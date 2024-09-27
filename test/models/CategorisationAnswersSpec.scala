@@ -149,6 +149,7 @@ class CategorisationAnswersSpec extends SpecBase {
 
           val categoryQuery = CategorisationInfo(
             "1234567890",
+            "BV",
             Some(validityEndDate),
             Seq(category1, category2, category3.copy(exemptions = Seq.empty)),
             Seq(category1, category2),
@@ -183,6 +184,7 @@ class CategorisationAnswersSpec extends SpecBase {
         "there are no questions to be answered but supplementary unit is asked for and answer is no" in {
           val catInfo = CategorisationInfo(
             "1234567890",
+            "BV",
             None,
             Seq(category2NoExemptions),
             Seq.empty,
@@ -214,6 +216,7 @@ class CategorisationAnswersSpec extends SpecBase {
         "there are no questions to be answered but supplementary unit is asked for and answer is yes" in {
           val catInfo = CategorisationInfo(
             "1234567890",
+            "BV",
             None,
             Seq(category2NoExemptions),
             Seq.empty,

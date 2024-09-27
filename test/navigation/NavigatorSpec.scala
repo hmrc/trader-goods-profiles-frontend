@@ -829,6 +829,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val categoryInfoWithNiphlAssessments = CategorisationInfo(
                 "1234567890",
+                "BV",
                 None,
                 Seq(category1Niphl, category1, category2NoExemptions),
                 Seq(category1),
@@ -854,6 +855,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val categoryInfoWithNirmsAssessments = CategorisationInfo(
                 "1234567890",
+                "BV",
                 None,
                 Seq(category2Nirms, category1, category2),
                 Seq(category1, category2),
@@ -879,6 +881,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val categoryInfoWithNirmsAssessments = CategorisationInfo(
                 "1234567890",
+                "BV",
                 None,
                 Seq(category2Nirms, category1, category2NoExemptions),
                 Seq(category1),
@@ -904,6 +907,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val categoryInfoWithNirmsAssessments = CategorisationInfo(
                 "1234567890",
+                "BV",
                 None,
                 Seq(category2Nirms, category1, category2),
                 Seq(category1, category2),
@@ -928,6 +932,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val categoryInfoWithNirmsAssessments = CategorisationInfo(
                 "1234567890",
+                "BV",
                 None,
                 Seq(category2Nirms, category1, category2NoExemptions),
                 Seq(category1),
@@ -966,6 +971,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val categoryInfoNoAssessments = CategorisationInfo(
                 "1234567890",
+                "BV",
                 Some(validityEndDate),
                 Seq.empty,
                 Seq.empty,
@@ -994,6 +1000,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val categoryInfoNoAssessments = CategorisationInfo(
                 "1234567890",
+                "BV",
                 Some(validityEndDate),
                 Seq(CategoryAssessment("assessmentId", 1, Seq.empty)),
                 Seq.empty,
@@ -1022,6 +1029,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val categoryInfoWithNiphlAssessments = CategorisationInfo(
                 "1234567890",
+                "BV",
                 None,
                 Seq(category1Niphl, category2NoExemptions),
                 Seq.empty,
@@ -1050,6 +1058,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val categoryInfoWithNiphlAssessments = CategorisationInfo(
                 "1234567890",
+                "BV",
                 None,
                 Seq(category1Niphl, category2NoExemptions),
                 Seq.empty,
@@ -1079,6 +1088,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val categoryInfoWithNiphlAssessments = CategorisationInfo(
                 "1234567890",
+                "BV",
                 None,
                 Seq(category1Niphl, category2NoExemptions, category1),
                 Seq.empty,
@@ -1106,6 +1116,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             "when only Nirms assessment and have Nirms and is six-digit code with descendants" in {
               val categoryInfoWithNirmsAssessments = CategorisationInfo(
                 "1234560000",
+                "BV",
                 None,
                 Seq(category2Nirms),
                 Seq.empty,
@@ -1135,6 +1146,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             "when only Nirms assessment and do not have Nirms and is six-digit code without descendants" in {
               val categoryInfoWithNirmsAssessments = CategorisationInfo(
                 "1234560000",
+                "BV",
                 None,
                 Seq(category2Nirms),
                 Seq.empty,
@@ -1162,6 +1174,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             "when only Nirms assessment and do not have Nirms and is ten-digit code" in {
               val categoryInfoWithNirmsAssessments = CategorisationInfo(
                 "1234567899",
+                "BV",
                 None,
                 Seq(category2Nirms),
                 Seq.empty,
@@ -1193,6 +1206,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             "when Niphl assessment and has Niphl and is six-digit code with descendants" in {
               val categoryInfoWithNiphlAssessments = CategorisationInfo(
                 "1234560000",
+                "BV",
                 None,
                 Seq(category1Niphl, category2NoExemptions),
                 Seq.empty,
@@ -1220,6 +1234,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             "when only Nirms assessment and does not have Nirms and is six-digit code with descendants" in {
               val categoryInfoWithNirmsAssessments = CategorisationInfo(
                 "1234560000",
+                "BV",
                 None,
                 Seq(category2Nirms),
                 Seq.empty,
@@ -1247,6 +1262,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             "when no category 1 exemptions but are category 2 exemptions with no answers and six-digit code with descendants" in {
               val categoryInfoNoAssessments = CategorisationInfo(
                 "12345600",
+                "BV",
                 None,
                 Seq(category2NoExemptions),
                 Seq.empty,
@@ -1277,6 +1293,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             "when Niphl assessment and has Niphl and is six-digit code with no descendants" in {
               val categoryInfoWithNiphlAssessments = CategorisationInfo(
                 "1234560000",
+                "BV",
                 None,
                 Seq(category1Niphl, category2NoExemptions),
                 Seq.empty,
@@ -1304,6 +1321,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             "when only Nirms assessment and does not have Nirms and is six-digit code with no descendants" in {
               val categoryInfoWithNirmsAssessments = CategorisationInfo(
                 "1234560000",
+                "BV",
                 None,
                 Seq(category2Nirms),
                 Seq.empty,
@@ -1331,6 +1349,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             "when no category 1 exemptions but are category 2 exemptions with no answers and six-digit code with no descendants" in {
               val categoryInfoNoAssessments = CategorisationInfo(
                 "12345600",
+                "BV",
                 None,
                 Seq(category2NoExemptions),
                 Seq.empty,
@@ -1357,6 +1376,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             "when Niphl assessment and has Niphl and is ten-digit code" in {
               val categoryInfoWithNiphlAssessments = CategorisationInfo(
                 "1234567891",
+                "BV",
                 None,
                 Seq(category1Niphl, category2NoExemptions),
                 Seq.empty,
@@ -1384,6 +1404,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             "when only Nirms assessment and does not have Nirms and is ten-digit code" in {
               val categoryInfoWithNirmsAssessments = CategorisationInfo(
                 "1234567891",
+                "BV",
                 None,
                 Seq(category2Nirms),
                 Seq.empty,
@@ -1411,6 +1432,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             "when no category 1 exemptions but are category 2 exemptions with no answers and ten-digit code" in {
               val categoryInfoNoAssessments = CategorisationInfo(
                 "1234567891",
+                "BV",
                 None,
                 Seq(category2NoExemptions),
                 Seq.empty,
@@ -1679,6 +1701,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val categoryInfoWithNiphlAssessments = CategorisationInfo(
                 "1234567890",
+                "BV",
                 None,
                 Seq(category1Niphl, category1, category2NoExemptions),
                 Seq(category1),
@@ -2357,6 +2380,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val categoryInfoNoAssessments = CategorisationInfo(
                 "1234567890",
+                "BV",
                 Some(validityEndDate),
                 Seq.empty,
                 Seq.empty,
@@ -2385,6 +2409,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val categoryInfoNoAssessments = CategorisationInfo(
                 "1234567890",
+                "BV",
                 Some(validityEndDate),
                 Seq(CategoryAssessment("assessmentId", 1, Seq.empty)),
                 Seq.empty,
@@ -2416,6 +2441,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             "when Niphl assessment and has Niphl and is six-digit code with no descendants" in {
               val categoryInfoWithNiphlAssessments = CategorisationInfo(
                 "1234560000",
+                "BV",
                 None,
                 Seq(category1Niphl, category2NoExemptions),
                 Seq.empty,
@@ -2443,6 +2469,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             "when only Nirms assessment and does not have Nirms and is six-digit code with no descendants" in {
               val categoryInfoWithNirmsAssessments = CategorisationInfo(
                 "1234560000",
+                "BV",
                 None,
                 Seq(category2Nirms),
                 Seq.empty,
@@ -2470,6 +2497,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             "when no category 1 exemptions but are category 2 exemptions with no answers and six-digit code with no descendants" in {
               val categoryInfoNoAssessments = CategorisationInfo(
                 "12345600",
+                "BV",
                 None,
                 Seq(category2NoExemptions),
                 Seq.empty,
@@ -2496,6 +2524,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             "when Niphl assessment and has Niphl and is ten-digit code" in {
               val categoryInfoWithNiphlAssessments = CategorisationInfo(
                 "1234567891",
+                "BV",
                 None,
                 Seq(category1Niphl, category2NoExemptions),
                 Seq.empty,
@@ -2523,6 +2552,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             "when only Nirms assessment and does not have Nirms and is ten-digit code" in {
               val categoryInfoWithNirmsAssessments = CategorisationInfo(
                 "1234567891",
+                "BV",
                 None,
                 Seq(category2Nirms),
                 Seq.empty,
@@ -2550,6 +2580,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             "when no category 1 exemptions but are category 2 exemptions with no answers and ten-digit code" in {
               val categoryInfoNoAssessments = CategorisationInfo(
                 "1234567891",
+                "BV",
                 None,
                 Seq(category2NoExemptions),
                 Seq.empty,
@@ -4458,6 +4489,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val categoryInfoNoAssessments = CategorisationInfo(
                 "1234567890",
+                "BV",
                 Some(validityEndDate),
                 Seq.empty,
                 Seq.empty,
@@ -4486,6 +4518,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val categoryInfoNoAssessments = CategorisationInfo(
                 "1234567890",
+                "BV",
                 Some(validityEndDate),
                 Seq(CategoryAssessment("assessmentId", 1, Seq.empty)),
                 Seq.empty,
@@ -4517,6 +4550,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             "when Niphl assessment and has Niphl and is six-digit code with no descendants" in {
               val categoryInfoWithNiphlAssessments = CategorisationInfo(
                 "1234560000",
+                "BV",
                 None,
                 Seq(category1Niphl, category2NoExemptions),
                 Seq.empty,
@@ -4544,6 +4578,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             "when only Nirms assessment and does not have Nirms and is six-digit code with no descendants" in {
               val categoryInfoWithNirmsAssessments = CategorisationInfo(
                 "1234560000",
+                "BV",
                 None,
                 Seq(category2Nirms),
                 Seq.empty,
@@ -4571,6 +4606,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             "when no category 1 exemptions but are category 2 exemptions with no answers and six-digit code with no descendants" in {
               val categoryInfoNoAssessments = CategorisationInfo(
                 "12345600",
+                "BV",
                 None,
                 Seq(category2NoExemptions),
                 Seq.empty,
@@ -4597,6 +4633,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             "when Niphl assessment and has Niphl and is ten-digit code" in {
               val categoryInfoWithNiphlAssessments = CategorisationInfo(
                 "1234567891",
+                "BV",
                 None,
                 Seq(category1Niphl, category2NoExemptions),
                 Seq.empty,
@@ -4624,6 +4661,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             "when only Nirms assessment and does not have Nirms and is ten-digit code" in {
               val categoryInfoWithNirmsAssessments = CategorisationInfo(
                 "1234567891",
+                "BV",
                 None,
                 Seq(category2Nirms),
                 Seq.empty,
@@ -4651,6 +4689,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             "when no category 1 exemptions but are category 2 exemptions with no answers and ten-digit code" in {
               val categoryInfoNoAssessments = CategorisationInfo(
                 "1234567891",
+                "BV",
                 None,
                 Seq(category2NoExemptions),
                 Seq.empty,

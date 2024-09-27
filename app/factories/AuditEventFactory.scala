@@ -92,6 +92,7 @@ case class AuditEventFactory() {
       writeOptional("updateSection", updateSection.map(_.toString)) ++
       writeOptional("recordId", recordId) ++
       writeOptional("commodityCode", commodity.map(_.commodityCode)) ++
+      writeOptional("countryOfOrigin", commodity.map(_.countryOfOrigin)) ++
       writeOptional("descendants", commodity.map(_.descendantCount.toString))
 
     DataEvent(
@@ -140,6 +141,7 @@ case class AuditEventFactory() {
       "eori"                              -> eori,
       "affinityGroup"                     -> affinityGroup.toString,
       "commodityCode"                     -> categoryRecord.initialCategoryInfo.commodityCode,
+      "countryOfOrigin"                   -> categoryRecord.initialCategoryInfo.countryOfOrigin,
       "descendants"                       -> categoryRecord.initialCategoryInfo.descendantCount.toString,
       "categoryAssessments"               -> categoryRecord.initialCategoryInfo.categoryAssessmentsThatNeedAnswers.size.toString,
       "categoryAssessmentsWithExemptions" -> categoryRecord.assessmentAnswersWithExemptions.toString,

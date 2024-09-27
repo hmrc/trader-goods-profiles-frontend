@@ -44,9 +44,9 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
 
     val assessmentList                = Seq(assessment1, assessment2, assessment3, assessment4)
     val categorisationInfo            =
-      CategorisationInfo("1234567890", Some(validityEndDate), assessmentList, assessmentList, None, 1)
+      CategorisationInfo("1234567890", "BV", Some(validityEndDate), assessmentList, assessmentList, None, 1)
     val categorisationInfoMeasureUnit =
-      CategorisationInfo("1234567890", Some(validityEndDate), assessmentList, assessmentList, Some("Weight"), 1)
+      CategorisationInfo("1234567890", "BV", Some(validityEndDate), assessmentList, assessmentList, Some("Weight"), 1)
 
     "must return a CategoryRecord" - {
 
@@ -233,7 +233,7 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
             None,
             None,
             categorisationInfo,
-            1,
+            0,
             wasSupplementaryUnitAsked = false
           )
         )
@@ -286,7 +286,7 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
             4,
             wasSupplementaryUnitAsked = false,
             Some(longerCat),
-            Some(1)
+            Some(0)
           )
         )
 

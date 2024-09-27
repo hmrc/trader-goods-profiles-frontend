@@ -23,4 +23,11 @@ case class AnsweredQuestions(
   question: CategoryAssessment,
   answer: Option[AssessmentAnswer],
   reassessmentQuestion: Boolean = false
-)
+) {
+
+  def answerIsYes: Boolean = answer match {
+    case Some(AssessmentAnswer.Exemption) => true
+    case _                                => false
+  }
+
+}

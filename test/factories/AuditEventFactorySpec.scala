@@ -118,13 +118,14 @@ class AuditEventFactorySpec extends SpecBase {
         result.tags.isEmpty mustBe false
 
         val auditDetails = result.detail
-        auditDetails.size mustBe 7
+        auditDetails.size mustBe 8
         auditDetails("journey") mustBe "UpdateRecord"
         auditDetails("eori") mustBe testEori
         auditDetails("affinityGroup") mustBe "Individual"
         auditDetails("updateSection") mustBe "categorisation"
         auditDetails("recordId") mustBe "8ebb6b04-6ab0-4fe2-ad62-e6389a8a204f"
         auditDetails("commodityCode") mustBe "1234567890"
+        auditDetails("countryOfOrigin") mustBe "BV"
         auditDetails("descendants") mustBe "1"
 
       }
@@ -268,13 +269,14 @@ class AuditEventFactorySpec extends SpecBase {
             result.tags.isEmpty mustBe false
 
             val auditDetails = result.detail
-            auditDetails.size mustBe 11
+            auditDetails.size mustBe 12
             auditDetails("journey") mustBe "UpdateRecord"
             auditDetails("updateSection") mustBe "categorisation"
             auditDetails("eori") mustBe testEori
             auditDetails("affinityGroup") mustBe "Organisation"
             auditDetails("recordId") mustBe testRecordId
             auditDetails("commodityCode") mustBe "1234567890"
+            auditDetails("countryOfOrigin") mustBe "BV"
             auditDetails("descendants") mustBe "1"
             auditDetails("categoryAssessments") mustBe "2"
             auditDetails("categoryAssessmentsWithExemptions") mustBe "2"
@@ -309,13 +311,14 @@ class AuditEventFactorySpec extends SpecBase {
             result.tags.isEmpty mustBe false
 
             val auditDetails = result.detail
-            auditDetails.size mustBe 12
+            auditDetails.size mustBe 13
             auditDetails("journey") mustBe "UpdateRecord"
             auditDetails("updateSection") mustBe "categorisation"
             auditDetails("eori") mustBe testEori
             auditDetails("affinityGroup") mustBe "Organisation"
             auditDetails("recordId") mustBe testRecordId
             auditDetails("commodityCode") mustBe "1234567890"
+            auditDetails("countryOfOrigin") mustBe "BV"
             auditDetails("descendants") mustBe "1"
             auditDetails("categoryAssessments") mustBe "3"
             auditDetails("categoryAssessmentsWithExemptions") mustBe "2"
@@ -351,13 +354,14 @@ class AuditEventFactorySpec extends SpecBase {
             result.tags.isEmpty mustBe false
 
             val auditDetails = result.detail
-            auditDetails.size mustBe 13
+            auditDetails.size mustBe 14
             auditDetails("journey") mustBe "UpdateRecord"
             auditDetails("updateSection") mustBe "categorisation"
             auditDetails("eori") mustBe testEori
             auditDetails("affinityGroup") mustBe "Organisation"
             auditDetails("recordId") mustBe testRecordId
             auditDetails("commodityCode") mustBe "1234567890"
+            auditDetails("countryOfOrigin") mustBe "BV"
             auditDetails("descendants") mustBe "1"
             auditDetails("categoryAssessments") mustBe "3"
             auditDetails("categoryAssessmentsWithExemptions") mustBe "2"
@@ -400,13 +404,14 @@ class AuditEventFactorySpec extends SpecBase {
             result.tags.isEmpty mustBe false
 
             val auditDetails = result.detail
-            auditDetails.size mustBe 16
+            auditDetails.size mustBe 17
             auditDetails("journey") mustBe "UpdateRecord"
             auditDetails("updateSection") mustBe "categorisation"
             auditDetails("eori") mustBe testEori
             auditDetails("affinityGroup") mustBe "Organisation"
             auditDetails("recordId") mustBe testRecordId
             auditDetails("commodityCode") mustBe "998877"
+            auditDetails("countryOfOrigin") mustBe "BV"
             auditDetails("descendants") mustBe "1"
             auditDetails("categoryAssessments") mustBe "3"
             auditDetails("categoryAssessmentsWithExemptions") mustBe "3"

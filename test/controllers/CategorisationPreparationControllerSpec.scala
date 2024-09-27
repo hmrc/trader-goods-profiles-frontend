@@ -60,6 +60,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
   private val categoryInfoNoAssessments = CategorisationInfo(
     "1234567890",
+    "BV",
     Some(validityEndDate),
     Seq.empty,
     Seq.empty,

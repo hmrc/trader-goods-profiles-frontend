@@ -53,7 +53,7 @@ class CategorisationService @Inject() (
           LocalDate.now()
         )
         .flatMap { response =>
-          CategorisationInfo.build(response, commodityCode, profile, longerCode) match {
+          CategorisationInfo.build(response, country, commodityCode, profile, longerCode) match {
             case Some(categorisationInfo) =>
               Future.successful(categorisationInfo)
 
