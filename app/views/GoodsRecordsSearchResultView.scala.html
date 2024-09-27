@@ -35,13 +35,7 @@
 @layout(pageTitle = preparedTitle, isFullWidth = true) {
 
 <div class="govuk-grid-column-two-thirds">
-
-    @{
-        pagination.items match {
-            case Some(items) if (items.size > 1) => <h1 class="govuk-heading-l">{messages("goodsRecordSearchResult.h1.withPage", totalRecords, page, items.size)}</h1>
-            case _ => <h1 class="govuk-heading-l">{messages("goodsRecordSearchResult.h1", totalRecords)}</h1>
-        }
-    }
+    <h1 class="govuk-heading-l">{messages("goodsRecordSearchResult.h1", totalRecords)}</h1>
 
     <p class="govuk-body">@messages("goodsRecordSearchResult.p1", searchString)</p>
 </div>

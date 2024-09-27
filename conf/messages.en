@@ -536,7 +536,6 @@ helpAndSupport.p15.linkText = Sign up for the Trader Support Service
 goodsRecordSearchResult.title = There are {0} search results
 goodsRecordSearchResult.title.withPage = There are {0} search results - page {1} of {2}
 goodsRecordSearchResult.h1 = There are {0} search results
-goodsRecordSearchResult.h1.withPage = There are {0} search results - page {1} of {2}
 goodsRecordSearchResult.p1 = You searched for the term ''{0}''.
 
 goodsRecordSearchResultEmptyView.title = There are no matching results
