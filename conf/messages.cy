@@ -410,3 +410,12 @@ downloadRequestSuccess.p1 = Byddwn yn anfon e-bost at {0} i roi gwybod i chi pry
 downloadRequestSuccess.p2 = Byddwch yn gweld hysbysiad pan fyddwch yn mewngofnodi i’ch TGP a fydd yn dangos cysylltiad i’r dudalen lawrlwytho. Mae’r ffeil ar ffurf CSV (gwerthoedd wedi’u gwahanu gan goma).
 downloadRequestSuccess.p3 = Bydd gennych 10 diwrnod o {0} i lawrlwytho’r ffeil. Ar ôl 10 diwrnod, bydd angen i chi wneud cais am ffeil newydd.
 
+goodsRecords.title = Proffil Nwyddau
+goodsRecords.title.withPage = Proffil Nwyddau – tudalen {0} o {1}
+goodsRecords.heading = Proffil Nwyddau
+goodsRecords.heading.withPage = Proffil Nwyddau – tudalen {0} o {1}
+
+goodsRecordSearchResult.title = Mae yna {0} o ganlyniadau chwilio
+goodsRecordSearchResult.title.withPage = Mae yna {0} o ganlyniadau chwilio – tudalen {1} o {2}
+goodsRecordSearchResult.h1 = Mae yna {0} o ganlyniadau chwilio
+goodsRecordSearchResult.h1.withPage = Mae yna {0} o ganlyniadau chwilio – tudalen {1} o {2}
