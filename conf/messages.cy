@@ -238,12 +238,10 @@ goodsDescription.checkYourAnswersLabel = Disgrifiad o’r nwyddau
 
 commodityCode.title = Cod nwyddau
 commodityCode.h1 = Cod nwyddau
-commodityCode.p1 = Mae codau nwyddau yn gyfeirnodau sy’n cael eu cydnabod yn rhyngwladol. Mae cod nwyddau yn disgrifio cynnyrch penodol wrth fewnforio neu allforio nwyddau. Byddwch yn defnyddio’r cod hwn ar unrhyw ddatganiadau tollau.
-commodityCode.p2 = Gallwch ychwanegu codau nwyddau i Broffil Nwyddau Masnachwr mewn 6, 8 neu 10 digid.
-commodityCode.p3 = Os nad ydych yn siŵr beth yw cod nwyddau eich nwyddau, gallwch ddefnyddio
-commodityCode.p3.linkText = Offeryn Tariff Ar-lein Gogledd Iwerddon (yn agor tab newydd)
+commodityCode.p1 = Os nad ydych yn siŵr beth yw cod nwyddau eich nwyddau, gallwch ddefnyddio
+commodityCode.p1.linkText = Offeryn Tariff Ar-lein Gogledd Iwerddon (yn agor tab newydd)
 commodityCode.heading = Beth yw’r cod nwyddau ar gyfer eich nwyddau?
-commodityCode.hint = Gallwch ddefnyddio 6, 8 neu 10 digid, er enghraifft, 654321, 87654321, 9876543211
+commodityCode.hint = Gall y cod nwyddau fod yn 6, 8 neu 10 digid.
 
 commodityCode.error.required = Rhowch god nwydd
 commodityCode.checkYourAnswersLabel = Cod nwyddau
