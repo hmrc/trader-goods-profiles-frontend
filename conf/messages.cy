@@ -136,7 +136,7 @@ ukimsKickOut.title = Mae angen i chi wneud cais ar gyfer Cynllun Marchnad Fewnol
 ukimsKickOut.h1 = Mae angen i chi wneud cais ar gyfer Cynllun Marchnad Fewnol y DU (UKIMS)
 ukimsKickOut.p1 = Ni allwch ddefnyddio''r Proffil Nwyddau Masnachwyr (TGP) os nad ydych wedi cofrestru ar gyfer yr UKIMS.
 ukimsKickOut.p2 = Dysgwch sut i
-ukimsKickOut.linkText = gofrestru ar gyfer yr UKIMS (yn agor tab newydd).
+ukimsKickOut.linkText = gofrestru ar gyfer yr UKIMS (yn agor tab newydd)
 
 adviceStart.title = Gofyn i CThEF am gyngor
 adviceStart.heading = Gofyn i CThEF am gyngor
