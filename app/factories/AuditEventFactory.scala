@@ -94,7 +94,7 @@ case class AuditEventFactory() {
       writeOptional("commodityCode", commodity.map(_.commodityCode)) ++
       writeOptional("countryOfOrigin", commodity.map(_.countryOfOrigin)) ++
       writeOptional("descendants", commodity.map(_.descendantCount.toString)) ++
-    // How many pages COULD be shown to the user
+      // How many pages COULD be shown to the user
       writeOptional("categoryAssessments", commodity.map(_.categoryAssessmentsThatNeedAnswers.size.toString))
 
     DataEvent(
