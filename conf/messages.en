@@ -664,6 +664,7 @@ fileInProgress.linkText1 = Request a new file
 
 existingUkimsNumber.title = UK Internal Market Scheme (UKIMS) number
 existingUkimsNumber.h1 = UK Internal Market Scheme (UKIMS) number
+existingUkimsNumber.h2 = Is this still the correct UKIMS number for you?
 existingUkimsNumber.p1 = You''ve used UKIMS number {0} on previous declarations.
 existingUkimsNumber.error.required = Select if this is the correct UKIMS number
 
