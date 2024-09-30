@@ -104,13 +104,15 @@ class AuditEventFactorySpec extends SpecBase {
 
       "create event when journey is update record" in {
 
+        val catInfo = categorisationInfo.copy(categoryAssessmentsThatNeedAnswers = Seq(category1, category3))
+
         val result = AuditEventFactory().createStartManageGoodsRecordEvent(
           testEori,
           AffinityGroup.Individual,
           UpdateRecordJourney,
           Some(CategorisationUpdate),
           Some("8ebb6b04-6ab0-4fe2-ad62-e6389a8a204f"),
-          Some(categorisationInfo)
+          Some(catInfo)
         )
 
         result.auditSource mustBe "trader-goods-profiles-frontend"
@@ -118,7 +120,7 @@ class AuditEventFactorySpec extends SpecBase {
         result.tags.isEmpty mustBe false
 
         val auditDetails = result.detail
-        auditDetails.size mustBe 8
+        auditDetails.size mustBe 9
         auditDetails("journey") mustBe "UpdateRecord"
         auditDetails("eori") mustBe testEori
         auditDetails("affinityGroup") mustBe "Individual"
@@ -127,7 +129,7 @@ class AuditEventFactorySpec extends SpecBase {
         auditDetails("commodityCode") mustBe "1234567890"
         auditDetails("countryOfOrigin") mustBe "BV"
         auditDetails("descendants") mustBe "1"
-
+        auditDetails("categoryAssessments") mustBe "2"
       }
 
     }

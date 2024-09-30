@@ -93,7 +93,9 @@ case class AuditEventFactory() {
       writeOptional("recordId", recordId) ++
       writeOptional("commodityCode", commodity.map(_.commodityCode)) ++
       writeOptional("countryOfOrigin", commodity.map(_.countryOfOrigin)) ++
-      writeOptional("descendants", commodity.map(_.descendantCount.toString))
+      writeOptional("descendants", commodity.map(_.descendantCount.toString)) ++
+      // How many pages COULD be shown to the user
+      writeOptional("categoryAssessments", commodity.map(_.categoryAssessmentsThatNeedAnswers.size.toString))
 
     DataEvent(
       auditSource = auditSource,
@@ -143,7 +145,10 @@ case class AuditEventFactory() {
       "commodityCode"                     -> categoryRecord.initialCategoryInfo.commodityCode,
       "countryOfOrigin"                   -> categoryRecord.initialCategoryInfo.countryOfOrigin,
       "descendants"                       -> categoryRecord.initialCategoryInfo.descendantCount.toString,
+      // How many pages COULD have been shown to the user
       "categoryAssessments"               -> categoryRecord.initialCategoryInfo.categoryAssessmentsThatNeedAnswers.size.toString,
+      // How many pages were answered YES
+      // (so pages shown is MIN(categoryAssessments, categoryAssessmentsWithExemptions+1))
       "categoryAssessmentsWithExemptions" -> categoryRecord.assessmentAnswersWithExemptions.toString,
       "reassessmentNeeded"                -> categoryRecord.longerCategoryInfo.isDefined.toString,
       "category"                          -> Scenario.getResultAsInt(categoryRecord.category).toString
