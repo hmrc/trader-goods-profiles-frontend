@@ -66,7 +66,7 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
             .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 3), AssessmentAnswer.Exemption)
+            .set(AssessmentPage(testRecordId, 3), AssessmentAnswer.NoExemption)
             .success
             .value
         val result  = CategoryRecord.build(answers, testEori, testRecordId, mockCategorisationService)
@@ -233,7 +233,7 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
             None,
             None,
             categorisationInfo,
-            0,
+            1,
             wasSupplementaryUnitAsked = false
           )
         )
@@ -268,7 +268,13 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
             .set(LongerCategorisationDetailsQuery(testRecordId), longerCat)
             .success
             .value
-            .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.NoExemption))
+            .set(
+              ReassessmentPage(testRecordId, 0),
+              ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true)
+            )
+            .success
+            .value
+            .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.NoExemption))
             .success
             .value
 
@@ -286,7 +292,8 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
             4,
             wasSupplementaryUnitAsked = false,
             Some(longerCat),
-            Some(0)
+            Some(2),
+            Some(1)
           )
         )
 

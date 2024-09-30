@@ -326,7 +326,7 @@ class GoodsRecordConnectorSpec
       eori = testEori,
       recordId = testRecordId,
       category = Category1Scenario,
-      assessmentAnswersWithExemptions = 3,
+      assessmentsAnswered = 3,
       finalComCode = "1234567890",
       measurementUnit = None,
       supplementaryUnit = None,
