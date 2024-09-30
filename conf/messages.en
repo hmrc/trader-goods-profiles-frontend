@@ -549,6 +549,11 @@ successBanner.title = Success
 successBanner.heading = You have changed the {0}
 successBannerRemove.heading = You have removed the {0}
 
+successProfileBanner.title = Success
+successProfileBanner.changeNumber.heading = You have changed your {0} number
+successProfileBanner.removeRegistration.heading = You have removed your {0} registration
+successProfileBanner.addNumber.heading = You have added your {0} number
+
 feedback.header = Tell us what you think
 feedback.line.1 = This is a new service and we want to know what you think of it.
 feedback.line.2 = {0}. Your thoughts and ideas will help us to make improvements.

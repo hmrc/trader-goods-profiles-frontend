@@ -88,23 +88,21 @@ class RemoveNiphlControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to the next page when No submitted and save the answers" in {
-
       val mockSessionRepository                               = mock[SessionRepository]
       val finalUserAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
       when(mockSessionRepository.set(finalUserAnswersCaptor.capture())).thenReturn(Future.successful(true))
 
       when(mockTraderProfileConnector.getTraderProfile(any())(any())).thenReturn(
-        Future.successful(TraderProfile(testEori, "1", None, Some("933844")))
+        Future.successful(TraderProfile(testEori, "1", None, Some("SN12345")))
       )
 
-      val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionRepository].toInstance(mockSessionRepository)
-          )
-          .build()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+          bind[SessionRepository].toInstance(mockSessionRepository)
+        )
+        .build()
 
       running(application) {
         val request =
@@ -122,28 +120,27 @@ class RemoveNiphlControllerSpec extends SpecBase with MockitoSugar {
           finalUserAnswers.get(RemoveNiphlPage).get mustBe false
         }
 
-        withClue("must have saved the nirms number as future items will depend on it") {
-          finalUserAnswers.get(NiphlNumberUpdatePage).get mustBe "933844"
+        withClue("must have saved the niphl number as future items will depend on it") {
+          finalUserAnswers.get(NiphlNumberUpdatePage).get mustBe "SN12345"
         }
 
       }
     }
 
     "must redirect to the next page when No submitted and not overwrite the existing niphl value" in {
-
       val mockSessionRepository                               = mock[SessionRepository]
       val finalUserAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
       when(mockSessionRepository.set(finalUserAnswersCaptor.capture())).thenReturn(Future.successful(true))
 
       when(mockTraderProfileConnector.getTraderProfile(any())(any())).thenReturn(
-        Future.successful(TraderProfile(testEori, "1", None, Some("933844")))
+        Future.successful(TraderProfile(testEori, "1", None, Some("SN12345")))
       )
 
       val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers.set(NiphlNumberUpdatePage, "111234").success.value))
+        applicationBuilder(userAnswers = Some(emptyUserAnswers.set(NiphlNumberUpdatePage, "SN12346").success.value))
           .overrides(
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
             bind[SessionRepository].toInstance(mockSessionRepository)
           )
           .build()
@@ -164,8 +161,8 @@ class RemoveNiphlControllerSpec extends SpecBase with MockitoSugar {
           finalUserAnswers.get(RemoveNiphlPage).get mustBe false
         }
 
-        withClue("must not overwrite the user entered nirms") {
-          finalUserAnswers.get(NiphlNumberUpdatePage).get mustBe "111234"
+        withClue("must not overwrite the user entered niphl") {
+          finalUserAnswers.get(NiphlNumberUpdatePage).get mustBe "SN12346"
         }
 
       }

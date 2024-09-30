@@ -24,6 +24,7 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.TraderProfileQuery
 import repositories.SessionRepository
+import utils.SessionData.{dataAdded, dataRemoved, dataUpdated, pageUpdated}
 import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
 import views.html.ProfileView
@@ -58,7 +59,15 @@ class ProfileController @Inject() (
             ).flatten
           )
 
-          Ok(view(detailsList))
+          Ok(
+            view(
+              detailsList,
+              request.session.get(dataUpdated).contains("true"),
+              request.session.get(pageUpdated).getOrElse(""),
+              request.session.get(dataRemoved).contains("true"),
+              request.session.get(dataAdded).contains("true")
+            )
+          ).removingFromSession(dataUpdated, pageUpdated, dataRemoved, dataAdded)
         }
       }
     }

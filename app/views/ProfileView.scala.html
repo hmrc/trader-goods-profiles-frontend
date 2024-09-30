@@ -19,12 +19,34 @@
 @this(
     layout: templates.Layout,
     govukSummaryList: GovukSummaryList,
-    govukWarningText: GovukWarningText
+    govukWarningText: GovukWarningText,
+    govukNotificationBanner: GovukNotificationBanner
 )
 
-@(detailsList: SummaryList)(implicit request: Request[_], messages: Messages)
+@(detailsList: SummaryList, changesMade: Boolean, changedPage: String, dataRemoved: Boolean, dataAdded: Boolean)(implicit request: Request[_], messages: Messages)
+
+    @bannerContentForUpdate(page: String, dataRemoved: Boolean, dataAdded: Boolean) = {
+        <h3 class="govuk-notification-banner__heading">
+        @if(dataRemoved) {
+            @messages("successProfileBanner.removeRegistration.heading", page)
+        } else if(dataAdded) {
+            @messages("successProfileBanner.addNumber.heading", page)
+        } else {
+            @messages("successProfileBanner.changeNumber.heading", page)
+        }
+        </h3>
+    }
 
 @layout(backLinkUrl = controllers.routes.HomePageController.onPageLoad.url, backLinkMessageKey = "profile.back", pageTitle = titleNoForm(messages("profile.title"))) {
+
+    @if(changesMade) {
+        @govukNotificationBanner(NotificationBanner(
+            title = Text(messages("successBanner.title")),
+            content = HtmlContent(bannerContentForUpdate(changedPage, dataRemoved, dataAdded)),
+            bannerType = Some("success"),
+            role=Some("alert"))
+        )
+    }
 
     <h1 class="govuk-heading-l">@messages("profile.h1")</h1>
 

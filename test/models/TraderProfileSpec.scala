@@ -22,7 +22,6 @@ import org.scalatest.{OptionValues, TryValues}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import pages._
-import queries.TraderProfileQuery
 
 class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with OptionValues {
 
@@ -166,27 +165,9 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
     }
   }
 
-  ".buildNirms" - {
-
-    val traderProfile = TraderProfile(testEori, "1", None, None)
+  "validateHasNirms" - {
 
     "must return a TraderProfile when all nirms data is answered" - {
-
-      "and nirms is present" in {
-
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(HasNirmsUpdatePage, true)
-            .success
-            .value
-            .set(NirmsNumberUpdatePage, "2")
-            .success
-            .value
-
-        val result = TraderProfile.buildNirms(answers, testEori, traderProfile)
-
-        result mustEqual Right(TraderProfile(testEori, "1", Some("2"), None))
-      }
 
       "and nirms is not present" in {
 
@@ -199,39 +180,44 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
             .success
             .value
 
-        val result = TraderProfile.buildNirms(answers, testEori, traderProfile)
+        val result = TraderProfile.validateHasNirms(answers)
 
-        result mustEqual Right(traderProfile)
+        result mustEqual Right(None)
       }
     }
 
     "must return errors" - {
 
-      "when mandatory answers are missing" in {
-
-        val answers = UserAnswers(userAnswersId)
-
-        val result = TraderProfile.buildNirms(answers, testEori, traderProfile)
-
-        inside(result) { case Left(errors) =>
-          errors.toChain.toList must contain theSameElementsAs Seq(
-            PageMissing(HasNirmsUpdatePage)
-          )
-        }
-      }
-
-      "when the user said they have a Nirms number but it is missing" in {
+      "and nirms is present" in {
 
         val answers =
           UserAnswers(userAnswersId)
             .set(HasNirmsUpdatePage, true)
             .success
             .value
+            .set(NirmsNumberUpdatePage, "2")
+            .success
+            .value
 
-        val result = TraderProfile.buildNirms(answers, testEori, traderProfile)
+        val result = TraderProfile.validateHasNirms(answers)
 
         inside(result) { case Left(errors) =>
-          errors.toChain.toList must contain only PageMissing(NirmsNumberUpdatePage)
+          errors.toChain.toList must contain theSameElementsAs Seq(
+            IncorrectlyAnsweredPage(HasNirmsUpdatePage)
+          )
+        }
+      }
+
+      "when mandatory answers are missing" in {
+
+        val answers = UserAnswers(userAnswersId)
+
+        val result = TraderProfile.validateHasNirms(answers)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain theSameElementsAs Seq(
+            PageMissing(HasNirmsUpdatePage)
+          )
         }
       }
 
@@ -242,7 +228,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
             .success
             .value
 
-        val result = TraderProfile.buildNirms(answers, testEori, traderProfile)
+        val result = TraderProfile.validateHasNirms(answers)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
@@ -264,7 +250,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
             .success
             .value
 
-        val result = TraderProfile.buildNirms(answers, testEori, traderProfile)
+        val result = TraderProfile.validateHasNirms(answers)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
@@ -275,12 +261,31 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
     }
   }
 
-  ".validateHasNirms" - {
+  "validateNirmsNumber" - {
 
-    "must validate Nirms" - {
+    "must return a TraderProfile when all nirms data is answered" - {
 
-      "user has Nirms and changes answer to No" in {
-        val userProfile = TraderProfile(testEori, "1", Some("nirms"), None)
+      "and nirms is present" in {
+
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(HasNirmsUpdatePage, true)
+            .success
+            .value
+            .set(NirmsNumberUpdatePage, "2")
+            .success
+            .value
+
+        val result = TraderProfile.validateNirmsNumber(answers)
+
+        result mustEqual Right(Some("2"))
+      }
+
+    }
+
+    "must return errors" - {
+
+      "and nirms is not present" in {
 
         val answers =
           UserAnswers(userAnswersId)
@@ -290,83 +295,21 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
             .set(RemoveNirmsPage, true)
             .success
             .value
-            .set(TraderProfileQuery, userProfile)
-            .success
-            .value
 
-        val result = TraderProfile.validateHasNirms(answers)
+        val result = TraderProfile.validateNirmsNumber(answers)
 
-        result mustEqual Right(true)
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain theSameElementsAs Seq(
+            IncorrectlyAnsweredPage(HasNirmsUpdatePage)
+          )
+        }
       }
 
-      "user does not have Nirms and does not change answer to Yes" in {
-        val userProfile = TraderProfile(testEori, "1", None, None)
+      "when mandatory answers are missing" in {
 
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(HasNirmsUpdatePage, false)
-            .success
-            .value
-            .set(TraderProfileQuery, userProfile)
-            .success
-            .value
+        val answers = UserAnswers(userAnswersId)
 
-        val result = TraderProfile.validateHasNirms(answers)
-
-        result mustEqual Right(false)
-      }
-
-      "when user answered Yes" in {
-
-        val userProfile = TraderProfile(testEori, "1", Some("nirms"), None)
-
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(HasNirmsUpdatePage, true)
-            .success
-            .value
-            .set(RemoveNirmsPage, false)
-            .success
-            .value
-            .set(TraderProfileQuery, userProfile)
-            .success
-            .value
-
-        val result = TraderProfile.validateHasNirms(answers)
-
-        result mustEqual Right(false)
-
-      }
-
-      "when user answered No but No to remove Nirms question" in {
-
-        val userProfile = TraderProfile(testEori, "1", Some("nirms"), None)
-
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(HasNirmsUpdatePage, false)
-            .success
-            .value
-            .set(RemoveNirmsPage, false)
-            .success
-            .value
-            .set(TraderProfileQuery, userProfile)
-            .success
-            .value
-
-        val result = TraderProfile.validateHasNirms(answers)
-
-        result mustEqual Right(false)
-
-      }
-    }
-
-    "must return errors" - {
-
-      "when user does not have answers" in {
-
-        def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
-        val result                        = TraderProfile.validateHasNirms(emptyUserAnswers)
+        val result = TraderProfile.validateNirmsNumber(answers)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
@@ -375,35 +318,28 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
         }
       }
 
-      "when TraderProfileQuery is not set" in {
+      "when the user said they have a Nirms number but it is missing" in {
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(HasNirmsUpdatePage, false)
-            .success
-            .value
-            .set(RemoveNirmsPage, false)
+            .set(HasNirmsUpdatePage, true)
             .success
             .value
 
-        val result = TraderProfile.validateHasNirms(answers)
+        val result = TraderProfile.validateNirmsNumber(answers)
 
         inside(result) { case Left(errors) =>
-          errors.toChain.toList must contain theSameElementsAs Seq(
-            PageMissing(TraderProfileQuery)
-          )
+          errors.toChain.toList must contain only PageMissing(NirmsNumberUpdatePage)
         }
       }
     }
   }
 
-  ".validateNiphlsUpdate" - {
+  "validateHasNiphl" - {
 
-    val userProfile = TraderProfile(testEori, "1", None, Some("niphls"))
+    "must return Niphl number when all niphl data is answered" - {
 
-    "must validate Niphls" - {
-
-      "user has Niphls and changes answer to No" in {
+      "and niphl is not present" in {
 
         val answers =
           UserAnswers(userAnswersId)
@@ -413,28 +349,8 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
             .set(RemoveNiphlPage, true)
             .success
             .value
-            .set(TraderProfileQuery, userProfile)
-            .success
-            .value
 
-        val result = TraderProfile.validateNiphlsUpdate(answers)
-
-        result mustEqual Right(None)
-      }
-
-      "user does not have Niphls and does not change answer to Yes" in {
-        val userProfile = TraderProfile(testEori, "1", None, None)
-
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(HasNiphlUpdatePage, false)
-            .success
-            .value
-            .set(TraderProfileQuery, userProfile)
-            .success
-            .value
-
-        val result = TraderProfile.validateNiphlsUpdate(answers)
+        val result = TraderProfile.validateHasNiphl(answers)
 
         result mustEqual Right(None)
       }
@@ -442,10 +358,31 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
     "must return errors" - {
 
-      "when user does not have answers" in {
+      "and niphl is present" in {
 
-        def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
-        val result                        = TraderProfile.validateNiphlsUpdate(emptyUserAnswers)
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(HasNiphlUpdatePage, true)
+            .success
+            .value
+            .set(NiphlNumberUpdatePage, "2")
+            .success
+            .value
+
+        val result = TraderProfile.validateHasNiphl(answers)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain theSameElementsAs Seq(
+            IncorrectlyAnsweredPage(HasNiphlUpdatePage)
+          )
+        }
+      }
+
+      "when mandatory answers are missing" in {
+
+        val answers = UserAnswers(userAnswersId)
+
+        val result = TraderProfile.validateHasNiphl(answers)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
@@ -454,75 +391,14 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
         }
       }
 
-      "when user answered Yes" in {
-
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(HasNiphlUpdatePage, true)
-            .success
-            .value
-
-        val result = TraderProfile.validateNiphlsUpdate(answers)
-
-        inside(result) { case Left(errors) =>
-          errors.toChain.toList must contain theSameElementsAs Seq(
-            PageMissing(NiphlNumberUpdatePage)
-          )
-        }
-      }
-
-      "when user answered No to Has Niphls and No to Remove Niphls but there is a Niphls number defined" in {
-
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(RemoveNiphlPage, false)
-            .success
-            .value
-            .set(HasNiphlUpdatePage, false)
-            .success
-            .value
-            .set(TraderProfileQuery, userProfile.copy(niphlNumber = Some("432444")))
-            .success
-            .value
-
-        val result = TraderProfile.validateNiphlsUpdate(answers)
-
-        inside(result) { case Left(errors) =>
-          errors.toChain.toList must contain theSameElementsAs Seq(
-            UnexpectedPage(RemoveNiphlPage)
-          )
-        }
-      }
-
-      "when TraderProfileQuery is not set" in {
-
+      "when the user said they don't have optional data but they haven't confirmed it" in {
         val answers =
           UserAnswers(userAnswersId)
             .set(HasNiphlUpdatePage, false)
             .success
             .value
 
-        val result = TraderProfile.validateNiphlsUpdate(answers)
-
-        inside(result) { case Left(errors) =>
-          errors.toChain.toList must contain theSameElementsAs Seq(
-            PageMissing(TraderProfileQuery)
-          )
-        }
-      }
-
-      "when user answered No and RemoveNiphlPage is not set" in {
-
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(HasNiphlUpdatePage, false)
-            .success
-            .value
-            .set(TraderProfileQuery, userProfile)
-            .success
-            .value
-
-        val result = TraderProfile.validateNiphlsUpdate(answers)
+        val result = TraderProfile.validateHasNiphl(answers)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
@@ -531,10 +407,105 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
         }
       }
 
+      "when the user has confirmed deleting something they don't want to delete" in {
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(RemoveNiphlPage, false)
+            .success
+            .value
+            .set(HasNiphlUpdatePage, false)
+            .success
+            .value
+            .set(NiphlNumberUpdatePage, "123")
+            .success
+            .value
+
+        val result = TraderProfile.validateHasNiphl(answers)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain theSameElementsAs Seq(
+            UnexpectedPage(RemoveNiphlPage)
+          )
+        }
+      }
     }
   }
 
-  ".validateUkimsNumber" - {
+  "validateNiphlNumber" - {
+
+    "must return a Niphl Number when all niphl data is answered" - {
+
+      "and niphl is present" in {
+
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(HasNiphlUpdatePage, true)
+            .success
+            .value
+            .set(NiphlNumberUpdatePage, "2")
+            .success
+            .value
+
+        val result = TraderProfile.validateNiphlNumber(answers)
+
+        result mustEqual Right(Some("2"))
+      }
+
+    }
+
+    "must return errors" - {
+
+      "and niphl is not present" in {
+
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(HasNiphlUpdatePage, false)
+            .success
+            .value
+            .set(RemoveNiphlPage, true)
+            .success
+            .value
+
+        val result = TraderProfile.validateNiphlNumber(answers)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain theSameElementsAs Seq(
+            IncorrectlyAnsweredPage(HasNiphlUpdatePage)
+          )
+        }
+      }
+
+      "when mandatory answers are missing" in {
+
+        val answers = UserAnswers(userAnswersId)
+
+        val result = TraderProfile.validateNiphlNumber(answers)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain theSameElementsAs Seq(
+            PageMissing(HasNiphlUpdatePage)
+          )
+        }
+      }
+
+      "when the user said they have a Niphl number but it is missing" in {
+
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(HasNiphlUpdatePage, true)
+            .success
+            .value
+
+        val result = TraderProfile.validateNiphlNumber(answers)
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain only PageMissing(NiphlNumberUpdatePage)
+        }
+      }
+    }
+  }
+
+  "validateUkimsNumber" - {
 
     "must validate Ukims Number" in {
 

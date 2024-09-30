@@ -19,6 +19,7 @@ package utils
 case object SessionData {
   val dataUpdated: String                    = "changesMade"
   val dataRemoved: String                    = "valueRemoved"
+  val dataAdded: String                      = "valueAdded"
   val pageUpdated: String                    = "changedPage"
   val traderReference: String                = "trader reference"
   val goodsDescription: String               = "goods description"
@@ -30,6 +31,11 @@ case object SessionData {
   val hasNiphlPage: String                   = "hasNiphl"
   val nirmsNumberPage: String                = "nirmsNumber"
   val niphlNumberPage: String                = "niphlNumber"
+  val ukimsNumberUpdatePage: String          = "UKIMS"
+  val hasNirmsUpdatePage: String             = "NIRMS"
+  val hasNiphlUpdatePage: String             = "NIPHL"
+  val nirmsNumberUpdatePage: String          = "NIRMS"
+  val niphlNumberUpdatePage: String          = "NIPHL"
   val traderReferencePage: String            = "traderReference"
   val useTraderReferencePage: String         = "useTraderReference"
   val goodsDescriptionPage: String           = "goodsDescription"
@@ -56,5 +62,4 @@ case object SessionData {
   val fromExpiredCommodityCodePage: String   = "fromExpiredCommodityCodePage"
   val useExistingUkimsNumberPage: String     = "useExistingUkimsNumberPage"
   val historicProfileDataQuery: String       = "historicProfileData"
-
 }

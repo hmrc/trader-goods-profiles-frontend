@@ -83,7 +83,7 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[ProfileView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(detailsList)(
+        contentAsString(result) mustEqual view(detailsList, false, "", false, false)(
           request,
           messages(application)
         ).toString
@@ -128,7 +128,7 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[ProfileView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(detailsList)(
+        contentAsString(result) mustEqual view(detailsList, false, "", false, false)(
           request,
           messages(application)
         ).toString
@@ -173,7 +173,7 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[ProfileView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(detailsList)(
+        contentAsString(result) mustEqual view(detailsList, false, "", false, false)(
           request,
           messages(application)
         ).toString
@@ -218,7 +218,7 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[ProfileView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(detailsList)(
+        contentAsString(result) mustEqual view(detailsList, false, "", false, false)(
           request,
           messages(application)
         ).toString
