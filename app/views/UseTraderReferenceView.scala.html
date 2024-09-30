@@ -43,7 +43,7 @@
 
     <p class="govuk-body">@messages("useTraderReference.p4")</p>
 
-    <p class="govuk-body">@messages(traderReference)</p>
+    <p class="govuk-body" style="word-break: break-word">@messages(traderReference)</p>
 
     @formHelper(action = routes.UseTraderReferenceController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
