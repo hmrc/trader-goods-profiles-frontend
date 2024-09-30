@@ -406,7 +406,7 @@ downloadRequestSuccess.h1 = Mae’ch cais i gael ffeil sy’n cynnwys eich data 
 downloadRequestSuccess.h2 = Yr hyn sy’n digwydd nesaf
 downloadRequestSuccess.p1 = Byddwn yn anfon e-bost at {0} i roi gwybod i chi pryd bydd y ffeil yn barod i lawrlwytho.
 downloadRequestSuccess.p2 = Byddwch yn gweld hysbysiad pan fyddwch yn mewngofnodi i’ch TGP a fydd yn dangos cysylltiad i’r dudalen lawrlwytho. Mae’r ffeil ar ffurf CSV (gwerthoedd wedi’u gwahanu gan goma).
-downloadRequestSuccess.p3 = Bydd y ffeil hon ar gael am 30 diwrnod ar ôl i ni roi gwybod i chi ei bod yn barod.
+downloadRequestSuccess.p3 = Bydd y ffeil hon ar gael am 30 diwrnod ar ôl i ni roi gwybod i chi ei bod yn barod
 downloadRequestSuccess.p3.1 = Ar ôl 30 diwrnod, bydd angen i chi wneud cais am ffeil newydd.
 
 goodsRecords.title = Proffil Nwyddau

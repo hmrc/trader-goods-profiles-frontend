@@ -653,8 +653,8 @@ downloadRequestSuccess.h1 = We''ve received your request for a file of your TGP 
 downloadRequestSuccess.h2 = What happens next
 downloadRequestSuccess.p1 = We''ll send an email to {0} to let you know when the file is ready.
 downloadRequestSuccess.p2 = You will have a notification when you log in to your TGP with a link to the file download page. The file is in a comma separated value format.
-downloadRequestSuccess.p3 = The file will be available for 30 days from when we let you know it is ready.
-downloadRequestSuccess.p3.1 = After 30 days, you will need to request a new file.
+downloadRequestSuccess.p3 = This file will be available for 30 days from when we let you know it is ready.
+downloadRequestSuccess.p3.1 = After 30 days, you''ll need to request a new file.
 
 fileInProgress.title = We''re still preparing your file
 fileInProgress.heading = We''re still preparing your file
