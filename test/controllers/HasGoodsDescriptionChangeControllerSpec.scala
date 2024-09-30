@@ -52,7 +52,13 @@ class HasGoodsDescriptionChangeControllerSpec extends SpecBase with MockitoSugar
 
     "must return OK and the correct view for a GET" in {
 
+      val mockAuditService = mock[AuditService]
+
+      when(mockAuditService.auditStartUpdateGoodsRecord(any(), any(), any(), any(), any())(any()))
+        .thenReturn(Future.successful(Done))
+
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(bind[AuditService].toInstance(mockAuditService))
         .build()
 
       running(application) {
@@ -64,6 +70,17 @@ class HasGoodsDescriptionChangeControllerSpec extends SpecBase with MockitoSugar
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form, NormalMode, testRecordId)(request, messages(application)).toString
+
+        withClue("must call the audit service with the correct details") {
+          verify(mockAuditService)
+            .auditStartUpdateGoodsRecord(
+              eqTo(testEori),
+              eqTo(AffinityGroup.Individual),
+              eqTo(GoodsDetailsUpdate),
+              eqTo(testRecordId),
+              any()
+            )(any())
+        }
       }
     }
 
@@ -92,18 +109,13 @@ class HasGoodsDescriptionChangeControllerSpec extends SpecBase with MockitoSugar
     "must redirect to the next page when valid data is submitted" in {
 
       val mockSessionRepository = mock[SessionRepository]
-      val mockAuditService      = mock[AuditService]
-
-      when(mockAuditService.auditStartUpdateGoodsRecord(any(), any(), any(), any(), any())(any()))
-        .thenReturn(Future.successful(Done))
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionRepository].toInstance(mockSessionRepository),
-            bind[AuditService].toInstance(mockAuditService)
+            bind[SessionRepository].toInstance(mockSessionRepository)
           )
           .build()
 
@@ -116,17 +128,6 @@ class HasGoodsDescriptionChangeControllerSpec extends SpecBase with MockitoSugar
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
-
-        withClue("must call the audit service with the correct details") {
-          verify(mockAuditService)
-            .auditStartUpdateGoodsRecord(
-              eqTo(testEori),
-              eqTo(AffinityGroup.Individual),
-              eqTo(GoodsDetailsUpdate),
-              eqTo(testRecordId),
-              any()
-            )(any())
-        }
       }
     }
 
