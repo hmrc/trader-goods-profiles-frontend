@@ -80,6 +80,13 @@ class HasSupplementaryUnitController @Inject() (
 
   def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
+      auditService
+        .auditStartUpdateGoodsRecord(
+          request.eori,
+          request.affinityGroup,
+          SupplementaryUnitUpdate,
+          recordId
+        )
       val userAnswerValue = request.userAnswers.get(HasSupplementaryUnitUpdatePage(recordId))
 
       goodsRecordConnector.getRecord(request.eori, recordId).flatMap { record =>
@@ -109,19 +116,11 @@ class HasSupplementaryUnitController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, recordId, onSubmitAction))),
-          value => {
-            auditService
-              .auditStartUpdateGoodsRecord(
-                request.eori,
-                request.affinityGroup,
-                SupplementaryUnitUpdate,
-                recordId
-              )
+          value =>
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(HasSupplementaryUnitUpdatePage(recordId), value))
               _              <- sessionRepository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(HasSupplementaryUnitUpdatePage(recordId), mode, updatedAnswers))
-          }
         )
     }
 }

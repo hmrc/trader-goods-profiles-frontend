@@ -200,7 +200,10 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
     }
 
     ".update journey" - {
+
       "must return OK and the correct view for a GET" in {
+        val mockAuditService = mock[AuditService]
+
         val mockGoodsRecordConnector = mock[GoodsRecordConnector]
         when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
           .successful(record)
@@ -208,6 +211,7 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+            bind[AuditService].toInstance(mockAuditService),
             bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
           )
           .build()
@@ -225,10 +229,21 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
             messages(application)
           ).toString
 
+          withClue("must call the audit service with the correct details") {
+            verify(mockAuditService)
+              .auditStartUpdateGoodsRecord(
+                eqTo(testEori),
+                eqTo(AffinityGroup.Individual),
+                eqTo(SupplementaryUnitUpdate),
+                eqTo(recordId),
+                any()
+              )(any())
+          }
         }
       }
 
       "must return OK and the correct view for a GET - should set to false when supplementary value is 0" in {
+        val mockAuditService = mock[AuditService]
 
         val mockGoodsRecordConnector = mock[GoodsRecordConnector]
         when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
@@ -240,6 +255,7 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+            bind[AuditService].toInstance(mockAuditService),
             bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
           )
           .build()
@@ -256,11 +272,23 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
             request,
             messages(application)
           ).toString
+
+          withClue("must call the audit service with the correct details") {
+            verify(mockAuditService)
+              .auditStartUpdateGoodsRecord(
+                eqTo(testEori),
+                eqTo(AffinityGroup.Individual),
+                eqTo(SupplementaryUnitUpdate),
+                eqTo(recordId),
+                any()
+              )(any())
+          }
         }
       }
 
       "must populate the view correctly on a GET when the question has previously been answered" in {
-        val userAnswers = UserAnswers(userAnswersId).set(HasSupplementaryUnitUpdatePage(recordId), true).success.value
+        val userAnswers      = UserAnswers(userAnswersId).set(HasSupplementaryUnitUpdatePage(recordId), true).success.value
+        val mockAuditService = mock[AuditService]
 
         val mockGoodsRecordConnector = mock[GoodsRecordConnector]
         when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
@@ -269,6 +297,7 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
         val application = applicationBuilder(userAnswers = Some(userAnswers))
           .overrides(
             bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+            bind[AuditService].toInstance(mockAuditService),
             bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
           )
           .build()
@@ -291,6 +320,17 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
             request,
             messages(application)
           ).toString
+
+          withClue("must call the audit service with the correct details") {
+            verify(mockAuditService)
+              .auditStartUpdateGoodsRecord(
+                eqTo(testEori),
+                eqTo(AffinityGroup.Individual),
+                eqTo(SupplementaryUnitUpdate),
+                eqTo(recordId),
+                any()
+              )(any())
+          }
         }
       }
 
@@ -298,14 +338,12 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
         val mockSessionRepository = mock[SessionRepository]
 
         when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-        val mockAuditService = mock[AuditService]
 
         val application =
           applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(
               bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository),
-              bind[AuditService].toInstance(mockAuditService),
               bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
             )
             .build()
@@ -319,17 +357,6 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
-
-          withClue("must call the audit service with the correct details") {
-            verify(mockAuditService)
-              .auditStartUpdateGoodsRecord(
-                eqTo(testEori),
-                eqTo(AffinityGroup.Individual),
-                eqTo(SupplementaryUnitUpdate),
-                eqTo(recordId),
-                any()
-              )(any())
-          }
         }
       }
 

@@ -221,20 +221,20 @@ case class AuditEventFactory() {
     supplementaryRequest: SupplementaryRequest,
     recordId: String
   )(implicit hc: HeaderCarrier): DataEvent = {
-    val auditDetails = Map(
+    val hasSupUnit        = supplementaryRequest.hasSupplementaryUnit.getOrElse(false)
+    val suppUnitStringOpt = if (hasSupUnit) {
+      Some(s"${supplementaryRequest.supplementaryUnit.get} ${supplementaryRequest.measurementUnit.get}")
+    } else {
+      None
+    }
+    val auditDetails      = Map(
       "journey"              -> journey.toString,
       "updateSection"        -> SupplementaryUnitUpdate.toString,
       "recordId"             -> recordId,
       "eori"                 -> supplementaryRequest.eori,
       "affinityGroup"        -> affinityGroup.toString,
-      "addSupplementaryUnit" -> supplementaryRequest.hasSupplementaryUnit.getOrElse(false).toString,
-      "supplementaryUnit"    -> (if (supplementaryRequest.hasSupplementaryUnit.getOrElse(false)) {
-                                s"${supplementaryRequest.supplementaryUnit
-                                  .getOrElse("")} ${supplementaryRequest.measurementUnit.getOrElse("")}"
-                              } else {
-                                ""
-                              })
-    )
+      "addSupplementaryUnit" -> hasSupUnit.toString
+    ) ++ writeOptional("supplementaryUnit", suppUnitStringOpt)
     createSubmitGoodsRecordEvent(auditDetails)
   }
 
