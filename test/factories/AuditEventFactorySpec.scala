@@ -485,19 +485,6 @@ class AuditEventFactorySpec extends SpecBase {
 
         "and update is for supplementary unit" in {
 
-          val effectiveFrom = Instant.now
-          val effectiveTo   = effectiveFrom.plusSeconds(99)
-          val commodity     = Commodity(
-            "030821",
-            List(
-              "Sea urchins",
-              "Live, fresh or chilled",
-              "Aquatic invertebrates other than crustaceans and molluscs "
-            ),
-            effectiveFrom,
-            Some(effectiveTo)
-          )
-
           val result = AuditEventFactory().createSubmitGoodsRecordEventForUpdateSupplementaryUnit(
             AffinityGroup.Organisation,
             UpdateRecordJourney,
