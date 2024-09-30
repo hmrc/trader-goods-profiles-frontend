@@ -119,10 +119,12 @@
                 rows = goodsRecordsItems.map{
                     goodsRecord =>  Seq(
                         TableRow(
-                            content = Text(goodsRecord.traderRef)
+                            content = Text(goodsRecord.traderRef),
+                            attributes = Map("style" -> "word-break: break-word")
                         ),
                         TableRow(
-                            content = Text(goodsRecord.goodsDescription)
+                            content = Text(goodsRecord.goodsDescription),
+                            attributes = Map("style" -> "word-break: break-word")
                         ),
                         TableRow(
                             content = Text(
