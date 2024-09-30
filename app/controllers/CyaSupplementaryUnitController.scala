@@ -25,7 +25,7 @@ import navigation.Navigator
 import pages.CyaSupplementaryUnitPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
-import services.DataCleansingService
+import services.{AuditService, DataCleansingService}
 import utils.SessionData._
 import viewmodels.checkAnswers.{HasSupplementaryUnitSummary, SupplementaryUnitSummary}
 import viewmodels.govuk.summarylist._
@@ -43,7 +43,8 @@ class CyaSupplementaryUnitController @Inject() (
   dataCleansingService: DataCleansingService,
   val controllerComponents: MessagesControllerComponents,
   view: CyaSupplementaryUnitView,
-  navigator: Navigator
+  navigator: Navigator,
+  auditService: AuditService
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
@@ -72,8 +73,6 @@ class CyaSupplementaryUnitController @Inject() (
     implicit request =>
       SupplementaryRequest.build(request.userAnswers, request.eori, recordId) match {
         case Right(model) =>
-          //TODO : Audit service implementation
-
           val initialHasSuppUnitOpt = request.session.get(initialValueOfHasSuppUnit).map(_.toBoolean)
           val initialSuppUnitOpt    = request.session.get(initialValueOfSuppUnit)
 
@@ -90,7 +89,12 @@ class CyaSupplementaryUnitController @Inject() (
           val isSuppUnitRemoved =
             (initialHasSuppUnitOpt
               .contains(true) && finalHasSuppUnitOpt.contains(false)) || finalSuppUnitBD.contains(BigDecimal(0))
-// audit event
+
+          auditService.auditFinishUpdateSupplementaryUnitGoodsRecord(
+            recordId,
+            request.affinityGroup,
+            model
+          )
           goodsRecordConnector.updateSupplementaryUnitForGoodsRecord(request.eori, recordId, model).map { _ =>
             dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
             Redirect(navigator.nextPage(CyaSupplementaryUnitPage(recordId), NormalMode, request.userAnswers))

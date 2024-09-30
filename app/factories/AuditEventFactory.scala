@@ -17,10 +17,10 @@
 package factories
 
 import models.audits._
-import models.helper.{CategorisationUpdate, GoodsDetailsUpdate, Journey, UpdateSection}
+import models.helper.{CategorisationUpdate, GoodsDetailsUpdate, Journey, SupplementaryUnitUpdate, UpdateSection}
 import models.ott.CategorisationInfo
 import models.ott.response.OttResponse
-import models.{AdviceRequest, CategoryRecord, GoodsRecord, Scenario, TraderProfile, UpdateGoodsRecord}
+import models.{AdviceRequest, CategoryRecord, GoodsRecord, Scenario, SupplementaryRequest, TraderProfile, UpdateGoodsRecord}
 import play.api.http.Status.OK
 import play.api.libs.json.Json
 import uk.gov.hmrc.auth.core.AffinityGroup
@@ -201,6 +201,29 @@ case class AuditEventFactory() {
       writeOptional("traderReference", goodsRecord.traderReference) ++
       writeOptional("countryOfOrigin", goodsRecord.countryOfOrigin)
 
+    createSubmitGoodsRecordEvent(auditDetails)
+  }
+
+  def createSubmitGoodsRecordEventForUpdateSupplementaryUnit(
+    affinityGroup: AffinityGroup,
+    journey: Journey,
+    supplementaryRequest: SupplementaryRequest,
+    recordId: String
+  )(implicit hc: HeaderCarrier): DataEvent = {
+    val auditDetails = Map(
+      "journey"              -> journey.toString,
+      "updateSection"        -> SupplementaryUnitUpdate.toString,
+      "recordId"             -> recordId,
+      "eori"                 -> supplementaryRequest.eori,
+      "affinityGroup"        -> affinityGroup.toString,
+      "addSupplementaryUnit" -> supplementaryRequest.hasSupplementaryUnit.getOrElse(false).toString,
+      "supplementaryUnit"    -> (if (supplementaryRequest.hasSupplementaryUnit.getOrElse(false)) {
+                                s"${supplementaryRequest.supplementaryUnit
+                                  .getOrElse("")} ${supplementaryRequest.measurementUnit.getOrElse("")}"
+                              } else {
+                                ""
+                              })
+    )
     createSubmitGoodsRecordEvent(auditDetails)
   }
 

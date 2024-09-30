@@ -21,7 +21,7 @@ import base.TestConstants.{testEori, testRecordId}
 import models.audits._
 import models.helper.{CategorisationUpdate, CreateRecordJourney, RequestAdviceJourney, UpdateRecordJourney}
 import models.ott.response._
-import models.{AdviceRequest, Category1Scenario, Category2Scenario, CategoryRecord, Commodity, GoodsRecord, TraderProfile, UpdateGoodsRecord}
+import models.{AdviceRequest, Category1Scenario, Category2Scenario, CategoryRecord, Commodity, GoodsRecord, SupplementaryRequest, TraderProfile, UpdateGoodsRecord}
 import play.api.http.Status.{NOT_FOUND, OK}
 import play.api.libs.json.Json
 import uk.gov.hmrc.auth.core.AffinityGroup
@@ -474,6 +474,49 @@ class AuditEventFactorySpec extends SpecBase {
           auditDetails("commodityCodeEffectiveFrom") mustBe effectiveFrom.toString
           auditDetails("commodityCodeEffectiveTo") mustBe effectiveTo.toString
 
+        }
+
+        "and update is for supplementary unit" in {
+
+          val effectiveFrom = Instant.now
+          val effectiveTo   = effectiveFrom.plusSeconds(99)
+          val commodity     = Commodity(
+            "030821",
+            List(
+              "Sea urchins",
+              "Live, fresh or chilled",
+              "Aquatic invertebrates other than crustaceans and molluscs "
+            ),
+            effectiveFrom,
+            Some(effectiveTo)
+          )
+
+          val result = AuditEventFactory().createSubmitGoodsRecordEventForUpdateSupplementaryUnit(
+            AffinityGroup.Organisation,
+            UpdateRecordJourney,
+            SupplementaryRequest(
+              testEori,
+              testRecordId,
+              Some(true),
+              Some("supplementaryUnit"),
+              Some("measurementUnit")
+            ),
+            testRecordId
+          )
+
+          result.auditSource mustBe "trader-goods-profiles-frontend"
+          result.auditType mustBe "SubmitGoodsRecord"
+          result.tags.isEmpty mustBe false
+
+          val auditDetails = result.detail
+          auditDetails.size mustBe 7
+          auditDetails("journey") mustBe "UpdateRecord"
+          auditDetails("updateSection") mustBe "supplementaryUnit"
+          auditDetails("eori") mustBe testEori
+          auditDetails("recordId") mustBe testRecordId
+          auditDetails("affinityGroup") mustBe "Organisation"
+          auditDetails("addSupplementaryUnit") mustBe "true"
+          auditDetails("supplementaryUnit") mustBe "supplementaryUnit measurementUnit"
         }
       }
     }

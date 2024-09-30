@@ -22,7 +22,7 @@ import factories.AuditEventFactory
 import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, OttAuditData}
 import models.helper._
 import models.ott.response._
-import models.{AdviceRequest, Category1Scenario, CategoryRecord, GoodsRecord, TraderProfile, UpdateGoodsRecord}
+import models.{AdviceRequest, Category1Scenario, CategoryRecord, GoodsRecord, SupplementaryRequest, TraderProfile, UpdateGoodsRecord}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{reset, times, verify, when}
@@ -416,6 +416,121 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
             testRecordId,
             AffinityGroup.Individual,
             updateGoodsRecord
+          )
+        )
+      }
+    }
+  }
+
+  "auditFinishUpdateSupplementaryUnitGoodsRecord" - {
+
+    "return Done when built up an audit event and submitted it" in {
+
+      when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
+
+      val fakeAuditEvent = DataEvent("source", "type")
+      when(mockAuditFactory.createSubmitGoodsRecordEventForUpdateSupplementaryUnit(any(), any(), any(), any())(any()))
+        .thenReturn(fakeAuditEvent)
+
+      val expectedSupplementaryRequest =
+        SupplementaryRequest(
+          testEori,
+          testRecordId,
+          Some(true),
+          Some("10"),
+          Some("unit")
+        )
+
+      val result =
+        await(
+          auditService.auditFinishUpdateSupplementaryUnitGoodsRecord(
+            testRecordId,
+            AffinityGroup.Individual,
+            expectedSupplementaryRequest
+          )
+        )
+
+      result mustBe Done
+
+      withClue("Should have supplied the correct parameters to the factory to create the event") {
+        verify(mockAuditFactory)
+          .createSubmitGoodsRecordEventForUpdateSupplementaryUnit(
+            eqTo(AffinityGroup.Individual),
+            eqTo(UpdateRecordJourney),
+            eqTo(expectedSupplementaryRequest),
+            eqTo(testRecordId)
+          )(any())
+      }
+
+      withClue("Should have submitted the created event to the audit connector") {
+        verify(mockAuditConnector).sendEvent(eqTo(fakeAuditEvent))(any(), any())
+      }
+    }
+
+    "return Done when audit return type is failure" in {
+
+      val auditFailure = AuditResult.Failure("Failed audit event creation")
+      when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(auditFailure))
+
+      val fakeAuditEvent = DataEvent("source", "type")
+      when(mockAuditFactory.createSubmitGoodsRecordEventForUpdateSupplementaryUnit(any(), any(), any(), any())(any()))
+        .thenReturn(fakeAuditEvent)
+
+      val expectedSupplementaryRequest =
+        SupplementaryRequest(
+          testEori,
+          testRecordId,
+          Some(true),
+          Some("10"),
+          Some("unit")
+        )
+
+      val result =
+        await(
+          auditService.auditFinishUpdateSupplementaryUnitGoodsRecord(
+            testRecordId,
+            AffinityGroup.Individual,
+            expectedSupplementaryRequest
+          )
+        )
+
+      result mustBe Done
+
+      withClue("Should have supplied the EORI and affinity group to the factory to create the event") {
+        verify(mockAuditFactory)
+          .createSubmitGoodsRecordEventForUpdateSupplementaryUnit(
+            eqTo(AffinityGroup.Individual),
+            eqTo(UpdateRecordJourney),
+            eqTo(expectedSupplementaryRequest),
+            eqTo(testRecordId)
+          )(any())
+      }
+
+      withClue("Should have submitted the created event to the audit connector") {
+        verify(mockAuditConnector).sendEvent(eqTo(fakeAuditEvent))(any(), any())
+      }
+    }
+
+    "must let the play error handler deal with an future failure" in {
+
+      val expectedSupplementaryRequest =
+        SupplementaryRequest(
+          testEori,
+          testRecordId,
+          Some(true),
+          Some("10"),
+          Some("unit")
+        )
+
+      when(mockAuditConnector.sendEvent(any())(any(), any()))
+        .thenReturn(Future.failed(new RuntimeException("audit error")))
+
+      intercept[RuntimeException] {
+        await(
+          auditService.auditFinishUpdateSupplementaryUnitGoodsRecord(
+            testRecordId,
+            AffinityGroup.Individual,
+            expectedSupplementaryRequest
           )
         )
       }
