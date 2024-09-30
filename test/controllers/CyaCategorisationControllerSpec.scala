@@ -330,6 +330,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
           val categorisationInfo = CategorisationInfo(
             "1234567890",
+            "BV",
             None,
             Seq(category1, category2, category3),
             Seq(category1, category3),

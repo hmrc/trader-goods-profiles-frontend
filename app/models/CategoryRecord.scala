@@ -65,10 +65,10 @@ object CategoryRecord {
         finalCategorisationInfo.measurementUnit,
         supplementaryUnit,
         initialCategorisationInfo,
-        initialCategorisationInfo.getAnswersForQuestions(userAnswers, recordId).count(_.answer.isDefined),
+        initialCategorisationInfo.getAnswersForQuestions(userAnswers, recordId).count(_.answerIsYes),
         userAnswers.get(HasSupplementaryUnitPage(recordId)).isDefined,
         longerCategoryInfo,
-        longerCategoryInfo.map(_.getAnswersForQuestions(userAnswers, recordId).count(_.answer.isDefined))
+        longerCategoryInfo.map(_.getAnswersForQuestions(userAnswers, recordId).count(_.answerIsYes))
       )
     }
 

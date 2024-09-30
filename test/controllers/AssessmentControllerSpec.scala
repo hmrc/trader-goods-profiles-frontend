@@ -175,6 +175,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
             val categorisationInfo =
               CategorisationInfo(
                 "1234567890",
+                "BV",
                 Some(validityEndDate),
                 Seq.empty[CategoryAssessment],
                 Seq.empty[CategoryAssessment],
@@ -315,6 +316,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
             val categorisationInfo =
               CategorisationInfo(
                 "1234567890",
+                "BV",
                 Some(validityEndDate),
                 Seq.empty[CategoryAssessment],
                 Seq.empty[CategoryAssessment],
@@ -509,6 +511,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
             val categorisationInfo =
               CategorisationInfo(
                 "1234567890",
+                "BV",
                 Some(validityEndDate),
                 Seq.empty[CategoryAssessment],
                 Seq.empty[CategoryAssessment],
@@ -654,6 +657,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
             val categorisationInfo =
               CategorisationInfo(
                 "1234567890",
+                "BV",
                 Some(validityEndDate),
                 Seq.empty[CategoryAssessment],
                 Seq.empty[CategoryAssessment],

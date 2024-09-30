@@ -149,6 +149,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       await(categorisationService.getCategorisationInfo(mockDataRequest, "1234567890", "BV", testRecordId)) mustBe
         CategorisationInfo(
           "1234567890",
+          "BV",
           None,
           expectedAssessments,
           expectedAssessments,
@@ -282,6 +283,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
         val categorisationInfo = CategorisationInfo(
           "1234567890",
+          "BV",
           Some(validityEndDate),
           Seq(
             assessment1,
@@ -338,6 +340,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
         val categorisationInfo = CategorisationInfo(
           "1234567890",
+          "BV",
           None,
           Seq(
             assessment1,
@@ -386,6 +389,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
         val categorisationInfo = CategorisationInfo(
           "1234567890",
+          "BV",
           None,
           Seq(
             assessment1,
@@ -419,6 +423,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
           val categorisationInfo = CategorisationInfo(
             "1234567890",
+            "BV",
             None,
             Seq(
               category2Nirms,
@@ -449,6 +454,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
           val categorisationInfo = CategorisationInfo(
             "1234567890",
+            "BV",
             None,
             Seq(
               category2Nirms,
@@ -482,6 +488,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       "and not a Niphl assessment" in {
         val categorisationInfo = CategorisationInfo(
           "1234567890",
+          "BV",
           Some(validityEndDate),
           Seq(
             CategoryAssessment(
@@ -536,6 +543,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
         val categorisationInfo = CategorisationInfo(
           "1234567890",
+          "BV",
           None,
           Seq(
             assessment1,
@@ -567,6 +575,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
           val categorisationInfo = CategorisationInfo(
             "1234567890",
+            "BV",
             None,
             Seq(
               category2Nirms,
@@ -594,6 +603,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
           val categorisationInfo = CategorisationInfo(
             "1234567890",
+            "BV",
             None,
             Seq(
               category2Nirms,
@@ -647,6 +657,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       "if no category 1 assessments and category 2 question has no exemptions" in {
         val categorisationInfo = CategorisationInfo(
           "1234567890",
+          "BV",
           Some(validityEndDate),
           Seq(
             CategoryAssessment(
@@ -711,6 +722,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
         val categorisationInfo = CategorisationInfo(
           "1234567890",
+          "BV",
           Some(validityEndDate),
           Seq(
             assessment1,
@@ -768,6 +780,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
           val categorisationInfo = CategorisationInfo(
             "1234567890",
+            "BV",
             None,
             Seq(
               assessment1,
@@ -817,6 +830,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
           val categorisationInfo = CategorisationInfo(
             "1234567890",
+            "BV",
             None,
             Seq(
               assessment1,
@@ -871,6 +885,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
           val categorisationInfo = CategorisationInfo(
             "1234567890",
+            "BV",
             None,
             Seq(
               assessment1,
@@ -927,6 +942,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
           val categorisationInfo = CategorisationInfo(
             "1234567890",
+            "BV",
             Some(validityEndDate),
             Seq(
               category2Nirms,
@@ -960,6 +976,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
           val categorisationInfo = CategorisationInfo(
             "1234567890",
+            "BV",
             Some(validityEndDate),
             Seq(
               category2Nirms,
@@ -986,6 +1003,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
           val categorisationInfo = CategorisationInfo(
             "1234567890",
+            "BV",
             Some(validityEndDate),
             Seq(
               category2Nirms,
@@ -1028,6 +1046,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
           val categorisationInfo = CategorisationInfo(
             "1234567890",
+            "BV",
             Some(validityEndDate),
             Seq(
               category2Nirms,
@@ -1078,6 +1097,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
           val categorisationInfo = CategorisationInfo(
             "1234567890",
+            "BV",
             Some(validityEndDate),
             Seq(
               category2Nirms,
@@ -1111,6 +1131,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
           val categorisationInfo = CategorisationInfo(
             "1234567890",
+            "BV",
             Some(validityEndDate),
             Seq(
               category2Nirms
@@ -1190,6 +1211,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
           val categorisationInfo = CategorisationInfo(
             "1234567890",
+            "BV",
             None,
             Seq(
               nirmsAssessment,
@@ -1224,6 +1246,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
           val categorisationInfo = CategorisationInfo(
             "1234567890",
+            "BV",
             Some(validityEndDate),
             Seq(
               category2Nirms
@@ -1253,6 +1276,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       "if no assessments" in {
         val categoryInfoNoAssessments = CategorisationInfo(
           "1234567890",
+          "BV",
           Some(validityEndDate),
           Seq.empty,
           Seq.empty,
@@ -1314,6 +1338,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       val newCat                     = CategoryAssessment("0", 1, Seq(Certificate("Y199", "Y199", "Goods are not from warzone")))
       val newCommodityCategorisation = CategorisationInfo(
         "12345",
+        "BV",
         Some(validityEndDate),
         Seq(newCat),
         Seq(newCat),
@@ -1344,6 +1369,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       )
       val newCommodityCategorisation = CategorisationInfo(
         "1234567890",
+        "BV",
         Some(validityEndDate),
         assList,
         assList,
@@ -1372,6 +1398,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       val category4                  = CategoryAssessment("0", 1, Seq(Certificate("Y199", "Y199", "Goods are not from warzone")))
       val newCommodityCategorisation = CategorisationInfo(
         "1234567890",
+        "BV",
         Some(validityEndDate),
         Seq(category3, category1, category4, category2),
         Seq(category3, category1, category4, category2),
@@ -1434,6 +1461,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       val category4                  = CategoryAssessment("0", 1, Seq(Certificate("Y199", "Y199", "Goods are not from warzone")))
       val newCommodityCategorisation = CategorisationInfo(
         "1234567890",
+        "BV",
         Some(validityEndDate),
         Seq(category1, category4),
         Seq(category1, category4),

@@ -182,6 +182,7 @@ trait SpecBase
 
   lazy val categorisationInfo: CategorisationInfo                         = CategorisationInfo(
     "1234567890",
+    "BV",
     Some(validityEndDate),
     Seq(category1, category2, category3),
     Seq(category1, category2, category3),
@@ -191,6 +192,7 @@ trait SpecBase
   val today: Instant                                                      = LocalDate.now().atStartOfDay(ZoneId.of("UTC")).toInstant
   lazy val categorisationInfoWithExpiredCommodityCode: CategorisationInfo = CategorisationInfo(
     "1234567890",
+    "BV",
     Some(today),
     Seq(category1, category2, category3),
     Seq(category1, category2, category3),
@@ -201,6 +203,7 @@ trait SpecBase
   lazy val categorisationInfoWithEmptyCatAssessThatNeedAnswersWithExpiredCommodityCode: CategorisationInfo =
     CategorisationInfo(
       "1234567890",
+      "BV",
       Some(today),
       Seq(category1, category2, category3),
       Seq.empty,
@@ -210,6 +213,7 @@ trait SpecBase
 
   lazy val categorisationInfoWithEmptyMeasurementUnit: CategorisationInfo = CategorisationInfo(
     "1234567890",
+    "BV",
     Some(validityEndDate),
     Seq(category1, category2, category3),
     Seq(category1, category2, category3),

@@ -28,6 +28,7 @@ import java.time.{Instant, ZoneId, ZonedDateTime}
 
 final case class CategorisationInfo(
   commodityCode: String,
+  countryOfOrigin: String,
   comcodeEffectiveToDate: Option[Instant],
   categoryAssessments: Seq[CategoryAssessment],
   categoryAssessmentsThatNeedAnswers: Seq[CategoryAssessment],
@@ -91,6 +92,7 @@ object CategorisationInfo {
 
   def build(
     ott: OttResponse,
+    countryOfOrigin: String,
     commodityCodeUserEntered: String,
     traderProfile: TraderProfile,
     longerCode: Boolean = false
@@ -136,6 +138,7 @@ object CategorisationInfo {
 
         CategorisationInfo(
           commodityCodeUserEntered,
+          countryOfOrigin,
           ott.goodsNomenclature.validityEndDate,
           assessmentsSorted,
           questionsToAnswer,
