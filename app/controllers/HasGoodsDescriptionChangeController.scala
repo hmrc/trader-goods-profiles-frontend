@@ -52,6 +52,13 @@ class HasGoodsDescriptionChangeController @Inject() (
 
   def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
+      auditService
+        .auditStartUpdateGoodsRecord(
+          request.eori,
+          request.affinityGroup,
+          GoodsDetailsUpdate,
+          recordId
+        )
       val preparedForm = request.userAnswers.get(HasGoodsDescriptionChangePage(recordId)) match {
         case None        => form
         case Some(value) => form.fill(value)
@@ -66,21 +73,11 @@ class HasGoodsDescriptionChangeController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, recordId))),
-          value => {
-            if (value) {
-              auditService
-                .auditStartUpdateGoodsRecord(
-                  request.eori,
-                  request.affinityGroup,
-                  GoodsDetailsUpdate,
-                  recordId
-                )
-            }
+          value =>
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(HasGoodsDescriptionChangePage(recordId), value))
               _              <- sessionRepository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(HasGoodsDescriptionChangePage(recordId), mode, updatedAnswers))
-          }
         )
     }
 }

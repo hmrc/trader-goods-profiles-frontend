@@ -93,7 +93,9 @@ case class AuditEventFactory() {
       writeOptional("recordId", recordId) ++
       writeOptional("commodityCode", commodity.map(_.commodityCode)) ++
       writeOptional("countryOfOrigin", commodity.map(_.countryOfOrigin)) ++
-      writeOptional("descendants", commodity.map(_.descendantCount.toString))
+      writeOptional("descendants", commodity.map(_.descendantCount.toString)) ++
+      // How many pages COULD be shown to the user
+      writeOptional("categoryAssessments", commodity.map(_.categoryAssessmentsThatNeedAnswers.size.toString))
 
     DataEvent(
       auditSource = auditSource,
@@ -135,18 +137,20 @@ case class AuditEventFactory() {
     categoryRecord: CategoryRecord
   )(implicit hc: HeaderCarrier): DataEvent = {
     val auditDetails = Map(
-      "journey"                           -> journey.toString,
-      "updateSection"                     -> CategorisationUpdate.toString,
-      "recordId"                          -> recordId,
-      "eori"                              -> eori,
-      "affinityGroup"                     -> affinityGroup.toString,
-      "commodityCode"                     -> categoryRecord.initialCategoryInfo.commodityCode,
-      "countryOfOrigin"                   -> categoryRecord.initialCategoryInfo.countryOfOrigin,
-      "descendants"                       -> categoryRecord.initialCategoryInfo.descendantCount.toString,
-      "categoryAssessments"               -> categoryRecord.initialCategoryInfo.categoryAssessmentsThatNeedAnswers.size.toString,
-      "categoryAssessmentsWithExemptions" -> categoryRecord.assessmentAnswersWithExemptions.toString,
-      "reassessmentNeeded"                -> categoryRecord.longerCategoryInfo.isDefined.toString,
-      "category"                          -> Scenario.getResultAsInt(categoryRecord.category).toString
+      "journey"                     -> journey.toString,
+      "updateSection"               -> CategorisationUpdate.toString,
+      "recordId"                    -> recordId,
+      "eori"                        -> eori,
+      "affinityGroup"               -> affinityGroup.toString,
+      "commodityCode"               -> categoryRecord.initialCategoryInfo.commodityCode,
+      "countryOfOrigin"             -> categoryRecord.initialCategoryInfo.countryOfOrigin,
+      "descendants"                 -> categoryRecord.initialCategoryInfo.descendantCount.toString,
+      // How many pages COULD have been shown to the user
+      "categoryAssessments"         -> categoryRecord.initialCategoryInfo.categoryAssessmentsThatNeedAnswers.size.toString,
+      // How many pages were answered (i.e. actually shown to the user)
+      "categoryAssessmentsAnswered" -> categoryRecord.assessmentsAnswered.toString,
+      "reassessmentNeeded"          -> categoryRecord.longerCategoryInfo.isDefined.toString,
+      "category"                    -> Scenario.getResultAsInt(categoryRecord.category).toString
     ) ++ writeSupplementaryUnitDetails(categoryRecord) ++
       writeReassessmentDetails(categoryRecord)
 
@@ -167,12 +171,19 @@ case class AuditEventFactory() {
   private def writeReassessmentDetails(categoryRecord: CategoryRecord) =
     categoryRecord.longerCategoryInfo
       .map { catInfo =>
+        val howManyAnswered             = categoryRecord.longerAssessmentsAnswered
+          .getOrElse(0)
+        val howManyAnswersCopiedOver    = categoryRecord.answersCopiedOverFromShortToLong.getOrElse(0)
+        val howManyPagesShownSecondTime = Math.max(howManyAnswered - howManyAnswersCopiedOver, 0)
+
         Map(
-          "reassessmentCommodityCode"                     -> catInfo.commodityCode,
-          "reassessmentCategoryAssessments"               -> catInfo.categoryAssessmentsThatNeedAnswers.size.toString,
-          "reassessmentCategoryAssessmentsWithExemptions" -> categoryRecord.longerAssessmentAnswersWithExemptions
-            .getOrElse(0)
-            .toString
+          "reassessmentCommodityCode"                  -> catInfo.commodityCode,
+          // How many pages COULD have been shown to the user, including those already answered first time around
+          "reassessmentCategoryAssessments"            -> catInfo.categoryAssessmentsThatNeedAnswers.size.toString,
+          // How many pages were answered (i.e. actually shown to the user)
+          // Hence excluding those answers copied over
+          "reassessmentCategoryAssessmentsAnswered"    -> howManyPagesShownSecondTime.toString,
+          "reassessmentCategoryAssessmentsCarriedOver" -> howManyAnswersCopiedOver.toString
         )
       }
       .getOrElse(Map.empty[String, String])

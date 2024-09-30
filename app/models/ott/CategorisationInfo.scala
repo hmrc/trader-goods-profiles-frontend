@@ -60,14 +60,17 @@ final case class CategorisationInfo(
     }
 
   private def getAnswersForReassessmentQuestions(userAnswers: UserAnswers, recordId: String): Seq[AnsweredQuestions] =
-    categoryAssessmentsThatNeedAnswers.zipWithIndex.map(assessment =>
+    categoryAssessmentsThatNeedAnswers.zipWithIndex.map { assessment =>
+      val answerOpt = userAnswers.get(ReassessmentPage(recordId, assessment._2))
+
       AnsweredQuestions(
         assessment._2,
         assessment._1,
-        userAnswers.get(ReassessmentPage(recordId, assessment._2)).map(_.answer),
-        reassessmentQuestion = true
+        answerOpt.map(_.answer),
+        reassessmentQuestion = true,
+        wasCopiedFromInitialAssessment = answerOpt.exists(_.isAnswerCopiedFromPreviousAssessment)
       )
-    )
+    }
 
   def getMinimalCommodityCode: String =
     commodityCode.reverse.dropWhile(char => char == '0').reverse.padTo(minimumLengthOfCommodityCode, '0').mkString

@@ -406,7 +406,8 @@ downloadRequestSuccess.h1 = Mae’ch cais i gael ffeil sy’n cynnwys eich data 
 downloadRequestSuccess.h2 = Yr hyn sy’n digwydd nesaf
 downloadRequestSuccess.p1 = Byddwn yn anfon e-bost at {0} i roi gwybod i chi pryd bydd y ffeil yn barod i lawrlwytho.
 downloadRequestSuccess.p2 = Byddwch yn gweld hysbysiad pan fyddwch yn mewngofnodi i’ch TGP a fydd yn dangos cysylltiad i’r dudalen lawrlwytho. Mae’r ffeil ar ffurf CSV (gwerthoedd wedi’u gwahanu gan goma).
-downloadRequestSuccess.p3 = Bydd gennych 10 diwrnod o {0} i lawrlwytho’r ffeil. Ar ôl 10 diwrnod, bydd angen i chi wneud cais am ffeil newydd.
+downloadRequestSuccess.p3 = Bydd y ffeil hon ar gael am 30 diwrnod ar ôl i ni roi gwybod i chi ei bod yn barod.
+downloadRequestSuccess.p3.1 = Ar ôl 30 diwrnod, bydd angen i chi wneud cais am ffeil newydd.
 
 goodsRecords.title = Proffil Nwyddau
 goodsRecords.title.withPage = Proffil Nwyddau – tudalen {0} o {1}
@@ -416,3 +417,5 @@ goodsRecords.heading.withPage = Proffil Nwyddau – tudalen {0} o {1}
 goodsRecordSearchResult.title = Mae yna {0} o ganlyniadau chwilio
 goodsRecordSearchResult.title.withPage = Mae yna {0} o ganlyniadau chwilio – tudalen {1} o {2}
 goodsRecordSearchResult.h1 = Mae yna {0} o ganlyniadau chwilio
+
+existingUkimsNumber.h2 = Ai dyma’r rhif UKIMS cywir ar eich cyfer o hyd?

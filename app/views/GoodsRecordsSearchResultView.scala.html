@@ -41,6 +41,9 @@
 </div>
 
 <div class="govuk-grid-column-full">
+
+    <div style="overflow-x: auto;">
+
     @govukTable(
         Table(
             head = Some(Seq(
@@ -66,10 +69,12 @@
             rows = goodsRecordsItems.map{
                 goodsRecord =>  Seq(
                     TableRow(
-                        content = Text(goodsRecord.traderRef)
+                        content = Text(goodsRecord.traderRef),
+                        attributes = Map("style" -> "word-break: break-word")
                     ),
                     TableRow(
-                        content = Text(goodsRecord.goodsDescription)
+                        content = Text(goodsRecord.goodsDescription),
+                        attributes = Map("style" -> "word-break: break-word")
                     ),
                     TableRow(
                         content = Text(
@@ -100,6 +105,8 @@
             }
         )
     )
+
+    </div>
 
     @if(totalPages > 1) {
         @govukPagination(pagination)
