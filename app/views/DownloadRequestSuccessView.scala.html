@@ -31,7 +31,8 @@
     <h2 class="govuk-heading-m">@messages("downloadRequestSuccess.h2")</h2>
     <p class="govuk-body">@messages("downloadRequestSuccess.p1",email)</p>
     <p class="govuk-body">@messages("downloadRequestSuccess.p2")</p>
-    <p class="govuk-body">@messages("downloadRequestSuccess.p3")</p>
+    <p class="govuk-body">@messages("downloadRequestSuccess.p3")
+        @messages("downloadRequestSuccess.p3.1")</p>
 
     <p class="govuk-body"><a href="@routes.GoodsRecordsController.onPageLoad(1).url" class="govuk-link" >@messages("site.goBackToGoodsProfile")</a></p>
     <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad.url" class="govuk-link" >@messages("site.goBackToHomePage")</a></p>
