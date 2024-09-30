@@ -22,12 +22,14 @@ case class AnsweredQuestions(
   index: Int,
   question: CategoryAssessment,
   answer: Option[AssessmentAnswer],
-  reassessmentQuestion: Boolean = false
+  reassessmentQuestion: Boolean = false,
+  wasCopiedFromInitialAssessment: Boolean = false
 ) {
 
-  def answerIsYes: Boolean = answer match {
-    case Some(AssessmentAnswer.Exemption) => true
-    case _                                => false
+  def isAnswered: Boolean = answer match {
+    case Some(AssessmentAnswer.Exemption)   => true
+    case Some(AssessmentAnswer.NoExemption) => true
+    case _                                  => false
   }
 
 }

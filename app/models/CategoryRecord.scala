@@ -32,10 +32,11 @@ final case class CategoryRecord(
   supplementaryUnit: Option[String],
   //The below stuff is just for audits
   initialCategoryInfo: CategorisationInfo,
-  assessmentAnswersWithExemptions: Int,
+  assessmentsAnswered: Int,
   wasSupplementaryUnitAsked: Boolean,
   longerCategoryInfo: Option[CategorisationInfo] = None,
-  longerAssessmentAnswersWithExemptions: Option[Int] = None
+  longerAssessmentsAnswered: Option[Int] = None,
+  answersCopiedOverFromShortToLong: Option[Int] = None
 )
 
 object CategoryRecord {
@@ -56,6 +57,7 @@ object CategoryRecord {
     ).parMapN { (initialCategorisationInfo, supplementaryUnit) =>
       val longerCategoryInfo      = userAnswers.get(LongerCategorisationDetailsQuery(recordId))
       val finalCategorisationInfo = longerCategoryInfo.getOrElse(initialCategorisationInfo)
+      val longerCategoryAnswers   = longerCategoryInfo.map(_.getAnswersForQuestions(userAnswers, recordId))
 
       CategoryRecord(
         eori,
@@ -65,10 +67,11 @@ object CategoryRecord {
         finalCategorisationInfo.measurementUnit,
         supplementaryUnit,
         initialCategorisationInfo,
-        initialCategorisationInfo.getAnswersForQuestions(userAnswers, recordId).count(_.answerIsYes),
+        initialCategorisationInfo.getAnswersForQuestions(userAnswers, recordId).count(_.isAnswered),
         userAnswers.get(HasSupplementaryUnitPage(recordId)).isDefined,
         longerCategoryInfo,
-        longerCategoryInfo.map(_.getAnswersForQuestions(userAnswers, recordId).count(_.answerIsYes))
+        longerCategoryAnswers.map(_.count(_.isAnswered)),
+        longerCategoryAnswers.map(_.count(_.wasCopiedFromInitialAssessment))
       )
     }
 

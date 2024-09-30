@@ -281,7 +281,7 @@ class AuditEventFactorySpec extends SpecBase {
             auditDetails("countryOfOrigin") mustBe "BV"
             auditDetails("descendants") mustBe "1"
             auditDetails("categoryAssessments") mustBe "2"
-            auditDetails("categoryAssessmentsWithExemptions") mustBe "2"
+            auditDetails("categoryAssessmentsAnswered") mustBe "2"
             auditDetails("reassessmentNeeded") mustBe "false"
             auditDetails("category") mustBe "1"
           }
@@ -323,7 +323,7 @@ class AuditEventFactorySpec extends SpecBase {
             auditDetails("countryOfOrigin") mustBe "BV"
             auditDetails("descendants") mustBe "1"
             auditDetails("categoryAssessments") mustBe "3"
-            auditDetails("categoryAssessmentsWithExemptions") mustBe "2"
+            auditDetails("categoryAssessmentsAnswered") mustBe "2"
             auditDetails("reassessmentNeeded") mustBe "false"
             auditDetails("category") mustBe "1"
             auditDetails("providedSupplementaryUnit") mustBe "false"
@@ -366,7 +366,7 @@ class AuditEventFactorySpec extends SpecBase {
             auditDetails("countryOfOrigin") mustBe "BV"
             auditDetails("descendants") mustBe "1"
             auditDetails("categoryAssessments") mustBe "3"
-            auditDetails("categoryAssessmentsWithExemptions") mustBe "2"
+            auditDetails("categoryAssessmentsAnswered") mustBe "2"
             auditDetails("reassessmentNeeded") mustBe "false"
             auditDetails("category") mustBe "1"
             auditDetails("providedSupplementaryUnit") mustBe "true"
@@ -377,7 +377,10 @@ class AuditEventFactorySpec extends SpecBase {
 
             val shorterCode = categorisationInfo.copy(commodityCode = "998877")
             val longerCode  =
-              categorisationInfo.copy(categoryAssessmentsThatNeedAnswers = Seq(category1), descendantCount = 0)
+              categorisationInfo.copy(
+                categoryAssessmentsThatNeedAnswers = Seq(category1, category2, category3, category1),
+                descendantCount = 0
+              )
 
             val categoryRecord = CategoryRecord(
               testEori,
@@ -390,7 +393,8 @@ class AuditEventFactorySpec extends SpecBase {
               3,
               wasSupplementaryUnitAsked = true,
               Some(longerCode),
-              Some(0)
+              Some(3),
+              Some(2)
             )
 
             val result = AuditEventFactory().createSubmitGoodsRecordEventForCategorisation(
@@ -406,7 +410,7 @@ class AuditEventFactorySpec extends SpecBase {
             result.tags.isEmpty mustBe false
 
             val auditDetails = result.detail
-            auditDetails.size mustBe 17
+            auditDetails.size mustBe 18
             auditDetails("journey") mustBe "UpdateRecord"
             auditDetails("updateSection") mustBe "categorisation"
             auditDetails("eori") mustBe testEori
@@ -416,11 +420,12 @@ class AuditEventFactorySpec extends SpecBase {
             auditDetails("countryOfOrigin") mustBe "BV"
             auditDetails("descendants") mustBe "1"
             auditDetails("categoryAssessments") mustBe "3"
-            auditDetails("categoryAssessmentsWithExemptions") mustBe "3"
+            auditDetails("categoryAssessmentsAnswered") mustBe "3"
             auditDetails("reassessmentNeeded") mustBe "true"
             auditDetails("reassessmentCommodityCode") mustBe "1234567890"
-            auditDetails("reassessmentCategoryAssessments") mustBe "1"
-            auditDetails("reassessmentCategoryAssessmentsWithExemptions") mustBe "0"
+            auditDetails("reassessmentCategoryAssessments") mustBe "4"
+            auditDetails("reassessmentCategoryAssessmentsAnswered") mustBe "1"
+            auditDetails("reassessmentCategoryAssessmentsCarriedOver") mustBe "2"
             auditDetails("category") mustBe "2"
             auditDetails("providedSupplementaryUnit") mustBe "true"
             auditDetails("supplementaryUnit") mustBe "99"
