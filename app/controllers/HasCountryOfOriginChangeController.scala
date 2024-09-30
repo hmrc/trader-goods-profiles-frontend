@@ -73,22 +73,11 @@ class HasCountryOfOriginChangeController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, recordId))),
-          value => {
-            if (value) {
-              auditService
-                .auditStartUpdateGoodsRecord(
-                  request.eori,
-                  request.affinityGroup,
-                  GoodsDetailsUpdate,
-                  recordId
-                )
-            }
-
+          value =>
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(HasCountryOfOriginChangePage(recordId), value))
               _              <- sessionRepository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(HasCountryOfOriginChangePage(recordId), mode, updatedAnswers))
-          }
         )
     }
 }

@@ -80,7 +80,10 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
     "must return OK and the correct view for a GET" - {
 
       "when categorisation has happened" in {
+        val mockAuditService = mock[AuditService]
 
+        when(mockAuditService.auditStartUpdateGoodsRecord(any(), any(), any(), any(), any())(any()))
+          .thenReturn(Future.successful(Done))
         when(mockGoodsRecordConnector.getRecord(any(), any())(any())).thenReturn(
           Future.successful(goodsRecordCatNoAdvice)
         )
@@ -166,14 +169,17 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-
+      val mockAuditService = mock[AuditService]
       when(mockGoodsRecordConnector.getRecord(any(), any())(any())).thenReturn(
         Future.successful(goodsRecordCatNoAdvice)
       )
-      val userAnswers = UserAnswers(userAnswersId).set(HasCommodityCodeChangePage(testRecordId), true).success.value
+      val userAnswers      = UserAnswers(userAnswersId).set(HasCommodityCodeChangePage(testRecordId), true).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers))
-        .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
+        .overrides(
+          bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+          bind[AuditService].toInstance(mockAuditService)
+        )
         .build()
 
       running(application) {
@@ -200,10 +206,7 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
     "must redirect to the next page when valid data is submitted" in {
 
       val mockSessionRepository = mock[SessionRepository]
-      val mockAuditService      = mock[AuditService]
 
-      when(mockAuditService.auditStartUpdateGoodsRecord(any(), any(), any(), any(), any())(any()))
-        .thenReturn(Future.successful(Done))
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application =
@@ -211,7 +214,6 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository),
-            bind[AuditService].toInstance(mockAuditService),
             bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
           )
           .build()
@@ -226,16 +228,6 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
 
-        withClue("must call the audit service with the correct details") {
-          verify(mockAuditService)
-            .auditStartUpdateGoodsRecord(
-              eqTo(testEori),
-              eqTo(AffinityGroup.Individual),
-              eqTo(GoodsDetailsUpdate),
-              eqTo(testRecordId),
-              any()
-            )(any())
-        }
       }
     }
 

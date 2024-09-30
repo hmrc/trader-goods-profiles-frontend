@@ -95,21 +95,11 @@ class HasCommodityCodeChangeController @Inject() (
                 Future.successful(
                   BadRequest(view(formWithErrors, mode, recordId, needCategorisingWarning, needAdviceWarning))
                 ),
-              value => {
-                if (value) {
-                  auditService
-                    .auditStartUpdateGoodsRecord(
-                      request.eori,
-                      request.affinityGroup,
-                      GoodsDetailsUpdate,
-                      recordId
-                    )
-                }
+              value =>
                 for {
                   updatedAnswers <- Future.fromTry(request.userAnswers.set(HasCommodityCodeChangePage(recordId), value))
                   _              <- sessionRepository.set(updatedAnswers)
                 } yield Redirect(navigator.nextPage(HasCommodityCodeChangePage(recordId), mode, updatedAnswers))
-              }
             )
         }
         .recover { _ =>
