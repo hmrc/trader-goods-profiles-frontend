@@ -41,6 +41,9 @@
 </div>
 
 <div class="govuk-grid-column-full">
+
+    <div style="overflow-x: auto;">
+
     @govukTable(
         Table(
             head = Some(Seq(
@@ -102,6 +105,8 @@
             }
         )
     )
+
+    </div>
 
     @if(totalPages > 1) {
         @govukPagination(pagination)

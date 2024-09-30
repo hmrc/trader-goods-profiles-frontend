@@ -94,6 +94,8 @@
 
         <p class="govuk-body">@Html(messages("goodsRecords.pagination", boldWrapper(firstRecord.toString()), boldWrapper(lastRecord.toString()), boldWrapper(totalRecords.toString())))</p>
 
+        <div style="overflow-x: auto;">
+
         @govukTable(
             Table(
                 head = Some(Seq(
@@ -155,6 +157,8 @@
                 }
             )
         )
+
+        </div>
 
         @govukPagination(pagination)
 
