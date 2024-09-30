@@ -89,8 +89,10 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
         )
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-            bind[AuditService].toInstance(mockAuditService))
+          .overrides(
+            bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+            bind[AuditService].toInstance(mockAuditService)
+          )
           .build()
 
         running(application) {
@@ -183,7 +185,7 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
       when(mockGoodsRecordConnector.getRecord(any(), any())(any())).thenReturn(
         Future.successful(goodsRecordCatNoAdvice)
       )
-      val userAnswers      = UserAnswers(userAnswersId).set(HasCommodityCodeChangePage(testRecordId), true).success.value
+      val userAnswers = UserAnswers(userAnswersId).set(HasCommodityCodeChangePage(testRecordId), true).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers))
         .overrides(
