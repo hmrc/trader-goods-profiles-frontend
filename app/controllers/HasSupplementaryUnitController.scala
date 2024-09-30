@@ -110,15 +110,13 @@ class HasSupplementaryUnitController @Inject() (
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, recordId, onSubmitAction))),
           value => {
-            if (value) {
-              auditService
-                .auditStartUpdateGoodsRecord(
-                  request.eori,
-                  request.affinityGroup,
-                  SupplementaryUnitUpdate,
-                  recordId
-                )
-            }
+            auditService
+              .auditStartUpdateGoodsRecord(
+                request.eori,
+                request.affinityGroup,
+                SupplementaryUnitUpdate,
+                recordId
+              )
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(HasSupplementaryUnitUpdatePage(recordId), value))
               _              <- sessionRepository.set(updatedAnswers)

@@ -17,14 +17,15 @@
 package controllers
 
 import base.SpecBase
-import base.TestConstants.{testRecordId, userAnswersId}
+import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import connectors.{GoodsRecordConnector, TraderProfileConnector}
 import forms.HasSupplementaryUnitFormProvider
+import models.helper.SupplementaryUnitUpdate
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.Mockito.{verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{HasSupplementaryUnitPage, HasSupplementaryUnitUpdatePage}
 import play.api.inject.bind
@@ -32,6 +33,8 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
+import services.AuditService
+import uk.gov.hmrc.auth.core.AffinityGroup
 import views.html.HasSupplementaryUnitView
 
 import java.time.Instant
@@ -198,7 +201,6 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
 
     ".update journey" - {
       "must return OK and the correct view for a GET" in {
-
         val mockGoodsRecordConnector = mock[GoodsRecordConnector]
         when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
           .successful(record)
@@ -222,6 +224,7 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
             request,
             messages(application)
           ).toString
+
         }
       }
 
@@ -295,12 +298,14 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
         val mockSessionRepository = mock[SessionRepository]
 
         when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+        val mockAuditService = mock[AuditService]
 
         val application =
           applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(
               bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository),
+              bind[AuditService].toInstance(mockAuditService),
               bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
             )
             .build()
@@ -314,6 +319,17 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
+
+          withClue("must call the audit service with the correct details") {
+            verify(mockAuditService)
+              .auditStartUpdateGoodsRecord(
+                eqTo(testEori),
+                eqTo(AffinityGroup.Individual),
+                eqTo(SupplementaryUnitUpdate),
+                eqTo(recordId),
+                any()
+              )(any())
+          }
         }
       }
 
@@ -378,8 +394,6 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
           redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
         }
       }
-
     }
   }
-
 }
