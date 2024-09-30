@@ -20,11 +20,13 @@ import connectors.GoodsRecordConnector
 import controllers.actions._
 import forms.HasSupplementaryUnitFormProvider
 import models.Mode
+import models.helper.SupplementaryUnitUpdate
 import navigation.Navigator
 import pages.{HasSupplementaryUnitPage, HasSupplementaryUnitUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import repositories.SessionRepository
+import services.AuditService
 import utils.SessionData._
 import views.html.HasSupplementaryUnitView
 
@@ -42,7 +44,8 @@ class HasSupplementaryUnitController @Inject() (
   goodsRecordConnector: GoodsRecordConnector,
   formProvider: HasSupplementaryUnitFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: HasSupplementaryUnitView
+  view: HasSupplementaryUnitView,
+  auditService: AuditService
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
@@ -106,11 +109,21 @@ class HasSupplementaryUnitController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, recordId, onSubmitAction))),
-          value =>
+          value => {
+            if (value) {
+              auditService
+                .auditStartUpdateGoodsRecord(
+                  request.eori,
+                  request.affinityGroup,
+                  SupplementaryUnitUpdate,
+                  recordId
+                )
+            }
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(HasSupplementaryUnitUpdatePage(recordId), value))
               _              <- sessionRepository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(HasSupplementaryUnitUpdatePage(recordId), mode, updatedAnswers))
+          }
         )
     }
 }

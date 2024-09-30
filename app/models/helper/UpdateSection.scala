@@ -25,3 +25,7 @@ case object CategorisationUpdate extends UpdateSection {
 case object GoodsDetailsUpdate extends UpdateSection {
   override def toString: String = "goodsDetails"
 }
+
+case object SupplementaryUnitUpdate extends UpdateSection {
+  override def toString: String = "supplementaryUnit"
+}

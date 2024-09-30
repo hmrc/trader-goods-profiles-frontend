@@ -90,7 +90,7 @@ class CyaSupplementaryUnitController @Inject() (
           val isSuppUnitRemoved =
             (initialHasSuppUnitOpt
               .contains(true) && finalHasSuppUnitOpt.contains(false)) || finalSuppUnitBD.contains(BigDecimal(0))
-
+// audit event
           goodsRecordConnector.updateSupplementaryUnitForGoodsRecord(request.eori, recordId, model).map { _ =>
             dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
             Redirect(navigator.nextPage(CyaSupplementaryUnitPage(recordId), NormalMode, request.userAnswers))
