@@ -8,9 +8,9 @@ site.goToHomePage = Ewch i''r hafan
 site.signIn = Mewngofnodi
 site.save.continue = Cadw ac yn eich blaen
 site.back = yn ol
-site.goBackToGoodsRecord = Ewch i’r cofnod nwyddau
-site.goBackToHomePage = Ewch i’r hafan
-site.goBackToGoodsProfile = Ewch i’r proffil nwyddau
+site.goBackToGoodsRecord = Ewch yn ôl i’r cofnod nwyddau
+site.goBackToHomePage = Ewch yn ôl i’r hafan
+site.goBackToGoodsProfile = Ewch yn ôl i’r proffil nwyddau
 
 error.summary.title = Nodwch eich cyfeiriad e-bost
 
@@ -136,7 +136,7 @@ ukimsKickOut.title = Mae angen i chi wneud cais ar gyfer Cynllun Marchnad Fewnol
 ukimsKickOut.h1 = Mae angen i chi wneud cais ar gyfer Cynllun Marchnad Fewnol y DU (UKIMS)
 ukimsKickOut.p1 = Ni allwch ddefnyddio''r Proffil Nwyddau Masnachwyr (TGP) os nad ydych wedi cofrestru ar gyfer yr UKIMS.
 ukimsKickOut.p2 = Dysgwch sut i
-ukimsKickOut.linkText = gofrestru ar gyfer yr UKIMS (yn agor tab newydd).
+ukimsKickOut.linkText = gofrestru ar gyfer yr UKIMS (yn agor tab newydd)
 
 adviceStart.title = Gofyn i CThEF am gyngor
 adviceStart.heading = Gofyn i CThEF am gyngor
@@ -321,13 +321,15 @@ categorisationResult.Category1.title = Categori 1
 categorisationResult.Category1.h1 = Categori 1
 categorisationResult.Category1.p1 = Mae’ch nwyddau wedi’u categoreiddio ac nad ydynt yn gymwys i ddefnyddio’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM).
 categorisationResult.Category1NoExemptions.p1 = Mae’ch nwyddau wedi’u categoreiddio ac nad ydynt yn gymwys i ddefnyddio’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM). Nid oes unrhyw eithriadau ar gael i newid y categori.
+categorisationResult.Category2.title = Categori 2
+categorisationResult.Category2.heading = Categori 2
+categorisationResult.Category2.p1 = Mae’ch nwyddau wedi’u categoreiddio ac maent yn gymwys i ddefnyddio’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM).
 categorisationResult.Standard.panelBody = Mae’ch nwyddau yn nwyddau safonol, ac maent yn gymwys i ddefnyddio’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM).
 categorisationResult.StandardNoAssessments.panelBody = Mae’ch nwyddau yn nwyddau safonol, ac maent yn gymwys i ddefnyddio’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM).
 categorisationResult.StandardNoAssessments.p1 = Mae’r nwyddau hyn yn nwyddau safonol, ac nid oes angen asesiadau categori ar eu cyfer.
-categorisationResult.Category2.panelBody = Mae’ch nwyddau yn nwyddau Categori 2, ac maent yn gymwys i ddefnyddio’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM).
+categorisationResult.h2 = Yr hyn sy''n digwydd nesaf
 categorisationResult.h2 = Beth sy’n digwydd nesaf?
 categorisationResult.h2.paragraph = Gallwch fwrw golwg dros y cofnod o’ch proffil nwyddau, creu cofnod nwyddau newydd neu fynd i’r hafan.
-
 
 todo.cat = Daw’r wybodaeth am eithriadau o Offeryn Tariff Ar-lein Gogledd Iwerddon. Cytundebau yw’r rhain rhwng y DU a’r UE, ac nid ydynt ar gael yn Gymraeg.
 
@@ -408,3 +410,11 @@ downloadRequestSuccess.p1 = Byddwn yn anfon e-bost at {0} i roi gwybod i chi pry
 downloadRequestSuccess.p2 = Byddwch yn gweld hysbysiad pan fyddwch yn mewngofnodi i’ch TGP a fydd yn dangos cysylltiad i’r dudalen lawrlwytho. Mae’r ffeil ar ffurf CSV (gwerthoedd wedi’u gwahanu gan goma).
 downloadRequestSuccess.p3 = Bydd gennych 10 diwrnod o {0} i lawrlwytho’r ffeil. Ar ôl 10 diwrnod, bydd angen i chi wneud cais am ffeil newydd.
 
+goodsRecords.title = Proffil Nwyddau
+goodsRecords.title.withPage = Proffil Nwyddau – tudalen {0} o {1}
+goodsRecords.heading = Proffil Nwyddau
+goodsRecords.heading.withPage = Proffil Nwyddau – tudalen {0} o {1}
+
+goodsRecordSearchResult.title = Mae yna {0} o ganlyniadau chwilio
+goodsRecordSearchResult.title.withPage = Mae yna {0} o ganlyniadau chwilio – tudalen {1} o {2}
+goodsRecordSearchResult.h1 = Mae yna {0} o ganlyniadau chwilio

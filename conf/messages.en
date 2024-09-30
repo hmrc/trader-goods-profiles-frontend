@@ -304,11 +304,13 @@ categorisationResult.Category1.title = Category 1
 categorisationResult.Category1.h1 = Category 1
 categorisationResult.Category1.p1 = Your goods have been categorised and are not eligible for Simplified Process for Internal Market Movements (SPIMM).
 categorisationResult.Category1NoExemptions.p1 = Your goods have been categorised and are not eligible for Simplified Process for Internal Market Movements (SPIMM). There are no available exclusions to change the category.
+categorisationResult.Category2.title = Category 2
+categorisationResult.Category2.heading = Category 2
+categorisationResult.Category2.p1 = Your goods have been categorised and are eligible for Simplified Process for Internal Market Movements (SPIMM).
 categorisationResult.Standard.title = Standard goods
 categorisationResult.Standard.heading = Standard goods
 categorisationResult.Standard.p1 = Your goods have been categorised and are eligible for Simplified Process for Internal Market Movements (SPIMM).
 categorisationResult.StandardNoAssessments.p1 = Your goods have been categorised and are eligible for Simplified Process for Internal Market Movements (SPIMM). There are no category assessments needed.
-categorisationResult.Category2.panelBody = Your goods are Category 2 goods and are eligible for Simplified Process for Internal Market Movements (SPIMM).
 categorisationResult.h2 = What happens next?
 categorisationResult.h2.paragraph = You can view the record from your goods profile, create a new goods record or go to the homepage.
 
@@ -404,7 +406,9 @@ previousMovementRecords.description.notReadyForUse = Not ready for use records h
 goodsRecords.error.required = Enter your search term
 goodsRecords.error.length = Search term must be 100 characters or less
 goodsRecords.title = Goods profile
+goodsRecords.title.withPage = Goods profile - page {0} of {1}
 goodsRecords.heading = Goods profile
+goodsRecords.heading.withPage = Goods profile - page {0} of {1}
 goodsRecords.p1 = This is a list of goods in your TGP. If a goods record is ready for Internal Market Movement Information (IMMI), you can use that record to help complete the IMMI form.
 goodsRecords.p2 = If a haulier or other intermediary completes the IMMI on your behalf, you should use or share the:
 goodsRecordsEmptyView.p2 = When you, a haulier or other intermediary can complete the IMMI on your behalf, you should use or share the:
@@ -530,6 +534,7 @@ helpAndSupport.p15 = You can use the Trader Support Service to create IMMI forms
 helpAndSupport.p15.linkText = Sign up for the Trader Support Service
 
 goodsRecordSearchResult.title = There are {0} search results
+goodsRecordSearchResult.title.withPage = There are {0} search results - page {1} of {2}
 goodsRecordSearchResult.h1 = There are {0} search results
 goodsRecordSearchResult.p1 = You searched for the term ''{0}''.
 
