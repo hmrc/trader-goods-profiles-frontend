@@ -89,7 +89,8 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
         )
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
+          .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+            bind[AuditService].toInstance(mockAuditService))
           .build()
 
         running(application) {
@@ -107,6 +108,16 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
             adviceWarning = false,
             categoryWarning = true
           )(request, messages(application)).toString
+          withClue("must call the audit service with the correct details") {
+            verify(mockAuditService)
+              .auditStartUpdateGoodsRecord(
+                eqTo(testEori),
+                eqTo(AffinityGroup.Individual),
+                eqTo(GoodsDetailsUpdate),
+                eqTo(testRecordId),
+                any()
+              )(any())
+          }
         }
       }
 
@@ -169,7 +180,6 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-      val mockAuditService = mock[AuditService]
       when(mockGoodsRecordConnector.getRecord(any(), any())(any())).thenReturn(
         Future.successful(goodsRecordCatNoAdvice)
       )
@@ -177,8 +187,7 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
 
       val application = applicationBuilder(userAnswers = Some(userAnswers))
         .overrides(
-          bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-          bind[AuditService].toInstance(mockAuditService)
+          bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
         )
         .build()
 
@@ -307,10 +316,6 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
       )
 
       val mockSessionRepository = mock[SessionRepository]
-      val mockAuditService      = mock[AuditService]
-
-      when(mockAuditService.auditStartUpdateGoodsRecord(any(), any(), any(), any(), any())(any()))
-        .thenReturn(Future.successful(Done))
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application =
@@ -318,7 +323,6 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository),
-            bind[AuditService].toInstance(mockAuditService),
             bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
           )
           .build()
