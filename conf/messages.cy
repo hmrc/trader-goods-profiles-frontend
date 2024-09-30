@@ -416,3 +416,5 @@ goodsRecords.heading.withPage = Proffil Nwyddau – tudalen {0} o {1}
 goodsRecordSearchResult.title = Mae yna {0} o ganlyniadau chwilio
 goodsRecordSearchResult.title.withPage = Mae yna {0} o ganlyniadau chwilio – tudalen {1} o {2}
 goodsRecordSearchResult.h1 = Mae yna {0} o ganlyniadau chwilio
+
+existingUkimsNumber.h2 = Ai dyma’r rhif UKIMS cywir ar eich cyfer o hyd?
