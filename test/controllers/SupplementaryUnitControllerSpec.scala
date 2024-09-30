@@ -24,9 +24,9 @@ import models.helper.SupplementaryUnitUpdate
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{verify, when}
+import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{SupplementaryUnitPage, SupplementaryUnitUpdatePage}
+import pages.{HasSupplementaryUnitUpdatePage, SupplementaryUnitPage, SupplementaryUnitUpdatePage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -504,6 +504,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "update journey" - {
+
       "must return OK and the correct view for a GET" in {
         val mockGoodsRecordConnector = mock[GoodsRecordConnector]
         val mockAuditService         = mock[AuditService]
@@ -552,6 +553,60 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
           }
         }
       }
+
+      "must return OK and the correct view for a GET when the HasSupplementaryUnitUpdatePage has been filled in" in {
+        val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+        val mockAuditService         = mock[AuditService]
+        val answers                  = emptyUserAnswers
+          .set(HasSupplementaryUnitUpdatePage(testRecordId), true)
+          .success
+          .value
+
+        when(mockGoodsRecordConnector.getRecord(any(), any())(any()))
+          .thenReturn(Future.successful(record))
+
+        val application =
+          applicationBuilder(userAnswers = Some(answers))
+            .overrides(
+              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+              bind[AuditService].toInstance(mockAuditService),
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            )
+            .build()
+
+        running(application) {
+          val request =
+            FakeRequest(GET, routes.SupplementaryUnitController.onPageLoadUpdate(NormalMode, testRecordId).url)
+
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[SupplementaryUnitView]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(
+            form.fill("1234567890.123456"),
+            NormalMode,
+            testRecordId,
+            Some("grams"),
+            routes.SupplementaryUnitController.onSubmitUpdate(NormalMode, testRecordId)
+          )(
+            request,
+            messages(application)
+          ).toString
+
+          withClue("must not call the audit service with the correct details") {
+            verify(mockAuditService, never())
+              .auditStartUpdateGoodsRecord(
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+              )(any())
+          }
+        }
+      }
+
       "must populate the view correctly on a GET when the question has previously been answered" in {
         val userAnswers      = UserAnswers(userAnswersId)
           .set(SupplementaryUnitUpdatePage(testRecordId), validAnswer)

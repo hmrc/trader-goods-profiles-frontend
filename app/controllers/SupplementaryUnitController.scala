@@ -101,16 +101,14 @@ class SupplementaryUnitController @Inject() (
 
   def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      request.userAnswers.get(HasSupplementaryUnitUpdatePage(recordId)) match {
-        case None =>
-          auditService
-            .auditStartUpdateGoodsRecord(
-              request.eori,
-              request.affinityGroup,
-              SupplementaryUnitUpdate,
-              recordId
-            )
-        case _    =>
+      if (request.userAnswers.get(HasSupplementaryUnitUpdatePage(recordId)).isEmpty) {
+        auditService
+          .auditStartUpdateGoodsRecord(
+            request.eori,
+            request.affinityGroup,
+            SupplementaryUnitUpdate,
+            recordId
+          )
       }
 
       val userAnswerValue = request.userAnswers.get(SupplementaryUnitUpdatePage(recordId))
