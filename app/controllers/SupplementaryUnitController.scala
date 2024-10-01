@@ -20,13 +20,14 @@ import connectors.GoodsRecordConnector
 import controllers.actions._
 import forms.SupplementaryUnitFormProvider
 import models.Mode
+import models.helper.SupplementaryUnitUpdate
 import navigation.Navigator
-import pages.{SupplementaryUnitPage, SupplementaryUnitUpdatePage}
+import pages.{HasSupplementaryUnitUpdatePage, SupplementaryUnitPage, SupplementaryUnitUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery, MeasurementQuery}
 import repositories.SessionRepository
-import services.OttService
+import services.{AuditService, OttService}
 import utils.SessionData.{dataRemoved, dataUpdated, initialValueOfSuppUnit, pageUpdated}
 import views.html.SupplementaryUnitView
 
@@ -45,7 +46,8 @@ class SupplementaryUnitController @Inject() (
   formProvider: SupplementaryUnitFormProvider,
   ottService: OttService,
   val controllerComponents: MessagesControllerComponents,
-  view: SupplementaryUnitView
+  view: SupplementaryUnitView,
+  auditService: AuditService
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
@@ -99,6 +101,16 @@ class SupplementaryUnitController @Inject() (
 
   def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
+      if (request.userAnswers.get(HasSupplementaryUnitUpdatePage(recordId)).isEmpty) {
+        auditService
+          .auditStartUpdateGoodsRecord(
+            request.eori,
+            request.affinityGroup,
+            SupplementaryUnitUpdate,
+            recordId
+          )
+      }
+
       val userAnswerValue = request.userAnswers.get(SupplementaryUnitUpdatePage(recordId))
 
       goodsRecordConnector

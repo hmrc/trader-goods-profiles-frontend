@@ -23,7 +23,7 @@ import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCo
 import models.helper._
 import models.ott.CategorisationInfo
 import models.ott.response.OttResponse
-import models.{AdviceRequest, CategoryRecord, GoodsRecord, TraderProfile, UpdateGoodsRecord, UserAnswers}
+import models.{AdviceRequest, CategoryRecord, GoodsRecord, SupplementaryRequest, TraderProfile, UpdateGoodsRecord, UserAnswers}
 import org.apache.pekko.Done
 import pages.UseTraderReferencePage
 import play.api.Logging
@@ -135,6 +135,27 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
       affinityGroup,
       UpdateRecordJourney,
       updateGoodsRecord,
+      recordId
+    )
+
+    auditConnector.sendEvent(event).map { auditResult =>
+      logger.info(s"FinishUpdateGoodsRecord audit event status: $auditResult")
+      Done
+    }
+  }
+
+  def auditFinishUpdateSupplementaryUnitGoodsRecord(
+    recordId: String,
+    affinityGroup: AffinityGroup,
+    supplementaryRequest: SupplementaryRequest
+  )(implicit
+    hc: HeaderCarrier
+  ): Future[Done] = {
+
+    val event = auditEventFactory.createSubmitGoodsRecordEventForUpdateSupplementaryUnit(
+      affinityGroup,
+      UpdateRecordJourney,
+      supplementaryRequest,
       recordId
     )
 

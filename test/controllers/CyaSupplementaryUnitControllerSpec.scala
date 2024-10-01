@@ -33,6 +33,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import queries.MeasurementQuery
 import repositories.SessionRepository
+import services.AuditService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.SessionData._
 import viewmodels.checkAnswers.{HasSupplementaryUnitSummary, SupplementaryUnitSummary}
@@ -119,6 +120,8 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
 
           val userAnswers = mandatorySupplementaryUserAnswers
 
+          val mockAuditService = mock[AuditService]
+
           val mockGoodsRecordConnector = mock[GoodsRecordConnector]
           when(mockGoodsRecordConnector.updateSupplementaryUnitForGoodsRecord(any(), any(), any())(any()))
             .thenReturn(Future.successful(Done))
@@ -129,6 +132,7 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
           val application = applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
               bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+              bind[AuditService].toInstance(mockAuditService),
               bind[SessionRepository].toInstance(sessionRepository)
             )
             .build()
@@ -154,6 +158,10 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
             withClue("must cleanse the user answers data") {
               verify(sessionRepository).clearData(eqTo(userAnswers.id), eqTo(SupplementaryUnitUpdateJourney))
             }
+
+            withClue("must submit an audit") {
+              verify(mockAuditService).auditFinishUpdateSupplementaryUnitGoodsRecord(any(), any(), any())(any())
+            }
           }
         }
 
@@ -170,6 +178,8 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
             .success
             .value
 
+          val mockAuditService = mock[AuditService]
+
           val mockGoodsRecordConnector = mock[GoodsRecordConnector]
           when(mockGoodsRecordConnector.updateSupplementaryUnitForGoodsRecord(any(), any(), any())(any()))
             .thenReturn(Future.successful(Done))
@@ -180,6 +190,7 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
           val application = applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
               bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+              bind[AuditService].toInstance(mockAuditService),
               bind[SessionRepository].toInstance(sessionRepository)
             )
             .build()
@@ -198,6 +209,10 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
 
             session(result).get(dataUpdated) must be(Some("true"))
             session(result).get(pageUpdated) must be(Some("supplementary unit"))
+
+            withClue("must submit an audit") {
+              verify(mockAuditService).auditFinishUpdateSupplementaryUnitGoodsRecord(any(), any(), any())(any())
+            }
           }
         }
 
@@ -214,6 +229,8 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
             .success
             .value
 
+          val mockAuditService = mock[AuditService]
+
           val mockGoodsRecordConnector = mock[GoodsRecordConnector]
           when(mockGoodsRecordConnector.updateSupplementaryUnitForGoodsRecord(any(), any(), any())(any()))
             .thenReturn(Future.successful(Done))
@@ -224,6 +241,7 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
           val application = applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
               bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+              bind[AuditService].toInstance(mockAuditService),
               bind[SessionRepository].toInstance(sessionRepository)
             )
             .build()
@@ -243,6 +261,10 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
 
             session(result).get(dataUpdated) must be(Some("true"))
             session(result).get(pageUpdated) must be(Some("supplementary unit"))
+
+            withClue("must submit an audit") {
+              verify(mockAuditService).auditFinishUpdateSupplementaryUnitGoodsRecord(any(), any(), any())(any())
+            }
           }
         }
 
@@ -259,6 +281,8 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
             .success
             .value
 
+          val mockAuditService = mock[AuditService]
+
           val mockGoodsRecordConnector = mock[GoodsRecordConnector]
           when(mockGoodsRecordConnector.updateSupplementaryUnitForGoodsRecord(any(), any(), any())(any()))
             .thenReturn(Future.successful(Done))
@@ -269,6 +293,7 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
           val application = applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
               bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+              bind[AuditService].toInstance(mockAuditService),
               bind[SessionRepository].toInstance(sessionRepository)
             )
             .build()
@@ -287,6 +312,10 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
             redirectLocation(result).value mustEqual routes.SingleRecordController.onPageLoad(testRecordId).url
 
             session(result).get(dataUpdated) must be(Some("false"))
+
+            withClue("must submit an audit") {
+              verify(mockAuditService).auditFinishUpdateSupplementaryUnitGoodsRecord(any(), any(), any())(any())
+            }
           }
         }
       }
@@ -298,6 +327,8 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
           .success
           .value
 
+        val mockAuditService = mock[AuditService]
+
         val mockGoodsRecordConnector = mock[GoodsRecordConnector]
         when(mockGoodsRecordConnector.updateSupplementaryUnitForGoodsRecord(any(), any(), any())(any()))
           .thenReturn(Future.successful(Done))
@@ -308,6 +339,7 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
         val application = applicationBuilder(userAnswers = Some(userAnswers))
           .overrides(
             bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+            bind[AuditService].toInstance(mockAuditService),
             bind[SessionRepository].toInstance(sessionRepository)
           )
           .build()
@@ -326,12 +358,18 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
 
           session(result).get(dataRemoved) must be(Some("true"))
           session(result).get(pageUpdated) must be(Some("supplementary unit"))
+
+          withClue("must submit an audit") {
+            verify(mockAuditService).auditFinishUpdateSupplementaryUnitGoodsRecord(any(), any(), any())(any())
+          }
         }
       }
 
       "must let the play error handler deal with connector failure" in {
 
         val userAnswers = mandatorySupplementaryUserAnswers
+
+        val mockAuditService = mock[AuditService]
 
         val mockGoodsRecordConnector = mock[GoodsRecordConnector]
         when(mockGoodsRecordConnector.updateSupplementaryUnitForGoodsRecord(any(), any(), any())(any()))
@@ -343,6 +381,7 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
         val application = applicationBuilder(userAnswers = Some(userAnswers))
           .overrides(
             bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+            bind[AuditService].toInstance(mockAuditService),
             bind[SessionRepository].toInstance(sessionRepository)
           )
           .build()
@@ -352,6 +391,10 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
 
           intercept[RuntimeException] {
             await(route(application, request).value)
+          }
+
+          withClue("must submit an audit") {
+            verify(mockAuditService).auditFinishUpdateSupplementaryUnitGoodsRecord(any(), any(), any())(any())
           }
 
           withClue("must not cleanse the user answers data when connector fails") {
@@ -378,6 +421,8 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
 
         "must not submit anything, and redirect to Journey Recovery" in {
 
+          val mockAuditService = mock[AuditService]
+
           val mockGoodsRecordConnector = mock[GoodsRecordConnector]
           val continueUrl              =
             RedirectUrl(routes.HasSupplementaryUnitController.onPageLoadUpdate(NormalMode, testRecordId).url)
@@ -388,6 +433,7 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
           val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(
               bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+              bind[AuditService].toInstance(mockAuditService),
               bind[SessionRepository].toInstance(sessionRepository)
             )
             .build()
@@ -404,10 +450,15 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
             withClue("must cleanse the user answers data") {
               verify(sessionRepository).clearData(eqTo(emptyUserAnswers.id), eqTo(SupplementaryUnitUpdateJourney))
             }
+
+            withClue("must not submit an audit") {
+              verify(mockAuditService, never()).auditFinishUpdateSupplementaryUnitGoodsRecord(any(), any(), any())(
+                any()
+              )
+            }
           }
         }
       }
     }
-
   }
 }

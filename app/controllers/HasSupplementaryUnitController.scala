@@ -20,11 +20,13 @@ import connectors.GoodsRecordConnector
 import controllers.actions._
 import forms.HasSupplementaryUnitFormProvider
 import models.Mode
+import models.helper.SupplementaryUnitUpdate
 import navigation.Navigator
 import pages.{HasSupplementaryUnitPage, HasSupplementaryUnitUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import repositories.SessionRepository
+import services.AuditService
 import utils.SessionData._
 import views.html.HasSupplementaryUnitView
 
@@ -42,7 +44,8 @@ class HasSupplementaryUnitController @Inject() (
   goodsRecordConnector: GoodsRecordConnector,
   formProvider: HasSupplementaryUnitFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: HasSupplementaryUnitView
+  view: HasSupplementaryUnitView,
+  auditService: AuditService
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
@@ -77,6 +80,13 @@ class HasSupplementaryUnitController @Inject() (
 
   def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
+      auditService
+        .auditStartUpdateGoodsRecord(
+          request.eori,
+          request.affinityGroup,
+          SupplementaryUnitUpdate,
+          recordId
+        )
       val userAnswerValue = request.userAnswers.get(HasSupplementaryUnitUpdatePage(recordId))
 
       goodsRecordConnector.getRecord(request.eori, recordId).flatMap { record =>
