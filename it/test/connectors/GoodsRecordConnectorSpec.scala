@@ -97,7 +97,7 @@ class GoodsRecordConnectorSpec
               |    "declarable": "IMMI declarable",
               |    "ukimsNumber": "XIUKIM47699357400020231115081800",
               |    "nirmsNumber": "RMS-GB-123456",
-              |    niphlNumberKey: "6 S12345",
+              |    "niphlNumber": "6 S12345",
               |    "locked": false,
               |    "createdDateTime": "2024-11-18T23:20:19Z",
               |    "updatedDateTime": "2024-11-18T23:20:19Z"
@@ -141,7 +141,7 @@ class GoodsRecordConnectorSpec
               |    "declarable": "IMMI declarable",
               |    "ukimsNumber": "XIUKIM47699357400020231115081800",
               |    "nirmsNumber": "RMS-GB-123456",
-              |    niphlNumberKey: "6 S12345",
+              |    "niphlNumber": "6 S12345",
               |    "locked": false,
               |    "createdDateTime": "2022-11-18T23:20:19Z",
               |    "updatedDateTime": "2022-11-18T23:20:19Z"
@@ -179,7 +179,7 @@ class GoodsRecordConnectorSpec
               |    "declarable": "IMMI declarable",
               |    "ukimsNumber": "XIUKIM47699357400020231115081800",
               |    "nirmsNumber": "RMS-GB-123456",
-              |    niphlNumberKey: "6 S12345",
+              |    "niphlNumber": "6 S12345",
               |    "locked": false,
               |    "createdDateTime": "2023-11-18T23:20:19Z",
               |    "updatedDateTime": "2023-11-18T23:20:19Z"
@@ -217,7 +217,7 @@ class GoodsRecordConnectorSpec
               |    "declarable": "IMMI declarable",
               |    "ukimsNumber": "XIUKIM47699357400020231115081800",
               |    "nirmsNumber": "RMS-GB-123456",
-              |    niphlNumberKey: "6 S12345",
+              |    "niphlNumber": "6 S12345",
               |    "locked": false,
               |    "createdDateTime": "2024-11-18T23:20:19Z",
               |    "updatedDateTime": "2024-11-18T23:20:19Z"
