@@ -73,7 +73,7 @@ class CyaUpdateRecordController @Inject() (
                       .rowUpdateCya(answer, recordId, CheckMode)
                   )
                 )
-                Ok(view(list, onSubmitAction))
+                Ok(view(list, onSubmitAction, "countryOfOrigin"))
               }
             case Left(errors) =>
               Future.successful(
@@ -102,7 +102,7 @@ class CyaUpdateRecordController @Inject() (
           val list = SummaryListViewModel(
             Seq(GoodsDescriptionSummary.rowUpdateCya(goodsDescription, recordId, CheckMode))
           )
-          Ok(view(list, onSubmitAction))
+          Ok(view(list, onSubmitAction, "goodsDescription"))
         case Left(errors)            =>
           logErrorsAndContinue(
             errorMessage,
@@ -121,7 +121,7 @@ class CyaUpdateRecordController @Inject() (
           val list = SummaryListViewModel(
             Seq(TraderReferenceSummary.row(traderReference, recordId, CheckMode, recordLocked = false))
           )
-          Ok(view(list, onSubmitAction))
+          Ok(view(list, onSubmitAction, "traderReference"))
         case Left(errors)           =>
           logErrorsAndContinue(
             errorMessage,
@@ -157,7 +157,7 @@ class CyaUpdateRecordController @Inject() (
                     )
                 )
               )
-              Future.successful(Ok(view(list, onSubmitAction)))
+              Future.successful(Ok(view(list, onSubmitAction, "commodityCode")))
             case Left(errors)     =>
               Future.successful(
                 logErrorsAndContinue(

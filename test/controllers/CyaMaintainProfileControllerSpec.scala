@@ -89,7 +89,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val view = application.injector.instanceOf[CyaMaintainProfileView]
 
             status(result) mustEqual OK
-            contentAsString(result) mustEqual view(list, action)(request, messages(application)).toString
+            contentAsString(result) mustEqual view(list, action, "hasNirms")(request, messages(application)).toString
           }
         }
 
@@ -391,7 +391,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val view = application.injector.instanceOf[CyaMaintainProfileView]
 
             status(result) mustEqual OK
-            contentAsString(result) mustEqual view(list, action)(request, messages(application)).toString
+            contentAsString(result) mustEqual view(list, action, "ukimsNumber")(request, messages(application)).toString
           }
         }
 
@@ -698,7 +698,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val view = application.injector.instanceOf[CyaMaintainProfileView]
 
             status(result) mustEqual OK
-            contentAsString(result) mustEqual view(list, action)(request, messages(application)).toString
+            contentAsString(result) mustEqual view(list, action, "hasNiphl")(request, messages(application)).toString
           }
         }
 
@@ -1028,7 +1028,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val view = application.injector.instanceOf[CyaMaintainProfileView]
 
             status(result) mustEqual OK
-            contentAsString(result) mustEqual view(list, action)(request, messages(application)).toString
+            contentAsString(result) mustEqual view(list, action, "nirmsNumber")(request, messages(application)).toString
           }
         }
 
@@ -1285,7 +1285,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val view = application.injector.instanceOf[CyaMaintainProfileView]
 
             status(result) mustEqual OK
-            contentAsString(result) mustEqual view(list, action)(request, messages(application)).toString
+            contentAsString(result) mustEqual view(list, action, "niphlNumber")(request, messages(application)).toString
           }
         }
 

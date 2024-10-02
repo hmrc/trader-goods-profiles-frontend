@@ -45,13 +45,19 @@ cyaCreateProfile.li3 = Northern Ireland Plant Health Label (NIPHL)
 cyaCreateProfile.warning = Warning
 cyaCreateProfile.warningText = You need to make sure these details are correct. Any details that are wrong in your Trader Goods Profile and used to create movements, will not be valid.
 
-cyaCreateRecord.title = Check your answers
-cyaCreateRecord.h1 = Check your answers
+cyaCreateRecord.title = Check your answers for creating a record
+cyaCreateRecord.h1 = Check your answers for creating a record
 cyaCreateRecord.warning = Warning
 cyaCreateRecord.warningText = You are liable for the information on any movements created by you, or on your behalf using your TGP records.
 
-cyaUpdateRecord.title = Check your answers
-cyaUpdateRecord.h1 = Check your answers
+cyaUpdateRecord.title.traderReference = Check your answers for changing the trader reference
+cyaUpdateRecord.h1.traderReference = Check your answers for changing the trader reference
+cyaUpdateRecord.title.goodsDescription = Check your answers for changing the goods description
+cyaUpdateRecord.h1.goodsDescription = Check your answers for changing the goods description
+cyaUpdateRecord.title.countryOfOrigin = Check your answers for changing the country of origin
+cyaUpdateRecord.h1.countryOfOrigin = Check your answers for changing the country of origin
+cyaUpdateRecord.title.commodityCode = Check your answers for changing the commodity code
+cyaUpdateRecord.h1.commodityCode = Check your answers for changing the commodity code
 
 cyaRequestAdvice.title = Check your answers before sending your request for advice
 cyaRequestAdvice.heading = Check your answers before sending your request for advice
@@ -540,8 +546,8 @@ goodsRecordSearchResultEmptyView.title = There are no matching results
 goodsRecordSearchResultEmptyView.h1 = There are no matching results
 goodsRecordSearchResultEmptyView.p1 = You searched for the term ''{0}''.
 
-cyaSupplementaryUnit.title = Check your answers
-cyaSupplementaryUnit.heading = Check your answers
+cyaSupplementaryUnit.title = Check your answers for changing the supplementary unit
+cyaSupplementaryUnit.heading = Check your answers for changing the supplementary unit
 
 successBanner.title = Success
 successBanner.heading = You have changed the {0}
@@ -675,15 +681,17 @@ expiredCommodityCode.p2 = You need to update the commodity code, then categorise
 expiredCommodityCode.p1.linkText = Change the commodity code
 expiredCommodityCode.p2.linkText = Go back to goods record
 
-cyaMaintainProfile.title = Check your answers
-cyaMaintainProfile.heading = Check your answers
-cyaMaintainProfile.h2 = Schemes
-cyaMaintainProfile.li1 = UK Internal Market Scheme (UKIMS)
-cyaMaintainProfile.li2 = Northern Ireland Retail Movement Scheme (NIRMS)
-cyaMaintainProfile.li3 = Northern Ireland Plant Health Label (NIPHL)
+cyaMaintainProfile.title.ukimsNumber = Check your answers for changing your UKIMS number
+cyaMaintainProfile.heading.ukimsNumber = Check your answers for changing your UKIMS number
+cyaMaintainProfile.title.hasNirms = Check your answers for changing your NIRMS registration
+cyaMaintainProfile.heading.hasNirms = Check your answers for changing your NIRMS registration
+cyaMaintainProfile.title.nirmsNumber = Check your answers for changing your NIRMS number
+cyaMaintainProfile.heading.nirmsNumber = Check your answers for changing your NIRMS number
+cyaMaintainProfile.title.hasNiphl = Check your answers for changing your NIPHL registration
+cyaMaintainProfile.heading.hasNiphl = Check your answers for changing your NIPHL registration
+cyaMaintainProfile.title.niphlNumber = Check your answers for changing your NIPHL number
+cyaMaintainProfile.heading.niphlNumber = Check your answers for changing your NIPHL number
 
-cyaMaintainProfile.title = Check your answers
-cyaMaintainProfile.heading = Check your answers
 cyaMaintainProfile.h2 = Schemes
 cyaMaintainProfile.li1 = UK Internal Market Scheme (UKIMS)
 cyaMaintainProfile.li2 = Northern Ireland Retail Movement Scheme (NIRMS)

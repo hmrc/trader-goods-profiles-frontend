@@ -60,7 +60,7 @@ class CyaMaintainProfileController @Inject() (
             HasNirmsSummary.rowUpdate(request.userAnswers)
           ).flatten
         )
-        Ok(view(list, routes.CyaMaintainProfileController.onSubmitNirms))
+        Ok(view(list, routes.CyaMaintainProfileController.onSubmitNirms, "hasNirms"))
           .removingFromSession(dataUpdated, pageUpdated, dataRemoved, dataAdded)
       case Left(errors) =>
         logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors)
@@ -75,7 +75,7 @@ class CyaMaintainProfileController @Inject() (
             UkimsNumberSummary.rowUpdate(request.userAnswers)
           ).flatten
         )
-        Ok(view(list, routes.CyaMaintainProfileController.onSubmitUkimsNumber))
+        Ok(view(list, routes.CyaMaintainProfileController.onSubmitUkimsNumber, "ukimsNumber"))
           .removingFromSession(dataUpdated, pageUpdated, dataRemoved, dataAdded)
       case Left(errors) =>
         logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors)
@@ -126,7 +126,7 @@ class CyaMaintainProfileController @Inject() (
             ).flatten
           )
           Future.successful(
-            Ok(view(list, routes.CyaMaintainProfileController.onSubmitNiphl))
+            Ok(view(list, routes.CyaMaintainProfileController.onSubmitNiphl, "hasNiphl"))
               .removingFromSession(dataUpdated, pageUpdated, dataRemoved, dataAdded)
           )
         case Left(errors) =>
@@ -164,7 +164,7 @@ class CyaMaintainProfileController @Inject() (
             ).flatten
           )
           Future.successful(
-            Ok(view(list, routes.CyaMaintainProfileController.onSubmitNirmsNumber))
+            Ok(view(list, routes.CyaMaintainProfileController.onSubmitNirmsNumber, "nirmsNumber"))
               .removingFromSession(dataUpdated, pageUpdated, dataRemoved, dataAdded)
           )
         case Left(errors) =>
@@ -203,7 +203,7 @@ class CyaMaintainProfileController @Inject() (
             ).flatten
           )
           Future.successful(
-            Ok(view(list, routes.CyaMaintainProfileController.onSubmitNiphlNumber))
+            Ok(view(list, routes.CyaMaintainProfileController.onSubmitNiphlNumber, "niphlNumber"))
               .removingFromSession(dataUpdated, pageUpdated, dataRemoved, dataAdded)
           )
         case Left(errors) =>
