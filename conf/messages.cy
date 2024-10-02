@@ -123,8 +123,8 @@ niphlNumber.checkYourAnswersLabel = Rhif NIPHL
 niphlNumber.error.invalidFormat = Nodwch eich Rhif Cofrestru NIPHL yn y fformat cywir
 niphlNumber.change.hidden = Rhif NIPHL
 
-cyaCreateProfile.title = Gwirio''ch atebion
-cyaCreateProfile.h1 = Gwirio''ch atebion
+cyaCreateProfile.title = Gwirio’ch atebion ar gyfer sefydlu’ch proffil
+cyaCreateProfile.h1 = Gwirio’ch atebion ar gyfer sefydlu’ch proffil
 
 cyaCreateProfile.li1 = Cynllun Marchnad Fewnol y DU (UKIMS)
 cyaCreateProfile.li2 = Cynllun Symud Nwyddau Manwerthu Gogledd Iwerddon (NIRMS)

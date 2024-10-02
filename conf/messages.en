@@ -36,8 +36,8 @@ error.title.prefix = Error:
 error.prefix = Error
 error.summary.title = There is a problem
 
-cyaCreateProfile.title = Check your answers
-cyaCreateProfile.h1 = Check your answers
+cyaCreateProfile.title = Check your answers for setting up your profile
+cyaCreateProfile.h1 = Check your answers for setting up your profile
 cyaCreateProfile.h2 = Schemes
 cyaCreateProfile.li1 = UK Internal Market Scheme (UKIMS)
 cyaCreateProfile.li2 = Northern Ireland Retail Movement Scheme (NIRMS)
