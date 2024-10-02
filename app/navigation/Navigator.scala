@@ -50,7 +50,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     case RemoveNiphlPage                           => navigateFromRemoveNiphlPage
     case CyaMaintainProfilePage                    => _ => routes.ProfileController.onPageLoad()
     case CreateRecordStartPage                     => _ => routes.TraderReferenceController.onPageLoadCreate(NormalMode)
-    case TraderReferencePage                       => _ => routes.UseTraderReferenceController.onPageLoad(NormalMode)
+    case TraderReferencePage                       => _ => routes.GoodsDescriptionController.onPageLoadCreate(NormalMode)
     case p: TraderReferenceUpdatePage              => _ => routes.CyaUpdateRecordController.onPageLoadTraderReference(p.recordId)
     case UseTraderReferencePage                    => navigateFromUseTraderReference
     case GoodsDescriptionPage                      => _ => routes.CountryOfOriginController.onPageLoadCreate(NormalMode)
