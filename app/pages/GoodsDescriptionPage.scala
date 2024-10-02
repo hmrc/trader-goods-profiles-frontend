@@ -17,10 +17,11 @@
 package pages
 
 import play.api.libs.json.JsPath
+import utils.Constants.goodsDescriptionKey
 
 case object GoodsDescriptionPage extends QuestionPage[String] {
 
   override def path: JsPath = JsPath \ toString
 
-  override def toString: String = "goodsDescription"
+  override def toString: String = goodsDescriptionKey
 }

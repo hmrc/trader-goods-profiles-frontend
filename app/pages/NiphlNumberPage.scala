@@ -17,10 +17,11 @@
 package pages
 
 import play.api.libs.json.JsPath
+import utils.Constants.niphlNumberKey
 
 case object NiphlNumberPage extends QuestionPage[String] {
 
   override def path: JsPath = JsPath \ toString
 
-  override def toString: String = "niphlNumber"
+  override def toString: String = niphlNumberKey
 }

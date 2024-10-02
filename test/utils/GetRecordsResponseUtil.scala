@@ -38,8 +38,8 @@ trait GetRecordsResponseUtil {
          |    "traderRef": "BAN001001",
          |    "comcode": "10410100",
          |    "adviceStatus": "Not requested",
-         |    "goodsDescription": "Organic bananas",
-         |    "countryOfOrigin": "EC",
+         |    goodsDescriptionKey: "Organic bananas",
+         |    countryOfOriginKey: "EC",
          |    "category": 3,
          |    "assessments": [
          |      {
@@ -62,9 +62,9 @@ trait GetRecordsResponseUtil {
          |    "toReview": false,
          |    "reviewReason": null,
          |    "declarable": "IMMI declarable",
-         |    "ukimsNumber": "XIUKIM47699357400020231115081800",
-         |    "nirmsNumber": "RMS-GB-123456",
-         |    "niphlNumber": "6 S12345",
+         |    ukimsNumberKey: "XIUKIM47699357400020231115081800",
+         |    nirmsNumberKey: "RMS-GB-123456",
+         |    niphlNumberKey: "6 S12345",
          |    "locked": false,
          |    "createdDateTime": "2024-11-18T23:20:19Z",
          |    "updatedDateTime": "2024-11-18T23:20:19Z"
@@ -76,8 +76,8 @@ trait GetRecordsResponseUtil {
          |    "traderRef": "BAN001001",
          |    "comcode": "10410100",
          |    "adviceStatus": "Not requested",
-         |    "goodsDescription": "Organic bananas",
-         |    "countryOfOrigin": "EC",
+         |    goodsDescriptionKey: "Organic bananas",
+         |    countryOfOriginKey: "EC",
          |    "category": 3,
          |    "assessments": [
          |      {
@@ -100,9 +100,9 @@ trait GetRecordsResponseUtil {
          |    "toReview": false,
          |    "reviewReason": null,
          |    "declarable": "IMMI declarable",
-         |    "ukimsNumber": "XIUKIM47699357400020231115081800",
-         |    "nirmsNumber": "RMS-GB-123456",
-         |    "niphlNumber": "6 S12345",
+         |    ukimsNumberKey: "XIUKIM47699357400020231115081800",
+         |    nirmsNumberKey: "RMS-GB-123456",
+         |    niphlNumberKey: "6 S12345",
          |    "locked": false,
          |    "createdDateTime": "2024-11-18T23:20:19Z",
          |    "updatedDateTime": "2024-11-18T23:20:19Z"

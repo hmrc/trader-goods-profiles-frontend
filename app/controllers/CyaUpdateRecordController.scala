@@ -28,6 +28,7 @@ import queries.CountriesQuery
 import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
+import utils.Constants.{commodityCodeKey, countryOfOriginKey, goodsDescriptionKey, traderReferenceKey}
 import utils.SessionData.fromExpiredCommodityCodePage
 import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
@@ -73,7 +74,7 @@ class CyaUpdateRecordController @Inject() (
                       .rowUpdateCya(answer, recordId, CheckMode)
                   )
                 )
-                Ok(view(list, onSubmitAction, "countryOfOrigin"))
+                Ok(view(list, onSubmitAction, countryOfOriginKey))
               }
             case Left(errors) =>
               Future.successful(
@@ -102,7 +103,7 @@ class CyaUpdateRecordController @Inject() (
           val list = SummaryListViewModel(
             Seq(GoodsDescriptionSummary.rowUpdateCya(goodsDescription, recordId, CheckMode))
           )
-          Ok(view(list, onSubmitAction, "goodsDescription"))
+          Ok(view(list, onSubmitAction, goodsDescriptionKey))
         case Left(errors)            =>
           logErrorsAndContinue(
             errorMessage,
@@ -121,7 +122,7 @@ class CyaUpdateRecordController @Inject() (
           val list = SummaryListViewModel(
             Seq(TraderReferenceSummary.row(traderReference, recordId, CheckMode, recordLocked = false))
           )
-          Ok(view(list, onSubmitAction, "traderReference"))
+          Ok(view(list, onSubmitAction, traderReferenceKey))
         case Left(errors)           =>
           logErrorsAndContinue(
             errorMessage,
@@ -157,7 +158,7 @@ class CyaUpdateRecordController @Inject() (
                     )
                 )
               )
-              Future.successful(Ok(view(list, onSubmitAction, "commodityCode")))
+              Future.successful(Ok(view(list, onSubmitAction, commodityCodeKey)))
             case Left(errors)     =>
               Future.successful(
                 logErrorsAndContinue(

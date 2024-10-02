@@ -71,8 +71,8 @@ class GoodsRecordConnectorSpec
               |    "traderRef": "BAN001001",
               |    "comcode": "10410100",
               |    "adviceStatus": "Not requested",
-              |    "goodsDescription": "Organic bananas",
-              |    "countryOfOrigin": "EC",
+              |    goodsDescriptionKey: "Organic bananas",
+              |    countryOfOriginKey: "EC",
               |    "category": 3,
               |    "assessments": [
               |      {
@@ -95,9 +95,9 @@ class GoodsRecordConnectorSpec
               |    "toReview": false,
               |    "reviewReason": null,
               |    "declarable": "IMMI declarable",
-              |    "ukimsNumber": "XIUKIM47699357400020231115081800",
-              |    "nirmsNumber": "RMS-GB-123456",
-              |    "niphlNumber": "6 S12345",
+              |    ukimsNumberKey: "XIUKIM47699357400020231115081800",
+              |    nirmsNumberKey: "RMS-GB-123456",
+              |    niphlNumberKey: "6 S12345",
               |    "locked": false,
               |    "createdDateTime": "2024-11-18T23:20:19Z",
               |    "updatedDateTime": "2024-11-18T23:20:19Z"
@@ -115,8 +115,8 @@ class GoodsRecordConnectorSpec
               |    "traderRef": "BAN0010011",
               |    "comcode": "10410100",
               |    "adviceStatus": "Not requested",
-              |    "goodsDescription": "Organic bananas",
-              |    "countryOfOrigin": "EC",
+              |    goodsDescriptionKey: "Organic bananas",
+              |    countryOfOriginKey: "EC",
               |    "category": 3,
               |    "assessments": [
               |      {
@@ -139,9 +139,9 @@ class GoodsRecordConnectorSpec
               |    "toReview": false,
               |    "reviewReason": null,
               |    "declarable": "IMMI declarable",
-              |    "ukimsNumber": "XIUKIM47699357400020231115081800",
-              |    "nirmsNumber": "RMS-GB-123456",
-              |    "niphlNumber": "6 S12345",
+              |    ukimsNumberKey: "XIUKIM47699357400020231115081800",
+              |    nirmsNumberKey: "RMS-GB-123456",
+              |    niphlNumberKey: "6 S12345",
               |    "locked": false,
               |    "createdDateTime": "2022-11-18T23:20:19Z",
               |    "updatedDateTime": "2022-11-18T23:20:19Z"
@@ -153,8 +153,8 @@ class GoodsRecordConnectorSpec
               |    "traderRef": "BAN0010012",
               |    "comcode": "10410100",
               |    "adviceStatus": "Not requested",
-              |    "goodsDescription": "Organic bananas",
-              |    "countryOfOrigin": "EC",
+              |    goodsDescriptionKey: "Organic bananas",
+              |    countryOfOriginKey: "EC",
               |    "category": 3,
               |    "assessments": [
               |      {
@@ -177,9 +177,9 @@ class GoodsRecordConnectorSpec
               |    "toReview": false,
               |    "reviewReason": null,
               |    "declarable": "IMMI declarable",
-              |    "ukimsNumber": "XIUKIM47699357400020231115081800",
-              |    "nirmsNumber": "RMS-GB-123456",
-              |    "niphlNumber": "6 S12345",
+              |    ukimsNumberKey: "XIUKIM47699357400020231115081800",
+              |    nirmsNumberKey: "RMS-GB-123456",
+              |    niphlNumberKey: "6 S12345",
               |    "locked": false,
               |    "createdDateTime": "2023-11-18T23:20:19Z",
               |    "updatedDateTime": "2023-11-18T23:20:19Z"
@@ -191,8 +191,8 @@ class GoodsRecordConnectorSpec
               |    "traderRef": "BAN0010013",
               |    "comcode": "10410100",
               |    "adviceStatus": "Not requested",
-              |    "goodsDescription": "Organic bananas",
-              |    "countryOfOrigin": "EC",
+              |    goodsDescriptionKey: "Organic bananas",
+              |    countryOfOriginKey: "EC",
               |    "category": 3,
               |    "assessments": [
               |      {
@@ -215,9 +215,9 @@ class GoodsRecordConnectorSpec
               |    "toReview": false,
               |    "reviewReason": null,
               |    "declarable": "IMMI declarable",
-              |    "ukimsNumber": "XIUKIM47699357400020231115081800",
-              |    "nirmsNumber": "RMS-GB-123456",
-              |    "niphlNumber": "6 S12345",
+              |    ukimsNumberKey: "XIUKIM47699357400020231115081800",
+              |    nirmsNumberKey: "RMS-GB-123456",
+              |    niphlNumberKey: "6 S12345",
               |    "locked": false,
               |    "createdDateTime": "2024-11-18T23:20:19Z",
               |    "updatedDateTime": "2024-11-18T23:20:19Z"
@@ -330,7 +330,7 @@ class GoodsRecordConnectorSpec
       finalComCode = "1234567890",
       measurementUnit = None,
       supplementaryUnit = None,
-      initialCategoryInfo = CategorisationInfo("1234567890","BV",None,Seq.empty,Seq.empty,None,0),
+      initialCategoryInfo = CategorisationInfo("1234567890", "BV", None, Seq.empty, Seq.empty, None, 0),
       wasSupplementaryUnitAsked = false
     )
 
