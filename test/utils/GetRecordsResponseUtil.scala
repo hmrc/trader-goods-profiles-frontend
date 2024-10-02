@@ -38,8 +38,8 @@ trait GetRecordsResponseUtil {
          |    "traderRef": "BAN001001",
          |    "comcode": "10410100",
          |    "adviceStatus": "Not requested",
-         |    goodsDescriptionKey: "Organic bananas",
-         |    countryOfOriginKey: "EC",
+         |    "goodsDescription": "Organic bananas",
+         |    "countryOfOrigin": "EC",
          |    "category": 3,
          |    "assessments": [
          |      {
@@ -76,8 +76,8 @@ trait GetRecordsResponseUtil {
          |    "traderRef": "BAN001001",
          |    "comcode": "10410100",
          |    "adviceStatus": "Not requested",
-         |    goodsDescriptionKey: "Organic bananas",
-         |    countryOfOriginKey: "EC",
+         |    "goodsDescription": "Organic bananas",
+         |    "countryOfOrigin": "EC",
          |    "category": 3,
          |    "assessments": [
          |      {
