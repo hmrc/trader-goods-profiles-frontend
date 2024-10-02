@@ -47,13 +47,16 @@ case class GetGoodsRecordResponse(
   updatedDateTime: Instant
 ) {
 
-  def declarableAsLowercase: String = {
-    declarable.split(" ").zipWithIndex.map {
-      case (word, 0) => word
-      case (word, _) if word == "IMMI" => word
-      case (word, _) => word.toLowerCase
-    }.mkString(" ")
-  }
+  def statusForView: String =
+    declarable
+      .split(" ")
+      .zipWithIndex
+      .map {
+        case (word, 0)                   => word
+        case (word, _) if word == "IMMI" => word
+        case (word, _)                   => word.toLowerCase
+      }
+      .mkString(" ")
 
 }
 
