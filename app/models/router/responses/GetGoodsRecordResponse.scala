@@ -45,9 +45,20 @@ case class GetGoodsRecordResponse(
   niphlNumber: Option[String] = None,
   createdDateTime: Instant,
   updatedDateTime: Instant
-)
+) {
+
+  def declarableAsLowercase: String = {
+    declarable.split(" ").zipWithIndex.map {
+      case (word, 0) => word
+      case (word, _) if word == "IMMI" => word
+      case (word, _) => word.toLowerCase
+    }.mkString(" ")
+  }
+
+}
 
 object GetGoodsRecordResponse {
+
   implicit val reads: Reads[GetGoodsRecordResponse] = (json: JsValue) =>
     JsSuccess(
       GetGoodsRecordResponse(
