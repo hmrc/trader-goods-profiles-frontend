@@ -330,7 +330,7 @@ class GoodsRecordConnectorSpec
       finalComCode = "1234567890",
       measurementUnit = None,
       supplementaryUnit = None,
-      initialCategoryInfo = CategorisationInfo("1234567890","BV",None,Seq.empty,Seq.empty,None,0),
+      initialCategoryInfo = CategorisationInfo("1234567890", "BV", None, Seq.empty, Seq.empty, None, 0),
       wasSupplementaryUnitAsked = false
     )
 

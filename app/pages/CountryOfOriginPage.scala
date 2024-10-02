@@ -17,10 +17,11 @@
 package pages
 
 import play.api.libs.json.JsPath
+import utils.Constants.countryOfOriginKey
 
 case object CountryOfOriginPage extends QuestionPage[String] {
 
   override def path: JsPath = JsPath \ toString
 
-  override def toString: String = "countryOfOrigin"
+  override def toString: String = countryOfOriginKey
 }

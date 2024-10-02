@@ -17,6 +17,7 @@
 package models.router.responses
 
 import play.api.libs.json.{JsSuccess, JsValue, Json, Reads, Writes}
+import utils.Constants.{countryOfOriginKey, goodsDescriptionKey, niphlNumberKey, nirmsNumberKey, ukimsNumberKey}
 
 import java.time.Instant
 
@@ -72,8 +73,8 @@ object GetGoodsRecordResponse {
         (json \ "comcode").as[String],
         (json \ "adviceStatus")
           .as[String],
-        (json \ "goodsDescription").as[String],
-        (json \ "countryOfOrigin").as[String],
+        (json \ goodsDescriptionKey).as[String],
+        (json \ countryOfOriginKey).as[String],
         (json \ "category").asOpt[Int],
         (json \ "assessments").asOpt[Seq[Assessment]],
         (json \ "supplementaryUnit").asOpt[BigDecimal],
@@ -85,9 +86,9 @@ object GetGoodsRecordResponse {
         (json \ "toReview").as[Boolean],
         (json \ "reviewReason").asOpt[String],
         (json \ "declarable").as[String],
-        (json \ "ukimsNumber").asOpt[String],
-        (json \ "nirmsNumber").asOpt[String],
-        (json \ "niphlNumber").asOpt[String],
+        (json \ ukimsNumberKey).asOpt[String],
+        (json \ nirmsNumberKey).asOpt[String],
+        (json \ niphlNumberKey).asOpt[String],
         (json \ "createdDateTime").as[Instant],
         (json \ "updatedDateTime").as[Instant]
       )
@@ -101,8 +102,8 @@ object GetGoodsRecordResponse {
       "traderRef"                -> record.traderRef,
       "comcode"                  -> record.comcode,
       "adviceStatus"             -> record.adviceStatus,
-      "goodsDescription"         -> record.goodsDescription,
-      "countryOfOrigin"          -> record.countryOfOrigin,
+      goodsDescriptionKey        -> record.goodsDescription,
+      countryOfOriginKey         -> record.countryOfOrigin,
       "category"                 -> record.category,
       "assessments"              -> record.assessments,
       "supplementaryUnit"        -> record.supplementaryUnit,
@@ -114,9 +115,9 @@ object GetGoodsRecordResponse {
       "toReview"                 -> record.toReview,
       "reviewReason"             -> record.reviewReason,
       "declarable"               -> record.declarable,
-      "ukimsNumber"              -> record.ukimsNumber,
-      "nirmsNumber"              -> record.nirmsNumber,
-      "niphlNumber"              -> record.niphlNumber,
+      ukimsNumberKey             -> record.ukimsNumber,
+      nirmsNumberKey             -> record.nirmsNumber,
+      niphlNumberKey             -> record.niphlNumber,
       "createdDateTime"          -> record.createdDateTime,
       "updatedDateTime"          -> record.updatedDateTime
     )

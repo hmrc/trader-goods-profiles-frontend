@@ -35,6 +35,7 @@ import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
+import utils.Constants.{commodityCodeKey, countryOfOriginKey, goodsDescriptionKey, traderReferenceKey}
 import viewmodels.checkAnswers._
 import viewmodels.govuk.SummaryListFluency
 import views.html.CyaUpdateRecordView
@@ -110,7 +111,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             val list = createChangeList(application)
 
             status(result) mustEqual OK
-            contentAsString(result) mustEqual view(list, call)(
+            contentAsString(result) mustEqual view(list, call, countryOfOriginKey)(
               request,
               messages(application)
             ).toString
@@ -154,7 +155,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             val list = createChangeList(application)
 
             status(result) mustEqual OK
-            contentAsString(result) mustEqual view(list, call)(
+            contentAsString(result) mustEqual view(list, call, countryOfOriginKey)(
               request,
               messages(application)
             ).toString
@@ -441,7 +442,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             val list = createChangeList(application)
 
             status(result) mustEqual OK
-            contentAsString(result) mustEqual view(list, call)(
+            contentAsString(result) mustEqual view(list, call, goodsDescriptionKey)(
               request,
               messages(application)
             ).toString
@@ -651,7 +652,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             val list = createChangeList(application)
 
             status(result) mustEqual OK
-            contentAsString(result) mustEqual view(list, call)(
+            contentAsString(result) mustEqual view(list, call, traderReferenceKey)(
               request,
               messages(application)
             ).toString
@@ -885,7 +886,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             val list = createChangeList(application)
 
             status(result) mustEqual OK
-            contentAsString(result) mustEqual view(list, call)(
+            contentAsString(result) mustEqual view(list, call, commodityCodeKey)(
               request,
               messages(application)
             ).toString
@@ -935,7 +936,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             val list = createChangeListShorterCommCode(application)
 
             status(result) mustEqual OK
-            contentAsString(result) mustEqual view(list, call)(
+            contentAsString(result) mustEqual view(list, call, commodityCodeKey)(
               request,
               messages(application)
             ).toString

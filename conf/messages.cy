@@ -123,14 +123,26 @@ niphlNumber.checkYourAnswersLabel = Rhif NIPHL
 niphlNumber.error.invalidFormat = Nodwch eich Rhif Cofrestru NIPHL yn y fformat cywir
 niphlNumber.change.hidden = Rhif NIPHL
 
-cyaCreateProfile.title = Gwirio''ch atebion
-cyaCreateProfile.h1 = Gwirio''ch atebion
+cyaCreateProfile.title = Gwirio’ch atebion ar gyfer sefydlu’ch proffil
+cyaCreateProfile.h1 = Gwirio’ch atebion ar gyfer sefydlu’ch proffil
 
 cyaCreateProfile.li1 = Cynllun Marchnad Fewnol y DU (UKIMS)
 cyaCreateProfile.li2 = Cynllun Symud Nwyddau Manwerthu Gogledd Iwerddon (NIRMS)
 cyaCreateProfile.li3 = Label iechyd planhigion Gogledd Iwerddon (NIPHL)
 cyaCreateProfile.warning = Rhybudd
 cyaCreateProfile.warningText = Mae angen i chi wneud yn siŵr bod y manylion hyn yn gywir. Ni fydd unrhyw symudiadau y byddwch yn defnyddio manylion o''r TGP i''w creu yn ddilys os byddant yn anghywir.
+
+cyaUpdateRecord.title.traderReference = Gwiriwch eich atebion ar gyfer newid cyfeirnod masnachwr
+cyaUpdateRecord.h1.traderReference = Gwiriwch eich atebion ar gyfer newid cyfeirnod masnachwr
+cyaUpdateRecord.title.goodsDescription = Gwiriwch eich atebion ar gyfer newid disgrifiad y nwyddau
+cyaUpdateRecord.h1.goodsDescription = Gwiriwch eich atebion ar gyfer newid disgrifiad y nwyddau
+cyaUpdateRecord.title.countryOfOrigin = Gwiriwch eich atebion ar gyfer y wlad tarddiad
+cyaUpdateRecord.h1.countryOfOrigin = Gwiriwch eich atebion ar gyfer y wlad tarddiad
+cyaUpdateRecord.title.commodityCode = Gwiriwch eich atebion ar gyfer newid y cod nwyddau
+cyaUpdateRecord.h1.commodityCode = Gwiriwch eich atebion ar gyfer newid y cod nwyddau
+
+cyaSupplementaryUnit.title = Gwiriwch eich atebion ar gyfer newid yr uned atodol
+cyaSupplementaryUnit.heading = Gwiriwch eich atebion ar gyfer newid yr uned atodol
 
 ukimsKickOut.title = Mae angen i chi wneud cais ar gyfer Cynllun Marchnad Fewnol y DU (UKIMS)
 ukimsKickOut.h1 = Mae angen i chi wneud cais ar gyfer Cynllun Marchnad Fewnol y DU (UKIMS)
@@ -247,11 +259,10 @@ commodityCode.error.required = Rhowch god nwydd
 commodityCode.checkYourAnswersLabel = Cod nwyddau
 commodityCode.change.hidden = Cod nwyddau
 
-cyaCreateRecord.title = Gwiriwch eich atebion
-cyaCreateRecord.h1 = Gwiriwch eich atebion
+cyaCreateRecord.title = Gwiriwch eich atebion ar gyfer creu cofnod
+cyaCreateRecord.h1 = Gwiriwch eich atebion ar gyfer creu cofnod
 cyaCreateRecord.warning = Rhybudd
 cyaCreateRecord.warningText = Rydych yn atebol dros yr wybodaeth am unrhyw symudiadau a grëir gennych chi, neu ar eich rhan gan ddefnyddio eich cofnodion Proffil Nwyddau Masnachwr.
-
 
 createRecordSuccess.title = Rydych wedi creu cofnod nwyddau
 createRecordSuccess.h1 = Rydych wedi creu cofnod nwyddau
@@ -422,3 +433,14 @@ goodsRecordSearchResult.title.withPage = Mae yna {0} o ganlyniadau chwilio – t
 goodsRecordSearchResult.h1 = Mae yna {0} o ganlyniadau chwilio
 
 existingUkimsNumber.h2 = Ai dyma’r rhif UKIMS cywir ar eich cyfer o hyd?
+
+cyaMaintainProfile.title.ukimsNumber = Gwiriwch eich atebion ar gyfer newid eich rhif UKIMS
+cyaMaintainProfile.heading.ukimsNumber = Gwiriwch eich atebion ar gyfer newid eich rhif UKIMS
+cyaMaintainProfile.title.hasNirms = Gwiriwch eich atebion ar gyfer newid eich cofrestriad NIRMS
+cyaMaintainProfile.heading.hasNirms = Gwiriwch eich atebion ar gyfer newid eich cofrestriad NIRMS
+cyaMaintainProfile.title.nirmsNumber = Gwiriwch eich atebion ar gyfer newid eich rhif NIRMS
+cyaMaintainProfile.heading.nirmsNumber = Gwiriwch eich atebion ar gyfer newid eich rhif NIRMS
+cyaMaintainProfile.title.hasNiphl = Gwiriwch eich atebion ar gyfer newid eich cofrestriad NIPHL
+cyaMaintainProfile.heading.hasNiphl = Gwiriwch eich atebion ar gyfer newid eich cofrestriad NIPHL
+cyaMaintainProfile.title.niphlNumber = Gwiriwch eich atebion ar gyfer newid eich rhif NIPHL
+cyaMaintainProfile.heading.niphlNumber = Gwiriwch eich atebion ar gyfer newid eich rhif NIPHL
