@@ -21,11 +21,11 @@ formHelper: FormWithCSRF,
 govukButton: GovukButton
 )
 
-@(list: SummaryList, action: Call)(implicit request: Request[_], messages: Messages)
+@(list: SummaryList, action: Call, messageKey: String)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = titleNoForm(messages("cyaUpdateRecord.title"))) {
+@layout(pageTitle = titleNoForm(messages(s"cyaUpdateRecord.title.$messageKey"))) {
 
-<h1 class="govuk-heading-l">@messages("cyaUpdateRecord.h1")</h1>
+<h1 class="govuk-heading-l">@messages(s"cyaUpdateRecord.h1.$messageKey")</h1>
 @govukSummaryList(list)
 
  @formHelper(action = action) {

@@ -20,6 +20,7 @@ import models.{CategoryRecord, Scenario, SupplementaryRequest, UpdateGoodsRecord
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json.Format.GenericFormat
 import play.api.libs.json.{JsPath, OWrites, Reads}
+import utils.Constants.{countryOfOriginKey, goodsDescriptionKey}
 
 import java.time.Instant
 import scala.Function.unlift
@@ -84,8 +85,8 @@ object UpdateRecordRequest {
     ((JsPath \ "eori").read[String] and
       (JsPath \ "recordId").read[String] and
       (JsPath \ "actorId").read[String] and
-      (JsPath \ "countryOfOrigin").readNullable[String] and
-      (JsPath \ "goodsDescription").readNullable[String] and
+      (JsPath \ countryOfOriginKey).readNullable[String] and
+      (JsPath \ goodsDescriptionKey).readNullable[String] and
       (JsPath \ "traderRef").readNullable[String] and
       (JsPath \ "comcode").readNullable[String] and
       (JsPath \ "category").readNullable[Int] and
@@ -98,8 +99,8 @@ object UpdateRecordRequest {
     ((JsPath \ "eori").write[String] and
       (JsPath \ "recordId").write[String] and
       (JsPath \ "actorId").write[String] and
-      (JsPath \ "countryOfOrigin").writeNullable[String] and
-      (JsPath \ "goodsDescription").writeNullable[String] and
+      (JsPath \ countryOfOriginKey).writeNullable[String] and
+      (JsPath \ goodsDescriptionKey).writeNullable[String] and
       (JsPath \ "traderRef").writeNullable[String] and
       (JsPath \ "comcode").writeNullable[String] and
       (JsPath \ "category").writeNullable[Int] and

@@ -18,6 +18,7 @@ package pages
 
 import models.UserAnswers
 import play.api.libs.json.JsPath
+import utils.Constants.commodityCodeKey
 
 import scala.util.{Success, Try}
 
@@ -25,7 +26,7 @@ case object CommodityCodePage extends QuestionPage[String] {
 
   override def path: JsPath = JsPath \ toString
 
-  override def toString: String = "commodityCode"
+  override def toString: String = commodityCodeKey
 
   override def cleanup(
     newValue: Option[String],
