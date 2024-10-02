@@ -65,5 +65,3 @@ class GetGoodsRecordResponseSpec extends SpecBase {
   }
 
 }
-
-
