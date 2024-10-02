@@ -20,6 +20,7 @@ import models.GoodsRecord
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json.Format.GenericFormat
 import play.api.libs.json.{JsPath, OWrites, Reads}
+import utils.Constants.{countryOfOriginKey, goodsDescriptionKey}
 
 import java.time.Instant
 import scala.Function.unlift
@@ -56,8 +57,8 @@ object CreateRecordRequest {
       (JsPath \ "actorId").read[String] and
       (JsPath \ "traderRef").read[String] and
       (JsPath \ "comcode").read[String] and
-      (JsPath \ "goodsDescription").read[String] and
-      (JsPath \ "countryOfOrigin").read[String] and
+      (JsPath \ goodsDescriptionKey).read[String] and
+      (JsPath \ countryOfOriginKey).read[String] and
       (JsPath \ "comcodeEffectiveFromDate").read[Instant] and
       (JsPath \ "comcodeEffectiveToDate").readNullable[Instant] and
       (JsPath \ "category").readNullable[Int])(CreateRecordRequest.apply _)
@@ -67,8 +68,8 @@ object CreateRecordRequest {
       (JsPath \ "actorId").write[String] and
       (JsPath \ "traderRef").write[String] and
       (JsPath \ "comcode").write[String] and
-      (JsPath \ "goodsDescription").write[String] and
-      (JsPath \ "countryOfOrigin").write[String] and
+      (JsPath \ goodsDescriptionKey).write[String] and
+      (JsPath \ countryOfOriginKey).write[String] and
       (JsPath \ "comcodeEffectiveFromDate").write[Instant] and
       (JsPath \ "comcodeEffectiveToDate").writeNullable[Instant] and
       (JsPath \ "category").writeNullable[Int])(unlift(CreateRecordRequest.unapply))

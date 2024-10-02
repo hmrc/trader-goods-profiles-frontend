@@ -21,11 +21,11 @@
         govukButton: GovukButton
 )
 
-@(list: SummaryList, action: Call)(implicit request: Request[_], messages: Messages)
+@(list: SummaryList, action: Call, messageKey: String)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = titleNoForm(messages("cyaMaintainProfile.title"))) {
+@layout(pageTitle = titleNoForm(messages(s"cyaMaintainProfile.title.$messageKey"))) {
 
-    <h1 class="govuk-heading-l">@messages("cyaMaintainProfile.heading")</h1>
+    <h1 class="govuk-heading-l">@messages(s"cyaMaintainProfile.heading.$messageKey")</h1>
     <h2 class="govuk-heading-m">@messages("cyaMaintainProfile.h2")</h2>
 
     <ul class="govuk-list govuk-list--bullet">

@@ -16,6 +16,8 @@
 
 package utils
 
+import utils.Constants.{commodityCodeKey, countryOfOriginKey, goodsDescriptionKey, hasNiphlKey, hasNirmsKey, niphlNumberKey, nirmsNumberKey, traderReferenceKey, ukimsNumberKey}
+
 case object SessionData {
   val dataUpdated: String                    = "changesMade"
   val dataRemoved: String                    = "valueRemoved"
@@ -26,21 +28,21 @@ case object SessionData {
   val countryOfOrigin: String                = "country of origin"
   val commodityCode: String                  = "commodity code"
   val supplementaryUnit: String              = "supplementary unit"
-  val ukimsNumberPage: String                = "ukimsNumber"
-  val hasNirmsPage: String                   = "hasNirms"
-  val hasNiphlPage: String                   = "hasNiphl"
-  val nirmsNumberPage: String                = "nirmsNumber"
-  val niphlNumberPage: String                = "niphlNumber"
+  val ukimsNumberPage: String                = ukimsNumberKey
+  val hasNirmsPage: String                   = hasNirmsKey
+  val hasNiphlPage: String                   = hasNiphlKey
+  val nirmsNumberPage: String                = nirmsNumberKey
+  val niphlNumberPage: String                = niphlNumberKey
   val ukimsNumberUpdatePage: String          = "UKIMS"
   val hasNirmsUpdatePage: String             = "NIRMS"
   val hasNiphlUpdatePage: String             = "NIPHL"
   val nirmsNumberUpdatePage: String          = "NIRMS"
   val niphlNumberUpdatePage: String          = "NIPHL"
-  val traderReferencePage: String            = "traderReference"
+  val traderReferencePage: String            = traderReferenceKey
   val useTraderReferencePage: String         = "useTraderReference"
-  val goodsDescriptionPage: String           = "goodsDescription"
-  val countryOfOriginPage: String            = "countryOfOrigin"
-  val commodityCodePage: String              = "commodityCode"
+  val goodsDescriptionPage: String           = goodsDescriptionKey
+  val countryOfOriginPage: String            = countryOfOriginKey
+  val commodityCodePage: String              = commodityCodeKey
   val hasCorrectGoodsPage: String            = "hasCorrectGoods"
   val assessmentsPage: String                = "assessments"
   val reassessmentPage: String               = "reassessments"
