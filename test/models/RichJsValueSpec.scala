@@ -251,11 +251,10 @@ class RichJsValueSpec extends AnyFreeSpec with Matchers with ScalaCheckPropertyC
     }
 
     "must remove a value given a keyPathNode and return the new object" in {
-
       val gen = for {
         keys          <- Gen.listOf(nonEmptyAlphaStr)
-        values        <- Gen.listOf(nonEmptyAlphaStr)
-        keyToRemove   <- nonEmptyAlphaStr
+        values        <- Gen.listOfN(keys.length, nonEmptyAlphaStr)
+        keyToRemove   <- nonEmptyAlphaStr.suchThat(!keys.contains(_))
         valueToRemove <- nonEmptyAlphaStr
       } yield (keys, values, keyToRemove, valueToRemove)
 
@@ -274,7 +273,6 @@ class RichJsValueSpec extends AnyFreeSpec with Matchers with ScalaCheckPropertyC
     }
 
     "must remove a value given an index node and return the new object for one array" in {
-
       val gen = for {
         key    <- nonEmptyAlphaStr
         values <- Gen.nonEmptyListOf(nonEmptyAlphaStr)

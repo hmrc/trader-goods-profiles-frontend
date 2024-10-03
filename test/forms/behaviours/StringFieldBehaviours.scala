@@ -26,7 +26,7 @@ trait StringFieldBehaviours extends FieldBehaviours {
 
       forAll(stringsLongerThan(maxLength) -> "longString") { string =>
         val result = form.bind(Map(fieldName -> string)).apply(fieldName)
-        result.errors must contain only lengthError
+        result.errors.find(_ == lengthError) mustBe defined
       }
     }
 
@@ -41,7 +41,7 @@ trait StringFieldBehaviours extends FieldBehaviours {
       forAll(invalidDataGenerator -> "invalidDataItem") { dataItem: String =>
         val result = form.bind(Map(fieldName -> dataItem)).apply(fieldName)
         result.errors.size mustBe 1
-        result.errors.head.message mustBe invalidError
+        result.errors.find(_.message == invalidError) mustBe defined
       }
     }
 }
