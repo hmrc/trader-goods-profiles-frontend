@@ -71,6 +71,6 @@ lazy val it =
     .dependsOn(microservice % "test->test")
 
 
-addCommandAlias("coverageCheck", ";clean;coverage;test;it/test;coverageReport")
-addCommandAlias("prePR", ";scalafmt;test:scalafmt;coverageCheck")
-addCommandAlias("preMerge", ";scalafmtCheckAll;coverageCheck")
+addCommandAlias("testAndCoverage", ";clean;coverage;test;it/test;coverageReport")
+addCommandAlias("prePR", ";scalafmt;test:scalafmt;testAndCoverage")
+addCommandAlias("preMerge", ";scalafmtCheckAll;testAndCoverage")

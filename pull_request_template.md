@@ -1,6 +1,6 @@
 # Checklist for developers before reviewing
  - [ ] I have merged in main
- - [ ] I have run  `sbt prePR` to format and check code coverage
+ - [ ] I have run  `sbt prePR` to run all tests, format and check the code coverage
  - [ ] I have written unit tests to cover any code that I wrote, where necessary
  - [ ] I have ran the microservices with the latest SM2 config
  - [ ] I have checked all the Acceptance Criteria pass
@@ -12,7 +12,7 @@
 # Checklist for developers before merging
  - [ ] The PR has been approved by 2 other developers
  - [ ] I have merged in main
- - [ ] I have run  `sbt preMerge' to check formatting and code coverage
+ - [ ] I have run  `sbt preMerge' to run all tests, check formatting and code coverage
  - [ ] I have ran the microservices with the latest SM2 config
  - [ ] I have checked all the Acceptance Criteria pass
  - [ ] I have run the pipeline journey tests

@@ -29,13 +29,15 @@ class NiphlNumberFormProviderSpec extends StringFieldBehaviours with NiphlNumber
 
   ".value" - {
 
-    val fieldName = "value"
+    val fieldName =
+      "value"
 
     behave like mandatoryField(form, fieldName, requiredError = FormError(fieldName, requiredKey))
 
     "errors with" - {
       "less than 4 characters" - {
-        behave like fieldThatErrorsOnInvalidData(form, fieldName, stringsWithMaxLengthNonEmpty(3), wrongFormat)
+        behave like
+          fieldThatErrorsOnInvalidData(form, fieldName, stringsWithMaxLengthNonEmpty(3), wrongFormat)
       }
 
       "more than 7 characters" - {

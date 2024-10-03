@@ -25,7 +25,7 @@ Run this to check unit tests: `sbt test`
 
 Run this to check integration tests: `sbt it/test`
 
-Run this to check all code coverage and get report: `sbt clean coverage test it/test coverageReport`
+Run this to run all tests, check code coverage, and generate a report: `sbt clean coverage test it/test coverageReport`
 
 ### Formatting
 
@@ -37,11 +37,11 @@ Run this to format test scala files: `sbt test:scalafmt`
 
 ### SBT Alias Commands
 
-Run this to check all code coverage and get a report: `sbt coverageCheck`
+To run all unit and IT tests, check code coverage, and generate a report: Use `sbt testAndCoverage`
 
-Run this before a PR to format and check all code coverage and get a report: `sbt prePR`
+Before raising a PR, to run all unit and IT tests, format the code, check code coverage, and generate a report: Use `sbt prePR`
 
-Run this before merging to check formatting and all code coverage and get a report: `sbt preMerge`
+Before merging, to run all unit and IT tests, verify code formatting, check code coverage, and generate a report: Use `sbt preMerge`
 
 ### License
 
