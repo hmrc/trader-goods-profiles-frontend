@@ -16,17 +16,21 @@
 
 package controllers
 
+import cats.data
+import cats.data.EitherNec
 import com.google.inject.Inject
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
-import models.{CheckMode, Country, NormalMode, UpdateGoodsRecord, UserAnswers}
+import models.{CheckMode, Country, NormalMode, UpdateGoodsRecord, UserAnswers, ValidationError}
 import navigation.Navigator
+import org.apache.pekko.Done
 import pages._
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
 import queries.CountriesQuery
 import repositories.SessionRepository
 import services.AuditService
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants.{commodityCodeKey, countryOfOriginKey, goodsDescriptionKey, traderReferenceKey}
 import utils.SessionData.fromExpiredCommodityCodePage
@@ -201,30 +205,50 @@ class CyaUpdateRecordController @Inject() (
       _                       <- sessionRepository.set(updatedAnswersWithQuery)
     } yield countries
 
+  private def handleValidateError[T](result: EitherNec[ValidationError, T]): Future[T] =
+    result match {
+      case Right(value) => Future.successful(value)
+      case Left(errors) => Future.failed(GoodsRecordBuildFailure(errors))
+    }
+
+  private case class GoodsRecordBuildFailure(errors: data.NonEmptyChain[ValidationError]) extends Exception {
+    private val errorsAsString      = errors.toChain.toList.map(_.message).mkString(", ")
+    override def getMessage: String = s"$errorMessage Missing pages: $errorsAsString"
+  }
+
+  private def updateGoodsRecordIfValueChanged[T](
+    newValue: T,
+    oldValue: T,
+    newUpdateGoodsRecord: UpdateGoodsRecord
+  )(implicit hc: HeaderCarrier): Future[Done] =
+    if (newValue != oldValue) {
+      goodsRecordConnector.updateGoodsRecord(
+        newUpdateGoodsRecord
+      )
+    } else {
+      Future.successful(Done)
+    }
+
   def onSubmitTraderReference(recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      UpdateGoodsRecord.validateTraderReference(request.userAnswers, recordId) match {
-        case Right(traderReference) =>
-          auditService.auditFinishUpdateGoodsRecord(
-            recordId,
-            request.affinityGroup,
-            UpdateGoodsRecord(request.eori, recordId, traderReference = Some(traderReference))
-          )
-          for {
-            _              <- goodsRecordConnector.updateGoodsRecord(
-                                UpdateGoodsRecord(request.eori, recordId, traderReference = Some(traderReference))
-                              )
-            updatedAnswers <- Future.fromTry(request.userAnswers.remove(TraderReferenceUpdatePage(recordId)))
-            _              <- sessionRepository.set(updatedAnswers)
-          } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers))
-        case Left(errors)           =>
-          Future.successful(
-            logErrorsAndContinue(
-              errorMessage,
-              routes.SingleRecordController.onPageLoad(recordId),
-              errors
-            )
-          )
+      (for {
+        traderReference <- handleValidateError(UpdateGoodsRecord.validateTraderReference(request.userAnswers, recordId))
+        _                = auditService.auditFinishUpdateGoodsRecord(
+                             recordId,
+                             request.affinityGroup,
+                             UpdateGoodsRecord(request.eori, recordId, traderReference = Some(traderReference))
+                           )
+        oldRecord       <- goodsRecordConnector.getRecord(request.eori, recordId)
+        _               <- updateGoodsRecordIfValueChanged(
+                             traderReference,
+                             oldRecord.traderRef,
+                             UpdateGoodsRecord(request.eori, recordId, traderReference = Some(traderReference))
+                           )
+        updatedAnswers  <- Future.fromTry(request.userAnswers.remove(TraderReferenceUpdatePage(recordId)))
+        _               <- sessionRepository.set(updatedAnswers)
+      } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers))).recover {
+        case e: GoodsRecordBuildFailure =>
+          logErrorsAndContinue(e.getMessage, routes.SingleRecordController.onPageLoad(recordId))
       }
     }
 
