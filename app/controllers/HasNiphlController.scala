@@ -104,9 +104,13 @@ class HasNiphlController @Inject() (
                 updatedAnswers                  <- Future.fromTry(request.userAnswers.set(HasNiphlUpdatePage, value))
                 updatedAnswersWithTraderProfile <-
                   Future.fromTry(updatedAnswers.set(TraderProfileQuery, traderProfile))
-                updatedAnswersWithRemoveNiphl <- Option.when(traderProfile.niphlNumber.isEmpty && !value) {
-                    Future.fromTry(updatedAnswersWithTraderProfile.set(RemoveNiphlPage, true))
-                }.getOrElse(Future.successful(updatedAnswersWithTraderProfile))
+                updatedAnswersWithRemoveNiphl   <- Option
+                                                     .when(traderProfile.niphlNumber.isEmpty && !value) {
+                                                       Future.fromTry(
+                                                         updatedAnswersWithTraderProfile.set(RemoveNiphlPage, true)
+                                                       )
+                                                     }
+                                                     .getOrElse(Future.successful(updatedAnswersWithTraderProfile))
                 _                               <- sessionRepository.set(updatedAnswersWithRemoveNiphl)
               } yield Redirect(navigator.nextPage(HasNiphlUpdatePage, mode, updatedAnswersWithRemoveNiphl))
             }
