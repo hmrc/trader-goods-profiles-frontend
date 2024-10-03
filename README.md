@@ -35,6 +35,14 @@ Run this to format non-test scala files: `sbt scalafmt`
 
 Run this to format test scala files: `sbt test:scalafmt`
 
+### SBT Alias Commands
+
+Run this to check all code coverage and get a report: `sbt coverageCheck`
+
+Run this before a PR to format and check all code coverage and get a report: `sbt prePR`
+
+Run this before merging to check formatting and all code coverage and get a report: `sbt preMerge`
+
 ### License
 
 This code is open source software licensed under the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html").
