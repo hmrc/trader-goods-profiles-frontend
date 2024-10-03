@@ -24,6 +24,9 @@ import org.scalacheck.{Gen, Shrink}
 
 trait Generators {
 
+  def trimmedAsciiPrintableChars(length: Int): Gen[List[Char]] =
+    listOfN(length, Gen.asciiPrintableChar).suchThat(_.mkString.trim.length == length)
+
   implicit val dontShrink: Shrink[String] = Shrink.shrinkAny
 
   def genIntersperseString(gen: Gen[String], value: String, frequencyV: Int = 1, frequencyN: Int = 10): Gen[String] = {
@@ -85,7 +88,7 @@ trait Generators {
   def stringsWithMaxLength(maxLength: Int): Gen[String] =
     for {
       length <- choose(1, maxLength)
-      chars  <- listOfN(length, arbitrary[Char])
+      chars  <- trimmedAsciiPrintableChars(length)
     } yield chars.mkString
 
   def stringsWithMaxLengthNonEmpty(maxLength: Int): Gen[String] =
@@ -96,11 +99,11 @@ trait Generators {
   def stringsLongerThan(minLength: Int): Gen[String] = for {
     maxLength <- (minLength * 2).max(100)
     length    <- Gen.chooseNum(minLength + 1, maxLength)
-    chars     <- listOfN(length, arbitrary[Char])
+    chars     <- trimmedAsciiPrintableChars(length)
   } yield chars.mkString
 
-  def stringsExceptSpecificValues(excluded: Seq[String]): Gen[String] =
-    nonEmptyString suchThat (!excluded.contains(_))
+  def nonEmptyStringWithoutExcludedValues(excluded: Seq[String]): Gen[String] =
+    nonEmptyString.suchThat(str => str.nonEmpty && !excluded.exists(str.contains))
 
   def oneOf[T](xs: Seq[Gen[T]]): Gen[T] =
     if (xs.isEmpty) {
