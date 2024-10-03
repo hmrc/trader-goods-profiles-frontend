@@ -20,6 +20,7 @@ import cats.data.{EitherNec, NonEmptyChain}
 import cats.implicits._
 import pages._
 import play.api.libs.json.{Json, OFormat}
+import queries.TraderProfileQuery
 
 final case class TraderProfile(
   actorId: String,
@@ -61,7 +62,20 @@ object TraderProfile {
           answers.getPageValue(removePage) match {
             case Right(true)  => Right(None)
             case Right(false) => answers.unexpectedValueDefined(answers, removePage)
-            case Left(errors) => Left(errors)
+            case Left(errors) =>
+              removePage match {
+                case RemoveNirmsPage =>
+                  answers.getPageValue(TraderProfileQuery) match {
+                    case Right(profile) if profile.nirmsNumber.isEmpty => Right(None)
+                    case _                                             => Left(errors)
+                  }
+                case RemoveNiphlPage =>
+                  answers.getPageValue(TraderProfileQuery) match {
+                    case Right(profile) if profile.niphlNumber.isEmpty => Right(None)
+                    case _                                             => Left(errors)
+                  }
+                case _               => Left(errors)
+              }
           }
         }
       case Left(errors) => Left(errors)
