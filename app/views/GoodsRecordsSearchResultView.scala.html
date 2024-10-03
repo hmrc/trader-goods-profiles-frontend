@@ -46,6 +46,8 @@
 
     @govukTable(
         Table(
+            caption = Some(messages("goodsRecordSearchResult.h1", totalRecords)),
+            captionClasses = "govuk-visually-hidden",
             head = Some(Seq(
                 HeadCell(
                     content = Text(messages("goodsRecords.tableHeader.traderReference"))

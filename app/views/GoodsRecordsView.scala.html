@@ -98,6 +98,8 @@
 
         @govukTable(
             Table(
+                caption = Some(messages("goodsRecords.title")),
+                captionClasses = "govuk-visually-hidden",
                 head = Some(Seq(
                     HeadCell(
                         content = Text(messages("goodsRecords.tableHeader.traderReference"))
