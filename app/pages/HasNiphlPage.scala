@@ -18,6 +18,7 @@ package pages
 
 import models.UserAnswers
 import play.api.libs.json.JsPath
+import utils.Constants.hasNiphlKey
 
 import scala.util.Try
 
@@ -25,7 +26,7 @@ case object HasNiphlPage extends QuestionPage[Boolean] {
 
   override def path: JsPath = JsPath \ toString
 
-  override def toString: String = "hasNiphl"
+  override def toString: String = hasNiphlKey
 
   override def cleanup(
     value: Option[Boolean],

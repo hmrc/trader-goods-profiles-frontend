@@ -26,6 +26,7 @@ import play.api.http.Status.{NOT_FOUND, OK}
 import play.api.libs.json.Json
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
+import utils.Constants.{commodityCodeKey, countryOfOriginKey, goodsDescriptionKey, traderReferenceKey}
 
 import java.time.{Instant, LocalDate}
 
@@ -126,8 +127,8 @@ class AuditEventFactorySpec extends SpecBase {
         auditDetails("affinityGroup") mustBe "Individual"
         auditDetails("updateSection") mustBe "categorisation"
         auditDetails("recordId") mustBe "8ebb6b04-6ab0-4fe2-ad62-e6389a8a204f"
-        auditDetails("commodityCode") mustBe "1234567890"
-        auditDetails("countryOfOrigin") mustBe "BV"
+        auditDetails(commodityCodeKey) mustBe "1234567890"
+        auditDetails(countryOfOriginKey) mustBe "BV"
         auditDetails("descendants") mustBe "1"
         auditDetails("categoryAssessments") mustBe "2"
       }
@@ -175,10 +176,11 @@ class AuditEventFactorySpec extends SpecBase {
           auditDetails("journey") mustBe "CreateRecord"
           auditDetails("eori") mustBe testEori
           auditDetails("affinityGroup") mustBe "Organisation"
-          auditDetails("traderReference") mustBe "trader reference"
-          auditDetails("goodsDescription") mustBe "goods description"
-          auditDetails("countryOfOrigin") mustBe "AG"
-          auditDetails("commodityCode") mustBe "030821"
+          auditDetails(traderReferenceKey) mustBe "trader reference"
+          auditDetails("specifiedGoodsDescription") mustBe "true"
+          auditDetails(goodsDescriptionKey) mustBe "goods description"
+          auditDetails(countryOfOriginKey) mustBe "AG"
+          auditDetails(commodityCodeKey) mustBe "030821"
           auditDetails("commodityDescription") mustBe "Sea urchins"
           auditDetails("commodityCodeEffectiveFrom") mustBe effectiveFrom.toString
           auditDetails("commodityCodeEffectiveTo") mustBe effectiveTo.toString
@@ -220,10 +222,11 @@ class AuditEventFactorySpec extends SpecBase {
           auditDetails("journey") mustBe "CreateRecord"
           auditDetails("eori") mustBe testEori
           auditDetails("affinityGroup") mustBe "Organisation"
-          auditDetails("traderReference") mustBe "trader reference"
-          auditDetails("goodsDescription") mustBe "DESCRIPTION"
-          auditDetails("countryOfOrigin") mustBe "AG"
-          auditDetails("commodityCode") mustBe "030821"
+          auditDetails(traderReferenceKey) mustBe "trader reference"
+          auditDetails("specifiedGoodsDescription") mustBe "false"
+          auditDetails(goodsDescriptionKey) mustBe "trader reference"
+          auditDetails(countryOfOriginKey) mustBe "AG"
+          auditDetails(commodityCodeKey) mustBe "030821"
           auditDetails("commodityDescription") mustBe "Sea urchins"
           auditDetails("commodityCodeEffectiveFrom") mustBe effectiveFrom.toString
           auditDetails("commodityCodeEffectiveTo") mustBe "null"
@@ -273,8 +276,8 @@ class AuditEventFactorySpec extends SpecBase {
             auditDetails("eori") mustBe testEori
             auditDetails("affinityGroup") mustBe "Organisation"
             auditDetails("recordId") mustBe testRecordId
-            auditDetails("commodityCode") mustBe "1234567890"
-            auditDetails("countryOfOrigin") mustBe "BV"
+            auditDetails(commodityCodeKey) mustBe "1234567890"
+            auditDetails(countryOfOriginKey) mustBe "BV"
             auditDetails("descendants") mustBe "1"
             auditDetails("categoryAssessments") mustBe "2"
             auditDetails("categoryAssessmentsAnswered") mustBe "2"
@@ -315,8 +318,8 @@ class AuditEventFactorySpec extends SpecBase {
             auditDetails("eori") mustBe testEori
             auditDetails("affinityGroup") mustBe "Organisation"
             auditDetails("recordId") mustBe testRecordId
-            auditDetails("commodityCode") mustBe "1234567890"
-            auditDetails("countryOfOrigin") mustBe "BV"
+            auditDetails(commodityCodeKey) mustBe "1234567890"
+            auditDetails(countryOfOriginKey) mustBe "BV"
             auditDetails("descendants") mustBe "1"
             auditDetails("categoryAssessments") mustBe "3"
             auditDetails("categoryAssessmentsAnswered") mustBe "2"
@@ -358,8 +361,8 @@ class AuditEventFactorySpec extends SpecBase {
             auditDetails("eori") mustBe testEori
             auditDetails("affinityGroup") mustBe "Organisation"
             auditDetails("recordId") mustBe testRecordId
-            auditDetails("commodityCode") mustBe "1234567890"
-            auditDetails("countryOfOrigin") mustBe "BV"
+            auditDetails(commodityCodeKey) mustBe "1234567890"
+            auditDetails(countryOfOriginKey) mustBe "BV"
             auditDetails("descendants") mustBe "1"
             auditDetails("categoryAssessments") mustBe "3"
             auditDetails("categoryAssessmentsAnswered") mustBe "2"
@@ -412,8 +415,8 @@ class AuditEventFactorySpec extends SpecBase {
             auditDetails("eori") mustBe testEori
             auditDetails("affinityGroup") mustBe "Organisation"
             auditDetails("recordId") mustBe testRecordId
-            auditDetails("commodityCode") mustBe "998877"
-            auditDetails("countryOfOrigin") mustBe "BV"
+            auditDetails(commodityCodeKey) mustBe "998877"
+            auditDetails(countryOfOriginKey) mustBe "BV"
             auditDetails("descendants") mustBe "1"
             auditDetails("categoryAssessments") mustBe "3"
             auditDetails("categoryAssessmentsAnswered") mustBe "3"
@@ -469,10 +472,10 @@ class AuditEventFactorySpec extends SpecBase {
           auditDetails("eori") mustBe testEori
           auditDetails("recordId") mustBe testRecordId
           auditDetails("affinityGroup") mustBe "Organisation"
-          auditDetails("traderReference") mustBe "trader reference"
-          auditDetails("goodsDescription") mustBe "goods description"
-          auditDetails("countryOfOrigin") mustBe "GB"
-          auditDetails("commodityCode") mustBe "030821"
+          auditDetails(traderReferenceKey) mustBe "trader reference"
+          auditDetails(goodsDescriptionKey) mustBe "goods description"
+          auditDetails(countryOfOriginKey) mustBe "GB"
+          auditDetails(commodityCodeKey) mustBe "030821"
           auditDetails("commodityDescription") mustBe "Sea urchins"
           auditDetails("commodityCodeEffectiveFrom") mustBe effectiveFrom.toString
           auditDetails("commodityCodeEffectiveTo") mustBe effectiveTo.toString

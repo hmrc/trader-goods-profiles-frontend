@@ -17,6 +17,7 @@
 package testModels
 
 import play.api.libs.json.{OFormat, OWrites, Reads, __}
+import utils.Constants.{niphlNumberKey, nirmsNumberKey, ukimsNumberKey}
 
 case class DataStoreProfile(
   eori: String,
@@ -35,9 +36,9 @@ object DataStoreProfile {
     (
       (__ \ "eori").read[String] and
         (__ \ "actorId").read[String] and
-        (__ \ "ukimsNumber").read[String] and
-        (__ \ "nirmsNumber").readNullable[String] and
-        (__ \ "niphlNumber").readNullable[String]
+        (__ \ ukimsNumberKey).read[String] and
+        (__ \ nirmsNumberKey).readNullable[String] and
+        (__ \ niphlNumberKey).readNullable[String]
     )(DataStoreProfile.apply _)
   }
 
@@ -48,9 +49,9 @@ object DataStoreProfile {
     (
       (__ \ "eori").write[String] and
         (__ \ "actorId").write[String] and
-        (__ \ "ukimsNumber").write[String] and
-        (__ \ "nirmsNumber").writeNullable[String] and
-        (__ \ "niphlNumber").writeNullable[String]
+        (__ \ ukimsNumberKey).write[String] and
+        (__ \ nirmsNumberKey).writeNullable[String] and
+        (__ \ niphlNumberKey).writeNullable[String]
     )(unlift(DataStoreProfile.unapply))
   }
 

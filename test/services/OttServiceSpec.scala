@@ -29,6 +29,7 @@ import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.mvc.AnyContent
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import uk.gov.hmrc.http.HeaderCarrier
+import utils.Constants.{countryOfOriginKey, goodsDescriptionKey}
 
 import java.time.Instant
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -50,8 +51,8 @@ class OttServiceSpec extends SpecBase with BeforeAndAfterEach {
     "traderRef",
     "comcode",
     "adviceStatus",
-    "goodsDescription",
-    "countryOfOrigin",
+    goodsDescriptionKey,
+    countryOfOriginKey,
     Some(1),
     None,
     None,

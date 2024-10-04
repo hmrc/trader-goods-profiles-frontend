@@ -34,7 +34,7 @@ class OptionFieldBehaviours extends FieldBehaviours {
 
     "not bind invalid values" in {
 
-      val generator = stringsExceptSpecificValues(validValues.map(_.toString))
+      val generator = nonEmptyStringWithoutExcludedValues(validValues.map(_.toString))
 
       forAll(generator -> "invalidValue") { value =>
         val result = form.bind(Map(fieldName -> value)).apply(fieldName)

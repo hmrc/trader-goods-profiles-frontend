@@ -36,6 +36,7 @@ import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery}
 import repositories.SessionRepository
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
+import utils.Constants.{countryOfOriginKey, goodsDescriptionKey}
 
 import java.time.Instant
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -81,8 +82,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
     "traderRef",
     "comcode",
     "adviceStatus",
-    "goodsDescription",
-    "countryOfOrigin",
+    goodsDescriptionKey,
+    countryOfOriginKey,
     Some(1),
     None,
     None,

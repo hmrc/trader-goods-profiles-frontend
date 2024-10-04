@@ -98,6 +98,8 @@
 
         @govukTable(
             Table(
+                caption = Some(messages("goodsRecords.title")),
+                captionClasses = "govuk-visually-hidden",
                 head = Some(Seq(
                     HeadCell(
                         content = Text(messages("goodsRecords.tableHeader.traderReference"))
@@ -139,7 +141,7 @@
                             content = Text(goodsRecord.comcode)
                         ),
                         TableRow(
-                            content = Text(goodsRecord.declarable)
+                            content = Text(goodsRecord.statusForView)
                         ),
                         TableRow(
                             content = HtmlContent(

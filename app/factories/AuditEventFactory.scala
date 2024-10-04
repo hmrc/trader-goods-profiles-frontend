@@ -27,6 +27,7 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.AuditExtensions.auditHeaderCarrier
 import uk.gov.hmrc.play.audit.model.{DataEvent, ExtendedDataEvent}
+import utils.Constants.{commodityCodeKey, countryOfOriginKey, goodsDescriptionKey, traderReferenceKey}
 import utils.HttpStatusCodeDescriptions.codeDescriptions
 
 import java.time.Instant
@@ -91,8 +92,8 @@ case class AuditEventFactory() {
     ) ++
       writeOptional("updateSection", updateSection.map(_.toString)) ++
       writeOptional("recordId", recordId) ++
-      writeOptional("commodityCode", commodity.map(_.commodityCode)) ++
-      writeOptional("countryOfOrigin", commodity.map(_.countryOfOrigin)) ++
+      writeOptional(commodityCodeKey, commodity.map(_.commodityCode)) ++
+      writeOptional(countryOfOriginKey, commodity.map(_.countryOfOrigin)) ++
       writeOptional("descendants", commodity.map(_.descendantCount.toString)) ++
       // How many pages COULD be shown to the user
       writeOptional("categoryAssessments", commodity.map(_.categoryAssessmentsThatNeedAnswers.size.toString))
@@ -121,6 +122,11 @@ case class AuditEventFactory() {
       //"specifiedGoodsDescription"  -> isUsingGoodsDescription.toString,
       "countryOfOrigin"            -> goodsRecord.countryOfOrigin,
       "commodityCode"              -> goodsRecord.commodity.commodityCode,
+      traderReferenceKey           -> goodsRecord.traderRef,
+      goodsDescriptionKey          -> goodsRecord.goodsDescription,
+      "specifiedGoodsDescription"  -> isUsingGoodsDescription.toString,
+      countryOfOriginKey           -> goodsRecord.countryOfOrigin,
+      commodityCodeKey             -> goodsRecord.commodity.commodityCode,
       "commodityDescription"       -> goodsRecord.commodity.descriptions.headOption.getOrElse("null"),
       "commodityCodeEffectiveFrom" -> goodsRecord.commodity.validityStartDate.toString,
       "commodityCodeEffectiveTo"   -> goodsRecord.commodity.validityEndDate.map(_.toString).getOrElse("null")
@@ -142,8 +148,8 @@ case class AuditEventFactory() {
       "recordId"                    -> recordId,
       "eori"                        -> eori,
       "affinityGroup"               -> affinityGroup.toString,
-      "commodityCode"               -> categoryRecord.initialCategoryInfo.commodityCode,
-      "countryOfOrigin"             -> categoryRecord.initialCategoryInfo.countryOfOrigin,
+      commodityCodeKey              -> categoryRecord.initialCategoryInfo.commodityCode,
+      countryOfOriginKey            -> categoryRecord.initialCategoryInfo.countryOfOrigin,
       "descendants"                 -> categoryRecord.initialCategoryInfo.descendantCount.toString,
       // How many pages COULD have been shown to the user
       "categoryAssessments"         -> categoryRecord.initialCategoryInfo.categoryAssessmentsThatNeedAnswers.size.toString,
@@ -201,16 +207,16 @@ case class AuditEventFactory() {
       "eori"          -> goodsRecord.eori,
       "affinityGroup" -> affinityGroup.toString
     ) ++
-      writeOptional("commodityCode", goodsRecord.commodityCode.map(_.commodityCode)) ++
+      writeOptional(commodityCodeKey, goodsRecord.commodityCode.map(_.commodityCode)) ++
       writeOptional("commodityDescription", goodsRecord.commodityCode.flatMap(_.descriptions.headOption)) ++
       writeOptional("commodityCodeEffectiveFrom", goodsRecord.commodityCode.map(_.validityStartDate.toString)) ++
       writeOptional(
         "commodityCodeEffectiveTo",
         goodsRecord.commodityCode.map(_.validityEndDate.map(_.toString).getOrElse("null"))
       ) ++
-      writeOptional("goodsDescription", goodsRecord.goodsDescription) ++
-      writeOptional("traderReference", goodsRecord.traderReference) ++
-      writeOptional("countryOfOrigin", goodsRecord.countryOfOrigin)
+      writeOptional(goodsDescriptionKey, goodsRecord.goodsDescription) ++
+      writeOptional(traderReferenceKey, goodsRecord.traderReference) ++
+      writeOptional(countryOfOriginKey, goodsRecord.countryOfOrigin)
 
     createSubmitGoodsRecordEvent(auditDetails)
   }
