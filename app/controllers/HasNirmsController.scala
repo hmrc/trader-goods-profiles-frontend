@@ -21,7 +21,7 @@ import controllers.actions._
 import forms.HasNirmsFormProvider
 import models.Mode
 import navigation.Navigator
-import pages.{HasNirmsPage, HasNirmsUpdatePage, RemoveNirmsPage}
+import pages.{HasNirmsPage, HasNirmsUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.TraderProfileQuery
@@ -103,13 +103,8 @@ class HasNirmsController @Inject() (
                 updatedAnswers                  <- Future.fromTry(request.userAnswers.set(HasNirmsUpdatePage, value))
                 updatedAnswersWithTraderProfile <-
                   Future.fromTry(updatedAnswers.set(TraderProfileQuery, traderProfile))
-                updatedAnswersWithRemoveNirms <- if (traderProfile.nirmsNumber.isEmpty && !value) {
-                  Future.fromTry(updatedAnswersWithTraderProfile.set(RemoveNirmsPage, true))
-                } else {
-                  Future.successful(updatedAnswersWithTraderProfile)
-                }
-                _                               <- sessionRepository.set(updatedAnswersWithRemoveNirms)
-              } yield Redirect(navigator.nextPage(HasNirmsUpdatePage, mode, updatedAnswersWithRemoveNirms))
+                _                               <- sessionRepository.set(updatedAnswersWithTraderProfile)
+              } yield Redirect(navigator.nextPage(HasNirmsUpdatePage, mode, updatedAnswersWithTraderProfile))
 
             }
         )
