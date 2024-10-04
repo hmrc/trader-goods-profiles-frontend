@@ -152,11 +152,6 @@ POST        /update-record/:recordId/categorisation/longer-commodity-code-result
 GET         /update-record/:recordId/categorisation/longer-commodity-code-result/check      controllers.HasCorrectGoodsController.onPageLoadLongerCommodityCode(mode: Mode = CheckMode,recordId: String)
 POST        /update-record/:recordId/categorisation/longer-commodity-code-result/check      controllers.HasCorrectGoodsController.onSubmitLongerCommodityCode(mode: Mode = CheckMode,recordId: String)
 
-# GET         /create-record/goods-description-question                                       controllers.UseTraderReferenceController.onPageLoad(mode: Mode = NormalMode)
-# POST        /create-record/goods-description-question                                       controllers.UseTraderReferenceController.onSubmit(mode: Mode = NormalMode)
-# GET         /create-record/goods-description-question/check                                 controllers.UseTraderReferenceController.onPageLoad(mode: Mode = CheckMode)
-# POST        /create-record/goods-description-question/check                                 controllers.UseTraderReferenceController.onSubmit(mode: Mode = CheckMode)
-
 GET         /create-record/check-your-answers                                               controllers.CyaCreateRecordController.onPageLoad
 POST        /create-record/check-your-answers                                               controllers.CyaCreateRecordController.onSubmit
 

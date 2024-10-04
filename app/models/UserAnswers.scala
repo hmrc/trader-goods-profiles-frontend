@@ -48,16 +48,6 @@ final case class UserAnswers(
       case Left(errors) => Left(errors)
     }
 
-//  def getOppositeOptionalPageValue(
-//    answers: UserAnswers,
-//    optionalPage: QuestionPage[String]
-//  ): EitherNec[ValidationError, Option[String]] =
-//    getPageValue(questionPage) match {
-//      case Right(false) => getPageValue(optionalPage).map(Some(_))
-//      case Right(true)  => unexpectedValueDefined(answers, optionalPage)
-//      case Left(errors) => Left(errors)
-//    }
-
   def getOptionalPageValueForOptionalBooleanPage[A](
     answers: UserAnswers,
     questionPage: QuestionPage[Boolean],
