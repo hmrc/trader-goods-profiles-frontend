@@ -104,9 +104,6 @@ trait SpecBase
       .set(CountryOfOriginPage, "1")
       .success
       .value
-      .set(UseTraderReferencePage, false)
-      .success
-      .value
       .set(HasCorrectGoodsPage, true)
       .success
       .value
@@ -128,7 +125,7 @@ trait SpecBase
       .set(CountryOfOriginPage, "1")
       .success
       .value
-      .set(UseTraderReferencePage, true)
+      .set(GoodsDescriptionPage, "DESCRIPTION")
       .success
       .value
       .set(HasCorrectGoodsPage, true)

@@ -39,7 +39,6 @@ case object SessionData {
   val nirmsNumberUpdatePage: String          = "NIRMS"
   val niphlNumberUpdatePage: String          = "NIPHL"
   val traderReferencePage: String            = traderReferenceKey
-  val useTraderReferencePage: String         = "useTraderReference"
   val goodsDescriptionPage: String           = goodsDescriptionKey
   val countryOfOriginPage: String            = countryOfOriginKey
   val commodityCodePage: String              = commodityCodeKey

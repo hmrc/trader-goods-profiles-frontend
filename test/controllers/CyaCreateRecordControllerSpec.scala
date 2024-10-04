@@ -48,7 +48,6 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
     def createChangeList(userAnswers: UserAnswers, app: Application): SummaryList = SummaryListViewModel(
       rows = Seq(
         TraderReferenceSummary.row(userAnswers)(messages(app)),
-        UseTraderReferenceSummary.row(userAnswers)(messages(app)),
         GoodsDescriptionSummary.row(userAnswers)(messages(app)),
         CountryOfOriginSummary.row(userAnswers, Seq(Country("CN", "China")))(messages(app)),
         CommodityCodeSummary.row(userAnswers)(messages(app))
@@ -198,7 +197,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               testEori,
               "123",
               testCommodity,
-              "123",
+              "DESCRIPTION",
               "1"
             )
 
