@@ -64,17 +64,11 @@ object TraderProfile {
             case Right(false) => answers.unexpectedValueDefined(answers, removePage)
             case Left(errors) =>
               removePage match {
-                case RemoveNirmsPage =>
-                  answers.getPageValue(TraderProfileQuery) match {
-                    case Right(profile) if profile.nirmsNumber.isEmpty => Right(None)
-                    case _                                             => Left(errors)
-                  }
-                case RemoveNiphlPage =>
-                  answers.getPageValue(TraderProfileQuery) match {
-                    case Right(profile) if profile.niphlNumber.isEmpty => Right(None)
-                    case _                                             => Left(errors)
-                  }
-                case _               => Left(errors)
+                case RemoveNirmsPage if answers.getPageValue(TraderProfileQuery).exists(_.nirmsNumber.isEmpty) =>
+                  Right(None)
+                case RemoveNiphlPage if answers.getPageValue(TraderProfileQuery).exists(_.niphlNumber.isEmpty) =>
+                  Right(None)
+                case _                                                                                         => Left(errors)
               }
           }
         }
