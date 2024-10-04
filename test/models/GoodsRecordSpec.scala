@@ -48,9 +48,6 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .set(CountryOfOriginPage, "1")
             .success
             .value
-            .set(UseTraderReferencePage, false)
-            .success
-            .value
             .set(GoodsDescriptionPage, "2")
             .success
             .value
@@ -81,7 +78,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .set(CountryOfOriginPage, "1")
             .success
             .value
-            .set(UseTraderReferencePage, true)
+            .set(GoodsDescriptionPage, "DESCRIPTION")
             .success
             .value
             .set(HasCorrectGoodsPage, true)
@@ -94,7 +91,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
         val result = GoodsRecord.build(answers, testEori)
 
         result mustEqual Right(
-          GoodsRecord(testEori, "123", testCommodity, "123", "1")
+          GoodsRecord(testEori, "123", testCommodity, "DESCRIPTION", "1")
         )
       }
 
@@ -111,7 +108,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .set(CountryOfOriginPage, "1")
             .success
             .value
-            .set(UseTraderReferencePage, true)
+            .set(GoodsDescriptionPage, "DESCRIPTION")
             .success
             .value
             .set(HasCorrectGoodsPage, true)
@@ -124,7 +121,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
         val result = GoodsRecord.build(answers, testEori)
 
         result mustEqual Right(
-          GoodsRecord(testEori, "123", shorterCommodity, "123", "1")
+          GoodsRecord(testEori, "123", shorterCommodity, "DESCRIPTION", "1")
         )
       }
     }
@@ -142,7 +139,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             PageMissing(TraderReferencePage),
             PageMissing(CommodityCodePage),
             PageMissing(CountryOfOriginPage),
-            PageMissing(UseTraderReferencePage)
+            PageMissing(GoodsDescriptionPage)
           )
         }
       }
@@ -163,9 +160,6 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .set(CountryOfOriginPage, "1")
             .success
             .value
-            .set(UseTraderReferencePage, false)
-            .success
-            .value
             .set(CommodityQuery, testCommodity)
             .success
             .value
@@ -174,39 +168,6 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain only PageMissing(GoodsDescriptionPage)
-        }
-      }
-
-      "when the user said they don't have optional data but it is present" in {
-
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(TraderReferencePage, "123")
-            .success
-            .value
-            .set(CommodityCodePage, testCommodity.commodityCode)
-            .success
-            .value
-            .set(HasCorrectGoodsPage, true)
-            .success
-            .value
-            .set(CountryOfOriginPage, "1")
-            .success
-            .value
-            .set(UseTraderReferencePage, true)
-            .success
-            .value
-            .set(GoodsDescriptionPage, "2")
-            .success
-            .value
-            .set(CommodityQuery, testCommodity)
-            .success
-            .value
-
-        val result = GoodsRecord.build(answers, testEori)
-
-        inside(result) { case Left(errors) =>
-          errors.toChain.toList must contain only UnexpectedPage(GoodsDescriptionPage)
         }
       }
 
@@ -226,7 +187,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .set(CountryOfOriginPage, "1")
             .success
             .value
-            .set(UseTraderReferencePage, false)
+            .set(GoodsDescriptionPage, "goods description")
             .success
             .value
             .set(GoodsDescriptionPage, "2")
@@ -259,7 +220,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
             .set(CountryOfOriginPage, "1")
             .success
             .value
-            .set(UseTraderReferencePage, false)
+            .set(GoodsDescriptionPage, "goods description")
             .success
             .value
             .set(GoodsDescriptionPage, "2")

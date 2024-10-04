@@ -109,8 +109,8 @@ case class AuditEventFactory() {
   def createSubmitGoodsRecordEventForCreateRecord(
     affinityGroup: AffinityGroup,
     journey: Journey,
-    goodsRecord: GoodsRecord,
-    isUsingGoodsDescription: Boolean
+    goodsRecord: GoodsRecord
+    //isUsingGoodsDescription: Boolean
   )(implicit hc: HeaderCarrier): DataEvent = {
     val auditDetails = Map(
       "eori"                       -> goodsRecord.eori,
@@ -118,7 +118,7 @@ case class AuditEventFactory() {
       "journey"                    -> journey.toString,
       "traderReference"            -> goodsRecord.traderRef,
       "goodsDescription"           -> goodsRecord.goodsDescription,
-      "specifiedGoodsDescription"  -> isUsingGoodsDescription.toString,
+      //"specifiedGoodsDescription"  -> isUsingGoodsDescription.toString,
       "countryOfOrigin"            -> goodsRecord.countryOfOrigin,
       "commodityCode"              -> goodsRecord.commodity.commodityCode,
       "commodityDescription"       -> goodsRecord.commodity.descriptions.headOption.getOrElse("null"),

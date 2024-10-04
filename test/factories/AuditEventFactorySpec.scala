@@ -163,8 +163,7 @@ class AuditEventFactorySpec extends SpecBase {
               commodity,
               "goods description",
               "AG"
-            ),
-            isUsingGoodsDescription = true
+            )
           )
 
           result.auditSource mustBe "trader-goods-profiles-frontend"
@@ -172,12 +171,11 @@ class AuditEventFactorySpec extends SpecBase {
           result.tags.isEmpty mustBe false
 
           val auditDetails = result.detail
-          auditDetails.size mustBe 11
+          auditDetails.size mustBe 10
           auditDetails("journey") mustBe "CreateRecord"
           auditDetails("eori") mustBe testEori
           auditDetails("affinityGroup") mustBe "Organisation"
           auditDetails("traderReference") mustBe "trader reference"
-          auditDetails("specifiedGoodsDescription") mustBe "true"
           auditDetails("goodsDescription") mustBe "goods description"
           auditDetails("countryOfOrigin") mustBe "AG"
           auditDetails("commodityCode") mustBe "030821"
@@ -208,10 +206,9 @@ class AuditEventFactorySpec extends SpecBase {
               testEori,
               "trader reference",
               commodity,
-              "trader reference",
+              "DESCRIPTION",
               "AG"
-            ),
-            isUsingGoodsDescription = false
+            )
           )
 
           result.auditSource mustBe "trader-goods-profiles-frontend"
@@ -219,13 +216,12 @@ class AuditEventFactorySpec extends SpecBase {
           result.tags.isEmpty mustBe false
 
           val auditDetails = result.detail
-          auditDetails.size mustBe 11
+          auditDetails.size mustBe 10
           auditDetails("journey") mustBe "CreateRecord"
           auditDetails("eori") mustBe testEori
           auditDetails("affinityGroup") mustBe "Organisation"
           auditDetails("traderReference") mustBe "trader reference"
-          auditDetails("specifiedGoodsDescription") mustBe "false"
-          auditDetails("goodsDescription") mustBe "trader reference"
+          auditDetails("goodsDescription") mustBe "DESCRIPTION"
           auditDetails("countryOfOrigin") mustBe "AG"
           auditDetails("commodityCode") mustBe "030821"
           auditDetails("commodityDescription") mustBe "Sea urchins"
