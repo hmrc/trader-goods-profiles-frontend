@@ -39,7 +39,6 @@ case object CreateRecordJourney extends Journey {
   val pages: Seq[String]        =
     Seq(
       traderReferencePage,
-      useTraderReferencePage,
       goodsDescriptionPage,
       countryOfOriginPage,
       commodityCodePage,
