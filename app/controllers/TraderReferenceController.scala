@@ -66,7 +66,6 @@ class TraderReferenceController @Inject() (
       Ok(view(preparedForm, onSubmitAction))
     }
 
-
   def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       val preparedForm = request.userAnswers.get(TraderReferenceUpdatePage(recordId)) match {

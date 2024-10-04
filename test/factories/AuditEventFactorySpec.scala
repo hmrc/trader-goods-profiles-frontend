@@ -177,7 +177,6 @@ class AuditEventFactorySpec extends SpecBase {
           auditDetails("eori") mustBe testEori
           auditDetails("affinityGroup") mustBe "Organisation"
           auditDetails(traderReferenceKey) mustBe "trader reference"
-          auditDetails("specifiedGoodsDescription") mustBe "true"
           auditDetails(goodsDescriptionKey) mustBe "goods description"
           auditDetails(countryOfOriginKey) mustBe "AG"
           auditDetails(commodityCodeKey) mustBe "030821"
@@ -223,8 +222,7 @@ class AuditEventFactorySpec extends SpecBase {
           auditDetails("eori") mustBe testEori
           auditDetails("affinityGroup") mustBe "Organisation"
           auditDetails(traderReferenceKey) mustBe "trader reference"
-          auditDetails("specifiedGoodsDescription") mustBe "false"
-          auditDetails(goodsDescriptionKey) mustBe "trader reference"
+          auditDetails(goodsDescriptionKey) mustBe "DESCRIPTION"
           auditDetails(countryOfOriginKey) mustBe "AG"
           auditDetails(commodityCodeKey) mustBe "030821"
           auditDetails("commodityDescription") mustBe "Sea urchins"
