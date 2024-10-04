@@ -21,7 +21,7 @@ import controllers.actions._
 import forms.HasNiphlFormProvider
 import models.Mode
 import navigation.Navigator
-import pages.{HasNiphlPage, HasNiphlUpdatePage, RemoveNiphlPage}
+import pages.{HasNiphlPage, HasNiphlUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.TraderProfileQuery
@@ -30,7 +30,6 @@ import views.html.HasNiphlView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Try
 
 class HasNiphlController @Inject() (
   override val messagesApi: MessagesApi,
@@ -104,15 +103,8 @@ class HasNiphlController @Inject() (
                 updatedAnswers                  <- Future.fromTry(request.userAnswers.set(HasNiphlUpdatePage, value))
                 updatedAnswersWithTraderProfile <-
                   Future.fromTry(updatedAnswers.set(TraderProfileQuery, traderProfile))
-                updatedAnswersWithRemoveNiphl   <- Option
-                                                     .when(traderProfile.niphlNumber.isEmpty && !value) {
-                                                       Future.fromTry(
-                                                         updatedAnswersWithTraderProfile.set(RemoveNiphlPage, true)
-                                                       )
-                                                     }
-                                                     .getOrElse(Future.successful(updatedAnswersWithTraderProfile))
-                _                               <- sessionRepository.set(updatedAnswersWithRemoveNiphl)
-              } yield Redirect(navigator.nextPage(HasNiphlUpdatePage, mode, updatedAnswersWithRemoveNiphl))
+                _                               <- sessionRepository.set(updatedAnswersWithTraderProfile)
+              } yield Redirect(navigator.nextPage(HasNiphlUpdatePage, mode, updatedAnswersWithTraderProfile))
             }
         )
   }

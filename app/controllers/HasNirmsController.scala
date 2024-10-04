@@ -103,13 +103,11 @@ class HasNirmsController @Inject() (
                 updatedAnswers                  <- Future.fromTry(request.userAnswers.set(HasNirmsUpdatePage, value))
                 updatedAnswersWithTraderProfile <-
                   Future.fromTry(updatedAnswers.set(TraderProfileQuery, traderProfile))
-                updatedAnswersWithRemoveNirms   <- Option
-                                                     .when(traderProfile.nirmsNumber.isEmpty && !value) {
-                                                       Future.fromTry(
-                                                         updatedAnswersWithTraderProfile.set(RemoveNirmsPage, true)
-                                                       )
-                                                     }
-                                                     .getOrElse(Future.successful(updatedAnswersWithTraderProfile))
+                updatedAnswersWithRemoveNirms <- if (traderProfile.nirmsNumber.isEmpty && !value) {
+                  Future.fromTry(updatedAnswersWithTraderProfile.set(RemoveNirmsPage, true))
+                } else {
+                  Future.successful(updatedAnswersWithTraderProfile)
+                }
                 _                               <- sessionRepository.set(updatedAnswersWithRemoveNirms)
               } yield Redirect(navigator.nextPage(HasNirmsUpdatePage, mode, updatedAnswersWithRemoveNirms))
 
