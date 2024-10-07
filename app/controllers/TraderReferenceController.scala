@@ -133,42 +133,44 @@ class TraderReferenceController @Inject() (
           value => {
             val oldValueOpt    = request.userAnswers.get(TraderReferenceUpdatePage(recordId))
             val isValueChanged = oldValueOpt.exists(_ != value)
-            if (isValueChanged) {
-              goodsRecordConnector.filterRecordsByField(request.eori, value, "traderRef").flatMap {
-                case Some(traderRef) =>
-                  for {
-                    updatedAnswers <-
-                      Future.fromTry(request.userAnswers.set(TraderReferenceUpdatePage(recordId), value))
-                    _              <- sessionRepository.set(updatedAnswers)
-                  } yield
-                    if (traderRef.pagination.totalRecords == 0) {
-                      Redirect(navigator.nextPage(TraderReferenceUpdatePage(recordId), mode, updatedAnswers))
-                        .addingToSession(dataUpdated -> isValueChanged.toString)
-                        .addingToSession(pageUpdated -> traderReference)
-                    } else {
-                      val formWithApiErrors =
-                        form
-                          .fill(value)
-                          .copy(
-                            errors =
-                              Seq(elems = FormError("value", getMessage("traderReference.error.traderRefNotUnique")))
-                          )
-                      BadRequest(view(formWithApiErrors, onSubmitAction))
-                    }
-                case None            =>
-                  Future.successful(
-                    Redirect(
-                      routes.GoodsRecordsLoadingController
-                        .onPageLoad(Some(RedirectUrl(onSubmitAction.url)))
+            goodsRecordConnector.getRecord(request.eori, recordId).flatMap { record =>
+              if (record.traderRef != value) {
+                goodsRecordConnector.filterRecordsByField(request.eori, value, "traderRef").flatMap {
+                  case Some(records) =>
+                    for {
+                      updatedAnswers <-
+                        Future.fromTry(request.userAnswers.set(TraderReferenceUpdatePage(recordId), value))
+                      _              <- sessionRepository.set(updatedAnswers)
+                    } yield
+                      if (records.pagination.totalRecords == 0) {
+                        Redirect(navigator.nextPage(TraderReferenceUpdatePage(recordId), mode, updatedAnswers))
+                          .addingToSession(dataUpdated -> isValueChanged.toString)
+                          .addingToSession(pageUpdated -> traderReference)
+                      } else {
+                        val formWithApiErrors =
+                          form
+                            .fill(value)
+                            .copy(
+                              errors =
+                                Seq(elems = FormError("value", getMessage("traderReference.error.traderRefNotUnique")))
+                            )
+                        BadRequest(view(formWithApiErrors, onSubmitAction))
+                      }
+                  case None          =>
+                    Future.successful(
+                      Redirect(
+                        routes.GoodsRecordsLoadingController
+                          .onPageLoad(Some(RedirectUrl(onSubmitAction.url)))
+                      )
                     )
-                  )
+                }
+              } else {
+                Future.successful(
+                  Redirect(navigator.nextPage(TraderReferenceUpdatePage(recordId), mode, request.userAnswers))
+                    .addingToSession(dataUpdated -> isValueChanged.toString)
+                    .addingToSession(pageUpdated -> traderReference)
+                )
               }
-            } else {
-              Future.successful(
-                Redirect(navigator.nextPage(TraderReferenceUpdatePage(recordId), mode, request.userAnswers))
-                  .addingToSession(dataUpdated -> isValueChanged.toString)
-                  .addingToSession(pageUpdated -> traderReference)
-              )
             }
           }
         )
