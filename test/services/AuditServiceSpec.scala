@@ -22,7 +22,7 @@ import factories.AuditEventFactory
 import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, OttAuditData}
 import models.helper._
 import models.ott.response._
-import models.{AdviceRequest, Category1Scenario, CategoryRecord, GoodsRecord, SupplementaryRequest, TraderProfile, UpdateGoodsRecord}
+import models.{AdviceRequest, Category1Scenario, CategoryRecord, GoodsRecord, SupplementaryRequest, TraderProfile, UpdateGoodsRecord, UserAnswers}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{reset, times, verify, when}
@@ -211,16 +211,16 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
 
       val fakeAuditEvent = DataEvent("source", "type")
-      when(mockAuditFactory.createSubmitGoodsRecordEventForCreateRecord(any(), any(), any(), any())(any()))
+      when(mockAuditFactory.createSubmitGoodsRecordEventForCreateRecord(any(), any(), any())(any()))
         .thenReturn(fakeAuditEvent)
 
-      val userAnswers         = generateUserAnswersForFinishCreateGoodsTest(true)
+      val userAnswers         = generateUserAnswersForFinishCreateGoodsTest
       val expectedGoodsRecord =
         GoodsRecord(
           testEori,
           "trader reference",
           testCommodity,
-          "trader reference",
+          "goods description",
           "PF"
         )
 
@@ -233,8 +233,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
           .createSubmitGoodsRecordEventForCreateRecord(
             eqTo(AffinityGroup.Individual),
             eqTo(CreateRecordJourney),
-            eqTo(expectedGoodsRecord),
-            eqTo(false)
+            eqTo(expectedGoodsRecord)
           )(any())
       }
 
@@ -250,10 +249,10 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(auditFailure))
 
       val fakeAuditEvent = DataEvent("source", "type")
-      when(mockAuditFactory.createSubmitGoodsRecordEventForCreateRecord(any(), any(), any(), any())(any()))
+      when(mockAuditFactory.createSubmitGoodsRecordEventForCreateRecord(any(), any(), any())(any()))
         .thenReturn(fakeAuditEvent)
 
-      val userAnswers         = generateUserAnswersForFinishCreateGoodsTest(false)
+      val userAnswers         = generateUserAnswersForFinishCreateGoodsTest
       val expectedGoodsRecord =
         GoodsRecord(testEori, "trader reference", testCommodity, "goods description", "PF")
 
@@ -266,8 +265,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
           .createSubmitGoodsRecordEventForCreateRecord(
             eqTo(AffinityGroup.Individual),
             eqTo(CreateRecordJourney),
-            eqTo(expectedGoodsRecord),
-            eqTo(true)
+            eqTo(expectedGoodsRecord)
           )(any())
       }
 
@@ -286,7 +284,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
           auditService.auditFinishCreateGoodsRecord(
             testEori,
             AffinityGroup.Individual,
-            generateUserAnswersForFinishCreateGoodsTest(true)
+            generateUserAnswersForFinishCreateGoodsTest
           )
         )
       }
@@ -301,7 +299,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
 
       withClue("Should not have tried to create the event as the details were invalid") {
         verify(mockAuditFactory, times(0))
-          .createSubmitGoodsRecordEventForCreateRecord(any, any, any, any)(any())
+          .createSubmitGoodsRecordEventForCreateRecord(any, any, any)(any())
       }
 
       withClue("Should not have tried to submit an event to the audit connector") {
@@ -1223,12 +1221,15 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
 
   }
 
-  private def generateUserAnswersForFinishCreateGoodsTest(useTraderRef: Boolean) = {
-    val ua = emptyUserAnswers
+  private def generateUserAnswersForFinishCreateGoodsTest =
+    emptyUserAnswers
       .set(CommodityQuery, testCommodity)
       .success
       .value
       .set(TraderReferencePage, "trader reference")
+      .success
+      .value
+      .set(GoodsDescriptionPage, "goods description")
       .success
       .value
       .set(CountryOfOriginPage, "PF")
@@ -1240,16 +1241,4 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       .set(HasCorrectGoodsPage, true)
       .success
       .value
-
-    if (useTraderRef) {
-      ua.set(UseTraderReferencePage, true).success.value
-    } else {
-      ua.set(UseTraderReferencePage, false)
-        .success
-        .value
-        .set(GoodsDescriptionPage, "goods description")
-        .success
-        .value
-    }
-  }
 }

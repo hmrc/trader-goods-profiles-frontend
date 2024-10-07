@@ -16,7 +16,7 @@
 
 package services
 
-import cats.implicits.catsSyntaxTuple4Parallel
+import cats.implicits.catsSyntaxTuple3Parallel
 import com.google.inject.Inject
 import factories.AuditEventFactory
 import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, OttAuditData}
@@ -25,7 +25,6 @@ import models.ott.CategorisationInfo
 import models.ott.response.OttResponse
 import models.{AdviceRequest, CategoryRecord, GoodsRecord, SupplementaryRequest, TraderProfile, UpdateGoodsRecord, UserAnswers}
 import org.apache.pekko.Done
-import pages.UseTraderReferencePage
 import play.api.Logging
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
@@ -105,8 +104,7 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
     val buildEvent = (
       Right(affinityGroup),
       Right(CreateRecordJourney),
-      GoodsRecord.build(userAnswers, eori),
-      userAnswers.getPageValue(UseTraderReferencePage).map(!_)
+      GoodsRecord.build(userAnswers, eori)
     ).parMapN(auditEventFactory.createSubmitGoodsRecordEventForCreateRecord)
 
     buildEvent match {
