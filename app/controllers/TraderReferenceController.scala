@@ -67,22 +67,20 @@ class TraderReferenceController @Inject() (
     }
 
   def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] =
-    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
-      val preparedForm = request.userAnswers.get(TraderReferenceUpdatePage(recordId)) match {
-        case None        => form
-        case Some(value) => form.fill(value)
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
+      goodsRecordConnector.getRecord(request.eori, recordId).map { record =>
+        val preparedForm = form.fill(record.traderRef)
+        auditService
+          .auditStartUpdateGoodsRecord(
+            request.eori,
+            request.affinityGroup,
+            GoodsDetailsUpdate,
+            recordId
+          )
+
+        val onSubmitAction = routes.TraderReferenceController.onSubmitUpdate(mode, recordId)
+        Ok(view(preparedForm, onSubmitAction)).removingFromSession(dataRemoved, dataUpdated, pageUpdated)
       }
-
-      auditService
-        .auditStartUpdateGoodsRecord(
-          request.eori,
-          request.affinityGroup,
-          GoodsDetailsUpdate,
-          recordId
-        )
-
-      val onSubmitAction = routes.TraderReferenceController.onSubmitUpdate(mode, recordId)
-      Ok(view(preparedForm, onSubmitAction)).removingFromSession(dataRemoved, dataUpdated, pageUpdated)
     }
 
   def onSubmitCreate(mode: Mode): Action[AnyContent] =
@@ -130,49 +128,39 @@ class TraderReferenceController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, onSubmitAction))),
-          value => {
-            val oldValueOpt    = request.userAnswers.get(TraderReferenceUpdatePage(recordId))
-            val isValueChanged = oldValueOpt.exists(_ != value)
-            goodsRecordConnector.getRecord(request.eori, recordId).flatMap { record =>
-              if (record.traderRef != value) {
-                goodsRecordConnector.filterRecordsByField(request.eori, value, "traderRef").flatMap {
-                  case Some(records) =>
-                    for {
-                      updatedAnswers <-
-                        Future.fromTry(request.userAnswers.set(TraderReferenceUpdatePage(recordId), value))
-                      _              <- sessionRepository.set(updatedAnswers)
-                    } yield
-                      if (records.pagination.totalRecords == 0) {
-                        Redirect(navigator.nextPage(TraderReferenceUpdatePage(recordId), mode, updatedAnswers))
-                          .addingToSession(dataUpdated -> isValueChanged.toString)
-                          .addingToSession(pageUpdated -> traderReference)
-                      } else {
-                        val formWithApiErrors =
-                          form
-                            .fill(value)
-                            .copy(
-                              errors =
-                                Seq(elems = FormError("value", getMessage("traderReference.error.traderRefNotUnique")))
-                            )
-                        BadRequest(view(formWithApiErrors, onSubmitAction))
-                      }
-                  case None          =>
-                    Future.successful(
-                      Redirect(
-                        routes.GoodsRecordsLoadingController
-                          .onPageLoad(Some(RedirectUrl(onSubmitAction.url)))
-                      )
-                    )
-                }
-              } else {
+          value =>
+            goodsRecordConnector.filterRecordsByField(request.eori, value, "traderRef").flatMap {
+              case Some(records) =>
+                for {
+                  oldRecord      <- goodsRecordConnector.getRecord(request.eori, recordId)
+                  updatedAnswers <-
+                    Future.fromTry(request.userAnswers.set(TraderReferenceUpdatePage(recordId), value))
+                  _              <- sessionRepository.set(updatedAnswers)
+                } yield
+                  if (
+                    records.pagination.totalRecords == 0 || (records.pagination.totalRecords == 1 && oldRecord.traderRef == value)
+                  ) {
+                    Redirect(navigator.nextPage(TraderReferenceUpdatePage(recordId), mode, updatedAnswers))
+                      .addingToSession(dataUpdated -> (oldRecord.traderRef != value).toString)
+                      .addingToSession(pageUpdated -> traderReference)
+                  } else {
+                    val formWithApiErrors =
+                      form
+                        .fill(value)
+                        .copy(
+                          errors =
+                            Seq(elems = FormError("value", getMessage("traderReference.error.traderRefNotUnique")))
+                        )
+                    BadRequest(view(formWithApiErrors, onSubmitAction))
+                  }
+              case None          =>
                 Future.successful(
-                  Redirect(navigator.nextPage(TraderReferenceUpdatePage(recordId), mode, request.userAnswers))
-                    .addingToSession(dataUpdated -> isValueChanged.toString)
-                    .addingToSession(pageUpdated -> traderReference)
+                  Redirect(
+                    routes.GoodsRecordsLoadingController
+                      .onPageLoad(Some(RedirectUrl(onSubmitAction.url)))
+                  )
                 )
-              }
             }
-          }
         )
     }
 }
