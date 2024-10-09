@@ -27,7 +27,7 @@ import models.{GoodsRecordsPagination, NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{never, verify, when}
+import org.mockito.Mockito.{verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{TraderReferencePage, TraderReferenceUpdatePage}
 import play.api.data.FormError
@@ -54,12 +54,14 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
   private val currentPage   = firstPage
   private val totalRecords  = 23
   private val numberOfPages = 3
-  private val records       = Seq(
-    goodsRecordResponse(
-      Instant.parse("2022-11-18T23:20:19Z"),
-      Instant.parse("2022-11-18T23:20:19Z")
-    )
+  private val record        = goodsRecordResponse(
+    Instant.parse("2022-11-18T23:20:19Z"),
+    Instant.parse("2022-11-18T23:20:19Z")
   )
+  private val records       = Seq(
+    record
+  )
+
   private val emptyResponse = GetRecordsResponse(
     Seq.empty,
     GoodsRecordsPagination(0, 0, 0, None, None)
@@ -360,6 +362,11 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
             Some(emptyResponse)
           )
 
+        when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
+          .successful(
+            record
+          )
+
         val application =
           applicationBuilder(userAnswers =
             Some(emptyUserAnswers.set(TraderReferenceUpdatePage(recordId = testRecordId), "oldAnswer").success.value)
@@ -391,9 +398,19 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
         val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
+        when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
+          .successful(
+            record
+          )
+
+        when(mockGoodsRecordConnector.filterRecordsByField(any(), any(), any())(any())) thenReturn Future
+          .successful(
+            Some(response)
+          )
+
         val application =
           applicationBuilder(userAnswers =
-            Some(emptyUserAnswers.set(TraderReferenceUpdatePage(recordId = testRecordId), "answer").success.value)
+            Some(emptyUserAnswers.set(TraderReferenceUpdatePage(recordId = testRecordId), "BAN0010011").success.value)
           )
             .overrides(
               bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
@@ -405,15 +422,12 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
         running(application) {
           val request =
             FakeRequest(POST, traderReferenceRoute)
-              .withFormUrlEncodedBody(("value", "answer"))
+              .withFormUrlEncodedBody(("value", "BAN0010011"))
 
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
-
-          verify(mockGoodsRecordConnector, never()).filterRecordsByField(any(), any(), any())(any())
-
         }
       }
 
@@ -424,6 +438,11 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
         when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
         val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+
+        when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
+          .successful(
+            record
+          )
 
         when(mockGoodsRecordConnector.filterRecordsByField(any(), any(), any())(any())) thenReturn Future
           .successful(
@@ -465,13 +484,18 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
         val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
+        when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
+          .successful(
+            record
+          )
+
         when(mockGoodsRecordConnector.filterRecordsByField(any(), any(), any())(any())) thenReturn Future
           .successful(
             Some(emptyResponse)
           )
 
         val userAnswers =
-          UserAnswers(userAnswersId).set(TraderReferenceUpdatePage(testRecordId), "oldValue").success.value
+          UserAnswers(userAnswersId).set(TraderReferenceUpdatePage(testRecordId), "BAN0010011").success.value
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
@@ -485,7 +509,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
           val controller = application.injector.instanceOf[TraderReferenceController]
           val request    =
             FakeRequest(POST, traderReferenceRoute)
-              .withFormUrlEncodedBody(("value", "oldValue"))
+              .withFormUrlEncodedBody(("value", "BAN0010011"))
 
           val result: Future[Result] = controller.onSubmitUpdate(NormalMode, testRecordId)(request)
 
@@ -524,6 +548,11 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
         when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
         val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+
+        when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
+          .successful(
+            record
+          )
 
         when(mockGoodsRecordConnector.filterRecordsByField(any(), any(), any())(any())) thenReturn Future
           .successful(
@@ -570,6 +599,11 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
         when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
         val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+
+        when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
+          .successful(
+            record
+          )
 
         when(mockGoodsRecordConnector.filterRecordsByField(any(), any(), any())(any())) thenReturn Future
           .successful(
@@ -633,6 +667,5 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
         }
       }
     }
-
   }
 }
