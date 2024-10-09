@@ -67,20 +67,21 @@ class TraderReferenceController @Inject() (
     }
 
   def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] =
-    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      goodsRecordConnector.getRecord(request.eori, recordId).map { record =>
-        val preparedForm = form.fill(record.traderRef)
-        auditService
-          .auditStartUpdateGoodsRecord(
-            request.eori,
-            request.affinityGroup,
-            GoodsDetailsUpdate,
-            recordId
-          )
-
-        val onSubmitAction = routes.TraderReferenceController.onSubmitUpdate(mode, recordId)
-        Ok(view(preparedForm, onSubmitAction)).removingFromSession(dataRemoved, dataUpdated, pageUpdated)
+    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
+      val preparedForm = request.userAnswers.get(TraderReferenceUpdatePage(recordId)) match {
+        case None        => form
+        case Some(value) => form.fill(value)
       }
+      auditService
+        .auditStartUpdateGoodsRecord(
+          request.eori,
+          request.affinityGroup,
+          GoodsDetailsUpdate,
+          recordId
+        )
+
+      val onSubmitAction = routes.TraderReferenceController.onSubmitUpdate(mode, recordId)
+      Ok(view(preparedForm, onSubmitAction)).removingFromSession(dataRemoved, dataUpdated, pageUpdated)
     }
 
   def onSubmitCreate(mode: Mode): Action[AnyContent] =
@@ -137,9 +138,7 @@ class TraderReferenceController @Inject() (
                     Future.fromTry(request.userAnswers.set(TraderReferenceUpdatePage(recordId), value))
                   _              <- sessionRepository.set(updatedAnswers)
                 } yield
-                  if (
-                    records.pagination.totalRecords == 0 || (records.pagination.totalRecords == 1 && oldRecord.traderRef == value)
-                  ) {
+                  if (records.pagination.totalRecords == 0 || oldRecord.traderRef == value) {
                     Redirect(navigator.nextPage(TraderReferenceUpdatePage(recordId), mode, updatedAnswers))
                       .addingToSession(dataUpdated -> (oldRecord.traderRef != value).toString)
                       .addingToSession(pageUpdated -> traderReference)

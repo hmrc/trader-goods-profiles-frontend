@@ -27,7 +27,7 @@ import models.{GoodsRecordsPagination, NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{never, verify, when}
+import org.mockito.Mockito.{verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{TraderReferencePage, TraderReferenceUpdatePage}
 import play.api.data.FormError
@@ -403,6 +403,11 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
             record
           )
 
+        when(mockGoodsRecordConnector.filterRecordsByField(any(), any(), any())(any())) thenReturn Future
+          .successful(
+            Some(response)
+          )
+
         val application =
           applicationBuilder(userAnswers =
             Some(emptyUserAnswers.set(TraderReferenceUpdatePage(recordId = testRecordId), "BAN0010011").success.value)
@@ -423,9 +428,6 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
-
-          verify(mockGoodsRecordConnector, never()).filterRecordsByField(any(), any(), any())(any())
-
         }
       }
 
@@ -493,7 +495,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
           )
 
         val userAnswers =
-          UserAnswers(userAnswersId).set(TraderReferenceUpdatePage(testRecordId), "oldValue").success.value
+          UserAnswers(userAnswersId).set(TraderReferenceUpdatePage(testRecordId), "BAN0010011").success.value
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
@@ -507,7 +509,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
           val controller = application.injector.instanceOf[TraderReferenceController]
           val request    =
             FakeRequest(POST, traderReferenceRoute)
-              .withFormUrlEncodedBody(("value", "oldValue"))
+              .withFormUrlEncodedBody(("value", "BAN0010011"))
 
           val result: Future[Result] = controller.onSubmitUpdate(NormalMode, testRecordId)(request)
 
@@ -665,6 +667,5 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
         }
       }
     }
-
   }
 }
