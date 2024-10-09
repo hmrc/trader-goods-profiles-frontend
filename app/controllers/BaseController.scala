@@ -43,7 +43,7 @@ trait BaseController extends FrontendBaseController with I18nSupport with Loggin
     continueCall: Call
   ): Result = {
 
-    logger.error(s"$errorMessage")
+    logger.warn(s"$errorMessage")
 
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(continueCall.url))))
   }
