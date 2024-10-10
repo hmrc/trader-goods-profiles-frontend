@@ -43,9 +43,9 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
             .success
             .value
 
-        val result = UpdateGoodsRecord.buildCountryOfOrigin(answers, testEori, testRecordId, isCategorised = true)
+        val result = UpdateGoodsRecord.validateCountryOfOrigin(answers, testRecordId, isCategorised = true)
 
-        result mustBe Right(UpdateGoodsRecord(testEori, testRecordId, Some("CN")))
+        result mustBe Right("CN")
       }
 
       "and all country of origin data is present when record is not categorised" in {
@@ -56,9 +56,9 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
             .success
             .value
 
-        val result = UpdateGoodsRecord.buildCountryOfOrigin(answers, testEori, testRecordId, isCategorised = false)
+        val result = UpdateGoodsRecord.validateCountryOfOrigin(answers, testRecordId, isCategorised = false)
 
-        result mustBe Right(UpdateGoodsRecord(testEori, testRecordId, Some("CN")))
+        result mustBe Right("CN")
       }
 
       "and all goods description data is present" in {
@@ -175,7 +175,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
           .success
           .value
 
-        val result = UpdateGoodsRecord.buildCountryOfOrigin(answers, testEori, testRecordId, isCategorised = true)
+        val result = UpdateGoodsRecord.validateCountryOfOrigin(answers, testRecordId, isCategorised = true)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain only PageMissing(CountryOfOriginUpdatePage(testRecordId))
@@ -189,7 +189,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
           .success
           .value
 
-        val result = UpdateGoodsRecord.buildCountryOfOrigin(answers, testEori, testRecordId, isCategorised = true)
+        val result = UpdateGoodsRecord.validateCountryOfOrigin(answers, testRecordId, isCategorised = true)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain only UnexpectedPage(HasCountryOfOriginChangePage(testRecordId))

@@ -17,7 +17,7 @@
 package models
 
 import cats.data.{EitherNec, NonEmptyChain}
-import cats.implicits.{catsSyntaxTuple2Parallel, catsSyntaxTuple3Parallel}
+import cats.implicits.catsSyntaxTuple2Parallel
 import pages._
 import play.api.libs.json.{Json, OFormat}
 import queries.CommodityUpdateQuery
@@ -40,23 +40,15 @@ object UpdateGoodsRecord {
 
   implicit lazy val format: OFormat[UpdateGoodsRecord] = Json.format
 
-  def buildCountryOfOrigin(
+  def validateCountryOfOrigin(
     answers: UserAnswers,
-    eori: String,
     recordId: String,
     isCategorised: Boolean
-  ): EitherNec[ValidationError, UpdateGoodsRecord] =
+  ): EitherNec[ValidationError, String] =
     (
-      Right(eori),
       Right(recordId),
       getCountryOfOrigin(answers, recordId, isCategorised)
-    ).parMapN((eori, recordId, value) =>
-      UpdateGoodsRecord(
-        eori,
-        recordId,
-        countryOfOrigin = Some(value)
-      )
-    )
+    ).parMapN((_, value) => value)
 
   def validateGoodsDescription(
     answers: UserAnswers,
