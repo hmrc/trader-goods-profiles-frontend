@@ -231,7 +231,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
         "when user answers can create a valid update goods record" - {
 
-          "must update the goods record, cleanse the data and redirect to the Goods record Page" in {
+          "must update the goods record, cleanse the data and redirect to the Goods record Page when use-eis-patch-method is false" in {
 
             val userAnswers = emptyUserAnswers
               .set(page, answer)

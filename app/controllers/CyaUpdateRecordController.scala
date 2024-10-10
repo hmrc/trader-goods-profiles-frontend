@@ -24,6 +24,7 @@ import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import models.requests.DataRequest
 import models.router.requests.PutRecordRequest
+import models.router.responses.GetGoodsRecordResponse
 import models.{CheckMode, Commodity, Country, NormalMode, UpdateGoodsRecord, UserAnswers, ValidationError}
 import navigation.Navigator
 import org.apache.pekko.Done
@@ -242,34 +243,33 @@ class CyaUpdateRecordController @Inject() (
       Future.successful(Done)
     }
 
-  private def updateCommodityCodeAndSession(recordId: String, commodity: Commodity)(implicit
-    request: DataRequest[AnyContent]
+  private def updateCommodityCodeAndSession(recordId: String, commodity: Commodity, oldRecord: GetGoodsRecordResponse)(
+    implicit request: DataRequest[AnyContent]
   ): Future[Result] =
     for {
       // TODO: remove this flag when EIS has implemented the PATCH method - TGP-2417 and keep the call to putGoodsRecord as default
-      oldRecord <- goodsRecordConnector.getRecord(request.eori, recordId)
-      _         <- if (config.useEisPatchMethod) {
-                     goodsRecordConnector.putGoodsRecord(
-                       PutRecordRequest(
-                         actorId = request.eori,
-                         traderRef = oldRecord.traderRef,
-                         comcode = commodity.commodityCode,
-                         goodsDescription = oldRecord.goodsDescription,
-                         countryOfOrigin = oldRecord.countryOfOrigin,
-                         category = oldRecord.category,
-                         assessments = oldRecord.assessments,
-                         supplementaryUnit = oldRecord.supplementaryUnit,
-                         measurementUnit = oldRecord.measurementUnit,
-                         comcodeEffectiveFromDate = oldRecord.comcodeEffectiveFromDate,
-                         comcodeEffectiveToDate = oldRecord.comcodeEffectiveToDate
-                       ),
-                       recordId
-                     )
-                   } else {
-                     goodsRecordConnector.updateGoodsRecord(
-                       UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity))
-                     )
-                   }
+      _ <- if (config.useEisPatchMethod) {
+             goodsRecordConnector.putGoodsRecord(
+               PutRecordRequest(
+                 actorId = request.eori,
+                 traderRef = oldRecord.traderRef,
+                 comcode = commodity.commodityCode,
+                 goodsDescription = oldRecord.goodsDescription,
+                 countryOfOrigin = oldRecord.countryOfOrigin,
+                 category = oldRecord.category,
+                 assessments = oldRecord.assessments,
+                 supplementaryUnit = oldRecord.supplementaryUnit,
+                 measurementUnit = oldRecord.measurementUnit,
+                 comcodeEffectiveFromDate = oldRecord.comcodeEffectiveFromDate,
+                 comcodeEffectiveToDate = oldRecord.comcodeEffectiveToDate
+               ),
+               recordId
+             )
+           } else {
+             goodsRecordConnector.updateGoodsRecord(
+               UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity))
+             )
+           }
 
       updatedAnswersWithChange <-
         Future.fromTry(request.userAnswers.remove(HasCommodityCodeChangePage(recordId)))
@@ -277,32 +277,35 @@ class CyaUpdateRecordController @Inject() (
       _                        <- sessionRepository.set(updatedAnswers)
     } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers))
 
-  private def updateCountryOfOriginAndSession(recordId: String, updateGoodsRecord: UpdateGoodsRecord)(implicit
+  private def updateCountryOfOriginAndSession(
+    recordId: String,
+    updateGoodsRecord: UpdateGoodsRecord,
+    oldRecord: GetGoodsRecordResponse
+  )(implicit
     request: DataRequest[AnyContent]
   ): Future[Result] =
     for {
       // TODO: remove this flag when EIS has implemented the PATCH method - TGP-2417 and keep the call to putGoodsRecord as default
-      oldRecord <- goodsRecordConnector.getRecord(request.eori, recordId)
-      _         <- if (config.useEisPatchMethod) {
-                     goodsRecordConnector.putGoodsRecord(
-                       PutRecordRequest(
-                         actorId = request.eori,
-                         traderRef = oldRecord.traderRef,
-                         comcode = oldRecord.comcode,
-                         goodsDescription = oldRecord.goodsDescription,
-                         countryOfOrigin = updateGoodsRecord.countryOfOrigin.get,
-                         category = oldRecord.category,
-                         assessments = oldRecord.assessments,
-                         supplementaryUnit = oldRecord.supplementaryUnit,
-                         measurementUnit = oldRecord.measurementUnit,
-                         comcodeEffectiveFromDate = oldRecord.comcodeEffectiveFromDate,
-                         comcodeEffectiveToDate = oldRecord.comcodeEffectiveToDate
-                       ),
-                       recordId
-                     )
-                   } else {
-                     goodsRecordConnector.updateGoodsRecord(updateGoodsRecord)
-                   }
+      _ <- if (config.useEisPatchMethod) {
+             goodsRecordConnector.putGoodsRecord(
+               PutRecordRequest(
+                 actorId = request.eori,
+                 traderRef = oldRecord.traderRef,
+                 comcode = oldRecord.comcode,
+                 goodsDescription = oldRecord.goodsDescription,
+                 countryOfOrigin = updateGoodsRecord.countryOfOrigin.get,
+                 category = oldRecord.category,
+                 assessments = oldRecord.assessments,
+                 supplementaryUnit = oldRecord.supplementaryUnit,
+                 measurementUnit = oldRecord.measurementUnit,
+                 comcodeEffectiveFromDate = oldRecord.comcodeEffectiveFromDate,
+                 comcodeEffectiveToDate = oldRecord.comcodeEffectiveToDate
+               ),
+               recordId
+             )
+           } else {
+             goodsRecordConnector.updateGoodsRecord(updateGoodsRecord)
+           }
 
       updatedAnswersWithChange <-
         Future.fromTry(request.userAnswers.remove(HasCountryOfOriginChangePage(recordId)))
@@ -347,7 +350,7 @@ class CyaUpdateRecordController @Inject() (
             ) match {
             case Right(model) =>
               auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, model)
-              updateCountryOfOriginAndSession(recordId, model)
+              updateCountryOfOriginAndSession(recordId, model, recordResponse)
             case Left(errors) =>
               Future.successful(
                 logErrorsAndContinue(
@@ -420,7 +423,7 @@ class CyaUpdateRecordController @Inject() (
                 request.affinityGroup,
                 UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity))
               )
-              updateCommodityCodeAndSession(recordId, commodity)
+              updateCommodityCodeAndSession(recordId, commodity, recordResponse)
             case Left(errors)     =>
               Future.successful(
                 logErrorsAndContinue(
