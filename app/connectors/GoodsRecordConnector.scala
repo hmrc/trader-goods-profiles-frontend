@@ -91,7 +91,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
         false
       }
 
-  // TODO: remove this function when EIS has implemented the PATCH method - TGP-2417
+  // TODO: remove this function when EIS has implemented the PATCH method - TGP-2417 and keep putGoodsRecord and patchGoodsRecord
   def updateGoodsRecord(updateGoodsRecord: UpdateGoodsRecord)(implicit
     hc: HeaderCarrier
   ): Future[Done] =

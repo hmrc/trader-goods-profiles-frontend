@@ -376,7 +376,7 @@ class CyaUpdateRecordController @Inject() (
             UpdateGoodsRecord(request.eori, recordId, goodsDescription = Some(goodsDescription))
           )
           for {
-            // TODO: remove this flag when EIS has implemented the PATCH method - TGP-2417
+            // TODO: remove this flag when EIS has implemented the PATCH method - TGP-2417 and keep the call to patchGoodsRecord as default
             _ <- if (config.useEisPatchMethod) {
                    goodsRecordConnector.patchGoodsRecord(
                      UpdateGoodsRecord(request.eori, recordId, goodsDescription = Some(goodsDescription))
