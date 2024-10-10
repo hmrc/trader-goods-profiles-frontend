@@ -95,14 +95,20 @@ class CyaSupplementaryUnitController @Inject() (
             request.affinityGroup,
             model
           )
-          goodsRecordConnector.updateSupplementaryUnitForGoodsRecord(request.eori, recordId, model).map { _ =>
+
+          val result = for {
+            oldRecord <- goodsRecordConnector.getRecord(request.eori, recordId)
+            _         <- goodsRecordConnector.updateSupplementaryUnitForGoodsRecord(request.eori, recordId, model, oldRecord)
+          } yield {
             dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
             Redirect(navigator.nextPage(CyaSupplementaryUnitPage(recordId), NormalMode, request.userAnswers))
               .addingToSession(dataUpdated -> isValueChanged.toString)
               .addingToSession(dataRemoved -> isSuppUnitRemoved.toString)
               .addingToSession(pageUpdated -> supplementaryUnit)
-
           }
+
+          result
+
         case Left(errors) =>
           dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
           Future.successful(

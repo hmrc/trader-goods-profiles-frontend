@@ -26,7 +26,7 @@ import java.time.Instant
 import scala.Function.unlift
 import scala.util.Try
 
-case class UpdateRecordRequest(
+case class PatchRecordRequest(
   eori: String,
   recordId: String,
   actorId: String,
@@ -41,10 +41,10 @@ case class UpdateRecordRequest(
   measurementUnit: Option[String] = None
 )
 
-object UpdateRecordRequest {
+object PatchRecordRequest {
 
-  def map(goodsRecord: UpdateGoodsRecord): UpdateRecordRequest =
-    UpdateRecordRequest(
+  def map(goodsRecord: UpdateGoodsRecord): PatchRecordRequest =
+    PatchRecordRequest(
       goodsRecord.eori,
       goodsRecord.recordId,
       goodsRecord.eori,
@@ -57,8 +57,8 @@ object UpdateRecordRequest {
       goodsRecord.commodityCodeEndDate
     )
 
-  def mapFromCategoryAndComcode(categoryRecord: CategoryRecord): UpdateRecordRequest =
-    UpdateRecordRequest(
+  def mapFromCategoryAndComcode(categoryRecord: CategoryRecord): PatchRecordRequest =
+    PatchRecordRequest(
       categoryRecord.eori,
       categoryRecord.recordId,
       categoryRecord.eori,
@@ -68,8 +68,8 @@ object UpdateRecordRequest {
       measurementUnit = categoryRecord.measurementUnit
     )
 
-  def mapFromSupplementary(supplementaryUnitRequest: SupplementaryRequest): UpdateRecordRequest =
-    UpdateRecordRequest(
+  def mapFromSupplementary(supplementaryUnitRequest: SupplementaryRequest): PatchRecordRequest =
+    PatchRecordRequest(
       supplementaryUnitRequest.eori,
       supplementaryUnitRequest.recordId,
       supplementaryUnitRequest.eori,
@@ -81,7 +81,7 @@ object UpdateRecordRequest {
       measurementUnit = supplementaryUnitRequest.measurementUnit
     )
 
-  implicit val reads: Reads[UpdateRecordRequest] =
+  implicit val reads: Reads[PatchRecordRequest] =
     ((JsPath \ "eori").read[String] and
       (JsPath \ "recordId").read[String] and
       (JsPath \ "actorId").read[String] and
@@ -93,9 +93,9 @@ object UpdateRecordRequest {
       (JsPath \ "comcodeEffectiveFromDate").readNullable[Instant] and
       (JsPath \ "comcodeEffectiveToDate").readNullable[Instant] and
       (JsPath \ "supplementaryUnit").readNullable[BigDecimal] and
-      (JsPath \ "measurementUnit").readNullable[String])(UpdateRecordRequest.apply _)
+      (JsPath \ "measurementUnit").readNullable[String])(PatchRecordRequest.apply _)
 
-  implicit lazy val writes: OWrites[UpdateRecordRequest] =
+  implicit lazy val writes: OWrites[PatchRecordRequest] =
     ((JsPath \ "eori").write[String] and
       (JsPath \ "recordId").write[String] and
       (JsPath \ "actorId").write[String] and
@@ -107,7 +107,7 @@ object UpdateRecordRequest {
       (JsPath \ "comcodeEffectiveFromDate").writeNullable[Instant] and
       (JsPath \ "comcodeEffectiveToDate").writeNullable[Instant] and
       (JsPath \ "supplementaryUnit").writeNullable[BigDecimal] and
-      (JsPath \ "measurementUnit").writeNullable[String])(unlift(UpdateRecordRequest.unapply))
+      (JsPath \ "measurementUnit").writeNullable[String])(unlift(PatchRecordRequest.unapply))
 
   private def convertToBigDecimal(value: Option[String]): Option[BigDecimal] =
     value.flatMap(v => Try(BigDecimal(v)).toOption)

@@ -18,6 +18,7 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId}
+import config.FrontendAppConfig
 import connectors.{GoodsRecordConnector, OttConnector}
 import models.{CheckMode, Country, UpdateGoodsRecord}
 import org.apache.pekko.Done
@@ -243,6 +244,9 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             val mockGoodsRecordConnector = mock[GoodsRecordConnector]
             val mockAuditService         = mock[AuditService]
             val mockSessionRepository    = mock[SessionRepository]
+            val mockAppConfig            = mock[FrontendAppConfig]
+
+            when(mockAppConfig.useEisPatchMethod).thenReturn(false)
 
             when(mockGoodsRecordConnector.updateGoodsRecord(any())(any())).thenReturn(Future.successful(Done))
             when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
@@ -257,7 +261,8 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
                 .overrides(
                   bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
                   bind[SessionRepository].toInstance(mockSessionRepository),
-                  bind[AuditService].toInstance(mockAuditService)
+                  bind[AuditService].toInstance(mockAuditService),
+                  bind[FrontendAppConfig].toInstance(mockAppConfig)
                 )
                 .build()
 
@@ -282,6 +287,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               }
             }
           }
+
         }
 
         "when user answers cannot create an update goods record" - {
@@ -497,6 +503,9 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
             val mockConnector    = mock[GoodsRecordConnector]
             val mockAuditService = mock[AuditService]
+            val mockAppConfig    = mock[FrontendAppConfig]
+
+            when(mockAppConfig.useEisPatchMethod).thenReturn(false)
 
             when(mockConnector.updateGoodsRecord(any())(any())).thenReturn(Future.successful(Done))
             when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
@@ -707,6 +716,9 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
             val mockConnector    = mock[GoodsRecordConnector]
             val mockAuditService = mock[AuditService]
+            val mockAppConfig    = mock[FrontendAppConfig]
+
+            when(mockAppConfig.useEisPatchMethod).thenReturn(false)
 
             when(mockConnector.getRecord(any(), any())(any())).thenReturn(Future.successful(record))
             when(mockConnector.updateGoodsRecord(any())(any())).thenReturn(Future.successful(Done))
@@ -1081,6 +1093,9 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
             val mockGoodsRecordConnector = mock[GoodsRecordConnector]
             val mockAuditService         = mock[AuditService]
+            val mockAppConfig            = mock[FrontendAppConfig]
+
+            when(mockAppConfig.useEisPatchMethod).thenReturn(false)
 
             when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
               .thenReturn(Future.successful(Done))

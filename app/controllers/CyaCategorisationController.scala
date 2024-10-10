@@ -136,9 +136,13 @@ class CyaCategorisationController @Inject() (
             categoryRecord
           )
 
-          goodsRecordConnector.updateCategoryAndComcodeForGoodsRecord(request.eori, recordId, categoryRecord).map { _ =>
+          val result = for {
+            oldRecord <- goodsRecordConnector.getRecord(request.eori, recordId)
+            _         <-
+              goodsRecordConnector
+                .updateCategoryAndComcodeForGoodsRecord(request.eori, recordId, categoryRecord, oldRecord)
+          } yield {
             dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
-
             Redirect(
               navigator.nextPage(
                 CyaCategorisationPage(recordId),
@@ -147,7 +151,10 @@ class CyaCategorisationController @Inject() (
               )
             )
           }
-        case Left(errors)          =>
+
+          result
+
+        case Left(errors) =>
           dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
           Future.successful(
             logErrorsAndContinue(
@@ -156,7 +163,6 @@ class CyaCategorisationController @Inject() (
               errors
             )
           )
-
       }
   }
 

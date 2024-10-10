@@ -19,14 +19,18 @@ package controllers
 import cats.data
 import cats.data.EitherNec
 import com.google.inject.Inject
+import config.FrontendAppConfig
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
-import models.{CheckMode, Country, NormalMode, UpdateGoodsRecord, UserAnswers, ValidationError}
+import models.requests.DataRequest
+import models.router.requests.PutRecordRequest
+import models.router.responses.GetGoodsRecordResponse
+import models.{CheckMode, Commodity, Country, NormalMode, UpdateGoodsRecord, UserAnswers, ValidationError}
 import navigation.Navigator
 import org.apache.pekko.Done
 import pages._
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
 import queries.CountriesQuery
 import repositories.SessionRepository
 import services.AuditService
@@ -51,7 +55,8 @@ class CyaUpdateRecordController @Inject() (
   goodsRecordConnector: GoodsRecordConnector,
   ottConnector: OttConnector,
   sessionRepository: SessionRepository,
-  navigator: Navigator
+  navigator: Navigator,
+  config: FrontendAppConfig
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
@@ -216,18 +221,97 @@ class CyaUpdateRecordController @Inject() (
     override def getMessage: String = s"$errorMessage Missing pages: $errorsAsString"
   }
 
-  private def updateGoodsRecordIfValueChanged[T](
+  private def updateTraderReferenceIfValueChanged[T](
     newValue: T,
     oldValue: T,
     newUpdateGoodsRecord: UpdateGoodsRecord
   )(implicit hc: HeaderCarrier): Future[Done] =
     if (newValue != oldValue) {
-      goodsRecordConnector.updateGoodsRecord(
-        newUpdateGoodsRecord
-      )
+
+      // TODO: remove this flag when EIS has implemented the PATCH method - TGP-2417 and keep the call to patchGoodsRecord as default
+      if (config.useEisPatchMethod) {
+        goodsRecordConnector.patchGoodsRecord(
+          newUpdateGoodsRecord
+        )
+      } else {
+        goodsRecordConnector.updateGoodsRecord(
+          newUpdateGoodsRecord
+        )
+      }
+
     } else {
       Future.successful(Done)
     }
+
+  private def updateCommodityCodeAndSession(recordId: String, commodity: Commodity, oldRecord: GetGoodsRecordResponse)(
+    implicit request: DataRequest[AnyContent]
+  ): Future[Result] =
+    for {
+      // TODO: remove this flag when EIS has implemented the PATCH method - TGP-2417 and keep the call to putGoodsRecord as default
+      _ <- if (config.useEisPatchMethod) {
+             goodsRecordConnector.putGoodsRecord(
+               PutRecordRequest(
+                 actorId = request.eori,
+                 traderRef = oldRecord.traderRef,
+                 comcode = commodity.commodityCode,
+                 goodsDescription = oldRecord.goodsDescription,
+                 countryOfOrigin = oldRecord.countryOfOrigin,
+                 category = oldRecord.category,
+                 assessments = oldRecord.assessments,
+                 supplementaryUnit = oldRecord.supplementaryUnit,
+                 measurementUnit = oldRecord.measurementUnit,
+                 comcodeEffectiveFromDate = oldRecord.comcodeEffectiveFromDate,
+                 comcodeEffectiveToDate = oldRecord.comcodeEffectiveToDate
+               ),
+               recordId
+             )
+           } else {
+             goodsRecordConnector.updateGoodsRecord(
+               UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity))
+             )
+           }
+
+      updatedAnswersWithChange <-
+        Future.fromTry(request.userAnswers.remove(HasCommodityCodeChangePage(recordId)))
+      updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CommodityCodeUpdatePage(recordId)))
+      _                        <- sessionRepository.set(updatedAnswers)
+    } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers))
+
+  private def updateCountryOfOriginAndSession(
+    recordId: String,
+    updateGoodsRecord: UpdateGoodsRecord,
+    oldRecord: GetGoodsRecordResponse
+  )(implicit
+    request: DataRequest[AnyContent]
+  ): Future[Result] =
+    for {
+      // TODO: remove this flag when EIS has implemented the PATCH method - TGP-2417 and keep the call to putGoodsRecord as default
+      _ <- if (config.useEisPatchMethod) {
+             goodsRecordConnector.putGoodsRecord(
+               PutRecordRequest(
+                 actorId = request.eori,
+                 traderRef = oldRecord.traderRef,
+                 comcode = oldRecord.comcode,
+                 goodsDescription = oldRecord.goodsDescription,
+                 countryOfOrigin = updateGoodsRecord.countryOfOrigin.get,
+                 category = oldRecord.category,
+                 assessments = oldRecord.assessments,
+                 supplementaryUnit = oldRecord.supplementaryUnit,
+                 measurementUnit = oldRecord.measurementUnit,
+                 comcodeEffectiveFromDate = oldRecord.comcodeEffectiveFromDate,
+                 comcodeEffectiveToDate = oldRecord.comcodeEffectiveToDate
+               ),
+               recordId
+             )
+           } else {
+             goodsRecordConnector.updateGoodsRecord(updateGoodsRecord)
+           }
+
+      updatedAnswersWithChange <-
+        Future.fromTry(request.userAnswers.remove(HasCountryOfOriginChangePage(recordId)))
+      updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CountryOfOriginUpdatePage(recordId)))
+      _                        <- sessionRepository.set(updatedAnswers)
+    } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers))
 
   def onSubmitTraderReference(recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
@@ -239,7 +323,7 @@ class CyaUpdateRecordController @Inject() (
                              UpdateGoodsRecord(request.eori, recordId, traderReference = Some(traderReference))
                            )
         oldRecord       <- goodsRecordConnector.getRecord(request.eori, recordId)
-        _               <- updateGoodsRecordIfValueChanged(
+        _               <- updateTraderReferenceIfValueChanged(
                              traderReference,
                              oldRecord.traderRef,
                              UpdateGoodsRecord(request.eori, recordId, traderReference = Some(traderReference))
@@ -266,13 +350,7 @@ class CyaUpdateRecordController @Inject() (
             ) match {
             case Right(model) =>
               auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, model)
-              for {
-                _                        <- goodsRecordConnector.updateGoodsRecord(model)
-                updatedAnswersWithChange <-
-                  Future.fromTry(request.userAnswers.remove(HasCountryOfOriginChangePage(recordId)))
-                updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CountryOfOriginUpdatePage(recordId)))
-                _                        <- sessionRepository.set(updatedAnswers)
-              } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers))
+              updateCountryOfOriginAndSession(recordId, model, recordResponse)
             case Left(errors) =>
               Future.successful(
                 logErrorsAndContinue(
@@ -301,9 +379,17 @@ class CyaUpdateRecordController @Inject() (
             UpdateGoodsRecord(request.eori, recordId, goodsDescription = Some(goodsDescription))
           )
           for {
-            _              <- goodsRecordConnector.updateGoodsRecord(
-                                UpdateGoodsRecord(request.eori, recordId, goodsDescription = Some(goodsDescription))
-                              )
+            // TODO: remove this flag when EIS has implemented the PATCH method - TGP-2417 and keep the call to patchGoodsRecord as default
+            _ <- if (config.useEisPatchMethod) {
+                   goodsRecordConnector.patchGoodsRecord(
+                     UpdateGoodsRecord(request.eori, recordId, goodsDescription = Some(goodsDescription))
+                   )
+                 } else {
+                   goodsRecordConnector.updateGoodsRecord(
+                     UpdateGoodsRecord(request.eori, recordId, goodsDescription = Some(goodsDescription))
+                   )
+                 }
+
             updatedAnswers <- Future.fromTry(request.userAnswers.remove(GoodsDescriptionUpdatePage(recordId)))
             _              <- sessionRepository.set(updatedAnswers)
           } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers))
@@ -337,15 +423,7 @@ class CyaUpdateRecordController @Inject() (
                 request.affinityGroup,
                 UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity))
               )
-              for {
-                _                        <- goodsRecordConnector.updateGoodsRecord(
-                                              UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity))
-                                            )
-                updatedAnswersWithChange <-
-                  Future.fromTry(request.userAnswers.remove(HasCommodityCodeChangePage(recordId)))
-                updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CommodityCodeUpdatePage(recordId)))
-                _                        <- sessionRepository.set(updatedAnswers)
-              } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers))
+              updateCommodityCodeAndSession(recordId, commodity, recordResponse)
             case Left(errors)     =>
               Future.successful(
                 logErrorsAndContinue(
