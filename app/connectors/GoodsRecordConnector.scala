@@ -82,9 +82,10 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .delete(deleteGoodsRecordUrl(eori, recordId))
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
-      .map { response =>
+      .flatMap { response =>
         response.status match {
-          case NO_CONTENT => true
+          case NO_CONTENT => Future.successful(true)
+          case _ => Future.failed(UpstreamErrorResponse(response.body, response.status))
         }
       }
       .recover { case _: NotFoundException =>
@@ -151,10 +152,11 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .get(goodsRecordsUrl(eori, queryParams))
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
-      .map { response =>
+      .flatMap { response =>
         response.status match {
-          case OK       => Some(response.json.as[GetRecordsResponse])
-          case ACCEPTED => None
+          case OK       => Future.successful(Some(response.json.as[GetRecordsResponse]))
+          case ACCEPTED => Future.successful(None)
+          case _ => Future.failed(UpstreamErrorResponse(response.body, response.status))
         }
       }
   }
@@ -187,10 +189,11 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .get(filterRecordsUrl(eori, queryParams))
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
-      .map { response =>
+      .flatMap { response =>
         response.status match {
-          case OK       => Some(response.json.as[GetRecordsResponse])
-          case ACCEPTED => None
+          case OK       => Future.successful(Some(response.json.as[GetRecordsResponse]))
+          case ACCEPTED => Future.successful(None)
+          case _ => Future.failed(UpstreamErrorResponse(response.body, response.status))
         }
       }
   }
@@ -214,10 +217,11 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .get(searchRecordsUrl(eori, searchTerm, exactMatch, queryParams))
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
-      .map { response =>
+      .flatMap { response =>
         response.status match {
-          case OK       => Some(response.json.as[GetRecordsResponse])
-          case ACCEPTED => None
+          case OK       => Future.successful(Some(response.json.as[GetRecordsResponse]))
+          case ACCEPTED => Future.successful(None)
+          case _ => Future.failed(UpstreamErrorResponse(response.body, response.status))
         }
       }
   }

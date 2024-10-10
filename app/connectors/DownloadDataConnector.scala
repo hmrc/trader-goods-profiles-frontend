@@ -57,10 +57,10 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
       httpClient
         .get(downloadDataSummaryUrl(eori))
         .execute[HttpResponse]
-        .map { response =>
+        .flatMap { response =>
           response.status match {
-            case OK => Some(response.json.as[DownloadDataSummary])
-            case _ => None
+            case OK => Future.successful(Some(response.json.as[DownloadDataSummary]))
+            case _ => Future.failed(UpstreamErrorResponse(response.body, response.status)) // TODO: PR Feedback: Should we return None instead of failing? Even if the status code is anything, but Ok the code returns 4xx or 5xx exception, seems to come from elsewhere before it hits this case.
           }
         }
         .recover { case _: NotFoundException =>

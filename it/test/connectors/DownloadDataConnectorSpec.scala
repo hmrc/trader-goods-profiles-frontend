@@ -18,6 +18,7 @@ package connectors
 
 import base.TestConstants.testEori
 import com.github.tomakehurst.wiremock.client.WireMock._
+import generators.StatusCodeGenerators
 import models.DownloadDataStatus.RequestFile
 import models.{DownloadData, DownloadDataSummary, Email}
 import org.apache.pekko.Done
@@ -43,7 +44,8 @@ class DownloadDataConnectorSpec
     with ScalaFutures
     with IntegrationPatience
     with GetRecordsResponseUtil
-    with OptionValues {
+    with OptionValues
+    with StatusCodeGenerators {
 
   private lazy val app: Application =
     new GuiceApplicationBuilder()
@@ -62,10 +64,6 @@ class DownloadDataConnectorSpec
 
   private val downloadDataUrl =
     s"/trader-goods-profiles-data-store/traders/$testEori/download-data"
-
-  private val errorResponses4xx: Gen[Int] = Gen.chooseNum(400: Int, 499: Int)
-  private val errorResponses5xx: Gen[Int] = Gen.chooseNum(500: Int, 599: Int)
-  private val errorResponses: Gen[Int] = Gen.oneOf(errorResponses4xx, errorResponses5xx)
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -171,7 +169,7 @@ class DownloadDataConnectorSpec
               .willReturn(status(errorResponses.sample.value))
           )
 
-          connector.getDownloadDataSummary(testEori).failed.futureValue // TODO: PR Comment: if the response is anything but the expected or 400 we get a hmrc exception, and the new None case cannot be hit?
+          connector.getDownloadDataSummary(testEori).failed.futureValue
       }
 
       "if Download summary does not exist" in {

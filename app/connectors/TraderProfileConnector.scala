@@ -44,9 +44,10 @@ class TraderProfileConnector @Inject() (config: Configuration, httpClient: HttpC
       .put(traderProfileUrl(eori))
       .withBody(Json.toJson(traderProfile))
       .execute[HttpResponse]
-      .map(response =>
+      .flatMap(response =>
         response.status match {
-          case OK => Done
+          case OK => Future.successful(Done)
+          case _ => Future.failed(UpstreamErrorResponse(response.body, response.status))
         }
       )
 
@@ -54,10 +55,11 @@ class TraderProfileConnector @Inject() (config: Configuration, httpClient: HttpC
     httpClient
       .head(traderProfileUrl(eori))
       .execute[HttpResponse]
-      .map { response =>
+      .flatMap { response =>
         response.status match {
-          case OK        => true
-          case NOT_FOUND => false
+          case OK        => Future.successful(true)
+          case NOT_FOUND => Future.successful(false)
+          case _ => Future.failed(UpstreamErrorResponse(response.body, response.status))
         }
       }
       .recover { case _: NotFoundException =>
