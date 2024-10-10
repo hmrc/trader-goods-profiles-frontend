@@ -21,6 +21,7 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import models.DownloadDataStatus.RequestFile
 import models.{DownloadData, DownloadDataSummary, Email}
 import org.apache.pekko.Done
+import org.scalacheck.Gen
 import org.scalatest.OptionValues
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
@@ -29,14 +30,14 @@ import play.api.Application
 import play.api.http.Status.ACCEPTED
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.test.WireMockSupport
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import utils.GetRecordsResponseUtil
 
 import java.time.Instant
 
 class DownloadDataConnectorSpec
-    extends AnyFreeSpec
+  extends AnyFreeSpec
     with Matchers
     with WireMockSupport
     with ScalaFutures
@@ -54,13 +55,22 @@ class DownloadDataConnectorSpec
 
   implicit private lazy val hc: HeaderCarrier = HeaderCarrier()
 
-  private val xClientIdName: String  = "X-Client-ID"
-  private val xClientId: String      = "tgp-frontend"
+  private val xClientIdName: String = "X-Client-ID"
+  private val xClientId: String = "tgp-frontend"
   private val downloadDataSummaryUrl =
     s"/trader-goods-profiles-data-store/traders/$testEori/download-data-summary"
 
   private val downloadDataUrl =
     s"/trader-goods-profiles-data-store/traders/$testEori/download-data"
+
+  private val errorResponses4xx: Gen[Int] = Gen.chooseNum(400: Int, 499: Int)
+  private val errorResponses5xx: Gen[Int] = Gen.chooseNum(500: Int, 599: Int)
+  private val errorResponses: Gen[Int] = Gen.oneOf(errorResponses4xx, errorResponses5xx)
+
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    wireMockServer.resetAll()
+  }
 
   ".requestDownloadData" - {
 
@@ -73,6 +83,19 @@ class DownloadDataConnectorSpec
       )
 
       connector.requestDownloadData(testEori).futureValue mustEqual Done
+    }
+
+    "must return a failed future when anything but Accepted is returned" in {
+
+        wireMockServer.stubFor(
+          post(urlEqualTo(downloadDataUrl))
+            .withHeader(xClientIdName, equalTo(xClientId))
+            .willReturn(status(errorResponses.sample.value))
+        )
+
+        val result = connector.requestDownloadData(testEori)
+
+        result.failed.futureValue
     }
 
     "must return a failed future when the server returns an error" in {
@@ -92,10 +115,10 @@ class DownloadDataConnectorSpec
 
     "must get download data summary" in {
 
-      val downloadURL  = "downloadURL"
-      val filename     = "filename"
-      val filesize     = 600
-      val metadata     = Seq.empty
+      val downloadURL = "downloadURL"
+      val filename = "filename"
+      val filesize = 600
+      val metadata = Seq.empty
       val downloadData = DownloadData(downloadURL, filename, filesize, metadata)
 
       wireMockServer.stubFor(
@@ -116,14 +139,14 @@ class DownloadDataConnectorSpec
       connector.getDownloadData(testEori).futureValue mustBe None
     }
 
-    "must return a failed future when the server returns an error" in {
+    "must return none when status code is anything but Ok" in {
 
       wireMockServer.stubFor(
         get(urlEqualTo(downloadDataSummaryUrl))
           .willReturn(serverError())
       )
 
-      connector.getDownloadDataSummary(testEori).failed.futureValue
+      connector.getDownloadData(testEori).futureValue mustBe None
     }
   }
 
@@ -142,6 +165,15 @@ class DownloadDataConnectorSpec
     }
 
     "must return None" - {
+      "if status is anything but a Ok response" in {
+          wireMockServer.stubFor(
+            get(urlEqualTo(downloadDataSummaryUrl))
+              .willReturn(status(errorResponses.sample.value))
+          )
+
+          connector.getDownloadDataSummary(testEori).failed.futureValue // TODO: PR Comment: if the response is anything but the expected or 400 we get a hmrc exception, and the new None case cannot be hit?
+      }
+
       "if Download summary does not exist" in {
 
         wireMockServer.stubFor(
@@ -176,7 +208,7 @@ class DownloadDataConnectorSpec
 
       wireMockServer.stubFor(
         get(urlEqualTo(downloadDataSummaryUrl))
-          .willReturn(serverError())
+          .willReturn(status(errorResponses.sample.value))
       )
 
       connector.getDownloadDataSummary(testEori).failed.futureValue
@@ -187,9 +219,9 @@ class DownloadDataConnectorSpec
     val emailUrl =
       s"/trader-goods-profiles-data-store/traders/$testEori/email"
 
-    val address   = "somebody@email.com"
+    val address = "somebody@email.com"
     val timestamp = Instant.now
-    val email     = Email(address, timestamp)
+    val email = Email(address, timestamp)
     "must get email" in {
 
       wireMockServer.stubFor(
@@ -208,6 +240,18 @@ class DownloadDataConnectorSpec
       )
 
       connector.getEmail(testEori).failed.futureValue
+    }
+
+    "must return a failed future when anything but Ok is returned" in {
+
+      wireMockServer.stubFor(
+          get(urlEqualTo(emailUrl))
+            .willReturn(status(errorResponses.sample.value))
+        )
+
+      val result = connector.requestDownloadData(testEori)
+
+      result.failed.futureValue
     }
   }
 

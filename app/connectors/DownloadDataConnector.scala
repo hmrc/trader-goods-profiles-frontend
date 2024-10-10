@@ -45,9 +45,10 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
       .post(downloadDataUrl(eori))
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
-      .map { response =>
+      .flatMap { response =>
         response.status match {
-          case ACCEPTED => Done
+          case ACCEPTED => Future.successful(Done)
+          case _  => Future.failed(UpstreamErrorResponse(response.body, response.status))
         }
       }
 
@@ -59,6 +60,7 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
         .map { response =>
           response.status match {
             case OK => Some(response.json.as[DownloadDataSummary])
+            case _ => None
           }
         }
         .recover { case _: NotFoundException =>
@@ -75,6 +77,7 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
       .map { response =>
         response.status match {
           case OK => Some(response.json.as[DownloadData])
+          case _  => None
         }
       }
       .recover { case _: NotFoundException =>
@@ -85,10 +88,11 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
     httpClient
       .get(emailUrl(eori))
       .execute[HttpResponse]
-      .map { response =>
+      .flatMap { response =>
         response.status match {
           //TODO this also retunrs a 404 but we are choosing to ignore it because at some point we are going to put in a check when anyone enters our service to check that they have a verified and deliverable email so this should never be 404
-          case OK => response.json.as[Email]
+          case OK => Future.successful(response.json.as[Email])
+          case _  => Future.failed(UpstreamErrorResponse(response.body, response.status))
         }
       }
 }
