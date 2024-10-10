@@ -507,7 +507,7 @@ class GoodsRecordConnectorSpec
 
   ".putGoodsRecord" - {
 
-    val updateRecordRequest = PutRecordRequest(
+    val putRecordRequest = PutRecordRequest(
       testEori,
       "BAN001001",
       "10410100",
@@ -525,24 +525,24 @@ class GoodsRecordConnectorSpec
 
       wireMockServer.stubFor(
         put(urlEqualTo(goodsRecordUrl))
-          .withRequestBody(equalTo(Json.toJson(updateRecordRequest).toString))
+          .withRequestBody(equalTo(Json.toJson(putRecordRequest).toString))
           .withHeader(xClientIdName, equalTo(xClientId))
           .willReturn(ok())
       )
 
-      connector.putGoodsRecord(updateRecordRequest, testRecordId).futureValue
+      connector.putGoodsRecord(putRecordRequest, testRecordId).futureValue
     }
 
     "must return a failed future when the server returns an error" in {
 
       wireMockServer.stubFor(
         patch(urlEqualTo(goodsRecordUrl))
-          .withRequestBody(equalTo(Json.toJson(updateRecordRequest).toString))
+          .withRequestBody(equalTo(Json.toJson(putRecordRequest).toString))
           .withHeader(xClientIdName, equalTo(xClientId))
           .willReturn(serverError())
       )
 
-      connector.putGoodsRecord(updateRecordRequest, testRecordId).failed.futureValue
+      connector.putGoodsRecord(putRecordRequest, testRecordId).failed.futureValue
     }
   }
 
