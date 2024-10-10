@@ -110,16 +110,18 @@ case class AuditEventFactory() {
   def createSubmitGoodsRecordEventForCreateRecord(
     affinityGroup: AffinityGroup,
     journey: Journey,
-    goodsRecord: GoodsRecord,
-    isUsingGoodsDescription: Boolean
+    goodsRecord: GoodsRecord
   )(implicit hc: HeaderCarrier): DataEvent = {
     val auditDetails = Map(
       "eori"                       -> goodsRecord.eori,
       "affinityGroup"              -> affinityGroup.toString,
       "journey"                    -> journey.toString,
+      "traderReference"            -> goodsRecord.traderRef,
+      "goodsDescription"           -> goodsRecord.goodsDescription,
+      "countryOfOrigin"            -> goodsRecord.countryOfOrigin,
+      "commodityCode"              -> goodsRecord.commodity.commodityCode,
       traderReferenceKey           -> goodsRecord.traderRef,
       goodsDescriptionKey          -> goodsRecord.goodsDescription,
-      "specifiedGoodsDescription"  -> isUsingGoodsDescription.toString,
       countryOfOriginKey           -> goodsRecord.countryOfOrigin,
       commodityCodeKey             -> goodsRecord.commodity.commodityCode,
       "commodityDescription"       -> goodsRecord.commodity.descriptions.headOption.getOrElse("null"),
@@ -222,20 +224,21 @@ case class AuditEventFactory() {
     supplementaryRequest: SupplementaryRequest,
     recordId: String
   )(implicit hc: HeaderCarrier): DataEvent = {
-    val hasSupUnit        = supplementaryRequest.hasSupplementaryUnit.getOrElse(false)
-    val suppUnitStringOpt = if (hasSupUnit) {
-      Some(s"${supplementaryRequest.supplementaryUnit.get} ${supplementaryRequest.measurementUnit.get}")
-    } else {
-      None
-    }
-    val auditDetails      = Map(
+    val auditDetails = Map(
       "journey"              -> journey.toString,
       "updateSection"        -> SupplementaryUnitUpdate.toString,
       "recordId"             -> recordId,
       "eori"                 -> supplementaryRequest.eori,
       "affinityGroup"        -> affinityGroup.toString,
-      "addSupplementaryUnit" -> hasSupUnit.toString
-    ) ++ writeOptional("supplementaryUnit", suppUnitStringOpt)
+      "addSupplementaryUnit" -> supplementaryRequest.hasSupplementaryUnit.getOrElse(false).toString
+    ) ++ writeOptional(
+      "supplementaryUnit",
+      if (supplementaryRequest.supplementaryUnit.isDefined) {
+        Some(s"${supplementaryRequest.supplementaryUnit.get} ${supplementaryRequest.measurementUnit.get}")
+      } else {
+        None
+      }
+    )
     createSubmitGoodsRecordEvent(auditDetails)
   }
 

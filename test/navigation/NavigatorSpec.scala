@@ -543,41 +543,14 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             .onPageLoadCreate(NormalMode)
         }
 
-        "must go from TraderReferencePage to UseTraderReferencePage" in {
+        "must go from TraderReferencePage to GoodsDescriptionPage" in {
 
           navigator.nextPage(
             TraderReferencePage,
             NormalMode,
             emptyUserAnswers
-          ) mustBe routes.UseTraderReferenceController
-            .onPageLoad(NormalMode)
-        }
-
-        "must go from UseTraderReferencePage" - {
-
-          "to GoodsDescriptionPage when answer is No" in {
-
-            val answers = UserAnswers(userAnswersId).set(UseTraderReferencePage, false).success.value
-            navigator.nextPage(UseTraderReferencePage, NormalMode, answers) mustBe routes.GoodsDescriptionController
-              .onPageLoadCreate(NormalMode)
-          }
-
-          "to CountryOfOriginPage when answer is Yes" in {
-
-            val answers = UserAnswers(userAnswersId).set(UseTraderReferencePage, true).success.value
-            navigator.nextPage(UseTraderReferencePage, NormalMode, answers) mustBe routes.CountryOfOriginController
-              .onPageLoadCreate(NormalMode)
-          }
-
-          "to JourneyRecoveryPage when answer is not present" in {
-
-            navigator.nextPage(
-              UseTraderReferencePage,
-              NormalMode,
-              emptyUserAnswers
-            ) mustBe routes.JourneyRecoveryController
-              .onPageLoad()
-          }
+          ) mustBe routes.GoodsDescriptionController
+            .onPageLoadCreate(NormalMode)
         }
 
         "must go from GoodsDescriptionPage to CountryOfOriginPage" in {
@@ -3502,56 +3475,6 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             CheckMode,
             emptyUserAnswers
           ) mustBe routes.CyaCreateRecordController.onPageLoad
-        }
-
-        "must go from UseTraderReferencePage" - {
-
-          "when answer is No" - {
-
-            "to GoodsDescriptionPage when GoodsDescriptionPage is empty" in {
-
-              val answers = UserAnswers(userAnswersId).set(UseTraderReferencePage, false).success.value
-              navigator.nextPage(UseTraderReferencePage, CheckMode, answers) mustBe routes.GoodsDescriptionController
-                .onPageLoadCreate(CheckMode)
-            }
-
-            "to CyaCreateRecord when GoodsDescriptionPage is answered" in {
-
-              val answers =
-                UserAnswers(userAnswersId)
-                  .set(UseTraderReferencePage, false)
-                  .success
-                  .value
-                  .set(GoodsDescriptionPage, "1234")
-                  .success
-                  .value
-              navigator.nextPage(
-                UseTraderReferencePage,
-                CheckMode,
-                answers
-              ) mustBe routes.CyaCreateRecordController.onPageLoad
-            }
-          }
-
-          "to CyaCreateRecord when answer is Yes" in {
-
-            val answers = UserAnswers(userAnswersId).set(UseTraderReferencePage, true).success.value
-            navigator.nextPage(
-              UseTraderReferencePage,
-              CheckMode,
-              answers
-            ) mustBe routes.CyaCreateRecordController.onPageLoad
-          }
-
-          "to JourneyRecoveryPage when answer is not present" in {
-
-            navigator.nextPage(
-              UseTraderReferencePage,
-              CheckMode,
-              emptyUserAnswers
-            ) mustBe routes.JourneyRecoveryController
-              .onPageLoad()
-          }
         }
 
         "must go from GoodsDescriptionPage to CyaCreateRecord" in {

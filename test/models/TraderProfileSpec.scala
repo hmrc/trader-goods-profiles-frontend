@@ -22,8 +22,11 @@ import org.scalatest.{OptionValues, TryValues}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import pages._
+import queries.TraderProfileQuery
 
 class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with OptionValues {
+
+  val traderProfile = TraderProfile("actorId", "ukims", Some("nirmsNumber"), Some("niphlNumber"))
 
   ".build" - {
 
@@ -177,6 +180,22 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
             .success
             .value
             .set(RemoveNirmsPage, true)
+            .success
+            .value
+
+        val result = TraderProfile.validateHasNirms(answers)
+
+        result mustEqual Right(None)
+      }
+
+      "except RemoveNirms and TraderProfileQuery has no nirms number" in {
+
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(HasNirmsUpdatePage, false)
+            .success
+            .value
+            .set(TraderProfileQuery, traderProfile.copy(nirmsNumber = None))
             .success
             .value
 
@@ -347,6 +366,22 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
             .success
             .value
             .set(RemoveNiphlPage, true)
+            .success
+            .value
+
+        val result = TraderProfile.validateHasNiphl(answers)
+
+        result mustEqual Right(None)
+      }
+
+      "except RemoveNiphl and TraderProfileQuery has no niphl number" in {
+
+        val answers =
+          UserAnswers(userAnswersId)
+            .set(HasNiphlUpdatePage, false)
+            .success
+            .value
+            .set(TraderProfileQuery, traderProfile.copy(niphlNumber = None))
             .success
             .value
 

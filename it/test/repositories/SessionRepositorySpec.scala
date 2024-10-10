@@ -51,7 +51,6 @@ class SessionRepositorySpec
     userAnswersId,
     Json.obj(
       traderReferencePage              -> "GB - Reason: unclear - In bottles",
-      useTraderReferencePage           -> "true",
       goodsDescriptionPage             -> "In bottles",
       countryOfOriginPage              -> "US",
       commodityCodePage                -> "22030001",
@@ -187,7 +186,6 @@ class SessionRepositorySpec
       val keysToCheck =
         Seq(
           traderReferencePage,
-          useTraderReferencePage,
           goodsDescriptionPage,
           countryOfOriginPage,
           commodityCodePage,

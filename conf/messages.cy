@@ -223,21 +223,6 @@ traderReference.inputHeading = Beth yw’r cyfeirnod masnachwr?
 traderReference.checkYourAnswersLabel = Cyfeirnod masnachwr
 traderReference.change.hidden = Cyfeirnod masnachwr
 
-useTraderReference.title = Disgrifiad o’r nwyddau
-useTraderReference.h1 = Disgrifiad o’r nwyddau
-useTraderReference.p1 = Bydd disgrifiad o’r nwyddau yn mynd ar y ffurflen Gwybodaeth Symud Marchnad Fewnol (IMMI) pan fyddwch yn symud y nwyddau.
-useTraderReference.p2 = Nid oes rhain i’r disgrifiad o’r nwyddau fod yn unigryw i’ch Proffil Nwyddau Masnachwr.
-useTraderReference.h2 = Os nad ydych yn ychwanegu disgrifiad o’r nwyddau.
-useTraderReference.p3 = Byddwn yn defnyddio’ch cyfeirnod masnachwr fel eich disgrifiad o’r nwyddau.
-useTraderReference.p4 = Y cyfeirnod masnachwr y gwnaethoch ei nodi oedd:
-useTraderReference.h3 = A ydych am ddefnyddio’r cyfeirnod masnachwr fel eich disgrifiad o’r nwyddau?
-useTraderReference.radio1 = Iawn, defnyddiwch fy nghyfeirnod masnachwr fel fy nisgrifiad o’r nwyddau
-useTraderReference.radio2 = Na, rwyf am nodi disgrifiad o’r nwyddau gwahanol
-
-useTraderReference.checkYourAnswersLabel = A ydych am ddefnyddio’r cyfeirnod masnachwr fel eich disgrifiad o’r nwyddau?
-useTraderReference.error.required = Cadarnhewch a ydych am ddefnyddio’ch cyfeirnod masnachwr fel disgrifiad y nwyddau
-useTraderReference.change.hidden = A ydych am ddefnyddio’r cyfeirnod masnachwr fel eich disgrifiad o’r nwyddau?
-
 
 goodsDescription.title = Disgrifiad o’r nwyddau
 goodsDescription.h1 = Disgrifiad o’r nwyddau
@@ -278,7 +263,6 @@ createRecordSuccess.p7 = Bydd eich meddyliau a’ch syniadau’n ein helpu i wne
 
 traderReference.error.required = Nodwch y cyfeirnod masnachwr
 traderReference.error.traderRefNotUnique = Mae’r cyfeirnod masnachwr hwn eisoes yn eich Proffil Nwyddau Masnachwyr. Nodwch gyfeirnod masnachwr unigryw.
-useTraderReference.error.required = Cadarnhewch a ydych am ddefnyddio’ch cyfeirnod masnachwr fel disgrifiad y nwyddau
 goodsDescription.error.required = Nodwch ddisgrifiad o’r nwyddau
 goodsDescription.error.length = Mae’n rhaid i ddisgrifiad y nwyddau fod yn 512 o gymeriadau neu lai
 countryOfOrigin.error.required = Nodwch y wlad wreiddiol

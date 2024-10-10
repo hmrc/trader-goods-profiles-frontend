@@ -132,7 +132,6 @@ class AuditEventFactorySpec extends SpecBase {
         auditDetails("descendants") mustBe "1"
         auditDetails("categoryAssessments") mustBe "2"
       }
-
     }
 
     "create submit goods record event" - {
@@ -164,8 +163,7 @@ class AuditEventFactorySpec extends SpecBase {
               commodity,
               "goods description",
               "AG"
-            ),
-            isUsingGoodsDescription = true
+            )
           )
 
           result.auditSource mustBe "trader-goods-profiles-frontend"
@@ -173,12 +171,11 @@ class AuditEventFactorySpec extends SpecBase {
           result.tags.isEmpty mustBe false
 
           val auditDetails = result.detail
-          auditDetails.size mustBe 11
+          auditDetails.size mustBe 10
           auditDetails("journey") mustBe "CreateRecord"
           auditDetails("eori") mustBe testEori
           auditDetails("affinityGroup") mustBe "Organisation"
           auditDetails(traderReferenceKey) mustBe "trader reference"
-          auditDetails("specifiedGoodsDescription") mustBe "true"
           auditDetails(goodsDescriptionKey) mustBe "goods description"
           auditDetails(countryOfOriginKey) mustBe "AG"
           auditDetails(commodityCodeKey) mustBe "030821"
@@ -209,10 +206,9 @@ class AuditEventFactorySpec extends SpecBase {
               testEori,
               "trader reference",
               commodity,
-              "trader reference",
+              "DESCRIPTION",
               "AG"
-            ),
-            isUsingGoodsDescription = false
+            )
           )
 
           result.auditSource mustBe "trader-goods-profiles-frontend"
@@ -220,13 +216,12 @@ class AuditEventFactorySpec extends SpecBase {
           result.tags.isEmpty mustBe false
 
           val auditDetails = result.detail
-          auditDetails.size mustBe 11
+          auditDetails.size mustBe 10
           auditDetails("journey") mustBe "CreateRecord"
           auditDetails("eori") mustBe testEori
           auditDetails("affinityGroup") mustBe "Organisation"
           auditDetails(traderReferenceKey) mustBe "trader reference"
-          auditDetails("specifiedGoodsDescription") mustBe "false"
-          auditDetails(goodsDescriptionKey) mustBe "trader reference"
+          auditDetails(goodsDescriptionKey) mustBe "DESCRIPTION"
           auditDetails(countryOfOriginKey) mustBe "AG"
           auditDetails(commodityCodeKey) mustBe "030821"
           auditDetails("commodityDescription") mustBe "Sea urchins"
@@ -234,7 +229,6 @@ class AuditEventFactorySpec extends SpecBase {
           auditDetails("commodityCodeEffectiveTo") mustBe "null"
 
         }
-
       }
 
       "create event when journey is updating a goods record" - {
@@ -431,7 +425,6 @@ class AuditEventFactorySpec extends SpecBase {
             auditDetails("providedSupplementaryUnit") mustBe "true"
             auditDetails("supplementaryUnit") mustBe "99"
           }
-
         }
 
         "and update is for goods details" in {
@@ -484,34 +477,93 @@ class AuditEventFactorySpec extends SpecBase {
 
         }
 
-        "and update is for supplementary unit" in {
+        "and update is for supplementary unit" - {
 
-          val result = AuditEventFactory().createSubmitGoodsRecordEventForUpdateSupplementaryUnit(
-            AffinityGroup.Organisation,
-            UpdateRecordJourney,
-            SupplementaryRequest(
-              testEori,
-              testRecordId,
-              Some(true),
-              Some("supplementaryUnit"),
-              Some("measurementUnit")
-            ),
-            testRecordId
-          )
+          "when hasSupp is present" in {
+            val result = AuditEventFactory().createSubmitGoodsRecordEventForUpdateSupplementaryUnit(
+              AffinityGroup.Organisation,
+              UpdateRecordJourney,
+              SupplementaryRequest(
+                testEori,
+                testRecordId,
+                Some(true),
+                Some("supplementaryUnit"),
+                Some("measurementUnit")
+              ),
+              testRecordId
+            )
 
-          result.auditSource mustBe "trader-goods-profiles-frontend"
-          result.auditType mustBe "SubmitGoodsRecord"
-          result.tags.isEmpty mustBe false
+            result.auditSource mustBe "trader-goods-profiles-frontend"
+            result.auditType mustBe "SubmitGoodsRecord"
+            result.tags.isEmpty mustBe false
 
-          val auditDetails = result.detail
-          auditDetails.size mustBe 7
-          auditDetails("journey") mustBe "UpdateRecord"
-          auditDetails("updateSection") mustBe "supplementaryUnit"
-          auditDetails("eori") mustBe testEori
-          auditDetails("recordId") mustBe testRecordId
-          auditDetails("affinityGroup") mustBe "Organisation"
-          auditDetails("addSupplementaryUnit") mustBe "true"
-          auditDetails("supplementaryUnit") mustBe "supplementaryUnit measurementUnit"
+            val auditDetails = result.detail
+            auditDetails.size mustBe 7
+            auditDetails("journey") mustBe "UpdateRecord"
+            auditDetails("updateSection") mustBe "supplementaryUnit"
+            auditDetails("eori") mustBe testEori
+            auditDetails("recordId") mustBe testRecordId
+            auditDetails("affinityGroup") mustBe "Organisation"
+            auditDetails("addSupplementaryUnit") mustBe "true"
+            auditDetails("supplementaryUnit") mustBe "supplementaryUnit measurementUnit"
+          }
+
+          "when hasSupp is not present" in {
+            val result = AuditEventFactory().createSubmitGoodsRecordEventForUpdateSupplementaryUnit(
+              AffinityGroup.Organisation,
+              UpdateRecordJourney,
+              SupplementaryRequest(
+                testEori,
+                testRecordId,
+                None,
+                Some("supplementaryUnit"),
+                Some("measurementUnit")
+              ),
+              testRecordId
+            )
+
+            result.auditSource mustBe "trader-goods-profiles-frontend"
+            result.auditType mustBe "SubmitGoodsRecord"
+            result.tags.isEmpty mustBe false
+
+            val auditDetails = result.detail
+            auditDetails.size mustBe 7
+            auditDetails("journey") mustBe "UpdateRecord"
+            auditDetails("updateSection") mustBe "supplementaryUnit"
+            auditDetails("eori") mustBe testEori
+            auditDetails("recordId") mustBe testRecordId
+            auditDetails("affinityGroup") mustBe "Organisation"
+            auditDetails("addSupplementaryUnit") mustBe "false"
+            auditDetails("supplementaryUnit") mustBe "supplementaryUnit measurementUnit"
+          }
+
+          "when suppUnit is not present" in {
+            val result = AuditEventFactory().createSubmitGoodsRecordEventForUpdateSupplementaryUnit(
+              AffinityGroup.Organisation,
+              UpdateRecordJourney,
+              SupplementaryRequest(
+                testEori,
+                testRecordId,
+                Some(false),
+                None,
+                Some("measurementUnit")
+              ),
+              testRecordId
+            )
+
+            result.auditSource mustBe "trader-goods-profiles-frontend"
+            result.auditType mustBe "SubmitGoodsRecord"
+            result.tags.isEmpty mustBe false
+
+            val auditDetails = result.detail
+            auditDetails.size mustBe 6
+            auditDetails("journey") mustBe "UpdateRecord"
+            auditDetails("updateSection") mustBe "supplementaryUnit"
+            auditDetails("eori") mustBe testEori
+            auditDetails("recordId") mustBe testRecordId
+            auditDetails("affinityGroup") mustBe "Organisation"
+            auditDetails("addSupplementaryUnit") mustBe "false"
+          }
         }
       }
     }
@@ -886,5 +938,4 @@ class AuditEventFactorySpec extends SpecBase {
       }
     }
   }
-
 }

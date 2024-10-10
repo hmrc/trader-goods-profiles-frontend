@@ -50,9 +50,8 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     case RemoveNiphlPage                           => navigateFromRemoveNiphlPage
     case CyaMaintainProfilePage                    => _ => routes.ProfileController.onPageLoad()
     case CreateRecordStartPage                     => _ => routes.TraderReferenceController.onPageLoadCreate(NormalMode)
-    case TraderReferencePage                       => _ => routes.UseTraderReferenceController.onPageLoad(NormalMode)
+    case TraderReferencePage                       => _ => routes.GoodsDescriptionController.onPageLoadCreate(NormalMode)
     case p: TraderReferenceUpdatePage              => _ => routes.CyaUpdateRecordController.onPageLoadTraderReference(p.recordId)
-    case UseTraderReferencePage                    => navigateFromUseTraderReference
     case GoodsDescriptionPage                      => _ => routes.CountryOfOriginController.onPageLoadCreate(NormalMode)
     case p: GoodsDescriptionUpdatePage             => _ => routes.CyaUpdateRecordController.onPageLoadGoodsDescription(p.recordId)
     case CountryOfOriginPage                       => _ => routes.CommodityCodeController.onPageLoadCreate(NormalMode)
@@ -159,15 +158,6 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
-
-  private def navigateFromUseTraderReference(answers: UserAnswers): Call =
-    answers
-      .get(UseTraderReferencePage)
-      .map {
-        case false => routes.GoodsDescriptionController.onPageLoadCreate(NormalMode)
-        case true  => routes.CountryOfOriginController.onPageLoadCreate(NormalMode)
-      }
-      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
   private def navigateFromHasCorrectGoods(answers: UserAnswers): Call =
     answers
@@ -465,7 +455,6 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     case UkimsNumberUpdatePage                     => _ => routes.CyaMaintainProfileController.onPageLoadUkimsNumber
     case TraderReferencePage                       => _ => routes.CyaCreateRecordController.onPageLoad
     case p: TraderReferenceUpdatePage              => _ => routes.CyaUpdateRecordController.onPageLoadTraderReference(p.recordId)
-    case UseTraderReferencePage                    => navigateFromUseTraderReferenceCheck
     case GoodsDescriptionPage                      => _ => routes.CyaCreateRecordController.onPageLoad
     case p: GoodsDescriptionUpdatePage             => _ => routes.CyaUpdateRecordController.onPageLoadGoodsDescription(p.recordId)
     case CountryOfOriginPage                       => _ => routes.CyaCreateRecordController.onPageLoad
@@ -517,20 +506,6 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
             routes.NiphlNumberController.onPageLoadCreate(CheckMode)
           }
         case false => routes.CyaCreateProfileController.onPageLoad
-      }
-      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
-
-  private def navigateFromUseTraderReferenceCheck(answers: UserAnswers): Call =
-    answers
-      .get(UseTraderReferencePage)
-      .map {
-        case false =>
-          if (answers.isDefined(GoodsDescriptionPage)) {
-            routes.CyaCreateRecordController.onPageLoad
-          } else {
-            routes.GoodsDescriptionController.onPageLoadCreate(CheckMode)
-          }
-        case true  => routes.CyaCreateRecordController.onPageLoad
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
