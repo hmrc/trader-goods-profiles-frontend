@@ -193,6 +193,7 @@ class CyaUpdateRecordController @Inject() (
               findCountryName(countries, answer)
             }
         }
+        // TODO: What do we do if the user has not answered this question? Throw an exception?
     }
 
   private def findCountryName(countries: Seq[Country], answer: String): String =
