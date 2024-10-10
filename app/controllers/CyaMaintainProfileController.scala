@@ -92,8 +92,8 @@ class CyaMaintainProfileController @Inject() (
         _                 = auditService.auditMaintainProfile(oldTraderProfile, newTraderProfile, request.affinityGroup)
         _                <- submitTraderProfileIfValueChanged(newTraderProfile, oldTraderProfile, request.eori)
       } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
-        .addingToSession( // TODO: What are these sessions used for? Where are they used?
-          dataUpdated -> (oldTraderProfile.ukimsNumber != newTraderProfile.ukimsNumber).toString //TODO Can this just be oldTraderProfile != newTraderProfile
+        .addingToSession(
+          dataUpdated -> (oldTraderProfile != newTraderProfile).toString
         )
         .addingToSession(pageUpdated -> ukimsNumberUpdatePage)).recover { case e: TraderProfileBuildFailure =>
         logErrorsAndContinue(e.getMessage, routes.ProfileController.onPageLoad())
