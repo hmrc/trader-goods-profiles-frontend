@@ -49,7 +49,6 @@ class AuthenticatedIdentifierAction @Inject() (
     with Logging {
 
   override def invokeBlock[A](request: Request[A], block: IdentifierRequest[A] => Future[Result]): Future[Result] = {
-
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
     val predicates =
@@ -70,6 +69,7 @@ class AuthenticatedIdentifierAction @Inject() (
             case _                                           =>
               throw InsufficientEnrolments("Unable to retrieve Enrolment")
           }
+        // case _ => throw InternalError("Internal Error") // TODO: What should we do when the other cases are not hit? What would be an acceptable error message?
       } recover {
       case _: UserNotAllowedException        =>
         logger.info("trader is not on user-allow-list redirecting to UnauthorisedServiceController")

@@ -71,6 +71,7 @@ class RemoveNiphlController @Inject() (
                   sessionRepository.set(answers).map { _ =>
                     Redirect(navigator.nextPage(RemoveNiphlPage, NormalMode, answers))
                   }
+                // case _ => Future.successful(InternalServerError) // TODO: Do we want to log an error here if it fails to set the value?
               }
             } else {
 
