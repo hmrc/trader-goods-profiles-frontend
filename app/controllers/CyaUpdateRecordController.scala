@@ -63,9 +63,8 @@ class CyaUpdateRecordController @Inject() (
         .getRecord(request.eori, recordId)
         .flatMap { recordResponse =>
           UpdateGoodsRecord
-            .buildCountryOfOrigin(
+            .validateCountryOfOrigin(
               request.userAnswers,
-              request.eori,
               recordId,
               recordResponse.category.isDefined
             ) match {
@@ -216,9 +215,9 @@ class CyaUpdateRecordController @Inject() (
     override def getMessage: String = s"$errorMessage Missing pages: $errorsAsString"
   }
 
-  private def updateGoodsRecordIfValueChanged[T](
-    newValue: T,
-    oldValue: T,
+  private def updateGoodsRecordIfValueChanged(
+    newValue: String,
+    oldValue: String,
     newUpdateGoodsRecord: UpdateGoodsRecord
   )(implicit hc: HeaderCarrier): Future[Done] =
     if (newValue != oldValue) {
@@ -250,17 +249,14 @@ class CyaUpdateRecordController @Inject() (
     (identify andThen getData andThen requireData).async { implicit request =>
       (for {
         oldRecord                <- goodsRecordConnector.getRecord(request.eori, recordId)
-        updateGoodsRecord        <-
+        countryOfOrigin          <-
           handleValidateError(
-            UpdateGoodsRecord
-              .buildCountryOfOrigin(request.userAnswers, request.eori, recordId, oldRecord.category.isDefined)
+            UpdateGoodsRecord.validateCountryOfOrigin(request.userAnswers, recordId, oldRecord.category.isDefined)
           )
+        updateGoodsRecord        <-
+          Future.successful(UpdateGoodsRecord(request.eori, recordId, countryOfOrigin = Some(countryOfOrigin)))
         _                         = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
-        _                        <- updateGoodsRecordIfValueChanged(
-                                      updateGoodsRecord.countryOfOrigin,
-                                      Some(oldRecord.countryOfOrigin),
-                                      updateGoodsRecord
-                                    )
+        _                        <- updateGoodsRecordIfValueChanged(countryOfOrigin, oldRecord.countryOfOrigin, updateGoodsRecord)
         updatedAnswersWithChange <- Future.fromTry(request.userAnswers.remove(HasCountryOfOriginChangePage(recordId)))
         updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CountryOfOriginUpdatePage(recordId)))
         _                        <- sessionRepository.set(updatedAnswers)
