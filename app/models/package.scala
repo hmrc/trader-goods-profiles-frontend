@@ -151,7 +151,7 @@ package object models {
                   }
                 }
             }
-        case _ => JsError("unhandled case in remove") // TODO: Is this suitable?
+        case _ => JsError("unhandled case in remove")
       }
   }
 }

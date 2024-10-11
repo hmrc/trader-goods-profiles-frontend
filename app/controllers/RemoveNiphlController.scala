@@ -71,7 +71,7 @@ class RemoveNiphlController @Inject() (
                   sessionRepository.set(answers).map { _ =>
                     Redirect(navigator.nextPage(RemoveNiphlPage, NormalMode, answers))
                   }
-                case _ => Future.successful(InternalServerError) // TODO: Do we want to throw an error if this fails and should we log it If it fails to set the value? Redirect to a session expired?
+                case _ => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
               }
             } else {
 

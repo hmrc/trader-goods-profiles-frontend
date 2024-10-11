@@ -69,7 +69,7 @@ class AuthenticatedIdentifierAction @Inject() (
             case _                                           =>
               throw InsufficientEnrolments("Unable to retrieve Enrolment")
           }
-        case _ => throw InternalError("Internal Error") // TODO: What should we do when the other cases are not hit? What would be an acceptable error message?
+        case _ =>  throw InternalError("Undefined authorisation error")
       } recover {
       case _: UserNotAllowedException        =>
         logger.info("trader is not on user-allow-list redirecting to UnauthorisedServiceController")

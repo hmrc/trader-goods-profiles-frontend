@@ -71,7 +71,7 @@ class RemoveNirmsController @Inject() (
                   sessionRepository.set(answers).map { _ =>
                     Redirect(navigator.nextPage(RemoveNirmsPage, NormalMode, answers))
                   }
-                case _ => Future.successful(InternalServerError) // TODO: Do we want to log an error here if it fails to set the value?
+                case _ => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
               }
             } else {
 
