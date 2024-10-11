@@ -74,5 +74,3 @@ lazy val it =
 addCommandAlias("testAndCoverage", ";clean;coverage;test;it/test;coverageReport")
 addCommandAlias("prePR", ";scalafmt;test:scalafmt;testAndCoverage")
 addCommandAlias("preMerge", ";scalafmtCheckAll;testAndCoverage")
-
-scalacOptions += "-deprecation"
