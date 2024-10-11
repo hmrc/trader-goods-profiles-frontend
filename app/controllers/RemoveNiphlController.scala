@@ -71,7 +71,7 @@ class RemoveNiphlController @Inject() (
                   sessionRepository.set(answers).map { _ =>
                     Redirect(navigator.nextPage(RemoveNiphlPage, NormalMode, answers))
                   }
-                case _ => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
+                case _                => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
               }
             } else {
 

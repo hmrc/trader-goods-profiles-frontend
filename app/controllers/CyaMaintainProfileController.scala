@@ -111,7 +111,9 @@ class CyaMaintainProfileController @Inject() (
       .addingToSession(
         dataUpdated -> (oldTraderProfile != newTraderProfile).toString
       )
-      .addingToSession(dataRemoved -> (oldTraderProfile.nirmsNumber.isDefined && newTraderProfile.nirmsNumber.isEmpty).toString)
+      .addingToSession(
+        dataRemoved -> (oldTraderProfile.nirmsNumber.isDefined && newTraderProfile.nirmsNumber.isEmpty).toString
+      )
       .addingToSession(pageUpdated -> hasNirmsUpdatePage)).recover { case e: TraderProfileBuildFailure =>
       logErrorsAndContinue(e.getMessage, routes.ProfileController.onPageLoad())
     }
@@ -146,7 +148,9 @@ class CyaMaintainProfileController @Inject() (
       .addingToSession(
         dataUpdated -> (oldTraderProfile != newTraderProfile).toString
       )
-      .addingToSession(dataRemoved -> (oldTraderProfile.niphlNumber.isDefined && newTraderProfile.niphlNumber.isEmpty).toString)
+      .addingToSession(
+        dataRemoved -> (oldTraderProfile.niphlNumber.isDefined && newTraderProfile.niphlNumber.isEmpty).toString
+      )
       .addingToSession(pageUpdated -> hasNiphlUpdatePage)).recover { case e: TraderProfileBuildFailure =>
       logErrorsAndContinue(e.getMessage, routes.ProfileController.onPageLoad())
     }
@@ -185,7 +189,9 @@ class CyaMaintainProfileController @Inject() (
         .addingToSession(
           dataUpdated -> (oldTraderProfile != newTraderProfile).toString
         )
-        .addingToSession(dataAdded -> (oldTraderProfile.nirmsNumber.isEmpty && newTraderProfile.nirmsNumber.isDefined).toString)
+        .addingToSession(
+          dataAdded -> (oldTraderProfile.nirmsNumber.isEmpty && newTraderProfile.nirmsNumber.isDefined).toString
+        )
         .addingToSession(pageUpdated -> nirmsNumberUpdatePage)).recover { case e: TraderProfileBuildFailure =>
         logErrorsAndContinue(e.getMessage, routes.ProfileController.onPageLoad())
       }
@@ -224,7 +230,9 @@ class CyaMaintainProfileController @Inject() (
         .addingToSession(
           dataUpdated -> (oldTraderProfile != newTraderProfile).toString
         )
-        .addingToSession(dataAdded -> (oldTraderProfile.niphlNumber.isEmpty && newTraderProfile.niphlNumber.isDefined).toString)
+        .addingToSession(
+          dataAdded -> (oldTraderProfile.niphlNumber.isEmpty && newTraderProfile.niphlNumber.isDefined).toString
+        )
         .addingToSession(pageUpdated -> niphlNumberUpdatePage)).recover { case e: TraderProfileBuildFailure =>
         logErrorsAndContinue(e.getMessage, routes.ProfileController.onPageLoad())
       }

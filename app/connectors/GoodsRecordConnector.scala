@@ -85,7 +85,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .flatMap { response =>
         response.status match {
           case NO_CONTENT => Future.successful(true)
-          case _ => Future.failed(UpstreamErrorResponse(response.body, response.status))
+          case _          => Future.failed(UpstreamErrorResponse(response.body, response.status))
         }
       }
       .recover { case _: NotFoundException =>
@@ -156,7 +156,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
         response.status match {
           case OK       => Future.successful(Some(response.json.as[GetRecordsResponse]))
           case ACCEPTED => Future.successful(None)
-          case _ => Future.failed(UpstreamErrorResponse(response.body, response.status))
+          case _        => Future.failed(UpstreamErrorResponse(response.body, response.status))
         }
       }
   }
@@ -193,7 +193,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
         response.status match {
           case OK       => Future.successful(Some(response.json.as[GetRecordsResponse]))
           case ACCEPTED => Future.successful(None)
-          case _ => Future.failed(UpstreamErrorResponse(response.body, response.status))
+          case _        => Future.failed(UpstreamErrorResponse(response.body, response.status))
         }
       }
   }
@@ -221,7 +221,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
         response.status match {
           case OK       => Future.successful(Some(response.json.as[GetRecordsResponse]))
           case ACCEPTED => Future.successful(None)
-          case _ => Future.failed(UpstreamErrorResponse(response.body, response.status))
+          case _        => Future.failed(UpstreamErrorResponse(response.body, response.status))
         }
       }
   }

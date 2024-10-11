@@ -33,5 +33,5 @@ case class DataRequest[A](
   userId: String,
   eori: String,
   affinityGroup: AffinityGroup,
-    userAnswers: UserAnswers
+  userAnswers: UserAnswers
 ) extends WrappedRequest[A](request)

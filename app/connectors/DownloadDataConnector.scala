@@ -48,7 +48,7 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
       .flatMap { response =>
         response.status match {
           case ACCEPTED => Future.successful(Done)
-          case _  => Future.failed(UpstreamErrorResponse(response.body, response.status))
+          case _        => Future.failed(UpstreamErrorResponse(response.body, response.status))
         }
       }
 
@@ -60,7 +60,7 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
         .flatMap { response =>
           response.status match {
             case OK => Future.successful(Some(response.json.as[DownloadDataSummary]))
-            case _ => Future.failed(UpstreamErrorResponse(response.body, response.status)) // TODO: PR Feedback: Should we return None instead of failing? Even if the status code is anything, but Ok the code returns 4xx or 5xx exception, seems to come from elsewhere before it hits this case.
+            case _  => Future.failed(UpstreamErrorResponse(response.body, response.status))
           }
         }
         .recover { case _: NotFoundException =>

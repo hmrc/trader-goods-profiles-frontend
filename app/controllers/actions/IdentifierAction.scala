@@ -69,7 +69,7 @@ class AuthenticatedIdentifierAction @Inject() (
             case _                                           =>
               throw InsufficientEnrolments("Unable to retrieve Enrolment")
           }
-        case _ =>  throw InternalError("Undefined authorisation error")
+        case _                                                             => throw InternalError("Undefined authorisation error")
       } recover {
       case _: UserNotAllowedException        =>
         logger.info("trader is not on user-allow-list redirecting to UnauthorisedServiceController")

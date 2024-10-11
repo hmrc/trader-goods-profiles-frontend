@@ -22,7 +22,6 @@ import generators.StatusCodeGenerators
 import models.DownloadDataStatus.RequestFile
 import models.{DownloadData, DownloadDataSummary, Email}
 import org.apache.pekko.Done
-import org.scalacheck.Gen
 import org.scalatest.OptionValues
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
@@ -31,8 +30,8 @@ import play.api.Application
 import play.api.http.Status.ACCEPTED
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.test.WireMockSupport
-import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import utils.GetRecordsResponseUtil
 
 import java.time.Instant

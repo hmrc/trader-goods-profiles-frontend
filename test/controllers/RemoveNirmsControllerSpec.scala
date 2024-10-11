@@ -20,15 +20,14 @@ import base.SpecBase
 import base.TestConstants.{testEori, userAnswersId}
 import connectors.TraderProfileConnector
 import forms.RemoveNirmsFormProvider
-import models.{RichJsObject, TraderProfile, UserAnswers}
+import models.{TraderProfile, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentCaptor
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{spy, when}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{HasNirmsUpdatePage, NirmsNumberUpdatePage, RemoveNirmsPage}
 import play.api.inject.bind
-import play.api.libs.json.{JsError, JsObject, JsResult, JsResultException}
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -36,7 +35,6 @@ import repositories.SessionRepository
 import views.html.RemoveNirmsView
 
 import scala.concurrent.Future
-import scala.util.Failure
 
 class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
 

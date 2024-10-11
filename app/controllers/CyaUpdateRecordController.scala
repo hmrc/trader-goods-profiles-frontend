@@ -69,17 +69,20 @@ class CyaUpdateRecordController @Inject() (
               recordId,
               recordResponse.category.isDefined
             ) match {
-            case Right(_)     =>
+            case Right(_) =>
               val onSubmitAction = routes.CyaUpdateRecordController.onSubmitCountryOfOrigin(recordId)
-              getCountryOfOriginAnswer(request.userAnswers, recordId).map { answer =>
-                val list = SummaryListViewModel(
-                  Seq(
-                    CountryOfOriginSummary
-                      .rowUpdateCya(answer, recordId, CheckMode)
+              getCountryOfOriginAnswer(request.userAnswers, recordId).map {
+                case Some(answer) =>
+                  val list = SummaryListViewModel(
+                    Seq(
+                      CountryOfOriginSummary
+                        .rowUpdateCya(answer, recordId, CheckMode)
+                    )
                   )
-                )
-                Ok(view(list, onSubmitAction, countryOfOriginKey))
+                  Ok(view(list, onSubmitAction, countryOfOriginKey))
+                case _            => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
               }
+
             case Left(errors) =>
               Future.successful(
                 logErrorsAndContinue(
@@ -183,17 +186,17 @@ class CyaUpdateRecordController @Inject() (
 
   private def getCountryOfOriginAnswer(userAnswers: UserAnswers, recordId: String)(implicit
     request: Request[_]
-  ): Future[String] =
+  ): Future[Option[String]] =
     userAnswers.get(CountryOfOriginUpdatePage(recordId)) match {
       case Some(answer) =>
         userAnswers.get(CountriesQuery) match {
-          case Some(countries) => Future.successful(findCountryName(countries, answer))
+          case Some(countries) => Future.successful(Some(findCountryName(countries, answer)))
           case None            =>
             getCountries(userAnswers).map { countries =>
-              findCountryName(countries, answer)
+              Some(findCountryName(countries, answer))
             }
         }
-      case _ => ??? // TODO: What do we do if the user has not answered this question? Throw an exception? Redirect to somewhere else?
+      case _            => Future.successful(None)
     }
 
   private def findCountryName(countries: Seq[Country], answer: String): String =
@@ -213,7 +216,8 @@ class CyaUpdateRecordController @Inject() (
     }
 
   private case class GoodsRecordBuildFailure(errors: data.NonEmptyChain[ValidationError]) extends Exception {
-    private val errorsAsString      = errors.toChain.toList.map(_.message).mkString(", ")
+    private val errorsAsString = errors.toChain.toList.map(_.message).mkString(", ")
+
     override def getMessage: String = s"$errorMessage Missing pages: $errorsAsString"
   }
 

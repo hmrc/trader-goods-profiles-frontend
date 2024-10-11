@@ -71,7 +71,7 @@ class RemoveNirmsController @Inject() (
                   sessionRepository.set(answers).map { _ =>
                     Redirect(navigator.nextPage(RemoveNirmsPage, NormalMode, answers))
                   }
-                case _ => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
+                case _                => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
               }
             } else {
 
