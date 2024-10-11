@@ -24,7 +24,7 @@
     pageTitle = titleNoForm(messages("unauthorisedCdsEnrolment.title")),
     timeout   = false,
     showBackLink = false,
-    signOutUrl = controllers.auth.routes.AuthController.signOutNoSession.url
+    signOutUrl = controllers.auth.routes.AuthController.signOutNoSession().url
 ) {
 
     <h1 class="govuk-heading-l">@messages("unauthorisedCdsEnrolment.heading")</h1>
@@ -39,7 +39,7 @@
 
     <p class="govuk-body">
         @messages("unauthorisedCdsEnrolment.p2.part1")
-        <a href="@controllers.auth.routes.AuthController.signOutNoSession.url" class="govuk-link">
+        <a href="@controllers.auth.routes.AuthController.signOutNoSession().url" class="govuk-link">
             @messages("unauthorisedCdsEnrolment.p2.linkText")
         </a>
         @messages("unauthorisedCdsEnrolment.p2.part2")

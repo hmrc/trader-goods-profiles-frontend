@@ -29,7 +29,7 @@
             content = HtmlContent(f"""
                 <h3 class='govuk-notification-banner__heading'>
                     ${messages("homepage.downloadBanner.content")}
-                    <a href="${routes.FileReadyController.onPageLoad.url}" class='govuk-link'>${messages("homepage.downloadBanner.linkText")}</a>.
+                    <a href="${routes.FileReadyController.onPageLoad().url}" class='govuk-link'>${messages("homepage.downloadBanner.linkText")}</a>.
                 </h3>"""),
             bannerType = Some("success"),
             role=Some("alert"))
@@ -41,16 +41,16 @@
 
     <h2 class="govuk-heading-m">@messages("homepage.h2.1")</h2>
 
-    <p class="govuk-body"><a href="@routes.PreviousMovementRecordsController.onPageLoad.url" class="govuk-link" >@messages("homepage.p2.linkText")</a></p>
+    <p class="govuk-body"><a href="@routes.PreviousMovementRecordsController.onPageLoad().url" class="govuk-link" >@messages("homepage.p2.linkText")</a></p>
 
-    <p class="govuk-body"><a href="@routes.CreateRecordStartController.onPageLoad.url" class="govuk-link" >@messages("homepage.p3.linkText")</a></p>
+    <p class="govuk-body"><a href="@routes.CreateRecordStartController.onPageLoad().url" class="govuk-link" >@messages("homepage.p3.linkText")</a></p>
 
     <h2 class="govuk-heading-m">@messages("homepage.h2.2")</h2>
 
-    <p class="govuk-body"><a href="@routes.ProfileController.onPageLoad.url" class="govuk-link" >@messages("homepage.p5.linkText")</a></p>
+    <p class="govuk-body"><a href="@routes.ProfileController.onPageLoad().url" class="govuk-link" >@messages("homepage.p5.linkText")</a></p>
 
     <h2 class="govuk-heading-m">@messages("homepage.h2.3")</h2>
 
-    <p class="govuk-body"><a href="@routes.HelpAndSupportController.onPageLoad.url" class="govuk-link" >@messages("homepage.p6.linkText")</a></p>
+    <p class="govuk-body"><a href="@routes.HelpAndSupportController.onPageLoad().url" class="govuk-link" >@messages("homepage.p6.linkText")</a></p>
 
 }

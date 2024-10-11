@@ -37,7 +37,7 @@
         </h3>
     }
 
-@layout(backLinkUrl = controllers.routes.HomePageController.onPageLoad.url, backLinkMessageKey = "profile.back", pageTitle = titleNoForm(messages("profile.title"))) {
+@layout(backLinkUrl = controllers.routes.HomePageController.onPageLoad().url, backLinkMessageKey = "profile.back", pageTitle = titleNoForm(messages("profile.title"))) {
 
     @if(changesMade) {
         @govukNotificationBanner(NotificationBanner(
@@ -60,5 +60,5 @@
         content = Text(messages("profile.warningText"))
     ))
 
-    <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad.url" class="govuk-link" >@messages("site.goBackToHomePage")</a></p>
+    <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad().url" class="govuk-link" >@messages("site.goBackToHomePage")</a></p>
 }

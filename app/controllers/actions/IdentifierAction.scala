@@ -84,7 +84,7 @@ class AuthenticatedIdentifierAction @Inject() (
         Redirect(routes.UnauthorisedCdsEnrolmentController.onPageLoad())
       case exception: AuthorisationException =>
         logger.info(f"Authorisation failure: ${exception.reason}. Redirecting to UnauthorisedController")
-        Redirect(routes.UnauthorisedController.onPageLoad)
+        Redirect(routes.UnauthorisedController.onPageLoad())
     }
   }
 

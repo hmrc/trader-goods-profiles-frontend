@@ -72,7 +72,7 @@
       <li>'@messages("goodsRecords.li2")'</li>
     </ul>
 
-    <p class="govuk-body"><a href="@routes.CreateRecordStartController.onPageLoad.url" class="govuk-link">@messages("goodsRecords.link1")</a></p>
+    <p class="govuk-body"><a href="@routes.CreateRecordStartController.onPageLoad().url" class="govuk-link">@messages("goodsRecords.link1")</a></p>
 
         @formHelper(action = routes.GoodsRecordsController.onSearch(page)) {
             <div style="display: flex; align-items: flex-end;">
@@ -164,7 +164,7 @@
 
         @govukPagination(pagination)
 
-        <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad.url" class="govuk-link">@messages("site.goBackToHomePage")</a></p>
+        <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad().url" class="govuk-link">@messages("site.goBackToHomePage")</a></p>
 
         @if(appConfig.downloadFileEnabled) {
             <p class="govuk-body"><a href="@downloadLinkRoute" class="govuk-link">@messages(downloadLinkMessagesKey)</a></p>

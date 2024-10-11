@@ -26,7 +26,7 @@ import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, HttpException, HttpResponse, StringContextOps, UpstreamErrorResponse}
-
+import uk.gov.hmrc.http.HttpReads.Implicits._
 import java.net.URL
 import java.time.{Instant, LocalDate}
 import javax.inject.Inject
