@@ -27,6 +27,9 @@ trait Generators {
   def trimmedAsciiPrintableChars(length: Int): Gen[List[Char]] =
     listOfN(length, Gen.asciiPrintableChar).suchThat(_.mkString.trim.length == length)
 
+  def noSpacesPrintableChars(length: Int): Gen[List[Char]] =
+    listOfN(length, Gen.asciiPrintableChar).suchThat(_.mkString.trim.replaceAll("\\s+", " ").length == length)
+
   implicit val dontShrink: Shrink[String] = Shrink.shrinkAny
 
   def genIntersperseString(gen: Gen[String], value: String, frequencyV: Int = 1, frequencyN: Int = 10): Gen[String] = {
@@ -100,6 +103,12 @@ trait Generators {
     maxLength <- (minLength * 2).max(100)
     length    <- Gen.chooseNum(minLength + 1, maxLength)
     chars     <- trimmedAsciiPrintableChars(length)
+  } yield chars.mkString
+
+  def noSpaceStringsLongerThan(minLength: Int): Gen[String] = for {
+    maxLength <- (minLength * 2).max(100)
+    length    <- Gen.chooseNum(minLength + 1, maxLength)
+    chars     <- noSpacesPrintableChars(length)
   } yield chars.mkString
 
   def nonEmptyStringWithoutExcludedValues(excluded: Seq[String]): Gen[String] =

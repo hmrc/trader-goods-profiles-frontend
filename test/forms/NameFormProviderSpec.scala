@@ -41,7 +41,8 @@ class NameFormProviderSpec extends StringFieldBehaviours {
       form,
       fieldName,
       maxLength = maxLength,
-      lengthError = FormError(fieldName, lengthKey, Seq(maxLength))
+      lengthError = FormError(fieldName, lengthKey, Seq(maxLength)),
+      generateString = noSpaceStringsLongerThan
     )
 
     behave like mandatoryField(
