@@ -71,7 +71,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             .build()
 
         running(application) {
-          val request = FakeRequest(GET, routes.CyaCreateRecordController.onPageLoad.url)
+          val request = FakeRequest(GET, routes.CyaCreateRecordController.onPageLoad().url)
 
           val result = route(application, request).value
 
@@ -100,7 +100,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             .build()
 
         running(application) {
-          val request = FakeRequest(GET, routes.CyaCreateRecordController.onPageLoad.url)
+          val request = FakeRequest(GET, routes.CyaCreateRecordController.onPageLoad().url)
 
           val result = route(application, request).value
 
@@ -120,7 +120,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           applicationBuilder(userAnswers = Some(userAnswers)).build()
 
         running(application) {
-          val request = FakeRequest(GET, routes.CyaCreateRecordController.onPageLoad.url)
+          val request = FakeRequest(GET, routes.CyaCreateRecordController.onPageLoad().url)
 
           val result = route(application, request).value
 
@@ -138,7 +138,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         val continueUrl = RedirectUrl(routes.CreateRecordStartController.onPageLoad().url)
 
         running(application) {
-          val request = FakeRequest(GET, routes.CyaCreateRecordController.onPageLoad.url)
+          val request = FakeRequest(GET, routes.CyaCreateRecordController.onPageLoad().url)
 
           val result = route(application, request).value
 
@@ -153,7 +153,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         val application = applicationBuilder(userAnswers = None).build()
 
         running(application) {
-          val request = FakeRequest(GET, routes.CyaCreateRecordController.onPageLoad.url)
+          val request = FakeRequest(GET, routes.CyaCreateRecordController.onPageLoad().url)
 
           val result = route(application, request).value
 
@@ -189,7 +189,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               .build()
 
           running(application) {
-            val request = FakeRequest(POST, routes.CyaCreateRecordController.onPageLoad.url)
+            val request = FakeRequest(POST, routes.CyaCreateRecordController.onPageLoad().url)
 
             val result = route(application, request).value
 
@@ -235,7 +235,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               .build()
 
           running(application) {
-            val request = FakeRequest(POST, routes.CyaCreateRecordController.onPageLoad.url)
+            val request = FakeRequest(POST, routes.CyaCreateRecordController.onPageLoad().url)
 
             val result = route(application, request).value
 
@@ -276,7 +276,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             .build()
 
         running(application) {
-          val request = FakeRequest(POST, routes.CyaCreateRecordController.onPageLoad.url)
+          val request = FakeRequest(POST, routes.CyaCreateRecordController.onPageLoad().url)
 
           intercept[RuntimeException] {
             await(route(application, request).value)
@@ -297,7 +297,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         val application = applicationBuilder(userAnswers = None).build()
 
         running(application) {
-          val request = FakeRequest(POST, routes.CyaCreateRecordController.onPageLoad.url)
+          val request = FakeRequest(POST, routes.CyaCreateRecordController.onPageLoad().url)
 
           val result = route(application, request).value
 

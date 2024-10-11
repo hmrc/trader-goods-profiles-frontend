@@ -52,7 +52,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
       "must go from a page that doesn't exist in the route map to Index" in {
 
         case object UnknownPage extends Page
-        navigator.nextPage(UnknownPage, NormalMode, emptyUserAnswers) mustBe routes.IndexController.onPageLoad
+        navigator.nextPage(UnknownPage, NormalMode, emptyUserAnswers) mustBe routes.IndexController.onPageLoad()
       }
 
       "in Require Advice Journey" - {
@@ -252,7 +252,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
           "to CyaCreateProfile when answer is No" in {
 
             val answers = UserAnswers(userAnswersId).set(HasNiphlPage, false).success.value
-            navigator.nextPage(HasNiphlPage, NormalMode, answers) mustBe routes.CyaCreateProfileController.onPageLoad
+            navigator.nextPage(HasNiphlPage, NormalMode, answers) mustBe routes.CyaCreateProfileController.onPageLoad()
           }
 
           "to JourneyRecoveryPage when answer is not present" in {
@@ -272,7 +272,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             NiphlNumberPage,
             NormalMode,
             emptyUserAnswers
-          ) mustBe routes.CyaCreateProfileController.onPageLoad
+          ) mustBe routes.CyaCreateProfileController.onPageLoad()
         }
 
         "must go from CyaCreateProfile to CreateProfileSuccess" in {
@@ -281,7 +281,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             CyaCreateProfilePage,
             NormalMode,
             emptyUserAnswers
-          ) mustBe routes.CreateProfileSuccessController.onPageLoad
+          ) mustBe routes.CreateProfileSuccessController.onPageLoad()
         }
       }
 
@@ -293,7 +293,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             UkimsNumberUpdatePage,
             NormalMode,
             emptyUserAnswers
-          ) mustBe routes.CyaMaintainProfileController.onPageLoadUkimsNumber
+          ) mustBe routes.CyaMaintainProfileController.onPageLoadUkimsNumber()
         }
 
         "must go from HasNirmsUpdatePage" - {
@@ -336,7 +336,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNirmsUpdatePage,
               NormalMode,
               answers
-            ) mustBe routes.CyaMaintainProfileController.onPageLoadNirms
+            ) mustBe routes.CyaMaintainProfileController.onPageLoadNirms()
           }
 
           "to JourneyRecoveryPage when answer is not present" in {
@@ -377,7 +377,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               RemoveNirmsPage,
               NormalMode,
               answers
-            ) mustBe routes.CyaMaintainProfileController.onPageLoadNirmsNumber
+            ) mustBe routes.CyaMaintainProfileController.onPageLoadNirmsNumber()
           }
 
           "to Cya NIRMS registered when user answered yes" in {
@@ -388,7 +388,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               RemoveNirmsPage,
               NormalMode,
               answers
-            ) mustBe routes.CyaMaintainProfileController.onPageLoadNirms
+            ) mustBe routes.CyaMaintainProfileController.onPageLoadNirms()
           }
 
           "to ProfilePage when answer is not present" in {
@@ -407,7 +407,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             NirmsNumberUpdatePage,
             NormalMode,
             emptyUserAnswers
-          ) mustBe routes.CyaMaintainProfileController.onPageLoadNirmsNumber
+          ) mustBe routes.CyaMaintainProfileController.onPageLoadNirmsNumber()
         }
 
         "must go from CyaMaintainProfilePage to CyaMaintainProfile" in {
@@ -458,7 +458,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNiphlUpdatePage,
               NormalMode,
               answers
-            ) mustBe routes.CyaMaintainProfileController.onPageLoadNiphl
+            ) mustBe routes.CyaMaintainProfileController.onPageLoadNiphl()
           }
 
           "to JourneyRecoveryPage when answer is not present" in {
@@ -497,7 +497,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               RemoveNiphlPage,
               NormalMode,
               answers
-            ) mustBe routes.CyaMaintainProfileController.onPageLoadNiphlNumber
+            ) mustBe routes.CyaMaintainProfileController.onPageLoadNiphlNumber()
           }
 
           "to Check Your Answers for NIPHL registered when user answered yes" in {
@@ -507,7 +507,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               RemoveNiphlPage,
               NormalMode,
               answers
-            ) mustBe routes.CyaMaintainProfileController.onPageLoadNiphl
+            ) mustBe routes.CyaMaintainProfileController.onPageLoadNiphl()
           }
 
           "to ProfilePage when answer is not present" in {
@@ -526,7 +526,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             NiphlNumberUpdatePage,
             NormalMode,
             emptyUserAnswers
-          ) mustBe routes.CyaMaintainProfileController.onPageLoadNiphlNumber
+          ) mustBe routes.CyaMaintainProfileController.onPageLoadNiphlNumber()
         }
 
       }
@@ -587,7 +587,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasCorrectGoodsPage,
               NormalMode,
               answers
-            ) mustBe routes.CyaCreateRecordController.onPageLoad
+            ) mustBe routes.CyaCreateRecordController.onPageLoad()
           }
 
           "to CommodityCodePage when answer is No" in {
@@ -3108,7 +3108,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             UkimsNumberPage,
             CheckMode,
             emptyUserAnswers
-          ) mustBe routes.CyaCreateProfileController.onPageLoad
+          ) mustBe routes.CyaCreateProfileController.onPageLoad()
         }
 
         "must go from HasNirmsPage" - {
@@ -3133,13 +3133,13 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .set(NirmsNumberPage, "1234")
                   .success
                   .value
-              navigator.nextPage(HasNirmsPage, CheckMode, answers) mustBe routes.CyaCreateProfileController.onPageLoad
+              navigator.nextPage(HasNirmsPage, CheckMode, answers) mustBe routes.CyaCreateProfileController.onPageLoad()
             }
           }
           "to CyaCreateProfile when answer is No" in {
 
             val answers = UserAnswers(userAnswersId).set(HasNirmsPage, false).success.value
-            navigator.nextPage(HasNirmsPage, CheckMode, answers) mustBe routes.CyaCreateProfileController.onPageLoad
+            navigator.nextPage(HasNirmsPage, CheckMode, answers) mustBe routes.CyaCreateProfileController.onPageLoad()
           }
 
           "to JourneyRecoveryPage when answer is not present" in {
@@ -3159,7 +3159,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             NirmsNumberPage,
             CheckMode,
             emptyUserAnswers
-          ) mustBe routes.CyaCreateProfileController.onPageLoad
+          ) mustBe routes.CyaCreateProfileController.onPageLoad()
         }
 
         "must go from HasNiphlPage" - {
@@ -3184,14 +3184,14 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .set(NiphlNumberPage, "1234")
                   .success
                   .value
-              navigator.nextPage(HasNiphlPage, CheckMode, answers) mustBe routes.CyaCreateProfileController.onPageLoad
+              navigator.nextPage(HasNiphlPage, CheckMode, answers) mustBe routes.CyaCreateProfileController.onPageLoad()
             }
           }
 
           "to CyaCreateProfile when answer is No" in {
 
             val answers = UserAnswers(userAnswersId).set(HasNiphlPage, false).success.value
-            navigator.nextPage(HasNiphlPage, CheckMode, answers) mustBe routes.CyaCreateProfileController.onPageLoad
+            navigator.nextPage(HasNiphlPage, CheckMode, answers) mustBe routes.CyaCreateProfileController.onPageLoad()
           }
 
           "to JourneyRecoveryPage when answer is not present" in {
@@ -3211,7 +3211,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             NiphlNumberPage,
             CheckMode,
             emptyUserAnswers
-          ) mustBe routes.CyaCreateProfileController.onPageLoad
+          ) mustBe routes.CyaCreateProfileController.onPageLoad()
         }
       }
 
@@ -3223,7 +3223,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             UkimsNumberUpdatePage,
             CheckMode,
             emptyUserAnswers
-          ) mustBe routes.CyaMaintainProfileController.onPageLoadUkimsNumber
+          ) mustBe routes.CyaMaintainProfileController.onPageLoadUkimsNumber()
         }
 
         "must go from RemoveNirmsPage" - {
@@ -3242,7 +3242,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               RemoveNirmsPage,
               CheckMode,
               answers
-            ) mustBe routes.CyaMaintainProfileController.onPageLoadNirmsNumber
+            ) mustBe routes.CyaMaintainProfileController.onPageLoadNirmsNumber()
           }
 
           "to CyaMaintainProfile when user answered No" in {
@@ -3253,7 +3253,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               RemoveNirmsPage,
               CheckMode,
               answers
-            ) mustBe routes.CyaMaintainProfileController.onPageLoadNirmsNumber
+            ) mustBe routes.CyaMaintainProfileController.onPageLoadNirmsNumber()
           }
 
           "to Cya NIRMS registered when user answered yes" in {
@@ -3264,7 +3264,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               RemoveNirmsPage,
               CheckMode,
               answers
-            ) mustBe routes.CyaMaintainProfileController.onPageLoadNirms
+            ) mustBe routes.CyaMaintainProfileController.onPageLoadNirms()
           }
 
           "must go from NirmsNumberUpdatePage to CyaMaintainProfile" in {
@@ -3273,7 +3273,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               NirmsNumberUpdatePage,
               CheckMode,
               emptyUserAnswers
-            ) mustBe routes.CyaMaintainProfileController.onPageLoadNirmsNumber
+            ) mustBe routes.CyaMaintainProfileController.onPageLoadNirmsNumber()
           }
         }
 
@@ -3316,7 +3316,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNirmsUpdatePage,
               CheckMode,
               answers
-            ) mustBe routes.CyaMaintainProfileController.onPageLoadNirms
+            ) mustBe routes.CyaMaintainProfileController.onPageLoadNirms()
           }
 
           "to JourneyRecoveryPage when answer is not present" in {
@@ -3353,7 +3353,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             NirmsNumberUpdatePage,
             CheckMode,
             emptyUserAnswers
-          ) mustBe routes.CyaMaintainProfileController.onPageLoadNirmsNumber
+          ) mustBe routes.CyaMaintainProfileController.onPageLoadNirmsNumber()
         }
 
         "must go from HasNiphlUpdatePage" - {
@@ -3395,7 +3395,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNiphlUpdatePage,
               CheckMode,
               answers
-            ) mustBe routes.CyaMaintainProfileController.onPageLoadNiphl
+            ) mustBe routes.CyaMaintainProfileController.onPageLoadNiphl()
           }
 
           "to JourneyRecoveryPage when answer is not present" in {
@@ -3432,7 +3432,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             NiphlNumberUpdatePage,
             CheckMode,
             emptyUserAnswers
-          ) mustBe routes.CyaMaintainProfileController.onPageLoadNiphlNumber
+          ) mustBe routes.CyaMaintainProfileController.onPageLoadNiphlNumber()
         }
 
         "must go from CyaMaintainProfilePage to CyaMaintainProfile" in {
@@ -3474,7 +3474,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             TraderReferencePage,
             CheckMode,
             emptyUserAnswers
-          ) mustBe routes.CyaCreateRecordController.onPageLoad
+          ) mustBe routes.CyaCreateRecordController.onPageLoad()
         }
 
         "must go from GoodsDescriptionPage to CyaCreateRecord" in {
@@ -3482,7 +3482,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             GoodsDescriptionPage,
             CheckMode,
             emptyUserAnswers
-          ) mustBe routes.CyaCreateRecordController.onPageLoad
+          ) mustBe routes.CyaCreateRecordController.onPageLoad()
         }
 
         "must go from CountryOfOriginPage to CyaCreateRecord" in {
@@ -3490,7 +3490,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             CountryOfOriginPage,
             CheckMode,
             emptyUserAnswers
-          ) mustBe routes.CyaCreateRecordController.onPageLoad
+          ) mustBe routes.CyaCreateRecordController.onPageLoad()
         }
 
         "must go from CommodityCodePage to HasCorrectGoodsPage" in {
@@ -3531,7 +3531,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 HasCorrectGoodsPage,
                 CheckMode,
                 answers
-              ) mustBe routes.CyaCreateRecordController.onPageLoad
+              ) mustBe routes.CyaCreateRecordController.onPageLoad()
             }
           }
 
