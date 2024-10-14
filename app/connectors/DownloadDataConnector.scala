@@ -19,8 +19,7 @@ package connectors
 import config.FrontendAppConfig
 import models.{DownloadData, DownloadDataSummary, Email}
 import org.apache.pekko.Done
-import play.api.http.Status.{ACCEPTED, OK}
-import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
+import play.api.http.Status.{ACCEPTED, NOT_FOUND, OK}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.client.HttpClientV2
 
@@ -30,6 +29,9 @@ import scala.concurrent.{ExecutionContext, Future}
 class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: HttpClientV2)(implicit
   ec: ExecutionContext
 ) {
+
+  implicit val legacyRawReads: HttpReads[HttpResponse] =
+    HttpReads.Implicits.throwOnFailure(HttpReads.Implicits.readEitherOf(HttpReads.Implicits.readRaw))
 
   private val clientIdHeader = ("X-Client-ID", "tgp-frontend")
 
@@ -65,7 +67,7 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
             case _  => None
           }
         }
-        .recover { case _: NotFoundException =>
+        .recover { case _: UpstreamErrorResponse =>
           None
         }
     } else {
@@ -82,8 +84,9 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
           case _  => None
         }
       }
-      .recover { case _: NotFoundException =>
-        None
+      .recover {
+        case x: UpstreamErrorResponse if x.statusCode == NOT_FOUND =>
+          None
       }
 
   def getEmail(eori: String)(implicit hc: HeaderCarrier): Future[Email] =
