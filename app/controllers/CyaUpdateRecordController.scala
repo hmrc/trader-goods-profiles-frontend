@@ -19,14 +19,18 @@ package controllers
 import cats.data
 import cats.data.EitherNec
 import com.google.inject.Inject
+import config.FrontendAppConfig
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
-import models.{CheckMode, Country, NormalMode, UpdateGoodsRecord, UserAnswers, ValidationError}
+import models.requests.DataRequest
+import models.router.requests.PutRecordRequest
+import models.router.responses.GetGoodsRecordResponse
+import models.{CheckMode, Commodity, Country, NormalMode, UpdateGoodsRecord, UserAnswers, ValidationError}
 import navigation.Navigator
 import org.apache.pekko.Done
 import pages._
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
 import queries.CountriesQuery
 import repositories.SessionRepository
 import services.AuditService
@@ -51,7 +55,8 @@ class CyaUpdateRecordController @Inject() (
   goodsRecordConnector: GoodsRecordConnector,
   ottConnector: OttConnector,
   sessionRepository: SessionRepository,
-  navigator: Navigator
+  navigator: Navigator,
+  config: FrontendAppConfig
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
@@ -221,12 +226,91 @@ class CyaUpdateRecordController @Inject() (
     newUpdateGoodsRecord: UpdateGoodsRecord
   )(implicit hc: HeaderCarrier): Future[Done] =
     if (newValue != oldValue) {
-      goodsRecordConnector.updateGoodsRecord(
-        newUpdateGoodsRecord
-      )
+
+      // TODO: remove this flag when EIS has implemented the PATCH method - TGP-2417 and keep the call to patchGoodsRecord as default
+      if (config.useEisPatchMethod) {
+        goodsRecordConnector.patchGoodsRecord(
+          newUpdateGoodsRecord
+        )
+      } else {
+        goodsRecordConnector.updateGoodsRecord(
+          newUpdateGoodsRecord
+        )
+      }
+
     } else {
       Future.successful(Done)
     }
+
+  private def updateCommodityCodeAndSession(recordId: String, commodity: Commodity, oldRecord: GetGoodsRecordResponse)(
+    implicit request: DataRequest[AnyContent]
+  ): Future[Result] =
+    for {
+      // TODO: remove this flag when EIS has implemented the PATCH method - TGP-2417 and keep the call to putGoodsRecord as default
+      _ <- if (config.useEisPatchMethod) {
+             goodsRecordConnector.putGoodsRecord(
+               PutRecordRequest(
+                 actorId = request.eori,
+                 traderRef = oldRecord.traderRef,
+                 comcode = commodity.commodityCode,
+                 goodsDescription = oldRecord.goodsDescription,
+                 countryOfOrigin = oldRecord.countryOfOrigin,
+                 category = None,
+                 assessments = oldRecord.assessments,
+                 supplementaryUnit = oldRecord.supplementaryUnit,
+                 measurementUnit = oldRecord.measurementUnit,
+                 comcodeEffectiveFromDate = oldRecord.comcodeEffectiveFromDate,
+                 comcodeEffectiveToDate = oldRecord.comcodeEffectiveToDate
+               ),
+               recordId
+             )
+           } else {
+             goodsRecordConnector.updateGoodsRecord(
+               UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity))
+             )
+           }
+
+      updatedAnswersWithChange <-
+        Future.fromTry(request.userAnswers.remove(HasCommodityCodeChangePage(recordId)))
+      updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CommodityCodeUpdatePage(recordId)))
+      _                        <- sessionRepository.set(updatedAnswers)
+    } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers))
+
+  private def updateCountryOfOriginAndSession(
+    recordId: String,
+    updateGoodsRecord: UpdateGoodsRecord,
+    oldRecord: GetGoodsRecordResponse
+  )(implicit
+    request: DataRequest[AnyContent]
+  ): Future[Result] =
+    for {
+      // TODO: remove this flag when EIS has implemented the PATCH method - TGP-2417 and keep the call to putGoodsRecord as default
+      _ <- if (config.useEisPatchMethod) {
+             goodsRecordConnector.putGoodsRecord(
+               PutRecordRequest(
+                 actorId = request.eori,
+                 traderRef = oldRecord.traderRef,
+                 comcode = oldRecord.comcode,
+                 goodsDescription = oldRecord.goodsDescription,
+                 countryOfOrigin = updateGoodsRecord.countryOfOrigin.get,
+                 category = None,
+                 assessments = oldRecord.assessments,
+                 supplementaryUnit = oldRecord.supplementaryUnit,
+                 measurementUnit = oldRecord.measurementUnit,
+                 comcodeEffectiveFromDate = oldRecord.comcodeEffectiveFromDate,
+                 comcodeEffectiveToDate = oldRecord.comcodeEffectiveToDate
+               ),
+               recordId
+             )
+           } else {
+             goodsRecordConnector.updateGoodsRecord(updateGoodsRecord)
+           }
+
+      updatedAnswersWithChange <-
+        Future.fromTry(request.userAnswers.remove(HasCountryOfOriginChangePage(recordId)))
+      updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CountryOfOriginUpdatePage(recordId)))
+      _                        <- sessionRepository.set(updatedAnswers)
+    } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers))
 
   def onSubmitTraderReference(recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>

@@ -42,6 +42,7 @@ import viewmodels.checkAnswers.{AssessmentsSummary, HasSupplementaryUnitSummary,
 import viewmodels.govuk.SummaryListFluency
 import views.html.CyaCategorisationView
 
+import java.time.Instant
 import scala.concurrent.Future
 
 class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency with MockitoSugar {
@@ -50,6 +51,11 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
   private val fakeNavigator = new FakeNavigator(onwardRoute)
 
   "CyaCategorisationController" - {
+
+    val record = goodsRecordResponse(
+      Instant.parse("2022-11-18T23:20:19Z"),
+      Instant.parse("2022-11-18T23:20:19Z")
+    ).copy(recordId = testRecordId, eori = testEori)
 
     "for a GET" - {
 
@@ -533,7 +539,9 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               .value
 
             val mockConnector = mock[GoodsRecordConnector]
-            when(mockConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any())(any()))
+            when(mockConnector.getRecord(any(), any())(any())) thenReturn Future
+              .successful(record)
+            when(mockConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any(), any())(any()))
               .thenReturn(Future.successful(Done))
 
             val mockAuditService = mock[AuditService]
@@ -568,7 +576,12 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               redirectLocation(result).value mustEqual onwardRoute.url
 
               verify(mockConnector)
-                .updateCategoryAndComcodeForGoodsRecord(eqTo(testEori), eqTo(testRecordId), eqTo(expectedPayload))(
+                .updateCategoryAndComcodeForGoodsRecord(
+                  eqTo(testEori),
+                  eqTo(testRecordId),
+                  eqTo(expectedPayload),
+                  any()
+                )(
                   any()
                 )
 
@@ -591,7 +604,9 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               .value
 
             val mockConnector = mock[GoodsRecordConnector]
-            when(mockConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any())(any()))
+            when(mockConnector.getRecord(any(), any())(any())) thenReturn Future
+              .successful(record)
+            when(mockConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any(), any())(any()))
               .thenReturn(Future.successful(Done))
 
             val mockAuditService = mock[AuditService]
@@ -623,7 +638,12 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
               withClue("connector was called even though audit failed") {
                 verify(mockConnector)
-                  .updateCategoryAndComcodeForGoodsRecord(eqTo(testEori), eqTo(testRecordId), eqTo(expectedPayload))(
+                  .updateCategoryAndComcodeForGoodsRecord(
+                    eqTo(testEori),
+                    eqTo(testRecordId),
+                    eqTo(expectedPayload),
+                    any()
+                  )(
                     any()
                   )
               }
@@ -661,7 +681,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               )
               .url
 
-            verify(mockConnector, never()).updateCategoryAndComcodeForGoodsRecord(any(), any(), any())(any())
+            verify(mockConnector, never()).updateCategoryAndComcodeForGoodsRecord(any(), any(), any(), any())(any())
             withClue("must cleanse the user answers data") {
               verify(sessionRepository).clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
             }
@@ -677,7 +697,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
           .value
 
         val mockConnector = mock[GoodsRecordConnector]
-        when(mockConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any())(any()))
+        when(mockConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any(), any())(any()))
           .thenReturn(Future.failed(new RuntimeException("Connector failed")))
 
         val sessionRepository = mock[SessionRepository]
