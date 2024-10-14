@@ -16,7 +16,7 @@
 
 package models
 
-import base.TestConstants.{testEori, testRecordId, userAnswersId}
+import base.TestConstants.{testRecordId, userAnswersId}
 import org.scalatest.Inside.inside
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
