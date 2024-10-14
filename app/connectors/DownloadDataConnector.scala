@@ -17,7 +17,7 @@
 package connectors
 
 import config.FrontendAppConfig
-import models.{DownloadData, DownloadDataSummary, Email}
+import models.{DownloadData, DownloadDataSummary, Email, LegacyRawReads}
 import org.apache.pekko.Done
 import play.api.http.Status.{ACCEPTED, NOT_FOUND, OK}
 import uk.gov.hmrc.http._
@@ -28,10 +28,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: HttpClientV2)(implicit
   ec: ExecutionContext
-) {
-
-  implicit val legacyRawReads: HttpReads[HttpResponse] =
-    HttpReads.Implicits.throwOnFailure(HttpReads.Implicits.readEitherOf(HttpReads.Implicits.readRaw))
+) extends LegacyRawReads {
 
   private val clientIdHeader = ("X-Client-ID", "tgp-frontend")
 

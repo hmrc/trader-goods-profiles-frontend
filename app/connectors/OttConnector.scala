@@ -19,13 +19,13 @@ package connectors
 import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, OttAuditData}
 import models.helper.Journey
 import models.ott.response.{CountriesResponse, OttResponse}
-import models.{Commodity, Country}
+import models.{Commodity, Country, LegacyRawReads}
 import play.api.Configuration
 import play.api.libs.json.{JsResult, Reads}
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, HttpException, HttpReads, HttpResponse, StringContextOps, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, HttpException, HttpResponse, StringContextOps, UpstreamErrorResponse}
 
 import java.net.URL
 import java.time.{Instant, LocalDate}
@@ -34,10 +34,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, auditService: AuditService)(implicit
   ec: ExecutionContext
-) {
-
-  implicit val legacyRawReads: HttpReads[HttpResponse] =
-    HttpReads.Implicits.throwOnFailure(HttpReads.Implicits.readEitherOf(HttpReads.Implicits.readRaw))
+) extends LegacyRawReads {
 
   private val baseUrl: String   = config.get[String]("microservice.services.online-trade-tariff-api.url")
   private val authToken: String = config.get[String]("microservice.services.online-trade-tariff-api.bearerToken")
