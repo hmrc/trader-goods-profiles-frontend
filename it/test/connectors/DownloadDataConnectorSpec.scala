@@ -110,7 +110,7 @@ class DownloadDataConnectorSpec
 
   ".getDownloadData" - {
 
-    "must get download data summary" in {
+    "must get download data data" in {
 
       val downloadURL = "downloadURL"
       val filename = "filename"
@@ -168,7 +168,7 @@ class DownloadDataConnectorSpec
               .willReturn(status(errorResponses.sample.value))
           )
 
-          connector.getDownloadDataSummary(testEori).failed.futureValue
+          connector.getDownloadDataSummary(testEori).futureValue mustBe None
       }
 
       "if Download summary does not exist" in {
@@ -199,16 +199,6 @@ class DownloadDataConnectorSpec
         connectorNoDownload.getDownloadDataSummary(testEori).futureValue mustBe None
       }
 
-    }
-
-    "must return a failed future when the server returns an error" in {
-
-      wireMockServer.stubFor(
-        get(urlEqualTo(downloadDataSummaryUrl))
-          .willReturn(status(errorResponses.sample.value))
-      )
-
-      connector.getDownloadDataSummary(testEori).failed.futureValue
     }
   }
 

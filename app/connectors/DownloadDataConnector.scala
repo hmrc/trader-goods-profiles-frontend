@@ -20,15 +20,17 @@ import config.FrontendAppConfig
 import models.{DownloadData, DownloadDataSummary, Email}
 import org.apache.pekko.Done
 import play.api.http.Status.{ACCEPTED, OK}
+import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.HttpReads.Implicits._
+
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: HttpClientV2)(implicit
   ec: ExecutionContext
 ) {
+
   private val clientIdHeader = ("X-Client-ID", "tgp-frontend")
 
   private def downloadDataSummaryUrl(eori: String) =
@@ -57,10 +59,10 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
       httpClient
         .get(downloadDataSummaryUrl(eori))
         .execute[HttpResponse]
-        .flatMap { response =>
+        .map { response =>
           response.status match {
-            case OK => Future.successful(Some(response.json.as[DownloadDataSummary]))
-            case _  => Future.failed(UpstreamErrorResponse(response.body, response.status))
+            case OK => Some(response.json.as[DownloadDataSummary])
+            case _  => None
           }
         }
         .recover { case _: NotFoundException =>

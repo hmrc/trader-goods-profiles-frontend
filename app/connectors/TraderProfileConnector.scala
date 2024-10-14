@@ -24,14 +24,16 @@ import play.api.http.Status.{FORBIDDEN, NOT_FOUND, OK}
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http._
-
+import uk.gov.hmrc.http.HttpReads.Implicits.readFromJson
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import uk.gov.hmrc.http.HttpReads.Implicits._
 
 class TraderProfileConnector @Inject() (config: Configuration, httpClient: HttpClientV2)(implicit
   ec: ExecutionContext
 ) {
+
+  implicit val legacyRawReads: HttpReads[HttpResponse] =
+    HttpReads.Implicits.throwOnFailure(HttpReads.Implicits.readEitherOf(HttpReads.Implicits.readRaw))
 
   private val dataStoreBaseUrl: Service = config.get[Service]("microservice.services.trader-goods-profiles-data-store")
   private val routerUrl: Service        = config.get[Service]("microservice.services.trader-goods-profiles-router")
@@ -62,8 +64,9 @@ class TraderProfileConnector @Inject() (config: Configuration, httpClient: HttpC
           case _         => Future.failed(UpstreamErrorResponse(response.body, response.status))
         }
       }
-      .recover { case _: NotFoundException =>
-        false
+      .recover {
+        case x: UpstreamErrorResponse if x.statusCode == NOT_FOUND =>
+          false
       }
 
   private def getTraderProfileUrl(eori: String) =

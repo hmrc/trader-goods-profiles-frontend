@@ -22,11 +22,11 @@ import models.router.responses.{GetGoodsRecordResponse, GetRecordsResponse}
 import models.{CategoryRecord, GoodsRecord, RecordsSummary, SupplementaryRequest, UpdateGoodsRecord}
 import org.apache.pekko.Done
 import play.api.Configuration
-import play.api.http.Status.{ACCEPTED, NO_CONTENT, OK}
+import play.api.http.Status.{ACCEPTED, NOT_FOUND, NO_CONTENT, OK}
 import play.api.libs.json.Json
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.HttpReads.Implicits._
+
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -35,6 +35,9 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
 ) {
   private val dataStoreBaseUrl: Service = config.get[Service]("microservice.services.trader-goods-profiles-data-store")
   private val clientIdHeader            = ("X-Client-ID", "tgp-frontend")
+
+  implicit val legacyRawReads: HttpReads[HttpResponse] =
+    HttpReads.Implicits.throwOnFailure(HttpReads.Implicits.readEitherOf(HttpReads.Implicits.readRaw))
 
   private def createGoodsRecordUrl(eori: String) =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records"
@@ -85,11 +88,13 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .flatMap { response =>
         response.status match {
           case NO_CONTENT => Future.successful(true)
+          case NOT_FOUND  => Future.successful(false)
           case _          => Future.failed(UpstreamErrorResponse(response.body, response.status))
         }
       }
-      .recover { case _: NotFoundException =>
-        false
+      .recover {
+        case x: UpstreamErrorResponse if x.statusCode == NOT_FOUND =>
+          false
       }
 
   // TODO: remove this function when EIS has implemented the PATCH method - TGP-2417 and keep putGoodsRecord and patchGoodsRecord

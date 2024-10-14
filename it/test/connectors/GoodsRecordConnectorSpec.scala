@@ -303,7 +303,7 @@ class GoodsRecordConnectorSpec
       connector.removeGoodsRecord(testEori, testRecordId).futureValue mustBe true
     }
 
-    "must return a a failed future when anything, but NO_CONTENT is returned" in {
+    "must return a false when anything, but NO_CONTENT is returned" in {
 
       wireMockServer.stubFor(
         delete(urlEqualTo(removeRecordUrl))
