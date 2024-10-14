@@ -36,9 +36,15 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
   ec: ExecutionContext
 ) {
 
+  private val useAPIKeyFeature: Boolean = config.get[Boolean]("features.online-trade-tariff-useApiKey")
+
   private val baseUrl: String   = config.get[String]("microservice.services.online-trade-tariff-api.url")
   private val authToken: String = config.get[String]("microservice.services.online-trade-tariff-api.bearerToken")
+  private val apiKey: String    = config.get[String]("microservice.services.online-trade-tariff-api.apiKey")
   private val useProxy: Boolean = config.get[Boolean]("microservice.services.online-trade-tariff-api.useProxy")
+
+  val headers: (String, String)                                                         =
+    if (useAPIKeyFeature) "x-api-key" -> s"$apiKey" else HeaderNames.authorisation -> s"Token $authToken"
 
   private def ottGreenLanesUrl(commodityCode: String, queryParams: Map[String, String]) =
     url"$baseUrl/xi/api/v2/green_lanes/goods_nomenclatures/$commodityCode?$queryParams"
@@ -55,9 +61,9 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
   ): Future[T] = {
     val requestStartTime = Instant.now
 
-    val request        = httpClient
+    val request = httpClient
       .get(url)(hc)
-      .setHeader(HeaderNames.authorisation -> s"Token $authToken")
+      .setHeader(headers)
 
     val updatedRequest = if (useProxy) request.withProxy else request
 
