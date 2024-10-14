@@ -162,14 +162,6 @@ class DownloadDataConnectorSpec
     }
 
     "must return None" - {
-      "if status is anything but a Ok response" in {
-          wireMockServer.stubFor(
-            get(urlEqualTo(downloadDataSummaryUrl))
-              .willReturn(status(errorResponses.sample.value))
-          )
-
-          connector.getDownloadDataSummary(testEori).futureValue mustBe None
-      }
 
       "if Download summary does not exist" in {
 

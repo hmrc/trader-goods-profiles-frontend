@@ -64,8 +64,9 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
             case _  => None
           }
         }
-        .recover { case _: UpstreamErrorResponse =>
-          None
+        .recover {
+          case x: UpstreamErrorResponse if x.statusCode == NOT_FOUND =>
+            None
         }
     } else {
       Future.successful(None)
