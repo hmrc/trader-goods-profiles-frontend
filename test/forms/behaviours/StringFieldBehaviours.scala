@@ -21,10 +21,16 @@ import play.api.data.{Form, FormError}
 
 trait StringFieldBehaviours extends FieldBehaviours {
 
-  def fieldWithMaxLength(form: Form[_], fieldName: String, maxLength: Int, lengthError: FormError): Unit =
+  def fieldWithMaxLength(
+    form: Form[_],
+    fieldName: String,
+    maxLength: Int,
+    lengthError: FormError,
+    generateString: Int => Gen[String] = stringsLongerThan
+  ): Unit =
     s"not bind strings longer than $maxLength characters" in {
 
-      forAll(stringsLongerThan(maxLength) -> "longString") { string =>
+      forAll(generateString(maxLength) -> "longString") { string =>
         val result = form.bind(Map(fieldName -> string)).apply(fieldName)
         result.errors.find(_ == lengthError) mustBe defined
       }
