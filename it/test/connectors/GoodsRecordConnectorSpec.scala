@@ -20,7 +20,7 @@ import base.TestConstants.testEori
 import com.github.tomakehurst.wiremock.client.WireMock._
 import generators.StatusCodeGenerators
 import models.ott.CategorisationInfo
-import models.router.requests.{CreateRecordRequest, PatchRecordRequest, PutRecordRequest}
+import models.router.requests.{CreateRecordRequest, UpdateRecordRequest}
 import models.router.responses.{GetGoodsRecordResponse, GetRecordsResponse}
 import models.{Category1Scenario, CategoryRecord, Commodity, GoodsRecord, RecordsSummary, SupplementaryRequest, UpdateGoodsRecord}
 import org.scalatest.OptionValues
@@ -38,7 +38,7 @@ import utils.GetRecordsResponseUtil
 import java.time.Instant
 
 class GoodsRecordConnectorSpec
-  extends AnyFreeSpec
+    extends AnyFreeSpec
     with Matchers
     with WireMockSupport
     with ScalaFutures
@@ -58,15 +58,14 @@ class GoodsRecordConnectorSpec
   implicit private lazy val hc: HeaderCarrier = HeaderCarrier()
 
   private val xClientIdName: String = "X-Client-ID"
-  private val xClientId: String = "tgp-frontend"
-  private val testRecordId = "8ebb6b04-6ab0-4fe2-ad62-e6389a8a204f"
+  private val xClientId: String     = "tgp-frontend"
+  private val testRecordId          = "8ebb6b04-6ab0-4fe2-ad62-e6389a8a204f"
 
-  private val goodsRecordUrl = s"/trader-goods-profiles-data-store/traders/$testEori/records/$testRecordId"
+  private val goodsRecordUrl    = s"/trader-goods-profiles-data-store/traders/$testEori/records/$testRecordId"
   private val recordsSummaryUrl = s"/trader-goods-profiles-data-store/traders/$testEori/records-summary"
 
   private lazy val getRecordResponse = Json
-    .parse(
-      s"""
+    .parse(s"""
          |  {
          |    "eori": "$testEori",
          |    "actorId": "$testEori",
@@ -108,8 +107,7 @@ class GoodsRecordConnectorSpec
          |""".stripMargin)
 
   private lazy val getRecordsResponse = Json
-    .parse(
-      s"""
+    .parse(s"""
          |{
          |"goodsItemRecords": [
          |  {
@@ -235,8 +233,6 @@ class GoodsRecordConnectorSpec
          |  }
          |""".stripMargin)
 
-  val goodsRecord: GetGoodsRecordResponse = getRecordResponse.as[GetGoodsRecordResponse]
-
   private val instant = Instant.now
 
   ".submitGoodsRecord" - {
@@ -351,7 +347,7 @@ class GoodsRecordConnectorSpec
       wasSupplementaryUnitAsked = false
     )
 
-    val updateRecordRequest = PatchRecordRequest(
+    val updateRecordRequest = UpdateRecordRequest(
       testEori,
       testRecordId,
       testEori,
@@ -371,7 +367,9 @@ class GoodsRecordConnectorSpec
             .willReturn(ok())
         )
 
-        connector.updateCategoryAndComcodeForGoodsRecord(testEori, testRecordId, categoryRecord, goodsRecord).futureValue
+        connector
+          .updateCategoryAndComcodeForGoodsRecord(testEori, testRecordId, categoryRecord)
+          .futureValue
       }
 
       "with a category and supplementary unit" in {
@@ -393,7 +391,9 @@ class GoodsRecordConnectorSpec
             .willReturn(ok())
         )
 
-        connector.updateCategoryAndComcodeForGoodsRecord(testEori, testRecordId, categoryRecordWithSupp, goodsRecord).futureValue
+        connector
+          .updateCategoryAndComcodeForGoodsRecord(testEori, testRecordId, categoryRecordWithSupp)
+          .futureValue
       }
 
       "with a category and longer commodity code" in {
@@ -414,7 +414,7 @@ class GoodsRecordConnectorSpec
         )
 
         connector
-          .updateCategoryAndComcodeForGoodsRecord(testEori, testRecordId, categoryRecordWithLongerComCode, goodsRecord)
+          .updateCategoryAndComcodeForGoodsRecord(testEori, testRecordId, categoryRecordWithLongerComCode)
           .futureValue
       }
 
@@ -429,7 +429,10 @@ class GoodsRecordConnectorSpec
           .willReturn(serverError())
       )
 
-      connector.updateCategoryAndComcodeForGoodsRecord(testEori, testRecordId, categoryRecord, goodsRecord).failed.futureValue
+      connector
+        .updateCategoryAndComcodeForGoodsRecord(testEori, testRecordId, categoryRecord)
+        .failed
+        .futureValue
     }
   }
 
@@ -443,7 +446,7 @@ class GoodsRecordConnectorSpec
       measurementUnit = Some("1")
     )
 
-    val updateRecordRequest = PatchRecordRequest(
+    val updateRecordRequest = UpdateRecordRequest(
       testEori,
       testRecordId,
       testEori,
@@ -461,7 +464,9 @@ class GoodsRecordConnectorSpec
           .willReturn(ok())
       )
 
-      connector.updateSupplementaryUnitForGoodsRecord(testEori, testRecordId, supplementaryRequest, goodsRecord).futureValue
+      connector
+        .updateSupplementaryUnitForGoodsRecord(testEori, testRecordId, supplementaryRequest)
+        .futureValue
     }
 
     "must return a failed future when the server returns an error" in {
@@ -473,11 +478,14 @@ class GoodsRecordConnectorSpec
           .willReturn(serverError())
       )
 
-      connector.updateSupplementaryUnitForGoodsRecord(testEori, testRecordId, supplementaryRequest, goodsRecord).failed.futureValue
+      connector
+        .updateSupplementaryUnitForGoodsRecord(testEori, testRecordId, supplementaryRequest)
+        .failed
+        .futureValue
     }
   }
 
-  ".patchGoodsRecord" - {
+  ".updateGoodsRecord" - {
 
     val goodsRecord = UpdateGoodsRecord(
       eori = testEori,
@@ -485,7 +493,7 @@ class GoodsRecordConnectorSpec
       countryOfOrigin = Some("CN")
     )
 
-    val updateRecordRequest = PatchRecordRequest(
+    val updateRecordRequest = UpdateRecordRequest(
       testEori,
       testRecordId,
       testEori,
@@ -517,47 +525,6 @@ class GoodsRecordConnectorSpec
       )
 
       connector.updateGoodsRecord(goodsRecord).failed.futureValue
-    }
-  }
-
-  ".putGoodsRecord" - {
-
-    val putRecordRequest = PutRecordRequest(
-      testEori,
-      "BAN001001",
-      "10410100",
-      "Organic bananas",
-      "EC",
-      Some(3),
-      None,
-      Some(500),
-      Some("square meters(m^2)"),
-      Instant.parse("2024-10-12T16:12:34Z"),
-      Some(Instant.parse("2024-10-12T16:12:34Z"))
-    )
-
-    "must update a goods record" in {
-
-      wireMockServer.stubFor(
-        put(urlEqualTo(goodsRecordUrl))
-          .withRequestBody(equalTo(Json.toJson(putRecordRequest).toString))
-          .withHeader(xClientIdName, equalTo(xClientId))
-          .willReturn(ok())
-      )
-
-      connector.putGoodsRecord(putRecordRequest, testRecordId).futureValue
-    }
-
-    "must return a failed future when the server returns an error" in {
-
-      wireMockServer.stubFor(
-        patch(urlEqualTo(goodsRecordUrl))
-          .withRequestBody(equalTo(Json.toJson(putRecordRequest).toString))
-          .withHeader(xClientIdName, equalTo(xClientId))
-          .willReturn(serverError())
-      )
-
-      connector.putGoodsRecord(putRecordRequest, testRecordId).failed.futureValue
     }
   }
 
@@ -722,8 +689,8 @@ class GoodsRecordConnectorSpec
 
   ".searchRecords" - {
 
-    val searchString = "banana"
-    val exactMatch = false
+    val searchString               = "banana"
+    val exactMatch                 = false
     val pagedGoodsRecordsSearchUrl =
       s"/trader-goods-profiles-data-store/traders/$testEori/records/filter?searchTerm=$searchString&exactMatch=$exactMatch&page=1&size=3"
 

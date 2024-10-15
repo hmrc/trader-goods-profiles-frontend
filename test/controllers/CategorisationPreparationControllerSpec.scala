@@ -134,7 +134,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
           withClue("must not have updated goods record") {
             verify(mockGoodsRecordConnector, times(0))
-              .updateCategoryAndComcodeForGoodsRecord(any(), any(), any(), any())(
+              .updateCategoryAndComcodeForGoodsRecord(any(), any(), any())(
                 any()
               )
           }
@@ -200,7 +200,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
           withClue("must not have updated goods record") {
             verify(mockGoodsRecordConnector, times(0))
-              .updateCategoryAndComcodeForGoodsRecord(any(), any(), any(), any())(
+              .updateCategoryAndComcodeForGoodsRecord(any(), any(), any())(
                 any()
               )
           }
@@ -238,7 +238,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
         when(mockCategorisationService.calculateResult(any(), any(), any()))
           .thenReturn(StandardGoodsNoAssessmentsScenario)
 
-        when(mockGoodsRecordConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any(), any())(any()))
+        when(mockGoodsRecordConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any())(any()))
           .thenReturn(Future.successful(Done))
 
         val app = application()
@@ -266,8 +266,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           verify(mockGoodsRecordConnector).updateCategoryAndComcodeForGoodsRecord(
             any(),
             eqTo(testRecordId),
-            categoryRecordArgCaptor.capture(),
-            any()
+            categoryRecordArgCaptor.capture()
           )(any())
 
           val categoryRecord = categoryRecordArgCaptor.getValue
@@ -385,7 +384,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
         when(mockCategorisationService.calculateResult(any(), any(), any()))
           .thenReturn(StandardGoodsNoAssessmentsScenario)
 
-        when(mockGoodsRecordConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any(), any())(any()))
+        when(mockGoodsRecordConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any())(any()))
           .thenReturn(Future.failed(new RuntimeException(":(")))
 
         val app = application()
@@ -528,7 +527,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
           withClue("must not have updated goods record") {
             verify(mockGoodsRecordConnector, times(0))
-              .updateCategoryAndComcodeForGoodsRecord(any(), any(), any(), any())(
+              .updateCategoryAndComcodeForGoodsRecord(any(), any(), any())(
                 any()
               )
           }
@@ -563,7 +562,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
         when(mockCategorisationService.calculateResult(any(), any(), any()))
           .thenReturn(StandardGoodsNoAssessmentsScenario)
 
-        when(mockGoodsRecordConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any(), any())(any()))
+        when(mockGoodsRecordConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any())(any()))
           .thenReturn(Future.successful(Done))
 
         val app = application(userAnswers)
@@ -603,8 +602,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           verify(mockGoodsRecordConnector).updateCategoryAndComcodeForGoodsRecord(
             any(),
             eqTo(testRecordId),
-            categoryRecordArgCaptor.capture(),
-            any()
+            categoryRecordArgCaptor.capture()
           )(any())
 
           val categoryRecord = categoryRecordArgCaptor.getValue
@@ -922,7 +920,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
             withClue("must not have updated goods record") {
               verify(mockGoodsRecordConnector, times(0))
-                .updateCategoryAndComcodeForGoodsRecord(any(), any(), any(), any())(
+                .updateCategoryAndComcodeForGoodsRecord(any(), any(), any())(
                   any()
                 )
             }
@@ -1065,7 +1063,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
         when(mockCategorisationService.calculateResult(any(), any(), any()))
           .thenReturn(StandardGoodsNoAssessmentsScenario)
 
-        when(mockGoodsRecordConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any(), any())(any()))
+        when(mockGoodsRecordConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any())(any()))
           .thenReturn(Future.failed(new RuntimeException(":(")))
 
         val app = application(userAnswers)
@@ -1099,7 +1097,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           Future.successful(categoryInfoNoAssessments)
         )
 
-        when(mockGoodsRecordConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any(), any())(any()))
+        when(mockGoodsRecordConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any())(any()))
           .thenReturn(Future.successful(Done))
 
         val userAnswers = emptyUserAnswers
@@ -1139,7 +1137,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           Future.successful(categoryInfoNoAssessments)
         )
 
-        when(mockGoodsRecordConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any(), any())(any()))
+        when(mockGoodsRecordConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any())(any()))
           .thenReturn(Future.successful(Done))
 
         val userAnswers = emptyUserAnswers

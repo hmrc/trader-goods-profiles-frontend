@@ -274,8 +274,6 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             val mockSessionRepository    = mock[SessionRepository]
             val mockAppConfig            = mock[FrontendAppConfig]
 
-            when(mockAppConfig.useEisPatchMethod).thenReturn(false)
-
             when(mockGoodsRecordConnector.updateGoodsRecord(any())(any())).thenReturn(Future.successful(Done))
             when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
               .thenReturn(Future.successful(Done))
@@ -521,9 +519,6 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
             val mockConnector    = mock[GoodsRecordConnector]
             val mockAuditService = mock[AuditService]
-            val mockAppConfig    = mock[FrontendAppConfig]
-
-            when(mockAppConfig.useEisPatchMethod).thenReturn(false)
 
             when(mockConnector.getRecord(any(), any())(any())).thenReturn(Future.successful(record))
 
@@ -736,9 +731,6 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
             val mockConnector    = mock[GoodsRecordConnector]
             val mockAuditService = mock[AuditService]
-            val mockAppConfig    = mock[FrontendAppConfig]
-
-            when(mockAppConfig.useEisPatchMethod).thenReturn(false)
 
             when(mockConnector.getRecord(any(), any())(any())).thenReturn(Future.successful(record))
             when(mockConnector.updateGoodsRecord(any())(any())).thenReturn(Future.successful(Done))
@@ -1113,9 +1105,6 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
             val mockGoodsRecordConnector = mock[GoodsRecordConnector]
             val mockAuditService         = mock[AuditService]
-            val mockAppConfig            = mock[FrontendAppConfig]
-
-            when(mockAppConfig.useEisPatchMethod).thenReturn(false)
 
             when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
               .thenReturn(Future.successful(Done))

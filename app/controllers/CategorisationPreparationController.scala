@@ -177,14 +177,8 @@ class CategorisationPreparationController @Inject() (
             record
           )
 
-          val result = for {
-            oldRecord <- goodsRecordsConnector.getRecord(eori, recordId)
-            _         <- goodsRecordsConnector.updateCategoryAndComcodeForGoodsRecord(eori, recordId, record, oldRecord)
-          } yield Done
-
-          result
-
-        case Left(errors) =>
+          goodsRecordsConnector.updateCategoryAndComcodeForGoodsRecord(eori, recordId, record)
+        case Left(errors)  =>
           val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
           Future.failed(CategoryRecordBuildFailure(errorMessages))
       }

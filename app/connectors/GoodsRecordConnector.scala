@@ -16,8 +16,8 @@
 
 package connectors
 
-import config.{FrontendAppConfig, Service}
-import models.router.requests.{CreateRecordRequest, PatchRecordRequest, PutRecordRequest}
+import config.Service
+import models.router.requests.{CreateRecordRequest, UpdateRecordRequest}
 import models.router.responses.{GetGoodsRecordResponse, GetRecordsResponse}
 import models.{CategoryRecord, GoodsRecord, LegacyRawReads, RecordsSummary, SupplementaryRequest, UpdateGoodsRecord}
 import org.apache.pekko.Done
@@ -30,8 +30,8 @@ import uk.gov.hmrc.http.client.HttpClientV2
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpClientV2, appConfig: FrontendAppConfig)(
-  implicit ec: ExecutionContext
+class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpClientV2)(implicit
+  ec: ExecutionContext
 ) extends LegacyRawReads {
   private val dataStoreBaseUrl: Service = config.get[Service]("microservice.services.trader-goods-profiles-data-store")
   private val clientIdHeader            = ("X-Client-ID", "tgp-frontend")
@@ -94,86 +94,39 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
           false
       }
 
-  // TODO: remove this function when EIS has implemented the PATCH method - TGP-2417 and keep putGoodsRecord and patchGoodsRecord
   def updateGoodsRecord(updateGoodsRecord: UpdateGoodsRecord)(implicit
     hc: HeaderCarrier
   ): Future[Done] =
     httpClient
       .patch(goodsRecordUrl(updateGoodsRecord.eori, updateGoodsRecord.recordId))
       .setHeader(clientIdHeader)
-      .withBody(Json.toJson(PatchRecordRequest.map(updateGoodsRecord)))
+      .withBody(Json.toJson(UpdateRecordRequest.map(updateGoodsRecord)))
       .execute[HttpResponse]
       .map(_ => Done)
 
-  def patchGoodsRecord(updateGoodsRecord: UpdateGoodsRecord)(implicit
+  def updateCategoryAndComcodeForGoodsRecord(eori: String, recordId: String, categoryRecord: CategoryRecord)(implicit
     hc: HeaderCarrier
   ): Future[Done] =
     httpClient
-      .patch(goodsRecordUrl(updateGoodsRecord.eori, updateGoodsRecord.recordId))
+      .patch(goodsRecordUrl(eori, recordId))
       .setHeader(clientIdHeader)
-      .withBody(Json.toJson(PatchRecordRequest.map(updateGoodsRecord)))
+      .withBody(Json.toJson(UpdateRecordRequest.mapFromCategoryAndComcode(categoryRecord)))
       .execute[HttpResponse]
       .map(_ => Done)
-
-  def putGoodsRecord(updateGoodsRecord: PutRecordRequest, recordId: String)(implicit
-    hc: HeaderCarrier
-  ): Future[Done] =
-    httpClient
-      .put(goodsRecordUrl(updateGoodsRecord.actorId, recordId))
-      .setHeader(clientIdHeader)
-      .withBody(Json.toJson(updateGoodsRecord))
-      .execute[HttpResponse]
-      .map(_ => Done)
-
-  def updateCategoryAndComcodeForGoodsRecord(
-    eori: String,
-    recordId: String,
-    categoryRecord: CategoryRecord,
-    oldRecord: GetGoodsRecordResponse
-  )(implicit
-    hc: HeaderCarrier
-  ): Future[Done] =
-    // TODO: remove this flag when EIS has implemented the PATCH method - TGP-2417 and keep the put call as default
-    if (appConfig.useEisPatchMethod) {
-      httpClient
-        .put(goodsRecordUrl(eori, recordId))
-        .setHeader(clientIdHeader)
-        .withBody(Json.toJson(PutRecordRequest.mapFromCategoryAndComcode(categoryRecord, oldRecord)))
-        .execute[HttpResponse]
-        .map(_ => Done)
-    } else {
-      httpClient
-        .patch(goodsRecordUrl(eori, recordId))
-        .setHeader(clientIdHeader)
-        .withBody(Json.toJson(PatchRecordRequest.mapFromCategoryAndComcode(categoryRecord)))
-        .execute[HttpResponse]
-        .map(_ => Done)
-    }
 
   def updateSupplementaryUnitForGoodsRecord(
     eori: String,
     recordId: String,
-    supplementaryRequest: SupplementaryRequest,
-    oldRecord: GetGoodsRecordResponse
+    supplementaryRequest: SupplementaryRequest
   )(implicit
     hc: HeaderCarrier
   ): Future[Done] =
-    // TODO: remove this flag when EIS has implemented the PATCH method - TGP-2417 and keep the put call as default
-    if (appConfig.useEisPatchMethod) {
-      httpClient
-        .put(goodsRecordUrl(eori, recordId))
-        .setHeader(clientIdHeader)
-        .withBody(Json.toJson(PutRecordRequest.mapFromSupplementary(supplementaryRequest, oldRecord)))
-        .execute[HttpResponse]
-        .map(_ => Done)
-    } else {
-      httpClient
-        .patch(goodsRecordUrl(eori, recordId))
-        .setHeader(clientIdHeader)
-        .withBody(Json.toJson(PatchRecordRequest.mapFromSupplementary(supplementaryRequest)))
-        .execute[HttpResponse]
-        .map(_ => Done)
-    }
+    httpClient
+      .patch(goodsRecordUrl(eori, recordId))
+      .setHeader(clientIdHeader)
+      .withBody(Json.toJson(UpdateRecordRequest.mapFromSupplementary(supplementaryRequest)))
+      .execute[HttpResponse]
+      .map(_ => Done)
 
   def getRecord(eori: String, recordId: String)(implicit
     hc: HeaderCarrier
