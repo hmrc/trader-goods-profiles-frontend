@@ -17,9 +17,9 @@
 package connectors
 
 import config.FrontendAppConfig
-import models.{DownloadData, DownloadDataSummary, Email}
+import models.{DownloadData, DownloadDataSummary, Email, LegacyRawReads}
 import org.apache.pekko.Done
-import play.api.http.Status.{ACCEPTED, OK}
+import play.api.http.Status.{ACCEPTED, NOT_FOUND, OK}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.client.HttpClientV2
 
@@ -28,7 +28,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: HttpClientV2)(implicit
   ec: ExecutionContext
-) {
+) extends LegacyRawReads {
+
   private val clientIdHeader = ("X-Client-ID", "tgp-frontend")
 
   private def downloadDataSummaryUrl(eori: String) =
@@ -45,9 +46,10 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
       .post(downloadDataUrl(eori))
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
-      .map { response =>
+      .flatMap { response =>
         response.status match {
-          case ACCEPTED => Done
+          case ACCEPTED => Future.successful(Done)
+          case _        => Future.failed(UpstreamErrorResponse(response.body, response.status))
         }
       }
 
@@ -59,10 +61,12 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
         .map { response =>
           response.status match {
             case OK => Some(response.json.as[DownloadDataSummary])
+            case _  => None
           }
         }
-        .recover { case _: NotFoundException =>
-          None
+        .recover {
+          case x: UpstreamErrorResponse if x.statusCode == NOT_FOUND =>
+            None
         }
     } else {
       Future.successful(None)
@@ -75,20 +79,23 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
       .map { response =>
         response.status match {
           case OK => Some(response.json.as[DownloadData])
+          case _  => None
         }
       }
-      .recover { case _: NotFoundException =>
-        None
+      .recover {
+        case x: UpstreamErrorResponse if x.statusCode == NOT_FOUND =>
+          None
       }
 
   def getEmail(eori: String)(implicit hc: HeaderCarrier): Future[Email] =
     httpClient
       .get(emailUrl(eori))
       .execute[HttpResponse]
-      .map { response =>
+      .flatMap { response =>
         response.status match {
           //TODO this also retunrs a 404 but we are choosing to ignore it because at some point we are going to put in a check when anyone enters our service to check that they have a verified and deliverable email so this should never be 404
-          case OK => response.json.as[Email]
+          case OK => Future.successful(response.json.as[Email])
+          case _  => Future.failed(UpstreamErrorResponse(response.body, response.status))
         }
       }
 }

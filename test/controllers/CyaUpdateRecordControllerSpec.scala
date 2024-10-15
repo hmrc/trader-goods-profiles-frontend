@@ -212,6 +212,34 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           }
         }
 
+        "must redirect to Journey Recovery if getCountryOfOriginAnswer returns None" in {
+
+          val userAnswers = emptyUserAnswers
+            .set(warningPage, true)
+            .success
+            .value
+
+          val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+          when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
+            .successful(record)
+
+          val application = applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
+            .build()
+
+          running(application) {
+            val request = FakeRequest(GET, getUrl)
+
+            val result = route(application, request).value
+
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual
+              routes.JourneyRecoveryController
+                .onPageLoad(continueUrl = Some(RedirectUrl(journeyRecoveryContinueUrl)))
+                .url
+          }
+        }
+
         "must redirect to Journey Recovery if no existing data is found" in {
 
           val application = applicationBuilder(userAnswers = None).build()

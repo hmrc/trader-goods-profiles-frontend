@@ -18,6 +18,7 @@ package connectors
 
 import base.TestConstants.testEori
 import com.github.tomakehurst.wiremock.client.WireMock._
+import generators.StatusCodeGenerators
 import models.ott.CategorisationInfo
 import models.router.requests.{CreateRecordRequest, PatchRecordRequest, PutRecordRequest}
 import models.router.responses.{GetGoodsRecordResponse, GetRecordsResponse}
@@ -37,13 +38,14 @@ import utils.GetRecordsResponseUtil
 import java.time.Instant
 
 class GoodsRecordConnectorSpec
-    extends AnyFreeSpec
+  extends AnyFreeSpec
     with Matchers
     with WireMockSupport
     with ScalaFutures
     with IntegrationPatience
     with GetRecordsResponseUtil
-    with OptionValues {
+    with OptionValues
+    with StatusCodeGenerators {
 
   private lazy val app: Application =
     new GuiceApplicationBuilder()
@@ -56,180 +58,182 @@ class GoodsRecordConnectorSpec
   implicit private lazy val hc: HeaderCarrier = HeaderCarrier()
 
   private val xClientIdName: String = "X-Client-ID"
-  private val xClientId: String     = "tgp-frontend"
-  private val testRecordId          = "8ebb6b04-6ab0-4fe2-ad62-e6389a8a204f"
+  private val xClientId: String = "tgp-frontend"
+  private val testRecordId = "8ebb6b04-6ab0-4fe2-ad62-e6389a8a204f"
 
-  private val goodsRecordUrl    = s"/trader-goods-profiles-data-store/traders/$testEori/records/$testRecordId"
+  private val goodsRecordUrl = s"/trader-goods-profiles-data-store/traders/$testEori/records/$testRecordId"
   private val recordsSummaryUrl = s"/trader-goods-profiles-data-store/traders/$testEori/records-summary"
 
   private lazy val getRecordResponse = Json
-    .parse(s"""
-              |  {
-              |    "eori": "$testEori",
-              |    "actorId": "$testEori",
-              |    "recordId": "$testRecordId",
-              |    "traderRef": "BAN001001",
-              |    "comcode": "10410100",
-              |    "adviceStatus": "Not requested",
-              |    "goodsDescription": "Organic bananas",
-              |    "countryOfOrigin": "EC",
-              |    "category": 3,
-              |    "assessments": [
-              |      {
-              |        "assessmentId": "abc123",
-              |        "primaryCategory": "1",
-              |        "condition": {
-              |          "type": "abc123",
-              |          "conditionId": "Y923",
-              |          "conditionDescription": "Products not considered as waste according to Regulation (EC) No 1013/2006 as retained in UK law",
-              |          "conditionTraderText": "Excluded product"
-              |        }
-              |      }
-              |    ],
-              |    "supplementaryUnit": 500,
-              |    "measurementUnit": "square meters(m^2)",
-              |    "comcodeEffectiveFromDate": "2024-11-18T23:20:19Z",
-              |    "comcodeEffectiveToDate": "2024-11-18T23:20:19Z",
-              |    "version": 1,
-              |    "active": true,
-              |    "toReview": false,
-              |    "reviewReason": null,
-              |    "declarable": "IMMI declarable",
-              |    "ukimsNumber": "XIUKIM47699357400020231115081800",
-              |    "nirmsNumber": "RMS-GB-123456",
-              |    "niphlNumber": "6 S12345",
-              |    "locked": false,
-              |    "createdDateTime": "2024-11-18T23:20:19Z",
-              |    "updatedDateTime": "2024-11-18T23:20:19Z"
-              |  }
-              |""".stripMargin)
+    .parse(
+      s"""
+         |  {
+         |    "eori": "$testEori",
+         |    "actorId": "$testEori",
+         |    "recordId": "$testRecordId",
+         |    "traderRef": "BAN001001",
+         |    "comcode": "10410100",
+         |    "adviceStatus": "Not requested",
+         |    "goodsDescription": "Organic bananas",
+         |    "countryOfOrigin": "EC",
+         |    "category": 3,
+         |    "assessments": [
+         |      {
+         |        "assessmentId": "abc123",
+         |        "primaryCategory": "1",
+         |        "condition": {
+         |          "type": "abc123",
+         |          "conditionId": "Y923",
+         |          "conditionDescription": "Products not considered as waste according to Regulation (EC) No 1013/2006 as retained in UK law",
+         |          "conditionTraderText": "Excluded product"
+         |        }
+         |      }
+         |    ],
+         |    "supplementaryUnit": 500,
+         |    "measurementUnit": "square meters(m^2)",
+         |    "comcodeEffectiveFromDate": "2024-11-18T23:20:19Z",
+         |    "comcodeEffectiveToDate": "2024-11-18T23:20:19Z",
+         |    "version": 1,
+         |    "active": true,
+         |    "toReview": false,
+         |    "reviewReason": null,
+         |    "declarable": "IMMI declarable",
+         |    "ukimsNumber": "XIUKIM47699357400020231115081800",
+         |    "nirmsNumber": "RMS-GB-123456",
+         |    "niphlNumber": "6 S12345",
+         |    "locked": false,
+         |    "createdDateTime": "2024-11-18T23:20:19Z",
+         |    "updatedDateTime": "2024-11-18T23:20:19Z"
+         |  }
+         |""".stripMargin)
 
   private lazy val getRecordsResponse = Json
-    .parse(s"""
-              |{
-              |"goodsItemRecords": [
-              |  {
-              |    "eori": "$testEori",
-              |    "actorId": "$testEori",
-              |    "recordId": "1",
-              |    "traderRef": "BAN0010011",
-              |    "comcode": "10410100",
-              |    "adviceStatus": "Not requested",
-              |    "goodsDescription": "Organic bananas",
-              |    "countryOfOrigin": "EC",
-              |    "category": 3,
-              |    "assessments": [
-              |      {
-              |        "assessmentId": "abc123",
-              |        "primaryCategory": "1",
-              |        "condition": {
-              |          "type": "abc123",
-              |          "conditionId": "Y923",
-              |          "conditionDescription": "Products not considered as waste according to Regulation (EC) No 1013/2006 as retained in UK law",
-              |          "conditionTraderText": "Excluded product"
-              |        }
-              |      }
-              |    ],
-              |    "supplementaryUnit": 500,
-              |    "measurementUnit": "square meters(m^2)",
-              |    "comcodeEffectiveFromDate": "2024-11-18T23:20:19Z",
-              |    "comcodeEffectiveToDate": "2024-11-18T23:20:19Z",
-              |    "version": 1,
-              |    "active": true,
-              |    "toReview": false,
-              |    "reviewReason": null,
-              |    "declarable": "IMMI declarable",
-              |    "ukimsNumber": "XIUKIM47699357400020231115081800",
-              |    "nirmsNumber": "RMS-GB-123456",
-              |    "niphlNumber": "6 S12345",
-              |    "locked": false,
-              |    "createdDateTime": "2022-11-18T23:20:19Z",
-              |    "updatedDateTime": "2022-11-18T23:20:19Z"
-              |  },
-              |    {
-              |    "eori": "$testEori",
-              |    "actorId": "$testEori",
-              |    "recordId": "2",
-              |    "traderRef": "BAN0010012",
-              |    "comcode": "10410100",
-              |    "adviceStatus": "Not requested",
-              |    "goodsDescription": "Organic bananas",
-              |    "countryOfOrigin": "EC",
-              |    "category": 3,
-              |    "assessments": [
-              |      {
-              |        "assessmentId": "abc123",
-              |        "primaryCategory": "1",
-              |        "condition": {
-              |          "type": "abc123",
-              |          "conditionId": "Y923",
-              |          "conditionDescription": "Products not considered as waste according to Regulation (EC) No 1013/2006 as retained in UK law",
-              |          "conditionTraderText": "Excluded product"
-              |        }
-              |      }
-              |    ],
-              |    "supplementaryUnit": 500,
-              |    "measurementUnit": "square meters(m^2)",
-              |    "comcodeEffectiveFromDate": "2024-11-18T23:20:19Z",
-              |    "comcodeEffectiveToDate": "2024-11-18T23:20:19Z",
-              |    "version": 1,
-              |    "active": true,
-              |    "toReview": false,
-              |    "reviewReason": null,
-              |    "declarable": "IMMI declarable",
-              |    "ukimsNumber": "XIUKIM47699357400020231115081800",
-              |    "nirmsNumber": "RMS-GB-123456",
-              |    "niphlNumber": "6 S12345",
-              |    "locked": false,
-              |    "createdDateTime": "2023-11-18T23:20:19Z",
-              |    "updatedDateTime": "2023-11-18T23:20:19Z"
-              |  },
-              |    {
-              |    "eori": "$testEori",
-              |    "actorId": "$testEori",
-              |    "recordId": "3",
-              |    "traderRef": "BAN0010013",
-              |    "comcode": "10410100",
-              |    "adviceStatus": "Not requested",
-              |    "goodsDescription": "Organic bananas",
-              |    "countryOfOrigin": "EC",
-              |    "category": 3,
-              |    "assessments": [
-              |      {
-              |        "assessmentId": "abc123",
-              |        "primaryCategory": "1",
-              |        "condition": {
-              |          "type": "abc123",
-              |          "conditionId": "Y923",
-              |          "conditionDescription": "Products not considered as waste according to Regulation (EC) No 1013/2006 as retained in UK law",
-              |          "conditionTraderText": "Excluded product"
-              |        }
-              |      }
-              |    ],
-              |    "supplementaryUnit": 500,
-              |    "measurementUnit": "square meters(m^2)",
-              |    "comcodeEffectiveFromDate": "2024-11-18T23:20:19Z",
-              |    "comcodeEffectiveToDate": "2024-11-18T23:20:19Z",
-              |    "version": 1,
-              |    "active": true,
-              |    "toReview": false,
-              |    "reviewReason": null,
-              |    "declarable": "IMMI declarable",
-              |    "ukimsNumber": "XIUKIM47699357400020231115081800",
-              |    "nirmsNumber": "RMS-GB-123456",
-              |    "niphlNumber": "6 S12345",
-              |    "locked": false,
-              |    "createdDateTime": "2024-11-18T23:20:19Z",
-              |    "updatedDateTime": "2024-11-18T23:20:19Z"
-              |  }
-              |  ],
-              |  "pagination": {
-              |  "totalRecords": 10,
-              |  "currentPage": 1,
-              |  "totalPages": 4
-              |  }
-              |  }
-              |""".stripMargin)
+    .parse(
+      s"""
+         |{
+         |"goodsItemRecords": [
+         |  {
+         |    "eori": "$testEori",
+         |    "actorId": "$testEori",
+         |    "recordId": "1",
+         |    "traderRef": "BAN0010011",
+         |    "comcode": "10410100",
+         |    "adviceStatus": "Not requested",
+         |    "goodsDescription": "Organic bananas",
+         |    "countryOfOrigin": "EC",
+         |    "category": 3,
+         |    "assessments": [
+         |      {
+         |        "assessmentId": "abc123",
+         |        "primaryCategory": "1",
+         |        "condition": {
+         |          "type": "abc123",
+         |          "conditionId": "Y923",
+         |          "conditionDescription": "Products not considered as waste according to Regulation (EC) No 1013/2006 as retained in UK law",
+         |          "conditionTraderText": "Excluded product"
+         |        }
+         |      }
+         |    ],
+         |    "supplementaryUnit": 500,
+         |    "measurementUnit": "square meters(m^2)",
+         |    "comcodeEffectiveFromDate": "2024-11-18T23:20:19Z",
+         |    "comcodeEffectiveToDate": "2024-11-18T23:20:19Z",
+         |    "version": 1,
+         |    "active": true,
+         |    "toReview": false,
+         |    "reviewReason": null,
+         |    "declarable": "IMMI declarable",
+         |    "ukimsNumber": "XIUKIM47699357400020231115081800",
+         |    "nirmsNumber": "RMS-GB-123456",
+         |    "niphlNumber": "6 S12345",
+         |    "locked": false,
+         |    "createdDateTime": "2022-11-18T23:20:19Z",
+         |    "updatedDateTime": "2022-11-18T23:20:19Z"
+         |  },
+         |    {
+         |    "eori": "$testEori",
+         |    "actorId": "$testEori",
+         |    "recordId": "2",
+         |    "traderRef": "BAN0010012",
+         |    "comcode": "10410100",
+         |    "adviceStatus": "Not requested",
+         |    "goodsDescription": "Organic bananas",
+         |    "countryOfOrigin": "EC",
+         |    "category": 3,
+         |    "assessments": [
+         |      {
+         |        "assessmentId": "abc123",
+         |        "primaryCategory": "1",
+         |        "condition": {
+         |          "type": "abc123",
+         |          "conditionId": "Y923",
+         |          "conditionDescription": "Products not considered as waste according to Regulation (EC) No 1013/2006 as retained in UK law",
+         |          "conditionTraderText": "Excluded product"
+         |        }
+         |      }
+         |    ],
+         |    "supplementaryUnit": 500,
+         |    "measurementUnit": "square meters(m^2)",
+         |    "comcodeEffectiveFromDate": "2024-11-18T23:20:19Z",
+         |    "comcodeEffectiveToDate": "2024-11-18T23:20:19Z",
+         |    "version": 1,
+         |    "active": true,
+         |    "toReview": false,
+         |    "reviewReason": null,
+         |    "declarable": "IMMI declarable",
+         |    "ukimsNumber": "XIUKIM47699357400020231115081800",
+         |    "nirmsNumber": "RMS-GB-123456",
+         |    "niphlNumber": "6 S12345",
+         |    "locked": false,
+         |    "createdDateTime": "2023-11-18T23:20:19Z",
+         |    "updatedDateTime": "2023-11-18T23:20:19Z"
+         |  },
+         |    {
+         |    "eori": "$testEori",
+         |    "actorId": "$testEori",
+         |    "recordId": "3",
+         |    "traderRef": "BAN0010013",
+         |    "comcode": "10410100",
+         |    "adviceStatus": "Not requested",
+         |    "goodsDescription": "Organic bananas",
+         |    "countryOfOrigin": "EC",
+         |    "category": 3,
+         |    "assessments": [
+         |      {
+         |        "assessmentId": "abc123",
+         |        "primaryCategory": "1",
+         |        "condition": {
+         |          "type": "abc123",
+         |          "conditionId": "Y923",
+         |          "conditionDescription": "Products not considered as waste according to Regulation (EC) No 1013/2006 as retained in UK law",
+         |          "conditionTraderText": "Excluded product"
+         |        }
+         |      }
+         |    ],
+         |    "supplementaryUnit": 500,
+         |    "measurementUnit": "square meters(m^2)",
+         |    "comcodeEffectiveFromDate": "2024-11-18T23:20:19Z",
+         |    "comcodeEffectiveToDate": "2024-11-18T23:20:19Z",
+         |    "version": 1,
+         |    "active": true,
+         |    "toReview": false,
+         |    "reviewReason": null,
+         |    "declarable": "IMMI declarable",
+         |    "ukimsNumber": "XIUKIM47699357400020231115081800",
+         |    "nirmsNumber": "RMS-GB-123456",
+         |    "niphlNumber": "6 S12345",
+         |    "locked": false,
+         |    "createdDateTime": "2024-11-18T23:20:19Z",
+         |    "updatedDateTime": "2024-11-18T23:20:19Z"
+         |  }
+         |  ],
+         |  "pagination": {
+         |  "totalRecords": 10,
+         |  "currentPage": 1,
+         |  "totalPages": 4
+         |  }
+         |  }
+         |""".stripMargin)
 
   val goodsRecord: GetGoodsRecordResponse = getRecordResponse.as[GetGoodsRecordResponse]
 
@@ -297,6 +301,17 @@ class GoodsRecordConnectorSpec
       )
 
       connector.removeGoodsRecord(testEori, testRecordId).futureValue mustBe true
+    }
+
+    "must return a false when anything, but NO_CONTENT is returned" in {
+
+      wireMockServer.stubFor(
+        delete(urlEqualTo(removeRecordUrl))
+          .withHeader(xClientIdName, equalTo(xClientId))
+          .willReturn(status(errorResponses.sample.value))
+      )
+
+      connector.removeGoodsRecord(testEori, testRecordId).failed.futureValue
     }
 
     "must return a failed future when the server returns an error" in {
@@ -609,6 +624,17 @@ class GoodsRecordConnectorSpec
       connector.getRecords(testEori, 1, 3).futureValue mustBe None
     }
 
+    "must return a failed future when the status code is anything but Accepted or Ok" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(pagedGoodsRecordsUrl))
+          .withHeader(xClientIdName, equalTo(xClientId))
+          .willReturn(status(errorResponses.sample.value))
+      )
+
+      connector.getRecords(testEori, 1, 3).failed.futureValue
+    }
+
     "must return a failed future when the server returns an error" in {
 
       wireMockServer.stubFor(
@@ -660,6 +686,17 @@ class GoodsRecordConnectorSpec
       connector.filterRecordsByField(testEori, "TOM001001", "traderRef").futureValue mustBe None
     }
 
+    "must return a failed future when the status is anything but Ok or Accepted" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(filterRecordsUrl))
+          .withHeader(xClientIdName, equalTo(xClientId))
+          .willReturn(status(errorResponses.sample.value))
+      )
+
+      connector.filterRecordsByField(testEori, "TOM001001", "traderRef").failed.futureValue
+    }
+
     "must return a failed future when the server returns an error" in {
 
       wireMockServer.stubFor(
@@ -683,10 +720,10 @@ class GoodsRecordConnectorSpec
     }
   }
 
-  ".getSearch" - {
+  ".searchRecords" - {
 
-    val searchString               = "banana"
-    val exactMatch                 = false
+    val searchString = "banana"
+    val exactMatch = false
     val pagedGoodsRecordsSearchUrl =
       s"/trader-goods-profiles-data-store/traders/$testEori/records/filter?searchTerm=$searchString&exactMatch=$exactMatch&page=1&size=3"
 
@@ -713,6 +750,17 @@ class GoodsRecordConnectorSpec
       )
 
       connector.searchRecords(testEori, searchString, exactMatch = false, 1, 3).futureValue mustBe None
+    }
+
+    "must return a failed future when the response is anything but Ok or Accepted" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(pagedGoodsRecordsSearchUrl))
+          .withHeader(xClientIdName, equalTo(xClientId))
+          .willReturn(status(errorResponses.sample.value))
+      )
+
+      connector.searchRecords(testEori, searchString, exactMatch = false, 1, 3).failed.futureValue
     }
 
     "must return a failed future when the server returns an error" in {

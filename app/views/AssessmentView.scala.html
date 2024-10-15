@@ -29,7 +29,7 @@
 
 @layout(pageTitle = title(form, messages("assessment.title"))) {
 
-    @formHelper(action = onSubmitAction, 'autoComplete -> "off") {
+    @formHelper(action = onSubmitAction, Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))

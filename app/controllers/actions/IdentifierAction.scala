@@ -49,7 +49,6 @@ class AuthenticatedIdentifierAction @Inject() (
     with Logging {
 
   override def invokeBlock[A](request: Request[A], block: IdentifierRequest[A] => Future[Result]): Future[Result] = {
-
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
     val predicates =
@@ -70,6 +69,7 @@ class AuthenticatedIdentifierAction @Inject() (
             case _                                           =>
               throw InsufficientEnrolments("Unable to retrieve Enrolment")
           }
+        case _                                                             => throw InternalError("Undefined authorisation error")
       } recover {
       case _: UserNotAllowedException        =>
         logger.info("trader is not on user-allow-list redirecting to UnauthorisedServiceController")
@@ -84,7 +84,7 @@ class AuthenticatedIdentifierAction @Inject() (
         Redirect(routes.UnauthorisedCdsEnrolmentController.onPageLoad())
       case exception: AuthorisationException =>
         logger.info(f"Authorisation failure: ${exception.reason}. Redirecting to UnauthorisedController")
-        Redirect(routes.UnauthorisedController.onPageLoad)
+        Redirect(routes.UnauthorisedController.onPageLoad())
     }
   }
 

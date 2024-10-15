@@ -43,7 +43,7 @@
     showBackLink: Boolean = true,
     timeout: Boolean = true,
     showSignOut: Boolean = true,
-    signOutUrl: String = controllers.auth.routes.AuthController.signOutNoSurvey.url,
+    signOutUrl: String = controllers.auth.routes.AuthController.signOutNoSurvey().url,
     isFullWidth: Boolean = false,
     extraHead: Html = HtmlFormat.empty,
     headerShouldHaveServiceLink: Boolean = true
@@ -56,7 +56,7 @@
             hmrcTimeoutDialog(TimeoutDialog(
                 timeout             = Some(appConfig.timeout),
                 countdown           = Some(appConfig.countdown),
-                keepAliveUrl        = Some(routes.KeepAliveController.keepAlive.url),
+                keepAliveUrl        = Some(routes.KeepAliveController.keepAlive().url),
                 keepAliveButtonText = Some(messages("timeout.keepAlive")),
                 signOutUrl          = Some(signOutUrl),
                 signOutButtonText   = Some(messages("timeout.signOut")),
@@ -126,7 +126,7 @@
     pageTitle   = Some(pageTitle),
     headBlock   = Some(head),
     headerBlock = Some(hmrcStandardHeader(
-        serviceUrl  = if (headerShouldHaveServiceLink) Some(routes.IndexController.onPageLoad.url) else None,
+        serviceUrl  = if (headerShouldHaveServiceLink) Some(routes.IndexController.onPageLoad().url) else None,
         signOutUrl  = if(showSignOut) Some(signOutUrl) else None,
         phaseBanner = Some(betaBanner(appConfig.feedbackUrl.toString()))
     )),

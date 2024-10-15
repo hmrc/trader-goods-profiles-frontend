@@ -19,7 +19,7 @@ package connectors
 import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, OttAuditData}
 import models.helper.Journey
 import models.ott.response.{CountriesResponse, OttResponse}
-import models.{Commodity, Country}
+import models.{Commodity, Country, LegacyRawReads}
 import play.api.Configuration
 import play.api.libs.json.{JsResult, Reads}
 import services.AuditService
@@ -34,7 +34,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, auditService: AuditService)(implicit
   ec: ExecutionContext
-) {
+) extends LegacyRawReads {
 
   private val useAPIKeyFeature: Boolean = config.get[Boolean]("features.online-trade-tariff-useApiKey")
 
