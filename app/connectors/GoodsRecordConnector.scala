@@ -19,10 +19,10 @@ package connectors
 import config.{FrontendAppConfig, Service}
 import models.router.requests.{CreateRecordRequest, PatchRecordRequest, PutRecordRequest}
 import models.router.responses.{GetGoodsRecordResponse, GetRecordsResponse}
-import models.{CategoryRecord, GoodsRecord, RecordsSummary, SupplementaryRequest, UpdateGoodsRecord}
+import models.{CategoryRecord, GoodsRecord, LegacyRawReads, RecordsSummary, SupplementaryRequest, UpdateGoodsRecord}
 import org.apache.pekko.Done
 import play.api.Configuration
-import play.api.http.Status.{ACCEPTED, NO_CONTENT, OK}
+import play.api.http.Status.{ACCEPTED, NOT_FOUND, NO_CONTENT, OK}
 import play.api.libs.json.Json
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.client.HttpClientV2
@@ -32,7 +32,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpClientV2, appConfig: FrontendAppConfig)(
   implicit ec: ExecutionContext
-) {
+) extends LegacyRawReads {
   private val dataStoreBaseUrl: Service = config.get[Service]("microservice.services.trader-goods-profiles-data-store")
   private val clientIdHeader            = ("X-Client-ID", "tgp-frontend")
 
@@ -82,13 +82,16 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .delete(deleteGoodsRecordUrl(eori, recordId))
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
-      .map { response =>
+      .flatMap { response =>
         response.status match {
-          case NO_CONTENT => true
+          case NO_CONTENT => Future.successful(true)
+          case NOT_FOUND  => Future.successful(false)
+          case _          => Future.failed(UpstreamErrorResponse(response.body, response.status))
         }
       }
-      .recover { case _: NotFoundException =>
-        false
+      .recover {
+        case x: UpstreamErrorResponse if x.statusCode == NOT_FOUND =>
+          false
       }
 
   // TODO: remove this function when EIS has implemented the PATCH method - TGP-2417 and keep putGoodsRecord and patchGoodsRecord
@@ -198,10 +201,11 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .get(goodsRecordsUrl(eori, queryParams))
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
-      .map { response =>
+      .flatMap { response =>
         response.status match {
-          case OK       => Some(response.json.as[GetRecordsResponse])
-          case ACCEPTED => None
+          case OK       => Future.successful(Some(response.json.as[GetRecordsResponse]))
+          case ACCEPTED => Future.successful(None)
+          case _        => Future.failed(UpstreamErrorResponse(response.body, response.status))
         }
       }
   }
@@ -234,10 +238,11 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .get(filterRecordsUrl(eori, queryParams))
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
-      .map { response =>
+      .flatMap { response =>
         response.status match {
-          case OK       => Some(response.json.as[GetRecordsResponse])
-          case ACCEPTED => None
+          case OK       => Future.successful(Some(response.json.as[GetRecordsResponse]))
+          case ACCEPTED => Future.successful(None)
+          case _        => Future.failed(UpstreamErrorResponse(response.body, response.status))
         }
       }
   }
@@ -261,10 +266,11 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .get(searchRecordsUrl(eori, searchTerm, exactMatch, queryParams))
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
-      .map { response =>
+      .flatMap { response =>
         response.status match {
-          case OK       => Some(response.json.as[GetRecordsResponse])
-          case ACCEPTED => None
+          case OK       => Future.successful(Some(response.json.as[GetRecordsResponse]))
+          case ACCEPTED => Future.successful(None)
+          case _        => Future.failed(UpstreamErrorResponse(response.body, response.status))
         }
       }
   }

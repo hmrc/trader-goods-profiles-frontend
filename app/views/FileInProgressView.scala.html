@@ -26,7 +26,7 @@
     <p class="govuk-body">@messages("fileInProgress.p1", email)</p>
     <p class="govuk-body">@messages("fileInProgress.p2")</p>
 
-    <p class="govuk-body"><a href="@routes.RequestDataController.onPageLoad.url" class="govuk-link" >@messages("fileInProgress.linkText1")</a></p>
+    <p class="govuk-body"><a href="@routes.RequestDataController.onPageLoad().url" class="govuk-link" >@messages("fileInProgress.linkText1")</a></p>
     <p class="govuk-body"><a href="@routes.GoodsRecordsController.onPageLoad(1).url" class="govuk-link" >@messages("site.goBackToGoodsProfile")</a></p>
 
 }

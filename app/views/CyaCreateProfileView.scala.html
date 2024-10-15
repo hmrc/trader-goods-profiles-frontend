@@ -45,7 +45,7 @@
     </div>
 
     @govukSummaryList(list)
-    @formHelper(action = routes.CyaCreateProfileController.onSubmit) {
+    @formHelper(action = routes.CyaCreateProfileController.onSubmit()) {
         @govukButton(ButtonViewModel(messages("site.save.continue")))
     }
 }
