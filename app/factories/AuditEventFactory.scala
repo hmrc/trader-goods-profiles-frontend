@@ -233,10 +233,10 @@ case class AuditEventFactory() {
       "addSupplementaryUnit" -> supplementaryRequest.hasSupplementaryUnit.getOrElse(false).toString
     ) ++ writeOptional(
       "supplementaryUnit",
-      supplementaryRequest.supplementaryUnit match {
-        case Some(supplementaryUnit) =>
-          Some(s"$supplementaryUnit ${supplementaryRequest.measurementUnit.getOrElse("Measurement Unit not found")}")
-        case None                    => None
+      if (supplementaryRequest.supplementaryUnit.isDefined) {
+        Some(s"${supplementaryRequest.supplementaryUnit.get} ${supplementaryRequest.measurementUnit.get}")
+      } else {
+        None
       }
     )
     createSubmitGoodsRecordEvent(auditDetails)
