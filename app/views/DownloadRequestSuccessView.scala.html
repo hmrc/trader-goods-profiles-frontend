@@ -32,7 +32,7 @@
 
     <h2 class="govuk-heading-m">@messages("downloadRequestSuccess.h2")</h2>
 
-    <p class="govuk-body">@messages("downloadRequestSuccess.p1")<a href="/to/new/page/when/built">@messages("downloadRequestSuccess.p1.linkText")</a>@messages("downloadRequestSuccess.p1.part2", email)</p>
+    <p class="govuk-body">@messages("downloadRequestSuccess.p1.part1") <a href="@controllers.routes.DownloadDataIndexController.redirect()">@messages("downloadRequestSuccess.p1.linkText")</a> @messages("downloadRequestSuccess.p1.part2", email)</p>
     <p class="govuk-body">@messages("downloadRequestSuccess.p2")</p>
     <p class="govuk-body">@messages("downloadRequestSuccess.p3")</p>
 
