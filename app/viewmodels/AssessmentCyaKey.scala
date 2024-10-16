@@ -23,24 +23,14 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 case class AssessmentCyaKey(codes: Seq[String], descriptions: Seq[String], assessmentNum: String)(implicit
   messages: Messages
 ) {
-  def content: HtmlContent = {
-
-    val exemptions = codes
-      .zip(descriptions)
-      .map { item =>
-        s"<p class='govuk-body'><strong>${item._1}</strong> - ${item._2}</p>"
-      }
-      .mkString
-
+  def content: HtmlContent =
     HtmlContent(
       Html(
         s"""
         <p class='govuk-body'>
-          <strong> ${messages("assessment.heading", assessmentNum)} </strong>
+          <strong> ${messages("cyaCategorisation.assessmentKey", assessmentNum)} </strong>
         </p>
-        $exemptions
       """
       )
     )
-  }
 }

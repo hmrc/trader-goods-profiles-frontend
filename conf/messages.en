@@ -67,6 +67,7 @@ cyaCategorisation.title = Check your answers
 cyaCategorisation.heading = Check your category assessment answers for {0}
 cyaCategorisation.supplementaryUnitHeader = Supplementary Unit
 cyaCategorisation.longerCommodityCode = Longer commodity code
+cyaCategorisation.assessmentKey = Exclusions for category assessment {0}
 
 journeyRecovery.continue.title = Something has gone wrong
 journeyRecovery.continue.heading = Something has gone wrong
