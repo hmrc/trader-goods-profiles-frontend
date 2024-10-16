@@ -112,7 +112,7 @@ class CyaCategorisationController @Inject() (
           ).flatten
         )
 
-        Ok(view(recordId, categorisationList, supplementaryUnitList, longerCommodityCodeList)(request, messages))
+        Ok(view(recordId, categoryInfo.commodityCode, categorisationList, supplementaryUnitList, longerCommodityCodeList)(request, messages))
 
       case Left(errors) =>
         dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)

@@ -331,8 +331,6 @@ todo.cat = Daw’r wybodaeth am eithriadau o Offeryn Tariff Ar-lein Gogledd Iwer
 
 cyaCategorisation.title = Gwiriwch eich atebion
 cyaCategorisation.heading = Gwiriwch eich atebion
-cyaCategorisation.categorisationHeader = Asesiadau categori
-cyaCategorisation.categorisationQuestion = A ydych yn bodloni unrhyw un o’r eithriadau canlynol, ac a allwch roi’r cod dogfen perthnasol ar gyfer eich symudiadau?
 cyaCategorisation.supplementaryUnitHeader = Unedau atodol
 
 categoryGuidance.title = Categoreiddio

@@ -21,12 +21,11 @@ formHelper: FormWithCSRF,
 govukButton: GovukButton
 )
 
-@(recordId: String, categorisationList: SummaryList, supplementaryUnitList: SummaryList, longerCommodityCodeList: SummaryList)(implicit request: Request[_], messages: Messages)
+@(recordId: String, commodityCode: String, categorisationList: SummaryList, supplementaryUnitList: SummaryList, longerCommodityCodeList: SummaryList)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("cyaCategorisation.title"))) {
 
-    <h1 class="govuk-heading-l">@messages("cyaCategorisation.heading")</h1>
-    <h2 class="govuk-heading-m">@messages("cyaCategorisation.categorisationHeader")</h2>
+    <h1 class="govuk-heading-l">@messages("cyaCategorisation.heading", commodityCode)</h1>
     <p class="govuk-body">@messages("cyaCategorisation.categorisationQuestion")</p>
 
     @govukSummaryList(categorisationList)
