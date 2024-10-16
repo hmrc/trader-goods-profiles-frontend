@@ -21,7 +21,7 @@ import base.TestConstants.{testEori, testRecordId}
 import connectors.GoodsRecordConnector
 import models.helper.CategorisationUpdate
 import models.ott.CategorisationInfo
-import models.{CategoryRecord, Commodity, NormalMode, StandardGoodsNoAssessmentsScenario, UserAnswers}
+import models.{Category2Scenario, CategoryRecord, Commodity, NormalMode, StandardGoodsNoAssessmentsScenario, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentCaptor
@@ -257,7 +257,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           }
 
           withClue("must get category result from categorisation service") {
-            verify(mockCategorisationService)
+            verify(mockCategorisationService, times(2))
               .calculateResult(eqTo(categoryInfoNoAssessments), any(), eqTo(testRecordId))
           }
 
@@ -593,7 +593,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           }
 
           withClue("must get category result from categorisation service") {
-            verify(mockCategorisationService)
+            verify(mockCategorisationService, times(2))
               .calculateResult(any(), any(), any())
           }
 
@@ -631,6 +631,65 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
             )(any())
           }
 
+        }
+
+      }
+
+      "and should not update the record if there is a supplementary question to answer" in {
+
+        val longerCodeWithMeasurementUnit =
+          categoryInfoNoAssessments.copy(longerCode = true).copy(measurementUnit = Some("KG"))
+        when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any())).thenReturn(
+          Future.successful(longerCodeWithMeasurementUnit)
+        )
+
+        val shorterCommodity = categorisationInfo.copy(commodityCode = "123456")
+
+        val userAnswers = emptyUserAnswers
+          .set(CategorisationDetailsQuery(testRecordId), shorterCommodity)
+          .success
+          .value
+          .set(
+            LongerCommodityQuery(testRecordId),
+            longerCommodity
+          )
+          .success
+          .value
+
+        when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any()))
+          .thenReturn(Success(userAnswers))
+
+        when(mockCategorisationService.calculateResult(any(), any(), any()))
+          .thenReturn(Category2Scenario)
+
+        when(mockGoodsRecordConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any(), any())(any()))
+          .thenReturn(Future.successful(Done))
+
+        val app = application(userAnswers)
+        running(app) {
+
+          val request =
+            FakeRequest(
+              GET,
+              routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId).url
+            )
+          val result  = route(app, request).value
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual onwardRoute.url
+
+          withClue("must get category details from categorisation service") {
+            verify(mockCategorisationService)
+              .getCategorisationInfo(any(), eqTo("1234567890"), eqTo("GB"), eqTo(testRecordId), eqTo(true))(any())
+          }
+
+          withClue("must get category result from categorisation service") {
+            verify(mockCategorisationService, times(1))
+              .calculateResult(any(), any(), any())
+          }
+
+          withClue("must not call the audit service finish categorisation event") {
+            verify(mockAuditService, times(0)).auditFinishCategorisation(any(), any(), any(), any())(any())
+          }
         }
 
       }
