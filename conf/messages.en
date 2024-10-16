@@ -161,14 +161,14 @@ ukimsNumber.change.hidden = UKIMS number
 
 categoryGuidance.title = Categorisation
 categoryGuidance.heading = Categorisation
-categoryGuidance.p1 = Categorisation allows you to know what category your goods are in and if they are eligible for Simplified Process for Internal Market Movements (SPIMM). By completing the categorisation journey, you can improve the category of your goods if you hold certain exclusions.
-categoryGuidance.p2 = We’ll ask you questions about exclusions that you hold and then tell you what category your goods are. If the commodity code has too many exclusions for us to list, we might ask you for an 8 or 10 digit commodity code.
+categoryGuidance.p1 = Categorisation allows you to know what category your goods are in and if they are eligible for Simplified Process for Internal Market Movements (SPIMM).
+categoryGuidance.p2 = We’ll ask you questions about exclusions that you hold and then tell you what category your goods are. We could ask you up to 10 questions.
 categoryGuidance.subheading = Exclusions
 categoryGuidance.p3 = Your goods will be placed into 1 of 3 categories:
-categoryGuidance.p3.1 = Category 1 – goods that are excluded and not suitable for movement using SPIMM
-categoryGuidance.p3.2 = Category 2 – goods that are controlled and require additional commodity details to use SPIMM
-categoryGuidance.p3.3 = Standard – goods that are not classed under Category 1 or Category 2 and benefit from SPIMM
-categoryGuidance.p4 = You’ll need to know the certificate number or name of any exclusions you have for your goods. For example, your certificate number could be either C644, Y929 or C640. If you get a new exclusion, you’ll be able to change this later. If any measures apply to your trade, you’ll receive a categorisation result.
+categoryGuidance.p3.1 = Category 1 – goods that are excluded for using SPIMM
+categoryGuidance.p3.2 = Category 2 – goods that are controlled and require additional details to use SPIMM
+categoryGuidance.p3.3 = Standard – goods that can use SPIMM
+categoryGuidance.p4 = You’ll need to know the certificate number or name of any exclusions you have for your goods. Example certificate numbers are C644, Y929 or C640. If you get a new exclusion, you’ll be able to change this later.
 
 commodityCode.title = Commodity code
 commodityCode.h1 = Commodity code
