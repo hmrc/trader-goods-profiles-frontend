@@ -20,7 +20,7 @@ import base.SpecBase
 import base.TestConstants.{testEori, testRecordId}
 import config.FrontendAppConfig
 import connectors.{GoodsRecordConnector, OttConnector}
-import models.{CheckMode, Country, UpdateGoodsRecord}
+import models.{CheckMode, Commodity, Country, UpdateGoodsRecord}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, verify, when}
@@ -301,6 +301,63 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual routes.SingleRecordController.onPageLoad(testRecordId).url
               verify(mockGoodsRecordConnector).updateGoodsRecord(eqTo(expectedPayload))(any())
+              verify(mockSessionRepository).set(any())
+
+              withClue("must call the audit connector with the supplied details") {
+                verify(mockAuditService)
+                  .auditFinishUpdateGoodsRecord(
+                    eqTo(testRecordId),
+                    eqTo(AffinityGroup.Individual),
+                    eqTo(expectedPayload)
+                  )(
+                    any()
+                  )
+              }
+            }
+          }
+
+          "must PUT the goods record, cleanse the data and redirect to the Goods record Page" in {
+
+            val userAnswers = emptyUserAnswers
+              .set(page, answer)
+              .success
+              .value
+              .set(warningPage, true)
+              .success
+              .value
+
+            val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+            val mockAuditService         = mock[AuditService]
+            val mockSessionRepository    = mock[SessionRepository]
+            val mockAppConfig            = mock[FrontendAppConfig]
+
+            when(mockAppConfig.useEisPatchMethod).thenReturn(true)
+
+            when(mockGoodsRecordConnector.putGoodsRecord(any(), any())(any())).thenReturn(Future.successful(Done))
+            when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
+              .thenReturn(Future.successful(Done))
+            when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
+
+            when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
+              .successful(record)
+
+            val application =
+              applicationBuilder(userAnswers = Some(userAnswers))
+                .overrides(
+                  bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+                  bind[SessionRepository].toInstance(mockSessionRepository),
+                  bind[AuditService].toInstance(mockAuditService),
+                  bind[FrontendAppConfig].toInstance(mockAppConfig)
+                )
+                .build()
+
+            running(application) {
+              val request = FakeRequest(POST, postUrl)
+
+              val result = route(application, request).value
+              status(result) mustEqual SEE_OTHER
+              redirectLocation(result).value mustEqual routes.SingleRecordController.onPageLoad(testRecordId).url
+              verify(mockGoodsRecordConnector).putGoodsRecord(any(), any())(any())
               verify(mockSessionRepository).set(any())
 
               withClue("must call the audit connector with the supplied details") {
@@ -776,6 +833,60 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             }
           }
 
+          "must PATCH the goods record, cleanse the data and redirect to the Goods record Page" in {
+
+            val userAnswers = emptyUserAnswers
+              .set(page, answer)
+              .success
+              .value
+
+            val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+            val mockAuditService         = mock[AuditService]
+            val mockSessionRepository    = mock[SessionRepository]
+            val mockAppConfig            = mock[FrontendAppConfig]
+
+            when(mockAppConfig.useEisPatchMethod).thenReturn(true)
+
+            when(mockGoodsRecordConnector.patchGoodsRecord(any())(any())).thenReturn(Future.successful(Done))
+            when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
+              .thenReturn(Future.successful(Done))
+            when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
+
+            when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
+              .successful(record)
+
+            val application =
+              applicationBuilder(userAnswers = Some(userAnswers))
+                .overrides(
+                  bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+                  bind[SessionRepository].toInstance(mockSessionRepository),
+                  bind[AuditService].toInstance(mockAuditService),
+                  bind[FrontendAppConfig].toInstance(mockAppConfig)
+                )
+                .build()
+
+            running(application) {
+              val request = FakeRequest(POST, postUrl)
+
+              val result = route(application, request).value
+              status(result) mustEqual SEE_OTHER
+              redirectLocation(result).value mustEqual routes.SingleRecordController.onPageLoad(testRecordId).url
+              verify(mockGoodsRecordConnector).patchGoodsRecord(any())(any())
+              verify(mockSessionRepository).set(any())
+
+              withClue("must call the audit connector with the supplied details") {
+                verify(mockAuditService)
+                  .auditFinishUpdateGoodsRecord(
+                    eqTo(testRecordId),
+                    eqTo(AffinityGroup.Individual),
+                    eqTo(expectedPayload)
+                  )(
+                    any()
+                  )
+              }
+            }
+          }
+
           "when trader reference has not been changed must not update the goods record and redirect to the Home Page" in {
             val answer          = record.traderRef
             val expectedPayload = UpdateGoodsRecord(testEori, testRecordId, traderReference = Some(answer))
@@ -1153,6 +1264,133 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               }
             }
           }
+
+          "must PUT the goods record, cleanse the data and redirect to the Goods record Page" in {
+
+            val userAnswers = emptyUserAnswers
+              .set(page, testCommodity.commodityCode)
+              .success
+              .value
+              .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true)
+              .success
+              .value
+              .set(warningPage, true)
+              .success
+              .value
+              .set(HasCommodityCodeChangePage(testRecordId), true)
+              .success
+              .value
+              .set(CommodityUpdateQuery(testRecordId), testCommodity)
+              .success
+              .value
+
+            val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+            val mockAuditService         = mock[AuditService]
+            val mockSessionRepository    = mock[SessionRepository]
+            val mockAppConfig            = mock[FrontendAppConfig]
+
+            when(mockAppConfig.useEisPatchMethod).thenReturn(true)
+
+            when(mockGoodsRecordConnector.putGoodsRecord(any(), any())(any())).thenReturn(Future.successful(Done))
+            when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
+              .thenReturn(Future.successful(Done))
+            when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
+
+            when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
+              .successful(record)
+
+            val application =
+              applicationBuilder(userAnswers = Some(userAnswers))
+                .overrides(
+                  bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+                  bind[SessionRepository].toInstance(mockSessionRepository),
+                  bind[AuditService].toInstance(mockAuditService),
+                  bind[FrontendAppConfig].toInstance(mockAppConfig)
+                )
+                .build()
+
+            running(application) {
+              val request = FakeRequest(POST, postUrl)
+
+              val result = route(application, request).value
+              status(result) mustEqual SEE_OTHER
+              redirectLocation(result).value mustEqual routes.SingleRecordController.onPageLoad(testRecordId).url
+              verify(mockGoodsRecordConnector).putGoodsRecord(any(), any())(any())
+              verify(mockSessionRepository).set(any())
+
+              withClue("must call the audit connector with the supplied details") {
+                verify(mockAuditService)
+                  .auditFinishUpdateGoodsRecord(
+                    eqTo(testRecordId),
+                    eqTo(AffinityGroup.Individual),
+                    eqTo(expectedPayload)
+                  )(
+                    any()
+                  )
+              }
+            }
+          }
+
+          "when commodity code has not been changed must not update the goods record and redirect to the Home Page" in {
+
+            val answer          = Commodity(record.comcode, List("test"), validityStartDate, None)
+            val expectedPayload = UpdateGoodsRecord(testEori, testRecordId, commodityCode = Some(answer))
+
+            val userAnswers = emptyUserAnswers
+              .set(page, answer.commodityCode)
+              .success
+              .value
+              .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true)
+              .success
+              .value
+              .set(warningPage, true)
+              .success
+              .value
+              .set(HasCommodityCodeChangePage(testRecordId), true)
+              .success
+              .value
+              .set(CommodityUpdateQuery(testRecordId), answer)
+              .success
+              .value
+
+            val mockConnector    = mock[GoodsRecordConnector]
+            val mockAuditService = mock[AuditService]
+
+            when(mockConnector.getRecord(any(), any())(any())).thenReturn(Future.successful(record))
+            when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
+              .thenReturn(Future.successful(Done))
+
+            val application =
+              applicationBuilder(userAnswers = Some(userAnswers))
+                .overrides(
+                  bind[GoodsRecordConnector].toInstance(mockConnector),
+                  bind[AuditService].toInstance(mockAuditService)
+                )
+                .build()
+
+            running(application) {
+              val request = FakeRequest(POST, postUrl)
+
+              val result = route(application, request).value
+
+              status(result) mustEqual SEE_OTHER
+              redirectLocation(result).value mustEqual routes.SingleRecordController.onPageLoad(testRecordId).url
+              verify(mockConnector, never()).updateGoodsRecord(any())(any())
+              verify(mockConnector).getRecord(eqTo(testEori), eqTo(testRecordId))(any())
+
+              withClue("must call the audit connector with the supplied details") {
+                verify(mockAuditService)
+                  .auditFinishUpdateGoodsRecord(
+                    eqTo(testRecordId),
+                    eqTo(AffinityGroup.Individual),
+                    eqTo(expectedPayload)
+                  )(
+                    any()
+                  )
+              }
+            }
+          }
+
         }
 
         "when user answers cannot create an update goods record" - {

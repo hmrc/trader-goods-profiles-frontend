@@ -22,6 +22,8 @@ import com.google.inject.Inject
 import config.FrontendAppConfig
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
+import models.router.requests.PutRecordRequest
+import models.router.responses.GetGoodsRecordResponse
 import models.{CheckMode, Country, NormalMode, UpdateGoodsRecord, UserAnswers, ValidationError}
 import navigation.Navigator
 import org.apache.pekko.Done
@@ -228,11 +230,34 @@ class CyaUpdateRecordController @Inject() (
     newUpdateGoodsRecord: UpdateGoodsRecord
   )(implicit hc: HeaderCarrier): Future[Done] =
     if (newValue != oldValue) {
-
       // TODO: remove this flag when EIS has implemented the PATCH method - TGP-2417 and keep the call to patchGoodsRecord as default
       if (config.useEisPatchMethod) {
         goodsRecordConnector.patchGoodsRecord(
           newUpdateGoodsRecord
+        )
+      } else {
+        goodsRecordConnector.updateGoodsRecord(
+          newUpdateGoodsRecord
+        )
+      }
+    } else {
+      Future.successful(Done)
+    }
+
+  private def updateGoodsRecordIfPutValueChanged(
+    newValue: String,
+    oldValue: String,
+    newUpdateGoodsRecord: UpdateGoodsRecord,
+    oldRecord: GetGoodsRecordResponse,
+    putRecordRequest: PutRecordRequest
+  )(implicit hc: HeaderCarrier): Future[Done] =
+    if (newValue != oldValue) {
+
+      // TODO: remove this flag when EIS has implemented the PATCH method - TGP-2417 and keep the call to putGoodsRecord as default
+      if (config.useEisPatchMethod) {
+        goodsRecordConnector.putGoodsRecord(
+          putRecordRequest,
+          oldRecord.recordId
         )
       } else {
         goodsRecordConnector.updateGoodsRecord(
@@ -271,8 +296,29 @@ class CyaUpdateRecordController @Inject() (
           )
         updateGoodsRecord        <-
           Future.successful(UpdateGoodsRecord(request.eori, recordId, countryOfOrigin = Some(countryOfOrigin)))
+        putGoodsRecord           <- Future.successful(
+                                      PutRecordRequest(
+                                        actorId = oldRecord.eori,
+                                        traderRef = oldRecord.traderRef,
+                                        comcode = oldRecord.comcode,
+                                        goodsDescription = oldRecord.goodsDescription,
+                                        countryOfOrigin = countryOfOrigin,
+                                        category = None,
+                                        assessments = oldRecord.assessments,
+                                        supplementaryUnit = oldRecord.supplementaryUnit,
+                                        measurementUnit = oldRecord.measurementUnit,
+                                        comcodeEffectiveFromDate = oldRecord.comcodeEffectiveFromDate,
+                                        comcodeEffectiveToDate = oldRecord.comcodeEffectiveToDate
+                                      )
+                                    )
         _                         = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
-        _                        <- updateGoodsRecordIfValueChanged(countryOfOrigin, oldRecord.countryOfOrigin, updateGoodsRecord)
+        _                        <- updateGoodsRecordIfPutValueChanged(
+                                      countryOfOrigin,
+                                      oldRecord.countryOfOrigin,
+                                      updateGoodsRecord,
+                                      oldRecord,
+                                      putGoodsRecord
+                                    )
         updatedAnswersWithChange <- Future.fromTry(request.userAnswers.remove(HasCountryOfOriginChangePage(recordId)))
         updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CountryOfOriginUpdatePage(recordId)))
         _                        <- sessionRepository.set(updatedAnswers)
@@ -316,11 +362,28 @@ class CyaUpdateRecordController @Inject() (
           )
         updateGoodsRecord        <-
           Future.successful(UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity)))
+        putGoodsRecord           <- Future.successful(
+                                      PutRecordRequest(
+                                        actorId = oldRecord.eori,
+                                        traderRef = oldRecord.traderRef,
+                                        comcode = commodity.commodityCode,
+                                        goodsDescription = oldRecord.goodsDescription,
+                                        countryOfOrigin = oldRecord.countryOfOrigin,
+                                        category = None,
+                                        assessments = oldRecord.assessments,
+                                        supplementaryUnit = oldRecord.supplementaryUnit,
+                                        measurementUnit = oldRecord.measurementUnit,
+                                        comcodeEffectiveFromDate = oldRecord.comcodeEffectiveFromDate,
+                                        comcodeEffectiveToDate = oldRecord.comcodeEffectiveToDate
+                                      )
+                                    )
         _                         = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
-        _                        <- updateGoodsRecordIfValueChanged(
+        _                        <- updateGoodsRecordIfPutValueChanged(
                                       commodity.commodityCode,
                                       oldRecord.comcode,
-                                      updateGoodsRecord
+                                      updateGoodsRecord,
+                                      oldRecord,
+                                      putGoodsRecord
                                     )
         updatedAnswersWithChange <-
           Future.fromTry(request.userAnswers.remove(HasCommodityCodeChangePage(recordId)))
