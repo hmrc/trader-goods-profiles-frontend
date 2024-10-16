@@ -684,3 +684,10 @@ cyaMaintainProfile.li2 = Northern Ireland Retail Movement Scheme (NIRMS)
 cyaMaintainProfile.li3 = Northern Ireland Plant Health Label (NIPHL)
 cyaMaintainProfile.warning = Warning
 cyaMaintainProfile.warningText = You need to make sure these details are correct. Any details that are wrong in your Trader Goods Profile and used to create movements, will not be valid.
+
+fileManagement.title = TGP records files
+fileManagement.heading = TGP records files
+fileManagement.files.paragraph1 = Files are available for 30 days from when we email you that it is ready to download.
+fileManagement.noFiles.paragraph1 = You do not have any TGP record files ready for download. Files expire after 30 days.
+fileManagement.pendingFiles.paragraph2 = These are requests you've made but the file is not ready yet. We'll email you when the file is ready.
+fileManagement.newRecord.linkText = Get a new TGP records file
