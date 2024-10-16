@@ -16,23 +16,25 @@
 
 @this(
         layout: templates.Layout,
-        govukPanel : GovukPanel,
+        govukPanel: GovukPanel,
         feedbackSection: components.feedback_section
 )
 
-@(email:String)(implicit request: Request[_], messages: Messages)
+@(email: String)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = titleNoForm(messages("downloadRequestSuccess.title")),showBackLink = false) {
+@layout(pageTitle = titleNoForm(messages("downloadRequestSuccess.title")), showBackLink = false) {
 
-    @govukPanel(Panel(
-        title = messages("downloadRequestSuccess.h1")
+    @govukPanel(
+        Panel(
+            title = messages("downloadRequestSuccess.h1")
+        )
     )
-    )
+
     <h2 class="govuk-heading-m">@messages("downloadRequestSuccess.h2")</h2>
-    <p class="govuk-body">@messages("downloadRequestSuccess.p1",email)</p>
+
+    <p class="govuk-body">@messages("downloadRequestSuccess.p1")<a href="/to/new/page/when/built">@messages("downloadRequestSuccess.p1.linkText")</a>@messages("downloadRequestSuccess.p1.part2", email)</p>
     <p class="govuk-body">@messages("downloadRequestSuccess.p2")</p>
-    <p class="govuk-body">@messages("downloadRequestSuccess.p3")
-        @messages("downloadRequestSuccess.p3.1")</p>
+    <p class="govuk-body">@messages("downloadRequestSuccess.p3")</p>
 
     <p class="govuk-body"><a href="@routes.GoodsRecordsController.onPageLoad(1).url" class="govuk-link" >@messages("site.goBackToGoodsProfile")</a></p>
     <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad().url" class="govuk-link" >@messages("site.goBackToHomePage")</a></p>
