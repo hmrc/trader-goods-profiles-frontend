@@ -428,3 +428,7 @@ cyaMaintainProfile.title.hasNiphl = Gwiriwch eich atebion ar gyfer newid eich co
 cyaMaintainProfile.heading.hasNiphl = Gwiriwch eich atebion ar gyfer newid eich cofrestriad NIPHL
 cyaMaintainProfile.title.niphlNumber = Gwiriwch eich atebion ar gyfer newid eich rhif NIPHL
 cyaMaintainProfile.heading.niphlNumber = Gwiriwch eich atebion ar gyfer newid eich rhif NIPHL
+
+hasCountryOfOriginChange.h1 = Newid gwybodaeth y cofnod
+hasCommodityCodeChange.h1 = Newid gwybodaeth y cofnod
+hasGoodsDescriptionChange.h1 = Newid gwybodaeth y cofnod
