@@ -365,7 +365,7 @@ class AuditEventFactorySpec extends SpecBase {
             auditDetails("reassessmentNeeded") mustBe "false"
             auditDetails("category") mustBe "1"
             auditDetails("providedSupplementaryUnit") mustBe "true"
-            auditDetails("supplementaryUnit") mustBe "858.321"
+            auditDetails("supplementaryUnit") mustBe "858.321 Weight, in kilograms"
           }
 
           "with longer commodity code asked and supplementary unit asked and supplied" in {
@@ -423,7 +423,65 @@ class AuditEventFactorySpec extends SpecBase {
             auditDetails("reassessmentCategoryAssessmentsCarriedOver") mustBe "2"
             auditDetails("category") mustBe "2"
             auditDetails("providedSupplementaryUnit") mustBe "true"
-            auditDetails("supplementaryUnit") mustBe "99"
+            auditDetails("supplementaryUnit") mustBe "99 Weight, in kilograms"
+          }
+
+          "with longer commodity code asked and supplementary unit asked and supplied but no measurement unit" in {
+
+            val shorterCode = categorisationInfo.copy(commodityCode = "998877")
+            val longerCode  =
+              categorisationInfo.copy(
+                categoryAssessmentsThatNeedAnswers = Seq(category1, category2, category3, category1),
+                descendantCount = 0
+              )
+
+            val categoryRecord = CategoryRecord(
+              testEori,
+              testRecordId,
+              "1234567890",
+              Category2Scenario,
+              None,
+              Some("99"),
+              shorterCode,
+              3,
+              wasSupplementaryUnitAsked = true,
+              Some(longerCode),
+              Some(3),
+              Some(2)
+            )
+
+            val result = AuditEventFactory().createSubmitGoodsRecordEventForCategorisation(
+              testEori,
+              AffinityGroup.Organisation,
+              UpdateRecordJourney,
+              testRecordId,
+              categoryRecord
+            )
+
+            result.auditSource mustBe "trader-goods-profiles-frontend"
+            result.auditType mustBe "SubmitGoodsRecord"
+            result.tags.isEmpty mustBe false
+
+            val auditDetails = result.detail
+            auditDetails.size mustBe 18
+            auditDetails("journey") mustBe "UpdateRecord"
+            auditDetails("updateSection") mustBe "categorisation"
+            auditDetails("eori") mustBe testEori
+            auditDetails("affinityGroup") mustBe "Organisation"
+            auditDetails("recordId") mustBe testRecordId
+            auditDetails(commodityCodeKey) mustBe "998877"
+            auditDetails(countryOfOriginKey) mustBe "BV"
+            auditDetails("descendants") mustBe "1"
+            auditDetails("categoryAssessments") mustBe "3"
+            auditDetails("categoryAssessmentsAnswered") mustBe "3"
+            auditDetails("reassessmentNeeded") mustBe "true"
+            auditDetails("reassessmentCommodityCode") mustBe "1234567890"
+            auditDetails("reassessmentCategoryAssessments") mustBe "4"
+            auditDetails("reassessmentCategoryAssessmentsAnswered") mustBe "1"
+            auditDetails("reassessmentCategoryAssessmentsCarriedOver") mustBe "2"
+            auditDetails("category") mustBe "2"
+            auditDetails("providedSupplementaryUnit") mustBe "true"
+            auditDetails("supplementaryUnit") mustBe "99 Measurement Unit not found"
           }
         }
 

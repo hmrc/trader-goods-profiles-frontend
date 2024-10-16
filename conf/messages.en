@@ -238,9 +238,8 @@ createRecordSuccess.p7 = Your thoughts and ideas will help us to make improvemen
 
 goodsDescription.title = Goods description
 goodsDescription.h1 = Goods description
-goodsDescription.p1 = A goods description is a plain language description of the goods. This does not have to match the trade tariff description. Authorities should be able to identify your goods from the description.
-goodsDescription.p2 = You can not use general terms like ''consolidated'' or ''general cargo''. General terms will not allow Border Force to perform customs controls.
-goodsDescription.p3 = If your goods will not be a full package, container or trailer you should confirm this on the goods description. You can use terms like ''part case'', ''part container'' or ''part trailer'' at the end of the goods description.
+goodsDescription.p1 = A goods description is a plain language description of the goods. Authorities should be able to identify your goods from the description.
+goodsDescription.p2 = You can not use general terms to describe the goods.
 goodsDescription.inputHeading = What is the goods description?
 goodsDescription.hint = This can be up to 512 characters long.
 goodsDescription.checkYourAnswersLabel = Goods description
@@ -632,7 +631,7 @@ singleRecord.recordLocked = This record is locked as you''ve asked HMRC for advi
 requestData.title = Making a request to download your TGP data
 requestData.heading = Making a request to download your TGP data
 requestData.p1 = Once you request the file, we''ll email {0} to let you know when it is ready to download. This is usually ready within five minutes but it could take up to 24 hours.
-requestData.p2 = You''ll also be able to check the progress on the TGP records file page.
+requestData.p2 = You''ll also be able to check the progress on the TGP records files page.
 requestData.button = Get TGP records file
 
 fileReady.title = Your file is ready to download

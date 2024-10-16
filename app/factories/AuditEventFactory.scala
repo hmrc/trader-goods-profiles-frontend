@@ -165,10 +165,17 @@ case class AuditEventFactory() {
       writeOptionalWithAssociatedBooleanFlag(
         "providedSupplementaryUnit",
         "supplementaryUnit",
-        categoryRecord.supplementaryUnit
+        getSupplementaryUnitAuditField(categoryRecord.supplementaryUnit, categoryRecord.measurementUnit)
       )
     } else {
       Map.empty[String, String]
+    }
+
+  private def getSupplementaryUnitAuditField(supplementaryUnit: Option[String], measurementUnit: Option[String]) =
+    supplementaryUnit match {
+      case Some(supplementaryUnit) =>
+        Some(s"$supplementaryUnit ${measurementUnit.getOrElse("Measurement Unit not found")}")
+      case None                    => None
     }
 
   private def writeReassessmentDetails(categoryRecord: CategoryRecord) =
@@ -233,11 +240,7 @@ case class AuditEventFactory() {
       "addSupplementaryUnit" -> supplementaryRequest.hasSupplementaryUnit.getOrElse(false).toString
     ) ++ writeOptional(
       "supplementaryUnit",
-      if (supplementaryRequest.supplementaryUnit.isDefined) {
-        Some(s"${supplementaryRequest.supplementaryUnit.get} ${supplementaryRequest.measurementUnit.get}")
-      } else {
-        None
-      }
+      getSupplementaryUnitAuditField(supplementaryRequest.supplementaryUnit, supplementaryRequest.measurementUnit)
     )
     createSubmitGoodsRecordEvent(auditDetails)
   }
