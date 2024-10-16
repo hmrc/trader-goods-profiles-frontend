@@ -23,7 +23,6 @@ import config.FrontendAppConfig
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import models.router.requests.PutRecordRequest
-import models.router.responses.GetGoodsRecordResponse
 import models.{CheckMode, Country, NormalMode, UpdateGoodsRecord, UserAnswers, ValidationError}
 import navigation.Navigator
 import org.apache.pekko.Done
@@ -248,7 +247,6 @@ class CyaUpdateRecordController @Inject() (
     newValue: String,
     oldValue: String,
     newUpdateGoodsRecord: UpdateGoodsRecord,
-    oldRecord: GetGoodsRecordResponse,
     putRecordRequest: PutRecordRequest
   )(implicit hc: HeaderCarrier): Future[Done] =
     if (newValue != oldValue) {
@@ -257,7 +255,7 @@ class CyaUpdateRecordController @Inject() (
       if (config.useEisPatchMethod) {
         goodsRecordConnector.putGoodsRecord(
           putRecordRequest,
-          oldRecord.recordId
+          newUpdateGoodsRecord.recordId
         )
       } else {
         goodsRecordConnector.updateGoodsRecord(
@@ -316,7 +314,6 @@ class CyaUpdateRecordController @Inject() (
                                       countryOfOrigin,
                                       oldRecord.countryOfOrigin,
                                       updateGoodsRecord,
-                                      oldRecord,
                                       putGoodsRecord
                                     )
         updatedAnswersWithChange <- Future.fromTry(request.userAnswers.remove(HasCountryOfOriginChangePage(recordId)))
@@ -382,7 +379,6 @@ class CyaUpdateRecordController @Inject() (
                                       commodity.commodityCode,
                                       oldRecord.comcode,
                                       updateGoodsRecord,
-                                      oldRecord,
                                       putGoodsRecord
                                     )
         updatedAnswersWithChange <-
