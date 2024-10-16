@@ -27,12 +27,14 @@
 @layout(pageTitle = titleNoForm(messages("cyaCreateRecord.title"))) {
 
     <h1 class="govuk-heading-l">@messages("cyaCreateRecord.h1")</h1>
-    @govukSummaryList(list)
 
     @govukWarningText(WarningText(
         iconFallbackText = Some(messages("cyaCreateRecord.warning")),
         content = Text(messages("cyaCreateRecord.warningText"))
     ))
+
+    @govukSummaryList(list)
+
 
     @formHelper(action = routes.CyaCreateRecordController.onSubmit()) {
         @govukButton(ButtonViewModel(messages("site.save.continue")))
