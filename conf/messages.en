@@ -16,7 +16,8 @@ site.search = Search
 site.goToHomePage = Go to homepage
 
 site.goBackToGoodsRecord = Go back to goods record
-site.goBackToGoodsProfile = Go to TGP records files
+site.goBackToGoodsProfile = Go back to goods profile
+site.goBackToTGPRecords = Go to TGP records files
 site.goBackToHomePage = Go back to homepage
 site.removeThisGoodsRecord = Remove this goods record
 
