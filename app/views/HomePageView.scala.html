@@ -23,51 +23,51 @@ govukPhaseBanner: GovukPhaseBanner)
 @layout(pageTitle = s"${messages("homepage.title")} - ${messages("site.govuk")}", showBackLink = false, headerShouldHaveServiceLink = false) {
 
 @if(true) {
-@govukPhaseBanner(PhaseBanner(
-tag = None,  // No tag is needed, so we pass None here
-content = HtmlContent(
-s"""
-<div class="govuk-notification-banner" role="region" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
-    <div class="govuk-notification-banner__header">
-        <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
-            ${messages("homepage.downloadBanner.important")}
-        </h2>
-    </div>
-    <div class="govuk-notification-banner__content">
-        <p class="govuk-notification-banner__heading">
-            ${messages("homepage.downloadBanner.content")}
-            <a class="govuk-notification-banner__link" href="${routes.FileReadyController.onPageLoad().url}">${messages("homepage.downloadBanner.linkText")}</a>.
-        </p>
-    </div>
-</div>
-"""
-)
-))
-}
+    @govukPhaseBanner(PhaseBanner(
+        tag = None,
+            content = HtmlContent(
+                s"""
+                <div class="govuk-notification-banner" role="region" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+                    <div class="govuk-notification-banner__header">
+                        <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+                            ${messages("homepage.downloadBanner.important")}
+                        </h2>
+                    </div>
+                    <div class="govuk-notification-banner__content">
+                        <p class="govuk-notification-banner__heading">
+                            ${messages("homepage.downloadBanner.content")}
+                            <a class="govuk-notification-banner__link" href="${routes.FileReadyController.onPageLoad().url}">${messages("homepage.downloadBanner.linkText")}</a>.
+                        </p>
+                    </div>
+                </div>
+                """
+            )
+        ))
+    }
 
-<h1 class="govuk-heading-l">@messages("homepage.h1")</h1>
-<p class="govuk-body">@messages("homepage.p1")</p>
+    <h1 class="govuk-heading-l">@messages("homepage.h1")</h1>
+    <p class="govuk-body">@messages("homepage.p1")</p>
 
-<h2 class="govuk-heading-m">@messages("homepage.h2.1")</h2>
+    <h2 class="govuk-heading-m">@messages("homepage.h2.1")</h2>
 
-<p class="govuk-body">
-    <a href="@routes.PreviousMovementRecordsController.onPageLoad().url" class="govuk-link">@messages("homepage.p2.linkText")</a>
-</p>
+    <p class="govuk-body">
+        <a href="@routes.PreviousMovementRecordsController.onPageLoad().url" class="govuk-link">@messages("homepage.p2.linkText")</a>
+    </p>
 
-<p class="govuk-body">
-    <a href="@routes.CreateRecordStartController.onPageLoad().url" class="govuk-link">@messages("homepage.p3.linkText")</a>
-</p>
+    <p class="govuk-body">
+        <a href="@routes.CreateRecordStartController.onPageLoad().url" class="govuk-link">@messages("homepage.p3.linkText")</a>
+    </p>
 
-<h2 class="govuk-heading-m">@messages("homepage.h2.2")</h2>
+    <h2 class="govuk-heading-m">@messages("homepage.h2.2")</h2>
 
-<p class="govuk-body">
-    <a href="@routes.ProfileController.onPageLoad().url" class="govuk-link">@messages("homepage.p5.linkText")</a>
-</p>
+    <p class="govuk-body">
+        <a href="@routes.ProfileController.onPageLoad().url" class="govuk-link">@messages("homepage.p5.linkText")</a>
+    </p>
 
-<h2 class="govuk-heading-m">@messages("homepage.h2.3")</h2>
+    <h2 class="govuk-heading-m">@messages("homepage.h2.3")</h2>
 
-<p class="govuk-body">
-    <a href="@routes.HelpAndSupportController.onPageLoad().url" class="govuk-link">@messages("homepage.p6.linkText")</a>
-</p>
+    <p class="govuk-body">
+        <a href="@routes.HelpAndSupportController.onPageLoad().url" class="govuk-link">@messages("homepage.p6.linkText")</a>
+    </p>
 
 }
