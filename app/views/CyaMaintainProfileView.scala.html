@@ -26,14 +26,7 @@
 @layout(pageTitle = titleNoForm(messages(s"cyaMaintainProfile.title.$messageKey"))) {
 
     <h1 class="govuk-heading-l">@messages(s"cyaMaintainProfile.heading.$messageKey")</h1>
-    <h2 class="govuk-heading-m">@messages("cyaMaintainProfile.h2")</h2>
 
-    <ul class="govuk-list govuk-list--bullet">
-        <li>@messages(s"cyaMaintainProfile.li1")</li>
-        <li>@messages(s"cyaMaintainProfile.li2")</li>
-        <li>@messages(s"cyaMaintainProfile.li3")</li>
-    </ul>
-    @govukSummaryList(list)
     <div class="govuk-warning-text">
         <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
         <strong class="govuk-warning-text__text">
@@ -42,7 +35,17 @@
         </strong>
     </div>
 
+    <h2 class="govuk-heading-m">@messages("cyaMaintainProfile.h2")</h2>
+
+    <ul class="govuk-list govuk-list--bullet">
+            <li>@messages(s"cyaMaintainProfile.li1")</li>
+            <li>@messages(s"cyaMaintainProfile.li2")</li>
+            <li>@messages(s"cyaMaintainProfile.li3")</li>
+        </ul>
+
+    @govukSummaryList(list)
+
     @formHelper(action = action) {
     @govukButton(ButtonViewModel(messages("site.save.continue")))
-}
+    }
 }
