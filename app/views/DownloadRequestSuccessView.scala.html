@@ -14,9 +14,15 @@
  * limitations under the License.
  *@
 
+@import views.html.components.paragraphBody
+@import views.html.components.link
+@import views.html.components.feedback_section
+
 @this(
         layout: templates.Layout,
         govukPanel: GovukPanel,
+        paragraphBody: paragraphBody,
+        link: link,
         feedbackSection: components.feedback_section
 )
 
@@ -32,7 +38,12 @@
 
     <h2 class="govuk-heading-m">@messages("downloadRequestSuccess.h2")</h2>
 
-    <p class="govuk-body">@messages("downloadRequestSuccess.p1.part1") <a href="@controllers.routes.DownloadDataIndexController.redirect()">@messages("downloadRequestSuccess.p1.linkText")</a> @messages("downloadRequestSuccess.p1.part2", email)</p>
+    @paragraphBody(message = messages("downloadRequestSuccess.p1", link(
+        text = messages("downloadRequestSuccess.p1.linkText"),
+        call = controllers.routes.DownloadDataIndexController.redirect(),
+        id = None
+    ), email))
+
     <p class="govuk-body">@messages("downloadRequestSuccess.p2")</p>
     <p class="govuk-body">@messages("downloadRequestSuccess.p3")</p>
 
