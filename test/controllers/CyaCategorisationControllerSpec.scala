@@ -95,6 +95,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             status(result) mustEqual OK
             contentAsString(result) mustEqual view(
               testRecordId,
+              "1234567890",
               expectedAssessmentList,
               emptySummaryList,
               emptySummaryList
@@ -141,6 +142,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             status(result) mustEqual OK
             contentAsString(result) mustEqual view(
               testRecordId,
+              "1234567890",
               expectedAssessmentList,
               emptySummaryList,
               emptySummaryList
@@ -203,6 +205,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             status(result) mustEqual OK
             contentAsString(result) mustEqual view(
               testRecordId,
+              "1234567890",
               expectedAssessmentList,
               expectedSupplementaryUnitList,
               emptySummaryList
@@ -252,6 +255,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             status(result) mustEqual OK
             contentAsString(result) mustEqual view(
               testRecordId,
+              "1234567890",
               expectedAssessmentList,
               expectedSupplementaryUnitList,
               emptySummaryList
@@ -322,6 +326,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             status(result) mustEqual OK
             contentAsString(result) mustEqual view(
               testRecordId,
+              "9876543210",
               expectedAssessmentList,
               emptySummaryList,
               expectedLongerCommodityList
@@ -378,6 +383,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             status(result) mustEqual OK
             contentAsString(result) mustEqual view(
               testRecordId,
+              "1234567890",
               expectedAssessmentList,
               emptySummaryList,
               emptySummaryList
