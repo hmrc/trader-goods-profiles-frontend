@@ -64,11 +64,10 @@ cyaRequestAdvice.heading = Check your answers before sending your request for ad
 cyaRequestAdvice.subheading = Contact details
 
 cyaCategorisation.title = Check your answers
-cyaCategorisation.heading = Check your answers
-cyaCategorisation.categorisationHeader = Category assessments
-cyaCategorisation.categorisationQuestion = Do you meet any of the following exclusions and can you supply the relevant document code on your movements?
+cyaCategorisation.heading = Check your category assessment answers for {0}
 cyaCategorisation.supplementaryUnitHeader = Supplementary Unit
 cyaCategorisation.longerCommodityCode = Longer commodity code
+cyaCategorisation.assessmentKey = Exclusions for category assessment {0}
 
 journeyRecovery.continue.title = Something has gone wrong
 journeyRecovery.continue.heading = Something has gone wrong

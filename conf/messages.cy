@@ -329,10 +329,9 @@ categorisationResult.Standard.p1 = Mae’ch nwyddau wedi’u categoreiddio ac ma
 todo.cat = Daw’r wybodaeth am eithriadau o Offeryn Tariff Ar-lein Gogledd Iwerddon. Cytundebau yw’r rhain rhwng y DU a’r UE, ac nid ydynt ar gael yn Gymraeg.
 
 cyaCategorisation.title = Gwiriwch eich atebion
-cyaCategorisation.heading = Gwiriwch eich atebion
-cyaCategorisation.categorisationHeader = Asesiadau categori
-cyaCategorisation.categorisationQuestion = A ydych yn bodloni unrhyw un o’r eithriadau canlynol, ac a allwch roi’r cod dogfen perthnasol ar gyfer eich symudiadau?
+cyaCategorisation.heading = Gwiriwch eich atebion asesiadau categori ar gyfer {0}
 cyaCategorisation.supplementaryUnitHeader = Unedau atodol
+cyaCategorisation.assessmentKey = Eithriadau ar gyfer asesiadau categori {0}
 
 categoryGuidance.title = Categoreiddio
 categoryGuidance.heading = Categoreiddio

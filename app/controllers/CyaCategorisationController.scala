@@ -16,19 +16,21 @@
 
 package controllers
 
+import cats.data
 import com.google.inject.Inject
 import connectors.GoodsRecordConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import models.helper.CategorisationJourney
 import models.ott.CategorisationInfo
 import models.requests.DataRequest
-import models.{CategorisationAnswers, CategoryRecord, NormalMode}
+import models.{CategorisationAnswers, CategoryRecord, NormalMode, UserAnswers, ValidationError}
 import navigation.Navigator
 import pages.CyaCategorisationPage
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery}
 import services.{AuditService, CategorisationService, DataCleansingService}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import viewmodels.checkAnswers.{AssessmentsSummary, HasSupplementaryUnitSummary, LongerCommodityCodeSummary, SupplementaryUnitSummary}
 import viewmodels.govuk.summarylist._
 import views.html.CyaCategorisationView
@@ -77,52 +79,78 @@ class CyaCategorisationController @Inject() (
 
   }
 
-  private def showCyaPage(request: DataRequest[_], recordId: String, categoryInfo: CategorisationInfo)(implicit
-    messages: Messages
-  ) = {
+  private def showCyaPage(
+    request: DataRequest[_],
+    recordId: String,
+    categoryInfo: CategorisationInfo
+  )(implicit messages: Messages) = {
     val userAnswers = request.userAnswers
 
     CategorisationAnswers.build(userAnswers, recordId) match {
       case Right(_) =>
-        val categorisationRows = categoryInfo.categoryAssessmentsThatNeedAnswers
-          .flatMap(assessment =>
-            AssessmentsSummary.row(
-              recordId,
-              userAnswers,
-              assessment,
-              categoryInfo.categoryAssessmentsThatNeedAnswers.indexOf(assessment),
-              categoryInfo.longerCode
-            )
-          )
+        val (categorisationList, supplementaryUnitList, longerCommodityCodeList) =
+          buildSummaryLists(userAnswers, recordId, categoryInfo)
 
-        val categorisationList = SummaryListViewModel(
-          rows = categorisationRows
+        Ok(
+          view(
+            recordId,
+            categoryInfo.commodityCode,
+            categorisationList,
+            supplementaryUnitList,
+            longerCommodityCodeList
+          )(request, messages)
         )
-
-        val supplementaryUnitList = SummaryListViewModel(
-          rows = Seq(
-            HasSupplementaryUnitSummary.row(userAnswers, recordId),
-            SupplementaryUnitSummary.row(userAnswers, recordId)
-          ).flatten
-        )
-
-        val longerCommodityCodeList = SummaryListViewModel(
-          rows = Seq(
-            LongerCommodityCodeSummary.row(userAnswers, recordId)
-          ).flatten
-        )
-
-        Ok(view(recordId, categorisationList, supplementaryUnitList, longerCommodityCodeList)(request, messages))
 
       case Left(errors) =>
-        dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
-        logErrorsAndContinue(
-          errorMessage,
-          routes.CategorisationPreparationController.startCategorisation(recordId),
-          errors
-        )
-
+        handleError(request, recordId, errors)
     }
+  }
+
+  private def buildSummaryLists(
+    userAnswers: UserAnswers,
+    recordId: String,
+    categoryInfo: CategorisationInfo
+  )(implicit messages: Messages): (SummaryList, SummaryList, SummaryList) = {
+
+    val categorisationRows = categoryInfo.categoryAssessmentsThatNeedAnswers.flatMap { assessment =>
+      AssessmentsSummary.row(
+        recordId,
+        userAnswers,
+        assessment,
+        categoryInfo.categoryAssessmentsThatNeedAnswers.indexOf(assessment),
+        categoryInfo.longerCode
+      )
+    }
+
+    val categorisationList = SummaryListViewModel(rows = categorisationRows)
+
+    val supplementaryUnitList = SummaryListViewModel(
+      rows = Seq(
+        HasSupplementaryUnitSummary.row(userAnswers, recordId),
+        SupplementaryUnitSummary.row(userAnswers, recordId)
+      ).flatten
+    )
+
+    val longerCommodityCodeList = SummaryListViewModel(
+      rows = Seq(
+        LongerCommodityCodeSummary.row(userAnswers, recordId)
+      ).flatten
+    )
+
+    (categorisationList, supplementaryUnitList, longerCommodityCodeList)
+  }
+
+  private def handleError(
+    request: DataRequest[_],
+    recordId: String,
+    errors: data.NonEmptyChain[ValidationError]
+  ) = {
+    dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
+    logErrorsAndContinue(
+      errorMessage,
+      routes.CategorisationPreparationController.startCategorisation(recordId),
+      errors
+    )
   }
 
   def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
