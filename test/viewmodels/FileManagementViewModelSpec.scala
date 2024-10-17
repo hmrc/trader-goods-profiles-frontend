@@ -20,18 +20,16 @@ import base.SpecBase
 import generators.Generators
 import models.filemanagement.{AvailableFilesTable, PendingFilesTable}
 import org.scalacheck.Gen
-import play.api.i18n.{Messages, MessagesApi}
-import play.api.mvc.AnyContent
-import play.api.test.FakeRequest
-import play.api.test.Helpers.baseApplicationBuilder.injector
+import play.api.i18n.Messages
 
 class FileManagementViewModelSpec extends SpecBase with Generators {
 
   "FileManagementViewModel" - {
 
-    def fakeRequest: FakeRequest[AnyContent] = FakeRequest("", "")
-    def messagesApi: MessagesApi             = injector.instanceOf[MessagesApi]
-    implicit def messages: Messages          = messagesApi.preferred(fakeRequest)
+    val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+      .build()
+
+    implicit val message: Messages = messages(application)
 
     val viewModelAvailableFiles = FileManagementViewModel(Some(AvailableFilesTable()), None)
     val viewModelPendingFiles   = FileManagementViewModel(None, Some(PendingFilesTable()))

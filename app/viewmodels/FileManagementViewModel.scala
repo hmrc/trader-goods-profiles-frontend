@@ -20,18 +20,18 @@ import models.filemanagement._
 import play.api.i18n.Messages
 import javax.inject.Inject
 
-
 case class FileManagementViewModel(
-                                    availableFilesTable: Option[AvailableFilesTable],
-                                    pendingFilesTable: Option[PendingFilesTable]
-                                  )(implicit messages: Messages) {
+  availableFilesTable: Option[AvailableFilesTable],
+  pendingFilesTable: Option[PendingFilesTable]
+)(implicit messages: Messages) {
 
   val isFiles: Boolean = availableFilesTable.isDefined || pendingFilesTable.isDefined
 
-  val title: String = messages("fileManagement.title")
+  val title: String   = messages("fileManagement.title")
   val heading: String = messages("fileManagement.heading")
 
-  val paragraph1: String = if (isFiles) messages("fileManagement.files.paragraph1") else messages("fileManagement.noFiles.paragraph1")
+  val paragraph1: String =
+    if (isFiles) messages("fileManagement.files.paragraph1") else messages("fileManagement.noFiles.paragraph1")
 
   val tgpRecordsLink: String = messages("fileManagement.requestRecord.linkText")
   val goBackHomeLink: String = messages("site.goBackToHomePage")
@@ -39,9 +39,8 @@ case class FileManagementViewModel(
 
 object FileManagementViewModel {
   class FileManagementViewModelProvider @Inject() {
-    def apply()(implicit messages: Messages): FileManagementViewModel = {
+    def apply()(implicit messages: Messages): FileManagementViewModel =
       // TODO - Implement method to sort data into correct case models for table rows
       new FileManagementViewModel(Some(AvailableFilesTable()), Some(PendingFilesTable()))
-    }
   }
 }

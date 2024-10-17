@@ -26,7 +26,7 @@ import views.html.FileManagementView
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class FileManagementController @Inject()(
+class FileManagementController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
@@ -43,6 +43,6 @@ class FileManagementController @Inject()(
     implicit request =>
 //    downloadDataConnector.getDownloadDataSummary(request.eori).map { downloadData => TODO: Pull out data as needed when TGP-2730 is complete
 //      viewModel(downloadDataConnector).map { viewModel =>
-        Ok(view(viewModelProvider()))
-      }
+      Ok(view(viewModelProvider()))
+  }
 }

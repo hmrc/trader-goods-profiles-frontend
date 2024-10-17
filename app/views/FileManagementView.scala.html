@@ -36,7 +36,7 @@
 
         @viewModel.availableFilesTable.map { table: FileManagementTable =>
             @govukTable(Table(
-                caption = Some(table.title),
+                caption = Some(table.caption),
                 head = Some(table.headRows),
                 rows = table.rows
             )
@@ -45,7 +45,7 @@
 
         @viewModel.pendingFilesTable.map { table: FileManagementTable =>
             @govukTable(Table(
-                caption = Some(table.title),
+                caption = Some(table.caption),
                 head = Some(table.headRows),
                 rows = table.rows
             )

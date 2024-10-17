@@ -21,7 +21,7 @@ import uk.gov.hmrc.govukfrontend.views.Aliases.{HeadCell, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.table.TableRow
 
 trait FileManagementTable {
-  val title: String
+  val caption: String
   val body: Option[String]
   val headRows: Seq[HeadCell]
   val rows: Seq[Seq[TableRow]]
@@ -29,9 +29,9 @@ trait FileManagementTable {
 
 case class AvailableFilesTable()(implicit messages: Messages) extends FileManagementTable {
   // TODO: Add apply in companion object to create table rows from data
-  override val title: String = messages("fileManagement.availableFiles.table.title")
-  override val body: Option[String] = None
-  override val headRows: Seq[HeadCell] =
+  override val caption: String          = messages("fileManagement.availableFiles.table.caption")
+  override val body: Option[String]     = None
+  override val headRows: Seq[HeadCell]  =
     Seq(
       messages("fileManagement.availableFiles.table.header1"),
       messages("fileManagement.availableFiles.table.header2"),
@@ -39,27 +39,27 @@ case class AvailableFilesTable()(implicit messages: Messages) extends FileManage
     ).map { content =>
       HeadCell(content = Text(content))
     }
-  override val rows: Seq[Seq[TableRow]] = Seq(
+  override val rows: Seq[Seq[TableRow]] = Seq( // This will be passed into the case class once data work is complete
     Seq(
       TableRow(
-        content = Text("time answer"),
+        content = Text("time answer")
       ),
       TableRow(
-        content = Text("expiry answer"),
+        content = Text("expiry answer")
       ),
       TableRow(
-        content = Text("file answer"),
+        content = Text("file answer")
       )
     ),
     Seq(
       TableRow(
-        content = Text("time answer"),
+        content = Text("time answer")
       ),
       TableRow(
-        content = Text("expiry answer"),
+        content = Text("expiry answer")
       ),
       TableRow(
-        content = Text("file answer"),
+        content = Text("file answer")
       )
     )
   )
@@ -67,9 +67,9 @@ case class AvailableFilesTable()(implicit messages: Messages) extends FileManage
 
 case class PendingFilesTable()(implicit messages: Messages) extends FileManagementTable {
   // TODO: Add apply in companion object to create table rows from data
-  override val title: String = messages("fileManagement.pendingFiles.table.title")
-  override val body: Option[String] = Some(messages("fileManagement.pendingFiles.paragraph2"))
-  override val headRows: Seq[HeadCell] =
+  override val caption: String          = messages("fileManagement.pendingFiles.table.caption")
+  override val body: Option[String]     = Some(messages("fileManagement.pendingFiles.table.body"))
+  override val headRows: Seq[HeadCell]  =
     Seq(
       messages("fileManagement.pendingFiles.table.header1"),
       messages("fileManagement.pendingFiles.table.header2")
@@ -79,18 +79,18 @@ case class PendingFilesTable()(implicit messages: Messages) extends FileManageme
   override val rows: Seq[Seq[TableRow]] = Seq(
     Seq(
       TableRow(
-        content = Text("time answer"),
+        content = Text("time answer")
       ),
       TableRow(
-        content = Text("file answer"),
+        content = Text("file answer")
       )
     ),
     Seq(
       TableRow(
-        content = Text("time answer"),
+        content = Text("time answer")
       ),
       TableRow(
-        content = Text("file answer"),
+        content = Text("file answer")
       )
     )
   )
