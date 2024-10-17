@@ -14,35 +14,28 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import views.html.components._
+
 @this(
 layout: templates.Layout,
-govukPhaseBanner: GovukPhaseBanner)
+govukPhaseBanner: GovukPhaseBanner,
+notificationBanner: notificationBanner,
+paragraphBody: paragraphBody
+)
 
 @(downloadReady: Boolean)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = s"${messages("homepage.title")} - ${messages("site.govuk")}", showBackLink = false, headerShouldHaveServiceLink = false) {
 
-@if(true) {
-    @govukPhaseBanner(PhaseBanner(
-        tag = None,
-            content = HtmlContent(
-                s"""
-                <div class="govuk-notification-banner" role="region" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
-                    <div class="govuk-notification-banner__header">
-                        <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
-                            ${messages("homepage.downloadBanner.important")}
-                        </h2>
-                    </div>
-                    <div class="govuk-notification-banner__content">
-                        <p class="govuk-notification-banner__heading">
-                            ${messages("homepage.downloadBanner.content")}
-                            <a class="govuk-notification-banner__link" href="${routes.FileReadyController.onPageLoad().url}">${messages("homepage.downloadBanner.linkText")}</a>.
-                        </p>
-                    </div>
-                </div>
-                """
-            )
-        ))
+    @if(true) {
+        @notificationBanner(
+            title = messages("homepage.downloadBanner.important"),
+            content = HtmlFormat.fill(Seq(
+                paragraphBody(messages("homepage.downloadBanner.content")), // First content: paragraph
+                Html(s"""<a href="/version-9/goods-profile/goods-profile-filters-8" class="govuk-link">${messages("homepage.downloadBanner.linkText")}</a>""") // Second content: link
+            ))
+        )
     }
 
     <h1 class="govuk-heading-l">@messages("homepage.h1")</h1>
