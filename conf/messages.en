@@ -467,7 +467,6 @@ hasGoodsDescriptionChange.p1 = Changing the goods description on this goods reco
 hasGoodsDescriptionChange.h2 = Do you want to change the goods description?
 hasGoodsDescriptionChange.error.required = Select if you want to change the goods description
 
-removeNirms.title
 
 removeNirms.title = Removing NIRMS details
 removeNirms.h1 = Removing NIRMS details
