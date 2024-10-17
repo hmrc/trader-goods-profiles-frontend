@@ -18,6 +18,7 @@ package controllers
 
 import connectors.GoodsRecordConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
+import models.Scenario.getResultAsInt
 import models.helper.CategorisationUpdate
 import models.ott.CategorisationInfo
 import models.{CategoryRecord, Mode, NormalMode, UserAnswers}
@@ -31,6 +32,7 @@ import repositories.SessionRepository
 import services.{AuditService, CategorisationService}
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
+import utils.Constants.Category2AsInt
 import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
 
 import javax.inject.Inject
@@ -167,7 +169,10 @@ class CategorisationPreparationController @Inject() (
   )(implicit
     hc: HeaderCarrier
   ): Future[Done] =
-    if (categorisationInfo.categoryAssessmentsThatNeedAnswers.isEmpty && !categorisationInfo.isCommCodeExpired) {
+    if (
+      categorisationInfo.categoryAssessmentsThatNeedAnswers.isEmpty && !categorisationInfo.isCommCodeExpired
+      && !isSupplementaryUnitQuestionToBeAnswered(categorisationInfo, updatedUserAnswers, recordId)
+    ) {
       CategoryRecord.build(updatedUserAnswers, eori, recordId, categorisationService) match {
         case Right(record) =>
           auditService.auditFinishCategorisation(
@@ -191,6 +196,15 @@ class CategorisationPreparationController @Inject() (
     } else {
       Future.successful(Done)
     }
+
+  private def isSupplementaryUnitQuestionToBeAnswered(
+    catInfo: CategorisationInfo,
+    updatedUserAnswers: UserAnswers,
+    recordId: String
+  ) = {
+    val scenario = categorisationService.calculateResult(catInfo, updatedUserAnswers, recordId)
+    catInfo.measurementUnit.isDefined && getResultAsInt(scenario) == Category2AsInt
+  }
 
   private def updateReassessmentAnswers(
     oldLongerCategorisationInfoOpt: Option[CategorisationInfo],

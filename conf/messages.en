@@ -160,14 +160,14 @@ ukimsNumber.change.hidden = UKIMS number
 
 categoryGuidance.title = Categorisation
 categoryGuidance.heading = Categorisation
-categoryGuidance.p1 = Categorisation allows you to know what category your goods are in and if they are eligible for Simplified Process for Internal Market Movements (SPIMM). By completing the categorisation journey, you can improve the category of your goods if you hold certain exclusions.
-categoryGuidance.p2 = We’ll ask you questions about exclusions that you hold and then tell you what category your goods are. If the commodity code has too many exclusions for us to list, we might ask you for an 8 or 10 digit commodity code.
+categoryGuidance.p1 = Categorisation allows you to know what category your goods are in and if they are eligible for Simplified Process for Internal Market Movements (SPIMM).
+categoryGuidance.p2 = We’ll ask you questions about exclusions that you hold and then tell you what category your goods are. We could ask you up to 10 questions.
 categoryGuidance.subheading = Exclusions
 categoryGuidance.p3 = Your goods will be placed into 1 of 3 categories:
-categoryGuidance.p3.1 = Category 1 – goods that are excluded and not suitable for movement using SPIMM
-categoryGuidance.p3.2 = Category 2 – goods that are controlled and require additional commodity details to use SPIMM
-categoryGuidance.p3.3 = Standard – goods that are not classed under Category 1 or Category 2 and benefit from SPIMM
-categoryGuidance.p4 = You’ll need to know the certificate number or name of any exclusions you have for your goods. For example, your certificate number could be either C644, Y929 or C640. If you get a new exclusion, you’ll be able to change this later. If any measures apply to your trade, you’ll receive a categorisation result.
+categoryGuidance.p3.1 = Category 1 – goods that are excluded for using SPIMM
+categoryGuidance.p3.2 = Category 2 – goods that are controlled and require additional details to use SPIMM
+categoryGuidance.p3.3 = Standard – goods that can use SPIMM
+categoryGuidance.p4 = You’ll need to know the certificate number or name of any exclusions you have for your goods. Example certificate numbers are C644, Y929 or C640. If you get a new exclusion, you’ll be able to change this later.
 
 commodityCode.title = Commodity code
 commodityCode.h1 = Commodity code
@@ -203,8 +203,9 @@ homepage.p4.linkText = Ask for an opinion from HMRC if a commodity code is corre
 homepage.p5.linkText = Manage your profile details
 homepage.h2.3 = Help and contact
 homepage.p6.linkText = Find additional support and contacts to help you
-homepage.downloadBanner.content = The file you requested with your TGP records is ready for you to download.
-homepage.downloadBanner.linkText = Go to the download page to get your file
+homepage.downloadBanner.important = Important
+homepage.downloadBanner.content = The TGP records file you asked for is ready to download.
+homepage.downloadBanner.linkText = Go to the TGP records file page to download the file
 
 createRecordStart.title = Creating a goods record
 createRecordStart.h1 = Creating a goods record
@@ -236,9 +237,8 @@ createRecordSuccess.p7 = Your thoughts and ideas will help us to make improvemen
 
 goodsDescription.title = Goods description
 goodsDescription.h1 = Goods description
-goodsDescription.p1 = A goods description is a plain language description of the goods. This does not have to match the trade tariff description. Authorities should be able to identify your goods from the description.
-goodsDescription.p2 = You can not use general terms like ''consolidated'' or ''general cargo''. General terms will not allow Border Force to perform customs controls.
-goodsDescription.p3 = If your goods will not be a full package, container or trailer you should confirm this on the goods description. You can use terms like ''part case'', ''part container'' or ''part trailer'' at the end of the goods description.
+goodsDescription.p1 = A goods description is a plain language description of the goods. Authorities should be able to identify your goods from the description.
+goodsDescription.p2 = You can not use general terms to describe the goods.
 goodsDescription.inputHeading = What is the goods description?
 goodsDescription.hint = This can be up to 512 characters long.
 goodsDescription.checkYourAnswersLabel = Goods description
@@ -449,20 +449,20 @@ singleRecord.standardGoods = Standard goods
 singleRecord.back = Back to goods profile
 
 hasCountryOfOriginChange.title = Change record information
-hasCountryOfOriginChange.h1 = Changing the country of origin
-hasCountryOfOriginChange.p1 = You''ll need to categorise this goods record if you change the country of origin
+hasCountryOfOriginChange.h1 = Change record information
+hasCountryOfOriginChange.p1 = You''ll need to recategorise this goods record if you change the country of origin
 hasCountryOfOriginChange.h2 = Do you want to change the country of origin?
 hasCountryOfOriginChange.error.required = Select if you want to change the country of origin
 
 hasCommodityCodeChange.title = Change record information
-hasCommodityCodeChange.h1 = Changing the commodity code
+hasCommodityCodeChange.h1 = Change record information
 hasCommodityCodeChange.h2 = Do you want to change the commodity code?
 hasCommodityCodeChange.advice = Changing the commodity code on this goods record will remove the advice status. If you want to check the commodity code is correct and matches the description, you''ll need to ask for advice again.
-hasCommodityCodeChange.category = You''ll need to categorise this goods record if you change the commodity code.
+hasCommodityCodeChange.category = You''ll need to recategorise this goods record if you change the commodity code.
 hasCommodityCodeChange.error.required = Select if you want to change the commodity code
 
 hasGoodsDescriptionChange.title = Change record information
-hasGoodsDescriptionChange.h1 = Changing the goods description
+hasGoodsDescriptionChange.h1 = Change record information
 hasGoodsDescriptionChange.p1 = Changing the goods description on this goods record will remove the advice status. If you want to check the commodity code is correct and matches the goods description, you''ll need to ask for advice again.
 hasGoodsDescriptionChange.h2 = Do you want to change the goods description?
 hasGoodsDescriptionChange.error.required = Select if you want to change the goods description
@@ -630,7 +630,8 @@ singleRecord.recordLocked = This record is locked as you''ve asked HMRC for advi
 requestData.title = Making a request to download your TGP data
 requestData.heading = Making a request to download your TGP data
 requestData.p1 = Once you request the file, we''ll email {0} to let you know when it is ready to download. This is usually ready within five minutes but it could take up to 24 hours.
-requestData.button = Request TGP data
+requestData.p2 = You''ll also be able to check the progress on the TGP records files page.
+requestData.button = Get TGP records file
 
 fileReady.title = Your file is ready to download
 fileReady.heading = Your file is ready to download
