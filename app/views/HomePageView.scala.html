@@ -28,7 +28,7 @@ paragraphBody: paragraphBody
 
 @layout(pageTitle = s"${messages("homepage.title")} - ${messages("site.govuk")}", showBackLink = false, headerShouldHaveServiceLink = false) {
 
-    @if(true) {
+    @if(downloadReady) {
         @notificationBanner(
             title = messages("homepage.downloadBanner.important"),
             content = HtmlFormat.fill(Seq(
