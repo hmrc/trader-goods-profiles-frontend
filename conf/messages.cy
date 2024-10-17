@@ -329,21 +329,20 @@ categorisationResult.Standard.p1 = Mae’ch nwyddau wedi’u categoreiddio ac ma
 todo.cat = Daw’r wybodaeth am eithriadau o Offeryn Tariff Ar-lein Gogledd Iwerddon. Cytundebau yw’r rhain rhwng y DU a’r UE, ac nid ydynt ar gael yn Gymraeg.
 
 cyaCategorisation.title = Gwiriwch eich atebion
-cyaCategorisation.heading = Gwiriwch eich atebion
-cyaCategorisation.categorisationHeader = Asesiadau categori
-cyaCategorisation.categorisationQuestion = A ydych yn bodloni unrhyw un o’r eithriadau canlynol, ac a allwch roi’r cod dogfen perthnasol ar gyfer eich symudiadau?
+cyaCategorisation.heading = Gwiriwch eich atebion asesiadau categori ar gyfer {0}
 cyaCategorisation.supplementaryUnitHeader = Unedau atodol
+cyaCategorisation.assessmentKey = Eithriadau ar gyfer asesiadau categori {0}
 
 categoryGuidance.title = Categoreiddio
 categoryGuidance.heading = Categoreiddio
-categoryGuidance.p1 = Mae categoreiddio yn eich galluogi i wybod pa gategori sy’n berthnasol i’ch nwyddau, a ph’un a ydynt yn gymwys i ddefnyddio’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM) neu beidio. Trwy gwblhau’r daith gategoreiddio, gallwch wella categori eich nwyddau os oes eithriadau penodol yn berthnasol i chi.
-categoryGuidance.p2 = Byddwn yn gofyn cwestiynau ynghylch unrhyw eithriadau sy’n berthnasol i chi, ac wedyn byddwn yn rhoi gwybod i chi i ba gategori y mae’ch nwyddau’n perthyn iddo. Os oes gan y cod nwyddau ormod o eithriadau i ni allu eu rhestru, mae’n bosibl y byddwn yn gofyn am god nwyddau 8 neu 10 digit.
+categoryGuidance.p1 = Mae categoreiddio yn eich galluogi i wybod pa gategori sy’n berthnasol i’ch eich nwyddau, a ph’un a ydynt yn gymwys i ddefnyddio’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM) neu beidio.
+categoryGuidance.p2 = Byddwn yn gofyn cwestiynau ynghylch unrhyw eithriadau sy’n berthnasol i chi, ac wedyn byddwn yn rhoi gwybod i chi i ba gategori y mae’ch nwyddau’n perthyn iddo. Gallwn ofyn hyd at 10 cwestiwn i chi.
 categoryGuidance.subheading = Eithriadau
 categoryGuidance.p3 = Bydd eich nwyddau yn cael eu rhannu i 1 o 3 chategori:
-categoryGuidance.p3.1 = Categori 1 – nwyddau sydd wedi’u heithrio, ac nad ydynt yn gymwys i ddefnyddio SPIMM
-categoryGuidance.p3.2 = Categori 2 – nwyddau sydd o dan reolaeth, ac mae angen manylion y nwyddau ychwanegol ar eu cyfer er mwyn gallu defnyddio SPIMM
-categoryGuidance.p3.3 = Safonol – nwyddau nad ydynt yn perthyn i Gategori 1 neu Gategori 2, ac maent yn cael budd o ddefnyddio SPIMM
-categoryGuidance.p4 = Bydd angen i chi wybod rhif tystysgrif neu enw unrhyw eithriadau sy’n berthnasol ar gyfer eich nwyddau. Er enghraifft, gall eich rhif tystysgrif fod yn C644, Y929 neu C640. Os byddwch yn cael amod newydd, byddwch yn gallu ei newid yn nes ymlaen. Os yw unrhyw fesurau yn berthnasol i’ch masnach, byddwch yn cael canlyniad categoreiddio.
+categoryGuidance.p3.1 = Categori 1 – nwyddau sydd wedi’u heithrio ar gyfer defnyddio SPIMM
+categoryGuidance.p3.2 = Categori 2 – nwyddau sy’n cael eu rheoli ac sydd angen manylion ychwanegol i ddefnyddio SPIMM
+categoryGuidance.p3.3 = Safonol – nwyddau sy’n gallu defnyddio SPIMM
+categoryGuidance.p4 = Bydd angen i chi wybod rhif tystysgrif neu enw unrhyw eithriadau s’n berthnasol ar gyfer eich nwyddau. Rhifau tystysgrif enghreifftiol yw C644, Y929 neu C640. Os byddwch yn cael eithriad newydd, byddwch yn gallu ei newid yn nes ymlaen.
 
 assessment.title = Cwestiwn categoreiddio
 assessment.heading = Asesiadau categori {0}
@@ -428,3 +427,7 @@ cyaMaintainProfile.title.hasNiphl = Gwiriwch eich atebion ar gyfer newid eich co
 cyaMaintainProfile.heading.hasNiphl = Gwiriwch eich atebion ar gyfer newid eich cofrestriad NIPHL
 cyaMaintainProfile.title.niphlNumber = Gwiriwch eich atebion ar gyfer newid eich rhif NIPHL
 cyaMaintainProfile.heading.niphlNumber = Gwiriwch eich atebion ar gyfer newid eich rhif NIPHL
+
+hasCountryOfOriginChange.h1 = Newid gwybodaeth y cofnod
+hasCommodityCodeChange.h1 = Newid gwybodaeth y cofnod
+hasGoodsDescriptionChange.h1 = Newid gwybodaeth y cofnod
