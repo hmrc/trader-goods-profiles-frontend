@@ -23,7 +23,7 @@ govukButton: GovukButton
 
 @(recordId: String, commodityCode: String, categorisationList: SummaryList, supplementaryUnitList: SummaryList, longerCommodityCodeList: SummaryList)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = titleNoForm(messages("cyaCategorisation.title"))) {
+@layout(pageTitle = titleNoForm(messages("cyaCategorisation.title", commodityCode))) {
 
     <h1 class="govuk-heading-l">@messages("cyaCategorisation.heading", commodityCode)</h1>
 
