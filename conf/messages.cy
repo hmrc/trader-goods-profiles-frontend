@@ -286,6 +286,21 @@ singleRecord.warningText = Rydych yn atebol dros yr wybodaeth am unrhyw symudiad
 
 
 
+singleRecord.h2.categorisation = Categoreiddio
+singleRecord.category.row = Categori
+singleRecord.h2.supplementaryUnit = Unedau atodol
+singleRecord.h2.adviceStatus = Statws cyngor
+singleRecord.adviceStatus.row = Cyngor
+singleRecord.status.row = Statws
+singleRecord.askForAdvice = Gofyn am gyngor
+singleRecord.withdrawAdvice = Tynnu’r cais yn ôl
+singleRecord.categoriseThisGood = Categoreiddio‘r nwydd
+singleRecord.cat1 = Categori 1
+singleRecord.cat2 = Categori 2
+singleRecord.standardGoods = Nwyddau safonol
+singleRecord.back = Yn ôl proffil nwyddau
+
+
 countryOfOrigin.title = Gwlad tarddiad
 countryOfOrigin.h1 = Gwlad tarddiad
 countryOfOrigin.p1 = Mae ‘gwlad tarddiad’ yn cyfeirio at y wlad lle cafodd y nwyddau eu gweithgynhyrchu (naill ai’n gyfan gwbl, neu gan fwyaf), eu tyfu neu eu haddasu. Mae’n cael ei defnyddio at ddibenion labelu, ac mae’n effeithio ar gyfraddau’r tollau.
@@ -427,6 +442,72 @@ cyaMaintainProfile.heading.hasNiphl = Gwiriwch eich atebion ar gyfer newid eich 
 cyaMaintainProfile.title.niphlNumber = Gwiriwch eich atebion ar gyfer newid eich rhif NIPHL
 cyaMaintainProfile.heading.niphlNumber = Gwiriwch eich atebion ar gyfer newid eich rhif NIPHL
 
-hasCountryOfOriginChange.h1 = Newid gwybodaeth y cofnod
-hasCommodityCodeChange.h1 = Newid gwybodaeth y cofnod
+
+
+
+
+hasGoodsDescriptionChange.title = Newid gwybodaeth y cofnod
 hasGoodsDescriptionChange.h1 = Newid gwybodaeth y cofnod
+hasGoodsDescriptionChange.p1 = Bydd newid disgrifiad y nwyddau ar y cofnod nwyddau hwn yn dileu’r statws cyngor. Os ydych am wirio bod y cod nwyddau yn gywir ac yn cyd-fynd â’r disgrifiad nwyddau, bydd angen i chi ofyn am gyngor eto.
+hasGoodsDescriptionChange.h2 = A ydych am newid disgrifiad y nwyddau?
+hasGoodsDescriptionChange.error.required = Dewiswch os ydych am newid disgrifiad y nwyddau
+
+
+
+hasCountryOfOriginChange.title = Newid gwybodaeth y cofnod
+hasCountryOfOriginChange.h1 = Newid gwybodaeth y cofnod
+hasCountryOfOriginChange.p1 = Bydd angen i chi gategoreiddio’r cofnod nwyddau hwn os byddwch yn newid y wlad wreiddiol.
+hasCountryOfOriginChange.h2 = A ydych am newid y wlad wreiddiol?
+hasCountryOfOriginChange.error.required = Dewiswch os ydych am newid y wlad wreiddiol
+
+
+hasCommodityCodeChange.title = Newid gwybodaeth y cofnod
+hasCommodityCodeChange.h1 = Newid gwybodaeth y cofnod
+hasCommodityCodeChange.h2 = A ydych am newid y cod nwyddau?
+hasCommodityCodeChange.advice = Bydd newid y cod nwyddau ar y cofnod nwyddau hwn yn dileu’r statws cyngor. Os ydych am wirio bod y cod nwyddau yn gywir ac yn cyd-fynd â’r disgrifiad, bydd angen i chi ofyn am gyngor eto.
+hasCommodityCodeChange.category = YBydd angen i chi gategoreiddio’r cofnod nwyddau hwn os byddwch yn newid y cod nwyddau.
+hasCommodityCodeChange.error.required = Dewiswch os ydych am newid y cod nwyddau
+
+
+removeGoodsRecord.title = Tynnu’r cofnod nwyddau
+removeGoodsRecord.heading = Tynnu’r cofnod nwyddau
+removeGoodsRecord.error.required = Dewiswch ‘Iawn’ os ydych am dynnu’r cofnod nwyddau hwn
+removeGoodsRecord.warning = Rhybudd
+removeGoodsRecord.warningText = Os byddwch yn tynnu’r cofnod nwyddau hwn, ni fyddwch yn gallu ei ddefnyddio ar gyfer symudiadau. Ar ôl ei dynnu, ni fyddwch yn gallu adfer y cofnod nwyddau hwn.
+removeGoodsRecord.question = A ydych yn siŵr eich bod am dynnu’r cofnod nwyddau hwn?
+removeGoodsRecord.yes = Iawn, tynnwch y cofnod nwyddau hwn
+removeGoodsRecord.noProfile =Na, yn ôl i’r proffil nwyddau
+removeGoodsRecord.noRecord = Na, yn ôl i’r cofnod nwyddau
+
+profile.title = Manylion y proffil
+profile.h1 = Manylion y proffil
+profile.h2 = UKIMS, NIRMS a’r NIPHL
+profile.p1 = Gwiriwch fod y manylion ar eich proffil yn gywir. Gallwch newid eich rhif UKIMS neu ychwanegu, newid a dileu gwybodaeth NIRMS a NIPHL.
+profile.warning = Rhybudd
+profile.warningText = Mae angen i chi wneud yn siŵr bod y manylion hyn yn gywir. Ni fydd unrhyw symudiadau y byddwch yn defnyddio manylion o’r TGP i’w creu yn ddilys os byddant yn anghywir.
+profile.back = Yn ôl i’r hafan
+
+
+removeNirms.title
+
+removeNirms.title = Removing NIRMS details
+removeNirms.h1 = Removing NIRMS details
+removeNirms.p1 = If you remove your NIRMS details, the categorisation of goods you move under the Simplified Process for Internal Market Movements (SPIMM) could change.
+removeNirms.p2 = You will need to re-categorise those records to see if you can still move them under SPIMM.
+removeNirms.h2 = Are you sure you want to remove your NIRMS details?
+removeNirms.error.required = Confirm if you want to remove your NIRMS details
+removeNirms.yes = Yes, remove my NIRMS details
+removeNirms.no = No, do not remove my NIRMS details
+removeNirms.warning = Warning
+removeNirms.warningText = If you move goods under SPIMM and they are not eligible to, you could be liable for any incorrectly declared goods.
+
+removeNiphl.title = Removing NIPHL details
+removeNiphl.h1 = Removing NIPHL details
+removeNiphl.p1 = If you remove your NIPHL details, the categorisation of goods you move under the Simplified Process for Internal Market Movements (SPIMM) could change.
+removeNiphl.p2 = You will need to re-categorise those records to see if you can still move them under SPIMM.
+removeNiphl.h2 = Are you sure you want to remove your NIPHL details?
+removeNiphl.error.required = Confirm if you want to remove your NIPHL details
+removeNiphl.yes = Yes, remove my NIPHL details
+removeNiphl.no = No, do not remove my NIPHL details
+removeNiphl.warning = Warning
+removeNiphl.warningText = If you move goods under SPIMM and they are not eligible to, you could be liable for any incorrectly declared goods.
