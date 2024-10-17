@@ -23,11 +23,11 @@ govukPhaseBanner: GovukPhaseBanner,
 govukNotificationBanner: GovukNotificationBanner
 )
 
-@(downloadReady: Boolean)(implicit request: Request[_], messages: Messages)
+@(downloadReady: Boolean =false)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = s"${messages("homepage.title")} - ${messages("site.govuk")}", showBackLink = false, headerShouldHaveServiceLink = false) {
 
-    @if(true) {
+    @if(downloadReady) {
         @govukNotificationBanner(NotificationBanner(
             title = Text(messages("homepage.downloadBanner.important")),
             content = HtmlContent(f"""
