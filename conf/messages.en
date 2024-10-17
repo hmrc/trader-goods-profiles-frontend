@@ -470,7 +470,7 @@ hasGoodsDescriptionChange.error.required = Select if you want to change the good
 ukimsNumberChangeController.title = UK Internal Market Scheme(UKIMS) number change
 ukimsNumberChangeController.heading = UK Internal Market Scheme(UKIMS) number change
 ukimsNumberChangeController.paragraph = As you have a new EORI number, you also have a new UKIMS number. You need to update your UKIMS number on you TGP. Keeping your UKIMS number up to date is important as it can be used on your movements.
-ukimsNumberChangeController.buttom = Update UKIMS number
+ukimsNumberChangeController.button = Update UKIMS number
 
 profile.title = Profile details
 profile.h1 = Profile details
@@ -689,5 +689,4 @@ cyaMaintainProfile.li2 = Northern Ireland Retail Movement Scheme (NIRMS)
 cyaMaintainProfile.li3 = Northern Ireland Plant Health Label (NIPHL)
 cyaMaintainProfile.warning = Warning
 cyaMaintainProfile.warningText = You need to make sure these details are correct. Any details that are wrong in your Trader Goods Profile and used to create movements, will not be valid.
-ukimsNumberChangeController.title = ukimsNumberChangeController
-ukimsNumberChangeController.heading = ukimsNumberChangeController
+

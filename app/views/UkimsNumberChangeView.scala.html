@@ -27,9 +27,13 @@
 @layout(pageTitle = titleNoForm(messages("ukimsNumberChangeController.title"))) {
 
     <h1 class="govuk-heading-xl">@messages("ukimsNumberChangeController.heading")</h1>
-    <p class="govuk-heading-body">@messages("ukimsNumberChangeController.paragraph")</p>
+    <p class="govuk-heading-body govUk-body">@messages("ukimsNumberChangeController.paragraph")</p>
 
-   @formHelper(action = routes.UkimsNumberController.onPageLoadUpdate(mode)){
+   @formHelper(action = controllers.routes.UkimsNumberController.onPageLoadUpdate(mode)){
       @govukButton(ButtonViewModel(messages("ukimsNumberChangeController.button")))
    }
+
+    <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad().url" class="govuk-link" >@messages("site.goToHomePage")</a></p>
+
+
 }
