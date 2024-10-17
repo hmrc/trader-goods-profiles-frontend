@@ -20,21 +20,22 @@
 @this(
 layout: templates.Layout,
 govukPhaseBanner: GovukPhaseBanner,
-notificationBanner: notificationBanner,
-paragraphBody: paragraphBody
+govukNotificationBanner: GovukNotificationBanner
 )
 
 @(downloadReady: Boolean)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = s"${messages("homepage.title")} - ${messages("site.govuk")}", showBackLink = false, headerShouldHaveServiceLink = false) {
 
-    @if(downloadReady) {
-        @notificationBanner(
-            title = messages("homepage.downloadBanner.important"),
-            content = HtmlFormat.fill(Seq(
-                paragraphBody(messages("homepage.downloadBanner.content"), classes = "govuk-body govuk-!-font-weight-bold"),
-                Html(s"""<a href="${routes.FileReadyController.onPageLoad().url}" class="govuk-link govuk-!-font-weight-bold">${messages("homepage.downloadBanner.linkText")}</a>.""")
-            ))
+    @if(true) {
+        @govukNotificationBanner(NotificationBanner(
+            title = Text(messages("homepage.downloadBanner.important")),
+            content = HtmlContent(f"""
+            <h3 class='govuk-notification-banner__heading'>
+                ${messages("homepage.downloadBanner.content")}
+                <a href="${routes.FileReadyController.onPageLoad().url}" class='govuk-link'>${messages("homepage.downloadBanner.linkText")}</a>.
+            </h3>"""),
+            role=Some("alert"))
         )
     }
 
