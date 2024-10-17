@@ -82,8 +82,7 @@ class GoodsRecordsController @Inject() (
                     goodsRecordsResponse.pagination.totalPages
                   ),
                   page,
-                  getDownloadLinkMessagesKey(downloadDataSummaryOpt),
-                  getDownloadLinkRoute(downloadDataSummaryOpt)
+                  getDownloadLinkMessagesKey(downloadDataSummaryOpt)
                 )
               ).removingFromSession(dataUpdated, pageUpdated, dataRemoved)
             }
@@ -114,19 +113,6 @@ class GoodsRecordsController @Inject() (
         "goodsRecords.downloadLinkText.requestFile"
     }
 
-  def getDownloadLinkRoute(opt: Option[DownloadDataSummary]): String =
-    opt.map(_.status) match {
-      case Some(RequestFile)     =>
-        routes.RequestDataController.onPageLoad().url
-      case Some(FileInProgress)  =>
-        routes.FileInProgressController.onPageLoad().url
-      case Some(FileReadySeen)   =>
-        routes.FileReadyController.onPageLoad().url
-      case Some(FileReadyUnseen) =>
-        routes.FileReadyController.onPageLoad().url
-      case _                     => routes.RequestDataController.onPageLoad().url
-    }
-
   def onSearch(page: Int): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       form
@@ -153,8 +139,7 @@ class GoodsRecordsController @Inject() (
                         goodsRecordsResponse.pagination.totalPages
                       ),
                       page,
-                      getDownloadLinkMessagesKey(downloadDataSummaryOpt),
-                      getDownloadLinkRoute(downloadDataSummaryOpt)
+                      getDownloadLinkMessagesKey(downloadDataSummaryOpt)
                     )
                   )
                 }

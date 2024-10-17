@@ -41,7 +41,6 @@
     pagination: Pagination,
     page: Int,
     downloadLinkMessagesKey: String,
-    downloadLinkRoute: String
 )(implicit request: Request[_], messages: Messages)
 
 
@@ -167,7 +166,7 @@
         <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad().url" class="govuk-link">@messages("site.goBackToHomePage")</a></p>
 
         @if(appConfig.downloadFileEnabled) {
-            <p class="govuk-body"><a href="@downloadLinkRoute" class="govuk-link">@messages(downloadLinkMessagesKey)</a></p>
+            <p class="govuk-body"><a href="@controllers.routes.DownloadDataIndexController.redirect()" class="govuk-link">@messages(downloadLinkMessagesKey)</a></p>
         }
 
 </div>

@@ -17,6 +17,7 @@ site.goToHomePage = Go to homepage
 
 site.goBackToGoodsRecord = Go back to goods record
 site.goBackToGoodsProfile = Go back to goods profile
+site.goBackToTGPRecords = Go to TGP records files
 site.goBackToHomePage = Go back to homepage
 site.removeThisGoodsRecord = Remove this goods record
 
@@ -643,10 +644,10 @@ fileReady.p3.linkText = request another file
 downloadRequestSuccess.title = We''ve received your request for a file of your TGP data
 downloadRequestSuccess.h1 = We''ve received your request for a file of your TGP data
 downloadRequestSuccess.h2 = What happens next
-downloadRequestSuccess.p1 = We''ll send an email to {0} to let you know when the file is ready.
-downloadRequestSuccess.p2 = You will have a notification when you log in to your TGP with a link to the file download page. The file is in a comma separated value format.
-downloadRequestSuccess.p3 = This file will be available for 30 days from when we let you know it is ready.
-downloadRequestSuccess.p3.1 = After 30 days, you''ll need to request a new file.
+downloadRequestSuccess.p1 = You can check the progress of your file on the {0}. We''ll also send an email to {1} to let you know when your TGP records file is ready.
+downloadRequestSuccess.p1.linkText = download TGP data page
+downloadRequestSuccess.p2 = You will have a notification when you sign in to your TGP with a link to the file download page. The file is in a .csv format.
+downloadRequestSuccess.p3 = The TGP records file will be available for 30 days from when we let you know it is ready.
 
 fileInProgress.title = We''re still preparing your file
 fileInProgress.heading = We''re still preparing your file

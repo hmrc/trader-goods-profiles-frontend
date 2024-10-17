@@ -123,8 +123,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
     next = Some(PaginationLink(routes.GoodsRecordsController.onPageLoad(1 + currentPage).url))
   )
 
-  private val downloadLinkRoute = routes.RequestDataController.onPageLoad().url
-  private val downloadLinkText  = "goodsRecords.downloadLinkText.requestFile"
+  private val downloadLinkText = "goodsRecords.downloadLinkText.requestFile"
 
   private val fileName      = "fileName"
   private val fileSize      = 600
@@ -175,8 +174,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
             Seq(Country("EC", "Ecuador")),
             pagination,
             currentPage,
-            downloadLinkText,
-            downloadLinkRoute
+            downloadLinkText
           )(
             request,
             messages(application)
@@ -226,8 +224,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
             Seq(Country("EC", "Ecuador")),
             pagination,
             currentPage,
-            downloadLinkText,
-            downloadLinkRoute
+            downloadLinkText
           )(
             request,
             messages(application)
@@ -237,8 +234,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
       "when file is in progress" in {
 
-        val downloadLinkRoute = routes.FileInProgressController.onPageLoad().url
-        val downloadLinkText  = "goodsRecords.downloadLinkText.fileInProgress"
+        val downloadLinkText = "goodsRecords.downloadLinkText.fileInProgress"
 
         val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
@@ -280,8 +276,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
             Seq(Country("EC", "Ecuador")),
             pagination,
             currentPage,
-            downloadLinkText,
-            downloadLinkRoute
+            downloadLinkText
           )(
             request,
             messages(application)
@@ -291,8 +286,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
       "when file is ready" in {
 
-        val downloadLinkRoute = routes.FileReadyController.onPageLoad().url
-        val downloadLinkText  = "goodsRecords.downloadLinkText.fileReady"
+        val downloadLinkText = "goodsRecords.downloadLinkText.fileReady"
 
         val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
@@ -340,8 +334,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
             Seq(Country("EC", "Ecuador")),
             pagination,
             currentPage,
-            downloadLinkText,
-            downloadLinkRoute
+            downloadLinkText
           )(
             request,
             messages(application)
@@ -458,8 +451,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
           Seq(Country("EC", "Ecuador")),
           pagination,
           middlePage,
-          downloadLinkText,
-          downloadLinkRoute
+          downloadLinkText
         )(
           request,
           messages(application)
@@ -577,8 +569,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
           Seq(Country("EC", "Ecuador")),
           pagination,
           currentPage,
-          downloadLinkText,
-          downloadLinkRoute
+          downloadLinkText
         )(
           request,
           messages(application)
