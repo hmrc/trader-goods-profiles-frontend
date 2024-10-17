@@ -19,9 +19,9 @@ package controllers
 import base.SpecBase
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import views.html.UkimsNumberChangeControllerView
+import views.html.UkimsNumberChangeView
 
-class UkimsNumberChangeControllerControllerSpec extends SpecBase {
+class UkimsNumberChangeControllerSpec extends SpecBase {
 
   "UkimsNumberChangeController Controller" - {
 
@@ -30,11 +30,11 @@ class UkimsNumberChangeControllerControllerSpec extends SpecBase {
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.UkimsNumberChangeControllerController.onPageLoad().url)
+        val request = FakeRequest(GET, routes.UkimsNumberChangeController.onPageLoad().url)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[UkimsNumberChangeControllerView]
+        val view = application.injector.instanceOf[UkimsNumberChangeView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view()(request, messages(application)).toString

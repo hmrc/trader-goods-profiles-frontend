@@ -467,6 +467,11 @@ hasGoodsDescriptionChange.p1 = Changing the goods description on this goods reco
 hasGoodsDescriptionChange.h2 = Do you want to change the goods description?
 hasGoodsDescriptionChange.error.required = Select if you want to change the goods description
 
+ukimsNumberChangeController.title = UK Internal Market Scheme(UKIMS) number change
+ukimsNumberChangeController.heading = UK Internal Market Scheme(UKIMS) number change
+ukimsNumberChangeController.paragraph = As you have a new EORI number, you also have a new UKIMS number. You need to update your UKIMS number on you TGP. Keeping your UKIMS number up to date is important as it can be used on your movements.
+ukimsNumberChangeController.buttom = Update UKIMS number
+
 profile.title = Profile details
 profile.h1 = Profile details
 profile.h2 = UKIMS, NIRMS and NIPHL

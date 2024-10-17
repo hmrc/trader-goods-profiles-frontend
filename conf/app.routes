@@ -177,7 +177,7 @@ POST        /update-record/:recordId/recategorise/category-assessment/:number/ch
 
 GET         /create-profile/ukims-kickout                                                   controllers.UkimsKickOutController.onPageLoad()
 
-GET         /new/ukims-number-change                                                        controllers.UkimsNumberChangeControllerController.onPageLoad()
+GET         /new/ukims-number-change                                                        controllers.UkimsNumberChangeController.onPageLoad()
 
 GET         /update-record/:recordId/categorisation/result/category-1                       controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = Category1Scenario)
 GET         /update-record/:recordId/categorisation/result/category-2                       controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = Category2Scenario)
@@ -313,4 +313,4 @@ GET         /problem/:recordId/expired-commodity-code                           
 
 # this url must be the last url on this page so it becomes the default if no other urls match
 GET         /*path                                                                          controllers.PageNotFoundController.onPageLoad(path: String)
-GET        /ukimsNumberChangeController                       controllers.UkimsNumberChangeControllerController.onPageLoad()
+
