@@ -18,19 +18,13 @@ package controllers
 
 import connectors.DownloadDataConnector
 import controllers.actions._
-import models.DownloadDataStatus.{FileReadySeen, FileReadyUnseen}
-import models.DownloadDataSummary
-import navigation.Navigator
-import play.api.i18n.{Lang, Messages, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import utils.DateTimeFormats.dateTimeFormat
-import viewmodels.FileManagementViewModel
-import views.html.{FileManagementView, FileReadyView}
+import viewmodels.FileManagementViewModel.FileManagementViewModelProvider
+import views.html.FileManagementView
 
-import java.time.temporal.ChronoUnit
-import java.time.{Instant, ZoneOffset}
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 class FileManagementController @Inject()(
   override val messagesApi: MessagesApi,
@@ -39,7 +33,7 @@ class FileManagementController @Inject()(
   requireData: DataRequiredAction,
   profileAuth: ProfileAuthenticateAction,
   downloadDataConnector: DownloadDataConnector,
-  viewModel: FileManagementViewModel,
+  viewModelProvider: FileManagementViewModelProvider,
   val controllerComponents: MessagesControllerComponents,
   view: FileManagementView
 )(implicit ec: ExecutionContext)
@@ -49,6 +43,6 @@ class FileManagementController @Inject()(
     implicit request =>
 //    downloadDataConnector.getDownloadDataSummary(request.eori).map { downloadData => TODO: Pull out data as needed when TGP-2730 is complete
 //      viewModel(downloadDataConnector).map { viewModel =>
-        Ok(view(viewModel))
+        Ok(view(viewModelProvider()))
       }
 }

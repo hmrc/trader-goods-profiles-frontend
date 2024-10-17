@@ -16,34 +16,33 @@
 
 package viewmodels
 
-import models.DownloadDataSummary
+import models.filemanagement._
 import play.api.i18n.Messages
 
+import javax.inject.Inject
+
+
 case class FileManagementViewModel(
-                                    availableFilesTableRows: Option[String],
-                                    pendingFilesTableRows: Option[String]
+                                    availableFilesTable: Option[AvailableFilesTable],
+                                    pendingFilesTable: Option[PendingFilesTable]
                                   )(implicit messages: Messages) {
 
-  val isFiles: Boolean = availableFilesTableRows.isDefined || pendingFilesTableRows.isDefined
+  val isFiles: Boolean = availableFilesTable.isDefined || pendingFilesTable.isDefined
 
   val title: String = messages("fileManagement.title")
   val heading: String = messages("fileManagement.heading")
 
-  val paragraph1: String = if(isFiles) messages("fileManagement.files.paragraph1") else messages("fileManagement.noFiles.paragraph1")
-//  val pendingFilesParagraph2: String = messages("fileManagement.pendingFiles.paragraph2") TODO Add this as optional body inside of a case class for handling table rows (AvailableFilesTable + PendingFileTable< FileManagementTable)
+  val paragraph1: String = if (isFiles) messages("fileManagement.files.paragraph1") else messages("fileManagement.noFiles.paragraph1")
 
-  val tgpRecordsLink: String = messages("fileManagement.tgpRecordsLink")
+  val tgpRecordsLink: String = messages("fileManagement.requestRecord.linkText")
   val goBackHomeLink: String = messages("site.goBackToHomePage")
 }
 
 object FileManagementViewModel {
-
-  def apply(
-             downloadData: Option[Seq[DownloadDataSummary]], // Assuming we will be returned a model which contains the status of each file
-           )(implicit messagesL Messages): FileManagementViewModel = {
-
-    // TODO - Implement this method to sort data into correct case models for table rows
-
-    new FileManagementViewModel(Some(""), Some(""))
+  class FileManagementViewModelProvider @Inject() {
+    def apply()(implicit messages: Messages): FileManagementViewModel = {
+      // TODO - Implement method to sort data into correct case models for table rows
+      new FileManagementViewModel(Some(AvailableFilesTable()), Some(PendingFilesTable()))
+    }
   }
 }

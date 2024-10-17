@@ -14,29 +14,46 @@
  * limitations under the License.
  *@
 
+@import models.filemanagement.FileManagementTable
 @import viewmodels.FileManagementViewModel
+@import uk.gov.hmrc.govukfrontend.views.html.components.GovukTable
+@import uk.gov.hmrc.govukfrontend.views.Aliases.Table
 
 @this(
-    layout: templates.Layout
+        layout: templates.Layout,
+        govukTable: GovukTable
 )
 
 @(viewModel: FileManagementViewModel)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = titleNoForm(messages("fileReady.title"))) {
+@layout(pageTitle = titleNoForm(viewModel.title)) {
 
-    <h1 class="govuk-heading-l">@messages("fileReady.heading")</h1>
+    <h1 class="govuk-heading-l">@viewModel.heading</h1>
 
-    <p class="govuk-body">@messages("fileReady.p1", createdDate, availableUntil)</p>
+    <p class="govuk-body">@viewModel.paragraph1</p>
 
-    <p class="govuk-body">
-        <a href="@fileDownloadLink" class="govuk-link">@messages("fileReady.p2.linkText", fileSizeKilobytes.toString)</a>
-    </p>
+    @if(viewModel.isFiles) {
 
-    <p class="govuk-body">
-        @messages("fileReady.p3") <a href="@routes.RequestDataController.onPageLoad().url" class="govuk-link">@messages("fileReady.p3.linkText")</a>.
-    </p>
+        @viewModel.availableFilesTable.map { table: FileManagementTable =>
+            @govukTable(Table(
+                caption = Some(table.title),
+                head = Some(table.headRows),
+                rows = table.rows
+            )
+          )
+        }
 
-    <p class="govuk-body"><a href="@routes.GoodsRecordsController.onPageLoad(1).url" class="govuk-link" >@messages("site.goBackToGoodsProfile")</a></p>
-    <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad().url" class="govuk-link" >@messages("site.goBackToHomePage")</a></p>
+        @viewModel.pendingFilesTable.map { table: FileManagementTable =>
+            @govukTable(Table(
+                caption = Some(table.title),
+                head = Some(table.headRows),
+                rows = table.rows
+            )
+          )
+        }
+    }
+
+    <p class="govuk-!-font-weight-bold"><a href="@routes.RequestDataController.onPageLoad().url" class="govuk-link" >@viewModel.tgpRecordsLink</a></p>
+    <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad().url" class="govuk-link" >@viewModel.goBackHomeLink</a></p>
 
 }
