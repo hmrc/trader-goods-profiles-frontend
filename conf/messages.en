@@ -63,7 +63,7 @@ cyaRequestAdvice.title = Check your answers before sending your request for advi
 cyaRequestAdvice.heading = Check your answers before sending your request for advice
 cyaRequestAdvice.subheading = Contact details
 
-cyaCategorisation.title = Check your answers
+cyaCategorisation.title = Check your category assessment answers for {0}
 cyaCategorisation.heading = Check your category assessment answers for {0}
 cyaCategorisation.supplementaryUnitHeader = Supplementary Unit
 cyaCategorisation.longerCommodityCode = Longer commodity code
