@@ -41,12 +41,19 @@ object AssessmentAnswer {
     case NoExemption        => JsString("false")
   }
 
-  def fromSeq(inputs: Seq[String]): AssessmentAnswer =
-    if (inputs.contains("false")) {
-      NoExemption
+  def fromStringOrSeq(input: Either[String, Seq[String]]): AssessmentAnswer = {
+    input match {
+      case Left(string) => string match {
+        case NotAnsweredYet.toString => NotAnsweredYet
+        case _ => NoExemption
+      }
+      case Right(seq) =>
+        if (seq.contains(NoExemption.toString)) {
+          NoExemption
+        } else {
+          Exemption(seq)
+        }
     }
-    else {
-      Exemption(inputs)
-    }
+  }
 
 }
