@@ -63,7 +63,7 @@ cyaRequestAdvice.title = Check your answers before sending your request for advi
 cyaRequestAdvice.heading = Check your answers before sending your request for advice
 cyaRequestAdvice.subheading = Contact details
 
-cyaCategorisation.title = Check your answers
+cyaCategorisation.title = Check your category assessment answers for {0}
 cyaCategorisation.heading = Check your category assessment answers for {0}
 cyaCategorisation.supplementaryUnitHeader = Supplementary Unit
 cyaCategorisation.longerCommodityCode = Longer commodity code
@@ -450,7 +450,7 @@ singleRecord.back = Back to goods profile
 
 hasCountryOfOriginChange.title = Change record information
 hasCountryOfOriginChange.h1 = Change record information
-hasCountryOfOriginChange.p1 = You''ll need to categorise this goods record if you change the country of origin
+hasCountryOfOriginChange.p1 = You''ll need to recategorise this goods record if you change the country of origin
 hasCountryOfOriginChange.h2 = Do you want to change the country of origin?
 hasCountryOfOriginChange.error.required = Select if you want to change the country of origin
 
@@ -458,7 +458,7 @@ hasCommodityCodeChange.title = Change record information
 hasCommodityCodeChange.h1 = Change record information
 hasCommodityCodeChange.h2 = Do you want to change the commodity code?
 hasCommodityCodeChange.advice = Changing the commodity code on this goods record will remove the advice status. If you want to check the commodity code is correct and matches the description, you''ll need to ask for advice again.
-hasCommodityCodeChange.category = You''ll need to categorise this goods record if you change the commodity code.
+hasCommodityCodeChange.category = You''ll need to recategorise this goods record if you change the commodity code.
 hasCommodityCodeChange.error.required = Select if you want to change the commodity code
 
 hasGoodsDescriptionChange.title = Change record information
