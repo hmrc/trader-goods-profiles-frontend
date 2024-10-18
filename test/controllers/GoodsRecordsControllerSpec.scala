@@ -36,7 +36,6 @@ import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import views.html.{GoodsRecordsEmptyView, GoodsRecordsView}
 
 import java.time.Instant
-import java.time.temporal.ChronoUnit
 import scala.concurrent.Future
 
 class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
@@ -121,11 +120,6 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
     previous = None,
     next = Some(PaginationLink(routes.GoodsRecordsController.onPageLoad(1 + currentPage).url))
   )
-
-  private val fileName      = "fileName"
-  private val fileSize      = 600
-  private val fileCreated   = Instant.now.minus(40, ChronoUnit.DAYS)
-  private val retentionDays = "30"
 
   "GoodsRecords Controller" - {
 
