@@ -27,47 +27,45 @@ import views.html.HomePageView
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class HomePageController @Inject() (
-  override val messagesApi: MessagesApi,
-  identify: IdentifierAction,
-  getOrCreate: DataRetrievalOrCreateAction,
-  profileAuth: ProfileAuthenticateAction,
-  downloadDataConnector: DownloadDataConnector,
-  goodsRecordConnector: GoodsRecordConnector,
-  val controllerComponents: MessagesControllerComponents,
-  view: HomePageView
-)(implicit ec: ExecutionContext)
-    extends BaseController {
+class HomePageController @Inject()(
+                                    override val messagesApi: MessagesApi,
+                                    identify: IdentifierAction,
+                                    getOrCreate: DataRetrievalOrCreateAction,
+                                    profileAuth: ProfileAuthenticateAction,
+                                    downloadDataConnector: DownloadDataConnector,
+                                    goodsRecordConnector: GoodsRecordConnector,
+                                    val controllerComponents: MessagesControllerComponents,
+                                    view: HomePageView
+                                  )(implicit ec: ExecutionContext)
+  extends BaseController {
 
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getOrCreate).async { implicit request =>
     for {
       downloadDataSummary <- downloadDataConnector.getDownloadDataSummary(request.eori)
-      goodsRecords        <- goodsRecordConnector.getRecords(request.eori, 1, 1)
+      goodsRecords <- goodsRecordConnector.getRecords(request.eori, 1, 1)
       doesGoodsRecordExist = goodsRecords.exists(_.goodsItemRecords.nonEmpty)
     } yield {
       val downloadLinkMessagesKey = getDownloadLinkMessagesKey(downloadDataSummary, doesGoodsRecordExist)
-      downloadDataSummary match {
-        case Some(downloadDataSummary) if downloadDataSummary.status == FileReadyUnseen =>
-          Ok(view(downloadReady = true, downloadLinkMessagesKey))
-        case _                                                                          =>
-          Ok(view(downloadReady = false, downloadLinkMessagesKey))
-      }
+      Ok(view(downloadReady = downloadReady(downloadDataSummary), downloadLinkMessagesKey))
     }
   }
 
-  private def getDownloadLinkMessagesKey(opt: Option[DownloadDataSummary], doesGoodsRecordExist: Boolean): String =
+  private def downloadReady(downloadDataSummary: Option[Seq[DownloadDataSummary]]): Boolean =
+    // TODO: Check what the expected logic is for showing the download banner,
+    //  do we want to show it if any of the downloaded files are unseen, or only if the latest request is unseen?
+    downloadDataSummary.flatMap(_.collectFirst {
+      case summary if summary.status == FileReadyUnseen => true
+    }).getOrElse(false)
+
+  private def getDownloadLinkMessagesKey(opt: Option[Seq[DownloadDataSummary]], doesGoodsRecordExist: Boolean): String =
+    //TODO: CHeck what the expected logic is for the download link text, show based on the first instance of a file being ready?
     if (doesGoodsRecordExist) {
-      opt.map(_.status) match {
-        case Some(FileInProgress)  =>
-          "homepage.downloadLinkText.fileInProgress"
-        case Some(FileReadyUnseen) =>
-          "homepage.downloadLinkText.fileReady"
-        case Some(FileReadySeen)   =>
-          "homepage.downloadLinkText.fileReady"
-        case _                     =>
-          "homepage.downloadLinkText.requestFile"
-      }
+      opt.flatMap(_.collectFirst {
+        case summary if summary.status == FileReadyUnseen | summary.status == FileReadySeen => "homepage.downloadLinkText.fileReady"
+        case summary if summary.status == FileInProgress => "homepage.downloadLinkText.fileInProgress"
+      }).getOrElse("homepage.downloadLinkText.requestFile")
     } else {
       "homepage.downloadLinkText.noGoodsRecords"
     }
+
 }

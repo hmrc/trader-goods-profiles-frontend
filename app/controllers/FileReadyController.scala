@@ -47,10 +47,10 @@ class FileReadyController @Inject() (
   def onPageLoad(): Action[AnyContent]                               = (identify andThen profileAuth andThen getData andThen requireData).async {
     implicit request =>
       (for {
-        Some(downloadDataSummary) <- downloadDataConnector.getDownloadDataSummary(request.eori)
+        Some(downloadDataSummary) <- downloadDataConnector.getDownloadDataSummary(request.eori).map(_.map(_.head)) //TODO: Double check this, are we going to preserve the old page functionallity until they are removed?
         if isFileReady(downloadDataSummary)
         Some(fileInfo)            <- Future.successful(downloadDataSummary.fileInfo)
-        Some(downloadData)        <- downloadDataConnector.getDownloadData(request.eori)
+        Some(downloadData)        <- downloadDataConnector.getDownloadData(request.eori).map(_.map(_.head)) //TODO: Double check this, are we going to preserve the old page functionallity until they are removed?
       } yield Ok(
         view(
           fileInfo.fileSize,
