@@ -23,28 +23,35 @@ sealed trait AssessmentAnswer
 object AssessmentAnswer {
 
   case object NoExemption extends WithName("false") with AssessmentAnswer
-  case object Exemption extends WithName("true") with AssessmentAnswer
 
-  // Unideal but need it as a placeholder when recategorising - because it stores answers in a JSON array
+  case class Exemption(values: Seq[String]) extends WithName("answered") with AssessmentAnswer
+
   case object NotAnsweredYet extends WithName("notAnswered") with AssessmentAnswer
 
   implicit val reads: Reads[AssessmentAnswer] = Reads {
     case JsString("false")       => JsSuccess(NoExemption)
-    case JsString("true")        => JsSuccess(Exemption)
     case JsString("notAnswered") => JsSuccess(NotAnsweredYet)
-    case _                       => JsError("unable to read assessment answer")
+    case JsArray(values) if values.forall(_.isInstanceOf[JsString]) =>
+      JsSuccess(Exemption(values.map(_.as[String]).toSeq))
+    case _ => JsError("unable to read assessment answer")
   }
 
   implicit val writes: Writes[AssessmentAnswer] = Writes {
-    case Exemption      => JsString("true")
-    case NotAnsweredYet => JsString("notAnswered")
-    case NoExemption    => JsString("false")
+    case NoExemption        => JsString("false")
+    case NotAnsweredYet     => JsString("notAnswered")
+    case Exemption(values)  => JsArray(values.map(JsString))
   }
 
-  def fromString(input: String): AssessmentAnswer =
+  def fromString(input: String): AssessmentAnswer = {
     input match {
-      case Exemption.toString      => Exemption
-      case NotAnsweredYet.toString => NotAnsweredYet
-      case _                       => NoExemption
+      case "false"       => NoExemption
+      case "notAnswered" => NotAnsweredYet
+      case custom        => Exemption(Seq(custom))
     }
+  }
+
+  def fromSeq(inputs: Seq[String]): AssessmentAnswer = {
+    if (inputs.contains("false")){ NoExemption }
+    else {Exemption(inputs)}
+  }
 }

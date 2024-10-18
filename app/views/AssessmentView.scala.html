@@ -22,7 +22,8 @@
         formHelper: FormWithCSRF,
         govukErrorSummary: GovukErrorSummary,
         govukRadios: GovukRadios,
-        govukButton: GovukButton
+        govukButton: GovukButton,
+        govukCheckboxes: GovukCheckboxes,
 )
 
 @(form: Form[_], mode: Mode, recordId: String, number: Int, listItems: Seq[String], commodityCode: String, onSubmitAction: Call)(implicit request: Request[_], messages: Messages)
@@ -62,8 +63,34 @@
 
         @govukRadios(
             RadiosViewModel.yesNo(
-                field = form("value"),
+                field = form("value2"),
                 legend = Legend(messages("assessment.question")).withCssClass("govuk-visually-hidden")
+            )
+        )
+
+        @govukCheckboxes(
+            CheckboxesViewModel(
+                form   = form,
+                name   = "value[]",
+                legend = Legend(messages("assessment.question")).withCssClass("govuk-visually-hidden"),
+                items  = listItems.zipWithIndex.map { item =>
+                    CheckboxItem(
+                        id = Some("value_" + item._2.toString),
+                        name = Some("value[]"),
+                        content = Text(item._1),
+                        value = item._1,
+                        checked = false
+                    )
+                } ++ Seq(
+                    CheckboxItem(
+                        id = Some("none_of_above"),
+                        name = Some("value[]"),
+                        content = Text("none of the above"),
+                        value = "false",
+                        checked = false,
+                        behaviour = Some(ExclusiveCheckbox)
+                    )
+                )
             )
         )
 

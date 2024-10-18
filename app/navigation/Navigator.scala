@@ -359,12 +359,12 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
         nextAnswer          = answers.get(ReassessmentPage(recordId, nextIndex))
         assessmentAnswer   <- answers.get(assessmentPage)
       } yield assessmentAnswer.answer match {
-        case AssessmentAnswer.Exemption
+        case AssessmentAnswer.Exemption(_)
             if nextIndex < assessmentCount && (reassessmentAnswerIsEmpty(nextAnswer) || !nextAnswer.exists(
               _.isAnswerCopiedFromPreviousAssessment
             )) =>
           routes.AssessmentController.onPageLoadReassessment(NormalMode, recordId, nextNumber)
-        case AssessmentAnswer.Exemption if nextIndex < assessmentCount                                           =>
+        case AssessmentAnswer.Exemption(_) if nextIndex < assessmentCount                                           =>
           navigateFromReassessment(ReassessmentPage(recordId, nextIndex))(answers)
         case AssessmentAnswer.NoExemption if shouldGoToSupplementaryUnit(categorisationInfo, assessmentQuestion) =>
           routes.HasSupplementaryUnitController.onPageLoad(NormalMode, recordId)
@@ -386,9 +386,9 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
         assessmentQuestion <- categorisationInfo.getAssessmentFromIndex(assessmentPage.index)
         assessmentAnswer   <- answers.get(assessmentPage)
       } yield assessmentAnswer match {
-        case AssessmentAnswer.Exemption if nextIndex < assessmentCount                                           =>
+        case AssessmentAnswer.Exemption(_) if nextIndex < assessmentCount                                           =>
           routes.AssessmentController.onPageLoad(NormalMode, recordId, nextNumber)
-        case AssessmentAnswer.Exemption
+        case AssessmentAnswer.Exemption(_)
             if shouldGoToLongerCommodityCodeWhenCategory1(categorisationInfo, assessmentQuestion) =>
           routes.LongerCommodityCodeController.onPageLoad(NormalMode, recordId)
         case AssessmentAnswer.NoExemption
@@ -575,12 +575,12 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
       assessmentAnswer   <- answers.get(assessmentPage)
       nextAnswer          = answers.get(ReassessmentPage(recordId, nextIndex))
     } yield assessmentAnswer.answer match {
-      case AssessmentAnswer.Exemption
+      case AssessmentAnswer.Exemption(_)
           if nextIndex < assessmentCount && (reassessmentAnswerIsEmpty(nextAnswer) || !nextAnswer.exists(
             _.isAnswerCopiedFromPreviousAssessment
           )) =>
         routes.AssessmentController.onPageLoadReassessment(CheckMode, recordId, nextNumber)
-      case AssessmentAnswer.Exemption if nextIndex < assessmentCount =>
+      case AssessmentAnswer.Exemption(_) if nextIndex < assessmentCount =>
         navigateFromReassessmentCheck(ReassessmentPage(recordId, nextIndex))(answers)
       case AssessmentAnswer.NoExemption
           if shouldGoToSupplementaryUnitCheck(answers, categorisationInfo, assessmentQuestion, recordId) =>
@@ -603,9 +603,9 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
         assessmentAnswer   <- answers.get(assessmentPage)
         nextAnswer          = answers.get(AssessmentPage(recordId, nextIndex))
       } yield assessmentAnswer match {
-        case AssessmentAnswer.Exemption if nextIndex < assessmentCount && answerIsEmpty(nextAnswer) =>
+        case AssessmentAnswer.Exemption(_) if nextIndex < assessmentCount && answerIsEmpty(nextAnswer) =>
           routes.AssessmentController.onPageLoad(CheckMode, recordId, nextNumber)
-        case AssessmentAnswer.Exemption
+        case AssessmentAnswer.Exemption(_)
             if shouldGoToLongerCommodityCodeWhenCategory1(categorisationInfo, assessmentQuestion) =>
           routes.LongerCommodityCodeController.onPageLoad(CheckMode, recordId)
         case AssessmentAnswer.NoExemption
