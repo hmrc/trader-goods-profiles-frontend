@@ -17,7 +17,7 @@
 package models
 
 import base.SpecBase
-import play.api.libs.json.{JsString, JsSuccess, Json}
+import play.api.libs.json.{JsArray, JsString, JsSuccess, Json}
 
 class AssessmentAnswerSpec extends SpecBase {
 
@@ -26,10 +26,10 @@ class AssessmentAnswerSpec extends SpecBase {
     "must serialise / deserialise to / from JSON" - {
       "for an exemption" in {
 
-        val exemption = AssessmentAnswer.Exemption(Seq("TEST_CODE"))
+        val exemption = AssessmentAnswer.Exemption(Seq("Y903"))
         val json      = Json.toJson[AssessmentAnswer](exemption)
 
-        json mustEqual JsString("true")
+        json mustEqual JsArray(Seq(JsString("Y903")))
         json.validate[AssessmentAnswer] mustEqual JsSuccess(exemption)
       }
 

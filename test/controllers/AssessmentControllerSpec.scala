@@ -228,7 +228,11 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               .build()
 
           running(application) {
-            val request = FakeRequest(POST, assessmentRoute).withFormUrlEncodedBody(("value", "false"))
+            val checkedValues = List("false")
+
+            val request = FakeRequest(POST, assessmentRoute).withFormUrlEncodedBody(
+              checkedValues.flatMap(value => Seq("value[]" -> value)): _*
+            )
 
             val result = route(application, request).value
 
@@ -364,7 +368,11 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               .build()
 
             running(application) {
-              val request = FakeRequest(POST, assessmentRoute).withFormUrlEncodedBody(("value", "false"))
+              val checkedValues = List("false")
+
+              val request = FakeRequest(POST, assessmentRoute).withFormUrlEncodedBody(
+                checkedValues.flatMap(value => Seq("value[]" -> value)): _*
+              )
 
               val result = route(application, request).value
 
@@ -565,13 +573,17 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               .build()
 
           running(application) {
-            val request = FakeRequest(POST, reassessmentRoute).withFormUrlEncodedBody(("value", "false"))
+            val checkedValues = List("Y903", "Y256")
+
+            val request = FakeRequest(POST, reassessmentRoute).withFormUrlEncodedBody(
+              checkedValues.flatMap(value => Seq("value[]" -> value)): _*
+            )
 
             val result = route(application, request).value
 
             val expectedAnswers =
               answers
-                .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.NoExemption))
+                .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("Y903", "Y256"))))
                 .success
                 .value
 
@@ -705,7 +717,11 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               .build()
 
             running(application) {
-              val request = FakeRequest(POST, reassessmentRoute).withFormUrlEncodedBody(("value", "false"))
+              val checkedValues = List("false")
+
+              val request = FakeRequest(POST, assessmentRoute).withFormUrlEncodedBody(
+                checkedValues.flatMap(value => Seq("value[]" -> value)): _*
+              )
 
               val result = route(application, request).value
 

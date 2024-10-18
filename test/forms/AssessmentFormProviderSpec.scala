@@ -20,31 +20,34 @@ import forms.behaviours.StringFieldBehaviours
 import models.AssessmentAnswer
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import play.api.data.FormError
+import play.api.libs.json.{JsValue, Json}
 
 class AssessmentFormProviderSpec extends StringFieldBehaviours with ScalaCheckPropertyChecks {
 
-  private val form2 = new AssessmentFormProvider()(1)
+  private val form = new AssessmentFormProvider()(2)
 
-  ".value2" - {
+  ".value" - {
 
-    val fieldName = "value"
+    val fieldName       = "value"
+    val maxCharsForJson = 64
 
-    "must bind `false`" in {
-
-      val result = form2.bind(Map("value" -> "false"))
+    "must bind when the user checks none of the above" in {
+      val jsonData: JsValue = Json.obj("value" -> Json.arr("false"))
+      val result            = form.bind(jsonData, maxCharsForJson)
       result.errors mustBe empty
       result.get mustEqual AssessmentAnswer.NoExemption
     }
 
-    "must bind `true`" in {
-      val result = form2.bind(Map("value" -> "true"))
+    "must bind when the user checks some codes" in {
+      val jsonData: JsValue = Json.obj("value" -> Json.arr("Y903", "Y508"))
+      val result            = form.bind(jsonData, maxCharsForJson)
       result.errors mustBe empty
-      result.get mustEqual AssessmentAnswer.Exemption(Seq("TEST_CODE"))
+      result.get mustEqual AssessmentAnswer.Exemption(Seq("Y903", "Y508"))
     }
 
     "must not bind invalid value" in {
-      val result = form2.bind(Map("value" -> ""))
-      result.errors must contain only FormError(fieldName, "assessment.error.required.onlyOne")
+      val result = form.bind(Map("value" -> ""))
+      result.errors must contain only FormError(fieldName, "assessment.error.required")
     }
   }
 }
