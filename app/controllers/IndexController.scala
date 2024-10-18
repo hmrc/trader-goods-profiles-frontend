@@ -18,10 +18,13 @@ package controllers
 
 import connectors.TraderProfileConnector
 import controllers.actions.IdentifierAction
+import models.TraderProfile
+import models.requests.IdentifierRequest
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class IndexController @Inject() (
   val controllerComponents: MessagesControllerComponents,
@@ -31,9 +34,21 @@ class IndexController @Inject() (
     extends BaseController {
 
   def onPageLoad: Action[AnyContent] = identify.async { implicit request =>
-    traderProfileConnector.checkTraderProfile(request.eori).map {
-      case true  => Redirect(routes.HomePageController.onPageLoad())
-      case false => Redirect(routes.ProfileSetupController.onPageLoad())
+    traderProfileConnector.checkTraderProfile(request.eori).flatMap {
+      case true =>
+        eoriChanged(request)
+      case false => Future.successful(Redirect(routes.ProfileSetupController.onPageLoad()))
+    }
+  }
+
+  private def eoriChanged(request: IdentifierRequest[AnyContent])(implicit hc: HeaderCarrier) = {
+    traderProfileConnector.getTraderProfile(request.eori).map {
+      case TraderProfile(_, _, _, _, eoriChanged) =>
+        if (eoriChanged) {
+          Redirect(routes.UkimsNumberChangeController.onPageLoad())
+        } else {
+          Redirect(routes.HomePageController.onPageLoad())
+        }
     }
   }
 }

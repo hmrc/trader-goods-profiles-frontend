@@ -76,7 +76,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       val fakeAuditEvent = DataEvent("source", "type")
       when(mockAuditFactory.createSetUpProfileEvent(any(), any())(any())).thenReturn(fakeAuditEvent)
 
-      val traderProfile = TraderProfile(testEori, "", None, None)
+      val traderProfile = TraderProfile(testEori, "", None, None, eoriChanged = false)
       val result        = await(auditService.auditProfileSetUp(traderProfile, AffinityGroup.Individual))
 
       result mustBe Done
@@ -100,7 +100,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       val fakeAuditEvent = DataEvent("source", "type")
       when(mockAuditFactory.createSetUpProfileEvent(any(), any())(any())).thenReturn(fakeAuditEvent)
 
-      val traderProfile = TraderProfile(testEori, "", None, None)
+      val traderProfile = TraderProfile(testEori, "", None, None, eoriChanged = false)
       val result        = await(auditService.auditProfileSetUp(traderProfile, AffinityGroup.Individual))
 
       result mustBe Done
@@ -121,7 +121,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
         .thenReturn(Future.failed(new RuntimeException("audit error")))
 
       intercept[RuntimeException] {
-        val traderProfile = TraderProfile(testEori, "", None, None)
+        val traderProfile = TraderProfile(testEori, "", None, None, eoriChanged = false)
         await(auditService.auditProfileSetUp(traderProfile, AffinityGroup.Individual))
       }
 
@@ -1155,8 +1155,9 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
   }
 
   "auditMaintainProfile" - {
-    val traderProfile        = TraderProfile(testEori, "XIUKIM47699357400020231115081800", None, None)
-    val updatedTraderProfile = TraderProfile(testEori, "XIUKIM47699357400020231115081801", None, None)
+    val traderProfile        = TraderProfile(testEori, "XIUKIM47699357400020231115081800", None, None, eoriChanged = false)
+    val updatedTraderProfile =
+      TraderProfile(testEori, "XIUKIM47699357400020231115081801", None, None, eoriChanged = false)
 
     "return Done when built up an audit event and submitted it" in {
 

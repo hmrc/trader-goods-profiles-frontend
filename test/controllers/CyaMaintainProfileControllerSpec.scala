@@ -63,7 +63,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
         "must return OK and the correct view" in {
 
-          val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"))
+          val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"), false)
 
           val userAnswers = emptyUserAnswers
             .set(RemoveNirmsPage, true)
@@ -130,8 +130,8 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
         "when user answers can remove Nirms and update user profile" - {
 
           "must update the profile and redirect to the Profile Page" in {
-            val traderProfile        = TraderProfile(testEori, "1", Some("2"), Some("3"))
-            val updatedTraderProfile = TraderProfile(testEori, "1", None, Some("3"))
+            val traderProfile        = TraderProfile(testEori, "1", Some("2"), Some("3"), false)
+            val updatedTraderProfile = TraderProfile(testEori, "1", None, Some("3"), eoriChanged = false)
 
             val userAnswers = emptyUserAnswers
               .set(RemoveNirmsPage, true)
@@ -198,7 +198,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val mockAuditService           = mock[AuditService]
 
             when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(
-              TraderProfile(testEori, "ukims", None, None)
+              TraderProfile(testEori, "ukims", None, None, eoriChanged = false)
             )
 
             val application = applicationBuilder(userAnswers = Some(userAnswers))
@@ -229,7 +229,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
           "when user doesn't answer yes or no" in {
 
-            val traderProfile              = TraderProfile(testEori, "1", Some("2"), Some("3"))
+            val traderProfile              = TraderProfile(testEori, "1", Some("2"), Some("3"), false)
             val mockTraderProfileConnector = mock[TraderProfileConnector]
 
             when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
@@ -256,7 +256,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
         "must let the play error handler deal with connector failure when getTraderProfile request fails" in {
 
-          val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"))
+          val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"), false)
 
           val userAnswers = emptyUserAnswers
             .set(RemoveNirmsPage, true)
@@ -298,8 +298,8 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
         "must let the play error handler deal with connector failure when submitTraderProfile request fails" in {
 
-          val traderProfile        = TraderProfile(testEori, "1", Some("2"), Some("3"))
-          val updatedTraderProfile = TraderProfile(testEori, "1", None, Some("3"))
+          val traderProfile        = TraderProfile(testEori, "1", Some("2"), Some("3"), false)
+          val updatedTraderProfile = TraderProfile(testEori, "1", None, Some("3"), eoriChanged = false)
 
           val userAnswers = emptyUserAnswers
             .set(RemoveNirmsPage, true)
@@ -435,7 +435,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
           "when user answer is the same and no change is needed redirect to the Profile Page" - {
             val ukims         = "newUkims"
-            val traderProfile = TraderProfile(testEori, ukims, Some("2"), Some("3"))
+            val traderProfile = TraderProfile(testEori, ukims, Some("2"), Some("3"), eoriChanged = false)
 
             val userAnswers = emptyUserAnswers
               .set(UkimsNumberUpdatePage, ukims)
@@ -481,8 +481,8 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
           "must update the profile and redirect to the Profile Page" - {
             val newUkims             = "newUkims"
-            val traderProfile        = TraderProfile(testEori, "1", Some("2"), Some("3"))
-            val updatedTraderProfile = TraderProfile(testEori, newUkims, Some("2"), Some("3"))
+            val traderProfile        = TraderProfile(testEori, "1", Some("2"), Some("3"), false)
+            val updatedTraderProfile = TraderProfile(testEori, newUkims, Some("2"), Some("3"), eoriChanged = false)
 
             val userAnswers = emptyUserAnswers
               .set(UkimsNumberUpdatePage, newUkims)
@@ -537,7 +537,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val mockAuditService           = mock[AuditService]
 
             when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(
-              TraderProfile(testEori, "ukims", None, None)
+              TraderProfile(testEori, "ukims", None, None, eoriChanged = false)
             )
 
             val application = applicationBuilder(userAnswers = Some(userAnswers))
@@ -605,8 +605,8 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
           val newUkims = "newUkims"
 
-          val traderProfile        = TraderProfile(testEori, "1", Some("2"), Some("3"))
-          val updatedTraderProfile = TraderProfile(testEori, newUkims, Some("2"), Some("3"))
+          val traderProfile        = TraderProfile(testEori, "1", Some("2"), Some("3"), false)
+          val updatedTraderProfile = TraderProfile(testEori, newUkims, Some("2"), Some("3"), eoriChanged = false)
 
           val userAnswers = emptyUserAnswers
             .set(UkimsNumberUpdatePage, newUkims)
@@ -675,7 +675,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
         "must return OK and the correct view" in {
 
-          val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"))
+          val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"), false)
 
           val userAnswers = emptyUserAnswers
             .set(RemoveNiphlPage, true)
@@ -742,8 +742,8 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
         "when user answers can remove Niphl and update user profile" - {
 
           "must update the profile and redirect to the Profile Page" - {
-            val traderProfile        = TraderProfile(testEori, "1", Some("2"), Some("3"))
-            val updatedTraderProfile = TraderProfile(testEori, "1", Some("2"), None)
+            val traderProfile        = TraderProfile(testEori, "1", Some("2"), Some("3"), false)
+            val updatedTraderProfile = TraderProfile(testEori, "1", Some("2"), None, eoriChanged = false)
 
             val userAnswers = emptyUserAnswers
               .set(RemoveNiphlPage, true)
@@ -797,7 +797,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
         "must redirect to Journey recovery" - {
 
           "when the data is invalid" in {
-            val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"))
+            val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"), false)
 
             val userAnswers = emptyUserAnswers
               .set(RemoveNiphlPage, true)
@@ -840,7 +840,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
           "when user doesn't answer yes or no" in {
 
-            val traderProfile              = TraderProfile(testEori, "1", Some("2"), Some("3"))
+            val traderProfile              = TraderProfile(testEori, "1", Some("2"), Some("3"), false)
             val mockTraderProfileConnector = mock[TraderProfileConnector]
 
             when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
@@ -867,7 +867,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
         "must let the play error handler deal with connector failure when getTraderProfile request fails" in {
 
-          val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"))
+          val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"), false)
 
           val userAnswers = emptyUserAnswers
             .set(RemoveNiphlPage, true)
@@ -909,8 +909,8 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
         "must let the play error handler deal with connector failure when submitTraderProfile request fails" in {
 
-          val traderProfile        = TraderProfile(testEori, "1", Some("2"), Some("3"))
-          val updatedTraderProfile = TraderProfile(testEori, "1", Some("2"), None)
+          val traderProfile        = TraderProfile(testEori, "1", Some("2"), Some("3"), false)
+          val updatedTraderProfile = TraderProfile(testEori, "1", Some("2"), None, eoriChanged = false)
 
           val userAnswers = emptyUserAnswers
             .set(RemoveNiphlPage, true)
@@ -978,9 +978,9 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
         ).flatten
       )
 
-      val traderProfile = TraderProfile(testEori, "1", Some("RMS-GB-123456"), Some("3"))
+      val traderProfile = TraderProfile(testEori, "1", Some("RMS-GB-123456"), Some("3"), eoriChanged = false)
 
-      val updatedTraderProfile = TraderProfile(testEori, "1", Some("RMS-GB-555555"), Some("3"))
+      val updatedTraderProfile = TraderProfile(testEori, "1", Some("RMS-GB-555555"), Some("3"), eoriChanged = false)
 
       val nirmsNumberAnswers = emptyUserAnswers
         .set(HasNirmsUpdatePage, true)
@@ -1238,9 +1238,9 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
         ).flatten
       )
 
-      val traderProfile = TraderProfile(testEori, "1", None, Some("3"))
+      val traderProfile = TraderProfile(testEori, "1", None, Some("3"), eoriChanged = false)
 
-      val updatedTraderProfile = TraderProfile(testEori, "1", None, Some("5"))
+      val updatedTraderProfile = TraderProfile(testEori, "1", None, Some("5"), eoriChanged = false)
 
       val niphlNumberAnswers = emptyUserAnswers
         .set(HasNiphlUpdatePage, true)

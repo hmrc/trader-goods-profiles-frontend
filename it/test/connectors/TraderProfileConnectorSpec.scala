@@ -53,7 +53,7 @@ class TraderProfileConnectorSpec
 
     "must submit a trader profile" in {
 
-      val traderProfile = TraderProfile(testEori, "1", Some("2"), None)
+      val traderProfile = TraderProfile(testEori, "1", Some("2"), None, eoriChanged = false)
 
       wireMockServer.stubFor(
         put(urlEqualTo(s"/trader-goods-profiles-data-store/traders/$testEori/profile"))
@@ -66,7 +66,7 @@ class TraderProfileConnectorSpec
 
     "must return a failed future when the response status is anything but Ok" in {
 
-      val traderProfile = TraderProfile(testEori, "1", Some("2"), None)
+      val traderProfile = TraderProfile(testEori, "1", Some("2"), None, eoriChanged = false)
 
       wireMockServer.stubFor(
         put(urlEqualTo(s"/trader-goods-profiles-data-store/traders/$testEori/profile"))
@@ -80,7 +80,7 @@ class TraderProfileConnectorSpec
 
       "must return a failed future when the server returns an error" in {
 
-        val traderProfile = TraderProfile(testEori, "1", Some("2"), None)
+        val traderProfile = TraderProfile(testEori, "1", Some("2"), None, eoriChanged = false)
 
         wireMockServer.stubFor(
           put(urlEqualTo(s"/trader-goods-profiles-data-store/traders/$testEori/profile"))
@@ -97,7 +97,7 @@ class TraderProfileConnectorSpec
       "must get a trader profile" in {
 
         val dataStoreTraderProfile = DataStoreProfile(testEori, testEori, "1", Some("2"), None)
-        val traderProfile = TraderProfile(testEori, "1", Some("2"), None)
+        val traderProfile = TraderProfile(testEori, "1", Some("2"), None, eoriChanged = true)
 
         wireMockServer.stubFor(
           get(urlEqualTo(s"/trader-goods-profiles-data-store/customs/traders/goods-profiles/$testEori"))
