@@ -46,10 +46,10 @@ class DownloadDataIndexController @Inject() (
 
   private def getDownloadLinkRoute(opt: Option[DownloadDataSummary]): Call =
     opt.map(_.status) match {
-      case Some(FileInProgress)  =>
+      case Some(FileInProgress)                        =>
         routes.FileInProgressController.onPageLoad()
       case Some(FileReadyUnseen) | Some(FileReadySeen) =>
         routes.FileReadyController.onPageLoad()
-      case _                     => routes.RequestDataController.onPageLoad()
+      case _                                           => routes.RequestDataController.onPageLoad()
     }
 }
