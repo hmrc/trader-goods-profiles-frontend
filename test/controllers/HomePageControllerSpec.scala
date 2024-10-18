@@ -18,9 +18,10 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.testEori
-import connectors.{DownloadDataConnector, TraderProfileConnector}
-import models.DownloadDataStatus.{FileReadySeen, FileReadyUnseen}
-import models.{DownloadDataSummary, FileInfo}
+import connectors.{DownloadDataConnector, GoodsRecordConnector, TraderProfileConnector}
+import models.DownloadDataStatus.{FileInProgress, FileReadySeen, FileReadyUnseen, RequestFile}
+import models.router.responses.GetRecordsResponse
+import models.{DownloadDataSummary, FileInfo, GoodsRecordsPagination}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar.mock
@@ -42,74 +43,321 @@ class HomePageControllerSpec extends SpecBase {
     val fileCreated   = Instant.now.minus(40, ChronoUnit.DAYS)
     val retentionDays = "30"
 
-    "must return OK and the correct view for a GET with banner" in {
+    "when there are goods records" - {
 
-      val downloadDataSummary = DownloadDataSummary(
-        testEori,
-        FileReadyUnseen,
-        Some(FileInfo(fileName, fileSize, fileCreated, retentionDays))
-      )
-
-      val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-      when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
-
-      val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
-      when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
-        Some(downloadDataSummary)
-      )
-
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-          bind[DownloadDataConnector].toInstance(mockDownloadDataConnector)
+      val records = Seq(
+        goodsRecordResponse(
+          Instant.parse("2022-11-18T23:20:19Z"),
+          Instant.parse("2022-11-18T23:20:19Z")
         )
-        .build()
+      )
 
-      running(application) {
-        val request = FakeRequest(GET, routes.HomePageController.onPageLoad().url)
+      val goodsResponse = GetRecordsResponse(
+        records,
+        GoodsRecordsPagination(1, 1, 1, None, None)
+      )
 
-        val result = route(application, request).value
+      "must return OK and the correct view for a GET with banner" in {
 
-        val view = application.injector.instanceOf[HomePageView]
+        val downloadDataSummary = DownloadDataSummary(
+          testEori,
+          FileReadyUnseen,
+          Some(FileInfo(fileName, fileSize, fileCreated, retentionDays))
+        )
 
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(true)(request, messages(application)).toString
+        val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+
+        val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+        when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
+          Some(downloadDataSummary)
+        )
+
+        val mockGoodsRecordConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
+        when(mockGoodsRecordConnector.getRecords(any(), any(), any())(any())) thenReturn Future
+          .successful(Some(goodsResponse))
+
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+            bind[DownloadDataConnector].toInstance(mockDownloadDataConnector),
+            bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
+          )
+          .build()
+
+        running(application) {
+          val request = FakeRequest(GET, routes.HomePageController.onPageLoad().url)
+
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[HomePageView]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(
+            downloadReady = true,
+            downloadLinkMessagesKey = "homepage.downloadLinkText.fileReady"
+          )(request, messages(application)).toString
+        }
+      }
+
+      "must return OK and the correct view for a GET without banner" in {
+
+        val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+
+        val downloadDataSummary = DownloadDataSummary(
+          testEori,
+          FileReadySeen,
+          Some(FileInfo(fileName, fileSize, fileCreated, retentionDays))
+        )
+
+        val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+        when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
+          Some(downloadDataSummary)
+        )
+
+        val mockGoodsRecordConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
+        when(mockGoodsRecordConnector.getRecords(any(), any(), any())(any())) thenReturn Future
+          .successful(Some(goodsResponse))
+
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+            bind[DownloadDataConnector].toInstance(mockDownloadDataConnector),
+            bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
+          )
+          .build()
+
+        running(application) {
+          val request = FakeRequest(GET, routes.HomePageController.onPageLoad().url)
+
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[HomePageView]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(
+            downloadReady = false,
+            downloadLinkMessagesKey = "homepage.downloadLinkText.fileReady"
+          )(request, messages(application)).toString
+        }
+      }
+
+      "must return OK and the correct view for a GET with correct messageKey" - {
+        "when downloadDataSummary is RequestFile" in {
+          val downloadDataSummary = DownloadDataSummary(
+            testEori,
+            RequestFile,
+            None
+          )
+
+          val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+
+          val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+          when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
+            Some(downloadDataSummary)
+          )
+
+          val mockGoodsRecordConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
+          when(mockGoodsRecordConnector.getRecords(any(), any(), any())(any())) thenReturn Future
+            .successful(Some(goodsResponse))
+
+          val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .overrides(
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+              bind[DownloadDataConnector].toInstance(mockDownloadDataConnector),
+              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
+            )
+            .build()
+
+          running(application) {
+            val request = FakeRequest(GET, routes.HomePageController.onPageLoad().url)
+
+            val result = route(application, request).value
+
+            val view = application.injector.instanceOf[HomePageView]
+
+            status(result) mustEqual OK
+            contentAsString(result) mustEqual view(
+              downloadReady = false,
+              downloadLinkMessagesKey = "homepage.downloadLinkText.requestFile"
+            )(request, messages(application)).toString
+          }
+        }
+
+        "when downloadDataSummary is FileInProgress" in {
+          val downloadDataSummary = DownloadDataSummary(
+            testEori,
+            FileInProgress,
+            None
+          )
+
+          val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+
+          val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+          when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
+            Some(downloadDataSummary)
+          )
+
+          val mockGoodsRecordConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
+          when(mockGoodsRecordConnector.getRecords(any(), any(), any())(any())) thenReturn Future
+            .successful(Some(goodsResponse))
+
+          val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .overrides(
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+              bind[DownloadDataConnector].toInstance(mockDownloadDataConnector),
+              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
+            )
+            .build()
+
+          running(application) {
+            val request = FakeRequest(GET, routes.HomePageController.onPageLoad().url)
+
+            val result = route(application, request).value
+
+            val view = application.injector.instanceOf[HomePageView]
+
+            status(result) mustEqual OK
+            contentAsString(result) mustEqual view(
+              downloadReady = false,
+              downloadLinkMessagesKey = "homepage.downloadLinkText.fileInProgress"
+            )(request, messages(application)).toString
+          }
+        }
+
+        "when downloadDataSummary is FileReadyUnseen" in {
+          val downloadDataSummary = DownloadDataSummary(
+            testEori,
+            FileReadyUnseen,
+            None
+          )
+
+          val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+
+          val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+          when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
+            Some(downloadDataSummary)
+          )
+
+          val mockGoodsRecordConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
+          when(mockGoodsRecordConnector.getRecords(any(), any(), any())(any())) thenReturn Future
+            .successful(Some(goodsResponse))
+
+          val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .overrides(
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+              bind[DownloadDataConnector].toInstance(mockDownloadDataConnector),
+              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
+            )
+            .build()
+
+          running(application) {
+            val request = FakeRequest(GET, routes.HomePageController.onPageLoad().url)
+
+            val result = route(application, request).value
+
+            val view = application.injector.instanceOf[HomePageView]
+
+            status(result) mustEqual OK
+            contentAsString(result) mustEqual view(
+              downloadReady = true,
+              downloadLinkMessagesKey = "homepage.downloadLinkText.fileReady"
+            )(request, messages(application)).toString
+          }
+        }
+
+        "when downloadDataSummary is FileReadySeen" in {
+          val downloadDataSummary = DownloadDataSummary(
+            testEori,
+            FileReadySeen,
+            None
+          )
+
+          val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+
+          val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+          when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
+            Some(downloadDataSummary)
+          )
+
+          val mockGoodsRecordConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
+          when(mockGoodsRecordConnector.getRecords(any(), any(), any())(any())) thenReturn Future
+            .successful(Some(goodsResponse))
+
+          val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .overrides(
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+              bind[DownloadDataConnector].toInstance(mockDownloadDataConnector),
+              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
+            )
+            .build()
+
+          running(application) {
+            val request = FakeRequest(GET, routes.HomePageController.onPageLoad().url)
+
+            val result = route(application, request).value
+
+            val view = application.injector.instanceOf[HomePageView]
+
+            status(result) mustEqual OK
+            contentAsString(result) mustEqual view(
+              downloadReady = false,
+              downloadLinkMessagesKey = "homepage.downloadLinkText.fileReady"
+            )(request, messages(application)).toString
+          }
+        }
       }
     }
 
-    "must return OK and the correct view for a GET without banner" in {
+    "when there are not any goods records" - {
+      "must return OK and the correct view for a GET with noGoodsRecords messageKey" in {
 
-      val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-      when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
-
-      val downloadDataSummary = DownloadDataSummary(
-        testEori,
-        FileReadySeen,
-        Some(FileInfo(fileName, fileSize, fileCreated, retentionDays))
-      )
-
-      val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
-      when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
-        Some(downloadDataSummary)
-      )
-
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-          bind[DownloadDataConnector].toInstance(mockDownloadDataConnector)
+        val downloadDataSummary = DownloadDataSummary(
+          testEori,
+          RequestFile,
+          Some(FileInfo(fileName, fileSize, fileCreated, retentionDays))
         )
-        .build()
 
-      running(application) {
-        val request = FakeRequest(GET, routes.HomePageController.onPageLoad().url)
+        val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
-        val result = route(application, request).value
+        val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+        when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
+          Some(downloadDataSummary)
+        )
 
-        val view = application.injector.instanceOf[HomePageView]
+        val mockGoodsRecordConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
+        when(mockGoodsRecordConnector.getRecords(any(), any(), any())(any())) thenReturn Future
+          .successful(None)
 
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(false)(request, messages(application)).toString
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+            bind[DownloadDataConnector].toInstance(mockDownloadDataConnector),
+            bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
+          )
+          .build()
+
+        running(application) {
+          val request = FakeRequest(GET, routes.HomePageController.onPageLoad().url)
+
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[HomePageView]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(
+            downloadReady = false,
+            downloadLinkMessagesKey = "homepage.downloadLinkText.noGoodsRecords"
+          )(request, messages(application)).toString
+        }
       }
+
     }
   }
 }

@@ -14,24 +14,28 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import config.FrontendAppConfig
+
 @this(
+appConfig: FrontendAppConfig,
         layout: templates.Layout,
-        govukNotificationBanner: GovukNotificationBanner
+        govukPhaseBanner: GovukPhaseBanner,
+govukNotificationBanner: GovukNotificationBanner
 )
 
-@(downloadReady: Boolean = false)(implicit request: Request[_], messages: Messages)
+@(downloadReady: Boolean =false, downloadLinkMessagesKey: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = s"${messages("homepage.title")} - ${messages("site.govuk")}", showBackLink = false, headerShouldHaveServiceLink = false) {
 
     @if(downloadReady) {
         @govukNotificationBanner(NotificationBanner(
-            title = Text(messages("successBanner.title")),
+            title = Text(messages("homepage.downloadBanner.important")),
             content = HtmlContent(f"""
-                <h3 class='govuk-notification-banner__heading'>
-                    ${messages("homepage.downloadBanner.content")}
-                    <a href="${routes.FileReadyController.onPageLoad().url}" class='govuk-link'>${messages("homepage.downloadBanner.linkText")}</a>.
-                </h3>"""),
-            bannerType = Some("success"),
+            <h3 class='govuk-notification-banner__heading'>
+                ${messages("homepage.downloadBanner.content")}
+                <a href="${routes.FileReadyController.onPageLoad().url}" class='govuk-link'>${messages("homepage.downloadBanner.linkText")}</a>.
+            </h3>"""),
             role=Some("alert"))
         )
     }
@@ -41,16 +45,33 @@
 
     <h2 class="govuk-heading-m">@messages("homepage.h2.1")</h2>
 
-    <p class="govuk-body"><a href="@routes.PreviousMovementRecordsController.onPageLoad().url" class="govuk-link" >@messages("homepage.p2.linkText")</a></p>
+    <p class="govuk-body">
+        <a href="@routes.PreviousMovementRecordsController.onPageLoad().url" class="govuk-link">@messages("homepage.p2.linkText")</a>
+    </p>
 
-    <p class="govuk-body"><a href="@routes.CreateRecordStartController.onPageLoad().url" class="govuk-link" >@messages("homepage.p3.linkText")</a></p>
+    <p class="govuk-body">
+        <a href="@routes.CreateRecordStartController.onPageLoad().url" class="govuk-link">@messages("homepage.p3.linkText")</a>
+    </p>
 
     <h2 class="govuk-heading-m">@messages("homepage.h2.2")</h2>
 
-    <p class="govuk-body"><a href="@routes.ProfileController.onPageLoad().url" class="govuk-link" >@messages("homepage.p5.linkText")</a></p>
+    <p class="govuk-body">
+        <a href="@routes.ProfileController.onPageLoad().url" class="govuk-link">@messages("homepage.p5.linkText")</a>
+    </p>
 
-    <h2 class="govuk-heading-m">@messages("homepage.h2.3")</h2>
+    @if(appConfig.downloadFileEnabled) {
+        <h2 class="govuk-heading-m">@messages("homepage.h2.3")</h2>
+        @if(downloadLinkMessagesKey == "homepage.downloadLinkText.noGoodsRecords") {
+            <p class="govuk-body">@messages(downloadLinkMessagesKey)</p>
+        } else {
+            <p class="govuk-body"><a href="@controllers.routes.DownloadDataIndexController.redirect()" class="govuk-link">@messages(downloadLinkMessagesKey)</a></p>
+        }
+    }
 
-    <p class="govuk-body"><a href="@routes.HelpAndSupportController.onPageLoad().url" class="govuk-link" >@messages("homepage.p6.linkText")</a></p>
+    <h2 class="govuk-heading-m">@messages("homepage.h2.4")</h2>
+
+    <p class="govuk-body">
+        <a href="@routes.HelpAndSupportController.onPageLoad().url" class="govuk-link">@messages("homepage.p6.linkText")</a>
+    </p>
 
 }
