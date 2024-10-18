@@ -47,10 +47,11 @@ homepage.p2.linkText = Bwrw golwg dros eich cofnodion nwyddau neu eu diweddaru
 homepage.p3.linkText = Creu cofnod nwyddau newydd
 homepage.h2.2 = Rheoli''ch proffil
 homepage.p5.linkText = Rheoli manylion eich proffil
-homepage.h2.3 = Help a chysylltu
+homepage.h2.4 = Help a chysylltu
 homepage.p6.linkText = Dewch o hyd i gymorth ychwanegol a chysylltiadau i''ch helpu
 homepage.downloadBanner.content = Mae’r ffeil y gofynnoch amdani, sy’n cynnwys eich data TGP, yn barod i’w lawrlwytho.
 homepage.downloadBanner.linkText = Ewch i’r dudalen lawrlwytho i gael mynediad at eich ffeil.
+# TODO: Awaiting welsh translation for download link text (Ticket: TGP-2753)
 
 unauthorised.title = Mae problem wedi codi
 unauthorised.heading = Mae problem wedi codi
