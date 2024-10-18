@@ -53,14 +53,14 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
         }
       }
 
-  def getDownloadDataSummary(eori: String)(implicit hc: HeaderCarrier): Future[Option[DownloadDataSummary]] =
+  def getDownloadDataSummary(eori: String)(implicit hc: HeaderCarrier): Future[Option[Seq[DownloadDataSummary]]] =
     if (config.downloadFileEnabled) {
       httpClient
         .get(downloadDataSummaryUrl(eori))
         .execute[HttpResponse]
         .map { response =>
           response.status match {
-            case OK => Some(response.json.as[DownloadDataSummary])
+            case OK => Some(response.json.as[Seq[DownloadDataSummary]])
             case _  => None
           }
         }
@@ -72,13 +72,13 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
       Future.successful(None)
     }
 
-  def getDownloadData(eori: String)(implicit hc: HeaderCarrier): Future[Option[DownloadData]] =
+  def getDownloadData(eori: String)(implicit hc: HeaderCarrier): Future[Option[Seq[DownloadData]]] =
     httpClient
       .get(downloadDataUrl(eori))
       .execute[HttpResponse]
       .map { response =>
         response.status match {
-          case OK => Some(response.json.as[DownloadData])
+          case OK => Some(response.json.as[Seq[DownloadData]])
           case _  => None
         }
       }
