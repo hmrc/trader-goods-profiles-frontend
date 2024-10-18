@@ -17,7 +17,7 @@
 package connectors
 
 import base.TestConstants.testEori
-import com.github.tomakehurst.wiremock.client.WireMock.{ok, _}
+import com.github.tomakehurst.wiremock.client.WireMock._
 import generators.StatusCodeGenerators
 import models.{HistoricProfileData, TraderProfile}
 import org.scalatest.OptionValues
@@ -25,11 +25,11 @@ import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import play.api.Application
+import play.api.http.Status.{BAD_REQUEST, INTERNAL_SERVER_ERROR, NOT_FOUND}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
-import testModels.DataStoreProfile
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.test.WireMockSupport
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 
 class TraderProfileConnectorSpec
   extends AnyFreeSpec
@@ -94,29 +94,73 @@ class TraderProfileConnectorSpec
 
     "getTraderProfile" - {
 
-      "must get a trader profile" in {
+      "return a valid TraderProfile when the response status is 200 (OK)" in {
+        val eori = "GB1234567890"
 
-        val dataStoreTraderProfile = DataStoreProfile(testEori, testEori, "1", Some("2"), None)
-        val traderProfile = TraderProfile(testEori, "1", Some("2"), None, eoriChanged = true)
+        val traderProfile = TraderProfile("TestName", "TestAddress", Some("TestPostcode"), Some("UK"), eoriChanged = true)
 
         wireMockServer.stubFor(
-          get(urlEqualTo(s"/trader-goods-profiles-data-store/customs/traders/goods-profiles/$testEori"))
-            .willReturn(ok().withBody(Json.toJson(dataStoreTraderProfile).toString))
+          get(urlEqualTo(s"/trader-goods-profiles-data-store/customs/traders/goods-profiles/$eori"))
+            .willReturn(
+              ok(Json.toJson(traderProfile).toString())
+            )
         )
 
-        connector.getTraderProfile(testEori).futureValue mustBe traderProfile
+        whenReady(connector.getTraderProfile(eori)) { result =>
+          result mustBe traderProfile
+        }
       }
 
-      "must return a failed future when the server returns an error" in {
+      "fail with UpstreamErrorResponse when the response status is 500 (Internal Server Error)" in {
+        val eori = "GB1234567890"
 
         wireMockServer.stubFor(
-          get(urlEqualTo(s"/trader-goods-profiles-data-store/customs/traders/goods-profiles/$testEori"))
-            .willReturn(serverError())
+          get(urlEqualTo(s"/trader-goods-profiles-data-store/customs/traders/goods-profiles/$eori"))
+            .willReturn(
+              serverError()
+            )
         )
 
-        connector.getTraderProfile(testEori).failed.futureValue
+        whenReady(connector.getTraderProfile(eori).failed) { result =>
+          result mustBe an[UpstreamErrorResponse]
+          result.asInstanceOf[UpstreamErrorResponse].statusCode mustBe INTERNAL_SERVER_ERROR
+        }
+      }
+
+      "fail with UpstreamErrorResponse when the response status is 404 (Not Found)" in {
+        val eori = "GB1234567890"
+
+        wireMockServer.stubFor(
+          get(urlEqualTo(s"/trader-goods-profiles-data-store/customs/traders/goods-profiles/$eori"))
+            .willReturn(
+              notFound()
+            )
+        )
+
+        whenReady(connector.getTraderProfile(eori).failed) { result =>
+          result mustBe an[UpstreamErrorResponse]
+          result.asInstanceOf[UpstreamErrorResponse].statusCode mustBe NOT_FOUND
+        }
+      }
+
+      "fail with UpstreamErrorResponse when the response status is 400 (Bad Request)" in {
+        val eori = "GB1234567890"
+
+        wireMockServer.stubFor(
+          get(urlEqualTo(s"/trader-goods-profiles-data-store/customs/traders/goods-profiles/$eori"))
+            .willReturn(
+              badRequest()
+            )
+        )
+
+        whenReady(connector.getTraderProfile(eori).failed) {
+          result =>
+            result mustBe an[UpstreamErrorResponse]
+            result.asInstanceOf[UpstreamErrorResponse].statusCode mustBe BAD_REQUEST
+        }
       }
     }
+
 
     "checkTraderProfile" - {
 

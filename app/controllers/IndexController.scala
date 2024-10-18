@@ -35,20 +35,18 @@ class IndexController @Inject() (
 
   def onPageLoad: Action[AnyContent] = identify.async { implicit request =>
     traderProfileConnector.checkTraderProfile(request.eori).flatMap {
-      case true =>
+      case true  =>
         eoriChanged(request)
       case false => Future.successful(Redirect(routes.ProfileSetupController.onPageLoad()))
     }
   }
 
-  private def eoriChanged(request: IdentifierRequest[AnyContent])(implicit hc: HeaderCarrier) = {
-    traderProfileConnector.getTraderProfile(request.eori).map {
-      case TraderProfile(_, _, _, _, eoriChanged) =>
-        if (eoriChanged) {
-          Redirect(routes.UkimsNumberChangeController.onPageLoad())
-        } else {
-          Redirect(routes.HomePageController.onPageLoad())
-        }
+  private def eoriChanged(request: IdentifierRequest[AnyContent])(implicit hc: HeaderCarrier) =
+    traderProfileConnector.getTraderProfile(request.eori).map { case TraderProfile(_, _, _, _, eoriChanged) =>
+      if (eoriChanged) {
+        Redirect(routes.UkimsNumberChangeController.onPageLoad())
+      } else {
+        Redirect(routes.HomePageController.onPageLoad())
+      }
     }
-  }
 }
