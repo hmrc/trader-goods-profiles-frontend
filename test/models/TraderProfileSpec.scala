@@ -26,7 +26,7 @@ import queries.TraderProfileQuery
 
 class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with OptionValues {
 
-  val traderProfile = TraderProfile("actorId", "ukims", Some("nirmsNumber"), Some("niphlNumber"))
+  val traderProfile = TraderProfile("actorId", "ukims", Some("nirmsNumber"), Some("niphlNumber"), eoriChanged = false)
 
   ".build" - {
 
@@ -54,7 +54,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
         val result = TraderProfile.build(answers, testEori)
 
-        result mustEqual Right(TraderProfile(testEori, "1", Some("2"), Some("3")))
+        result mustEqual Right(TraderProfile(testEori, "1", Some("2"), Some("3"), false))
       }
 
       "and all optional data is missing" in {
@@ -73,7 +73,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
         val result = TraderProfile.build(answers, testEori)
 
-        result mustEqual Right(TraderProfile(testEori, "1", None, None))
+        result mustEqual Right(TraderProfile(testEori, "1", None, None, false))
       }
     }
 

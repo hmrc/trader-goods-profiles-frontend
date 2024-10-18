@@ -51,7 +51,8 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
         actorId = "actorId",
         ukimsNumber = "Ukims number",
         nirmsNumber = Some("NIRMS number"),
-        niphlNumber = Some("NIPHL number")
+        niphlNumber = Some("NIPHL number"),
+        eoriChanged = false
       )
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -96,7 +97,8 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
         actorId = "actorId",
         ukimsNumber = "Ukims Number",
         nirmsNumber = None,
-        niphlNumber = Some("Niphl Number")
+        niphlNumber = Some("Niphl Number"),
+        eoriChanged = false
       )
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -141,7 +143,8 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
         actorId = "actorId",
         ukimsNumber = "Ukims Number",
         nirmsNumber = Some("Nirms Number"),
-        niphlNumber = None
+        niphlNumber = None,
+        eoriChanged = false
       )
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -186,7 +189,8 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
         actorId = "actorId",
         ukimsNumber = "Ukims Number",
         nirmsNumber = None,
-        niphlNumber = None
+        niphlNumber = None,
+        eoriChanged = false
       )
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))

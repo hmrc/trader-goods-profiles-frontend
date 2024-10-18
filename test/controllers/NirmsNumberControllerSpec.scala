@@ -212,7 +212,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       "must return OK and the correct view for a GET when HasNirms hasn't been answered when there is a nirms number" in {
 
-        val traderProfile    = TraderProfile(testEori, "1", Some("2"), Some("3"))
+        val traderProfile    = TraderProfile(testEori, "1", Some("2"), Some("3"), false)
         val mockAuditService = mock[AuditService]
 
         when(mockTraderProfileConnector.getTraderProfile(eqTo(testEori))(any())) thenReturn Future.successful(
@@ -255,7 +255,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       "must return OK and the correct view for a GET when HasNirms has been answered when there is a nirms number" in {
 
-        val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"))
+        val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"), false)
 
         val mockAuditService = mock[AuditService]
 
@@ -300,7 +300,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       "must return OK and the correct view for a GET when HasNirms has been answered when there isn't a nirms number" in {
 
-        val traderProfile = TraderProfile(testEori, "1", None, Some("3"))
+        val traderProfile = TraderProfile(testEori, "1", None, Some("3"), eoriChanged = false)
 
         val mockAuditService = mock[AuditService]
 
@@ -343,7 +343,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
       "must redirect to CyaMaintainProfile for a POST" in {
         val answer = "RMS-GB-123456"
 
-        val traderProfile = TraderProfile(testEori, "1", Some(answer), Some("3"))
+        val traderProfile = TraderProfile(testEori, "1", Some(answer), Some("3"), eoriChanged = false)
 
         val userAnswers = emptyUserAnswers
           .set(HasNirmsUpdatePage, true)
@@ -404,7 +404,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       "must redirect to Journey Recovery for a GET if HasNirms hasn't been answered and trader profile has no nirms number" in {
 
-        val traderProfile    = TraderProfile(testEori, "1", None, Some("3"))
+        val traderProfile    = TraderProfile(testEori, "1", None, Some("3"), eoriChanged = false)
         val mockAuditService = mock[AuditService]
 
         when(mockTraderProfileConnector.getTraderProfile(eqTo(testEori))(any())) thenReturn Future.successful(
@@ -442,7 +442,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       "must redirect to Journey Recovery for a GET if HasNirms has been answered no" in {
 
-        val traderProfile    = TraderProfile(testEori, "1", Some("2"), Some("3"))
+        val traderProfile    = TraderProfile(testEori, "1", Some("2"), Some("3"), false)
         val mockAuditService = mock[AuditService]
 
         when(mockTraderProfileConnector.getTraderProfile(eqTo(testEori))(any())) thenReturn Future.successful(

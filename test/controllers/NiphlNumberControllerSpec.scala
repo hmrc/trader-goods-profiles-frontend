@@ -212,7 +212,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
       "must return OK and the correct view for a GET when HasNiphl hasn't been answered when there is a niphl number" in {
 
-        val traderProfile    = TraderProfile(testEori, "1", Some("2"), Some("3"))
+        val traderProfile    = TraderProfile(testEori, "1", Some("2"), Some("3"), false)
         val mockAuditService = mock[AuditService]
 
         when(mockTraderProfileConnector.getTraderProfile(eqTo(testEori))(any())) thenReturn Future.successful(
@@ -255,7 +255,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
       "must return OK and the correct view for a GET when HasNiphl hasn't been answered when there isn't a niphl number" in {
 
-        val traderProfile    = TraderProfile(testEori, "1", Some("2"), None)
+        val traderProfile    = TraderProfile(testEori, "1", Some("2"), None, eoriChanged = false)
         val mockAuditService = mock[AuditService]
 
         when(mockTraderProfileConnector.getTraderProfile(eqTo(testEori))(any())) thenReturn Future.successful(
@@ -295,7 +295,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
       "must return OK and the correct view for a GET when HasNiphl has been answered when there is a niphl number" in {
 
-        val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"))
+        val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"), false)
 
         val mockAuditService = mock[AuditService]
 
@@ -340,7 +340,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
       "must return OK and the correct view for a GET when HasNiphl has been answered when there isn't a niphl number" in {
 
-        val traderProfile = TraderProfile(testEori, "1", Some("3"), None)
+        val traderProfile = TraderProfile(testEori, "1", Some("3"), None, eoriChanged = false)
 
         val mockAuditService = mock[AuditService]
 
@@ -383,7 +383,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
       "must redirect to Profile for a POST and submit data if value is different from original" in {
         val answer = "SN12345"
 
-        val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"))
+        val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"), false)
         val userAnswers   = emptyUserAnswers
           .set(HasNiphlUpdatePage, true)
           .success
@@ -426,7 +426,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
       "must redirect to Profile for a POST and not submit data if value is the same as original" in {
         val answer = "SN12345"
 
-        val traderProfile = TraderProfile(testEori, "1", Some("2"), Some(answer))
+        val traderProfile = TraderProfile(testEori, "1", Some("2"), Some(answer), eoriChanged = false)
 
         val userAnswers = emptyUserAnswers
           .set(HasNiphlUpdatePage, true)

@@ -193,7 +193,7 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
 
             val result = route(application, request).value
 
-            val expectedPayload = TraderProfile(testEori, "1", None, None)
+            val expectedPayload = TraderProfile(testEori, "1", None, None, eoriChanged = false)
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual routes.CreateProfileSuccessController.onPageLoad().url

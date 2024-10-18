@@ -40,7 +40,13 @@ class AuditEventFactorySpec extends SpecBase {
       "create event when all optionals supplied" in {
 
         val traderProfile =
-          TraderProfile(testEori, "XIUKIM47699357400020231115081800", Some("RMS-GB-123456"), Some("612345"))
+          TraderProfile(
+            testEori,
+            "XIUKIM47699357400020231115081800",
+            Some("RMS-GB-123456"),
+            Some("612345"),
+            eoriChanged = false
+          )
 
         val result = AuditEventFactory().createSetUpProfileEvent(traderProfile, AffinityGroup.Individual)
 
@@ -62,7 +68,7 @@ class AuditEventFactorySpec extends SpecBase {
 
       "create event when all optionals are not supplied" in {
 
-        val traderProfile = TraderProfile(testEori, "XIUKIM47699357400020231115081800", None, None)
+        val traderProfile = TraderProfile(testEori, "XIUKIM47699357400020231115081800", None, None, eoriChanged = false)
 
         val result = AuditEventFactory().createSetUpProfileEvent(traderProfile, AffinityGroup.Individual)
 
@@ -917,10 +923,22 @@ class AuditEventFactorySpec extends SpecBase {
       "create event on UKIMSNumber change" in {
 
         val traderProfile =
-          TraderProfile(testEori, "XIUKIM47699357400020231115081800", Some("RMS-GB-123456"), Some("612345"))
+          TraderProfile(
+            testEori,
+            "XIUKIM47699357400020231115081800",
+            Some("RMS-GB-123456"),
+            Some("612345"),
+            eoriChanged = false
+          )
 
         val updatedTraderProfile =
-          TraderProfile(testEori, "XIUKIM47699357400020231115081801", Some("RMS-GB-123456"), Some("612345"))
+          TraderProfile(
+            testEori,
+            "XIUKIM47699357400020231115081801",
+            Some("RMS-GB-123456"),
+            Some("612345"),
+            eoriChanged = false
+          )
 
         val result =
           AuditEventFactory().createMaintainProfileEvent(traderProfile, updatedTraderProfile, AffinityGroup.Individual)
@@ -944,10 +962,22 @@ class AuditEventFactorySpec extends SpecBase {
       "create event on NIRMSNumber change" in {
 
         val traderProfile =
-          TraderProfile(testEori, "XIUKIM47699357400020231115081800", Some("RMS-GB-123456"), Some("612345"))
+          TraderProfile(
+            testEori,
+            "XIUKIM47699357400020231115081800",
+            Some("RMS-GB-123456"),
+            Some("612345"),
+            eoriChanged = false
+          )
 
         val updatedTraderProfile =
-          TraderProfile(testEori, "XIUKIM47699357400020231115081800", Some("RMS-GB-123457"), Some("612345"))
+          TraderProfile(
+            testEori,
+            "XIUKIM47699357400020231115081800",
+            Some("RMS-GB-123457"),
+            Some("612345"),
+            eoriChanged = false
+          )
 
         val result =
           AuditEventFactory().createMaintainProfileEvent(traderProfile, updatedTraderProfile, AffinityGroup.Individual)
@@ -971,10 +1001,22 @@ class AuditEventFactorySpec extends SpecBase {
       "create event on NIPHLNumber change" in {
 
         val traderProfile =
-          TraderProfile(testEori, "XIUKIM47699357400020231115081800", Some("RMS-GB-123456"), Some("612345"))
+          TraderProfile(
+            testEori,
+            "XIUKIM47699357400020231115081800",
+            Some("RMS-GB-123456"),
+            Some("612345"),
+            eoriChanged = false
+          )
 
         val updatedTraderProfile =
-          TraderProfile(testEori, "XIUKIM47699357400020231115081800", Some("RMS-GB-123456"), Some("612346"))
+          TraderProfile(
+            testEori,
+            "XIUKIM47699357400020231115081800",
+            Some("RMS-GB-123456"),
+            Some("612346"),
+            eoriChanged = false
+          )
 
         val result =
           AuditEventFactory().createMaintainProfileEvent(traderProfile, updatedTraderProfile, AffinityGroup.Individual)

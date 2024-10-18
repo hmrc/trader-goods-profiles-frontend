@@ -314,7 +314,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               .set(HasNirmsUpdatePage, false)
               .success
               .value
-              .set(TraderProfileQuery, TraderProfile("actorId", "ukims", Some("nirms"), Some("niphl")))
+              .set(TraderProfileQuery, TraderProfile("actorId", "ukims", Some("nirms"), Some("niphl"), false))
               .success
               .value
 
@@ -328,7 +328,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               .set(HasNirmsUpdatePage, false)
               .success
               .value
-              .set(TraderProfileQuery, TraderProfile("actorId", "ukims", None, Some("niphl")))
+              .set(TraderProfileQuery, TraderProfile("actorId", "ukims", None, Some("niphl"), false))
               .success
               .value
 
@@ -437,7 +437,10 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               .set(HasNiphlUpdatePage, false)
               .success
               .value
-              .set(TraderProfileQuery, TraderProfile("actorId", "ukims", Some("nirms"), Some("niphl")))
+              .set(
+                TraderProfileQuery,
+                TraderProfile("actorId", "ukims", Some("nirms"), Some("niphl"), eoriChanged = false)
+              )
               .success
               .value
 
@@ -450,7 +453,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               .set(HasNiphlUpdatePage, false)
               .success
               .value
-              .set(TraderProfileQuery, TraderProfile("actorId", "ukims", Some("nirms"), None))
+              .set(TraderProfileQuery, TraderProfile("actorId", "ukims", Some("nirms"), None, eoriChanged = false))
               .success
               .value
 
@@ -3295,7 +3298,10 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               .set(HasNirmsUpdatePage, false)
               .success
               .value
-              .set(TraderProfileQuery, TraderProfile("actorId", "ukims", Some("nirms"), Some("niphl")))
+              .set(
+                TraderProfileQuery,
+                TraderProfile("actorId", "ukims", Some("nirms"), Some("niphl"), eoriChanged = false)
+              )
               .success
               .value
             navigator.nextPage(HasNirmsUpdatePage, CheckMode, answers) mustBe routes.RemoveNirmsController
@@ -3308,7 +3314,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               .set(HasNirmsUpdatePage, false)
               .success
               .value
-              .set(TraderProfileQuery, TraderProfile("actorId", "ukims", None, Some("niphl")))
+              .set(TraderProfileQuery, TraderProfile("actorId", "ukims", None, Some("niphl"), eoriChanged = false))
               .success
               .value
 
@@ -3374,7 +3380,10 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               .set(HasNiphlUpdatePage, false)
               .success
               .value
-              .set(TraderProfileQuery, TraderProfile("actorId", "ukims", Some("nirms"), Some("niphl")))
+              .set(
+                TraderProfileQuery,
+                TraderProfile("actorId", "ukims", Some("nirms"), Some("niphl"), eoriChanged = false)
+              )
               .success
               .value
 
@@ -3387,7 +3396,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               .set(HasNiphlUpdatePage, false)
               .success
               .value
-              .set(TraderProfileQuery, TraderProfile("actorId", "ukims", Some("nirms"), None))
+              .set(TraderProfileQuery, TraderProfile("actorId", "ukims", Some("nirms"), None, eoriChanged = false))
               .success
               .value
 
