@@ -48,9 +48,7 @@ class DownloadDataIndexController @Inject() (
     opt.map(_.status) match {
       case Some(FileInProgress)  =>
         routes.FileInProgressController.onPageLoad()
-      case Some(FileReadyUnseen) =>
-        routes.FileReadyController.onPageLoad()
-      case Some(FileReadySeen)   =>
+      case Some(FileReadyUnseen) | Some(FileReadySeen) =>
         routes.FileReadyController.onPageLoad()
       case _                     => routes.RequestDataController.onPageLoad()
     }
