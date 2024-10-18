@@ -1408,7 +1408,7 @@ class CategorisationInfoSpec extends SpecBase {
           .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
           .success
           .value
-          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
           .success
           .value
           .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.NoExemption)
@@ -1417,7 +1417,7 @@ class CategorisationInfoSpec extends SpecBase {
 
         categorisationInfo.getAnswersForQuestions(userAnswers, testRecordId) mustBe
           Seq(
-            AnsweredQuestions(0, category1, Some(AssessmentAnswer.Exemption)),
+            AnsweredQuestions(0, category1, Some(AssessmentAnswer.Exemption(Seq("TEST_CODE")))),
             AnsweredQuestions(1, category2, Some(AssessmentAnswer.NoExemption)),
             AnsweredQuestions(2, category3, None)
           )
@@ -1436,7 +1436,7 @@ class CategorisationInfoSpec extends SpecBase {
           .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
           .success
           .value
-          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
           .success
           .value
           .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.NoExemption)
@@ -1445,10 +1445,10 @@ class CategorisationInfoSpec extends SpecBase {
           .set(LongerCategorisationDetailsQuery(testRecordId), longerCommodity)
           .success
           .value
-          .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption))
+          .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE"))))
           .success
           .value
-          .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.Exemption))
+          .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE"))))
           .success
           .value
           .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(AssessmentAnswer.NoExemption))
@@ -1457,8 +1457,18 @@ class CategorisationInfoSpec extends SpecBase {
 
         longerCommodity.getAnswersForQuestions(userAnswers, testRecordId) mustBe
           Seq(
-            AnsweredQuestions(0, category1, Some(AssessmentAnswer.Exemption), reassessmentQuestion = true),
-            AnsweredQuestions(1, category1, Some(AssessmentAnswer.Exemption), reassessmentQuestion = true),
+            AnsweredQuestions(
+              0,
+              category1,
+              Some(AssessmentAnswer.Exemption(Seq("TEST_CODE"))),
+              reassessmentQuestion = true
+            ),
+            AnsweredQuestions(
+              1,
+              category1,
+              Some(AssessmentAnswer.Exemption(Seq("TEST_CODE"))),
+              reassessmentQuestion = true
+            ),
             AnsweredQuestions(2, category2, Some(AssessmentAnswer.NoExemption), reassessmentQuestion = true),
             AnsweredQuestions(3, category3, None, reassessmentQuestion = true)
           )

@@ -58,18 +58,21 @@ class ReassessmentPageSpec extends SpecBase {
             .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption))
+            .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE"))))
             .success
             .value
-            .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.Exemption))
+            .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE"))))
             .success
             .value
-            .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(AssessmentAnswer.Exemption))
+            .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE"))))
             .success
             .value
 
         val result =
-          answers.set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption)).success.value
+          answers
+            .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE"))))
+            .success
+            .value
 
         result.isDefined(ReassessmentPage(testRecordId, 0)) mustBe true
         result.isDefined(ReassessmentPage(testRecordId, 1)) mustBe true
@@ -86,16 +89,16 @@ class ReassessmentPageSpec extends SpecBase {
             .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption))
+            .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE"))))
             .success
             .value
-            .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.Exemption))
+            .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE"))))
             .success
             .value
-            .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(AssessmentAnswer.Exemption))
+            .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE"))))
             .success
             .value
-            .set(ReassessmentPage(testRecordId, 3), ReassessmentAnswer(AssessmentAnswer.Exemption))
+            .set(ReassessmentPage(testRecordId, 3), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE"))))
             .success
             .value
 

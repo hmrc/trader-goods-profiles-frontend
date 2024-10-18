@@ -57,13 +57,13 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption)
+            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
             .set(AssessmentPage(testRecordId, 3), AssessmentAnswer.NoExemption)
@@ -97,16 +97,16 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfoMeasureUnit)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption)
+            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 3), AssessmentAnswer.Exemption)
+            .set(AssessmentPage(testRecordId, 3), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
         val result  = CategoryRecord.build(answers, testEori, testRecordId, mockCategorisationService)
@@ -134,16 +134,16 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfoMeasureUnit)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption)
+            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 3), AssessmentAnswer.Exemption)
+            .set(AssessmentPage(testRecordId, 3), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
             .set(HasSupplementaryUnitPage(testRecordId), false)
@@ -174,16 +174,16 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfoMeasureUnit)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption)
+            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 3), AssessmentAnswer.Exemption)
+            .set(AssessmentPage(testRecordId, 3), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
             .set(HasSupplementaryUnitPage(testRecordId), true)
@@ -253,16 +253,16 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
             .set(CategorisationDetailsQuery(testRecordId), shorterCat)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption)
+            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 3), AssessmentAnswer.Exemption)
+            .set(AssessmentPage(testRecordId, 3), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
             .set(LongerCategorisationDetailsQuery(testRecordId), longerCat)
@@ -270,7 +270,10 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
             .value
             .set(
               ReassessmentPage(testRecordId, 0),
-              ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true)
+              ReassessmentAnswer(
+                AssessmentAnswer.Exemption(Seq("TEST_CODE")),
+                isAnswerCopiedFromPreviousAssessment = true
+              )
             )
             .success
             .value

@@ -39,7 +39,7 @@ class AssessmentFormProviderSpec extends StringFieldBehaviours with ScalaCheckPr
     "must bind `true`" in {
       val result = form2.bind(Map("value" -> "true"))
       result.errors mustBe empty
-      result.get mustEqual AssessmentAnswer.Exemption
+      result.get mustEqual AssessmentAnswer.Exemption(Seq("TEST_CODE"))
     }
 
     "must not bind invalid value" in {

@@ -69,14 +69,14 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
               val result = route(application, request).value
 
-              val onSubmitAction    =
+              val onSubmitAction               =
                 routes.AssessmentController.onSubmit(NormalMode, testRecordId, Constants.firstAssessmentNumber)
-              val view              = application.injector.instanceOf[AssessmentView]
-              val form              = formProvider(1)
-              val expectedListItems = categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map {
-                exemption =>
-                  exemption.code + " - " + exemption.description
-              }
+              val view                         = application.injector.instanceOf[AssessmentView]
+              val form                         = formProvider(1)
+              val expectedCodesAndDescriptions =
+                categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map { exemption =>
+                  (exemption.code, exemption.description)
+                }
 
               status(result) mustEqual OK
               contentAsString(result) mustEqual view(
@@ -84,7 +84,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 NormalMode,
                 testRecordId,
                 Constants.firstAssessmentNumber,
-                expectedListItems,
+                expectedCodesAndDescriptions,
                 categorisationInfo.commodityCode,
                 onSubmitAction
               )(
@@ -112,14 +112,14 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
               val result = route(application, request).value
 
-              val onSubmitAction    =
+              val onSubmitAction               =
                 routes.AssessmentController.onSubmit(NormalMode, testRecordId, Constants.firstAssessmentNumber)
-              val view              = application.injector.instanceOf[AssessmentView]
-              val form              = formProvider(1).fill(AssessmentAnswer.NoExemption)
-              val expectedListItems = categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map {
-                exemption =>
-                  exemption.code + " - " + exemption.description
-              }
+              val view                         = application.injector.instanceOf[AssessmentView]
+              val form                         = formProvider(1).fill(AssessmentAnswer.NoExemption)
+              val expectedCodesAndDescriptions =
+                categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map { exemption =>
+                  (exemption.code, exemption.description)
+                }
 
               status(result) mustEqual OK
               contentAsString(result) mustEqual view(
@@ -127,7 +127,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 NormalMode,
                 testRecordId,
                 Constants.firstAssessmentNumber,
-                expectedListItems,
+                expectedCodesAndDescriptions,
                 categorisationInfo.commodityCode,
                 onSubmitAction
               )(
@@ -253,15 +253,15 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
             val result = route(application, request).value
 
-            val onSubmitAction    =
+            val onSubmitAction               =
               routes.AssessmentController.onSubmit(NormalMode, testRecordId, Constants.firstAssessmentNumber)
-            val view              = application.injector.instanceOf[AssessmentView]
-            val form              = formProvider(1).fill(AssessmentAnswer.NoExemption)
-            val boundForm         = form.bind(Map("value" -> ""))
-            val expectedListItems = categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map {
-              exemption =>
-                exemption.code + " - " + exemption.description
-            }
+            val view                         = application.injector.instanceOf[AssessmentView]
+            val form                         = formProvider(1).fill(AssessmentAnswer.NoExemption)
+            val boundForm                    = form.bind(Map("value" -> ""))
+            val expectedCodesAndDescriptions =
+              categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map { exemption =>
+                (exemption.code, exemption.description)
+              }
 
             status(result) mustEqual BAD_REQUEST
             contentAsString(result) mustEqual view(
@@ -269,7 +269,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               NormalMode,
               testRecordId,
               Constants.firstAssessmentNumber,
-              expectedListItems,
+              expectedCodesAndDescriptions,
               categorisationInfo.commodityCode,
               onSubmitAction
             )(
@@ -404,14 +404,14 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
               val result = route(application, request).value
 
-              val onSubmitAction    = routes.AssessmentController
+              val onSubmitAction               = routes.AssessmentController
                 .onSubmitReassessment(NormalMode, testRecordId, Constants.firstAssessmentNumber)
-              val view              = application.injector.instanceOf[AssessmentView]
-              val form              = formProvider(1)
-              val expectedListItems = categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map {
-                exemption =>
-                  exemption.code + " - " + exemption.description
-              }
+              val view                         = application.injector.instanceOf[AssessmentView]
+              val form                         = formProvider(1)
+              val expectedCodesAndDescriptions =
+                categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map { exemption =>
+                  (exemption.code, exemption.description)
+                }
 
               status(result) mustEqual OK
               contentAsString(result) mustEqual view(
@@ -419,7 +419,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 NormalMode,
                 testRecordId,
                 Constants.firstAssessmentNumber,
-                expectedListItems,
+                expectedCodesAndDescriptions,
                 categorisationInfo.commodityCode,
                 onSubmitAction
               )(
@@ -450,12 +450,12 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
               val result = route(application, request).value
 
-              val view              = application.injector.instanceOf[AssessmentView]
-              val form              = formProvider(1).fill(AssessmentAnswer.NoExemption)
-              val expectedListItems = categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map {
-                exemption =>
-                  exemption.code + " - " + exemption.description
-              }
+              val view                         = application.injector.instanceOf[AssessmentView]
+              val form                         = formProvider(1).fill(AssessmentAnswer.NoExemption)
+              val expectedCodesAndDescriptions =
+                categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map { exemption =>
+                  (exemption.code, exemption.description)
+                }
 
               status(result) mustEqual OK
               contentAsString(result) mustEqual view(
@@ -463,7 +463,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 NormalMode,
                 testRecordId,
                 Constants.firstAssessmentNumber,
-                expectedListItems,
+                expectedCodesAndDescriptions,
                 categorisationInfo.commodityCode,
                 onSubmitAction
               )(
@@ -593,16 +593,16 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
             val result = route(application, request).value
 
-            val onSubmitAction    =
+            val onSubmitAction               =
               routes.AssessmentController
                 .onSubmitReassessment(NormalMode, testRecordId, Constants.firstAssessmentNumber)
-            val view              = application.injector.instanceOf[AssessmentView]
-            val form              = formProvider(1).fill(AssessmentAnswer.NoExemption)
-            val boundForm         = form.bind(Map("value" -> ""))
-            val expectedListItems = categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map {
-              exemption =>
-                exemption.code + " - " + exemption.description
-            }
+            val view                         = application.injector.instanceOf[AssessmentView]
+            val form                         = formProvider(1).fill(AssessmentAnswer.NoExemption)
+            val boundForm                    = form.bind(Map("value" -> ""))
+            val expectedCodesAndDescriptions =
+              categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map { exemption =>
+                (exemption.code, exemption.description)
+              }
 
             status(result) mustEqual BAD_REQUEST
             contentAsString(result) mustEqual view(
@@ -610,7 +610,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               NormalMode,
               testRecordId,
               Constants.firstAssessmentNumber,
-              expectedListItems,
+              expectedCodesAndDescriptions,
               categorisationInfo.commodityCode,
               onSubmitAction
             )(

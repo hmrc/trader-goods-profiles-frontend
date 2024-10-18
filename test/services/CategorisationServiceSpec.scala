@@ -301,7 +301,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
           .success
           .value
-          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
           .success
           .value
           .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.NoExemption)
@@ -637,10 +637,10 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
           .success
           .value
-          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
           .success
           .value
-          .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+          .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
           .success
           .value
           .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
@@ -740,10 +740,10 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
           .success
           .value
-          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
           .success
           .value
-          .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+          .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
           .success
           .value
 
@@ -848,7 +848,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
 
@@ -903,10 +903,10 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
             .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
@@ -959,10 +959,10 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
 
@@ -1064,7 +1064,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
             .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.NoExemption)
@@ -1114,7 +1114,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
             .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.NoExemption)
@@ -1165,13 +1165,13 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
           .success
           .value
-          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
           .success
           .value
-          .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+          .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
           .success
           .value
-          .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption)
+          .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
           .success
           .value
 
@@ -1229,10 +1229,10 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
 
@@ -1306,19 +1306,19 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       val expectedUserAnswers = userAnswersForCategorisation
         .set(
           ReassessmentPage(testRecordId, 0),
-          ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true)
+          ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE")), isAnswerCopiedFromPreviousAssessment = true)
         )
         .success
         .value
         .set(
           ReassessmentPage(testRecordId, 1),
-          ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true)
+          ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE")), isAnswerCopiedFromPreviousAssessment = true)
         )
         .success
         .value
         .set(
           ReassessmentPage(testRecordId, 2),
-          ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true)
+          ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE")), isAnswerCopiedFromPreviousAssessment = true)
         )
         .success
         .value
@@ -1387,11 +1387,17 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         .success
         .value
       result.get(ReassessmentPage(testRecordId, 0)) shouldBe
-        Some(ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true))
+        Some(
+          ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE")), isAnswerCopiedFromPreviousAssessment = true)
+        )
       result.get(ReassessmentPage(testRecordId, 1)) shouldBe
-        Some(ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true))
+        Some(
+          ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE")), isAnswerCopiedFromPreviousAssessment = true)
+        )
       result.get(ReassessmentPage(testRecordId, 2)) shouldBe
-        Some(ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true))
+        Some(
+          ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE")), isAnswerCopiedFromPreviousAssessment = true)
+        )
     }
 
     "should copy the old answers to the right position if they are in different order in the new categorisation" in {
@@ -1414,13 +1420,13 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         .set(LongerCategorisationDetailsQuery(testRecordId), newCommodityCategorisation)
         .success
         .value
-        .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+        .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
         .success
         .value
-        .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+        .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
         .success
         .value
-        .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption)
+        .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
         .success
         .value
 
@@ -1434,13 +1440,19 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         .success
         .value
       newUserAnswers.get(ReassessmentPage(testRecordId, 0)) mustBe
-        Some(ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true))
+        Some(
+          ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE")), isAnswerCopiedFromPreviousAssessment = true)
+        )
       newUserAnswers.get(ReassessmentPage(testRecordId, 1)) mustBe
-        Some(ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true))
+        Some(
+          ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE")), isAnswerCopiedFromPreviousAssessment = true)
+        )
       newUserAnswers.get(ReassessmentPage(testRecordId, 2)) mustBe
         Some(ReassessmentAnswer(AssessmentAnswer.NotAnsweredYet))
       newUserAnswers.get(ReassessmentPage(testRecordId, 3)) mustBe
-        Some(ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true))
+        Some(
+          ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE")), isAnswerCopiedFromPreviousAssessment = true)
+        )
     }
 
     "should move the old answers to the right position if only some are in the new categorisation" in {
@@ -1449,13 +1461,13 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
         .success
         .value
-        .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+        .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
         .success
         .value
-        .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+        .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
         .success
         .value
-        .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption)
+        .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
         .success
         .value
 
@@ -1480,7 +1492,9 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         .success
         .value
       newUserAnswers.get(ReassessmentPage(testRecordId, 0)) mustBe
-        Some(ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true))
+        Some(
+          ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE")), isAnswerCopiedFromPreviousAssessment = true)
+        )
       newUserAnswers.get(ReassessmentPage(testRecordId, 1)) mustBe
         Some(ReassessmentAnswer(AssessmentAnswer.NotAnsweredYet))
       newUserAnswers.get(ReassessmentPage(testRecordId, 2)) mustBe None
