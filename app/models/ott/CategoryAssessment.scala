@@ -32,9 +32,7 @@ final case class CategoryAssessment(
   override def compare(that: CategoryAssessment): Int =
     (this.category, this.exemptions.size) compare (that.category, that.exemptions.size)
 
-  def getExemptionListItems: Seq[String] = exemptions.map { exemption =>
-    exemption.code + " - " + exemption.description
-  }
+  def getCodesZippedWithDescriptions: Seq[(String, String)] = exemptions.map(_.code).zip(exemptions.map(_.description))
 
   def isCategory1: Boolean   = category == Category1AsInt
   def isCategory2: Boolean   = category == Category2AsInt

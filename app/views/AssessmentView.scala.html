@@ -26,7 +26,7 @@
         govukCheckboxes: GovukCheckboxes,
 )
 
-@(form: Form[_], mode: Mode, recordId: String, number: Int, listItems: Seq[String], commodityCode: String, onSubmitAction: Call)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, recordId: String, number: Int, codesAndDescriptions: Seq[(String, String)], commodityCode: String, onSubmitAction: Call)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("assessment.title"))) {
 
@@ -48,36 +48,23 @@
         </p>
 
         <h2 class='govuk-heading-m'>
-            @if(listItems.size == 1) {
+            @if(codesAndDescriptions.size == 1) {
                 @messages("assessment.question.onlyOne")
             } else {
                 @messages("assessment.question")
             }
         </h2>
 
-        <ul class="govuk-list govuk-list--bullet">
-            @listItems.map { item =>
-                <li>@item</li>
-            }
-        </ul>
-
-        @govukRadios(
-            RadiosViewModel.yesNo(
-                field = form("value2"),
-                legend = Legend(messages("assessment.question")).withCssClass("govuk-visually-hidden")
-            )
-        )
-
         @govukCheckboxes(
             CheckboxesViewModel(
                 form   = form,
-                name   = "value[]",
+                name   = "value",
                 legend = Legend(messages("assessment.question")).withCssClass("govuk-visually-hidden"),
-                items  = listItems.zipWithIndex.map { item =>
+                items  = codesAndDescriptions.map { item =>
                     CheckboxItem(
-                        id = Some("value_" + item._2.toString),
+                        id = Some(item._1),
                         name = Some("value[]"),
-                        content = Text(item._1),
+                        content = Text(item._1 + " - " + item._2),
                         value = item._1,
                         checked = false
                     )

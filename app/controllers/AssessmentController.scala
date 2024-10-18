@@ -63,8 +63,8 @@ class AssessmentController @Inject() (
             .get(CategorisationDetailsQuery(recordId))
             .flatMap { categorisationInfo =>
               categorisationInfo.getAssessmentFromIndex(index).map { assessment =>
-                val listItems = assessment.getExemptionListItems
-                val form      = formProvider(listItems.size)
+                val codesAndDescriptions = assessment.getCodesZippedWithDescriptions
+                val form      = formProvider(codesAndDescriptions.size)
 
                 val preparedForm = request.userAnswers.get(AssessmentPage(recordId, index)) match {
                   case Some(value) => form.fill(value)
@@ -78,7 +78,7 @@ class AssessmentController @Inject() (
                     mode,
                     recordId,
                     number,
-                    listItems,
+                    codesAndDescriptions,
                     categorisationInfo.commodityCode,
                     submitAction
                   )
@@ -98,8 +98,8 @@ class AssessmentController @Inject() (
             .get(LongerCategorisationDetailsQuery(recordId))
             .flatMap { categorisationInfo =>
               categorisationInfo.getAssessmentFromIndex(index).map { assessment =>
-                val listItems = assessment.getExemptionListItems
-                val form      = formProvider(listItems.size)
+                val codesAndDescriptions = assessment.getCodesZippedWithDescriptions
+                val form      = formProvider(codesAndDescriptions.size)
 
                 val preparedForm = request.userAnswers.get(ReassessmentPage(recordId, index)) match {
                   case Some(value) => form.fill(value.answer)
@@ -114,7 +114,7 @@ class AssessmentController @Inject() (
                     mode,
                     recordId,
                     number,
-                    listItems,
+                    codesAndDescriptions,
                     categorisationInfo.commodityCode,
                     submitAction
                   )
@@ -134,8 +134,8 @@ class AssessmentController @Inject() (
             .get(CategorisationDetailsQuery(recordId))
             .flatMap { categorisationInfo =>
               categorisationInfo.getAssessmentFromIndex(index).map { assessment =>
-                val listItems    = assessment.getExemptionListItems
-                val form         = formProvider(listItems.size)
+                val codesAndDescriptions    = assessment.getCodesZippedWithDescriptions
+                val form         = formProvider(codesAndDescriptions.size)
                 val submitAction = routes.AssessmentController.onSubmit(mode, recordId, number)
 
                 form
@@ -149,7 +149,7 @@ class AssessmentController @Inject() (
                             mode,
                             recordId,
                             number,
-                            listItems,
+                            codesAndDescriptions,
                             categorisationInfo.commodityCode,
                             submitAction
                           )
@@ -182,8 +182,8 @@ class AssessmentController @Inject() (
             .get(LongerCategorisationDetailsQuery(recordId))
             .flatMap { categorisationInfo =>
               categorisationInfo.getAssessmentFromIndex(index).map { assessment =>
-                val listItems    = assessment.getExemptionListItems
-                val form         = formProvider(listItems.size)
+                val codesAndDescriptions    = assessment.getCodesZippedWithDescriptions
+                val form         = formProvider(codesAndDescriptions.size)
                 val submitAction = routes.AssessmentController.onSubmitReassessment(mode, recordId, number)
 
                 form
@@ -197,7 +197,7 @@ class AssessmentController @Inject() (
                             mode,
                             recordId,
                             number,
-                            listItems,
+                            codesAndDescriptions,
                             categorisationInfo.commodityCode,
                             submitAction
                           )
