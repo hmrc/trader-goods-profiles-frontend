@@ -43,7 +43,7 @@ class HomePageController @Inject() (
     for {
       downloadDataSummary <- downloadDataConnector.getDownloadDataSummary(request.eori)
       goodsRecords        <- goodsRecordConnector.getRecords(request.eori, 1, 1)
-      doesGoodsRecordExist = goodsRecords.nonEmpty
+      doesGoodsRecordExist = goodsRecords.exists(_.goodsItemRecords.nonEmpty)
     } yield {
       val downloadLinkMessagesKey = getDownloadLinkMessagesKey(downloadDataSummary, doesGoodsRecordExist)
       downloadDataSummary match {
