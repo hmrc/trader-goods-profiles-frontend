@@ -63,8 +63,9 @@ object FileManagementViewModel {
         availableFiles = availableDataSummaries.map(
           availableFilesSeq => availableFilesSeq.flatMap { availableFile =>
             availableFile.fileInfo.flatMap { fileInfo =>
-              downloadData.map { downloadDataSeq =>
-                (availableFile, downloadDataSeq.find(_.filename == fileInfo.fileName))
+              downloadData.collect {
+                case downloadDataSeq if downloadDataSeq.exists(_.filename == fileInfo.fileName) =>
+                  (availableFile, downloadDataSeq.find(_.filename == fileInfo.fileName).get)
               }
             }
           }

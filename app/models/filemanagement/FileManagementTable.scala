@@ -28,7 +28,7 @@ trait FileManagementTable {
   val rows: Seq[Seq[TableRow]]
 }
 
-case class AvailableFilesTable()(implicit messages: Messages) extends FileManagementTable {
+case class AvailableFilesTable(availableFileRows: Option[Seq[FileRow]])(implicit messages: Messages) extends FileManagementTable {
   // TODO: Add apply in companion object to create table rows from data
   override val caption: String          = messages("fileManagement.availableFiles.table.caption")
   override val body: Option[String]     = None
@@ -68,12 +68,16 @@ case class AvailableFilesTable()(implicit messages: Messages) extends FileManage
 
 object AvailableFilesTable {
   def apply(
-             availableFiles: Option[Seq[(DownloadDataSummary, Option[DownloadData])]]
+             availableFiles: Option[Seq[(DownloadDataSummary, DownloadData)]]
            )(implicit messages: Messages): AvailableFilesTable = {
 
-    val x = availableFiles.get.head._1.fileInfo.get.fileCreated
-    val y = availableFiles.get.head._1.fileInfo.get.retentionDays
+    val availableFileRows = availableFiles.map {
+      _.flatMap { availableFile =>
+        FileRow.AvailableFileRow(availableFile)
+      }
+    }
 
+    new AvailableFilesTable(availableFileRows)
   }
 }
 
