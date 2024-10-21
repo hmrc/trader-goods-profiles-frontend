@@ -18,7 +18,8 @@ package models.filemanagement
 
 import models.{DownloadData, DownloadDataSummary, FileInfo}
 import play.api.i18n.{Lang, Messages}
-import play.twirl.api.Html
+import uk.gov.hmrc.govukfrontend.views.Aliases.{HtmlContent, Tag, Text}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Content
 import utils.DateTimeFormats.dateTimeFormat
 
 import java.time.temporal.ChronoUnit
@@ -27,11 +28,11 @@ import java.time.{Instant, ZoneOffset}
 trait FileRow {
   val fileCreated: String
   val fileExpirationDate: Option[String]
-  val fileLink: Html
+  val fileLink: Content
 }
 
-case class AvailableFileRow(fileCreated: String, fileExpirationDate: Option[String], fileLink: Html) extends FileRow
-case class PendingFileRow(fileCreated: String, fileExpirationDate: Option[String], fileLink: Html) extends FileRow
+case class AvailableFileRow(fileCreated: String, fileExpirationDate: Option[String], fileLink: Content) extends FileRow
+case class PendingFileRow(fileCreated: String, fileExpirationDate: Option[String], fileLink: Content) extends FileRow
 
 object FileRow {
 
@@ -50,7 +51,7 @@ object FileRow {
       summary.fileInfo.map {fileInfo =>
         val fileCreated = convertToDateString(fileInfo.fileCreated) // Double check that this is actually the date and time of the request
         val fileExpirationDate = retentionTimeToExpirationDate(fileInfo)
-        val fileLink = Html(
+        val fileLink = HtmlContent(
           s"""<a href="${data.downloadURL}" class="govuk-link">${messages("fileManagement.availableFiles.downloadText")}</a>"""
         )
 
@@ -59,13 +60,13 @@ object FileRow {
     }
   }
 
-  object PendingFileRow {
+  object PendingFileRow { // TODO: Do we want to use these then convert to table row? Or just use the table row directly?
     def apply(summaryData: DownloadDataSummary)(implicit messages: Messages): Option[PendingFileRow] = {
       summaryData.fileInfo.map {fileInfo =>
         val fileCreated = convertToDateString(fileInfo.fileCreated) // Double check that this is actually the date and time of the request
-        val fileLink = Html(
-          s"""<p>${messages("fileManagement.pendingFiles.fileText")}</p>""" // TODO: Figure out styling for the in table text
-        )
+        val fileLink = Tag(
+            content = Text(messages("fileManagement.pendingFiles.fileText"))
+          ).content
 
         new PendingFileRow(fileCreated, None, fileLink)
       }

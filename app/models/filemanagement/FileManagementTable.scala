@@ -16,10 +16,15 @@
 
 package models.filemanagement
 
-import models.{DownloadData, DownloadDataSummary}
-import play.api.i18n.Messages
-import uk.gov.hmrc.govukfrontend.views.Aliases.{HeadCell, Text}
+import models.{DownloadData, DownloadDataSummary, FileInfo}
+import play.api.i18n.{Lang, Messages}
+import uk.gov.hmrc.govukfrontend.views.Aliases.{HeadCell, HtmlContent, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.table.TableRow
+import uk.gov.hmrc.govukfrontend.views.viewmodels.tag.Tag
+import utils.DateTimeFormats.dateTimeFormat
+
+import java.time.temporal.ChronoUnit
+import java.time.{Instant, ZoneOffset}
 
 trait FileManagementTable {
   val caption: String
@@ -28,8 +33,7 @@ trait FileManagementTable {
   val rows: Seq[Seq[TableRow]]
 }
 
-case class AvailableFilesTable(availableFileRows: Option[Seq[FileRow]])(implicit messages: Messages) extends FileManagementTable {
-  // TODO: Add apply in companion object to create table rows from data
+case class AvailableFilesTable(availableFileRows: Seq[Seq[TableRow]])(implicit messages: Messages) extends FileManagementTable {
   override val caption: String          = messages("fileManagement.availableFiles.table.caption")
   override val body: Option[String]     = None
   override val headRows: Seq[HeadCell]  =
@@ -40,49 +44,92 @@ case class AvailableFilesTable(availableFileRows: Option[Seq[FileRow]])(implicit
     ).map { content =>
       HeadCell(content = Text(content))
     }
-  override val rows: Seq[Seq[TableRow]] = Seq( // This will be passed into the case class once data work is complete
-    Seq(
-      TableRow(
-        content = Text("time answer")
-      ),
-      TableRow(
-        content = Text("expiry answer")
-      ),
-      TableRow(
-        content = Text("file answer")
-      )
-    ),
-    Seq(
-      TableRow(
-        content = Text("time answer")
-      ),
-      TableRow(
-        content = Text("expiry answer")
-      ),
-      TableRow(
-        content = Text("file answer")
-      )
-    )
-  )
+  override val rows: Seq[Seq[TableRow]] = availableFileRows
 }
 
-object AvailableFilesTable {
-  def apply(
-             availableFiles: Option[Seq[(DownloadDataSummary, DownloadData)]]
-           )(implicit messages: Messages): AvailableFilesTable = {
+object FileManagementTable {
+  private def convertToDateString(instant: Instant)(implicit messages: Messages): String = {
+    implicit val lang: Lang = messages.lang
+    instant.atZone(ZoneOffset.UTC).toLocalDate.format(dateTimeFormat())
+  }
 
-    val availableFileRows = availableFiles.map {
-      _.flatMap { availableFile =>
-        FileRow.AvailableFileRow(availableFile)
+  private def retentionTimeToExpirationDate(fileInfo: FileInfo)(implicit messages: Messages): String = convertToDateString(fileInfo.fileCreated
+    .plus(fileInfo.retentionDays.toInt, ChronoUnit.DAYS))
+
+  object AvailableFilesTable {
+    def apply(
+               availableFiles: Option[Seq[(DownloadDataSummary, DownloadData)]]
+             )(implicit messages: Messages): Option[AvailableFilesTable] = {
+
+      val availableFileRows = availableFiles.map {
+        _.flatMap { availableFile =>
+
+          val (summary, data) = availableFile
+
+          summary.fileInfo.map {fileInfo =>
+            val fileCreated = convertToDateString(fileInfo.fileCreated) // Double check that this is actually the date and time of the request
+            val fileExpirationDate = retentionTimeToExpirationDate(fileInfo)
+            val fileLink = HtmlContent(
+              s"""<a href="${data.downloadURL}" class="govuk-link">${messages("fileManagement.availableFiles.downloadText")}</a>"""
+            )
+
+            Seq(
+              TableRow(
+                content = Text(fileCreated)
+              ),
+              TableRow(
+                content = Text(fileExpirationDate)
+              ),
+              TableRow(
+                content = fileLink
+              )
+            )
+          }
+        }
+      }
+
+      availableFileRows.map {
+        new AvailableFilesTable(_)
       }
     }
-
-    new AvailableFilesTable(availableFileRows)
   }
+
+  object PendingFilesTable {
+    def apply(
+               pendingFiles: Option[Seq[DownloadDataSummary]]
+             )(implicit messages: Messages): Option[PendingFilesTable] = {
+
+      val pendingFilesRows = pendingFiles.map {
+        _.flatMap { pendingFile =>
+
+          pendingFile.fileInfo.map { fileInfo =>
+            val fileCreated = convertToDateString(fileInfo.fileCreated) // Double check that this is actually the date and time of the request
+            val fileLink = Tag(
+              content = Text(messages("fileManagement.pendingFiles.fileText"))
+            ).content
+
+            Seq(
+              TableRow(
+                content = Text(fileCreated)
+              ),
+              TableRow(
+                content = fileLink
+              )
+            )
+          }
+        }
+      }
+
+      pendingFilesRows.map {
+        new PendingFilesTable(_)
+      }
+    }
+  }
+
 }
 
-case class PendingFilesTable()(implicit messages: Messages) extends FileManagementTable {
-  // TODO: Add apply in companion object to create table rows from data
+
+case class PendingFilesTable(pendingFileRows: Seq[Seq[TableRow]])(implicit messages: Messages) extends FileManagementTable {
   override val caption: String          = messages("fileManagement.pendingFiles.table.caption")
   override val body: Option[String]     = Some(messages("fileManagement.pendingFiles.table.body"))
   override val headRows: Seq[HeadCell]  =
@@ -92,22 +139,5 @@ case class PendingFilesTable()(implicit messages: Messages) extends FileManageme
     ).map { content =>
       HeadCell(content = Text(content))
     }
-  override val rows: Seq[Seq[TableRow]] = Seq(
-    Seq(
-      TableRow(
-        content = Text("time answer")
-      ),
-      TableRow(
-        content = Text("file answer")
-      )
-    ),
-    Seq(
-      TableRow(
-        content = Text("time answer")
-      ),
-      TableRow(
-        content = Text("file answer")
-      )
-    )
-  )
+  override val rows: Seq[Seq[TableRow]] = pendingFileRows
 }

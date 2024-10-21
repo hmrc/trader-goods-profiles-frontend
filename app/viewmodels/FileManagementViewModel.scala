@@ -48,7 +48,6 @@ object FileManagementViewModel {
                eori: String,
                downloadDataConnector: DownloadDataConnector
              )(implicit messages: Messages, ec: ExecutionContext, hc: HeaderCarrier): Future[FileManagementViewModel] = {
-      // TODO - Implement method to sort data into correct case models for table rows
 
       for {
         downloadDataSummary <- downloadDataConnector.getDownloadDataSummary(eori)
@@ -78,8 +77,8 @@ object FileManagementViewModel {
             )
           )
       } yield {
-        val availableFilesTable = if(availableFiles.isDefined) Some(AvailableFilesTable()) else None
-        val pendingFilesTable = if(pendingFiles.isDefined) Some(PendingFilesTable()) else None
+        val availableFilesTable = if(availableFiles.isDefined) FileManagementTable.AvailableFilesTable(availableFiles) else None
+        val pendingFilesTable = if(pendingFiles.isDefined) FileManagementTable.PendingFilesTable(pendingFiles) else None
         new FileManagementViewModel(availableFilesTable, pendingFilesTable)
       }
     }
