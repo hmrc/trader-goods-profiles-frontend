@@ -583,7 +583,10 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
             val expectedAnswers =
               answers
-                .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("Y903", "Y256"))))
+                .set(
+                  ReassessmentPage(testRecordId, 0),
+                  ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("Y903", "Y256")))
+                )
                 .success
                 .value
 

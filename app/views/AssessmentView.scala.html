@@ -66,7 +66,7 @@
                         name = Some("value[]"),
                         content = Text(item._1 + " - " + item._2),
                         value = item._1,
-                        checked = false
+                        checked = form("value[]").value.contains(item._1)
                     )
                 } ++ Seq(
                     CheckboxItem(
@@ -74,7 +74,7 @@
                         name = Some("value[]"),
                         content = Text("none of the above"),
                         value = "false",
-                        checked = false,
+                        checked = form("value[]").value.contains("false"),
                         behaviour = Some(ExclusiveCheckbox)
                     )
                 )
