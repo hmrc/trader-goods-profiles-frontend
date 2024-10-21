@@ -42,14 +42,14 @@ class HomePageController @Inject() (
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getOrCreate).async { implicit request =>
     for {
       downloadDataSummary <- downloadDataConnector.getDownloadDataSummary(request.eori)
-      goodsRecords <- goodsRecordConnector.getRecords(request.eori, 1, 1)
+      goodsRecords        <- goodsRecordConnector.getRecords(request.eori, 1, 1)
       doesGoodsRecordExist = goodsRecords.exists(_.goodsItemRecords.nonEmpty)
     } yield {
       val downloadLinkMessagesKey = getDownloadLinkMessagesKey(downloadDataSummary, doesGoodsRecordExist)
       downloadDataSummary match {
         case Some(downloadDataSummary) if downloadDataSummary.status == FileReadyUnseen =>
           Ok(view(downloadReady = true, downloadLinkMessagesKey))
-        case _ =>
+        case _                                                                          =>
           Ok(view(downloadReady = false, downloadLinkMessagesKey))
       }
     }
@@ -62,7 +62,7 @@ class HomePageController @Inject() (
       opt.map(_.status) match {
         case Some(FileInProgress) | Some(FileReadyUnseen) | Some(FileReadySeen) =>
           "homepage.downloadLinkText.filesRequested"
-        case _ =>
+        case _                                                                  =>
           "homepage.downloadLinkText.noFilesRequested"
       }
     }
