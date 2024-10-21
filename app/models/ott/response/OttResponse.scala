@@ -50,6 +50,11 @@ final case class OttResponse(
     case e: OtherExemptionResponse => Some(e)
     case _                         => None
   }
+
+  lazy val measureTypes: Seq[MeasureTypeResponse] = includedElements.flatMap {
+    case mt: MeasureTypeResponse => Some(mt)
+    case _ => None
+  }
 }
 
 object OttResponse {

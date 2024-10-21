@@ -19,20 +19,17 @@ package models.ott.response
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
-final case class CategoryAssessmentResponse(
+final case class MeasureTypeResponse(
   id: String,
-  themeId: String,
-  exemptions: Seq[ExemptionResponse],
-  measureTypeId: String
+  description: String
 ) extends IncludedElement
 
-object CategoryAssessmentResponse {
+object MeasureTypeResponse {
 
-  implicit lazy val reads: Reads[CategoryAssessmentResponse] =
+  implicit lazy val reads: Reads[MeasureTypeResponse] =
     (
       (__ \ "id").read[String] and
-        (__ \ "relationships" \ "theme" \ "data" \ "id").read[String] and
-        (__ \ "relationships" \ "exemptions" \ "data").read[Seq[ExemptionResponse]] and
-          (__ \ "relationships" \ "measure_type" \ "data" \ "id").read[String]
-    )(CategoryAssessmentResponse.apply _)
+        (__ \ "attributes" \ "description").read[String]
+    )(MeasureTypeResponse.apply _)
+
 }

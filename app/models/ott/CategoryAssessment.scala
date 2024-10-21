@@ -24,7 +24,8 @@ import utils.Constants.{Category1AsInt, Category2AsInt, NiphlCode, NirmsCode}
 final case class CategoryAssessment(
   id: String,
   category: Int,
-  exemptions: Seq[Exemption]
+  exemptions: Seq[Exemption],
+  measureTypeDescription: String
 ) extends Ordered[CategoryAssessment] {
 
   import scala.math.Ordered.orderingToOrdered
@@ -49,7 +50,8 @@ object CategoryAssessment {
       assessment <- ottResponse.categoryAssessments.find(_.id == id)
       theme      <- ottResponse.themes.find(_.id == assessment.themeId)
       exemptions <- assessment.exemptions.map(x => buildExemption(x.id, x.exemptionType, ottResponse)).sequence
-    } yield CategoryAssessment(id, theme.category, exemptions)
+      measureTypeDescription <- ottResponse.measureTypes.find(_.id == assessment.measureTypeId).map(_.description)
+    } yield CategoryAssessment(id, theme.category, exemptions, measureTypeDescription)
 
   private def buildExemption(id: String, exemptionType: ExemptionType, ottResponse: OttResponse): Option[Exemption] =
     exemptionType match {

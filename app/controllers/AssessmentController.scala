@@ -80,7 +80,8 @@ class AssessmentController @Inject() (
                     number,
                     codesAndDescriptions,
                     categorisationInfo.commodityCode,
-                    submitAction
+                    submitAction,
+                    assessment.measureTypeDescription
                   )
                 )
               }
@@ -116,7 +117,8 @@ class AssessmentController @Inject() (
                     number,
                     codesAndDescriptions,
                     categorisationInfo.commodityCode,
-                    submitAction
+                    submitAction,
+                    assessment.measureTypeDescription
                   )
                 )
               }
@@ -151,7 +153,8 @@ class AssessmentController @Inject() (
                             number,
                             codesAndDescriptions,
                             categorisationInfo.commodityCode,
-                            submitAction
+                            submitAction,
+                            assessment.measureTypeDescription
                           )
                         )
                       ),
@@ -199,7 +202,8 @@ class AssessmentController @Inject() (
                             number,
                             codesAndDescriptions,
                             categorisationInfo.commodityCode,
-                            submitAction
+                            submitAction,
+                            assessment.measureTypeDescription
                           )
                         )
                       ),
