@@ -16,9 +16,14 @@
 
 package viewmodels
 
+import connectors.DownloadDataConnector
+import models.DownloadDataStatus.{FileInProgress, FileReadySeen, FileReadyUnseen}
 import models.filemanagement._
 import play.api.i18n.Messages
+import uk.gov.hmrc.http.HeaderCarrier
+
 import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 case class FileManagementViewModel(
   availableFilesTable: Option[AvailableFilesTable],
@@ -39,8 +44,43 @@ case class FileManagementViewModel(
 
 object FileManagementViewModel {
   class FileManagementViewModelProvider @Inject() {
-    def apply()(implicit messages: Messages): FileManagementViewModel =
+    def apply(
+               eori: String,
+               downloadDataConnector: DownloadDataConnector
+             )(implicit messages: Messages, ec: ExecutionContext, hc: HeaderCarrier): Future[FileManagementViewModel] = {
       // TODO - Implement method to sort data into correct case models for table rows
-      new FileManagementViewModel(Some(AvailableFilesTable()), Some(PendingFilesTable()))
+
+      for {
+        downloadDataSummary <- downloadDataConnector.getDownloadDataSummary(eori)
+        downloadData <- downloadDataConnector.getDownloadData(eori)
+        availableDataSummaries =
+          downloadDataSummary.map(downloadDataSummaries =>
+            downloadDataSummaries.filter(
+              downloadDataSummary => downloadDataSummary.status == FileReadySeen || downloadDataSummary.status == FileReadyUnseen
+            )
+          )
+
+        availableFiles = availableDataSummaries.map(
+          availableFilesSeq => availableFilesSeq.flatMap { availableFile =>
+            availableFile.fileInfo.flatMap { fileInfo =>
+              downloadData.map { downloadDataSeq =>
+                (availableFile, downloadDataSeq.find(_.filename == fileInfo.fileName))
+              }
+            }
+          }
+        )
+
+        pendingFiles =
+          downloadDataSummary.map(downloadDataSummaries =>
+            downloadDataSummaries.filter(
+              downloadDataSummary => downloadDataSummary.status == FileInProgress
+            )
+          )
+      } yield {
+        val availableFilesTable = if(availableFiles.isDefined) Some(AvailableFilesTable()) else None
+        val pendingFilesTable = if(pendingFiles.isDefined) Some(PendingFilesTable()) else None
+        new FileManagementViewModel(availableFilesTable, pendingFilesTable)
+      }
+    }
   }
 }

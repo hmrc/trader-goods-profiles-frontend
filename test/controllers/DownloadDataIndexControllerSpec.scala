@@ -49,7 +49,7 @@ class DownloadDataIndexControllerSpec extends SpecBase with BeforeAndAfterEach {
     "must redirect to correct page" - {
       "when download summary is RequestFile" in {
         val downloadDataSummary =
-          DownloadDataSummary("eori", RequestFile, Some(FileInfo("file", 1, Instant.now(), "30")))
+          Seq(DownloadDataSummary("eori", RequestFile, Some(FileInfo("file", 1, Instant.now(), "30"))))
         when(mockDownloadDataConnector.getDownloadDataSummary(any())(any()))
           .thenReturn(Future.successful(Some(downloadDataSummary)))
 
@@ -67,7 +67,7 @@ class DownloadDataIndexControllerSpec extends SpecBase with BeforeAndAfterEach {
 
       "when download summary is FileInProgress" in {
         val downloadDataSummary =
-          DownloadDataSummary("eori", FileInProgress, Some(FileInfo("file", 1, Instant.now(), "30")))
+          Seq(DownloadDataSummary("eori", FileInProgress, Some(FileInfo("file", 1, Instant.now(), "30"))))
         when(mockDownloadDataConnector.getDownloadDataSummary(any())(any()))
           .thenReturn(Future.successful(Some(downloadDataSummary)))
 
@@ -85,7 +85,7 @@ class DownloadDataIndexControllerSpec extends SpecBase with BeforeAndAfterEach {
 
       "when download summary is FileReadyUnseen" in {
         val downloadDataSummary =
-          DownloadDataSummary("eori", FileReadyUnseen, Some(FileInfo("file", 1, Instant.now(), "30")))
+          Seq(DownloadDataSummary("eori", FileReadyUnseen, Some(FileInfo("file", 1, Instant.now(), "30"))))
         when(mockDownloadDataConnector.getDownloadDataSummary(any())(any()))
           .thenReturn(Future.successful(Some(downloadDataSummary)))
 
@@ -103,7 +103,7 @@ class DownloadDataIndexControllerSpec extends SpecBase with BeforeAndAfterEach {
 
       "when download summary is FileReadySeen" in {
         val downloadDataSummary =
-          DownloadDataSummary("eori", FileReadySeen, Some(FileInfo("file", 1, Instant.now(), "30")))
+          Seq(DownloadDataSummary("eori", FileReadySeen, Some(FileInfo("file", 1, Instant.now(), "30"))))
         when(mockDownloadDataConnector.getDownloadDataSummary(any())(any()))
           .thenReturn(Future.successful(Some(downloadDataSummary)))
 

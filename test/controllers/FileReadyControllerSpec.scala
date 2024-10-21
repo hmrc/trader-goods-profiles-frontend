@@ -76,9 +76,11 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
         val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
 
         when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
-          Some(downloadDataSummary)
+          Some(Seq(downloadDataSummary))
         )
-        when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(Some(downloadData))
+        when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(
+          Some(Seq(downloadData))
+        )
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
@@ -120,7 +122,7 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
           val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
 
           when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
-            Some(downloadDataSummary)
+            Some(Seq(downloadDataSummary))
           )
           when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(None)
 
@@ -153,7 +155,7 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
           val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
 
           when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
-            Some(downloadDataSummary)
+            Some(Seq(downloadDataSummary))
           )
           when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(None)
 
@@ -186,7 +188,7 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
           val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
 
           when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
-            Some(downloadDataSummary)
+            Some(Seq(downloadDataSummary))
           )
           when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(None)
 

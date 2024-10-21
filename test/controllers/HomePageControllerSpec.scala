@@ -59,10 +59,12 @@ class HomePageControllerSpec extends SpecBase {
 
       "must return OK and the correct view for a GET with banner" in {
 
-        val downloadDataSummary = DownloadDataSummary(
-          testEori,
-          FileReadyUnseen,
-          Some(FileInfo(fileName, fileSize, fileCreated, retentionDays))
+        val downloadDataSummary = Seq(
+          DownloadDataSummary(
+            testEori,
+            FileReadyUnseen,
+            Some(FileInfo(fileName, fileSize, fileCreated, retentionDays))
+          )
         )
 
         val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
@@ -105,10 +107,12 @@ class HomePageControllerSpec extends SpecBase {
         val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
         when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
-        val downloadDataSummary = DownloadDataSummary(
-          testEori,
-          FileReadySeen,
-          Some(FileInfo(fileName, fileSize, fileCreated, retentionDays))
+        val downloadDataSummary = Seq(
+          DownloadDataSummary(
+            testEori,
+            FileReadySeen,
+            Some(FileInfo(fileName, fileSize, fileCreated, retentionDays))
+          )
         )
 
         val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
@@ -145,10 +149,12 @@ class HomePageControllerSpec extends SpecBase {
 
       "must return OK and the correct view for a GET with correct messageKey" - {
         "when downloadDataSummary is RequestFile" in {
-          val downloadDataSummary = DownloadDataSummary(
-            testEori,
-            RequestFile,
-            None
+          val downloadDataSummary = Seq(
+            DownloadDataSummary(
+              testEori,
+              RequestFile,
+              None
+            )
           )
 
           val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
@@ -187,10 +193,12 @@ class HomePageControllerSpec extends SpecBase {
         }
 
         "when downloadDataSummary is FileInProgress" in {
-          val downloadDataSummary = DownloadDataSummary(
-            testEori,
-            FileInProgress,
-            None
+          val downloadDataSummary = Seq(
+            DownloadDataSummary(
+              testEori,
+              FileInProgress,
+              None
+            )
           )
 
           val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
@@ -229,10 +237,12 @@ class HomePageControllerSpec extends SpecBase {
         }
 
         "when downloadDataSummary is FileReadyUnseen" in {
-          val downloadDataSummary = DownloadDataSummary(
-            testEori,
-            FileReadyUnseen,
-            None
+          val downloadDataSummary = Seq(
+            DownloadDataSummary(
+              testEori,
+              FileReadyUnseen,
+              None
+            )
           )
 
           val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
@@ -271,10 +281,12 @@ class HomePageControllerSpec extends SpecBase {
         }
 
         "when downloadDataSummary is FileReadySeen" in {
-          val downloadDataSummary = DownloadDataSummary(
-            testEori,
-            FileReadySeen,
-            None
+          val downloadDataSummary = Seq(
+            DownloadDataSummary(
+              testEori,
+              FileReadySeen,
+              None
+            )
           )
 
           val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
@@ -317,10 +329,12 @@ class HomePageControllerSpec extends SpecBase {
     "when there are not any goods records" - {
       "must return OK and the correct view for a GET with noGoodsRecords messageKey" in {
 
-        val downloadDataSummary = DownloadDataSummary(
-          testEori,
-          RequestFile,
-          Some(FileInfo(fileName, fileSize, fileCreated, retentionDays))
+        val downloadDataSummary = Seq(
+          DownloadDataSummary(
+            testEori,
+            RequestFile,
+            Some(FileInfo(fileName, fileSize, fileCreated, retentionDays))
+          )
         )
 
         val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
@@ -357,7 +371,6 @@ class HomePageControllerSpec extends SpecBase {
           )(request, messages(application)).toString
         }
       }
-
     }
   }
 }

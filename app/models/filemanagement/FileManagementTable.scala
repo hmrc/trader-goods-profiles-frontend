@@ -16,6 +16,7 @@
 
 package models.filemanagement
 
+import models.{DownloadData, DownloadDataSummary}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.{HeadCell, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.table.TableRow
@@ -63,6 +64,17 @@ case class AvailableFilesTable()(implicit messages: Messages) extends FileManage
       )
     )
   )
+}
+
+object AvailableFilesTable {
+  def apply(
+             availableFiles: Option[Seq[(DownloadDataSummary, Option[DownloadData])]]
+           )(implicit messages: Messages): AvailableFilesTable = {
+
+    val x = availableFiles.get.head._1.fileInfo.get.fileCreated
+    val y = availableFiles.get.head._1.fileInfo.get.retentionDays
+
+  }
 }
 
 case class PendingFilesTable()(implicit messages: Messages) extends FileManagementTable {

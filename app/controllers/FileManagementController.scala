@@ -39,10 +39,10 @@ class FileManagementController @Inject() (
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
-  def onPageLoad(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
+  def onPageLoad(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData).async {
     implicit request =>
-//    downloadDataConnector.getDownloadDataSummary(request.eori).map { downloadData => TODO: Pull out data as needed when TGP-2730 is complete
-//      viewModel(downloadDataConnector).map { viewModel =>
-      Ok(view(viewModelProvider()))
+      viewModelProvider(request.eori, downloadDataConnector).map { viewModel =>
+        Ok(view(viewModel))
+      }
   }
 }

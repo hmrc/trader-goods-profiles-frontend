@@ -46,7 +46,7 @@ class HomePageController @Inject()(
       doesGoodsRecordExist = goodsRecords.exists(_.goodsItemRecords.nonEmpty)
     } yield {
       val downloadLinkMessagesKey = getDownloadLinkMessagesKey(downloadDataSummary, doesGoodsRecordExist)
-      Ok(view(downloadReady = downloadReady(downloadDataSummary), downloadLinkMessagesKey))
+      Ok(view(downloadReady(downloadDataSummary), downloadLinkMessagesKey))
     }
   }
 
