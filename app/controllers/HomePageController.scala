@@ -42,32 +42,28 @@ class HomePageController @Inject() (
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getOrCreate).async { implicit request =>
     for {
       downloadDataSummary <- downloadDataConnector.getDownloadDataSummary(request.eori)
-      goodsRecords        <- goodsRecordConnector.getRecords(request.eori, 1, 1)
+      goodsRecords <- goodsRecordConnector.getRecords(request.eori, 1, 1)
       doesGoodsRecordExist = goodsRecords.exists(_.goodsItemRecords.nonEmpty)
     } yield {
       val downloadLinkMessagesKey = getDownloadLinkMessagesKey(downloadDataSummary, doesGoodsRecordExist)
       downloadDataSummary match {
         case Some(downloadDataSummary) if downloadDataSummary.status == FileReadyUnseen =>
           Ok(view(downloadReady = true, downloadLinkMessagesKey))
-        case _                                                                          =>
+        case _ =>
           Ok(view(downloadReady = false, downloadLinkMessagesKey))
       }
     }
   }
 
   private def getDownloadLinkMessagesKey(opt: Option[DownloadDataSummary], doesGoodsRecordExist: Boolean): String =
-    if (doesGoodsRecordExist) {
-      opt.map(_.status) match {
-        case Some(FileInProgress)  =>
-          "homepage.downloadLinkText.fileInProgress"
-        case Some(FileReadyUnseen) =>
-          "homepage.downloadLinkText.fileReady"
-        case Some(FileReadySeen)   =>
-          "homepage.downloadLinkText.fileReady"
-        case _                     =>
-          "homepage.downloadLinkText.requestFile"
-      }
-    } else {
+    if (!doesGoodsRecordExist) {
       "homepage.downloadLinkText.noGoodsRecords"
+    } else {
+      opt.map(_.status) match {
+        case Some(FileInProgress) | Some(FileReadyUnseen) | Some(FileReadySeen) =>
+          "homepage.downloadLinkText.filesRequested"
+        case _ =>
+          "homepage.downloadLinkText.noFilesRequested"
+      }
     }
 }
