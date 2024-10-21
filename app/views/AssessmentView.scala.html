@@ -38,22 +38,19 @@
 
         <h1 class="govuk-heading-l">@messages("assessment.heading", number)</h1>
         <p class="govuk-body">@messages("assessment.guidance", commodityCode)</p>
-
-        <div class="govuk-inset-text">
-            @messages("assessment.insetText")
-        </div>
+        <p class="govuk-body">Measure from OTT</p>
 
         <p class="govuk-body">
             <a target="_blank" href="https://www.trade-tariff.service.gov.uk/xi/find_commodity" class="govuk-link">@messages("assessment.linkText")</a>
         </p>
 
         <h2 class='govuk-heading-m'>
-            @if(codesAndDescriptions.size == 1) {
-                @messages("assessment.question.onlyOne")
-            } else {
-                @messages("assessment.question")
-            }
+            @messages("assessment.question", commodityCode)
         </h2>
+
+        <div id="value-hint" class="govuk-hint">
+            @messages("assessment.hint", commodityCode)
+        </div>
 
         @govukCheckboxes(
             CheckboxesViewModel(
@@ -72,7 +69,7 @@
                     CheckboxItem(
                         id = Some("none_of_above"),
                         name = Some("value[]"),
-                        content = Text("none of the above"),
+                        content = Text(messages("assessment.exemption.none")),
                         value = "false",
                         checked = form("value[]").value.contains("false"),
                         behaviour = Some(ExclusiveCheckbox)

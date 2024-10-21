@@ -39,14 +39,11 @@ class AssessmentFormProvider @Inject() extends Mappings {
           .transform[AssessmentAnswer](
             values => AssessmentAnswer.fromStringOrSeq(Right(values)),
             {
-              case AssessmentAnswer.NoExemption => Seq("false")
+              case AssessmentAnswer.NoExemption     => Seq("false")
               case AssessmentAnswer.Exemption(vals) => vals
-              case _ => Seq.empty
+              case _                                => Seq.empty
             }
           )
     )
   }
 }
-
-
-

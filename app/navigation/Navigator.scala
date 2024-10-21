@@ -364,7 +364,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
               _.isAnswerCopiedFromPreviousAssessment
             )) =>
           routes.AssessmentController.onPageLoadReassessment(NormalMode, recordId, nextNumber)
-        case AssessmentAnswer.Exemption(_) if nextIndex < assessmentCount                                           =>
+        case AssessmentAnswer.Exemption(_) if nextIndex < assessmentCount                                        =>
           navigateFromReassessment(ReassessmentPage(recordId, nextIndex))(answers)
         case AssessmentAnswer.NoExemption if shouldGoToSupplementaryUnit(categorisationInfo, assessmentQuestion) =>
           routes.HasSupplementaryUnitController.onPageLoad(NormalMode, recordId)
@@ -386,7 +386,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
         assessmentQuestion <- categorisationInfo.getAssessmentFromIndex(assessmentPage.index)
         assessmentAnswer   <- answers.get(assessmentPage)
       } yield assessmentAnswer match {
-        case AssessmentAnswer.Exemption(_) if nextIndex < assessmentCount                                           =>
+        case AssessmentAnswer.Exemption(_) if nextIndex < assessmentCount                                        =>
           routes.AssessmentController.onPageLoad(NormalMode, recordId, nextNumber)
         case AssessmentAnswer.Exemption(_)
             if shouldGoToLongerCommodityCodeWhenCategory1(categorisationInfo, assessmentQuestion) =>
@@ -585,7 +585,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
       case AssessmentAnswer.NoExemption
           if shouldGoToSupplementaryUnitCheck(answers, categorisationInfo, assessmentQuestion, recordId) =>
         routes.HasSupplementaryUnitController.onPageLoad(CheckMode, recordId)
-      case _                                                         =>
+      case _                                                            =>
         routes.CyaCategorisationController.onPageLoad(recordId)
     }
   } getOrElse routes.JourneyRecoveryController.onPageLoad()
@@ -614,7 +614,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
         case AssessmentAnswer.NoExemption
             if shouldGoToSupplementaryUnitCheck(answers, categorisationInfo, assessmentQuestion, recordId) =>
           routes.HasSupplementaryUnitController.onPageLoad(CheckMode, recordId)
-        case _                                                                                      =>
+        case _                                                                                         =>
           routes.CyaCategorisationController.onPageLoad(recordId)
       }
     }.getOrElse(routes.JourneyRecoveryController.onPageLoad())

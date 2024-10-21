@@ -27,9 +27,9 @@ case class AnsweredQuestions(
 ) {
 
   def isAnswered: Boolean = answer match {
-    case Some(AssessmentAnswer.Exemption(_))   => true
-    case Some(AssessmentAnswer.NoExemption) => true
-    case _                                  => false
+    case Some(AssessmentAnswer.Exemption(_)) => true
+    case Some(AssessmentAnswer.NoExemption)  => true
+    case _                                   => false
   }
 
 }

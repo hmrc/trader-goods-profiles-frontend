@@ -64,7 +64,7 @@ class AssessmentController @Inject() (
             .flatMap { categorisationInfo =>
               categorisationInfo.getAssessmentFromIndex(index).map { assessment =>
                 val codesAndDescriptions = assessment.getCodesZippedWithDescriptions
-                val form      = formProvider(codesAndDescriptions.size)
+                val form                 = formProvider(codesAndDescriptions.size)
 
                 val preparedForm = request.userAnswers.get(AssessmentPage(recordId, index)) match {
                   case Some(value) => form.fill(value)
@@ -99,7 +99,7 @@ class AssessmentController @Inject() (
             .flatMap { categorisationInfo =>
               categorisationInfo.getAssessmentFromIndex(index).map { assessment =>
                 val codesAndDescriptions = assessment.getCodesZippedWithDescriptions
-                val form      = formProvider(codesAndDescriptions.size)
+                val form                 = formProvider(codesAndDescriptions.size)
 
                 val preparedForm = request.userAnswers.get(ReassessmentPage(recordId, index)) match {
                   case Some(value) => form.fill(value.answer)
@@ -134,9 +134,9 @@ class AssessmentController @Inject() (
             .get(CategorisationDetailsQuery(recordId))
             .flatMap { categorisationInfo =>
               categorisationInfo.getAssessmentFromIndex(index).map { assessment =>
-                val codesAndDescriptions    = assessment.getCodesZippedWithDescriptions
-                val form         = formProvider(codesAndDescriptions.size)
-                val submitAction = routes.AssessmentController.onSubmit(mode, recordId, number)
+                val codesAndDescriptions = assessment.getCodesZippedWithDescriptions
+                val form                 = formProvider(codesAndDescriptions.size)
+                val submitAction         = routes.AssessmentController.onSubmit(mode, recordId, number)
 
                 form
                   .bindFromRequest()
@@ -182,9 +182,9 @@ class AssessmentController @Inject() (
             .get(LongerCategorisationDetailsQuery(recordId))
             .flatMap { categorisationInfo =>
               categorisationInfo.getAssessmentFromIndex(index).map { assessment =>
-                val codesAndDescriptions    = assessment.getCodesZippedWithDescriptions
-                val form         = formProvider(codesAndDescriptions.size)
-                val submitAction = routes.AssessmentController.onSubmitReassessment(mode, recordId, number)
+                val codesAndDescriptions = assessment.getCodesZippedWithDescriptions
+                val form                 = formProvider(codesAndDescriptions.size)
+                val submitAction         = routes.AssessmentController.onSubmitReassessment(mode, recordId, number)
 
                 form
                   .bindFromRequest()

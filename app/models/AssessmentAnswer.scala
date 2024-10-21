@@ -31,29 +31,29 @@ object AssessmentAnswer {
   implicit val reads: Reads[AssessmentAnswer] = Reads {
     case JsString("false")       => JsSuccess(NoExemption)
     case JsString("notAnswered") => JsSuccess(NotAnsweredYet)
-    case JsArray(values) => JsSuccess(Exemption(values.map(_.as[String]).toSeq))
-    case _ => JsError("unable to read assessment answer")
+    case JsArray(values)         => JsSuccess(Exemption(values.map(_.as[String]).toSeq))
+    case _                       => JsError("unable to read assessment answer")
   }
 
   implicit val writes: Writes[AssessmentAnswer] = Writes {
-    case Exemption(values)  => JsArray(values.map(JsString))
-    case NotAnsweredYet     => JsString("notAnswered")
-    case NoExemption        => JsString("false")
+    case Exemption(values) => JsArray(values.map(JsString))
+    case NotAnsweredYet    => JsString("notAnswered")
+    case NoExemption       => JsString("false")
   }
 
-  def fromStringOrSeq(input: Either[String, Seq[String]]): AssessmentAnswer = {
+  def fromStringOrSeq(input: Either[String, Seq[String]]): AssessmentAnswer =
     input match {
-      case Left(string) => string match {
-        case NotAnsweredYet.toString => NotAnsweredYet
-        case _ => NoExemption
-      }
-      case Right(seq) =>
+      case Left(string) =>
+        string match {
+          case NotAnsweredYet.toString => NotAnsweredYet
+          case _                       => NoExemption
+        }
+      case Right(seq)   =>
         if (seq.contains(NoExemption.toString)) {
           NoExemption
         } else {
           Exemption(seq)
         }
     }
-  }
 
 }
