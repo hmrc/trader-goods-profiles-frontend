@@ -51,7 +51,6 @@ class HasCorrectGoodsController @Inject() (
 
   def onPageLoadCreate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-
       val preparedForm = prepareForm(HasCorrectGoodsPage, form)
       val submitAction = routes.HasCorrectGoodsController.onSubmitCreate(mode)
       request.userAnswers.get(CommodityQuery) match {
@@ -72,7 +71,6 @@ class HasCorrectGoodsController @Inject() (
 
   def onPageLoadLongerCommodityCode(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData) { implicit request =>
-
       val preparedForm = prepareForm(HasCorrectGoodsLongerCommodityCodePage(recordId), form)
       val submitAction = routes.HasCorrectGoodsController.onSubmitLongerCommodityCode(mode, recordId)
       request.userAnswers.get(LongerCommodityQuery(recordId)) match {
@@ -151,8 +149,10 @@ class HasCorrectGoodsController @Inject() (
         )
     }
 
-  private def prepareForm[T](page: QuestionPage[T], form: Form[T])(implicit request: DataRequest[AnyContent], reads: Reads[T]): Form[T] = {
+  private def prepareForm[T](page: QuestionPage[T], form: Form[T])(implicit
+    request: DataRequest[AnyContent],
+    reads: Reads[T]
+  ): Form[T] =
     request.userAnswers.get(page).map(form.fill).getOrElse(form)
-  }
 
 }

@@ -79,7 +79,6 @@ class GoodsDescriptionController @Inject() (
 
   def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
-
       val preparedForm = prepareForm(GoodsDescriptionUpdatePage(recordId), form)
 
       request.userAnswers.get(HasGoodsDescriptionChangePage(recordId)) match {
@@ -119,7 +118,9 @@ class GoodsDescriptionController @Inject() (
         )
     }
 
-  private def prepareForm[T](page: QuestionPage[T], form: Form[T])(implicit request: DataRequest[AnyContent], reads: Reads[T]): Form[T] = {
+  private def prepareForm[T](page: QuestionPage[T], form: Form[T])(implicit
+    request: DataRequest[AnyContent],
+    reads: Reads[T]
+  ): Form[T] =
     request.userAnswers.get(page).map(form.fill).getOrElse(form)
-  }
 }

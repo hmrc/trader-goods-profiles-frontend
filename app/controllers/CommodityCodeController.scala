@@ -58,14 +58,12 @@ class CommodityCodeController @Inject() (
 
   def onPageLoadCreate(mode: Mode): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
-
       val preparedForm = prepareForm(CommodityCodePage, form)
 
       val onSubmitAction: Call = routes.CommodityCodeController.onSubmitCreate(mode)
 
       Ok(view(preparedForm, onSubmitAction))
     }
-
 
   def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData) { implicit request =>
@@ -98,7 +96,7 @@ class CommodityCodeController @Inject() (
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, onSubmitAction))),
           value =>
             (for {
-              commodity <- fetchCommodity(value, countryOfOrigin)
+              commodity               <- fetchCommodity(value, countryOfOrigin)
               updatedAnswers          <- Future.fromTry(request.userAnswers.set(CommodityCodePage, value))
               updatedAnswersWithQuery <-
                 Future.fromTry(updatedAnswers.set(CommodityQuery, commodity.copy(commodityCode = value)))
@@ -123,7 +121,7 @@ class CommodityCodeController @Inject() (
               val oldValueOpt    = request.userAnswers.get(CommodityCodeUpdatePage(recordId))
               val isValueChanged = oldValueOpt.exists(_ != value)
               for {
-                commodity <- fetchCommodity(value, countryOfOrigin)
+                commodity               <- fetchCommodity(value, countryOfOrigin)
                 updatedAnswers          <- Future.fromTry(request.userAnswers.set(CommodityCodeUpdatePage(recordId), value))
                 updatedAnswersWithQuery <-
                   Future.fromTry(
@@ -141,14 +139,16 @@ class CommodityCodeController @Inject() (
         )
     }
 
-  private def prepareForm[T](page: QuestionPage[T], form: Form[T])(implicit request: DataRequest[AnyContent], reads: Reads[T]): Form[T] = {
+  private def prepareForm[T](page: QuestionPage[T], form: Form[T])(implicit
+    request: DataRequest[AnyContent],
+    reads: Reads[T]
+  ): Form[T] =
     request.userAnswers.get(page).map(form.fill).getOrElse(form)
-  }
 
   private def fetchCommodity(
-                              value: String,
-                              countryOfOrigin: String
-                            )(implicit request: DataRequest[AnyContent]): Future[Commodity] = {
+    value: String,
+    countryOfOrigin: String
+  )(implicit request: DataRequest[AnyContent]): Future[Commodity] =
     ottConnector.getCommodityCode(
       value,
       request.eori,
@@ -157,8 +157,9 @@ class CommodityCodeController @Inject() (
       countryOfOrigin,
       None
     )
-  }
-  private def handleFormError[T](form: Form[T], errorKey: String, onSubmitAction: Call)(implicit request: Request[AnyContent]): Result = {
+  private def handleFormError[T](form: Form[T], errorKey: String, onSubmitAction: Call)(implicit
+    request: Request[AnyContent]
+  ): Result = {
     val formWithApiErrors = form.copy(errors = Seq(FormError("value", getMessage(errorKey))))
     BadRequest(view(formWithApiErrors, onSubmitAction))
   }

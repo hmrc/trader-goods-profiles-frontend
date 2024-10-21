@@ -179,7 +179,7 @@ class CountryOfOriginController @Inject() (
   private def displayViewUpdate(countries: Seq[Country], action: Call, userAnswers: UserAnswers, recordId: String)(
     implicit request: Request[_]
   ): Result = {
-    val form = formProvider(countries)
+    val form         = formProvider(countries)
     val preparedForm = prepareForm(CountryOfOriginUpdatePage(recordId), form, userAnswers)
 
     Ok(view(preparedForm, action, countries))
