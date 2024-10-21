@@ -58,14 +58,10 @@ class HomePageController @Inject() (
   private def getDownloadLinkMessagesKey(opt: Option[DownloadDataSummary], doesGoodsRecordExist: Boolean): String =
     if (doesGoodsRecordExist) {
       opt.map(_.status) match {
-        case Some(FileInProgress)  =>
-          "homepage.downloadLinkText.fileInProgress"
-        case Some(FileReadyUnseen) =>
-          "homepage.downloadLinkText.fileReady"
-        case Some(FileReadySeen)   =>
-          "homepage.downloadLinkText.fileReady"
-        case _                     =>
-          "homepage.downloadLinkText.requestFile"
+        case Some(FileInProgress) | Some(FileReadyUnseen) | Some(FileReadySeen) =>
+          "homepage.downloadLinkText.filesRequested"
+        case _                                                                  =>
+          "homepage.downloadLinkText.noFilesRequested"
       }
     } else {
       "homepage.downloadLinkText.noGoodsRecords"
