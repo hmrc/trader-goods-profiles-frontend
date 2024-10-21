@@ -16,9 +16,10 @@
 
 package controllers
 
-import connectors.DownloadDataConnector
+import connectors.{DownloadDataConnector, GoodsRecordConnector}
 import controllers.actions._
-import models.DownloadDataStatus.FileReadyUnseen
+import models.DownloadDataStatus.{FileInProgress, FileReadySeen, FileReadyUnseen}
+import models.DownloadDataSummary
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import views.html.HomePageView
@@ -32,15 +33,37 @@ class HomePageController @Inject() (
   getOrCreate: DataRetrievalOrCreateAction,
   profileAuth: ProfileAuthenticateAction,
   downloadDataConnector: DownloadDataConnector,
+  goodsRecordConnector: GoodsRecordConnector,
   val controllerComponents: MessagesControllerComponents,
   view: HomePageView
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getOrCreate).async { implicit request =>
-    downloadDataConnector.getDownloadDataSummary(request.eori).map {
-      case Some(downloadDataSummary) if downloadDataSummary.status == FileReadyUnseen => Ok(view(downloadReady = true))
-      case _                                                                          => Ok(view(downloadReady = false))
+    for {
+      downloadDataSummary <- downloadDataConnector.getDownloadDataSummary(request.eori)
+      goodsRecords        <- goodsRecordConnector.getRecords(request.eori, 1, 1)
+      doesGoodsRecordExist = goodsRecords.exists(_.goodsItemRecords.nonEmpty)
+    } yield {
+      val downloadLinkMessagesKey = getDownloadLinkMessagesKey(downloadDataSummary, doesGoodsRecordExist)
+      downloadDataSummary match {
+        case Some(downloadDataSummary) if downloadDataSummary.status == FileReadyUnseen =>
+          Ok(view(downloadReady = true, downloadLinkMessagesKey))
+        case _                                                                          =>
+          Ok(view(downloadReady = false, downloadLinkMessagesKey))
+      }
     }
   }
+
+  private def getDownloadLinkMessagesKey(opt: Option[DownloadDataSummary], doesGoodsRecordExist: Boolean): String =
+    if (doesGoodsRecordExist) {
+      opt.map(_.status) match {
+        case Some(FileInProgress) | Some(FileReadyUnseen) | Some(FileReadySeen) =>
+          "homepage.downloadLinkText.filesRequested"
+        case _                                                                  =>
+          "homepage.downloadLinkText.noFilesRequested"
+      }
+    } else {
+      "homepage.downloadLinkText.noGoodsRecords"
+    }
 }
