@@ -53,7 +53,7 @@ final case class OttResponse(
 
   lazy val measureTypes: Seq[MeasureTypeResponse] = includedElements.flatMap {
     case mt: MeasureTypeResponse => Some(mt)
-    case _ => None
+    case _                       => None
   }
 }
 

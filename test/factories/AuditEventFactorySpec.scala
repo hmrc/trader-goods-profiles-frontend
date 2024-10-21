@@ -818,7 +818,7 @@ class AuditEventFactorySpec extends SpecBase {
               CategoryAssessmentRelationship("assessmentId2")
             ),
             includedElements = Seq(
-              CategoryAssessmentResponse("assessmentId1", "themeId1", Nil),
+              CategoryAssessmentResponse("assessmentId1", "themeId1", Nil, "measureTpyeId1"),
               ThemeResponse("themeId1", 1),
               CategoryAssessmentResponse(
                 "assessmentId2",
@@ -826,7 +826,8 @@ class AuditEventFactorySpec extends SpecBase {
                 Seq(
                   ExemptionResponse("exemptionId1", ExemptionType.Certificate),
                   ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode)
-                )
+                ),
+                "measureTypeId1"
               ),
               ThemeResponse("themeId2", 2),
               CertificateResponse("exemptionId1", "code1", "description1"),

@@ -37,10 +37,14 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
   }
 
   ".build" - {
-    val assessment1 = CategoryAssessment("assessmentId1", 1, Seq(Certificate("1", "code", "description")))
-    val assessment2 = CategoryAssessment("assessmentId2", 1, Seq(Certificate("1", "code", "description")))
-    val assessment3 = CategoryAssessment("assessmentId3", 2, Seq(Certificate("1", "code", "description")))
-    val assessment4 = CategoryAssessment("assessmentId4", 2, Seq(Certificate("1", "code", "description")))
+    val assessment1 =
+      CategoryAssessment("assessmentId1", 1, Seq(Certificate("1", "code", "description")), "measureTypeId1")
+    val assessment2 =
+      CategoryAssessment("assessmentId2", 1, Seq(Certificate("1", "code", "description")), "measureTypeId2")
+    val assessment3 =
+      CategoryAssessment("assessmentId3", 2, Seq(Certificate("1", "code", "description")), "measureTypeId3")
+    val assessment4 =
+      CategoryAssessment("assessmentId4", 2, Seq(Certificate("1", "code", "description")), "measureTypeId4")
 
     val assessmentList                = Seq(assessment1, assessment2, assessment3, assessment4)
     val categorisationInfo            =

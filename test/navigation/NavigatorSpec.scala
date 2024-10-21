@@ -984,7 +984,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 "1234567890",
                 "BV",
                 Some(validityEndDate),
-                Seq(CategoryAssessment("assessmentId", 1, Seq.empty)),
+                Seq(CategoryAssessment("assessmentId", 1, Seq.empty, "measure description")),
                 Seq.empty,
                 None,
                 1
@@ -2417,7 +2417,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 "1234567890",
                 "BV",
                 Some(validityEndDate),
-                Seq(CategoryAssessment("assessmentId", 1, Seq.empty)),
+                Seq(CategoryAssessment("assessmentId", 1, Seq.empty, "measure description")),
                 Seq.empty,
                 None,
                 1
@@ -4590,7 +4590,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 "1234567890",
                 "BV",
                 Some(validityEndDate),
-                Seq(CategoryAssessment("assessmentId", 1, Seq.empty)),
+                Seq(CategoryAssessment("assessmentId", 1, Seq.empty, "measure description")),
                 Seq.empty,
                 None,
                 1

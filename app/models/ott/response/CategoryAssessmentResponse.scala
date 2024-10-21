@@ -33,6 +33,6 @@ object CategoryAssessmentResponse {
       (__ \ "id").read[String] and
         (__ \ "relationships" \ "theme" \ "data" \ "id").read[String] and
         (__ \ "relationships" \ "exemptions" \ "data").read[Seq[ExemptionResponse]] and
-          (__ \ "relationships" \ "measure_type" \ "data" \ "id").read[String]
+        (__ \ "relationships" \ "measure_type" \ "data" \ "id").read[String]
     )(CategoryAssessmentResponse.apply _)
 }

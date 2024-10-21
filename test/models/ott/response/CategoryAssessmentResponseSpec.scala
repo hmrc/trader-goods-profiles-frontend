@@ -43,7 +43,7 @@ class CategoryAssessmentResponseSpec extends AnyFreeSpec with Matchers {
       )
 
       val result = json.validate[CategoryAssessmentResponse]
-      result mustEqual JsSuccess(CategoryAssessmentResponse("abc", "1", Nil))
+      result mustEqual JsSuccess(CategoryAssessmentResponse("abc", "1", Nil, "measureTypeId1"))
     }
 
     "must deserialise valid JSON with exemptions" in {
@@ -86,7 +86,8 @@ class CategoryAssessmentResponseSpec extends AnyFreeSpec with Matchers {
             ExemptionResponse("cert", ExemptionType.Certificate),
             ExemptionResponse("code", ExemptionType.AdditionalCode),
             ExemptionResponse("exempt", ExemptionType.OtherExemption)
-          )
+          ),
+          "measureTypeId1"
         )
       )
     }

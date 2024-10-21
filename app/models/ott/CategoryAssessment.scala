@@ -47,9 +47,9 @@ object CategoryAssessment {
 
   def build(id: String, ottResponse: OttResponse): Option[CategoryAssessment] =
     for {
-      assessment <- ottResponse.categoryAssessments.find(_.id == id)
-      theme      <- ottResponse.themes.find(_.id == assessment.themeId)
-      exemptions <- assessment.exemptions.map(x => buildExemption(x.id, x.exemptionType, ottResponse)).sequence
+      assessment             <- ottResponse.categoryAssessments.find(_.id == id)
+      theme                  <- ottResponse.themes.find(_.id == assessment.themeId)
+      exemptions             <- assessment.exemptions.map(x => buildExemption(x.id, x.exemptionType, ottResponse)).sequence
       measureTypeDescription <- ottResponse.measureTypes.find(_.id == assessment.measureTypeId).map(_.description)
     } yield CategoryAssessment(id, theme.category, exemptions, measureTypeDescription)
 
