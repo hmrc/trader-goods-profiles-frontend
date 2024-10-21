@@ -20,19 +20,20 @@ import cats.data
 import cats.data.EitherNec
 import connectors.TraderProfileConnector
 import controllers.actions._
+import models.requests.DataRequest
 import models.{NormalMode, TraderProfile, ValidationError}
 import navigation.Navigator
 import org.apache.pekko.Done
 import pages._
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.AuditService
 import utils.SessionData._
 import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
 import views.html.CyaMaintainProfileView
 import uk.gov.hmrc.http._
-import utils.Constants.{hasNiphlKey, hasNirmsKey, niphlNumberKey, nirmsNumberKey, ukimsNumberKey}
+import utils.Constants.{hasNiphlKey, hasNirmsKey, newUkimsNumberKey, niphlNumberKey, nirmsNumberKey, ukimsNumberKey}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -84,6 +85,39 @@ class CyaMaintainProfileController @Inject() (
   }
 
   def onSubmitUkimsNumber(): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+    implicit request =>
+      (for {
+        ukimsNumber      <- handleValidateError(TraderProfile.validateUkimsNumber(request.userAnswers))
+        oldTraderProfile <- traderProfileConnector.getTraderProfile(request.eori)
+        newTraderProfile <- Future.successful(oldTraderProfile.copy(ukimsNumber = ukimsNumber))
+        _                 = auditService.auditMaintainProfile(oldTraderProfile, newTraderProfile, request.affinityGroup)
+        _                <- submitTraderProfileIfValueChanged(newTraderProfile, oldTraderProfile, request.eori)
+      } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
+        .addingToSession(
+          dataUpdated -> (oldTraderProfile != newTraderProfile).toString
+        )
+        .addingToSession(pageUpdated -> ukimsNumberUpdatePage)).recover { case e: TraderProfileBuildFailure =>
+        logErrorsAndContinue(e.getMessage, routes.ProfileController.onPageLoad())
+      }
+  }
+
+  def onPageLoadNewUkimsNumber(): Action[AnyContent] = (identify andThen getData andThen requireData) {
+    implicit request =>
+      TraderProfile.validateUkimsNumber(request.userAnswers) match {
+        case Right(_)     =>
+          val list = SummaryListViewModel(
+            rows = Seq(
+              UkimsNumberSummary.rowUpdate(request.userAnswers)
+            ).flatten
+          )
+          Ok(view(list, routes.CyaMaintainProfileController.onSubmitNewUkimsNumber(), newUkimsNumberKey, false))
+            .removingFromSession(dataUpdated, pageUpdated, dataRemoved, dataAdded)
+        case Left(errors) =>
+          logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors)
+      }
+  }
+
+  def onSubmitNewUkimsNumber(): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
       (for {
         ukimsNumber      <- handleValidateError(TraderProfile.validateUkimsNumber(request.userAnswers))

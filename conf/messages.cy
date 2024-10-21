@@ -485,6 +485,8 @@ goodsRecordSearchResultEmptyView.p1 = Roeddech yn chwilio am y term {0}.
 
 existingUkimsNumber.h2 = Ai dyma’r rhif UKIMS cywir ar eich cyfer o hyd?
 
+cyaMaintainProfile.title.newUkimsNumber = Gwiriwch eich atebion ar gyfer eich rhif UKIMS newydd
+cyaMaintainProfile.heading.newUkimsNumber = Gwiriwch eich atebion ar gyfer eich rhif UKIMS newydd
 cyaMaintainProfile.title.ukimsNumber = Gwiriwch eich atebion ar gyfer newid eich rhif UKIMS
 cyaMaintainProfile.heading.ukimsNumber = Gwiriwch eich atebion ar gyfer newid eich rhif UKIMS
 cyaMaintainProfile.title.hasNirms = Gwiriwch eich atebion ar gyfer newid eich cofrestriad NIRMS

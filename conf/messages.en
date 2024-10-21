@@ -668,6 +668,8 @@ expiredCommodityCode.p2 = You need to update the commodity code, then categorise
 expiredCommodityCode.p1.linkText = Change the commodity code
 expiredCommodityCode.p2.linkText = Go back to goods record
 
+cyaMaintainProfile.title.newUkimsNumber = Check your answers for your new UKIMS number
+cyaMaintainProfile.heading.newUkimsNumber = Check your answers for your new UKIMS number
 cyaMaintainProfile.title.ukimsNumber = Check your answers for changing your UKIMS number
 cyaMaintainProfile.heading.ukimsNumber = Check your answers for changing your UKIMS number
 cyaMaintainProfile.title.hasNirms = Check your answers for changing your NIRMS registration

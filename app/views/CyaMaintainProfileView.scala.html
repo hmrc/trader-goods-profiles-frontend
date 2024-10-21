@@ -18,30 +18,30 @@
         layout: templates.Layout,
         govukSummaryList: GovukSummaryList,
         formHelper: FormWithCSRF,
-        govukButton: GovukButton
+        govukButton: GovukButton,
+        govukWarningText: GovukWarningText
 )
 
-@(list: SummaryList, action: Call, messageKey: String)(implicit request: Request[_], messages: Messages)
+@(list: SummaryList, action: Call, messageKey: String, displaySchemes = true)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages(s"cyaMaintainProfile.title.$messageKey"))) {
 
     <h1 class="govuk-heading-l">@messages(s"cyaMaintainProfile.heading.$messageKey")</h1>
 
-    <div class="govuk-warning-text">
-        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-        <strong class="govuk-warning-text__text">
-            <span class="govuk-visually-hidden">@messages("cyaMaintainProfile.warning")</span>
-            @messages("cyaMaintainProfile.warningText")
-        </strong>
-    </div>
+    @govukWarningText(WarningText(
+        iconFallbackText = Some(messages("cyaMaintainProfile.warning")),
+        content = Text(messages("cyaMaintainProfile.warningText"))
+    ))
 
-    <h2 class="govuk-heading-m">@messages("cyaMaintainProfile.h2")</h2>
+    @if(displaySchemes) {
+        <h2 class="govuk-heading-m">@messages("cyaMaintainProfile.h2")</h2>
 
-    <ul class="govuk-list govuk-list--bullet">
+        <ul class="govuk-list govuk-list--bullet">
             <li>@messages(s"cyaMaintainProfile.li1")</li>
             <li>@messages(s"cyaMaintainProfile.li2")</li>
             <li>@messages(s"cyaMaintainProfile.li3")</li>
         </ul>
+    }
 
     @govukSummaryList(list)
 

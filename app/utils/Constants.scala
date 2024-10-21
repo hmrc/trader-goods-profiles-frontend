@@ -31,11 +31,12 @@ case object Constants {
 
   val minimumLengthOfCommodityCode: Int = 6
 
-  val ukimsNumberKey = "ukimsNumber"
-  val hasNirmsKey    = "hasNirms"
-  val nirmsNumberKey = "nirmsNumber"
-  val hasNiphlKey    = "hasNiphl"
-  val niphlNumberKey = "niphlNumber"
+  val ukimsNumberKey    = "ukimsNumber"
+  val newUkimsNumberKey = "newUkimsNumber"
+  val hasNirmsKey       = "hasNirms"
+  val nirmsNumberKey    = "nirmsNumber"
+  val hasNiphlKey       = "hasNiphl"
+  val niphlNumberKey    = "niphlNumber"
 
   val traderReferenceKey  = "traderReference"
   val goodsDescriptionKey = "goodsDescription"
