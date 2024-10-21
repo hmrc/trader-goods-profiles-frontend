@@ -97,7 +97,7 @@ class IndexControllerSpec extends SpecBase {
         redirectLocation(result).value mustEqual routes.HomePageController.onPageLoad().url
       }
     }
-    "must redirect to HomePageController if no profile present and eori has changed" in {
+    "must redirect to UkimsNumberChangeController if no profile present and eori has changed" in {
 
       val mockConnector = mock[TraderProfileConnector]
       when(mockConnector.checkTraderProfile(any())(any())).thenReturn(Future.successful(true))
