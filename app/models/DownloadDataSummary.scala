@@ -18,9 +18,12 @@ package models
 
 import play.api.libs.json.{Json, OFormat}
 
+import java.time.Instant
+
 final case class DownloadDataSummary(
   eori: String,
   status: DownloadDataStatus,
+  createdAt: Instant,
   fileInfo: Option[FileInfo]
 )
 

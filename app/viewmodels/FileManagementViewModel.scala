@@ -76,9 +76,11 @@ object FileManagementViewModel {
               downloadDataSummary => downloadDataSummary.status == FileInProgress
             )
           )
+
       } yield {
-        val availableFilesTable = if(availableFiles.isDefined) FileManagementTable.AvailableFilesTable(availableFiles) else None
-        val pendingFilesTable = if(pendingFiles.isDefined) FileManagementTable.PendingFilesTable(pendingFiles) else None
+        val availableFilesTable = if(availableFiles.nonEmpty) FileManagementTable.AvailableFilesTable(availableFiles) else None // TODO: Still showing row when empty, as we are getting AvailableFilesTable(List())
+        val pendingFilesTable = if(pendingFiles.nonEmpty) FileManagementTable.PendingFilesTable(pendingFiles) else None // TODO: Still showing row when empty, as we are getting PendingFilesTable(List())
+
         new FileManagementViewModel(availableFilesTable, pendingFilesTable)
       }
     }

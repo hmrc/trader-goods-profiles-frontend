@@ -34,9 +34,9 @@ trait FileManagementTable {
 }
 
 case class AvailableFilesTable(availableFileRows: Seq[Seq[TableRow]])(implicit messages: Messages) extends FileManagementTable {
-  override val caption: String          = messages("fileManagement.availableFiles.table.caption")
-  override val body: Option[String]     = None
-  override val headRows: Seq[HeadCell]  =
+  override val caption: String = messages("fileManagement.availableFiles.table.caption")
+  override val body: Option[String] = None
+  override val headRows: Seq[HeadCell] =
     Seq(
       messages("fileManagement.availableFiles.table.header1"),
       messages("fileManagement.availableFiles.table.header2"),
@@ -50,11 +50,11 @@ case class AvailableFilesTable(availableFileRows: Seq[Seq[TableRow]])(implicit m
 object FileManagementTable {
   private def convertToDateString(instant: Instant)(implicit messages: Messages): String = {
     implicit val lang: Lang = messages.lang
-    instant.atZone(ZoneOffset.UTC).toLocalDate.format(dateTimeFormat())
+    instant.atZone(ZoneOffset.UTC).toLocalDate.format(dateTimeFormat()) // TODO: Date time formatter
   }
 
   private def retentionTimeToExpirationDate(fileInfo: FileInfo)(implicit messages: Messages): String = convertToDateString(fileInfo.fileCreated
-    .plus(fileInfo.retentionDays.toInt, ChronoUnit.DAYS))
+    .plus(fileInfo.retentionDays.toInt, ChronoUnit.DAYS)) // TODO: Is this from the date of request or date of the file being created?
 
   object AvailableFilesTable {
     def apply(
@@ -66,8 +66,8 @@ object FileManagementTable {
 
           val (summary, data) = availableFile
 
-          summary.fileInfo.map {fileInfo =>
-            val fileCreated = convertToDateString(fileInfo.fileCreated) // Double check that this is actually the date and time of the request
+          summary.fileInfo.map { fileInfo =>
+            val fileCreated = convertToDateString(summary.createdAt)
             val fileExpirationDate = retentionTimeToExpirationDate(fileInfo)
             val fileLink = HtmlContent(
               s"""<a href="${data.downloadURL}" class="govuk-link">${messages("fileManagement.availableFiles.downloadText")}</a>"""
@@ -102,11 +102,10 @@ object FileManagementTable {
       val pendingFilesRows = pendingFiles.map {
         _.flatMap { pendingFile =>
 
-          pendingFile.fileInfo.map { fileInfo =>
-            val fileCreated = convertToDateString(fileInfo.fileCreated) // Double check that this is actually the date and time of the request
-            val fileLink = Tag(
-              content = Text(messages("fileManagement.pendingFiles.fileText"))
-            ).content
+            val fileCreated = convertToDateString(pendingFile.createdAt)
+            val fileLink =
+              HtmlContent(s"<strong class=govuk-tag>${messages("fileManagement.pendingFiles.fileText")}</strong>")
+          // TODO: Is it possible to use the component here?
 
             Seq(
               TableRow(
@@ -117,22 +116,20 @@ object FileManagementTable {
               )
             )
           }
-        }
       }
 
-      pendingFilesRows.map {
-        new PendingFilesTable(_)
-      }
+      pendingFilesRows.map { tableRows =>
+          new PendingFilesTable(Seq(tableRows))
+        }
     }
   }
-
 }
 
 
 case class PendingFilesTable(pendingFileRows: Seq[Seq[TableRow]])(implicit messages: Messages) extends FileManagementTable {
-  override val caption: String          = messages("fileManagement.pendingFiles.table.caption")
-  override val body: Option[String]     = Some(messages("fileManagement.pendingFiles.table.body"))
-  override val headRows: Seq[HeadCell]  =
+  override val caption: String = messages("fileManagement.pendingFiles.table.caption")
+  override val body: Option[String] = Some(messages("fileManagement.pendingFiles.table.body"))
+  override val headRows: Seq[HeadCell] =
     Seq(
       messages("fileManagement.pendingFiles.table.header1"),
       messages("fileManagement.pendingFiles.table.header2")
