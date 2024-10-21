@@ -19,13 +19,15 @@ package controllers
 import connectors.GoodsRecordConnector
 import controllers.actions._
 import forms.TraderReferenceFormProvider
-import models.Mode
+import models.{Mode, UserAnswers}
 import models.helper.GoodsDetailsUpdate
+import models.requests.DataRequest
 import navigation.Navigator
-import pages.{TraderReferencePage, TraderReferenceUpdatePage}
-import play.api.data.FormError
+import pages.{QuestionPage, TraderReferencePage, TraderReferenceUpdatePage}
+import play.api.data.{Form, FormError}
 import play.api.i18n.{Messages, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.libs.json.Reads
+import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents, Request, Result}
 import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
@@ -56,10 +58,7 @@ class TraderReferenceController @Inject() (
 
   def onPageLoadCreate(mode: Mode): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
-      val preparedForm = request.userAnswers.get(TraderReferencePage) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
+      val preparedForm = prepareForm(TraderReferencePage, form)
 
       val onSubmitAction = routes.TraderReferenceController.onSubmitCreate(mode)
 
@@ -68,10 +67,8 @@ class TraderReferenceController @Inject() (
 
   def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
-      val preparedForm = request.userAnswers.get(TraderReferenceUpdatePage(recordId)) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
+      val preparedForm = prepareForm(TraderReferenceUpdatePage(recordId), form)
+
       auditService
         .auditStartUpdateGoodsRecord(
           request.eori,
@@ -102,14 +99,8 @@ class TraderReferenceController @Inject() (
                   if (traderRef.pagination.totalRecords == 0) {
                     Redirect(navigator.nextPage(TraderReferencePage, mode, updatedAnswers))
                   } else {
-                    val formWithApiErrors =
-                      form
-                        .fill(value)
-                        .copy(
-                          errors =
-                            Seq(elems = FormError("value", getMessage("traderReference.error.traderRefNotUnique")))
-                        )
-                    BadRequest(view(formWithApiErrors, onSubmitAction))
+                       val formWithApiErrors = createFormWithErrors(form, value, "traderReference.error.traderRefNotUnique")
+                       BadRequest(view(formWithApiErrors, onSubmitAction))
                   }
               case None            =>
                 Future.successful(
@@ -143,14 +134,8 @@ class TraderReferenceController @Inject() (
                       .addingToSession(dataUpdated -> (oldRecord.traderRef != value).toString)
                       .addingToSession(pageUpdated -> traderReference)
                   } else {
-                    val formWithApiErrors =
-                      form
-                        .fill(value)
-                        .copy(
-                          errors =
-                            Seq(elems = FormError("value", getMessage("traderReference.error.traderRefNotUnique")))
-                        )
-                    BadRequest(view(formWithApiErrors, onSubmitAction))
+                      val formWithApiErrors = createFormWithErrors(form, value, "traderReference.error.traderRefNotUnique")
+                     BadRequest(view(formWithApiErrors, onSubmitAction))
                   }
               case None          =>
                 Future.successful(
@@ -162,4 +147,15 @@ class TraderReferenceController @Inject() (
             }
         )
     }
+
+  private def prepareForm[T](page: QuestionPage[T], form: Form[T])(implicit request: DataRequest[AnyContent], reads: Reads[T]): Form[T] = {
+    request.userAnswers.get(page).map(form.fill).getOrElse(form)
+  }
+
+  private def createFormWithErrors[T](form: Form[T], value: T, errorMessageKey: String, field: String = "value")(implicit messages: Messages): Form[T] = {
+    form
+      .fill(value)
+      .copy(errors = Seq(FormError(field, messages(errorMessageKey))))
+  }
+
 }

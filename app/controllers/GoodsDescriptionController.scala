@@ -20,9 +20,12 @@ import controllers.actions._
 import forms.GoodsDescriptionFormProvider
 import models.Mode
 import models.helper.GoodsDetailsUpdate
+import models.requests.DataRequest
 import navigation.Navigator
-import pages.{GoodsDescriptionPage, GoodsDescriptionUpdatePage, HasGoodsDescriptionChangePage}
+import pages.{GoodsDescriptionPage, GoodsDescriptionUpdatePage, HasGoodsDescriptionChangePage, QuestionPage}
+import play.api.data.Form
 import play.api.i18n.MessagesApi
+import play.api.libs.json.Reads
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import services.AuditService
@@ -52,10 +55,7 @@ class GoodsDescriptionController @Inject() (
 
   def onPageLoadCreate(mode: Mode): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
-      val preparedForm = request.userAnswers.get(GoodsDescriptionPage) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
+      val preparedForm = prepareForm(GoodsDescriptionPage, form)
 
       val submitAction = routes.GoodsDescriptionController.onSubmitCreate(mode)
 
@@ -79,10 +79,8 @@ class GoodsDescriptionController @Inject() (
 
   def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
-      val preparedForm = request.userAnswers.get(GoodsDescriptionUpdatePage(recordId)) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
+
+      val preparedForm = prepareForm(GoodsDescriptionUpdatePage(recordId), form)
 
       request.userAnswers.get(HasGoodsDescriptionChangePage(recordId)) match {
         case None =>
@@ -120,4 +118,8 @@ class GoodsDescriptionController @Inject() (
           }
         )
     }
+
+  private def prepareForm[T](page: QuestionPage[T], form: Form[T])(implicit request: DataRequest[AnyContent], reads: Reads[T]): Form[T] = {
+    request.userAnswers.get(page).map(form.fill).getOrElse(form)
+  }
 }

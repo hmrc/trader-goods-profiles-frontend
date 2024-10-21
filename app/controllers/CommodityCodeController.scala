@@ -19,13 +19,15 @@ package controllers
 import connectors.OttConnector
 import controllers.actions._
 import forms.CommodityCodeFormProvider
-import models.Mode
+import models.{Commodity, Mode}
 import models.helper.{CreateRecordJourney, GoodsDetailsUpdate}
+import models.requests.DataRequest
 import navigation.Navigator
-import pages.{CommodityCodePage, CommodityCodeUpdatePage, CountryOfOriginPage, CountryOfOriginUpdatePage, HasCommodityCodeChangePage}
-import play.api.data.FormError
+import pages.{CommodityCodePage, CommodityCodeUpdatePage, CountryOfOriginPage, CountryOfOriginUpdatePage, HasCommodityCodeChangePage, QuestionPage}
+import play.api.data.{Form, FormError}
 import play.api.i18n.{Messages, MessagesApi}
-import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
+import play.api.libs.json.Reads
+import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents, Request, Result}
 import queries.{CommodityQuery, CommodityUpdateQuery}
 import repositories.SessionRepository
 import services.AuditService
@@ -56,22 +58,18 @@ class CommodityCodeController @Inject() (
 
   def onPageLoadCreate(mode: Mode): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
-      val preparedForm = request.userAnswers.get(CommodityCodePage) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
+
+      val preparedForm = prepareForm(CommodityCodePage, form)
 
       val onSubmitAction: Call = routes.CommodityCodeController.onSubmitCreate(mode)
 
       Ok(view(preparedForm, onSubmitAction))
     }
 
+
   def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData) { implicit request =>
-      val preparedForm = request.userAnswers.get(CommodityCodeUpdatePage(recordId)) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
+      val preparedForm = prepareForm(CommodityCodeUpdatePage(recordId), form)
 
       request.userAnswers.get(HasCommodityCodeChangePage(recordId)) match {
         case None =>
@@ -100,24 +98,14 @@ class CommodityCodeController @Inject() (
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, onSubmitAction))),
           value =>
             (for {
-              commodity               <-
-                ottConnector.getCommodityCode(
-                  value,
-                  request.eori,
-                  request.affinityGroup,
-                  CreateRecordJourney,
-                  countryOfOrigin,
-                  None
-                )
+              commodity <- fetchCommodity(value, countryOfOrigin)
               updatedAnswers          <- Future.fromTry(request.userAnswers.set(CommodityCodePage, value))
               updatedAnswersWithQuery <-
                 Future.fromTry(updatedAnswers.set(CommodityQuery, commodity.copy(commodityCode = value)))
               _                       <- sessionRepository.set(updatedAnswersWithQuery)
             } yield Redirect(navigator.nextPage(CommodityCodePage, mode, updatedAnswersWithQuery))).recover {
               case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
-                val formWithApiErrors =
-                  form.copy(errors = Seq(elems = FormError("value", getMessage("commodityCode.error.invalid"))))
-                BadRequest(view(formWithApiErrors, onSubmitAction))
+                handleFormError(form, "commodityCode.error.invalid", onSubmitAction)
             }
         )
     }
@@ -135,15 +123,7 @@ class CommodityCodeController @Inject() (
               val oldValueOpt    = request.userAnswers.get(CommodityCodeUpdatePage(recordId))
               val isValueChanged = oldValueOpt.exists(_ != value)
               for {
-                commodity               <-
-                  ottConnector.getCommodityCode(
-                    value,
-                    request.eori,
-                    request.affinityGroup,
-                    CreateRecordJourney,
-                    countryOfOrigin,
-                    None
-                  )
+                commodity <- fetchCommodity(value, countryOfOrigin)
                 updatedAnswers          <- Future.fromTry(request.userAnswers.set(CommodityCodeUpdatePage(recordId), value))
                 updatedAnswersWithQuery <-
                   Future.fromTry(
@@ -156,12 +136,32 @@ class CommodityCodeController @Inject() (
 
             }
               .recover { case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
-                val formWithApiErrors =
-                  form.copy(errors = Seq(elems = FormError("value", getMessage("commodityCode.error.invalid"))))
-                BadRequest(view(formWithApiErrors, onSubmitAction))
+                handleFormError(form, "commodityCode.error.invalid", onSubmitAction)
               }
         )
     }
+
+  private def prepareForm[T](page: QuestionPage[T], form: Form[T])(implicit request: DataRequest[AnyContent], reads: Reads[T]): Form[T] = {
+    request.userAnswers.get(page).map(form.fill).getOrElse(form)
+  }
+
+  private def fetchCommodity(
+                              value: String,
+                              countryOfOrigin: String
+                            )(implicit request: DataRequest[AnyContent]): Future[Commodity] = {
+    ottConnector.getCommodityCode(
+      value,
+      request.eori,
+      request.affinityGroup,
+      CreateRecordJourney,
+      countryOfOrigin,
+      None
+    )
+  }
+  private def handleFormError[T](form: Form[T], errorKey: String, onSubmitAction: Call)(implicit request: Request[AnyContent]): Result = {
+    val formWithApiErrors = form.copy(errors = Seq(FormError("value", getMessage(errorKey))))
+    BadRequest(view(formWithApiErrors, onSubmitAction))
+  }
 
   private def getMessage(key: String)(implicit messages: Messages): String = messages(key)
 }

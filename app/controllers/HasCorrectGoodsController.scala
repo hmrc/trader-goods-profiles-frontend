@@ -19,9 +19,12 @@ package controllers
 import controllers.actions._
 import forms.HasCorrectGoodsFormProvider
 import models.Mode
+import models.requests.DataRequest
 import navigation.Navigator
 import pages._
+import play.api.data.Form
 import play.api.i18n.MessagesApi
+import play.api.libs.json.Reads
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries._
 import repositories.SessionRepository
@@ -48,11 +51,8 @@ class HasCorrectGoodsController @Inject() (
 
   def onPageLoadCreate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      val preparedForm = request.userAnswers.get(HasCorrectGoodsPage) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
 
+      val preparedForm = prepareForm(HasCorrectGoodsPage, form)
       val submitAction = routes.HasCorrectGoodsController.onSubmitCreate(mode)
       request.userAnswers.get(CommodityQuery) match {
         case Some(commodity) => Ok(view(preparedForm, commodity, submitAction))
@@ -62,11 +62,7 @@ class HasCorrectGoodsController @Inject() (
 
   def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData) { implicit request =>
-      val preparedForm = request.userAnswers.get(HasCorrectGoodsCommodityCodeUpdatePage(recordId)) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
-
+      val preparedForm = prepareForm(HasCorrectGoodsCommodityCodeUpdatePage(recordId), form)
       val submitAction = routes.HasCorrectGoodsController.onSubmitUpdate(mode, recordId)
       request.userAnswers.get(CommodityUpdateQuery(recordId)) match {
         case Some(commodity) => Ok(view(preparedForm, commodity, submitAction))
@@ -76,11 +72,8 @@ class HasCorrectGoodsController @Inject() (
 
   def onPageLoadLongerCommodityCode(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData) { implicit request =>
-      val preparedForm = request.userAnswers.get(HasCorrectGoodsLongerCommodityCodePage(recordId)) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
 
+      val preparedForm = prepareForm(HasCorrectGoodsLongerCommodityCodePage(recordId), form)
       val submitAction = routes.HasCorrectGoodsController.onSubmitLongerCommodityCode(mode, recordId)
       request.userAnswers.get(LongerCommodityQuery(recordId)) match {
         case Some(commodity) =>
@@ -157,5 +150,9 @@ class HasCorrectGoodsController @Inject() (
             } yield Redirect(navigator.nextPage(HasCorrectGoodsCommodityCodeUpdatePage(recordId), mode, updatedAnswers))
         )
     }
+
+  private def prepareForm[T](page: QuestionPage[T], form: Form[T])(implicit request: DataRequest[AnyContent], reads: Reads[T]): Form[T] = {
+    request.userAnswers.get(page).map(form.fill).getOrElse(form)
+  }
 
 }
