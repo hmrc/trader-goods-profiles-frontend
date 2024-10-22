@@ -26,7 +26,8 @@ final case class TraderProfile(
   actorId: String,
   ukimsNumber: String,
   nirmsNumber: Option[String],
-  niphlNumber: Option[String]
+  niphlNumber: Option[String],
+  eoriChanged: Boolean
 )
 
 object TraderProfile {
@@ -38,7 +39,8 @@ object TraderProfile {
       Right(eori),
       answers.getPageValue(UkimsNumberPage),
       answers.getOptionalPageValue(answers, HasNirmsPage, NirmsNumberPage),
-      answers.getOptionalPageValue(answers, HasNiphlPage, NiphlNumberPage)
+      answers.getOptionalPageValue(answers, HasNiphlPage, NiphlNumberPage),
+      Right(false)
     ).parMapN(TraderProfile.apply)
 
   private def getOptionallyRemovedPage(

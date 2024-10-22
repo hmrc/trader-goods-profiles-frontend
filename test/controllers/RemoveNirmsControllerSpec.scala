@@ -93,7 +93,7 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
       when(mockSessionRepository.set(finalUserAnswersCaptor.capture())).thenReturn(Future.successful(true))
 
       when(mockTraderProfileConnector.getTraderProfile(any())(any())).thenReturn(
-        Future.successful(TraderProfile(testEori, "1", Some("RMS-GB-848211"), None))
+        Future.successful(TraderProfile(testEori, "1", Some("RMS-GB-848211"), None, eoriChanged = false))
       )
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -133,7 +133,7 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
       when(mockSessionRepository.set(finalUserAnswersCaptor.capture())).thenReturn(Future.successful(true))
 
       when(mockTraderProfileConnector.getTraderProfile(any())(any())).thenReturn(
-        Future.successful(TraderProfile(testEori, "1", Some("RMS-GB-848211"), None))
+        Future.successful(TraderProfile(testEori, "1", Some("RMS-GB-848211"), None, eoriChanged = false))
       )
 
       val application = applicationBuilder(userAnswers =
@@ -175,7 +175,7 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
       when(mockSessionRepository.set(finalUserAnswersCaptor.capture())).thenReturn(Future.successful(true))
 
       when(mockTraderProfileConnector.getTraderProfile(any())(any())).thenReturn(
-        Future.successful(TraderProfile(testEori, "1", Some("RMS-GB-848211"), None))
+        Future.successful(TraderProfile(testEori, "1", Some("RMS-GB-848211"), None, eoriChanged = false))
       )
 
       val application =

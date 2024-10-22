@@ -19,8 +19,6 @@ package controllers
 import connectors.{DownloadDataConnector, GoodsRecordConnector, OttConnector}
 import controllers.actions._
 import forms.GoodsRecordsFormProvider
-import models.DownloadDataStatus.{FileInProgress, FileReadySeen, FileReadyUnseen, RequestFile}
-import models.DownloadDataSummary
 import models.GoodsRecordsPagination._
 import navigation.Navigator
 import pages.GoodsRecordsPage
@@ -63,10 +61,9 @@ class GoodsRecordsController @Inject() (
         goodsRecordConnector.getRecords(request.eori, page, pageSize).flatMap {
           case Some(goodsRecordsResponse) if goodsRecordsResponse.pagination.totalRecords > 0 =>
             for {
-              countries              <- ottConnector.getCountries
-              updatedAnswers         <- Future.fromTry(request.userAnswers.remove(GoodsRecordsPage))
-              _                      <- sessionRepository.set(updatedAnswers)
-              downloadDataSummaryOpt <- downloadDataConnector.getDownloadDataSummary(request.eori)
+              countries      <- ottConnector.getCountries
+              updatedAnswers <- Future.fromTry(request.userAnswers.remove(GoodsRecordsPage))
+              _              <- sessionRepository.set(updatedAnswers)
             } yield {
               val firstRecord = getFirstRecordIndex(goodsRecordsResponse.pagination, pageSize)
               Ok(
@@ -81,8 +78,7 @@ class GoodsRecordsController @Inject() (
                     goodsRecordsResponse.pagination.currentPage,
                     goodsRecordsResponse.pagination.totalPages
                   ),
-                  page,
-                  getDownloadLinkMessagesKey(downloadDataSummaryOpt)
+                  page
                 )
               ).removingFromSession(dataUpdated, pageUpdated, dataRemoved)
             }
@@ -99,20 +95,6 @@ class GoodsRecordsController @Inject() (
       }
     }
 
-  def getDownloadLinkMessagesKey(opt: Option[DownloadDataSummary]): String =
-    opt.map(_.status) match {
-      case Some(RequestFile)     =>
-        "goodsRecords.downloadLinkText.requestFile"
-      case Some(FileInProgress)  =>
-        "goodsRecords.downloadLinkText.fileInProgress"
-      case Some(FileReadyUnseen) =>
-        "goodsRecords.downloadLinkText.fileReady"
-      case Some(FileReadySeen)   =>
-        "goodsRecords.downloadLinkText.fileReady"
-      case _                     =>
-        "goodsRecords.downloadLinkText.requestFile"
-    }
-
   def onSearch(page: Int): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       form
@@ -122,8 +104,7 @@ class GoodsRecordsController @Inject() (
             goodsRecordConnector.getRecords(request.eori, page, pageSize).flatMap {
               case Some(goodsRecordsResponse) =>
                 for {
-                  countries              <- ottConnector.getCountries
-                  downloadDataSummaryOpt <- downloadDataConnector.getDownloadDataSummary(request.eori)
+                  countries <- ottConnector.getCountries
                 } yield {
                   val firstRecord = getFirstRecordIndex(goodsRecordsResponse.pagination, pageSize)
                   BadRequest(
@@ -138,8 +119,7 @@ class GoodsRecordsController @Inject() (
                         goodsRecordsResponse.pagination.currentPage,
                         goodsRecordsResponse.pagination.totalPages
                       ),
-                      page,
-                      getDownloadLinkMessagesKey(downloadDataSummaryOpt)
+                      page
                     )
                   )
                 }

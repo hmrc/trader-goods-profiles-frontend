@@ -14,7 +14,6 @@
  * limitations under the License.
  *@
 
-@import viewmodels.InputWidth._
 @import models.router.responses.GetGoodsRecordResponse
 @import config.FrontendAppConfig
 
@@ -39,8 +38,7 @@
     lastRecord: Int,
     countries: Seq[Country],
     pagination: Pagination,
-    page: Int,
-    downloadLinkMessagesKey: String,
+    page: Int
 )(implicit request: Request[_], messages: Messages)
 
 
@@ -164,10 +162,6 @@
         @govukPagination(pagination)
 
         <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad().url" class="govuk-link">@messages("site.goBackToHomePage")</a></p>
-
-        @if(appConfig.downloadFileEnabled) {
-            <p class="govuk-body"><a href="@controllers.routes.DownloadDataIndexController.redirect()" class="govuk-link">@messages(downloadLinkMessagesKey)</a></p>
-        }
 
 </div>
 }
