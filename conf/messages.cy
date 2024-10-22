@@ -11,6 +11,28 @@ site.back = Yn ôl
 site.goBackToGoodsRecord = Ewch yn ôl i’r cofnod nwyddau
 site.goBackToHomePage = Ewch yn ôl i’r hafan
 site.goBackToGoodsProfile = Ewch yn ôl i’r proffil nwyddau
+site.remove = Tynnu
+site.start = Dechrau nawr
+site.govuk = GOV.UK
+site.or = neu
+site.search = Chwilio
+site.removeThisGoodsRecord = Tynnwch y cofnod nwyddau hwn
+
+
+date.day = Diwrnod
+date.month = Mis
+date.year = Blwyddyn
+date.error.day = diwrnod
+date.error.month = mis
+date.error.year = blwyddyn
+
+timeout.title = Rydych ar fin cael eich allgofnodi
+timeout.message = Am resymau diogelwch, cewch eich allgofnodi o’r gwasanaeth hwn ymhen
+timeout.keepAlive = Peidio ag allgofnodi
+timeout.signOut = Allgofnodi
+
+error.title.prefix = Gwall:
+error.prefix = Gwall
 
 error.summary.title = Nodwch eich cyfeiriad e-bost
 
@@ -25,10 +47,11 @@ homepage.p2.linkText = Bwrw golwg dros eich cofnodion nwyddau neu eu diweddaru
 homepage.p3.linkText = Creu cofnod nwyddau newydd
 homepage.h2.2 = Rheoli''ch proffil
 homepage.p5.linkText = Rheoli manylion eich proffil
-homepage.h2.3 = Help a chysylltu
+homepage.h2.4 = Help a chysylltu
 homepage.p6.linkText = Dewch o hyd i gymorth ychwanegol a chysylltiadau i''ch helpu
 homepage.downloadBanner.content = Mae’r ffeil y gofynnoch amdani, sy’n cynnwys eich data TGP, yn barod i’w lawrlwytho.
 homepage.downloadBanner.linkText = Ewch i’r dudalen lawrlwytho i gael mynediad at eich ffeil.
+# TODO: Awaiting welsh translation for download link text (Ticket: TGP-2753)
 
 unauthorised.title = Mae problem wedi codi
 unauthorised.heading = Mae problem wedi codi
@@ -125,7 +148,7 @@ niphlNumber.change.hidden = Rhif NIPHL
 
 cyaCreateProfile.title = Gwirio’ch atebion ar gyfer sefydlu’ch proffil
 cyaCreateProfile.h1 = Gwirio’ch atebion ar gyfer sefydlu’ch proffil
-
+cyaCreateProfile.h2 = Gwiriwch fod y manylion yn y cofnod hwn yn gywir.
 cyaCreateProfile.li1 = Cynllun Marchnad Fewnol y DU (UKIMS)
 cyaCreateProfile.li2 = Cynllun Symud Nwyddau Manwerthu Gogledd Iwerddon (NIRMS)
 cyaCreateProfile.li3 = Label iechyd planhigion Gogledd Iwerddon (NIPHL)
@@ -141,6 +164,12 @@ cyaUpdateRecord.h1.countryOfOrigin = Gwiriwch eich atebion ar gyfer y wlad tardd
 cyaUpdateRecord.title.commodityCode = Gwiriwch eich atebion ar gyfer newid y cod nwyddau
 cyaUpdateRecord.h1.commodityCode = Gwiriwch eich atebion ar gyfer newid y cod nwyddau
 
+cyaUpdateRecord.title = Gwiriwch eich atebion
+cyaUpdateRecord.h1 = Gwiriwch eich atebion
+cyaUpdateRecord.h2 = Gwiriwch fod y manylion yn y cofnod hwn yn gywir.
+cyaCategorisation.longerCommodityCode = Cod nwyddau hirach
+niphlNumber.error.required = Nodwch eich rhif cofrestru NIPHL
+homepage.p4.linkText = Gofynnwch am farn gan CThEF os yw cod nwyddau yn gywir
 cyaSupplementaryUnit.title = Gwiriwch eich atebion ar gyfer newid yr uned atodol
 cyaSupplementaryUnit.heading = Gwiriwch eich atebion ar gyfer newid yr uned atodol
 
@@ -286,6 +315,21 @@ singleRecord.warningText = Rydych yn atebol dros yr wybodaeth am unrhyw symudiad
 
 
 
+singleRecord.h2.categorisation = Categoreiddio
+singleRecord.category.row = Categori
+singleRecord.h2.supplementaryUnit = Unedau atodol
+singleRecord.h2.adviceStatus = Statws cyngor
+singleRecord.adviceStatus.row = Cyngor
+singleRecord.status.row = Statws
+singleRecord.askForAdvice = Gofyn am gyngor
+singleRecord.withdrawAdvice = Tynnu’r cais yn ôl
+singleRecord.categoriseThisGood = Categoreiddio‘r nwydd
+singleRecord.cat1 = Categori 1
+singleRecord.cat2 = Categori 2
+singleRecord.standardGoods = Nwyddau safonol
+singleRecord.back = Yn ôl proffil nwyddau
+
+
 countryOfOrigin.title = Gwlad tarddiad
 countryOfOrigin.h1 = Gwlad tarddiad
 countryOfOrigin.p1 = Mae ‘gwlad tarddiad’ yn cyfeirio at y wlad lle cafodd y nwyddau eu gweithgynhyrchu (naill ai’n gyfan gwbl, neu gan fwyaf), eu tyfu neu eu haddasu. Mae’n cael ei defnyddio at ddibenion labelu, ac mae’n effeithio ar gyfraddau’r tollau.
@@ -400,6 +444,7 @@ requestData.button = Gwneud cais am ddata TGP
 downloadRequestSuccess.title = Mae’ch cais i gael ffeil sy’n cynnwys eich data TGP wedi dod i law
 downloadRequestSuccess.h1 = Mae’ch cais i gael ffeil sy’n cynnwys eich data TGP wedi dod i law
 downloadRequestSuccess.h2 = Yr hyn sy’n digwydd nesaf
+# TODO: Awaiting welsh translation of the new changes brought in from TGP-2677 (Will include key changes - see lines 644 to 650 of English messages) (Ticket Number: TGP-2753)
 downloadRequestSuccess.p1 = Byddwn yn anfon e-bost at {0} i roi gwybod i chi pryd bydd y ffeil yn barod i lawrlwytho.
 downloadRequestSuccess.p2 = Byddwch yn gweld hysbysiad pan fyddwch yn mewngofnodi i’ch TGP a fydd yn dangos cysylltiad i’r dudalen lawrlwytho. Mae’r ffeil ar ffurf CSV (gwerthoedd wedi’u gwahanu gan goma).
 downloadRequestSuccess.p3 = Bydd y ffeil hon ar gael am 30 diwrnod ar ôl i ni roi gwybod i chi ei bod yn barod.
@@ -409,10 +454,35 @@ goodsRecords.title = Proffil Nwyddau
 goodsRecords.title.withPage = Proffil Nwyddau – tudalen {0} o {1}
 goodsRecords.heading = Proffil Nwyddau
 goodsRecords.heading.withPage = Proffil Nwyddau – tudalen {0} o {1}
+goodsRecords.error.required = Nodwch eich term i’w chwilio
+goodsRecords.error.length = Mae’n rhaid i’r term i’w chwilio fod yn 100 o gymeriadau neu lai
+goodsRecords.p1 = Dyma restr o nwyddau yn eich TGP. Os yw cofnod nwyddau yn barod ar gyfer Gwybodaeth Symud Marchnad Fewnol (IMMI), gallwch ddefnyddio’r cofnod hwnnw i helpu i lenwi’r ffurflen IMMI.
+goodsRecords.p2 = Os bydd cludwr neu gyfryngwr arall yn cwblhau’r IMMI ar eich rhan, dylech ddefnyddio neu rannu’r canlynol:
+goodsRecordsEmptyView.p2 = Pan allwch chi, cludwr neu gyfryngwr arall gwblhau’r IMMI ar eich rhan, dylech ddefnyddio neu rannu’r canlynol:
+goodsRecords.li1 = 'Cyfeirnod masnachwr'
+goodsRecords.li2 = 'Disgrifiad o’r nwyddau'
+goodsRecords.p3 = Nid oes gennych unrhyw gofnodion yn eich rhestr gofnodion.
+goodsRecords.label = Chwiliwch yn ôl cyfeirnod masnachwr, disgrifiad nwyddau neu god nwyddau
+goodsRecords.link1 = Creu cofnod nwyddau newydd
+goodsRecords.downloadLinkText.requestFile = Gofyn am ffeil o’ch cofnodion TGP
+goodsRecords.downloadLinkText.fileInProgress = Cael diweddariad ar eich ffeil cofnodion TGP neu gofynnwch am ffeil newydd
+goodsRecords.downloadLinkText.fileReady = Lawrlwythwch eich ffeil cofnodion TGP neu gofynnwch am ffeil newydd
+goodsRecords.pagination = Yn dangos {0} i {1} o {2} cofnod nwyddau. Mae’r cofnodion wedi’u didoli gan y rhai a ddiwygiwyd neu ychwanegwyd yn fwyaf diweddar yn gyntaf.
+goodsRecords.tableHeader.traderReference = Cyfeirnod masnachwr
+goodsRecords.tableHeader.goodsDescription = Disgrifiad o’r nwyddau
+goodsRecords.tableHeader.countryOfOrigin = Gwlad wreiddiol
+goodsRecords.tableHeader.commodityCode = Cod nwyddau
+goodsRecords.tableHeader.status = Statws
+goodsRecords.tableHeader.actions = Camau gweithredu
 
 goodsRecordSearchResult.title = Mae yna {0} o ganlyniadau chwilio
 goodsRecordSearchResult.title.withPage = Mae yna {0} o ganlyniadau chwilio – tudalen {1} o {2}
 goodsRecordSearchResult.h1 = Mae yna {0} o ganlyniadau chwilio
+goodsRecordSearchResult.p1 = Roeddech yn chwilio am y term {0}.
+
+goodsRecordSearchResultEmptyView.title = Does dim canlyniadau cyfatebol
+goodsRecordSearchResultEmptyView.h1 = Does dim canlyniadau cyfatebol
+goodsRecordSearchResultEmptyView.p1 = Roeddech yn chwilio am y term {0}.
 
 existingUkimsNumber.h2 = Ai dyma’r rhif UKIMS cywir ar eich cyfer o hyd?
 
@@ -427,6 +497,203 @@ cyaMaintainProfile.heading.hasNiphl = Gwiriwch eich atebion ar gyfer newid eich 
 cyaMaintainProfile.title.niphlNumber = Gwiriwch eich atebion ar gyfer newid eich rhif NIPHL
 cyaMaintainProfile.heading.niphlNumber = Gwiriwch eich atebion ar gyfer newid eich rhif NIPHL
 
-hasCountryOfOriginChange.h1 = Newid gwybodaeth y cofnod
-hasCommodityCodeChange.h1 = Newid gwybodaeth y cofnod
+
+hasGoodsDescriptionChange.title = Newid gwybodaeth y cofnod
 hasGoodsDescriptionChange.h1 = Newid gwybodaeth y cofnod
+hasGoodsDescriptionChange.p1 = Bydd newid disgrifiad y nwyddau ar y cofnod nwyddau hwn yn dileu’r statws cyngor. Os ydych am wirio bod y cod nwyddau yn gywir ac yn cyd-fynd â’r disgrifiad nwyddau, bydd angen i chi ofyn am gyngor eto.
+hasGoodsDescriptionChange.h2 = A ydych am newid disgrifiad y nwyddau?
+hasGoodsDescriptionChange.error.required = Dewiswch os ydych am newid disgrifiad y nwyddau
+
+
+
+hasCountryOfOriginChange.title = Newid gwybodaeth y cofnod
+hasCountryOfOriginChange.h1 = Newid gwybodaeth y cofnod
+hasCountryOfOriginChange.p1 = Bydd angen i chi gategoreiddio’r cofnod nwyddau hwn os byddwch yn newid y wlad wreiddiol.
+hasCountryOfOriginChange.h2 = A ydych am newid y wlad wreiddiol?
+hasCountryOfOriginChange.error.required = Dewiswch os ydych am newid y wlad wreiddiol
+
+
+hasCommodityCodeChange.title = Newid gwybodaeth y cofnod
+hasCommodityCodeChange.h1 = Newid gwybodaeth y cofnod
+hasCommodityCodeChange.h2 = A ydych am newid y cod nwyddau?
+hasCommodityCodeChange.advice = Bydd newid y cod nwyddau ar y cofnod nwyddau hwn yn dileu’r statws cyngor. Os ydych am wirio bod y cod nwyddau yn gywir ac yn cyd-fynd â’r disgrifiad, bydd angen i chi ofyn am gyngor eto.
+hasCommodityCodeChange.category = YBydd angen i chi gategoreiddio’r cofnod nwyddau hwn os byddwch yn newid y cod nwyddau.
+hasCommodityCodeChange.error.required = Dewiswch os ydych am newid y cod nwyddau
+
+
+removeGoodsRecord.title = Tynnu’r cofnod nwyddau
+removeGoodsRecord.heading = Tynnu’r cofnod nwyddau
+removeGoodsRecord.error.required = Dewiswch ‘Iawn’ os ydych am dynnu’r cofnod nwyddau hwn
+removeGoodsRecord.warning = Rhybudd
+removeGoodsRecord.warningText = Os byddwch yn tynnu’r cofnod nwyddau hwn, ni fyddwch yn gallu ei ddefnyddio ar gyfer symudiadau. Ar ôl ei dynnu, ni fyddwch yn gallu adfer y cofnod nwyddau hwn.
+removeGoodsRecord.question = A ydych yn siŵr eich bod am dynnu’r cofnod nwyddau hwn?
+removeGoodsRecord.yes = Iawn, tynnwch y cofnod nwyddau hwn
+removeGoodsRecord.noProfile =Na, yn ôl i’r proffil nwyddau
+removeGoodsRecord.noRecord = Na, yn ôl i’r cofnod nwyddau
+
+profile.title = Manylion y proffil
+profile.h1 = Manylion y proffil
+profile.h2 = UKIMS, NIRMS a’r NIPHL
+profile.p1 = Gwiriwch fod y manylion ar eich proffil yn gywir. Gallwch newid eich rhif UKIMS neu ychwanegu, newid a dileu gwybodaeth NIRMS a NIPHL.
+profile.warning = Rhybudd
+profile.warningText = Mae angen i chi wneud yn siŵr bod y manylion hyn yn gywir. Ni fydd unrhyw symudiadau y byddwch yn defnyddio manylion o’r TGP i’w creu yn ddilys os byddant yn anghywir.
+profile.back = Yn ôl i’r hafan
+
+
+
+removeNirms.title = Tynnu manylion y contract
+removeNirms.h1 = Tynnu manylion y contract
+removeNirms.p1 = Os byddwch yn dileu’ch manylion NIRMS, mae’n bosibl y bydd y categori ar gyfer y nwyddau rydych yn eu symud o dan y Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM) yn newid.
+removeNirms.p2 = Bydd angen i chi ail-gategoreiddio’r nwyddau hynny er mwyn gwirio a allwch eu symud o dan SPIMM o hyd.
+removeNirms.h2 = A ydych yn siŵr eich bod am ddileu’r manylion ynghylch eich NIRMS?
+removeNirms.error.required = Cadarnhewch eich bod am ddileu’r manylion ynghylch eich NIRMS
+removeNirms.yes = Iawn, rwyf am i chi ddileu’r manylion ynghylch fy NIRMS
+removeNirms.no = Na, peidiwch â dileu’r manylion ynghylch fy NIRMS
+removeNirms.warning = Rhybudd
+removeNirms.warningText = Os ydych yn symud nwyddau o dan SPIMM, ac nad ydynt yn gymwys i ddefnyddio’r broses hon, gallech fod yn atebol am unrhyw nwyddau a gafodd eu datgan yn anghywir.
+
+removeNiphl.title = Tynnu manylion NIPHL
+removeNiphl.h1 = Tynnu manylion NIPHL
+removeNiphl.p1 = Os byddwch yn dileu’ch manylion NIPHL, mae’n bosibl y bydd y categori ar gyfer y nwyddau rydych yn eu symud o dan y Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM) yn newid.
+removeNiphl.p2 = Bydd angen i chi ail-gategoreiddio’r nwyddau hynny er mwyn gwirio a allwch eu symud o dan SPIMM o hyd.
+removeNiphl.h2 = A ydych yn siŵr eich bod am ddileu’r manylion ynghylch eich NIPHL?
+removeNiphl.error.required = Cadarnhewch eich bod am ddileu’r manylion ynghylch eich NIPHL
+removeNiphl.yes = Iawn, rwyf am i chi ddileu’r manylion ynghylch fy NIPHL
+removeNiphl.no = Na, peidiwch â dileu’r manylion ynghylch fy NIPHL
+removeNiphl.warning = Rhybudd
+removeNiphl.warningText = Os ydych yn symud nwyddau o dan SPIMM, ac nad ydynt yn gymwys i ddefnyddio’r broses hon, gallech fod yn atebol am unrhyw nwyddau a gafodd eu datgan yn anghywir.
+
+
+
+helpAndSupport.title = Help a chymorth
+helpAndSupport.h1 = Help a chymorth
+helpAndSupport.h2.1 = Tollau cyffredinol
+helpAndSupport.h2.2 = Codau nwyddau a Thariff
+helpAndSupport.h2.3 = Cynllun Symud Nwyddau Manwerthu Gogledd Iwerddon (NIRMS) a Label Iechyd Planhigion Gogledd Iwerddon (NIPHL)
+helpAndSupport.h2.4 = Proffil Nwyddau Masnachwyr
+helpAndSupport.h2.5 = cefnogaeth Gwybodaeth Symud Marchnad Fewnol (IMMI)
+helpAndSupport.h3 = Cysylltu
+helpAndSupport.p1 = Dyma gysylltiadau i arweiniad, help a thudalennau cyswllt sy’n eich helpu gyda symud nwyddau.
+helpAndSupport.p2.linkText = Canllaw cam wrth gam ar gyfer mewnforio nwyddau i’r DU
+helpAndSupport.p3.linkText = Masnachu a symud nwyddau i mewn ac allan o Ogledd Iwerddon
+
+helpAndSupport.p5.linkText = Mewnforion ac allforion: ymholiadau cyffredinol
+helpAndSupport.p6.linkText = Dod o hyd i godau nwyddau ar gyfer mewnforion i mewn i’r DU neu allforion allan o’r DU
+helpAndSupport.p7.linkText = Chwilio am Dariff Ar-lein Gogledd Iwerddon
+helpAndSupport.p8.linkText = Help i ddefnyddio’r Offeryn Tariff Ar-lein
+helpAndSupport.p9.linkText = Gwneud cais am benderfyniad Gwybodaeth am Dariff sy’n Rhwymo i gael penderfyniad cyfreithiol rwymol ar y cod nwyddau i’w ddefnyddio
+helpAndSupport.p10.linkText = Webchat i gael help i ddosbarthu’ch nwyddau
+helpAndSupport.p11.linkText = Arweiniad ar sut y bydd Cynllun Symud Nwyddau Manwerthu Gogledd Iwerddon yn gweithio
+helpAndSupport.p12.linkText = Sut i gofrestru ar gyfer Cynllun Symud Nwyddau Manwerthu Gogledd Iwerddon i werthu neu symud bwyd i Ogledd Iwerddon
+helpAndSupport.p13.linkText = Arweiniad ar gyfer defnyddio label iechyd planhigion Gogledd Iwerddon (NIPHL)
+helpAndSupport.p14.linkText = Dewch o hyd i gymorth ychwanegol a chysylltiadau i’ch helpu
+helpAndSupport.p15 = Gallwch ddefnyddio’r Gwasanaeth Cymorth i Fasnachwyr i greu ffurflenni IMMI gyda gwybodaeth gan eich TGP.
+helpAndSupport.p15.linkText = Cofrestrwch ar gyfer y Gwasanaeth Cymorth i Fasnachwyr
+
+
+successBanner.title = Llwyddiant
+successBanner.heading = Rydych wedi newid y {0}
+successBannerRemove.heading = Rydych wedi newid y {0}
+
+goodsRecordsLoading.title = Rydym yn llwytho’ch cofnodion
+goodsRecordsLoading.heading = Rydym yn llwytho’ch cofnodion
+goodsRecordsLoading.p1 = Rydym yn llwytho {0} o gofnodion. Byddwn yn mynd â chi i’ch tudalen cofnodion nwyddau pan fyddant yn barod i’w gweld.
+goodsRecordsLoading.p2 = Ar hyn o bryd, rydym wedi llwytho {0} allan o {1} o gofnodion.
+goodsRecordsLoading.p3.1 = Gallwch
+goodsRecordsLoading.p3.2 = adnewyddu’r dudalen hon
+goodsRecordsLoading.p3.3 = i wirio cynnydd llwytho’ch cofnodion.
+
+
+reviewReason.commodity.title = Mae problem gyda’r cofnod hwn
+reviewReason.commodity.heading = Mae problem gyda’r cofnod hwn
+reviewReason.commodity.p1 = Mae’r cod nwyddau wedi dod i ben. Os ydych am weld a allwch ddefnyddio’r cofnod o fewn IMMI, bydd angen i chi wneud y canlynol:
+reviewReason.commodity.li1 = newid y cod nwyddau
+reviewReason.commodity.li2 = categoreiddio’r nwyddau
+
+reviewReason.measure.title = Mae problem gyda’r cofnod hwn
+reviewReason.measure.heading = Mae problem gyda’r cofnod hwn
+reviewReason.measure.p1 = Mae’r cod nwyddau neu’r cyfyngiadau wedi newid. Bydd angen i chi gategoreiddio’r record.
+
+reviewReason.unclear.title = Mae angen adolygu’r cofnod hwn
+reviewReason.unclear.heading = Mae angen adolygu’r cofnod hwn
+reviewReason.unclear.p1 = Mae CThEF wedi adolygu’r cofnod. Mae’r disgrifiad o’r nwyddau yn aneglur. Os ydych am ddefnyddio’r cofnod hwn ar IMMI, bydd angen i chi newid disgrifiad y nwyddau.
+reviewReason.unclear.p2 = Dylai disgrifiad o’r nwyddau gynnwys disgrifiad o’r nwyddau mewn iaith glir. Nid oes rhaid i hyn gyd-fynd â’r disgrifiad tariff masnach.
+
+reviewReason.inadequate.title = Mae angen adolygu’r cofnod hwn
+reviewReason.inadequate.heading = Mae angen adolygu’r cofnod hwn
+reviewReason.inadequate.p1 = Mae CThEF wedi adolygu’r cofnod hwn. Nid oes gan y disgrifiad nwyddau ddigon o fanylion. Os ydych am ddefnyddio’r cofnod hwn ar IMMI, bydd angen i chi newid disgrifiad y nwyddau.
+reviewReason.inadequate.p2 = Dylai disgrifiad o’r nwyddau gynnwys disgrifiad o’r nwyddau mewn iaith glir. Nid oes rhaid i hyn gyd-fynd â’r disgrifiad tariff masnach.
+
+reviewReason.mismatch.title = Mae angen adolygu’r cofnod hwn
+reviewReason.mismatch.heading = Mae angen adolygu’r cofnod hwn
+reviewReason.mismatch.p1 = Mae CThEF wedi adolygu’r cofnod hwn. Nid yw’r cod nwyddau a’r disgrifiad nwyddau yn cyd-fynd. Os ydych am ddefnyddio’r cofnod hwn ar IMMI, bydd angen i chi ddiwygio’r cod nwyddau a’r disgrifiad nwyddau.
+
+
+withdrawAdviceStart.title = Tynnu’ch cais yn ôl
+withdrawAdviceStart.h1 = Tynnu’ch cais yn ôl
+withdrawAdviceStart.h2 = A ydych yn siŵr eich bod am dynnu’ch cais am gyngor yn ôl?
+withdrawAdviceStart.p1 = Bydd tynnu’ch cais yn ôl yn golygu na fydd CThEF yn cysylltu â chi gyda phenderfyniad.
+withdrawAdviceStart.p2 = Byddwn yn datgloi’ch cofnod nwyddau os ydych yn tynnu’ch cais yn ôl. Mae hyn yn golygu y byddwch yn gallu diweddaru’r cofnod nwyddau.
+withdrawAdviceStart.radio1 = Iawn, tynnwch fy nghais am gyngor
+withdrawAdviceStart.radio2 = Na, peidiwch â thynnu fy nghais am gyngor
+withdrawAdviceStart.error.required = Dewiswch os ydych am dynnu’ch cais am gyngor yn ôl
+
+withdrawAdviceSuccess.title = Cais am gyngor wedi’i dynnu’n ôl
+withdrawAdviceSuccess.h1 = Cais am gyngor wedi’i dynnu’n ôl
+withdrawAdviceSuccess.p1 = Rydym wedi datgloi’r cofnod nwyddau a gallwch wneud newidiadau iddo.
+
+reasonForWithdrawAdvice.title = A allwch roi gwybod i ni pam eich bod yn tynnu’ch cais am gyngor yn ôl?
+reasonForWithdrawAdvice.h1 = A allwch roi gwybod i ni pam eich bod yn tynnu’ch cais am gyngor yn ôl?
+reasonForWithdrawAdvice.hint = Mae hyn yn ddewisol a gallwch dynnu’ch cais yn ôl heb roi rheswm i ni. Mae rhoi gwybod i ni pam yn gallu helpu ni i wella’r gwasanaeth.
+reasonForWithdrawAdvice.continue = Tynnu’r cais yn ôl
+reasonForWithdrawAdvice.error.length = Mae’n rhaid i’r rheswm fod yn 512 o gymeriadau neu lai
+
+singleRecord.recordLocked = Mae’r cofnod hwn wedi’i gloi gan eich bod wedi gofyn i CThEF am gyngor os yw’n gywir. Ni allwch wneud unrhyw newidiadau i’r cofnod hwn nes bod CThEF wedi gwneud penderfyniad, neu eich bod yn tynnu’ch cais yn ôl.
+
+previousMovementRecords.title = Cofnodion symud blaenorol
+previousMovementRecords.h1 = Cofnodion symud blaenorol
+previousMovementRecords.p1 = Mae gan Broffil Nwyddau Masnachwr (TGP) eich gwybodaeth symud flaenorol o 01/04/2023 i 19/06/2024 wedi’i chadw fel cofnodion unigol. Mae CThEF wedi tynnu unrhyw gofnodion dyblyg. Mae’n bosibl y byddwch am wirio bod gwybodaeth y cofnod yn gywir cyn eu defnyddio ar symudiad.
+previousMovementRecords.p2 = Mae TGP wedi creu cyfeirnodau masnachwr o wybodaeth sydd gennym eisoes. Gallwch newid y cyfeirnod masnachwr at unrhyw beth i’ch helpu i nodi’r cofnod.
+previousMovementRecords.h2 = Gwladwriaethau
+previousMovementRecords.p3 = Bydd TGP yn rhoi gwybod i chi a yw cofnod yn barod i symud o dan Gwybodaeth Symud Marchnad Fewnol (IMMI) trwy ddefnyddio gwladwriaethau. Gallwch weld y gwladwriaethau ar eich rhestr cofnodion nwyddau.
+previousMovementRecords.tableHeader.state = Gwladwriaethau
+previousMovementRecords.tableHeader.description = Disgrifiad
+previousMovementRecords.state.immiReady = Barod ar gyfer IMMI
+previousMovementRecords.description.immiReady = Mae’r cofnod hwn yn barod i symud o dan IMMI
+previousMovementRecords.state.notImmiReady = Ddim yn barod ar gyfer IMMI
+previousMovementRecords.description.notImmiReady = Ni allwch ddefnyddio’r cofnodion hyn i symud gan ddefnyddio IMMI. Mae’n bosibl y gallwch ddiweddaru’r wybodaeth neu gategoreiddio’r cofnod i weld a yw’n barod ar gyfer IMMI.
+previousMovementRecords.state.notReadyForUse = Ddim yn barod i’w ddefnyddio
+previousMovementRecords.description.notReadyForUse = Mae gan gofnodion Ddim yn barod i’w defnyddio gwybodaeth sydd ar goll, wedi dod i ben neu annilys. Bydd angen i chi gwblhau’r cofnod i weld a yw’n barod ar gyfer IMMI.
+
+
+hasSupplementaryUnit.title = Uned atodol
+hasSupplementaryUnit.h1 = Uned atodol
+hasSupplementaryUnit.h2 = A ydych am ychwanegu’r uned atodol?
+hasSupplementaryUnit.p1 = Gan fod eich nwyddau yn perthyn i Gategori 2, mae hyn yn golygu y bydd angen i chi ychwanegu uned atodol at eich Gwybodaeth Symud Marchnad Fewnol (IMMI).
+hasSupplementaryUnit.p2 = Mae’r opsiwn gennych i storio uned atodol yn eich TGP. Mae’r opsiwn hwn yn ddefnyddiol os ydych yn symud yr un faint o nwyddau yn aml.
+hasSupplementaryUnit.checkYourAnswersLabel = A ydych am ychwanegu’r uned atodol?
+hasSupplementaryUnit.error.required = Dewiswch ‘Iawn’ os ydych am ychwanegu uned atodol
+hasSupplementaryUnit.change.hidden = HasSupplementaryUnit
+
+supplementaryUnit.title = Beth yw uned atodol y nwyddau?
+supplementaryUnit.h1 = Beth yw uned atodol y nwyddau?
+supplementaryUnit.checkYourAnswersLabel = Beth yw uned atodol y nwyddau?
+supplementaryUnit.error.nonNumeric = Nodwch uned atodol yn y fformat cywir
+supplementaryUnit.error.required = Nodwch uned atodol y nwyddau
+supplementaryUnit.change.hidden = SupplementaryUnit
+
+longerCommodityCode.title = Mae angen i chi nodi cod nwyddau hirach
+longerCommodityCode.h1 = Mae angen i chi nodi cod nwyddau hirach
+longerCommodityCode.p1 = Rydych wedi nodi cod nwyddau {0}.
+longerCommodityCode.p2 = Mae angen i chi roi cod nwyddau sy’n 8 neu 10 digid er mwyn i ni allu categoreiddio’ch nwyddau.
+longerCommodityCode.insetText = Gan eich bod yn rhoi cod nwyddau hirach, mae’n bosibl na fydd rhai o’r asesiadau categori bellach yn berthnasol i’ch nwyddau. Yn yr achos hwn, bydd unrhyw atebion ar gyfer yr asesiadau categori a roddwyd gennych yn flaenorol yn cael eu dileu.
+longerCommodityCode.h2 = Beth yw’r rhifau ychwanegol yn y cod nwyddau?
+longerCommodityCode.hint = Nodwch 2 neu 4 digid
+longerCommodityCode.linkText = Defnyddiwch yr Offeryn Tariff Ar-lein (yn agor tab newydd) i chwilio am god nwyddau.
+longerCommodityCode.checkYourAnswersLabel = Cod nwyddau hirach
+longerCommodityCode.error.required = Nodwch 2 neu 4 digid
+longerCommodityCode.error.invalidFormat = Nodwch god nwyddau yn y fformat cywir
+longerCommodityCode.error.invalid = Nodwch god nwyddau go iawn
+longerCommodityCode.change.hidden = LongerCommodityCode
+
+name.error.length = Nodwch enw gan ddefnyddio 70 o gymeriadau neu lai
