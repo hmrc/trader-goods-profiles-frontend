@@ -26,20 +26,21 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 case class FileManagementViewModel(
-                                    availableFilesTable: Option[AvailableFilesTable],
-                                    pendingFilesTable: Option[PendingFilesTable]
-                                  )(implicit messages: Messages) {
+  availableFilesTable: Option[AvailableFilesTable],
+  pendingFilesTable: Option[PendingFilesTable]
+)(implicit messages: Messages) {
 
   val isFiles: Boolean = availableFilesTable.isDefined || pendingFilesTable.isDefined
 
-  val title: String = messages("fileManagement.title")
+  val title: String   = messages("fileManagement.title")
   val heading: String = messages("fileManagement.heading")
 
   val paragraph1: String =
     if (isFiles) messages("fileManagement.files.paragraph1") else messages("fileManagement.noFiles.paragraph1")
 
   val tgpRecordsLink: String =
-    if (isFiles) messages("fileManagement.files.requestRecord.linkText") else messages("fileManagement.noFiles.requestRecord.linkText")
+    if (isFiles) messages("fileManagement.files.requestRecord.linkText")
+    else messages("fileManagement.noFiles.requestRecord.linkText")
 
   val goBackHomeLink: String = messages("site.goBackToHomePage")
 }
@@ -47,12 +48,12 @@ case class FileManagementViewModel(
 object FileManagementViewModel {
   class FileManagementViewModelProvider @Inject() {
     def apply(
-               eori: String,
-               downloadDataConnector: DownloadDataConnector
-             )(implicit messages: Messages, ec: ExecutionContext, hc: HeaderCarrier): Future[FileManagementViewModel] =
+      eori: String,
+      downloadDataConnector: DownloadDataConnector
+    )(implicit messages: Messages, ec: ExecutionContext, hc: HeaderCarrier): Future[FileManagementViewModel] =
       for {
         downloadDataSummary <- downloadDataConnector.getDownloadDataSummary(eori)
-        downloadData <- downloadDataConnector.getDownloadData(eori)
+        downloadData        <- downloadDataConnector.getDownloadData(eori)
 
         availableDataSummaries =
           downloadDataSummary
@@ -60,21 +61,21 @@ object FileManagementViewModel {
             .filter(_.nonEmpty)
 
         availableFiles = availableDataSummaries.flatMap { availableFilesSeq =>
-          val files = for {
-            availableFile <- availableFilesSeq
-            fileInfo <- availableFile.fileInfo
-            downloadDataSeq <- downloadData
-            matchingDownload <- downloadDataSeq.find(_.filename == fileInfo.fileName)
-          } yield (availableFile, matchingDownload)
+                           val files = for {
+                             availableFile    <- availableFilesSeq
+                             fileInfo         <- availableFile.fileInfo
+                             downloadDataSeq  <- downloadData
+                             matchingDownload <- downloadDataSeq.find(_.filename == fileInfo.fileName)
+                           } yield (availableFile, matchingDownload)
 
-          if (files.nonEmpty) Some(files) else None
-        }
+                           if (files.nonEmpty) Some(files) else None
+                         }
 
         pendingFiles = downloadDataSummary.map(_.filter(_.status == FileInProgress)).filter(_.nonEmpty)
 
       } yield {
         val availableFilesTable = FileManagementTable.AvailableFilesTable(availableFiles)
-        val pendingFilesTable = FileManagementTable.PendingFilesTable(pendingFiles)
+        val pendingFilesTable   = FileManagementTable.PendingFilesTable(pendingFiles)
 
         new FileManagementViewModel(availableFilesTable, pendingFilesTable)
       }

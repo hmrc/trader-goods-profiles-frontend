@@ -27,22 +27,22 @@ import views.html.HomePageView
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class HomePageController @Inject()(
-                                    override val messagesApi: MessagesApi,
-                                    identify: IdentifierAction,
-                                    getOrCreate: DataRetrievalOrCreateAction,
-                                    profileAuth: ProfileAuthenticateAction,
-                                    downloadDataConnector: DownloadDataConnector,
-                                    goodsRecordConnector: GoodsRecordConnector,
-                                    val controllerComponents: MessagesControllerComponents,
-                                    view: HomePageView
-                                  )(implicit ec: ExecutionContext)
-  extends BaseController {
+class HomePageController @Inject() (
+  override val messagesApi: MessagesApi,
+  identify: IdentifierAction,
+  getOrCreate: DataRetrievalOrCreateAction,
+  profileAuth: ProfileAuthenticateAction,
+  downloadDataConnector: DownloadDataConnector,
+  goodsRecordConnector: GoodsRecordConnector,
+  val controllerComponents: MessagesControllerComponents,
+  view: HomePageView
+)(implicit ec: ExecutionContext)
+    extends BaseController {
 
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getOrCreate).async { implicit request =>
     for {
       downloadDataSummary <- downloadDataConnector.getDownloadDataSummary(request.eori)
-      goodsRecords <- goodsRecordConnector.getRecords(request.eori, 1, 1)
+      goodsRecords        <- goodsRecordConnector.getRecords(request.eori, 1, 1)
       doesGoodsRecordExist = goodsRecords.exists(_.goodsItemRecords.nonEmpty)
     } yield {
       val downloadLinkMessagesKey = getDownloadLinkMessagesKey(downloadDataSummary, doesGoodsRecordExist)
@@ -61,16 +61,17 @@ class HomePageController @Inject()(
       )
       .getOrElse(false)
 
-  private def getDownloadLinkMessagesKey(opt: Option[Seq[DownloadDataSummary]], doesGoodsRecordExist: Boolean): String = {
+  private def getDownloadLinkMessagesKey(opt: Option[Seq[DownloadDataSummary]], doesGoodsRecordExist: Boolean): String =
     if (doesGoodsRecordExist) {
-      opt.flatMap(
-        _.collectFirst {
-          case summary if Seq(FileInProgress, FileReadyUnseen, FileReadySeen).contains(summary.status) =>
-            "homepage.downloadLinkText.filesRequested"
-        }
-      ).getOrElse("homepage.downloadLinkText.noFilesRequested")
+      opt
+        .flatMap(
+          _.collectFirst {
+            case summary if Seq(FileInProgress, FileReadyUnseen, FileReadySeen).contains(summary.status) =>
+              "homepage.downloadLinkText.filesRequested"
+          }
+        )
+        .getOrElse("homepage.downloadLinkText.noFilesRequested")
     } else {
       "homepage.downloadLinkText.noGoodsRecords"
     }
-  }
 }
