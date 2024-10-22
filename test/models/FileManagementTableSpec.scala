@@ -18,13 +18,17 @@ package models
 
 import base.SpecBase
 import generators.Generators
+import models.DownloadDataStatus.{FileInProgress, FileReadyUnseen}
 import models.filemanagement._
 import play.api.i18n.Messages
-import uk.gov.hmrc.govukfrontend.views.Aliases.{HeadCell, Text}
+import uk.gov.hmrc.govukfrontend.views.Aliases.{HeadCell, HtmlContent, Text}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.table.TableRow
+
+import java.time.Instant
 
 class FileManagementTableSpec extends SpecBase with Generators {
 
-  "FileManagementTable" - { // TODO: Test apply object
+  "FileManagementTable" - {
 
     val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
       .build()
@@ -51,6 +55,46 @@ class FileManagementTableSpec extends SpecBase with Generators {
           HeadCell(content = Text("File"))
         )
       }
+
+      ".apply" - {
+        "must return convert Option[Seq[(DownloadDataSummary, DownloadData)]] into correct table rows" - {
+          "when None" in {
+            FileManagementTable.AvailableFilesTable(None) mustBe None
+          }
+
+          "when populated with both DownloadDataSummary and DownloadData" in {
+
+            val instant = Instant.parse("2024-04-22T10:05:00Z")
+
+            val fileName            = "url.csv"
+            val fileInfo            = FileInfo(fileName, 1, instant, "30")
+            val downloadDataSummary = DownloadDataSummary("testEori", FileReadyUnseen, instant, Some(fileInfo))
+            val downloadData        = DownloadData(fileName, fileName, 1, Seq.empty)
+
+            val tableParameter = Some(Seq((downloadDataSummary, downloadData)))
+
+            val dateTime   = "22 April 2024 10:05"
+            val expiryDate = "22 May 2024 10:05"
+            val file       = s"""<a href="url.csv" class="govuk-link">Download file</a>"""
+
+            val tableRows = Seq(
+              Seq(
+                TableRow(
+                  content = Text(dateTime)
+                ),
+                TableRow(
+                  content = Text(expiryDate)
+                ),
+                TableRow(
+                  content = HtmlContent(file)
+                )
+              )
+            )
+
+            FileManagementTable.AvailableFilesTable(tableParameter).value.availableFileRows mustBe tableRows
+          }
+        }
+      }
     }
 
     "PendingFilesTable" - {
@@ -72,7 +116,39 @@ class FileManagementTableSpec extends SpecBase with Generators {
           HeadCell(content = Text("File"))
         )
       }
-    }
 
+      ".apply" - {
+        "must return convert Option[Seq[(DownloadDataSummary]] into correct table rows" - {
+          "when None" in {
+            FileManagementTable.PendingFilesTable(None) mustBe None
+          }
+
+          "when populated with both DownloadDataSummary" in {
+
+            val instant = Instant.parse("2024-04-22T10:05:00Z")
+
+            val downloadDataSummary = DownloadDataSummary("testEori", FileInProgress, instant, None)
+
+            val tableParameter = Some(Seq(downloadDataSummary))
+
+            val dateTime = "22 April 2024 10:05"
+            val file     = s"""<strong class="govuk-tag">File not ready</strong>"""
+
+            val tableRows = Seq(
+              Seq(
+                TableRow(
+                  content = Text(dateTime)
+                ),
+                TableRow(
+                  content = HtmlContent(file)
+                )
+              )
+            )
+
+            FileManagementTable.PendingFilesTable(tableParameter).value.pendingFileRows mustBe tableRows
+          }
+        }
+      }
+    }
   }
 }

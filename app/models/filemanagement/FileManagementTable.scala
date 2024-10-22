@@ -103,7 +103,7 @@ object FileManagementTable {
 
             val fileCreated = convertToDateString(pendingFile.createdAt)
             val fileLink =
-              HtmlContent(s"<strong class=govuk-tag>${messages("fileManagement.pendingFiles.fileText")}</strong>")
+              HtmlContent(s"""<strong class="govuk-tag">${messages("fileManagement.pendingFiles.fileText")}</strong>""")
           // TODO: Is it possible to use the component here?
 
             Seq(

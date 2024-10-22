@@ -149,7 +149,7 @@ class DownloadDataConnectorSpec
 
   ".getDownloadDataSummary" - {
 
-    val downloadDataSummary = Seq(DownloadDataSummary(testEori, RequestFile, None))
+    val downloadDataSummary = Seq(DownloadDataSummary(testEori, RequestFile, Instant.now(), None))
 
     "must get download data summary" in {
 
