@@ -35,7 +35,7 @@ import scala.concurrent.{ExecutionContextExecutor, Future}
 
 class FileManagementViewModelSpec extends SpecBase with Generators {
 
-  "FileManagementViewModel" - { // TODO: Test apply object
+  "FileManagementViewModel" - {
 
     val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
       .build()

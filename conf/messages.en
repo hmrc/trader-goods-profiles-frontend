@@ -208,10 +208,9 @@ homepage.p6.linkText = Find additional support and contacts to help you
 homepage.downloadBanner.important = Important
 homepage.downloadBanner.content = The TGP records file you asked for is ready to download.
 homepage.downloadBanner.linkText = Go to the TGP records file page to download the file
-homepage.downloadLinkText.requestFile = Request a file of your TGP records
-homepage.downloadLinkText.fileInProgress = Get an update on your TGP records file or request a new file
-homepage.downloadLinkText.fileReady = Download your TGP records file or request a new file
 homepage.downloadLinkText.noGoodsRecords = You do not have TGP goods records to download.
+homepage.downloadLinkText.noFilesRequested = Get your TGP records file
+homepage.downloadLinkText.filesRequested = Get or download your TGP records file
 
 createRecordStart.title = Creating a goods record
 createRecordStart.h1 = Creating a goods record

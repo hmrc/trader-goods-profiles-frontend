@@ -27,22 +27,22 @@ import views.html.HomePageView
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class HomePageController @Inject() (
-  override val messagesApi: MessagesApi,
-  identify: IdentifierAction,
-  getOrCreate: DataRetrievalOrCreateAction,
-  profileAuth: ProfileAuthenticateAction,
-  downloadDataConnector: DownloadDataConnector,
-  goodsRecordConnector: GoodsRecordConnector,
-  val controllerComponents: MessagesControllerComponents,
-  view: HomePageView
-)(implicit ec: ExecutionContext)
-    extends BaseController {
+class HomePageController @Inject()(
+                                    override val messagesApi: MessagesApi,
+                                    identify: IdentifierAction,
+                                    getOrCreate: DataRetrievalOrCreateAction,
+                                    profileAuth: ProfileAuthenticateAction,
+                                    downloadDataConnector: DownloadDataConnector,
+                                    goodsRecordConnector: GoodsRecordConnector,
+                                    val controllerComponents: MessagesControllerComponents,
+                                    view: HomePageView
+                                  )(implicit ec: ExecutionContext)
+  extends BaseController {
 
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getOrCreate).async { implicit request =>
     for {
       downloadDataSummary <- downloadDataConnector.getDownloadDataSummary(request.eori)
-      goodsRecords        <- goodsRecordConnector.getRecords(request.eori, 1, 1)
+      goodsRecords <- goodsRecordConnector.getRecords(request.eori, 1, 1)
       doesGoodsRecordExist = goodsRecords.exists(_.goodsItemRecords.nonEmpty)
     } yield {
       val downloadLinkMessagesKey = getDownloadLinkMessagesKey(downloadDataSummary, doesGoodsRecordExist)
@@ -54,23 +54,23 @@ class HomePageController @Inject() (
     // TODO: Check what the expected logic is for showing the download banner,
     //  do we want to show it if any of the downloaded files are unseen, or only if the latest request is unseen?
     downloadDataSummary
-      .flatMap(_.collectFirst {
-        case summary if summary.status == FileReadyUnseen => true
-      })
+      .flatMap(
+        _.collectFirst {
+          case summary if summary.status == FileReadyUnseen => true
+        }
+      )
       .getOrElse(false)
 
-  private def getDownloadLinkMessagesKey(opt: Option[Seq[DownloadDataSummary]], doesGoodsRecordExist: Boolean): String =
-    //TODO: CHeck what the expected logic is for the download link text, show based on the first instance of a file being ready?
+  private def getDownloadLinkMessagesKey(opt: Option[Seq[DownloadDataSummary]], doesGoodsRecordExist: Boolean): String = {
     if (doesGoodsRecordExist) {
-      opt
-        .flatMap(_.collectFirst {
-          case summary if summary.status == FileReadyUnseen | summary.status == FileReadySeen =>
-            "homepage.downloadLinkText.fileReady"
-          case summary if summary.status == FileInProgress                                    => "homepage.downloadLinkText.fileInProgress"
-        })
-        .getOrElse("homepage.downloadLinkText.requestFile")
+      opt.flatMap(
+        _.collectFirst {
+          case summary if Seq(FileInProgress, FileReadyUnseen, FileReadySeen).contains(summary.status) =>
+            "homepage.downloadLinkText.filesRequested"
+        }
+      ).getOrElse("homepage.downloadLinkText.noFilesRequested")
     } else {
       "homepage.downloadLinkText.noGoodsRecords"
     }
-
+  }
 }

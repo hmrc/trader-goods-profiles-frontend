@@ -98,7 +98,7 @@ class HomePageControllerSpec extends SpecBase {
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             downloadReady = true,
-            downloadLinkMessagesKey = "homepage.downloadLinkText.fileReady"
+            downloadLinkMessagesKey = "homepage.downloadLinkText.filesRequested"
           )(request, messages(application)).toString
         }
       }
@@ -144,12 +144,48 @@ class HomePageControllerSpec extends SpecBase {
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             downloadReady = false,
-            downloadLinkMessagesKey = "homepage.downloadLinkText.fileReady"
+            downloadLinkMessagesKey = "homepage.downloadLinkText.filesRequested"
           )(request, messages(application)).toString
         }
       }
 
       "must return OK and the correct view for a GET with correct messageKey" - {
+        "when downloadDataSummary is None" in {
+          val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+
+          val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+          when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
+            None
+          )
+
+          val mockGoodsRecordConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
+          when(mockGoodsRecordConnector.getRecords(any(), any(), any())(any())) thenReturn Future
+            .successful(Some(goodsResponse))
+
+          val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .overrides(
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+              bind[DownloadDataConnector].toInstance(mockDownloadDataConnector),
+              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
+            )
+            .build()
+
+          running(application) {
+            val request = FakeRequest(GET, routes.HomePageController.onPageLoad().url)
+
+            val result = route(application, request).value
+
+            val view = application.injector.instanceOf[HomePageView]
+
+            status(result) mustEqual OK
+            contentAsString(result) mustEqual view(
+              downloadReady = false,
+              downloadLinkMessagesKey = "homepage.downloadLinkText.noFilesRequested"
+            )(request, messages(application)).toString
+          }
+        }
+
         "when downloadDataSummary is RequestFile" in {
           val downloadDataSummary = Seq(
             DownloadDataSummary(
@@ -190,7 +226,7 @@ class HomePageControllerSpec extends SpecBase {
             status(result) mustEqual OK
             contentAsString(result) mustEqual view(
               downloadReady = false,
-              downloadLinkMessagesKey = "homepage.downloadLinkText.requestFile"
+              downloadLinkMessagesKey = "homepage.downloadLinkText.noFilesRequested"
             )(request, messages(application)).toString
           }
         }
@@ -235,7 +271,7 @@ class HomePageControllerSpec extends SpecBase {
             status(result) mustEqual OK
             contentAsString(result) mustEqual view(
               downloadReady = false,
-              downloadLinkMessagesKey = "homepage.downloadLinkText.fileInProgress"
+              downloadLinkMessagesKey = "homepage.downloadLinkText.filesRequested"
             )(request, messages(application)).toString
           }
         }
@@ -280,7 +316,7 @@ class HomePageControllerSpec extends SpecBase {
             status(result) mustEqual OK
             contentAsString(result) mustEqual view(
               downloadReady = true,
-              downloadLinkMessagesKey = "homepage.downloadLinkText.fileReady"
+              downloadLinkMessagesKey = "homepage.downloadLinkText.filesRequested"
             )(request, messages(application)).toString
           }
         }
@@ -325,7 +361,7 @@ class HomePageControllerSpec extends SpecBase {
             status(result) mustEqual OK
             contentAsString(result) mustEqual view(
               downloadReady = false,
-              downloadLinkMessagesKey = "homepage.downloadLinkText.fileReady"
+              downloadLinkMessagesKey = "homepage.downloadLinkText.filesRequested"
             )(request, messages(application)).toString
           }
         }
