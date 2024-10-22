@@ -28,7 +28,7 @@ import java.time.Instant
 class CategorisationInfoSpec extends SpecBase {
 
   val testTraderProfileResponseWithoutNiphlAndNirms: TraderProfile =
-    TraderProfile("actorId", "ukims number", None, None)
+    TraderProfile("actorId", "ukims number", None, None, eoriChanged = false)
 
   ".build" - {
 
@@ -584,7 +584,7 @@ class CategorisationInfoSpec extends SpecBase {
         ".is authorised" - {
 
           val testTraderProfileResponseWithNiphlAndNirms =
-            TraderProfile("actorId", "ukims number", Some("nirms number"), Some("niphl number"))
+            TraderProfile("actorId", "ukims number", Some("nirms number"), Some("niphl number"), eoriChanged = false)
 
           "when there is a Category 1 assessment that need answers and there are Category 2 assessment with no exemptions" in {
             val mockOttResponse = OttResponse(
@@ -1067,7 +1067,7 @@ class CategorisationInfoSpec extends SpecBase {
         "and NIRMS authorised" - {
 
           val testTraderProfileResponseWithNirms =
-            TraderProfile("actorId", "ukims number", Some("nirms number"), None)
+            TraderProfile("actorId", "ukims number", Some("nirms number"), None, eoriChanged = false)
 
           "with Category 1 assessment and there is a Category 2 assessment" in {
 
