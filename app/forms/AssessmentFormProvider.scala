@@ -24,9 +24,9 @@ import play.api.data.Forms.seq
 
 class AssessmentFormProvider @Inject() extends Mappings {
 
-  def apply(exemptionCount: Int): Form[AssessmentAnswer] = {
-    val messagesKey = if (exemptionCount == 1) { "assessment.error.required.onlyOne" }
-    else { "assessment.error.required" }
+  def apply(): Form[AssessmentAnswer] = {
+
+    val messagesKey = "assessment.error.required"
 
     Form(
       "value" ->

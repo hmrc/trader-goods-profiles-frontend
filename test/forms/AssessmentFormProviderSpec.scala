@@ -24,7 +24,7 @@ import play.api.libs.json.{JsValue, Json}
 
 class AssessmentFormProviderSpec extends StringFieldBehaviours with ScalaCheckPropertyChecks {
 
-  private val form = new AssessmentFormProvider()(2)
+  private val form = new AssessmentFormProvider()()
 
   ".value" - {
 

@@ -72,7 +72,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               val onSubmitAction               =
                 routes.AssessmentController.onSubmit(NormalMode, testRecordId, Constants.firstAssessmentNumber)
               val view                         = application.injector.instanceOf[AssessmentView]
-              val form                         = formProvider(1)
+              val form                         = formProvider()
               val expectedCodesAndDescriptions =
                 categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map { exemption =>
                   (exemption.code, exemption.description)
@@ -116,7 +116,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               val onSubmitAction               =
                 routes.AssessmentController.onSubmit(NormalMode, testRecordId, Constants.firstAssessmentNumber)
               val view                         = application.injector.instanceOf[AssessmentView]
-              val form                         = formProvider(1).fill(AssessmentAnswer.NoExemption)
+              val form                         = formProvider().fill(AssessmentAnswer.NoExemption)
               val expectedCodesAndDescriptions =
                 categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map { exemption =>
                   (exemption.code, exemption.description)
@@ -262,7 +262,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
             val onSubmitAction               =
               routes.AssessmentController.onSubmit(NormalMode, testRecordId, Constants.firstAssessmentNumber)
             val view                         = application.injector.instanceOf[AssessmentView]
-            val form                         = formProvider(1).fill(AssessmentAnswer.NoExemption)
+            val form                         = formProvider().fill(AssessmentAnswer.NoExemption)
             val boundForm                    = form.bind(Map("value" -> ""))
             val expectedCodesAndDescriptions =
               categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map { exemption =>
@@ -418,7 +418,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               val onSubmitAction               = routes.AssessmentController
                 .onSubmitReassessment(NormalMode, testRecordId, Constants.firstAssessmentNumber)
               val view                         = application.injector.instanceOf[AssessmentView]
-              val form                         = formProvider(1)
+              val form                         = formProvider()
               val expectedCodesAndDescriptions =
                 categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map { exemption =>
                   (exemption.code, exemption.description)
@@ -463,7 +463,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               val result = route(application, request).value
 
               val view                         = application.injector.instanceOf[AssessmentView]
-              val form                         = formProvider(1).fill(AssessmentAnswer.NoExemption)
+              val form                         = formProvider().fill(AssessmentAnswer.NoExemption)
               val expectedCodesAndDescriptions =
                 categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map { exemption =>
                   (exemption.code, exemption.description)
@@ -617,7 +617,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               routes.AssessmentController
                 .onSubmitReassessment(NormalMode, testRecordId, Constants.firstAssessmentNumber)
             val view                         = application.injector.instanceOf[AssessmentView]
-            val form                         = formProvider(1).fill(AssessmentAnswer.NoExemption)
+            val form                         = formProvider().fill(AssessmentAnswer.NoExemption)
             val boundForm                    = form.bind(Map("value" -> ""))
             val expectedCodesAndDescriptions =
               categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map { exemption =>
