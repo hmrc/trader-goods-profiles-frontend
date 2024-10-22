@@ -267,19 +267,17 @@ traderReference.checkYourAnswersLabel = Trader reference
 traderReference.change.hidden = Trader reference
 
 assessment.title = Categorisation question
-assessment.heading = Category assessment {0} of {1} *
-assessment.guidance = You need to confirm which of these exclusions you hold for {0}. The measure for this assessment is: *
+assessment.heading = Category assessment {0} of {1}
+assessment.guidance = You need to confirm which of these exclusions you hold for {0}. The measure for this assessment is:
 assessment.linkText = Search for a commodity code on the Online Tariff Tool (opens in new tab)
-assessment.question = Which of these exclusions you hold for {0}? *
-assessment.question.onlyOne =
-assessment.hint = Select all that apply. *
+assessment.question = Which of these exclusions you hold for {0}?
+assessment.hint = Select all that apply.
 assessment.exemption = {0} - {1}
 assessment.exemption.none = None of the above
-assessment.error.required = Select yes if you meet any of the exclusions *
-assessment.error.required.onlyOne = Select yes if you meet the exclusion *
+assessment.error.required = Select yes if you meet any of the exclusions
+assessment.error.required.onlyOne = Select yes if you meet the exclusion
 assessment.exemption.none.checkYourAnswersLabel = None selected
 assessment.checkYourAnswersLabel = Category assessment {0} of {1}
-assessment.insetText =
 assessment.change.hidden = Category assessment {0}
 
 ukimsKickOut.title = You need to apply for the UK Internal Market Scheme (UKIMS)

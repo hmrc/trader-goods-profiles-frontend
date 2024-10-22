@@ -21,7 +21,6 @@
         layout: templates.Layout,
         formHelper: FormWithCSRF,
         govukErrorSummary: GovukErrorSummary,
-        govukRadios: GovukRadios,
         govukButton: GovukButton,
         govukCheckboxes: GovukCheckboxes,
 )
@@ -70,8 +69,8 @@
                         id = Some("none_of_above"),
                         name = Some("value[]"),
                         content = Text(messages("assessment.exemption.none")),
-                        value = "false",
-                        checked = form("value[]").value.contains("false"),
+                        value = "none",
+                        checked = form("value[]").value.contains("none"),
                         behaviour = Some(ExclusiveCheckbox)
                     )
                 )

@@ -34,15 +34,11 @@ class AssessmentFormProvider @Inject() extends Mappings {
           .verifying(messagesKey, values => values.nonEmpty)
           .verifying(
             messagesKey,
-            values => !values.contains("false") || values.size == 1
+            values => !(values.contains("none") && values.size > 1)
           )
           .transform[AssessmentAnswer](
-            values => AssessmentAnswer.fromStringOrSeq(Right(values)),
-            {
-              case AssessmentAnswer.NoExemption     => Seq("false")
-              case AssessmentAnswer.Exemption(vals) => vals
-              case _                                => Seq.empty
-            }
+            values => AssessmentAnswer.fromSeq(values),
+            values => AssessmentAnswer.toSeq(values)
           )
     )
   }

@@ -230,7 +230,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               .build()
 
           running(application) {
-            val checkedValues = List("false")
+            val checkedValues = List("none")
 
             val request = FakeRequest(POST, assessmentRoute).withFormUrlEncodedBody(
               checkedValues.flatMap(value => Seq("value[]" -> value)): _*
@@ -371,7 +371,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               .build()
 
             running(application) {
-              val checkedValues = List("false")
+              val checkedValues = List("none")
 
               val request = FakeRequest(POST, assessmentRoute).withFormUrlEncodedBody(
                 checkedValues.flatMap(value => Seq("value[]" -> value)): _*
@@ -726,7 +726,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               .build()
 
             running(application) {
-              val checkedValues = List("false")
+              val checkedValues = List("none")
 
               val request = FakeRequest(POST, assessmentRoute).withFormUrlEncodedBody(
                 checkedValues.flatMap(value => Seq("value[]" -> value)): _*
