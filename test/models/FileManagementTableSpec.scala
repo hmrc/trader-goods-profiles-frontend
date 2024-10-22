@@ -90,7 +90,8 @@ class FileManagementTableSpec extends SpecBase with Generators {
 
             val dateTime   = "22 April 2024 10:05"
             val expiryDate = "22 May 2024 10:05"
-            val file       = s"""<a href="url.csv" class="govuk-link">Download file</a>"""
+            val file       =
+              s"""<a href="url.csv" class="govuk-link">Download file<span class="govuk-visually-hidden"> requested on 22 April 2024 10:05</span></a>"""
 
             val tableRows = Seq(
               Seq(

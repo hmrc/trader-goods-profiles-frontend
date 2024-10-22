@@ -52,7 +52,7 @@ class FileReadyController @Inject() (
             .getDownloadDataSummary(request.eori)
             .map(
               _.map(_.head)
-            ) //TODO: Double check this, are we going to preserve the old page functionallity until they are removed?
+            )
         if isFileReady(downloadDataSummary)
         Some(fileInfo)            <- Future.successful(downloadDataSummary.fileInfo)
         Some(downloadData)        <-
@@ -60,7 +60,7 @@ class FileReadyController @Inject() (
             .getDownloadData(request.eori)
             .map(
               _.map(_.head)
-            ) //TODO: Double check this, are we going to preserve the old page functionallity until they are removed?
+            )
       } yield Ok(
         view(
           fileInfo.fileSize,

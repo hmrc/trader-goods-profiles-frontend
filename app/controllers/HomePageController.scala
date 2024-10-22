@@ -51,12 +51,10 @@ class HomePageController @Inject() (
   }
 
   private def downloadReady(downloadDataSummary: Option[Seq[DownloadDataSummary]]): Boolean =
-    // TODO: Check what the expected logic is for showing the download banner,
-    //  do we want to show it if any of the downloaded files are unseen, or only if the latest request is unseen?
     downloadDataSummary
       .flatMap(
         _.collectFirst {
-          case summary if summary.status == FileReadyUnseen => true
+          case summary if summary.status == FileReadyUnseen => true // TODO: Set to ReadySeen on seen
         }
       )
       .getOrElse(false)

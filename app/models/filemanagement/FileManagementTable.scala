@@ -73,7 +73,10 @@ object FileManagementTable {
             val fileLink           = HtmlContent(
               s"""<a href="${data.downloadURL}" class="govuk-link">${messages(
                 "fileManagement.availableFiles.downloadText"
-              )}</a>"""
+              )}<span class="govuk-visually-hidden"> ${messages(
+                "fileManagement.availableFiles.downloadText.hidden",
+                fileCreated
+              )}</span></a>"""
             )
 
             Seq(
