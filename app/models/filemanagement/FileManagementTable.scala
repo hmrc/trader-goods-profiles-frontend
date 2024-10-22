@@ -47,12 +47,12 @@ case class AvailableFilesTable(availableFileRows: Seq[Seq[TableRow]])(implicit m
 }
 
 object FileManagementTable {
-  private def convertToDateString(instant: Instant)(implicit messages: Messages): String = {
+   def convertToDateString(instant: Instant)(implicit messages: Messages): String = {
     implicit val lang: Lang = messages.lang
     instant.atZone(ZoneOffset.UTC).toLocalDateTime.format(dateTimeFormat())
   }
 
-  private def retentionTimeToExpirationDate(fileInfo: FileInfo)(implicit messages: Messages): String = convertToDateString(fileInfo.fileCreated
+  def retentionTimeToExpirationDate(fileInfo: FileInfo)(implicit messages: Messages): String = convertToDateString(fileInfo.fileCreated
     .plus(fileInfo.retentionDays.toInt, ChronoUnit.DAYS))
 
   object AvailableFilesTable {

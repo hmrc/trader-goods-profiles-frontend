@@ -37,6 +37,21 @@ class FileManagementTableSpec extends SpecBase with Generators {
 
     val tableRows = arbitrarySeqTableRows.sample.value
 
+    "convertToDateString" - {
+      "must return correct date string" in {
+        val instant = Instant.parse("2024-04-22T10:05:00Z")
+        FileManagementTable.convertToDateString(instant) mustEqual "22 April 2024 10:05"
+      }
+    }
+
+    "retentionTimeToExpirationDate" - {
+      "must return correct expiration date" in {
+        val instant  = Instant.parse("2024-04-22T10:05:00Z")
+        val fileInfo = FileInfo("url.csv", 1, instant, "30")
+        FileManagementTable.retentionTimeToExpirationDate(fileInfo) mustEqual "22 May 2024 10:05"
+      }
+    }
+
     "AvailableFilesTable" - {
       val table = AvailableFilesTable(tableRows)
 
