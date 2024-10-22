@@ -24,17 +24,24 @@ import play.api.i18n.Messages
 
 class FileManagementViewModelSpec extends SpecBase with Generators {
 
-  "FileManagementViewModel" - {
+  "FileManagementViewModel" - { // TODO: Test apply object
 
     val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
       .build()
 
+    val availableFilesTableRow = arbitrarySeqTableRows.sample.value
+
+    val pendingFilesTableRow = arbitrarySeqTableRows.sample.value
+
     implicit val message: Messages = messages(application)
 
-    val viewModelAvailableFiles = FileManagementViewModel(Some(AvailableFilesTable()), None)
-    val viewModelPendingFiles   = FileManagementViewModel(None, Some(PendingFilesTable()))
+    val viewModelAvailableFiles = FileManagementViewModel(Some(AvailableFilesTable(availableFilesTableRow)), None)
+    val viewModelPendingFiles   = FileManagementViewModel(None, Some(PendingFilesTable(pendingFilesTableRow)))
     val viewModelNoFiles        = FileManagementViewModel(None, None)
-    val viewModelAllFiles       = FileManagementViewModel(Some(AvailableFilesTable()), Some(PendingFilesTable()))
+    val viewModelAllFiles       = FileManagementViewModel(
+      Some(AvailableFilesTable(availableFilesTableRow)),
+      Some(PendingFilesTable(pendingFilesTableRow))
+    )
     val viewModels              =
       Gen.oneOf(Seq(viewModelAvailableFiles, viewModelPendingFiles, viewModelNoFiles, viewModelAllFiles)).sample.value
 

@@ -63,6 +63,7 @@ class HomePageControllerSpec extends SpecBase {
           DownloadDataSummary(
             testEori,
             FileReadyUnseen,
+            Instant.now(),
             Some(FileInfo(fileName, fileSize, fileCreated, retentionDays))
           )
         )
@@ -111,6 +112,7 @@ class HomePageControllerSpec extends SpecBase {
           DownloadDataSummary(
             testEori,
             FileReadySeen,
+            Instant.now(),
             Some(FileInfo(fileName, fileSize, fileCreated, retentionDays))
           )
         )
@@ -153,6 +155,7 @@ class HomePageControllerSpec extends SpecBase {
             DownloadDataSummary(
               testEori,
               RequestFile,
+              Instant.now(),
               None
             )
           )
@@ -197,6 +200,7 @@ class HomePageControllerSpec extends SpecBase {
             DownloadDataSummary(
               testEori,
               FileInProgress,
+              Instant.now(),
               None
             )
           )
@@ -241,6 +245,7 @@ class HomePageControllerSpec extends SpecBase {
             DownloadDataSummary(
               testEori,
               FileReadyUnseen,
+              Instant.now(),
               None
             )
           )
@@ -285,6 +290,7 @@ class HomePageControllerSpec extends SpecBase {
             DownloadDataSummary(
               testEori,
               FileReadySeen,
+              Instant.now(),
               None
             )
           )
@@ -333,6 +339,7 @@ class HomePageControllerSpec extends SpecBase {
           DownloadDataSummary(
             testEori,
             RequestFile,
+            Instant.now(),
             Some(FileInfo(fileName, fileSize, fileCreated, retentionDays))
           )
         )

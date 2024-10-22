@@ -70,6 +70,7 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
         val downloadDataSummary      = DownloadDataSummary(
           testEori,
           FileReadySeen,
+          Instant.now(),
           Some(FileInfo(fileName, fileSize, fileCreated, retentionDays))
         )
 
@@ -116,6 +117,7 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
           val downloadDataSummary = DownloadDataSummary(
             testEori,
             FileReadySeen,
+            Instant.now(),
             Some(FileInfo(fileName, fileSize, fileCreated, retentionDays))
           )
 
@@ -149,6 +151,7 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
           val downloadDataSummary = DownloadDataSummary(
             testEori,
             FileReadySeen,
+            Instant.now(),
             None
           )
 
@@ -182,6 +185,7 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
           val downloadDataSummary = DownloadDataSummary(
             testEori,
             RequestFile,
+            Instant.now(),
             None
           )
 

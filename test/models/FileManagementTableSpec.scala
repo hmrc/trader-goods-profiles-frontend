@@ -17,21 +17,24 @@
 package models
 
 import base.SpecBase
+import generators.Generators
 import models.filemanagement._
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.{HeadCell, Text}
 
-class FileManagementTableSpec extends SpecBase {
+class FileManagementTableSpec extends SpecBase with Generators {
 
-  "FileManagementTable" - {
+  "FileManagementTable" - { // TODO: Test apply object
 
     val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
       .build()
 
     implicit val message: Messages = messages(application)
 
+    val tableRows = arbitrarySeqTableRows.sample.value
+
     "AvailableFilesTable" - {
-      val table = AvailableFilesTable()
+      val table = AvailableFilesTable(tableRows)
 
       "must return correct caption" in {
         table.caption mustEqual "TGP records files"
@@ -51,7 +54,7 @@ class FileManagementTableSpec extends SpecBase {
     }
 
     "PendingFilesTable" - {
-      val table = PendingFilesTable()
+      val table = PendingFilesTable(tableRows)
 
       "must return correct caption" in {
         table.caption mustEqual "Pending files"
