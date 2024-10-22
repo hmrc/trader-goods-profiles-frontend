@@ -54,8 +54,6 @@ class TraderReferenceController @Inject() (
     extends BaseController {
 
   private val form                                                         = formProvider()
-  private def getMessage(key: String)(implicit messages: Messages): String = messages(key)
-
   def onPageLoadCreate(mode: Mode): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       val preparedForm = prepareForm(TraderReferencePage, form)
