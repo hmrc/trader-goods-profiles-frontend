@@ -23,8 +23,9 @@ import java.util.Locale
 
 object DateTimeFormats {
 
-  private val dateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
-  private val dateTimeFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy HH:mm") // TODO: Do we want to show 06:01 or 6:11
+  private val dateFormatter     = DateTimeFormatter.ofPattern("d MMMM yyyy")
+  private val dateTimeFormatter =
+    DateTimeFormatter.ofPattern("d MMMM yyyy HH:mm") // TODO: Do we want to show 06:01 or 6:11
 
   private def localisedDateTimeFormatters(formatter: DateTimeFormatter): Map[String, DateTimeFormatter] = Map(
     "en" -> formatter,
