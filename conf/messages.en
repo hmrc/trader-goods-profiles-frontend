@@ -702,4 +702,5 @@ fileManagement.pendingFiles.table.body = These are requests you''ve made but the
 fileManagement.pendingFiles.table.header1 = Date and time requested
 fileManagement.pendingFiles.table.header2 = File
 fileManagement.pendingFiles.fileText = File not ready
-fileManagement.requestRecord.linkText = Get a new TGP records file
+fileManagement.files.requestRecord.linkText = Get a new TGP records file
+fileManagement.noFiles.requestRecord.linkText = Get a TGP records file

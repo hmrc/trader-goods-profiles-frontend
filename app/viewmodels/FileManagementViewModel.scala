@@ -38,7 +38,9 @@ case class FileManagementViewModel(
   val paragraph1: String =
     if (isFiles) messages("fileManagement.files.paragraph1") else messages("fileManagement.noFiles.paragraph1")
 
-  val tgpRecordsLink: String = messages("fileManagement.requestRecord.linkText")
+  val tgpRecordsLink: String =
+    if(isFiles) messages("fileManagement.files.requestRecord.linkText") else messages("fileManagement.noFiles.requestRecord.linkText")
+
   val goBackHomeLink: String = messages("site.goBackToHomePage")
 }
 

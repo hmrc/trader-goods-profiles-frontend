@@ -98,8 +98,13 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
     }
 
     "tgpRecordsLink" - {
-      "must return the correct link text" in {
-        viewModels.tgpRecordsLink mustEqual "Get a new TGP records file"
+      "must return the correct link text" - {
+        "if isFiles" in {
+          viewModelAllFiles.tgpRecordsLink mustEqual "Get a new TGP records file"
+        }
+        "if !isFiles" in {
+          viewModelNoFiles.tgpRecordsLink mustEqual "Get a TGP records file"
+        }
       }
     }
 
