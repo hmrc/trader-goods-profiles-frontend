@@ -20,7 +20,6 @@ import models.{DownloadData, DownloadDataSummary, FileInfo}
 import play.api.i18n.{Lang, Messages}
 import uk.gov.hmrc.govukfrontend.views.Aliases.{HeadCell, HtmlContent, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.table.TableRow
-import uk.gov.hmrc.govukfrontend.views.viewmodels.tag.Tag
 import utils.DateTimeFormats.dateTimeFormat
 
 import java.time.temporal.ChronoUnit
@@ -41,8 +40,8 @@ case class AvailableFilesTable(availableFileRows: Seq[Seq[TableRow]])(implicit m
       messages("fileManagement.availableFiles.table.header1"),
       messages("fileManagement.availableFiles.table.header2"),
       messages("fileManagement.availableFiles.table.header3")
-    ).map { content =>
-      HeadCell(content = Text(content))
+    ).map { text =>
+      HeadCell(content = Text(text))
     }
   override val rows: Seq[Seq[TableRow]] = availableFileRows
 }
@@ -50,11 +49,11 @@ case class AvailableFilesTable(availableFileRows: Seq[Seq[TableRow]])(implicit m
 object FileManagementTable {
   private def convertToDateString(instant: Instant)(implicit messages: Messages): String = {
     implicit val lang: Lang = messages.lang
-    instant.atZone(ZoneOffset.UTC).toLocalDate.format(dateTimeFormat()) // TODO: Date time formatter
+    instant.atZone(ZoneOffset.UTC).toLocalDateTime.format(dateTimeFormat())
   }
 
   private def retentionTimeToExpirationDate(fileInfo: FileInfo)(implicit messages: Messages): String = convertToDateString(fileInfo.fileCreated
-    .plus(fileInfo.retentionDays.toInt, ChronoUnit.DAYS)) // TODO: Is this from the date of request or date of the file being created?
+    .plus(fileInfo.retentionDays.toInt, ChronoUnit.DAYS))
 
   object AvailableFilesTable {
     def apply(

@@ -26,13 +26,13 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 case class FileManagementViewModel(
-  availableFilesTable: Option[AvailableFilesTable],
-  pendingFilesTable: Option[PendingFilesTable]
-)(implicit messages: Messages) {
+                                    availableFilesTable: Option[AvailableFilesTable],
+                                    pendingFilesTable: Option[PendingFilesTable]
+                                  )(implicit messages: Messages) {
 
   val isFiles: Boolean = availableFilesTable.isDefined || pendingFilesTable.isDefined
 
-  val title: String   = messages("fileManagement.title")
+  val title: String = messages("fileManagement.title")
   val heading: String = messages("fileManagement.heading")
 
   val paragraph1: String =
@@ -52,15 +52,12 @@ object FileManagementViewModel {
       for {
         downloadDataSummary <- downloadDataConnector.getDownloadDataSummary(eori)
         downloadData <- downloadDataConnector.getDownloadData(eori)
-        availableDataSummaries =
-          downloadDataSummary.map(downloadDataSummaries =>
-            downloadDataSummaries.filter(
-              downloadDataSummary => downloadDataSummary.status == FileReadySeen || downloadDataSummary.status == FileReadyUnseen
-            )
-          )
 
-        availableFiles = availableDataSummaries.map(
-          availableFilesSeq => availableFilesSeq.flatMap { availableFile =>
+        availableDataSummaries =
+          downloadDataSummary.map(_.filter(summary => summary.status == FileReadySeen || summary.status == FileReadyUnseen)).filter(_.nonEmpty)
+
+        availableFiles = availableDataSummaries.flatMap { availableFilesSeq =>
+          val files = availableFilesSeq.flatMap { availableFile =>
             availableFile.fileInfo.flatMap { fileInfo =>
               downloadData.collect {
                 case downloadDataSeq if downloadDataSeq.exists(_.filename == fileInfo.fileName) =>
@@ -68,18 +65,14 @@ object FileManagementViewModel {
               }
             }
           }
-        )
+          if (files.isEmpty) None else Some(files)
+        }
 
-        pendingFiles =
-          downloadDataSummary.map(downloadDataSummaries =>
-            downloadDataSummaries.filter(
-              downloadDataSummary => downloadDataSummary.status == FileInProgress
-            )
-          )
+        pendingFiles = downloadDataSummary.map(_.filter(_.status == FileInProgress)).filter(_.nonEmpty)
 
       } yield {
-        val availableFilesTable = if(availableFiles.nonEmpty) FileManagementTable.AvailableFilesTable(availableFiles) else None // TODO: Still showing row when empty, as we are getting AvailableFilesTable(List())
-        val pendingFilesTable = if(pendingFiles.nonEmpty) FileManagementTable.PendingFilesTable(pendingFiles) else None // TODO: Still showing row when empty, as we are getting PendingFilesTable(List())
+        val availableFilesTable = FileManagementTable.AvailableFilesTable(availableFiles)
+        val pendingFilesTable = FileManagementTable.PendingFilesTable(pendingFiles)
 
         new FileManagementViewModel(availableFilesTable, pendingFilesTable)
       }

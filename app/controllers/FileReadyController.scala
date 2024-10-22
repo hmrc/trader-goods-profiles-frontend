@@ -23,7 +23,7 @@ import models.DownloadDataSummary
 import navigation.Navigator
 import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import utils.DateTimeFormats.dateTimeFormat
+import utils.DateTimeFormats.dateFormat
 import views.html.FileReadyView
 
 import java.time.{Instant, ZoneOffset}
@@ -68,6 +68,6 @@ class FileReadyController @Inject() (
 
   def convertToDateString(instant: Instant)(implicit messages: Messages): String = {
     implicit val lang: Lang = messages.lang
-    instant.atZone(ZoneOffset.UTC).toLocalDate.format(dateTimeFormat())
+    instant.atZone(ZoneOffset.UTC).toLocalDate.format(dateFormat())
   }
 }
