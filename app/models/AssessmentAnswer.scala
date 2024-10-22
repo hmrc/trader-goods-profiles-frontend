@@ -29,7 +29,7 @@ object AssessmentAnswer {
   case object NotAnsweredYet extends WithName("notAnswered") with AssessmentAnswer
 
   implicit val reads: Reads[AssessmentAnswer] = Reads {
-    case JsString("none")       => JsSuccess(NoExemption)
+    case JsString("none")        => JsSuccess(NoExemption)
     case JsString("notAnswered") => JsSuccess(NotAnsweredYet)
     case JsArray(values)         => JsSuccess(Exemption(values.map(_.as[String]).toSeq))
     case _                       => JsError("unable to read assessment answer")
@@ -49,8 +49,8 @@ object AssessmentAnswer {
     }
 
   def toSeq(answer: AssessmentAnswer): Seq[String] = answer match {
-    case NoExemption => Seq(NoExemption.toString)
-    case NotAnsweredYet => Seq.empty
+    case NoExemption     => Seq(NoExemption.toString)
+    case NotAnsweredYet  => Seq.empty
     case Exemption(vals) => vals
   }
 
