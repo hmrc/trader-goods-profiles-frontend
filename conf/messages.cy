@@ -395,8 +395,6 @@ assessment.question = Pa un o'r eithriadau hyn sydd gennych ar gyfer {0}?
 assessment.hint = Dewiswch bob un sy’n berthnasol.
 assessment.exemption = {0} – {1}
 assessment.exemption.none = Dim un o’r uchod
-assessment.error.required = Dewiswch ‘Iawn’ os ydych yn bodloni unrhyw un o’r eithriadau
-assessment.error.required.onlyOne = Dewiswch ‘Iawn’ os ydych yn bodloni’r amod
 assessment.exemption.none.checkYourAnswersLabel = Dim wedi’i ddewis
 assessment.checkYourAnswersLabel = Asesiadau categori {0} o {1}
 
