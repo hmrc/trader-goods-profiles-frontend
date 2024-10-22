@@ -53,7 +53,7 @@ class TraderReferenceController @Inject() (
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
-  private val form                                                         = formProvider()
+  private val form                                     = formProvider()
   def onPageLoadCreate(mode: Mode): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       val preparedForm = prepareForm(TraderReferencePage, form)
