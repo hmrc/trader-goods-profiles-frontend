@@ -65,6 +65,7 @@
                         checked = form("value[]").value.contains(item._1)
                     )
                 } ++ Seq(
+                    CheckboxItem(divider = Some(messages("site.or"))),
                     CheckboxItem(
                         id = Some("none_of_above"),
                         name = Some("value[]"),
