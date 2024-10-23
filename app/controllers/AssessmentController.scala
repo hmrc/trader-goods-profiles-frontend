@@ -64,12 +64,7 @@ class AssessmentController @Inject() (
             .flatMap { categorisationInfo =>
               categorisationInfo.getAssessmentFromIndex(index).map { assessment =>
                 val codesAndDescriptions = assessment.getCodesZippedWithDescriptions
-                val form                 = formProvider()
-
-                val preparedForm = request.userAnswers.get(AssessmentPage(recordId, index)) match {
-                  case Some(value) => form.fill(value)
-                  case None        => form
-                }
+                val preparedForm         = prepareForm(AssessmentPage(recordId, index), formProvider())
 
                 val submitAction = routes.AssessmentController.onSubmit(mode, recordId, number)
                 Ok(
@@ -101,12 +96,7 @@ class AssessmentController @Inject() (
             .flatMap { categorisationInfo =>
               categorisationInfo.getAssessmentFromIndex(index).map { assessment =>
                 val codesAndDescriptions = assessment.getCodesZippedWithDescriptions
-                val form                 = formProvider()
-
-                val preparedForm = request.userAnswers.get(ReassessmentPage(recordId, index)) match {
-                  case Some(value) => form.fill(value.answer)
-                  case None        => form
-                }
+                val preparedForm         = prepareForm(AssessmentPage(recordId, index), formProvider())
 
                 val submitAction = routes.AssessmentController.onSubmitReassessment(mode, recordId, number)
 
