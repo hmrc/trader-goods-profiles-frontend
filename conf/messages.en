@@ -471,7 +471,7 @@ hasGoodsDescriptionChange.error.required = Select if you want to change the good
 
 ukimsNumberChangeController.title = UK Internal Market Scheme(UKIMS) number change
 ukimsNumberChangeController.heading = UK Internal Market Scheme(UKIMS) number change
-ukimsNumberChangeController.paragraph = As you have a new EORI number, you also have a new UKIMS number. You need to update your UKIMS number on you TGP. Keeping your UKIMS number up to date is important as it can be used on your movements.
+ukimsNumberChangeController.paragraph = As you have an new EORI number, you also have a new UKIMS number. You need to update your UKIMS number on your TGP. Keeping your UKIMS number up to date is important as it can be used on movements.
 ukimsNumberChangeController.button = Update UKIMS number
 
 profile.title = Profile details
