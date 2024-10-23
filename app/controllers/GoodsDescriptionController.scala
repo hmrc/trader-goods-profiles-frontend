@@ -52,10 +52,7 @@ class GoodsDescriptionController @Inject() (
 
   def onPageLoadCreate(mode: Mode): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
-      val preparedForm = request.userAnswers.get(GoodsDescriptionPage) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
+      val preparedForm = prepareForm(GoodsDescriptionPage, form)
 
       val submitAction = routes.GoodsDescriptionController.onSubmitCreate(mode)
 
@@ -79,10 +76,7 @@ class GoodsDescriptionController @Inject() (
 
   def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
-      val preparedForm = request.userAnswers.get(GoodsDescriptionUpdatePage(recordId)) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
+      val preparedForm = prepareForm(GoodsDescriptionUpdatePage(recordId), form)
 
       request.userAnswers.get(HasGoodsDescriptionChangePage(recordId)) match {
         case None =>
@@ -120,4 +114,5 @@ class GoodsDescriptionController @Inject() (
           }
         )
     }
+
 }

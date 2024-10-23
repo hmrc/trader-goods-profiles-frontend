@@ -63,10 +63,7 @@ class HasCommodityCodeChangeController @Inject() (
             GoodsDetailsUpdate,
             recordId
           )
-          val preparedForm = request.userAnswers.get(HasCommodityCodeChangePage(recordId)) match {
-            case None        => form
-            case Some(value) => form.fill(value)
-          }
+          val preparedForm = prepareForm(HasCommodityCodeChangePage(recordId), form)
 
           val needCategorisingWarning = goodsRecord.category.isDefined
           val needAdviceWarning       = goodsRecord.adviceStatus == adviceProvided

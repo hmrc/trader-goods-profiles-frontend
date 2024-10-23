@@ -23,7 +23,7 @@ import models.Mode
 import models.helper.GoodsDetailsUpdate
 import navigation.Navigator
 import pages.{TraderReferencePage, TraderReferenceUpdatePage}
-import play.api.data.FormError
+import play.api.data.{Form, FormError}
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -51,15 +51,10 @@ class TraderReferenceController @Inject() (
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
-  private val form                                                         = formProvider()
-  private def getMessage(key: String)(implicit messages: Messages): String = messages(key)
-
+  private val form                                     = formProvider()
   def onPageLoadCreate(mode: Mode): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
-      val preparedForm = request.userAnswers.get(TraderReferencePage) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
+      val preparedForm = prepareForm(TraderReferencePage, form)
 
       val onSubmitAction = routes.TraderReferenceController.onSubmitCreate(mode)
 
@@ -68,10 +63,8 @@ class TraderReferenceController @Inject() (
 
   def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
-      val preparedForm = request.userAnswers.get(TraderReferenceUpdatePage(recordId)) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
+      val preparedForm = prepareForm(TraderReferenceUpdatePage(recordId), form)
+
       auditService
         .auditStartUpdateGoodsRecord(
           request.eori,
@@ -103,12 +96,7 @@ class TraderReferenceController @Inject() (
                     Redirect(navigator.nextPage(TraderReferencePage, mode, updatedAnswers))
                   } else {
                     val formWithApiErrors =
-                      form
-                        .fill(value)
-                        .copy(
-                          errors =
-                            Seq(elems = FormError("value", getMessage("traderReference.error.traderRefNotUnique")))
-                        )
+                      createFormWithErrors(form, value, "traderReference.error.traderRefNotUnique")
                     BadRequest(view(formWithApiErrors, onSubmitAction))
                   }
               case None            =>
@@ -144,12 +132,7 @@ class TraderReferenceController @Inject() (
                       .addingToSession(pageUpdated -> traderReference)
                   } else {
                     val formWithApiErrors =
-                      form
-                        .fill(value)
-                        .copy(
-                          errors =
-                            Seq(elems = FormError("value", getMessage("traderReference.error.traderRefNotUnique")))
-                        )
+                      createFormWithErrors(form, value, "traderReference.error.traderRefNotUnique")
                     BadRequest(view(formWithApiErrors, onSubmitAction))
                   }
               case None          =>
@@ -162,4 +145,12 @@ class TraderReferenceController @Inject() (
             }
         )
     }
+
+  private def createFormWithErrors[T](form: Form[T], value: T, errorMessageKey: String, field: String = "value")(
+    implicit messages: Messages
+  ): Form[T] =
+    form
+      .fill(value)
+      .copy(errors = Seq(FormError(field, messages(errorMessageKey))))
+
 }

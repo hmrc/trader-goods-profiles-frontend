@@ -55,10 +55,7 @@ class SupplementaryUnitController @Inject() (
 
   def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
-      val preparedForm = request.userAnswers.get(SupplementaryUnitPage(recordId)) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
+      val preparedForm = prepareForm(SupplementaryUnitPage(recordId), form)
       val catInfo      = request.userAnswers.get(LongerCategorisationDetailsQuery(recordId)) match {
         case Some(catInfo) => Some(catInfo)
         case _             => request.userAnswers.get(CategorisationDetailsQuery(recordId))

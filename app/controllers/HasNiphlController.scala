@@ -50,11 +50,7 @@ class HasNiphlController @Inject() (
 
   def onPageLoadCreate(mode: Mode): Action[AnyContent] =
     (identify andThen checkProfile andThen getData andThen requireData) { implicit request =>
-      val preparedForm = request.userAnswers.get(HasNiphlPage) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
-
+      val preparedForm = prepareForm(HasNiphlPage, form)
       Ok(view(preparedForm, routes.HasNiphlController.onSubmitCreate(mode)))
     }
 

@@ -23,8 +23,10 @@ import models.helper.GoodsDetailsUpdate
 import models.requests.DataRequest
 import models.{Country, Mode, UserAnswers}
 import navigation.Navigator
-import pages.{CountryOfOriginPage, CountryOfOriginUpdatePage, HasCountryOfOriginChangePage}
+import pages.{CountryOfOriginPage, CountryOfOriginUpdatePage, HasCountryOfOriginChangePage, QuestionPage}
+import play.api.data.Form
 import play.api.i18n.MessagesApi
+import play.api.libs.json.Reads
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents, Request, Result}
 import queries.CountriesQuery
 import repositories.SessionRepository
@@ -79,12 +81,14 @@ class CountryOfOriginController @Inject() (
     request: Request[_]
   ): Result = {
     val form         = formProvider(countries)
-    val preparedForm = userAnswers.get(CountryOfOriginPage) match {
-      case None        => form
-      case Some(value) => form.fill(value)
-    }
+    val preparedForm = prepareForm(CountryOfOriginPage, form, userAnswers)
     Ok(view(preparedForm, action, countries))
   }
+
+  private def prepareForm[T](page: QuestionPage[T], form: Form[T], userAnswers: UserAnswers)(implicit
+    rds: Reads[T]
+  ): Form[T] =
+    userAnswers.get(page).map(form.fill).getOrElse(form)
 
   private def submitForm(countries: Seq[Country], mode: Mode, userAnswers: UserAnswers)(implicit
     request: Request[_]
@@ -176,10 +180,7 @@ class CountryOfOriginController @Inject() (
     implicit request: Request[_]
   ): Result = {
     val form         = formProvider(countries)
-    val preparedForm = userAnswers.get(CountryOfOriginUpdatePage(recordId)) match {
-      case None        => form
-      case Some(value) => form.fill(value)
-    }
+    val preparedForm = prepareForm(CountryOfOriginUpdatePage(recordId), form, userAnswers)
 
     Ok(view(preparedForm, action, countries))
   }

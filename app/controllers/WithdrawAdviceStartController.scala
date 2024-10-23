@@ -48,11 +48,7 @@ class WithdrawAdviceStartController @Inject() (
 
   def onPageLoad(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
-      val preparedForm = request.userAnswers.get(WithdrawAdviceStartPage(recordId)) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
-
+      val preparedForm = prepareForm(WithdrawAdviceStartPage(recordId), form)
       Ok(view(preparedForm, recordId))
     }
 
