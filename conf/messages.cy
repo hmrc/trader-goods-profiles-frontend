@@ -390,7 +390,6 @@ categoryGuidance.p4 = Bydd angen i chi wybod rhif tystysgrif neu enw unrhyw eith
 
 assessment.title = Cwestiwn categoreiddio
 assessment.heading = Asesiadau categori {0} o {1}
-assessment.guidance = Mae angen i chi gadarnhau p’un o’r eithriadau hyn sy’n berthnasol ar gyfer {0}. Y mesur ar gyfer yr asesiad hwn yw:
 assessment.linkText = Defnyddiwch yr Offeryn Tariff Ar-lein (yn agor tab newydd) i chwilio am god nwyddau.
 assessment.question = Pa un o'r eithriadau hyn sydd gennych ar gyfer {0}?
 assessment.hint = Dewiswch bob un sy’n berthnasol.
