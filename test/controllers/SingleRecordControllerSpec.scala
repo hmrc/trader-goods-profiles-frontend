@@ -665,11 +665,15 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
         val recordLocked = false
 
-        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        val application                      = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .build()
         implicit val localMessages: Messages = messages(application)
         running(application) {
-          val row = AdviceStatusSummary.row(recordForTestingSummaryRowsWithAdviceProvided.adviceStatus, testRecordId, recordLocked)
+          val row = AdviceStatusSummary.row(
+            recordForTestingSummaryRowsWithAdviceProvided.adviceStatus,
+            testRecordId,
+            recordLocked
+          )
 
           row.actions mustBe Some(Actions("", List()))
         }
