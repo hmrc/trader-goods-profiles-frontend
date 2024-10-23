@@ -19,7 +19,7 @@ package connectors
 import config.FrontendAppConfig
 import models.{DownloadData, DownloadDataSummary, Email, LegacyRawReads}
 import org.apache.pekko.Done
-import play.api.http.Status.{ACCEPTED, NOT_FOUND, OK}
+import play.api.http.Status.{ACCEPTED, NOT_FOUND, NO_CONTENT, OK}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.client.HttpClientV2
 
@@ -40,9 +40,6 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
 
   private def emailUrl(eori: String) =
     url"${config.dataStoreBaseUrl}/trader-goods-profiles-data-store/traders/$eori/email"
-
-  private def updateSeenStatusUrl(eori: String) =
-    url"${config.dataStoreBaseUrl}/trader-goods-profiles-data-store/traders/$eori/update-seen-status"
 
   def requestDownloadData(eori: String)(implicit hc: HeaderCarrier): Future[Done] =
     httpClient
@@ -104,15 +101,13 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
 
   def updateSeenStatus(eori: String)(implicit hc: HeaderCarrier): Future[Boolean] =
     httpClient
-      .put(updateSeenStatusUrl(eori))
+      .patch(downloadDataSummaryUrl(eori))
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
       .map { response =>
         response.status match {
-          case OK => true
-          case _  => false
+          case NO_CONTENT => true
+          case _          => false
         }
       }
-      .recover(_ => false) // TODO: Does this need logged? Or does the global error handler handle it
-  // TODO: Configure this once new endpoint is made
 }

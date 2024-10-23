@@ -24,7 +24,7 @@ import viewmodels.FileManagementViewModel.FileManagementViewModelProvider
 import views.html.FileManagementView
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class FileManagementController @Inject() (
   override val messagesApi: MessagesApi,

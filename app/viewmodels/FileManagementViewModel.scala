@@ -80,6 +80,11 @@ object FileManagementViewModel {
         pendingFiles = downloadDataSummary.map(_.filter(_.status == FileInProgress)).filter(_.nonEmpty)
 
       } yield {
+
+        if (availableFiles.isDefined) {
+          downloadDataConnector.updateSeenStatus(eori)
+        }
+
         val availableFilesTable = FileManagementTable.AvailableFilesTable(availableFiles)
         val pendingFilesTable   = FileManagementTable.PendingFilesTable(pendingFiles)
 

@@ -24,7 +24,7 @@ import models.DownloadDataStatus.{FileInProgress, FileReadyUnseen}
 import models.filemanagement.{AvailableFilesTable, FileManagementTable, PendingFilesTable}
 import models.{DownloadData, DownloadDataSummary, FileInfo}
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{never, times, verify, when}
 import org.scalacheck.Gen
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.i18n.Messages
@@ -142,6 +142,9 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
 
               result.pendingFilesTable mustBe None
               result.availableFilesTable mustBe None
+
+              verify(mockDownloadDataConnector, never()).updateSeenStatus(any())(any())
+
             }
 
             "when all files are pending" in {
@@ -170,6 +173,9 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
 
               result.pendingFilesTable mustBe pendingFilesTable
               result.availableFilesTable mustBe None
+
+              verify(mockDownloadDataConnector, never()).updateSeenStatus(any())(any())
+
             }
 
             "when all files are available" in {
@@ -190,6 +196,10 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
                 Some(Seq(downloadData))
               )
 
+              when(mockDownloadDataConnector.updateSeenStatus(any())(any())) thenReturn Future.successful(
+                true
+              )
+
               val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
                 .overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector))
                 .build()
@@ -205,6 +215,8 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
 
               result.pendingFilesTable mustBe None
               result.availableFilesTable mustBe availableFilesTable
+
+              verify(mockDownloadDataConnector, times(1)).updateSeenStatus(any())(any())
             }
 
             "when both files are available and pending" in {
@@ -229,6 +241,10 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
                 Some(Seq(downloadData))
               )
 
+              when(mockDownloadDataConnector.updateSeenStatus(any())(any())) thenReturn Future.successful(
+                true
+              )
+
               val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
                 .overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector))
                 .build()
@@ -246,6 +262,8 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
 
               result.pendingFilesTable mustBe pendingFilesTable
               result.availableFilesTable mustBe availableFilesTable
+
+              verify(mockDownloadDataConnector, times(1)).updateSeenStatus(any())(any())
             }
 
             "when files should be available, but there is no DownloadData" in {
@@ -279,6 +297,9 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
 
               result.pendingFilesTable mustBe None
               result.availableFilesTable mustBe None
+
+              verify(mockDownloadDataConnector, never()).updateSeenStatus(any())(any())
+
             }
 
             "when files should be available, but there is no DownloadData with a matching fileName" in {
@@ -313,6 +334,9 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
 
               result.pendingFilesTable mustBe None
               result.availableFilesTable mustBe None
+
+              verify(mockDownloadDataConnector, never()).updateSeenStatus(any())(any())
+
             }
           }
         }
