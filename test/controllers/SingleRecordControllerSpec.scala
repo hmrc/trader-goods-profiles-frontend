@@ -660,6 +660,20 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           row.actions.value.items.head.href mustEqual routes.AdviceStartController.onPageLoad(testRecordId).url
         }
       }
+
+      "must return a SummaryListRow without change link action when advice status is Advice Provided " in {
+
+        val recordLocked = false
+
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .build()
+        implicit val localMessages: Messages = messages(application)
+        running(application) {
+          val row = AdviceStatusSummary.row(recordForTestingSummaryRowsWithAdviceProvided.adviceStatus, testRecordId, recordLocked)
+
+          row.actions mustBe Some(Actions("", List()))
+        }
+      }
     }
 
   }
