@@ -57,9 +57,8 @@ class CyaNewUkimsNumberController @Inject() (
       TraderProfile.validateUkimsNumber(request.userAnswers) match {
         case Right(_)     =>
           val list = SummaryListViewModel(
-            rows = Seq(
-              UkimsNumberSummary.rowUpdate(request.userAnswers)
-            ).flatten
+            // TODO This needs to be changed to NewUkimsNumberPageSummary.row TGP-2699
+            rows = Seq(UkimsNumberSummary.rowUpdate(request.userAnswers)).flatten
           )
           Ok(view(list))
         case Left(errors) =>
