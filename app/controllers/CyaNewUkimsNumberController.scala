@@ -25,8 +25,8 @@ import navigation.Navigator
 import pages._
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import repositories.SessionRepository
 import services.AuditService
-import utils.SessionData._
 import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
 import views.html.CyaNewUkimsNumberView
@@ -44,7 +44,8 @@ class CyaNewUkimsNumberController @Inject() (
   view: CyaNewUkimsNumberView,
   traderProfileConnector: TraderProfileConnector,
   navigator: Navigator,
-  auditService: AuditService
+  auditService: AuditService,
+  sessionRepository: SessionRepository
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
@@ -52,6 +53,7 @@ class CyaNewUkimsNumberController @Inject() (
 
   def onPageLoad(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
     implicit request =>
+      // TODO validateUkimsNumber validate the UkimsNumberUpdatePage. Needs a new method with NewUkimsNumberPage
       TraderProfile.validateUkimsNumber(request.userAnswers) match {
         case Right(_)     =>
           val list = SummaryListViewModel(
@@ -61,20 +63,24 @@ class CyaNewUkimsNumberController @Inject() (
           )
           Ok(view(list))
         case Left(errors) =>
-          logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors)
+          logErrorsAndContinue(errorMessage, routes.HomePageController.onPageLoad(), errors)
       }
   }
 
   def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
     (for {
-      ukimsNumber      <- handleValidateError(TraderProfile.validateUkimsNumber(request.userAnswers))
-      oldTraderProfile <- traderProfileConnector.getTraderProfile(request.eori)
-      newTraderProfile <- Future.successful(oldTraderProfile.copy(ukimsNumber = ukimsNumber, eoriChanged = false))
-      _                 = auditService.auditMaintainProfile(oldTraderProfile, newTraderProfile, request.affinityGroup)
-      _                <- traderProfileConnector.submitTraderProfile(newTraderProfile, request.eori)
-    } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))).recover {
+      ukimsNumber                <- handleValidateError(TraderProfile.validateUkimsNumber(request.userAnswers))
+      oldTraderProfile           <- traderProfileConnector.getTraderProfile(request.eori)
+      newTraderProfile           <- Future.successful(oldTraderProfile.copy(ukimsNumber = ukimsNumber))
+      _                           = auditService.auditMaintainProfile(oldTraderProfile, newTraderProfile, request.affinityGroup)
+      _                          <- traderProfileConnector.submitTraderProfile(newTraderProfile, request.eori)
+      // TODO UkimsNumberUpdatePage needs to be updated with NewUkimsNumberPage
+      updatedAnswersRemovedUkims <-
+        Future.fromTry(request.userAnswers.remove(UkimsNumberUpdatePage))
+      _                          <- sessionRepository.set(updatedAnswersRemovedUkims)
+    } yield Redirect(navigator.nextPage(CyaNewUkimsNumberPage, NormalMode, request.userAnswers))).recover {
       case e: TraderProfileBuildFailure =>
-        logErrorsAndContinue(e.getMessage, routes.ProfileController.onPageLoad())
+        logErrorsAndContinue(e.getMessage, routes.HomePageController.onPageLoad())
     }
   }
 
