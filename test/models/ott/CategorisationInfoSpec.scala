@@ -49,21 +49,19 @@ class CategorisationInfoSpec extends SpecBase {
             CategoryAssessmentRelationship("assessmentId2")
           ),
           includedElements = Seq(
-            ThemeResponse("themeId1", 1),
+            ThemeResponse("themeId1", 1, "theme description"),
             CategoryAssessmentResponse(
               "assessmentId2",
               "themeId2",
               Seq(
                 ExemptionResponse("exemptionId1", ExemptionType.Certificate),
                 ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode)
-              ),
-              "measureTypeId1"
+              )
             ),
-            MeasureTypeResponse("measureTypeId1", "measure description"),
-            ThemeResponse("themeId2", 2),
+            ThemeResponse("themeId2", 2, "theme description"),
             CertificateResponse("exemptionId1", "code1", "description1"),
             AdditionalCodeResponse("exemptionId2", "code2", "description2"),
-            ThemeResponse("ignoredTheme", 3),
+            ThemeResponse("ignoredTheme", 3, "theme description"),
             CertificateResponse("ignoredExemption", "code3", "description3")
           ),
           descendents = Seq.empty[Descendant]
@@ -77,7 +75,7 @@ class CategorisationInfoSpec extends SpecBase {
               Certificate("exemptionId1", "code1", "description1"),
               AdditionalCode("exemptionId2", "code2", "description2")
             ),
-            "measure description"
+            "theme description"
           )
         )
 
@@ -117,42 +115,34 @@ class CategorisationInfoSpec extends SpecBase {
             CategoryAssessmentResponse(
               "assessmentId1",
               "themeId1",
-              Seq(ExemptionResponse("exemptionId1", ExemptionType.Certificate)),
-              "measureTypeId1"
+              Seq(ExemptionResponse("exemptionId1", ExemptionType.Certificate))
             ),
-            MeasureTypeResponse("measureTypeId1", "measure description"),
             CategoryAssessmentResponse(
               "assessmentId2",
               "themeId2",
               Seq(
                 ExemptionResponse("exemptionId1", ExemptionType.Certificate),
                 ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode)
-              ),
-              "measureTypeId1"
+              )
             ),
-            MeasureTypeResponse("measureTypeId1", "measure description"),
             CategoryAssessmentResponse(
               "assessmentId3",
               "themeId1",
               Seq(
                 ExemptionResponse("exemptionId1", ExemptionType.Certificate),
                 ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode)
-              ),
-              "measureTypeId1"
+              )
             ),
-            MeasureTypeResponse("measureTypeId1", "measure description"),
             CategoryAssessmentResponse(
               "assessmentId4",
               "themeId2",
-              Seq(ExemptionResponse("exemptionId1", ExemptionType.Certificate)),
-              "measureTypeId1"
+              Seq(ExemptionResponse("exemptionId1", ExemptionType.Certificate))
             ),
-            MeasureTypeResponse("measureTypeId1", "measure description"),
-            ThemeResponse("themeId1", 1),
-            ThemeResponse("themeId2", 2),
+            ThemeResponse("themeId1", 1, "theme description"),
+            ThemeResponse("themeId2", 2, "theme description"),
             CertificateResponse("exemptionId1", "code1", "description1"),
             AdditionalCodeResponse("exemptionId2", "code2", "description2"),
-            ThemeResponse("ignoredTheme", 3),
+            ThemeResponse("ignoredTheme", 3, "theme description"),
             CertificateResponse("ignoredExemption", "code3", "description3")
           ),
           descendents = Seq(Descendant("1", "type1"), Descendant("2", "type2"))
@@ -163,7 +153,7 @@ class CategorisationInfoSpec extends SpecBase {
             "assessmentId1",
             1,
             Seq(Certificate("exemptionId1", "code1", "description1")),
-            "measure description"
+            "theme description"
           ),
           CategoryAssessment(
             "assessmentId3",
@@ -172,13 +162,13 @@ class CategorisationInfoSpec extends SpecBase {
               Certificate("exemptionId1", "code1", "description1"),
               AdditionalCode("exemptionId2", "code2", "description2")
             ),
-            "measure description"
+            "theme description"
           ),
           CategoryAssessment(
             "assessmentId4",
             2,
             Seq(Certificate("exemptionId1", "code1", "description1")),
-            "measure description"
+            "theme description"
           ),
           CategoryAssessment(
             "assessmentId2",
@@ -187,7 +177,7 @@ class CategorisationInfoSpec extends SpecBase {
               Certificate("exemptionId1", "code1", "description1"),
               AdditionalCode("exemptionId2", "code2", "description2")
             ),
-            "measure description"
+            "theme description"
           )
         )
 
@@ -221,21 +211,19 @@ class CategorisationInfoSpec extends SpecBase {
             CategoryAssessmentRelationship("assessmentId2")
           ),
           includedElements = Seq(
-            ThemeResponse("themeId1", 1),
+            ThemeResponse("themeId1", 1, "theme description"),
             CategoryAssessmentResponse(
               "assessmentId2",
               "themeId2",
               Seq(
                 ExemptionResponse("exemptionId1", ExemptionType.Certificate),
                 ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode)
-              ),
-              "measureTypeId1"
+              )
             ),
-            MeasureTypeResponse("measureTypeId1", "measure description"),
-            ThemeResponse("themeId2", 2),
+            ThemeResponse("themeId2", 2, "theme description"),
             CertificateResponse("exemptionId1", "code1", "description1"),
             AdditionalCodeResponse("exemptionId2", "code2", "description2"),
-            ThemeResponse("ignoredTheme", 3),
+            ThemeResponse("ignoredTheme", 3, "theme description"),
             CertificateResponse("ignoredExemption", "code3", "description3")
           ),
           descendents = Seq.empty[Descendant]
@@ -249,7 +237,7 @@ class CategorisationInfoSpec extends SpecBase {
               Certificate("exemptionId1", "code1", "description1"),
               AdditionalCode("exemptionId2", "code2", "description2")
             ),
-            "measure description"
+            "theme description"
           )
         )
 
@@ -312,52 +300,41 @@ class CategorisationInfoSpec extends SpecBase {
             CategoryAssessmentRelationship("assessmentId3")
           ),
           includedElements = Seq(
-            ThemeResponse("themeId1", 1),
+            ThemeResponse("themeId1", 1, "theme description"),
             CategoryAssessmentResponse(
               "assessmentId2",
               "themeId2",
               Seq(
                 ExemptionResponse("exemptionId1", ExemptionType.Certificate),
                 ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode)
-              ),
-              "measureTypeId1"
+              )
             ),
-            MeasureTypeResponse("measureTypeId1", "measure description"),
-            ThemeResponse("themeId2", 2),
+            ThemeResponse("themeId2", 2, "theme description"),
             CertificateResponse("exemptionId1", "code1", "description1"),
             AdditionalCodeResponse("exemptionId2", "code2", "description2"),
-            ThemeResponse("ignoredTheme", 3),
+            ThemeResponse("ignoredTheme", 3, "theme description"),
             CertificateResponse("ignoredExemption", "code3", "description3"),
             CategoryAssessmentResponse(
               "assessmentId1",
               "themeId1",
-              Seq.empty,
-              "measureTypeId1"
+              Seq.empty
             ),
-            MeasureTypeResponse("measureTypeId1", "measure description"),
             CategoryAssessmentResponse(
               "assessmentId3",
               "themeId1",
-              Seq(ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode)),
-              "measureTypeId1"
-            ),
-            MeasureTypeResponse("measureTypeId1", "measure description")
+              Seq(ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode))
+            )
           ),
           descendents = Seq.empty[Descendant]
         )
 
         val expectedAssessments = Seq(
-          CategoryAssessment(
-            "assessmentId1",
-            1,
-            Seq.empty,
-            "measure description"
-          ),
+          CategoryAssessment("assessmentId1", 1, Seq.empty, "theme description"),
           CategoryAssessment(
             "assessmentId3",
             1,
             Seq(AdditionalCode("exemptionId2", "code2", "description2")),
-            "measure description"
+            "theme description"
           ),
           CategoryAssessment(
             "assessmentId2",
@@ -366,7 +343,7 @@ class CategorisationInfoSpec extends SpecBase {
               Certificate("exemptionId1", "code1", "description1"),
               AdditionalCode("exemptionId2", "code2", "description2")
             ),
-            "measure description"
+            "theme description"
           )
         )
 
@@ -395,52 +372,41 @@ class CategorisationInfoSpec extends SpecBase {
             CategoryAssessmentRelationship("assessmentId3")
           ),
           includedElements = Seq(
-            ThemeResponse("themeId1", 1),
+            ThemeResponse("themeId1", 1, "theme description"),
             CategoryAssessmentResponse(
               "assessmentId2",
               "themeId2",
               Seq(
                 ExemptionResponse("exemptionId1", ExemptionType.Certificate),
                 ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode)
-              ),
-              "measureTypeId1"
+              )
             ),
-            MeasureTypeResponse("measureTypeId1", "measure description"),
-            ThemeResponse("themeId2", 2),
+            ThemeResponse("themeId2", 2, "theme description"),
             CertificateResponse("exemptionId1", "code1", "description1"),
             AdditionalCodeResponse("exemptionId2", "code2", "description2"),
-            ThemeResponse("ignoredTheme", 3),
+            ThemeResponse("ignoredTheme", 3, "theme description"),
             CertificateResponse("ignoredExemption", "code3", "description3"),
             CategoryAssessmentResponse(
               "assessmentId1",
               "themeId2",
-              Seq.empty,
-              "measureTypeId1"
+              Seq.empty
             ),
-            MeasureTypeResponse("measureTypeId1", "measure description"),
             CategoryAssessmentResponse(
               "assessmentId3",
               "themeId2",
-              Seq(ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode)),
-              "measureTypeId1"
-            ),
-            MeasureTypeResponse("measureTypeId1", "measure description")
+              Seq(ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode))
+            )
           ),
           descendents = Seq.empty[Descendant]
         )
 
         val expectedAssessments = Seq(
-          CategoryAssessment(
-            "assessmentId1",
-            2,
-            Seq.empty,
-            "measure description"
-          ),
+          CategoryAssessment("assessmentId1", 2, Seq.empty, "theme description"),
           CategoryAssessment(
             "assessmentId3",
             2,
             Seq(AdditionalCode("exemptionId2", "code2", "description2")),
-            "measure description"
+            "theme description"
           ),
           CategoryAssessment(
             "assessmentId2",
@@ -449,7 +415,7 @@ class CategorisationInfoSpec extends SpecBase {
               Certificate("exemptionId1", "code1", "description1"),
               AdditionalCode("exemptionId2", "code2", "description2")
             ),
-            "measure description"
+            "theme description"
           )
         )
 
@@ -478,46 +444,35 @@ class CategorisationInfoSpec extends SpecBase {
             CategoryAssessmentRelationship("assessmentId3")
           ),
           includedElements = Seq(
-            ThemeResponse("themeId1", 1),
+            ThemeResponse("themeId1", 1, "theme description"),
             CategoryAssessmentResponse(
               "assessmentId2",
               "themeId1",
               Seq(
                 ExemptionResponse("exemptionId1", ExemptionType.Certificate),
                 ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode)
-              ),
-              "measureTypeId1"
+              )
             ),
-            MeasureTypeResponse("measureTypeId1", "measure description"),
-            ThemeResponse("themeId2", 2),
+            ThemeResponse("themeId2", 2, "theme description"),
             CertificateResponse("exemptionId1", "code1", "description1"),
             AdditionalCodeResponse("exemptionId2", "code2", "description2"),
-            ThemeResponse("ignoredTheme", 3),
+            ThemeResponse("ignoredTheme", 3, "theme description"),
             CertificateResponse("ignoredExemption", "code3", "description3"),
             CategoryAssessmentResponse(
               "assessmentId1",
               "themeId2",
-              Seq.empty,
-              "measureTypeId1"
+              Seq.empty
             ),
-            MeasureTypeResponse("measureTypeId1", "measure description"),
             CategoryAssessmentResponse(
               "assessmentId3",
               "themeId1",
-              Seq(ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode)),
-              "measureTypeId1"
-            ),
-            MeasureTypeResponse("measureTypeId1", "measure description")
+              Seq(ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode))
+            )
           ),
           descendents = Seq.empty[Descendant]
         )
 
-        val expectedAssessmentId1 = CategoryAssessment(
-          "assessmentId1",
-          2,
-          Seq.empty,
-          "measure description"
-        )
+        val expectedAssessmentId1 = CategoryAssessment("assessmentId1", 2, Seq.empty, "theme description")
         val expectedAssesmentId2  = CategoryAssessment(
           "assessmentId2",
           1,
@@ -525,13 +480,13 @@ class CategorisationInfoSpec extends SpecBase {
             Certificate("exemptionId1", "code1", "description1"),
             AdditionalCode("exemptionId2", "code2", "description2")
           ),
-          "measure description"
+          "theme description"
         )
         val expectedAssessmentId3 = CategoryAssessment(
           "assessmentId3",
           1,
           Seq(AdditionalCode("exemptionId2", "code2", "description2")),
-          "measure description"
+          "theme description"
         )
 
         val expectedAssessments = Seq(
@@ -573,21 +528,19 @@ class CategorisationInfoSpec extends SpecBase {
             CategoryAssessmentRelationship("assessmentId2")
           ),
           includedElements = Seq(
-            ThemeResponse("themeId1", 1),
+            ThemeResponse("themeId1", 1, "theme description"),
             CategoryAssessmentResponse(
               "assessmentId2",
               "themeId2",
               Seq(
                 ExemptionResponse("exemptionId1", ExemptionType.Certificate),
                 ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode)
-              ),
-              "measureTypeId1"
+              )
             ),
-            MeasureTypeResponse("measureTypeId1", "measure description"),
-            ThemeResponse("themeId2", 2),
+            ThemeResponse("themeId2", 2, "theme description"),
             CertificateResponse("exemptionId1", "code1", "description1"),
             AdditionalCodeResponse("exemptionId2", "code2", "description2"),
-            ThemeResponse("ignoredTheme", 3),
+            ThemeResponse("ignoredTheme", 3, "theme description"),
             CertificateResponse("ignoredExemption", "code3", "description3")
           ),
           descendents = Seq.empty[Descendant]
@@ -601,7 +554,7 @@ class CategorisationInfoSpec extends SpecBase {
               Certificate("exemptionId1", "code1", "description1"),
               AdditionalCode("exemptionId2", "code2", "description2")
             ),
-            "measure description"
+            "theme description"
           )
         )
 
@@ -649,39 +602,30 @@ class CategorisationInfoSpec extends SpecBase {
                 CategoryAssessmentRelationship("assessmentId1")
               ),
               includedElements = Seq(
-                ThemeResponse("themeId1", 1),
+                ThemeResponse("themeId1", 1, "theme description"),
                 CategoryAssessmentResponse(
                   "assessmentId2",
                   "themeId1",
                   Seq(
                     ExemptionResponse("exemptionId1", ExemptionType.Certificate),
                     ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode)
-                  ),
-                  "measureTypeId1"
+                  )
                 ),
-                MeasureTypeResponse("measureTypeId1", "measure description"),
-                ThemeResponse("themeId2", 2),
+                ThemeResponse("themeId2", 2, "theme description"),
                 CertificateResponse("exemptionId1", "code1", "description1"),
                 AdditionalCodeResponse("exemptionId2", "code2", "description2"),
-                ThemeResponse("ignoredTheme", 3),
+                ThemeResponse("ignoredTheme", 3, "theme description"),
                 CertificateResponse("ignoredExemption", "code3", "description3"),
                 CategoryAssessmentResponse(
                   "assessmentId1",
                   "themeId2",
-                  Seq.empty,
-                  "measureTypeId1"
-                ),
-                MeasureTypeResponse("measureTypeId1", "measure description")
+                  Seq.empty
+                )
               ),
               descendents = Seq.empty[Descendant]
             )
 
-            val expectedAssessmentId1 = CategoryAssessment(
-              "assessmentId1",
-              2,
-              Seq.empty,
-              "measure description"
-            )
+            val expectedAssessmentId1 = CategoryAssessment("assessmentId1", 2, Seq.empty, "theme description")
             val expectedAssesmentId2  = CategoryAssessment(
               "assessmentId2",
               1,
@@ -689,7 +633,7 @@ class CategorisationInfoSpec extends SpecBase {
                 Certificate("exemptionId1", "code1", "description1"),
                 AdditionalCode("exemptionId2", "code2", "description2")
               ),
-              "measure description"
+              "theme description"
             )
 
             val expectedAssessments = Seq(
@@ -733,38 +677,32 @@ class CategorisationInfoSpec extends SpecBase {
                 CategoryAssessmentRelationship("assessmentId3")
               ),
               includedElements = Seq(
-                ThemeResponse("themeId1", 1),
+                ThemeResponse("themeId1", 1, "theme description"),
                 CategoryAssessmentResponse(
                   "assessmentId1",
                   "themeId1",
                   Seq(
                     ExemptionResponse("exemptionId1", ExemptionType.Certificate),
                     ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode)
-                  ),
-                  "measureTypeId1"
+                  )
                 ),
-                MeasureTypeResponse("measureTypeId1", "measure description"),
                 CertificateResponse("exemptionId1", "code1", "description1"),
                 AdditionalCodeResponse("exemptionId2", "code2", "description2"),
-                ThemeResponse("themeId2", 1),
+                ThemeResponse("themeId2", 1, "theme description"),
                 CategoryAssessmentResponse(
                   "assessmentId2",
                   "themeId2",
                   Seq(
                     ExemptionResponse(NiphlCode, ExemptionType.Certificate)
-                  ),
-                  "measureTypeId1"
+                  )
                 ),
-                MeasureTypeResponse("measureTypeId1", "measure description"),
                 CertificateResponse(NiphlCode, "WFE-code", "WFE-description"),
-                ThemeResponse("themeId3", 2),
+                ThemeResponse("themeId3", 2, "theme description"),
                 CategoryAssessmentResponse(
                   "assessmentId3",
                   "themeId3",
-                  Seq.empty,
-                  "measureTypeId1"
-                ),
-                MeasureTypeResponse("measureTypeId1", "measure description")
+                  Seq.empty
+                )
               ),
               descendents = Seq.empty[Descendant]
             )
@@ -776,7 +714,7 @@ class CategorisationInfoSpec extends SpecBase {
                 Certificate("exemptionId1", "code1", "description1"),
                 AdditionalCode("exemptionId2", "code2", "description2")
               ),
-              "measure description"
+              "theme description"
             )
             val expectedNiphlAssesmentId2 = CategoryAssessment(
               "assessmentId2",
@@ -784,14 +722,9 @@ class CategorisationInfoSpec extends SpecBase {
               Seq(
                 Certificate(NiphlCode, "WFE-code", "WFE-description")
               ),
-              "measure description"
+              "theme description"
             )
-            val expectedAssessmentId3     = CategoryAssessment(
-              "assessmentId3",
-              2,
-              Seq.empty,
-              "measure description"
-            )
+            val expectedAssessmentId3     = CategoryAssessment("assessmentId3", 2, Seq.empty, "theme description")
 
             val expectedAssessments = Seq(
               expectedNiphlAssesmentId2,
@@ -838,38 +771,32 @@ class CategorisationInfoSpec extends SpecBase {
                 CategoryAssessmentRelationship("assessmentId3")
               ),
               includedElements = Seq(
-                ThemeResponse("themeId1", 1),
+                ThemeResponse("themeId1", 1, "theme description"),
                 CategoryAssessmentResponse(
                   "assessmentId1",
                   "themeId1",
                   Seq(
                     ExemptionResponse("exemptionId1", ExemptionType.Certificate),
                     ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode)
-                  ),
-                  "measureTypeId1"
+                  )
                 ),
-                MeasureTypeResponse("measureTypeId1", "measure description"),
                 CertificateResponse("exemptionId1", "code1", "description1"),
                 AdditionalCodeResponse("exemptionId2", "code2", "description2"),
-                ThemeResponse("themeId2", 1),
+                ThemeResponse("themeId2", 1, "theme description"),
                 CategoryAssessmentResponse(
                   "assessmentId2",
                   "themeId2",
                   Seq(
                     ExemptionResponse(NiphlCode, ExemptionType.Certificate)
-                  ),
-                  "measureTypeId1"
+                  )
                 ),
-                MeasureTypeResponse("measureTypeId1", "measure description"),
                 CertificateResponse(NiphlCode, "WFE-code", "WFE-description"),
-                ThemeResponse("themeId3", 2),
+                ThemeResponse("themeId3", 2, "theme description"),
                 CategoryAssessmentResponse(
                   "assessmentId3",
                   "themeId3",
-                  Seq.empty,
-                  "measureTypeId1"
-                ),
-                MeasureTypeResponse("measureTypeId1", "measure description")
+                  Seq.empty
+                )
               ),
               descendents = Seq.empty[Descendant]
             )
@@ -881,7 +808,7 @@ class CategorisationInfoSpec extends SpecBase {
                 Certificate("exemptionId1", "code1", "description1"),
                 AdditionalCode("exemptionId2", "code2", "description2")
               ),
-              "measure description"
+              "theme description"
             )
             val expectedNiphlAssesmentId2 = CategoryAssessment(
               "assessmentId2",
@@ -889,14 +816,9 @@ class CategorisationInfoSpec extends SpecBase {
               Seq(
                 Certificate(NiphlCode, "WFE-code", "WFE-description")
               ),
-              "measure description"
+              "theme description"
             )
-            val expectedAssessmentId3     = CategoryAssessment(
-              "assessmentId3",
-              2,
-              Seq.empty,
-              "measure description"
-            )
+            val expectedAssessmentId3     = CategoryAssessment("assessmentId3", 2, Seq.empty, "theme description")
 
             val expectedAssessments = Seq(
               expectedNiphlAssesmentId2,
@@ -950,41 +872,35 @@ class CategorisationInfoSpec extends SpecBase {
                 CategoryAssessmentRelationship("assessmentId3")
               ),
               includedElements = Seq(
-                ThemeResponse("themeId1", 1),
+                ThemeResponse("themeId1", 1, "theme description"),
                 CategoryAssessmentResponse(
                   "assessmentId1",
                   "themeId1",
                   Seq(
                     ExemptionResponse("exemptionId1", ExemptionType.Certificate),
                     ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode)
-                  ),
-                  "measureTypeId1"
+                  )
                 ),
-                MeasureTypeResponse("measureTypeId1", "measure description"),
                 CertificateResponse("exemptionId1", "code1", "description1"),
                 AdditionalCodeResponse("exemptionId2", "code2", "description2"),
-                ThemeResponse("themeId2", 2),
+                ThemeResponse("themeId2", 2, "theme description"),
                 CategoryAssessmentResponse(
                   "assessmentId2",
                   "themeId2",
                   Seq(
                     ExemptionResponse(NirmsCode, ExemptionType.Certificate)
-                  ),
-                  "measureTypeId1"
+                  )
                 ),
-                MeasureTypeResponse("measureTypeId1", "measure description"),
                 CertificateResponse(NirmsCode, "WFE-code", "WFE-description"),
-                ThemeResponse("themeId3", 2),
+                ThemeResponse("themeId3", 2, "theme description"),
                 CategoryAssessmentResponse(
                   "assessmentId3",
                   "themeId3",
                   Seq(
                     ExemptionResponse("exemptionId3", ExemptionType.Certificate),
                     ExemptionResponse("exemptionId4", ExemptionType.AdditionalCode)
-                  ),
-                  "measureTypeId1"
+                  )
                 ),
-                MeasureTypeResponse("measureTypeId1", "measure description"),
                 CertificateResponse("exemptionId3", "code3", "description3"),
                 AdditionalCodeResponse("exemptionId4", "code4", "description4")
               ),
@@ -998,7 +914,7 @@ class CategorisationInfoSpec extends SpecBase {
                 Certificate("exemptionId1", "code1", "description1"),
                 AdditionalCode("exemptionId2", "code2", "description2")
               ),
-              "measure description"
+              "theme description"
             )
             val expectedNirmsAssesmentId2 = CategoryAssessment(
               "assessmentId2",
@@ -1006,7 +922,7 @@ class CategorisationInfoSpec extends SpecBase {
               Seq(
                 Certificate(NirmsCode, "WFE-code", "WFE-description")
               ),
-              "measure description"
+              "theme description"
             )
             val expectedAssessmentId3     = CategoryAssessment(
               "assessmentId3",
@@ -1015,7 +931,7 @@ class CategorisationInfoSpec extends SpecBase {
                 Certificate("exemptionId3", "code3", "description3"),
                 AdditionalCode("exemptionId4", "code4", "description4")
               ),
-              "measure description"
+              "theme description"
             )
 
             val expectedAssessments = Seq(
@@ -1064,38 +980,32 @@ class CategorisationInfoSpec extends SpecBase {
                 CategoryAssessmentRelationship("assessmentId3")
               ),
               includedElements = Seq(
-                ThemeResponse("themeId1", 1),
+                ThemeResponse("themeId1", 1, "theme description"),
                 CategoryAssessmentResponse(
                   "assessmentId1",
                   "themeId1",
                   Seq(
                     ExemptionResponse("exemptionId1", ExemptionType.Certificate),
                     ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode)
-                  ),
-                  "measureTypeId1"
+                  )
                 ),
-                MeasureTypeResponse("measureTypeId1", "measure description"),
                 CertificateResponse("exemptionId1", "code1", "description1"),
                 AdditionalCodeResponse("exemptionId2", "code2", "description2"),
-                ThemeResponse("themeId2", 2),
+                ThemeResponse("themeId2", 2, "theme description"),
                 CategoryAssessmentResponse(
                   "assessmentId2",
                   "themeId2",
                   Seq(
                     ExemptionResponse(NirmsCode, ExemptionType.Certificate)
-                  ),
-                  "measureTypeId1"
+                  )
                 ),
-                MeasureTypeResponse("measureTypeId1", "measure description"),
                 CertificateResponse(NirmsCode, "WFE-code", "WFE-description"),
-                ThemeResponse("themeId3", 2),
+                ThemeResponse("themeId3", 2, "theme description"),
                 CategoryAssessmentResponse(
                   "assessmentId3",
                   "themeId3",
-                  Seq.empty,
-                  "measureTypeId1"
-                ),
-                MeasureTypeResponse("measureTypeId1", "measure description")
+                  Seq.empty
+                )
               ),
               descendents = Seq.empty[Descendant]
             )
@@ -1107,7 +1017,7 @@ class CategorisationInfoSpec extends SpecBase {
                 Certificate("exemptionId1", "code1", "description1"),
                 AdditionalCode("exemptionId2", "code2", "description2")
               ),
-              "measure description"
+              "theme description"
             )
             val expectedNirmsAssesmentId2 = CategoryAssessment(
               "assessmentId2",
@@ -1115,14 +1025,9 @@ class CategorisationInfoSpec extends SpecBase {
               Seq(
                 Certificate(NirmsCode, "WFE-code", "WFE-description")
               ),
-              "measure description"
+              "theme description"
             )
-            val expectedAssessmentId3     = CategoryAssessment(
-              "assessmentId3",
-              2,
-              Seq.empty,
-              "measure description"
-            )
+            val expectedAssessmentId3     = CategoryAssessment("assessmentId3", 2, Seq.empty, "theme description")
 
             val expectedAssessments = Seq(
               expectedAssessmentId1,
@@ -1176,41 +1081,35 @@ class CategorisationInfoSpec extends SpecBase {
                 CategoryAssessmentRelationship("assessmentId3")
               ),
               includedElements = Seq(
-                ThemeResponse("themeId1", 1),
+                ThemeResponse("themeId1", 1, "theme description"),
                 CategoryAssessmentResponse(
                   "assessmentId1",
                   "themeId1",
                   Seq(
                     ExemptionResponse("exemptionId1", ExemptionType.Certificate),
                     ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode)
-                  ),
-                  "measureTypeId1"
+                  )
                 ),
-                MeasureTypeResponse("measureTypeId1", "measure description"),
                 CertificateResponse("exemptionId1", "code1", "description1"),
                 AdditionalCodeResponse("exemptionId2", "code2", "description2"),
-                ThemeResponse("themeId2", 2),
+                ThemeResponse("themeId2", 2, "theme description"),
                 CategoryAssessmentResponse(
                   "assessmentId2",
                   "themeId2",
                   Seq(
                     ExemptionResponse(NirmsCode, ExemptionType.Certificate)
-                  ),
-                  "measureTypeId1"
+                  )
                 ),
-                MeasureTypeResponse("measureTypeId1", "measure description"),
                 CertificateResponse(NirmsCode, "WFE-code", "WFE-description"),
-                ThemeResponse("themeId3", 2),
+                ThemeResponse("themeId3", 2, "theme description"),
                 CategoryAssessmentResponse(
                   "assessmentId3",
                   "themeId3",
                   Seq(
                     ExemptionResponse("exemptionId3", ExemptionType.Certificate),
                     ExemptionResponse("exemptionId4", ExemptionType.AdditionalCode)
-                  ),
-                  "measureTypeId1"
+                  )
                 ),
-                MeasureTypeResponse("measureTypeId1", "measure description"),
                 CertificateResponse("exemptionId3", "code3", "description3"),
                 AdditionalCodeResponse("exemptionId4", "code4", "description4")
               ),
@@ -1224,7 +1123,7 @@ class CategorisationInfoSpec extends SpecBase {
                 Certificate("exemptionId1", "code1", "description1"),
                 AdditionalCode("exemptionId2", "code2", "description2")
               ),
-              "measure description"
+              "theme description"
             )
             val expectedNirmsAssesmentId2 = CategoryAssessment(
               "assessmentId2",
@@ -1232,7 +1131,7 @@ class CategorisationInfoSpec extends SpecBase {
               Seq(
                 Certificate(NirmsCode, "WFE-code", "WFE-description")
               ),
-              "measure description"
+              "theme description"
             )
             val expectedAssessmentId3     = CategoryAssessment(
               "assessmentId3",
@@ -1241,7 +1140,7 @@ class CategorisationInfoSpec extends SpecBase {
                 Certificate("exemptionId3", "code3", "description3"),
                 AdditionalCode("exemptionId4", "code4", "description4")
               ),
-              "measure description"
+              "theme description"
             )
 
             val expectedAssessments = Seq(
@@ -1286,38 +1185,32 @@ class CategorisationInfoSpec extends SpecBase {
                 CategoryAssessmentRelationship("assessmentId3")
               ),
               includedElements = Seq(
-                ThemeResponse("themeId1", 1),
+                ThemeResponse("themeId1", 1, "theme description"),
                 CategoryAssessmentResponse(
                   "assessmentId1",
                   "themeId1",
                   Seq(
                     ExemptionResponse("exemptionId1", ExemptionType.Certificate),
                     ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode)
-                  ),
-                  "measureTypeId1"
+                  )
                 ),
-                MeasureTypeResponse("measureTypeId1", "measure description"),
                 CertificateResponse("exemptionId1", "code1", "description1"),
                 AdditionalCodeResponse("exemptionId2", "code2", "description2"),
-                ThemeResponse("themeId2", 2),
+                ThemeResponse("themeId2", 2, "theme description"),
                 CategoryAssessmentResponse(
                   "assessmentId2",
                   "themeId2",
                   Seq(
                     ExemptionResponse(NirmsCode, ExemptionType.Certificate)
-                  ),
-                  "measureTypeId1"
+                  )
                 ),
-                MeasureTypeResponse("measureTypeId1", "measure description"),
                 CertificateResponse(NirmsCode, "WFE-code", "WFE-description"),
-                ThemeResponse("themeId3", 2),
+                ThemeResponse("themeId3", 2, "theme description"),
                 CategoryAssessmentResponse(
                   "assessmentId3",
                   "themeId3",
-                  Seq.empty,
-                  "measureTypeId1"
-                ),
-                MeasureTypeResponse("measureTypeId1", "measure description")
+                  Seq.empty
+                )
               ),
               descendents = Seq.empty[Descendant]
             )
@@ -1329,7 +1222,7 @@ class CategorisationInfoSpec extends SpecBase {
                 Certificate("exemptionId1", "code1", "description1"),
                 AdditionalCode("exemptionId2", "code2", "description2")
               ),
-              "measure description"
+              "theme description"
             )
             val expectedNirmsAssesmentId2 = CategoryAssessment(
               "assessmentId2",
@@ -1337,14 +1230,9 @@ class CategorisationInfoSpec extends SpecBase {
               Seq(
                 Certificate(NirmsCode, "WFE-code", "WFE-description")
               ),
-              "measure description"
+              "theme description"
             )
-            val expectedAssessmentId3     = CategoryAssessment(
-              "assessmentId3",
-              2,
-              Seq.empty,
-              "measure description"
-            )
+            val expectedAssessmentId3     = CategoryAssessment("assessmentId3", 2, Seq.empty, "theme description")
 
             val expectedAssessments = Seq(
               expectedAssessmentId1,
@@ -1389,7 +1277,7 @@ class CategorisationInfoSpec extends SpecBase {
           ),
           categoryAssessmentRelationships = Seq(CategoryAssessmentRelationship("assessmentId")),
           includedElements = Seq(
-            ThemeResponse("otherThemeId", 2)
+            ThemeResponse("otherThemeId", 2, "theme description")
           ),
           descendents = Seq.empty[Descendant]
         )
@@ -1415,9 +1303,8 @@ class CategorisationInfoSpec extends SpecBase {
           ),
           categoryAssessmentRelationships = Seq(CategoryAssessmentRelationship("assessmentId")),
           includedElements = Seq(
-            CategoryAssessmentResponse("assessmentId", "themeId", Nil, "measureTypeId1"),
-            MeasureTypeResponse("measureTypeId1", "measure description"),
-            ThemeResponse("otherThemeId", 2)
+            CategoryAssessmentResponse("assessmentId", "themeId", Nil),
+            ThemeResponse("otherThemeId", 2, "theme description")
           ),
           descendents = Seq.empty[Descendant]
         )
@@ -1451,11 +1338,9 @@ class CategorisationInfoSpec extends SpecBase {
               Seq(
                 ExemptionResponse("exemptionId1", ExemptionType.Certificate),
                 ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode)
-              ),
-              "measureTypeId1"
+              )
             ),
-            MeasureTypeResponse("measureTypeId1", "measure description"),
-            ThemeResponse("themeId1", 1),
+            ThemeResponse("themeId1", 1, "theme description"),
             AdditionalCodeResponse("exemptionId2", "code2", "description2")
           ),
           descendents = Seq.empty[Descendant]
@@ -1490,11 +1375,9 @@ class CategorisationInfoSpec extends SpecBase {
               Seq(
                 ExemptionResponse("exemptionId1", ExemptionType.Certificate),
                 ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode)
-              ),
-              "measureTypeId1"
+              )
             ),
-            MeasureTypeResponse("measureTypeId1", "measure description"),
-            ThemeResponse("themeId1", 1),
+            ThemeResponse("themeId1", 1, "theme description"),
             CertificateResponse("exemptionId1", "code1", "description1")
           ),
           descendents = Seq.empty[Descendant]
@@ -1521,7 +1404,7 @@ class CategorisationInfoSpec extends SpecBase {
           .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
           .success
           .value
-          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("Y903")))
           .success
           .value
           .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.NoExemption)
@@ -1530,7 +1413,7 @@ class CategorisationInfoSpec extends SpecBase {
 
         categorisationInfo.getAnswersForQuestions(userAnswers, testRecordId) mustBe
           Seq(
-            AnsweredQuestions(0, category1, Some(AssessmentAnswer.Exemption(Seq("TEST_CODE")))),
+            AnsweredQuestions(0, category1, Some(AssessmentAnswer.Exemption(Seq("Y903")))),
             AnsweredQuestions(1, category2, Some(AssessmentAnswer.NoExemption)),
             AnsweredQuestions(2, category3, None)
           )
@@ -1549,7 +1432,7 @@ class CategorisationInfoSpec extends SpecBase {
           .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
           .success
           .value
-          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("Y903")))
           .success
           .value
           .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.NoExemption)
@@ -1558,10 +1441,10 @@ class CategorisationInfoSpec extends SpecBase {
           .set(LongerCategorisationDetailsQuery(testRecordId), longerCommodity)
           .success
           .value
-          .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE"))))
+          .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("Y903"))))
           .success
           .value
-          .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE"))))
+          .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("Y903"))))
           .success
           .value
           .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(AssessmentAnswer.NoExemption))
@@ -1570,18 +1453,8 @@ class CategorisationInfoSpec extends SpecBase {
 
         longerCommodity.getAnswersForQuestions(userAnswers, testRecordId) mustBe
           Seq(
-            AnsweredQuestions(
-              0,
-              category1,
-              Some(AssessmentAnswer.Exemption(Seq("TEST_CODE"))),
-              reassessmentQuestion = true
-            ),
-            AnsweredQuestions(
-              1,
-              category1,
-              Some(AssessmentAnswer.Exemption(Seq("TEST_CODE"))),
-              reassessmentQuestion = true
-            ),
+            AnsweredQuestions(0, category1, Some(AssessmentAnswer.Exemption(Seq("Y903"))), reassessmentQuestion = true),
+            AnsweredQuestions(1, category1, Some(AssessmentAnswer.Exemption(Seq("Y903"))), reassessmentQuestion = true),
             AnsweredQuestions(2, category2, Some(AssessmentAnswer.NoExemption), reassessmentQuestion = true),
             AnsweredQuestions(3, category3, None, reassessmentQuestion = true)
           )
@@ -1601,7 +1474,7 @@ class CategorisationInfoSpec extends SpecBase {
           Certificate("exemptionId1", "code1", "description1"),
           AdditionalCode("exemptionId2", "code2", "description2")
         ),
-        "measure description"
+        "theme description"
       )
     )
 

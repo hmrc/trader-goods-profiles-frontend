@@ -87,7 +87,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 expectedCodesAndDescriptions,
                 categorisationInfo.commodityCode,
                 onSubmitAction,
-                categorisationInfo.categoryAssessments.head.measureTypeDescription,
+                categorisationInfo.categoryAssessments.head.themeDescription,
                 categorisationInfo.categoryAssessments.size
               )(
                 request,
@@ -132,7 +132,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 expectedCodesAndDescriptions,
                 categorisationInfo.commodityCode,
                 onSubmitAction,
-                categorisationInfo.categoryAssessments.head.measureTypeDescription,
+                categorisationInfo.categoryAssessments.head.themeDescription,
                 categorisationInfo.categoryAssessments.size
               )(
                 request,
@@ -280,7 +280,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               expectedCodesAndDescriptions,
               categorisationInfo.commodityCode,
               onSubmitAction,
-              categorisationInfo.categoryAssessments.head.measureTypeDescription,
+              categorisationInfo.categoryAssessments.head.themeDescription,
               categorisationInfo.categoryAssessments.size
             )(
               request,
@@ -436,7 +436,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 expectedCodesAndDescriptions,
                 categorisationInfo.commodityCode,
                 onSubmitAction,
-                categorisationInfo.categoryAssessments.head.measureTypeDescription,
+                categorisationInfo.categoryAssessments.head.themeDescription,
                 categorisationInfo.categoryAssessments.size
               )(
                 request,
@@ -482,7 +482,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 expectedCodesAndDescriptions,
                 categorisationInfo.commodityCode,
                 onSubmitAction,
-                categorisationInfo.categoryAssessments.head.measureTypeDescription,
+                categorisationInfo.categoryAssessments.head.themeDescription,
                 categorisationInfo.categoryAssessments.size
               )(
                 request,
@@ -638,7 +638,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               expectedCodesAndDescriptions,
               categorisationInfo.commodityCode,
               onSubmitAction,
-              categorisationInfo.categoryAssessments.head.measureTypeDescription,
+              categorisationInfo.categoryAssessments.head.themeDescription,
               categorisationInfo.categoryAssessments.size
             )(
               request,

@@ -75,7 +75,7 @@ class AssessmentController @Inject() (
                     codesAndDescriptions,
                     categorisationInfo.commodityCode,
                     submitAction,
-                    assessment.measureTypeDescription,
+                    assessment.themeDescription,
                     categorisationInfo.categoryAssessments.size
                   )
                 )
@@ -108,7 +108,7 @@ class AssessmentController @Inject() (
                     codesAndDescriptions,
                     categorisationInfo.commodityCode,
                     submitAction,
-                    assessment.measureTypeDescription,
+                    assessment.themeDescription,
                     categorisationInfo.categoryAssessments.size
                   )
                 )
@@ -145,7 +145,7 @@ class AssessmentController @Inject() (
                             codesAndDescriptions,
                             categorisationInfo.commodityCode,
                             submitAction,
-                            assessment.measureTypeDescription,
+                            assessment.themeDescription,
                             categorisationInfo.categoryAssessments.size
                           )
                         )
@@ -195,7 +195,7 @@ class AssessmentController @Inject() (
                             codesAndDescriptions,
                             categorisationInfo.commodityCode,
                             submitAction,
-                            assessment.measureTypeDescription,
+                            assessment.themeDescription,
                             categorisationInfo.categoryAssessments.size
                           )
                         )

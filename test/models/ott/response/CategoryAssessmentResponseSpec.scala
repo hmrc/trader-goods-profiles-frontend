@@ -30,26 +30,20 @@ class CategoryAssessmentResponseSpec extends AnyFreeSpec with Matchers {
         "id"            -> "abc",
         "type"          -> "category_assessment",
         "relationships" -> Json.obj(
-          "exemptions"   -> Json.obj(
+          "exemptions" -> Json.obj(
             "data" -> Json.arr()
           ),
-          "theme"        -> Json.obj(
+          "theme"      -> Json.obj(
             "data" -> Json.obj(
               "id"   -> "1",
               "type" -> "theme"
-            )
-          ),
-          "measure_type" -> Json.obj(
-            "data" -> Json.obj(
-              "id"          -> "measureTypeId1",
-              "description" -> "measure description"
             )
           )
         )
       )
 
       val result = json.validate[CategoryAssessmentResponse]
-      result mustEqual JsSuccess(CategoryAssessmentResponse("abc", "1", Nil, "measureTypeId1"))
+      result mustEqual JsSuccess(CategoryAssessmentResponse("abc", "1", Nil))
     }
 
     "must deserialise valid JSON with exemptions" in {
@@ -58,7 +52,7 @@ class CategoryAssessmentResponseSpec extends AnyFreeSpec with Matchers {
         "id"            -> "abc",
         "type"          -> "category_assessment",
         "relationships" -> Json.obj(
-          "exemptions"   -> Json.obj(
+          "exemptions" -> Json.obj(
             "data" -> Json.arr(
               Json.obj(
                 "id"   -> "cert",
@@ -74,16 +68,10 @@ class CategoryAssessmentResponseSpec extends AnyFreeSpec with Matchers {
               )
             )
           ),
-          "theme"        -> Json.obj(
+          "theme"      -> Json.obj(
             "data" -> Json.obj(
               "id"   -> "1",
               "type" -> "theme"
-            )
-          ),
-          "measure_type" -> Json.obj(
-            "data" -> Json.obj(
-              "id"          -> "measureTypeId1",
-              "description" -> "measure description"
             )
           )
         )
@@ -98,8 +86,7 @@ class CategoryAssessmentResponseSpec extends AnyFreeSpec with Matchers {
             ExemptionResponse("cert", ExemptionType.Certificate),
             ExemptionResponse("code", ExemptionType.AdditionalCode),
             ExemptionResponse("exempt", ExemptionType.OtherExemption)
-          ),
-          "measureTypeId1"
+          )
         )
       )
     }

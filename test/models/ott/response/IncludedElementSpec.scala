@@ -30,7 +30,7 @@ class IncludedElementSpec extends AnyFreeSpec with Matchers {
         "id"            -> "abc",
         "type"          -> "category_assessment",
         "relationships" -> Json.obj(
-          "exemptions"   -> Json.obj(
+          "exemptions" -> Json.obj(
             "data" -> Json.arr(
               Json.obj(
                 "id"   -> "cert",
@@ -42,16 +42,10 @@ class IncludedElementSpec extends AnyFreeSpec with Matchers {
               )
             )
           ),
-          "theme"        -> Json.obj(
+          "theme"      -> Json.obj(
             "data" -> Json.obj(
               "id"   -> "1",
               "type" -> "theme"
-            )
-          ),
-          "measure_type" -> Json.obj(
-            "data" -> Json.obj(
-              "id"          -> "measureTypeId1",
-              "description" -> "measure description"
             )
           )
         )
@@ -65,8 +59,7 @@ class IncludedElementSpec extends AnyFreeSpec with Matchers {
           exemptions = Seq(
             ExemptionResponse("cert", ExemptionType.Certificate),
             ExemptionResponse("code", ExemptionType.AdditionalCode)
-          ),
-          "measureTypeId1"
+          )
         )
       )
     }
@@ -107,26 +100,13 @@ class IncludedElementSpec extends AnyFreeSpec with Matchers {
         "type"       -> "theme",
         "id"         -> "1",
         "attributes" -> Json.obj(
-          "category" -> 1
+          "category" -> 1,
+          "theme"    -> "theme description"
         )
       )
 
       val result = json.validate[IncludedElement]
-      result mustEqual JsSuccess(ThemeResponse("1", 1))
-    }
-
-    "must deserialise a measure type" in {
-
-      val json = Json.obj(
-        "type"       -> "measure_type",
-        "id"         -> "1",
-        "attributes" -> Json.obj(
-          "description" -> "some description"
-        )
-      )
-
-      val result = json.validate[IncludedElement]
-      result mustEqual JsSuccess(MeasureTypeResponse("1", "some description"))
+      result mustEqual JsSuccess(ThemeResponse("1", 1, "theme description"))
     }
 
     "must deserialise other types as Ignorable" in {

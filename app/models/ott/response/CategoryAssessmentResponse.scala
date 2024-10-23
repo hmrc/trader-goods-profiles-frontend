@@ -22,8 +22,7 @@ import play.api.libs.json._
 final case class CategoryAssessmentResponse(
   id: String,
   themeId: String,
-  exemptions: Seq[ExemptionResponse],
-  measureTypeId: String
+  exemptions: Seq[ExemptionResponse]
 ) extends IncludedElement
 
 object CategoryAssessmentResponse {
@@ -32,7 +31,6 @@ object CategoryAssessmentResponse {
     (
       (__ \ "id").read[String] and
         (__ \ "relationships" \ "theme" \ "data" \ "id").read[String] and
-        (__ \ "relationships" \ "exemptions" \ "data").read[Seq[ExemptionResponse]] and
-        (__ \ "relationships" \ "measure_type" \ "data" \ "id").read[String]
+        (__ \ "relationships" \ "exemptions" \ "data").read[Seq[ExemptionResponse]]
     )(CategoryAssessmentResponse.apply _)
 }
