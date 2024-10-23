@@ -52,11 +52,7 @@ class ReasonForWithdrawAdviceController @Inject() (
 
   def onPageLoad(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
-      val preparedForm = request.userAnswers.get(ReasonForWithdrawAdvicePage(recordId)) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
-
+      val preparedForm = prepareForm(ReasonForWithdrawAdvicePage(recordId), form)
       Ok(view(preparedForm, recordId))
     }
 

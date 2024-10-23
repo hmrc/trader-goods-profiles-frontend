@@ -21,12 +21,10 @@ import controllers.actions._
 import forms.TraderReferenceFormProvider
 import models.Mode
 import models.helper.GoodsDetailsUpdate
-import models.requests.DataRequest
 import navigation.Navigator
-import pages.{QuestionPage, TraderReferencePage, TraderReferenceUpdatePage}
+import pages.{TraderReferencePage, TraderReferenceUpdatePage}
 import play.api.data.{Form, FormError}
 import play.api.i18n.{Messages, MessagesApi}
-import play.api.libs.json.Reads
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import services.AuditService
@@ -147,12 +145,6 @@ class TraderReferenceController @Inject() (
             }
         )
     }
-
-  private def prepareForm[T](page: QuestionPage[T], form: Form[T])(implicit
-    request: DataRequest[AnyContent],
-    reads: Reads[T]
-  ): Form[T] =
-    request.userAnswers.get(page).map(form.fill).getOrElse(form)
 
   private def createFormWithErrors[T](form: Form[T], value: T, errorMessageKey: String, field: String = "value")(
     implicit messages: Messages

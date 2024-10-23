@@ -25,7 +25,6 @@ import pages.{UkimsNumberPage, UkimsNumberUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import services.AuditService
 import views.html.UkimsNumberView
 
 import javax.inject.Inject
@@ -42,8 +41,7 @@ class UkimsNumberController @Inject() (
   formProvider: UkimsNumberFormProvider,
   traderProfileConnector: TraderProfileConnector,
   val controllerComponents: MessagesControllerComponents,
-  view: UkimsNumberView,
-  auditService: AuditService
+  view: UkimsNumberView
 )(implicit ec: ExecutionContext)
     extends BaseController {
 

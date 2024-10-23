@@ -25,7 +25,7 @@ import models.{Mode, UserAnswers}
 import navigation.Navigator
 import pages.LongerCommodityCodePage
 import play.api.data.FormError
-import play.api.i18n.{Messages, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.{CategorisationDetailsQuery, LongerCommodityQuery}
 import repositories.SessionRepository
@@ -56,12 +56,7 @@ class LongerCommodityCodeController @Inject() (
   def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
       val shortComcodeOpt = getShortCommodityCodeOpt(recordId, request.userAnswers)
-
-      val preparedForm = request.userAnswers.get(LongerCommodityCodePage(recordId)) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
-
+      val preparedForm    = prepareForm(LongerCommodityCodePage(recordId), form)
       shortComcodeOpt match {
         case Some(shortComcode) if shortComcode.length == minimumLengthOfCommodityCode =>
           Ok(view(preparedForm, mode, shortComcode, recordId))
@@ -134,7 +129,5 @@ class LongerCommodityCodeController @Inject() (
       BadRequest(view(formWithApiErrors, mode, shortCode, recordId))
     }
   }
-
-  private def getMessage(key: String)(implicit messages: Messages): String = messages(key)
 
 }

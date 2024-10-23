@@ -20,12 +20,9 @@ import controllers.actions._
 import forms.GoodsDescriptionFormProvider
 import models.Mode
 import models.helper.GoodsDetailsUpdate
-import models.requests.DataRequest
 import navigation.Navigator
-import pages.{GoodsDescriptionPage, GoodsDescriptionUpdatePage, HasGoodsDescriptionChangePage, QuestionPage}
-import play.api.data.Form
+import pages.{GoodsDescriptionPage, GoodsDescriptionUpdatePage, HasGoodsDescriptionChangePage}
 import play.api.i18n.MessagesApi
-import play.api.libs.json.Reads
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import services.AuditService
@@ -118,9 +115,4 @@ class GoodsDescriptionController @Inject() (
         )
     }
 
-  private def prepareForm[T](page: QuestionPage[T], form: Form[T])(implicit
-    request: DataRequest[AnyContent],
-    reads: Reads[T]
-  ): Form[T] =
-    request.userAnswers.get(page).map(form.fill).getOrElse(form)
 }

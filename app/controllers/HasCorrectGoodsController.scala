@@ -19,12 +19,9 @@ package controllers
 import controllers.actions._
 import forms.HasCorrectGoodsFormProvider
 import models.Mode
-import models.requests.DataRequest
 import navigation.Navigator
 import pages._
-import play.api.data.Form
 import play.api.i18n.MessagesApi
-import play.api.libs.json.Reads
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries._
 import repositories.SessionRepository
@@ -148,11 +145,5 @@ class HasCorrectGoodsController @Inject() (
             } yield Redirect(navigator.nextPage(HasCorrectGoodsCommodityCodeUpdatePage(recordId), mode, updatedAnswers))
         )
     }
-
-  private def prepareForm[T](page: QuestionPage[T], form: Form[T])(implicit
-    request: DataRequest[AnyContent],
-    reads: Reads[T]
-  ): Form[T] =
-    request.userAnswers.get(page).map(form.fill).getOrElse(form)
 
 }

@@ -23,10 +23,9 @@ import models.{Commodity, Mode}
 import models.helper.{CreateRecordJourney, GoodsDetailsUpdate}
 import models.requests.DataRequest
 import navigation.Navigator
-import pages.{CommodityCodePage, CommodityCodeUpdatePage, CountryOfOriginPage, CountryOfOriginUpdatePage, HasCommodityCodeChangePage, QuestionPage}
+import pages.{CommodityCodePage, CommodityCodeUpdatePage, CountryOfOriginPage, CountryOfOriginUpdatePage, HasCommodityCodeChangePage}
 import play.api.data.{Form, FormError}
-import play.api.i18n.{Messages, MessagesApi}
-import play.api.libs.json.Reads
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents, Request, Result}
 import queries.{CommodityQuery, CommodityUpdateQuery}
 import repositories.SessionRepository
@@ -139,12 +138,6 @@ class CommodityCodeController @Inject() (
         )
     }
 
-  private def prepareForm[T](page: QuestionPage[T], form: Form[T])(implicit
-    request: DataRequest[AnyContent],
-    reads: Reads[T]
-  ): Form[T] =
-    request.userAnswers.get(page).map(form.fill).getOrElse(form)
-
   private def fetchCommodity(
     value: String,
     countryOfOrigin: String
@@ -164,5 +157,4 @@ class CommodityCodeController @Inject() (
     BadRequest(view(formWithApiErrors, onSubmitAction))
   }
 
-  private def getMessage(key: String)(implicit messages: Messages): String = messages(key)
 }
