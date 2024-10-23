@@ -313,6 +313,8 @@ GET         /download-data/file-ready                                           
 
 GET         /problem/:recordId/expired-commodity-code                                       controllers.ExpiredCommodityCodeController.onPageLoad(recordId:String)
 
+GET         /new/ukims-number-cya                                                           controllers.CyaNewUkimsNumberController.onPageLoad()
+POST        /new/ukims-number-cya                                                           controllers.CyaNewUkimsNumberController.onSubmit()
+
 # this url must be the last url on this page so it becomes the default if no other urls match
 GET         /*path                                                                          controllers.PageNotFoundController.onPageLoad(path: String)
-

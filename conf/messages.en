@@ -692,3 +692,5 @@ cyaMaintainProfile.li3 = Northern Ireland Plant Health Label (NIPHL)
 cyaMaintainProfile.warning = Warning
 cyaMaintainProfile.warningText = You need to make sure these details are correct. Any details that are wrong in your Trader Goods Profile and used to create movements, will not be valid.
 
+cyaNewUkimsNumber.title = Check your answers for your new UKIMS number
+cyaNewUkimsNumber.heading = Check your answers for your new UKIMS number
