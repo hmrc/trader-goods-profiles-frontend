@@ -17,6 +17,7 @@
 package viewmodels
 
 import connectors.DownloadDataConnector
+import helpers.FileManagementTableComponentHelper
 import models.DownloadDataStatus.{FileInProgress, FileReadySeen, FileReadyUnseen}
 import models.filemanagement._
 import play.api.i18n.Messages
@@ -49,7 +50,9 @@ case class FileManagementViewModel(
 }
 
 object FileManagementViewModel {
-  class FileManagementViewModelProvider @Inject() {
+  class FileManagementViewModelProvider @Inject() (implicit
+    fileManagementTableComponentHelper: FileManagementTableComponentHelper
+  ) {
     def apply(
       eori: String,
       downloadDataConnector: DownloadDataConnector

@@ -64,6 +64,10 @@ class DownloadDataConnectorSpec
   private val downloadDataUrl =
     s"/trader-goods-profiles-data-store/traders/$testEori/download-data"
 
+  private val updateSeenStatusUrl =
+    s"/trader-goods-profiles-data-store/traders/$testEori/update-seen-status"
+
+
   override def beforeEach(): Unit = {
     super.beforeEach()
     wireMockServer.resetAll()
@@ -231,6 +235,29 @@ class DownloadDataConnectorSpec
       val result = connector.requestDownloadData(testEori)
 
       result.failed.futureValue
+    }
+  }
+
+  ".updateSeenStatus" - {
+
+    "must return true on Ok" in {
+
+      wireMockServer.stubFor(
+        put(urlEqualTo(updateSeenStatusUrl)) // TODO: Update method once endpoint has been implemented
+          .willReturn(ok())
+      )
+
+      connector.updateSeenStatus(testEori).futureValue mustBe true
+    }
+
+    "must return false on anything but Ok" in {
+
+      wireMockServer.stubFor(
+        put(urlEqualTo(updateSeenStatusUrl)) // TODO: Update method once endpoint has been implemented
+          .willReturn(status(errorResponses.sample.value))
+      )
+
+      connector.updateSeenStatus(testEori).futureValue mustBe false
     }
   }
 

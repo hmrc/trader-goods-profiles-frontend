@@ -16,9 +16,10 @@
 
 package models.filemanagement
 
+import helpers.FileManagementTableComponentHelper
 import models.{DownloadData, DownloadDataSummary, FileInfo}
 import play.api.i18n.{Lang, Messages}
-import uk.gov.hmrc.govukfrontend.views.Aliases.{HeadCell, HtmlContent, Text}
+import uk.gov.hmrc.govukfrontend.views.Aliases.{HeadCell, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.table.TableRow
 import utils.DateTimeFormats.dateTimeFormat
 
@@ -61,7 +62,10 @@ object FileManagementTable {
   object AvailableFilesTable {
     def apply(
       availableFiles: Option[Seq[(DownloadDataSummary, DownloadData)]]
-    )(implicit messages: Messages): Option[AvailableFilesTable] = {
+    )(implicit
+      messages: Messages,
+      fileManagementTableComponentHelper: FileManagementTableComponentHelper
+    ): Option[AvailableFilesTable] = {
 
       val availableFileRows = availableFiles.map {
         _.flatMap { availableFile =>
@@ -70,13 +74,10 @@ object FileManagementTable {
           summary.fileInfo.map { fileInfo =>
             val fileCreated        = convertToDateString(summary.createdAt)
             val fileExpirationDate = retentionTimeToExpirationDate(fileInfo)
-            val fileLink           = HtmlContent(
-              s"""<a href="${data.downloadURL}" class="govuk-link">${messages(
-                "fileManagement.availableFiles.downloadText"
-              )}<span class="govuk-visually-hidden"> ${messages(
-                "fileManagement.availableFiles.downloadText.hidden",
-                fileCreated
-              )}</span></a>"""
+            val fileLink           = fileManagementTableComponentHelper.createLink(
+              messages("fileManagement.availableFiles.downloadText"),
+              messages("fileManagement.availableFiles.downloadText.hidden", fileCreated),
+              data.downloadURL
             )
 
             Seq(
@@ -103,14 +104,15 @@ object FileManagementTable {
   object PendingFilesTable {
     def apply(
       pendingFiles: Option[Seq[DownloadDataSummary]]
-    )(implicit messages: Messages): Option[PendingFilesTable] = {
+    )(implicit
+      messages: Messages,
+      fileManagementTableComponentHelper: FileManagementTableComponentHelper
+    ): Option[PendingFilesTable] = {
 
       val pendingFilesRows = pendingFiles.map {
         _.flatMap { pendingFile =>
           val fileCreated = convertToDateString(pendingFile.createdAt)
-          val fileLink    =
-            HtmlContent(s"""<strong class="govuk-tag">${messages("fileManagement.pendingFiles.fileText")}</strong>""")
-          // TODO: Is it possible to use the component here?
+          val fileLink    = fileManagementTableComponentHelper.createTag(messages("fileManagement.pendingFiles.fileText"))
 
           Seq(
             TableRow(

@@ -41,6 +41,9 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
   private def emailUrl(eori: String) =
     url"${config.dataStoreBaseUrl}/trader-goods-profiles-data-store/traders/$eori/email"
 
+  private def updateSeenStatusUrl(eori: String) =
+    url"${config.dataStoreBaseUrl}/trader-goods-profiles-data-store/traders/$eori/update-seen-status"
+
   def requestDownloadData(eori: String)(implicit hc: HeaderCarrier): Future[Done] =
     httpClient
       .post(downloadDataUrl(eori))
@@ -98,4 +101,18 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
           case _  => Future.failed(UpstreamErrorResponse(response.body, response.status))
         }
       }
+
+  def updateSeenStatus(eori: String)(implicit hc: HeaderCarrier): Future[Boolean] =
+    httpClient
+      .put(updateSeenStatusUrl(eori))
+      .setHeader(clientIdHeader)
+      .execute[HttpResponse]
+      .map { response =>
+        response.status match {
+          case OK => true
+          case _  => false
+        }
+      }
+      .recover(_ => false) // TODO: Does this need logged? Or does the global error handler handle it
+  // TODO: Configure this once new endpoint is made
 }

@@ -18,10 +18,11 @@ package models
 
 import base.SpecBase
 import generators.Generators
+import helpers.FileManagementTableComponentHelper
 import models.DownloadDataStatus.{FileInProgress, FileReadyUnseen}
 import models.filemanagement._
 import play.api.i18n.Messages
-import uk.gov.hmrc.govukfrontend.views.Aliases.{HeadCell, HtmlContent, Text}
+import uk.gov.hmrc.govukfrontend.views.Aliases.{HeadCell, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.table.TableRow
 
 import java.time.Instant
@@ -32,6 +33,9 @@ class FileManagementTableSpec extends SpecBase with Generators {
 
     val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
       .build()
+
+    implicit val fileManagementTableComponentHelper: FileManagementTableComponentHelper =
+      application.injector.instanceOf[FileManagementTableComponentHelper]
 
     implicit val message: Messages = messages(application)
 
@@ -90,8 +94,11 @@ class FileManagementTableSpec extends SpecBase with Generators {
 
             val dateTime   = "22 April 2024 10:05"
             val expiryDate = "22 May 2024 10:05"
-            val file       =
-              s"""<a href="url.csv" class="govuk-link">Download file<span class="govuk-visually-hidden"> requested on 22 April 2024 10:05</span></a>"""
+            val file       = fileManagementTableComponentHelper.createLink(
+              "Download file",
+              "requested on 22 April 2024 10:05",
+              fileName
+            )
 
             val tableRows = Seq(
               Seq(
@@ -102,7 +109,7 @@ class FileManagementTableSpec extends SpecBase with Generators {
                   content = Text(expiryDate)
                 ),
                 TableRow(
-                  content = HtmlContent(file)
+                  content = file
                 )
               )
             )
@@ -139,7 +146,7 @@ class FileManagementTableSpec extends SpecBase with Generators {
             FileManagementTable.PendingFilesTable(None) mustBe None
           }
 
-          "when populated with both DownloadDataSummary" in {
+          "when populated with DownloadDataSummary" in {
 
             val instant = Instant.parse("2024-04-22T10:05:00Z")
 
@@ -148,7 +155,7 @@ class FileManagementTableSpec extends SpecBase with Generators {
             val tableParameter = Some(Seq(downloadDataSummary))
 
             val dateTime = "22 April 2024 10:05"
-            val file     = s"""<strong class="govuk-tag">File not ready</strong>"""
+            val file     = fileManagementTableComponentHelper.createTag("File not ready")
 
             val tableRows = Seq(
               Seq(
@@ -156,7 +163,7 @@ class FileManagementTableSpec extends SpecBase with Generators {
                   content = Text(dateTime)
                 ),
                 TableRow(
-                  content = HtmlContent(file)
+                  content = file
                 )
               )
             )

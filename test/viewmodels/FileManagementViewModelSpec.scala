@@ -19,9 +19,10 @@ package viewmodels
 import base.SpecBase
 import connectors.DownloadDataConnector
 import generators.Generators
+import helpers.FileManagementTableComponentHelper
 import models.DownloadDataStatus.{FileInProgress, FileReadyUnseen}
-import models.{DownloadData, DownloadDataSummary, FileInfo}
 import models.filemanagement.{AvailableFilesTable, FileManagementTable, PendingFilesTable}
+import models.{DownloadData, DownloadDataSummary, FileInfo}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalacheck.Gen
@@ -43,6 +44,9 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
     val availableFilesTableRow = arbitrarySeqTableRows.sample.value
 
     val pendingFilesTableRow = arbitrarySeqTableRows.sample.value
+
+    implicit val fileManagementTableComponentHelper: FileManagementTableComponentHelper =
+      application.injector.instanceOf[FileManagementTableComponentHelper]
 
     implicit val message: Messages = messages(application)
 
