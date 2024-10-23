@@ -50,11 +50,7 @@ class NirmsNumberController @Inject() (
 
   def onPageLoadCreate(mode: Mode): Action[AnyContent] =
     (identify andThen checkProfile andThen getData andThen requireData) { implicit request =>
-      val preparedForm = request.userAnswers.get(NirmsNumberPage) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
-
+      val preparedForm = prepareForm(NirmsNumberPage, form)
       Ok(view(preparedForm, routes.NirmsNumberController.onSubmitCreate(mode)))
     }
 

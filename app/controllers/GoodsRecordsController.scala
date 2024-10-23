@@ -16,7 +16,7 @@
 
 package controllers
 
-import connectors.{DownloadDataConnector, GoodsRecordConnector, OttConnector}
+import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions._
 import forms.GoodsRecordsFormProvider
 import models.GoodsRecordsPagination._
@@ -44,7 +44,6 @@ class GoodsRecordsController @Inject() (
   view: GoodsRecordsView,
   emptyView: GoodsRecordsEmptyView,
   goodsRecordConnector: GoodsRecordConnector,
-  downloadDataConnector: DownloadDataConnector,
   ottConnector: OttConnector,
   navigator: Navigator
 )(implicit ec: ExecutionContext)

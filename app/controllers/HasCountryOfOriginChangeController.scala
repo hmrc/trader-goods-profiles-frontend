@@ -59,10 +59,8 @@ class HasCountryOfOriginChangeController @Inject() (
           GoodsDetailsUpdate,
           recordId
         )
-      val preparedForm = request.userAnswers.get(HasCountryOfOriginChangePage(recordId)) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
+
+      val preparedForm = prepareForm(HasCountryOfOriginChangePage(recordId), form)
 
       Ok(view(preparedForm, mode, recordId)).removingFromSession(dataRemoved, dataUpdated, pageUpdated)
     }

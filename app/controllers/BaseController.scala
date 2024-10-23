@@ -19,8 +19,12 @@ package controllers
 import cats.data
 import logging.Logging
 import models.ValidationError
-import play.api.i18n.I18nSupport
-import play.api.mvc.{Call, Result}
+import models.requests.DataRequest
+import pages.QuestionPage
+import play.api.data.Form
+import play.api.i18n.{I18nSupport, Messages}
+import play.api.libs.json.Reads
+import play.api.mvc.{AnyContent, Call, Result}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -48,4 +52,11 @@ trait BaseController extends FrontendBaseController with I18nSupport with Loggin
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(continueCall.url))))
   }
 
+  def prepareForm[T](page: QuestionPage[T], form: Form[T])(implicit
+    request: DataRequest[AnyContent],
+    reads: Reads[T]
+  ): Form[T] =
+    request.userAnswers.get(page).map(form.fill).getOrElse(form)
+
+  def getMessage(key: String)(implicit messages: Messages): String = messages(key)
 }
