@@ -65,8 +65,7 @@ class AssessmentController @Inject() (
               categorisationInfo.getAssessmentFromIndex(index).map { assessment =>
                 val codesAndDescriptions = assessment.getCodesZippedWithDescriptions
                 val preparedForm         = prepareForm(AssessmentPage(recordId, index), formProvider())
-
-                val submitAction = routes.AssessmentController.onSubmit(mode, recordId, number)
+                val submitAction         = routes.AssessmentController.onSubmit(mode, recordId, number)
                 Ok(
                   view(
                     preparedForm,
@@ -96,7 +95,7 @@ class AssessmentController @Inject() (
             .flatMap { categorisationInfo =>
               categorisationInfo.getAssessmentFromIndex(index).map { assessment =>
                 val codesAndDescriptions = assessment.getCodesZippedWithDescriptions
-                val preparedForm         = prepareForm(AssessmentPage(recordId, index), formProvider())
+                val preparedForm         = prepareForm(ReassessmentPage(recordId, index), formProvider())
 
                 val submitAction = routes.AssessmentController.onSubmitReassessment(mode, recordId, number)
 
