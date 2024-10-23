@@ -50,11 +50,7 @@ class RemoveNiphlController @Inject() (
 
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
     implicit request =>
-      val preparedForm = request.userAnswers.get(RemoveNiphlPage) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
-
+      val preparedForm = prepareForm(RemoveNiphlPage, form)
       Ok(view(preparedForm))
   }
 

@@ -53,11 +53,7 @@ class HasSupplementaryUnitController @Inject() (
 
   def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
-      val preparedForm = request.userAnswers.get(HasSupplementaryUnitPage(recordId)) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
-
+      val preparedForm         = prepareForm(HasSupplementaryUnitPage(recordId), form)
       val onSubmitAction: Call = routes.HasSupplementaryUnitController.onSubmit(mode, recordId)
 
       Ok(view(preparedForm, mode, recordId, onSubmitAction))

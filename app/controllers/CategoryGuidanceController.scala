@@ -22,7 +22,6 @@ import navigation.Navigator
 import pages.CategoryGuidancePage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.AuditService
 import views.html.CategoryGuidanceView
 
 import javax.inject.Inject
@@ -35,7 +34,6 @@ class CategoryGuidanceController @Inject() (
   profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
   view: CategoryGuidanceView,
-  auditService: AuditService,
   navigator: Navigator
 ) extends BaseController {
 
