@@ -114,10 +114,10 @@ class DownloadDataConnectorSpec
     "must get download data data" in {
 
       val downloadURL = "downloadURL"
-      val filename = "filename"
-      val filesize = 600
+      val fileName = "fileName"
+      val fileSize = 600
       val metadata = Seq.empty
-      val downloadData = Seq(DownloadData(downloadURL, filename, filesize, metadata))
+      val downloadData = Seq(DownloadData(downloadURL, fileName, fileSize, metadata))
 
       wireMockServer.stubFor(
         get(urlEqualTo(downloadDataUrl))
