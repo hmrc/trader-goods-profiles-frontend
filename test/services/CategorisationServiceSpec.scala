@@ -102,7 +102,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
     Instant.now()
   )
 
-  private val testTraderProfileResponseWithoutNiphl = TraderProfile("actorId", "ukims number", None, None)
+  private val testTraderProfileResponseWithoutNiphl =
+    TraderProfile("actorId", "ukims number", None, None, eoriChanged = false)
 
   private val categorisationService =
     new CategorisationService(mockOttConnector, mockTraderProfileConnector)

@@ -49,11 +49,7 @@ class NiphlNumberController @Inject() (
 
   def onPageLoadCreate(mode: Mode): Action[AnyContent] =
     (identify andThen checkProfile andThen getData andThen requireData) { implicit request =>
-      val preparedForm = request.userAnswers.get(NiphlNumberPage) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
-
+      val preparedForm = prepareForm(NiphlNumberPage, form)
       Ok(view(preparedForm, routes.NiphlNumberController.onSubmitCreate(mode)))
     }
 

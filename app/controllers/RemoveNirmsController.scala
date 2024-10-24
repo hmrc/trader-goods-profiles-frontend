@@ -50,11 +50,7 @@ class RemoveNirmsController @Inject() (
 
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
     implicit request =>
-      val preparedForm = request.userAnswers.get(RemoveNirmsPage) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
-
+      val preparedForm = prepareForm(RemoveNirmsPage, form)
       Ok(view(preparedForm))
   }
 

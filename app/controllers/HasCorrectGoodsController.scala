@@ -48,11 +48,7 @@ class HasCorrectGoodsController @Inject() (
 
   def onPageLoadCreate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      val preparedForm = request.userAnswers.get(HasCorrectGoodsPage) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
-
+      val preparedForm = prepareForm(HasCorrectGoodsPage, form)
       val submitAction = routes.HasCorrectGoodsController.onSubmitCreate(mode)
       request.userAnswers.get(CommodityQuery) match {
         case Some(commodity) => Ok(view(preparedForm, commodity, submitAction))
@@ -62,11 +58,7 @@ class HasCorrectGoodsController @Inject() (
 
   def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData) { implicit request =>
-      val preparedForm = request.userAnswers.get(HasCorrectGoodsCommodityCodeUpdatePage(recordId)) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
-
+      val preparedForm = prepareForm(HasCorrectGoodsCommodityCodeUpdatePage(recordId), form)
       val submitAction = routes.HasCorrectGoodsController.onSubmitUpdate(mode, recordId)
       request.userAnswers.get(CommodityUpdateQuery(recordId)) match {
         case Some(commodity) => Ok(view(preparedForm, commodity, submitAction))
@@ -76,11 +68,7 @@ class HasCorrectGoodsController @Inject() (
 
   def onPageLoadLongerCommodityCode(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData) { implicit request =>
-      val preparedForm = request.userAnswers.get(HasCorrectGoodsLongerCommodityCodePage(recordId)) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
-
+      val preparedForm = prepareForm(HasCorrectGoodsLongerCommodityCodePage(recordId), form)
       val submitAction = routes.HasCorrectGoodsController.onSubmitLongerCommodityCode(mode, recordId)
       request.userAnswers.get(LongerCommodityQuery(recordId)) match {
         case Some(commodity) =>

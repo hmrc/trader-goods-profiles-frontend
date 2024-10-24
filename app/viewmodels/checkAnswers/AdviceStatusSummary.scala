@@ -30,7 +30,9 @@ object AdviceStatusSummary {
     SummaryListRowViewModel(
       key = "singleRecord.adviceStatus.row",
       value = ValueViewModel(HtmlFormat.escape(value).toString),
-      actions = if (recordLocked) {
+      actions = if ("Advice Provided".equalsIgnoreCase(value)) {
+        Seq.empty
+      } else if (recordLocked) {
         Seq(
           ActionItemViewModel(
             "singleRecord.withdrawAdvice",

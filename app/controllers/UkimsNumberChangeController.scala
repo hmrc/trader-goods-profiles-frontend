@@ -17,33 +17,23 @@
 package controllers
 
 import controllers.actions._
-import models.NormalMode
-import navigation.Navigator
-import pages.CategoryGuidancePage
-import play.api.i18n.MessagesApi
+import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import views.html.CategoryGuidanceView
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import views.html.UkimsNumberChangeView
 
 import javax.inject.Inject
 
-class CategoryGuidanceController @Inject() (
+class UkimsNumberChangeController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
-  profileAuth: ProfileAuthenticateAction,
+  getOrCreate: DataRetrievalOrCreateAction,
   val controllerComponents: MessagesControllerComponents,
-  view: CategoryGuidanceView,
-  navigator: Navigator
-) extends BaseController {
+  view: UkimsNumberChangeView
+) extends FrontendBaseController
+    with I18nSupport {
 
-  def onPageLoad(recordId: String): Action[AnyContent] =
-    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
-      Ok(view(recordId))
-    }
-
-  def onSubmit(recordId: String): Action[AnyContent] =
-    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
-      Redirect(navigator.nextPage(CategoryGuidancePage(recordId), NormalMode, request.userAnswers))
-    }
+  def onPageLoad(): Action[AnyContent] = (identify andThen getOrCreate) { implicit request =>
+    Ok(view())
+  }
 }

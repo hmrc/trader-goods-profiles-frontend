@@ -469,6 +469,11 @@ hasGoodsDescriptionChange.p1 = Changing the goods description on this goods reco
 hasGoodsDescriptionChange.h2 = Do you want to change the goods description?
 hasGoodsDescriptionChange.error.required = Select if you want to change the goods description
 
+ukimsNumberChangeController.title = UK Internal Market Scheme(UKIMS) number change
+ukimsNumberChangeController.heading = UK Internal Market Scheme(UKIMS) number change
+ukimsNumberChangeController.paragraph = As you have a new EORI number, you also have a new UKIMS number. You need to update your UKIMS number on your TGP. Keeping your UKIMS number up to date is important as it can be used on movements.
+ukimsNumberChangeController.button = Update UKIMS number
+
 profile.title = Profile details
 profile.h1 = Profile details
 profile.h2 = UKIMS, NIRMS and NIPHL
@@ -686,6 +691,9 @@ cyaMaintainProfile.li2 = Northern Ireland Retail Movement Scheme (NIRMS)
 cyaMaintainProfile.li3 = Northern Ireland Plant Health Label (NIPHL)
 cyaMaintainProfile.warning = Warning
 cyaMaintainProfile.warningText = You need to make sure these details are correct. Any details that are wrong in your Trader Goods Profile and used to create movements, will not be valid.
+
+cyaNewUkimsNumber.title = Check your answers for your new UKIMS number
+cyaNewUkimsNumber.heading = Check your answers for your new UKIMS number
 
 # TODO: Welsh translation for the file management page (TGP-2753)
 fileManagement.title = TGP records files

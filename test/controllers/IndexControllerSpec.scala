@@ -18,6 +18,7 @@ package controllers
 
 import base.SpecBase
 import connectors.TraderProfileConnector
+import models.TraderProfile
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar.mock
@@ -55,7 +56,31 @@ class IndexControllerSpec extends SpecBase {
     "must redirect to HomePageController if no profile present" in {
 
       val mockConnector = mock[TraderProfileConnector]
+      when(mockConnector.checkTraderProfile(any())(any())).thenReturn(Future.successful(false))
+
+      val application =
+        applicationBuilder(userAnswers = None)
+          .overrides(bind[TraderProfileConnector].toInstance(mockConnector))
+          .build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.IndexController.onPageLoad().url)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+
+        redirectLocation(result).value mustEqual routes.ProfileSetupController.onPageLoad().url
+      }
+    }
+    "must redirect to HomePageController if no profile present and eori has not changed" in {
+
+      val mockConnector = mock[TraderProfileConnector]
       when(mockConnector.checkTraderProfile(any())(any())).thenReturn(Future.successful(true))
+      when(mockConnector.getTraderProfile(any())(any()))
+        .thenReturn(
+          Future.successful(TraderProfile("name", "address", Some("postcode"), Some("country"), eoriChanged = false))
+        )
 
       val application =
         applicationBuilder(userAnswers = None)
@@ -70,6 +95,30 @@ class IndexControllerSpec extends SpecBase {
         status(result) mustEqual SEE_OTHER
 
         redirectLocation(result).value mustEqual routes.HomePageController.onPageLoad().url
+      }
+    }
+    "must redirect to UkimsNumberChangeController if no profile present and eori has changed" in {
+
+      val mockConnector = mock[TraderProfileConnector]
+      when(mockConnector.checkTraderProfile(any())(any())).thenReturn(Future.successful(true))
+      when(mockConnector.getTraderProfile(any())(any()))
+        .thenReturn(
+          Future.successful(TraderProfile("name", "address", Some("postcode"), Some("country"), eoriChanged = true))
+        )
+
+      val application =
+        applicationBuilder(userAnswers = None)
+          .overrides(bind[TraderProfileConnector].toInstance(mockConnector))
+          .build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.IndexController.onPageLoad().url)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+
+        redirectLocation(result).value mustEqual routes.UkimsNumberChangeController.onPageLoad().url
       }
     }
   }

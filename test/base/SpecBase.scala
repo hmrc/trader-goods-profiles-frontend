@@ -274,6 +274,11 @@ trait SpecBase
     Instant.parse("2022-11-18T23:20:19Z")
   ).copy(recordId = testRecordId)
 
+  val recordForTestingSummaryRowsWithAdviceProvided: GetGoodsRecordResponse = goodsRecordResponse(
+    Instant.parse("2022-11-18T23:20:19Z"),
+    Instant.parse("2022-11-18T23:20:19Z")
+  ).copy(recordId = testRecordId).copy(adviceStatus = "Advice Provided")
+
   def toReviewGoodsRecordResponse(
     createdDateTime: Instant,
     updatedDateTime: Instant,
