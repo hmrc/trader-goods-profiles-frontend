@@ -29,14 +29,10 @@ case class AssessmentCyaValue(answers: AssessmentAnswer, codes: Seq[String], des
     val exemptions = codes
       .zip(descriptions)
 
-    val matchedExemptions: Seq[(String, String)] = answerCodes.flatMap { answerCode =>
-      exemptions.find { case (code, _) => code == answerCode }.map { case (_, description) =>
-        (answerCode, description)
+    val answerExemptions: String = answerCodes.flatMap { answerCode =>
+      exemptions.collectFirst {
+        case (code, description) if code == answerCode => s"<p class='govuk-body'>$code - $description</p>"
       }
-    }
-
-    val answerExemptions = matchedExemptions.map { item =>
-      s"<p class='govuk-body'>${item._1} - ${item._2}</p>"
     }.mkString
 
     HtmlContent(
