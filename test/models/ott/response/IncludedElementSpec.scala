@@ -100,12 +100,13 @@ class IncludedElementSpec extends AnyFreeSpec with Matchers {
         "type"       -> "theme",
         "id"         -> "1",
         "attributes" -> Json.obj(
-          "category" -> 1
+          "category" -> 1,
+          "theme"    -> "theme description"
         )
       )
 
       val result = json.validate[IncludedElement]
-      result mustEqual JsSuccess(ThemeResponse("1", 1))
+      result mustEqual JsSuccess(ThemeResponse("1", 1, "theme description"))
     }
 
     "must deserialise other types as Ignorable" in {

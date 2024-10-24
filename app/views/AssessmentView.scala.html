@@ -21,11 +21,11 @@
         layout: templates.Layout,
         formHelper: FormWithCSRF,
         govukErrorSummary: GovukErrorSummary,
-        govukRadios: GovukRadios,
-        govukButton: GovukButton
+        govukButton: GovukButton,
+        govukCheckboxes: GovukCheckboxes,
 )
 
-@(form: Form[_], mode: Mode, recordId: String, number: Int, listItems: Seq[String], commodityCode: String, onSubmitAction: Call)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, recordId: String, number: Int, codesAndDescriptions: Seq[(String, String)], commodityCode: String, onSubmitAction: Call, themeDescription: String, totalNumber: Int)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("assessment.title"))) {
 
@@ -35,35 +35,46 @@
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
-        <h1 class="govuk-heading-l">@messages("assessment.heading", number)</h1>
+        <h1 class="govuk-heading-l">@messages("assessment.heading", number, totalNumber)</h1>
         <p class="govuk-body">@messages("assessment.guidance", commodityCode)</p>
-
-        <div class="govuk-inset-text">
-            @messages("assessment.insetText")
-        </div>
+        <p class="govuk-body">@themeDescription</p>
 
         <p class="govuk-body">
             <a target="_blank" href="https://www.trade-tariff.service.gov.uk/xi/find_commodity" class="govuk-link">@messages("assessment.linkText")</a>
         </p>
 
         <h2 class='govuk-heading-m'>
-            @if(listItems.size == 1) {
-                @messages("assessment.question.onlyOne")
-            } else {
-                @messages("assessment.question")
-            }
+            @messages("assessment.question", commodityCode)
         </h2>
 
-        <ul class="govuk-list govuk-list--bullet">
-            @listItems.map { item =>
-                <li>@item</li>
-            }
-        </ul>
+        <div id="value-hint" class="govuk-hint">
+            @messages("assessment.hint", commodityCode)
+        </div>
 
-        @govukRadios(
-            RadiosViewModel.yesNo(
-                field = form("value"),
-                legend = Legend(messages("assessment.question")).withCssClass("govuk-visually-hidden")
+        @govukCheckboxes(
+            CheckboxesViewModel(
+                form   = form,
+                name   = "value",
+                legend = Legend(messages("assessment.question")).withCssClass("govuk-visually-hidden"),
+                items  = codesAndDescriptions.map { item =>
+                    CheckboxItem(
+                        id = Some(item._1),
+                        name = Some("value[]"),
+                        content = Text(item._1 + " - " + item._2),
+                        value = item._1,
+                        checked = form("value[]").value.contains(item._1)
+                    )
+                } ++ Seq(
+                    CheckboxItem(divider = Some(messages("site.or"))),
+                    CheckboxItem(
+                        id = Some("none_of_above"),
+                        name = Some("value[]"),
+                        content = Text(messages("assessment.exemption.none")),
+                        value = "none",
+                        checked = form("value[]").value.contains("none"),
+                        behaviour = Some(ExclusiveCheckbox)
+                    )
+                )
             )
         )
 

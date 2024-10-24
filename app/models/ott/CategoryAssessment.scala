@@ -24,7 +24,8 @@ import utils.Constants.{Category1AsInt, Category2AsInt, NiphlCode, NirmsCode}
 final case class CategoryAssessment(
   id: String,
   category: Int,
-  exemptions: Seq[Exemption]
+  exemptions: Seq[Exemption],
+  themeDescription: String
 ) extends Ordered[CategoryAssessment] {
 
   import scala.math.Ordered.orderingToOrdered
@@ -32,9 +33,7 @@ final case class CategoryAssessment(
   override def compare(that: CategoryAssessment): Int =
     (this.category, this.exemptions.size) compare (that.category, that.exemptions.size)
 
-  def getExemptionListItems: Seq[String] = exemptions.map { exemption =>
-    exemption.code + " - " + exemption.description
-  }
+  def getCodesZippedWithDescriptions: Seq[(String, String)] = exemptions.map(_.code).zip(exemptions.map(_.description))
 
   def isCategory1: Boolean   = category == Category1AsInt
   def isCategory2: Boolean   = category == Category2AsInt
@@ -48,10 +47,11 @@ object CategoryAssessment {
 
   def build(id: String, ottResponse: OttResponse): Option[CategoryAssessment] =
     for {
-      assessment <- ottResponse.categoryAssessments.find(_.id == id)
-      theme      <- ottResponse.themes.find(_.id == assessment.themeId)
-      exemptions <- assessment.exemptions.map(x => buildExemption(x.id, x.exemptionType, ottResponse)).sequence
-    } yield CategoryAssessment(id, theme.category, exemptions)
+      assessment       <- ottResponse.categoryAssessments.find(_.id == id)
+      theme            <- ottResponse.themes.find(_.id == assessment.themeId)
+      exemptions       <- assessment.exemptions.map(x => buildExemption(x.id, x.exemptionType, ottResponse)).sequence
+      themeDescription <- ottResponse.themes.find(_.id == assessment.themeId).map(_.theme)
+    } yield CategoryAssessment(id, theme.category, exemptions, themeDescription)
 
   private def buildExemption(id: String, exemptionType: ExemptionType, ottResponse: OttResponse): Option[Exemption] =
     exemptionType match {
