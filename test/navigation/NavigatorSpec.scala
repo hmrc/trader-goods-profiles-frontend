@@ -314,7 +314,10 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               .set(HasNirmsUpdatePage, false)
               .success
               .value
-              .set(TraderProfileQuery, TraderProfile("actorId", "ukims", Some("nirms"), Some("niphl"), false))
+              .set(
+                TraderProfileQuery,
+                TraderProfile("actorId", "ukims", Some("nirms"), Some("niphl"), eoriChanged = false)
+              )
               .success
               .value
 
@@ -328,7 +331,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               .set(HasNirmsUpdatePage, false)
               .success
               .value
-              .set(TraderProfileQuery, TraderProfile("actorId", "ukims", None, Some("niphl"), false))
+              .set(TraderProfileQuery, TraderProfile("actorId", "ukims", None, Some("niphl"), eoriChanged = false))
               .success
               .value
 
@@ -3008,6 +3011,19 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             NormalMode,
             emptyUserAnswers
           ) mustBe routes.DownloadRequestSuccessController.onPageLoad()
+        }
+      }
+
+      "in the new UKIMS number update journey" - {
+
+        "must go from CyaNewUkimsNumberPage to ???" in {
+
+          // TODO Needs to be updated according to navigation TGP-2700
+          navigator.nextPage(
+            CyaNewUkimsNumberPage,
+            NormalMode,
+            emptyUserAnswers
+          ) mustBe routes.IndexController.onPageLoad()
         }
       }
     }
