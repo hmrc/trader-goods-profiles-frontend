@@ -23,11 +23,10 @@ import models.DownloadDataSummary
 import navigation.Navigator
 import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import utils.DateTimeFormats.dateTimeFormat
+import utils.DateTimeFormats.dateFormat
 import views.html.FileReadyView
 
 import java.time.{Instant, ZoneOffset}
-import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -47,18 +46,27 @@ class FileReadyController @Inject() (
   def onPageLoad(): Action[AnyContent]                               = (identify andThen profileAuth andThen getData andThen requireData).async {
     implicit request =>
       (for {
-        Some(downloadDataSummary) <- downloadDataConnector.getDownloadDataSummary(request.eori)
+        Some(downloadDataSummary) <-
+          downloadDataConnector
+            .getDownloadDataSummary(request.eori)
+            .map(
+              _.map(_.head)
+            )
         if isFileReady(downloadDataSummary)
         Some(fileInfo)            <- Future.successful(downloadDataSummary.fileInfo)
-        Some(downloadData)        <- downloadDataConnector.getDownloadData(request.eori)
+        Some(downloadData)        <-
+          downloadDataConnector
+            .getDownloadData(request.eori)
+            .map(
+              _.map(_.head)
+            )
       } yield Ok(
         view(
           fileInfo.fileSize,
           downloadData.downloadURL,
-          convertToDateString(fileInfo.fileCreated),
+          convertToDateString(downloadDataSummary.createdAt),
           convertToDateString(
-            fileInfo.fileCreated
-              .plus(fileInfo.retentionDays.toInt, ChronoUnit.DAYS)
+            downloadDataSummary.expiresAt
           )
         )
       )).recover { case _ => navigator.journeyRecovery() }
@@ -68,6 +76,6 @@ class FileReadyController @Inject() (
 
   def convertToDateString(instant: Instant)(implicit messages: Messages): String = {
     implicit val lang: Lang = messages.lang
-    instant.atZone(ZoneOffset.UTC).toLocalDate.format(dateTimeFormat())
+    instant.atZone(ZoneOffset.UTC).toLocalDate.format(dateFormat())
   }
 }

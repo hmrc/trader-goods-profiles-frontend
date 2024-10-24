@@ -19,7 +19,7 @@ package connectors
 import base.TestConstants.testEori
 import com.github.tomakehurst.wiremock.client.WireMock._
 import generators.StatusCodeGenerators
-import models.DownloadDataStatus.RequestFile
+import models.DownloadDataStatus.FileInProgress
 import models.{DownloadData, DownloadDataSummary, Email}
 import org.apache.pekko.Done
 import org.scalatest.OptionValues
@@ -63,6 +63,7 @@ class DownloadDataConnectorSpec
 
   private val downloadDataUrl =
     s"/trader-goods-profiles-data-store/traders/$testEori/download-data"
+
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -113,10 +114,10 @@ class DownloadDataConnectorSpec
     "must get download data data" in {
 
       val downloadURL = "downloadURL"
-      val filename = "filename"
+      val fileName = "fileName"
       val fileSize = 600
       val metadata = Seq.empty
-      val downloadData = DownloadData(downloadURL, filename, fileSize, metadata)
+      val downloadData = Seq(DownloadData(downloadURL, fileName, fileSize, metadata))
 
       wireMockServer.stubFor(
         get(urlEqualTo(downloadDataUrl))
@@ -149,7 +150,7 @@ class DownloadDataConnectorSpec
 
   ".getDownloadDataSummary" - {
 
-    val downloadDataSummary = DownloadDataSummary(testEori, RequestFile, None)
+    val downloadDataSummary = Seq(DownloadDataSummary(testEori, FileInProgress, Instant.now(), Instant.now(), None))
 
     "must get download data summary" in {
 
@@ -228,9 +229,32 @@ class DownloadDataConnectorSpec
             .willReturn(status(errorResponses.sample.value))
         )
 
-      val result = connector.requestDownloadData(testEori)
+      val result = connector.getEmail(testEori)
 
       result.failed.futureValue
+    }
+  }
+
+  ".updateSeenStatus" - {
+
+    "must return Done on NO_CONTENT" in {
+
+      wireMockServer.stubFor(
+        patch(urlEqualTo(downloadDataSummaryUrl))
+          .willReturn(noContent())
+      )
+
+      connector.updateSeenStatus(testEori).futureValue mustBe Done
+    }
+
+    "must return exception on 4xx+ responses" in {
+
+      wireMockServer.stubFor(
+        patch(urlEqualTo(downloadDataSummaryUrl))
+          .willReturn(status(errorResponses.sample.value))
+      )
+
+      connector.updateSeenStatus(testEori).failed.futureValue
     }
   }
 

@@ -16,33 +16,53 @@
 
 package utils
 
-import org.scalatest.freespec.AnyFreeSpec
+import base.SpecBase
 import org.scalatest.matchers.must.Matchers
-import play.api.i18n.Lang
-import utils.DateTimeFormats.dateTimeFormat
+import play.api.i18n.{Lang, Messages}
+import utils.DateTimeFormats.dateFormat
 
-import java.time.LocalDate
+import java.time.{Instant, LocalDate}
 
-class DateTimeFormatsSpec extends AnyFreeSpec with Matchers {
+class DateTimeFormatsSpec extends SpecBase with Matchers {
 
   ".dateTimeFormat" - {
 
     "must format dates in English" in {
-      val formatter = dateTimeFormat()(Lang("en"))
+      val formatter = dateFormat()(Lang("en"))
       val result    = LocalDate.of(2023, 1, 1).format(formatter)
       result mustEqual "1 January 2023"
     }
 
     "must format dates in Welsh" in {
-      val formatter = dateTimeFormat()(Lang("cy"))
+      val formatter = dateFormat()(Lang("cy"))
       val result    = LocalDate.of(2023, 1, 1).format(formatter)
       result mustEqual "1 Ionawr 2023"
     }
 
     "must default to English format" in {
-      val formatter = dateTimeFormat()(Lang("de"))
+      val formatter = dateFormat()(Lang("de"))
       val result    = LocalDate.of(2023, 1, 1).format(formatter)
       result mustEqual "1 January 2023"
+    }
+  }
+
+  "convertToDateTimeString" - {
+    "must return correct date time string when am" in {
+      val application                     = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .build()
+      implicit val messagesImpl: Messages = messages(application)
+
+      val instant = Instant.parse("2024-04-22T10:05:00Z")
+      DateTimeFormats.convertToDateTimeString(instant) mustEqual "22 April 2024 10:05am"
+    }
+
+    "must return correct date time string when pm" in {
+      val application                     = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .build()
+      implicit val messagesImpl: Messages = messages(application)
+
+      val instant = Instant.parse("2024-04-22T13:11:00Z")
+      DateTimeFormats.convertToDateTimeString(instant) mustEqual "22 April 2024 1:11pm"
     }
   }
 }

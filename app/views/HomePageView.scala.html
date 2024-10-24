@@ -18,25 +18,26 @@
 @import config.FrontendAppConfig
 
 @this(
-appConfig: FrontendAppConfig,
+        appConfig: FrontendAppConfig,
         layout: templates.Layout,
         govukPhaseBanner: GovukPhaseBanner,
-govukNotificationBanner: GovukNotificationBanner
+        govukNotificationBanner: GovukNotificationBanner
 )
 
-@(downloadReady: Boolean =false, downloadLinkMessagesKey: String)(implicit request: Request[_], messages: Messages)
+@(downloadReady: Boolean = false, downloadLinkMessagesKey: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = s"${messages("homepage.title")} - ${messages("site.govuk")}", showBackLink = false, headerShouldHaveServiceLink = false) {
 
     @if(downloadReady) {
         @govukNotificationBanner(NotificationBanner(
             title = Text(messages("homepage.downloadBanner.important")),
-            content = HtmlContent(f"""
+            content = HtmlContent(
+                f"""
             <h3 class='govuk-notification-banner__heading'>
                 ${messages("homepage.downloadBanner.content")}
                 <a href="${routes.FileReadyController.onPageLoad().url}" class='govuk-link'>${messages("homepage.downloadBanner.linkText")}</a>.
             </h3>"""),
-            role=Some("alert"))
+            role = Some("alert"))
         )
     }
 

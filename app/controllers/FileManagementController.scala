@@ -18,40 +18,31 @@ package controllers
 
 import connectors.DownloadDataConnector
 import controllers.actions._
-import models.DownloadDataStatus._
-import models.DownloadDataSummary
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import viewmodels.FileManagementViewModel.FileManagementViewModelProvider
+import views.html.FileManagementView
 
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class DownloadDataIndexController @Inject() (
+class FileManagementController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   profileAuth: ProfileAuthenticateAction,
   downloadDataConnector: DownloadDataConnector,
-  val controllerComponents: MessagesControllerComponents
+  viewModelProvider: FileManagementViewModelProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: FileManagementView
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
-  def redirect: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData).async {
+  def onPageLoad(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData).async {
     implicit request =>
-      downloadDataConnector.getDownloadDataSummary(request.eori).map { route =>
-        Redirect(getDownloadLinkRoute(route))
+      viewModelProvider(request.eori, downloadDataConnector).map { viewModel =>
+        Ok(view(viewModel))
       }
   }
-
-  private def getDownloadLinkRoute(opt: Option[Seq[DownloadDataSummary]]): Call =
-    opt
-      .map(_.head)
-      .map(_.status) match {
-      case Some(FileInProgress)                        =>
-        routes.FileInProgressController.onPageLoad()
-      case Some(FileReadyUnseen) | Some(FileReadySeen) =>
-        routes.FileReadyController.onPageLoad()
-      case _                                           => routes.RequestDataController.onPageLoad()
-    }
 }

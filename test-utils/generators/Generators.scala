@@ -17,10 +17,11 @@
 package generators
 
 import java.time.{Instant, LocalDate, ZoneOffset}
-
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen._
 import org.scalacheck.{Gen, Shrink}
+import uk.gov.hmrc.govukfrontend.views.Aliases.Text
+import uk.gov.hmrc.govukfrontend.views.viewmodels.table.TableRow
 
 trait Generators {
 
@@ -131,4 +132,17 @@ trait Generators {
       Instant.ofEpochMilli(millis).atOffset(ZoneOffset.UTC).toLocalDate
     }
   }
+
+  def arbitraryTableRow: Gen[TableRow] = for {
+    text <- arbitrary[String]
+  } yield TableRow(Text(text))
+
+  def arbitraryTableRows: Gen[Seq[TableRow]] = for {
+    rows <- Gen.listOf(arbitraryTableRow)
+  } yield rows
+
+  def arbitrarySeqTableRows: Gen[Seq[Seq[TableRow]]] = for {
+    rows <- Gen.listOf(arbitraryTableRows)
+  } yield rows
+
 }

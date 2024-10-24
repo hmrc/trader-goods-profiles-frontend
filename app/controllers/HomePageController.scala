@@ -46,23 +46,29 @@ class HomePageController @Inject() (
       doesGoodsRecordExist = goodsRecords.exists(_.goodsItemRecords.nonEmpty)
     } yield {
       val downloadLinkMessagesKey = getDownloadLinkMessagesKey(downloadDataSummary, doesGoodsRecordExist)
-      downloadDataSummary match {
-        case Some(downloadDataSummary) if downloadDataSummary.status == FileReadyUnseen =>
-          Ok(view(downloadReady = true, downloadLinkMessagesKey))
-        case _                                                                          =>
-          Ok(view(downloadReady = false, downloadLinkMessagesKey))
-      }
+      Ok(view(downloadReady(downloadDataSummary), downloadLinkMessagesKey))
     }
   }
 
-  private def getDownloadLinkMessagesKey(opt: Option[DownloadDataSummary], doesGoodsRecordExist: Boolean): String =
+  private def downloadReady(downloadDataSummary: Option[Seq[DownloadDataSummary]]): Boolean =
+    downloadDataSummary
+      .flatMap(
+        _.collectFirst {
+          case summary if summary.status == FileReadyUnseen => true
+        }
+      )
+      .getOrElse(false)
+
+  private def getDownloadLinkMessagesKey(opt: Option[Seq[DownloadDataSummary]], doesGoodsRecordExist: Boolean): String =
     if (doesGoodsRecordExist) {
-      opt.map(_.status) match {
-        case Some(FileInProgress) | Some(FileReadyUnseen) | Some(FileReadySeen) =>
-          "homepage.downloadLinkText.filesRequested"
-        case _                                                                  =>
-          "homepage.downloadLinkText.noFilesRequested"
-      }
+      opt
+        .flatMap(
+          _.collectFirst {
+            case summary if Seq(FileInProgress, FileReadyUnseen, FileReadySeen).contains(summary.status) =>
+              "homepage.downloadLinkText.filesRequested"
+          }
+        )
+        .getOrElse("homepage.downloadLinkText.noFilesRequested")
     } else {
       "homepage.downloadLinkText.noGoodsRecords"
     }

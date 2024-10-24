@@ -19,7 +19,7 @@ package controllers
 import base.SpecBase
 import base.TestConstants.testEori
 import connectors.{DownloadDataConnector, TraderProfileConnector}
-import models.DownloadDataStatus.{FileReadySeen, RequestFile}
+import models.DownloadDataStatus.{FileInProgress, FileReadySeen}
 import models.{DownloadData, DownloadDataSummary, FileInfo, Metadata}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, verify, when}
@@ -70,15 +70,19 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
         val downloadDataSummary      = DownloadDataSummary(
           testEori,
           FileReadySeen,
-          Some(FileInfo(fileName, fileSize, fileCreated, retentionDays))
+          fileCreated,
+          fileCreated.plus(retentionDays.toInt, java.time.temporal.ChronoUnit.DAYS),
+          Some(FileInfo(fileName, fileSize, retentionDays))
         )
 
         val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
 
         when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
-          Some(downloadDataSummary)
+          Some(Seq(downloadDataSummary))
         )
-        when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(Some(downloadData))
+        when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(
+          Some(Seq(downloadData))
+        )
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
@@ -114,13 +118,15 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
           val downloadDataSummary = DownloadDataSummary(
             testEori,
             FileReadySeen,
-            Some(FileInfo(fileName, fileSize, fileCreated, retentionDays))
+            Instant.now(),
+            fileCreated,
+            Some(FileInfo(fileName, fileSize, retentionDays))
           )
 
           val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
 
           when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
-            Some(downloadDataSummary)
+            Some(Seq(downloadDataSummary))
           )
           when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(None)
 
@@ -147,13 +153,15 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
           val downloadDataSummary = DownloadDataSummary(
             testEori,
             FileReadySeen,
+            Instant.now(),
+            Instant.now(),
             None
           )
 
           val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
 
           when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
-            Some(downloadDataSummary)
+            Some(Seq(downloadDataSummary))
           )
           when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(None)
 
@@ -179,14 +187,16 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
 
           val downloadDataSummary = DownloadDataSummary(
             testEori,
-            RequestFile,
+            FileInProgress,
+            Instant.now(),
+            Instant.now(),
             None
           )
 
           val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
 
           when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
-            Some(downloadDataSummary)
+            Some(Seq(downloadDataSummary))
           )
           when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(None)
 
