@@ -16,23 +16,29 @@
 
 package viewmodels
 
+import models.AssessmentAnswer
+import models.AssessmentAnswer.toSeq
 import play.twirl.api.Html
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 
-case class AssessmentCyaValue(codes: Seq[String], descriptions: Seq[String]) {
+case class AssessmentCyaValue(answers: AssessmentAnswer, codes: Seq[String], descriptions: Seq[String]) {
   def content: HtmlContent = {
+
+    val answerCodes: Seq[String] = toSeq(answers)
 
     val exemptions = codes
       .zip(descriptions)
-      .map { item =>
-        s"<p class='govuk-body'>${item._1} - ${item._2}</p>"
+
+    val answerExemptions: String = answerCodes.flatMap { answerCode =>
+      exemptions.collectFirst {
+        case (code, description) if code == answerCode => s"<p class='govuk-body'>$code - $description</p>"
       }
-      .mkString
+    }.mkString
 
     HtmlContent(
       Html(
         s"""
-        $exemptions
+        $answerExemptions
       """
       )
     )

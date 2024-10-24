@@ -397,6 +397,7 @@ assessment.exemption = {0} – {1}
 assessment.exemption.none = Dim un o’r uchod
 assessment.exemption.none.checkYourAnswersLabel = Dim wedi’i ddewis
 assessment.checkYourAnswersLabel = Asesiadau categori {0} o {1}
+assessment.none = Dim
 
 expiredCommodityCode.title = Mae problem wedi codi
 expiredCommodityCode.heading = Mae problem wedi codi

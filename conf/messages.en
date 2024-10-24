@@ -282,6 +282,7 @@ assessment.error.required = Select the exclusions you hold, or select ‘None of
 assessment.exemption.none.checkYourAnswersLabel = None selected
 assessment.checkYourAnswersLabel = Category assessment {0} of {1}
 assessment.change.hidden = Category assessment {0}
+assessment.none = None
 
 ukimsKickOut.title = You need to apply for the UK Internal Market Scheme (UKIMS)
 ukimsKickOut.h1 = You need to apply for the UK Internal Market Scheme (UKIMS)
