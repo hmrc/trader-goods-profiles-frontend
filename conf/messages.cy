@@ -398,6 +398,9 @@ assessment.exemption.none = Dim un o’r uchod
 assessment.exemption.none.checkYourAnswersLabel = Dim wedi’i ddewis
 assessment.checkYourAnswersLabel = Asesiadau categori {0} o {1}
 assessment.none = Dim
+assessment.guidance = Mae angen i chi gadarnhau p’un o’r eithriadau hyn sydd gennych ar gyfer <commodity code>. Y thema ar gyfer yr asesiad hwn yw:
+assessment.error.required = Dewiswch yr eithriadau sydd gennych, neu dewiswch ‘Dim un o’r uchod’
+
 
 expiredCommodityCode.title = Mae problem wedi codi
 expiredCommodityCode.heading = Mae problem wedi codi
