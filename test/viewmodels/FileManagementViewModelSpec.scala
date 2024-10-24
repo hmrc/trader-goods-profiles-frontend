@@ -21,7 +21,7 @@ import connectors.DownloadDataConnector
 import generators.Generators
 import helpers.FileManagementTableComponentHelper
 import models.DownloadDataStatus.{FileInProgress, FileReadyUnseen}
-import models.filemanagement.{AvailableFilesTable, FileManagementTable, PendingFilesTable}
+import models.filemanagement.{AvailableFilesTable, PendingFilesTable}
 import models.{DownloadData, DownloadDataSummary, FileInfo}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{never, times, verify, when}
@@ -152,7 +152,8 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
 
               val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
 
-              val downloadDataSummary = Some(Seq(DownloadDataSummary("eori", FileInProgress, Instant.now(), None)))
+              val downloadDataSummary =
+                Some(Seq(DownloadDataSummary("eori", FileInProgress, Instant.now(), Instant.now(), None)))
 
               when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
                 downloadDataSummary
@@ -169,7 +170,7 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
 
               val result = viewModelProvider.apply("eori", mockDownloadDataConnector)(messagesImp, ec, hc).futureValue
 
-              val pendingFilesTable = FileManagementTable.PendingFilesTable(downloadDataSummary)
+              val pendingFilesTable = PendingFilesTable(downloadDataSummary)
 
               result.pendingFilesTable mustBe pendingFilesTable
               result.availableFilesTable mustBe None
@@ -185,8 +186,9 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
 
               val fileName = "file"
 
-              val fileInfo            = FileInfo(fileName, 1, Instant.now(), "30")
-              val downloadDataSummary = DownloadDataSummary("eori", FileReadyUnseen, Instant.now(), Some(fileInfo))
+              val fileInfo            = FileInfo(fileName, 1, "30")
+              val downloadDataSummary =
+                DownloadDataSummary("eori", FileReadyUnseen, Instant.now(), Instant.now(), Some(fileInfo))
               val downloadData        = DownloadData("file", fileName, 1, Seq.empty)
 
               when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
@@ -211,7 +213,7 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
               val result = viewModelProvider.apply("eori", mockDownloadDataConnector)(messagesImp, ec, hc).futureValue
 
               val availableFilesTable =
-                FileManagementTable.AvailableFilesTable(Some(Seq((downloadDataSummary, downloadData))))
+                AvailableFilesTable(Some(Seq((downloadDataSummary, downloadData))))
 
               result.pendingFilesTable mustBe None
               result.availableFilesTable mustBe availableFilesTable
@@ -226,10 +228,10 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
 
               val fileName = "file"
 
-              val fileInfo            = FileInfo(fileName, 1, Instant.now(), "30")
+              val fileInfo            = FileInfo(fileName, 1, "30")
               val downloadDataSummary = Seq(
-                DownloadDataSummary("eori", FileReadyUnseen, Instant.now(), Some(fileInfo)),
-                DownloadDataSummary("eori", FileInProgress, Instant.now(), None)
+                DownloadDataSummary("eori", FileReadyUnseen, Instant.now(), Instant.now(), Some(fileInfo)),
+                DownloadDataSummary("eori", FileInProgress, Instant.now(), Instant.now(), None)
               )
 
               val downloadData = DownloadData("file", fileName, 1, Seq.empty)
@@ -256,9 +258,9 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
               val result = viewModelProvider.apply("eori", mockDownloadDataConnector)(messagesImp, ec, hc).futureValue
 
               val availableFilesTable =
-                FileManagementTable.AvailableFilesTable(Some(Seq((downloadDataSummary.head, downloadData))))
+                AvailableFilesTable(Some(Seq((downloadDataSummary.head, downloadData))))
 
-              val pendingFilesTable = FileManagementTable.PendingFilesTable(Some(Seq(downloadDataSummary.last)))
+              val pendingFilesTable = PendingFilesTable(Some(Seq(downloadDataSummary.last)))
 
               result.pendingFilesTable mustBe pendingFilesTable
               result.availableFilesTable mustBe availableFilesTable
@@ -273,9 +275,9 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
 
               val fileName = "file"
 
-              val fileInfo            = FileInfo(fileName, 1, Instant.now(), "30")
+              val fileInfo            = FileInfo(fileName, 1, "30")
               val downloadDataSummary = Seq(
-                DownloadDataSummary("eori", FileReadyUnseen, Instant.now(), Some(fileInfo))
+                DownloadDataSummary("eori", FileReadyUnseen, Instant.now(), Instant.now(), Some(fileInfo))
               )
 
               when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
@@ -309,9 +311,9 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
 
               val fileName = "file"
 
-              val fileInfo            = FileInfo(fileName, 1, Instant.now(), "30")
+              val fileInfo            = FileInfo(fileName, 1, "30")
               val downloadDataSummary = Seq(
-                DownloadDataSummary("eori", FileReadyUnseen, Instant.now(), Some(fileInfo))
+                DownloadDataSummary("eori", FileReadyUnseen, Instant.now(), Instant.now(), Some(fileInfo))
               )
               val downloadData        = DownloadData("unmatched", "unmatched", 1, Seq.empty)
 

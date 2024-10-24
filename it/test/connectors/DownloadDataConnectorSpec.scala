@@ -19,7 +19,7 @@ package connectors
 import base.TestConstants.testEori
 import com.github.tomakehurst.wiremock.client.WireMock._
 import generators.StatusCodeGenerators
-import models.DownloadDataStatus.RequestFile
+import models.DownloadDataStatus.FileInProgress
 import models.{DownloadData, DownloadDataSummary, Email}
 import org.apache.pekko.Done
 import org.scalatest.OptionValues
@@ -150,7 +150,7 @@ class DownloadDataConnectorSpec
 
   ".getDownloadDataSummary" - {
 
-    val downloadDataSummary = Seq(DownloadDataSummary(testEori, RequestFile, Instant.now(), None))
+    val downloadDataSummary = Seq(DownloadDataSummary(testEori, FileInProgress, Instant.now(), Instant.now(), None))
 
     "must get download data summary" in {
 

@@ -24,6 +24,7 @@ final case class DownloadDataSummary(
   eori: String,
   status: DownloadDataStatus,
   createdAt: Instant,
+  expiresAt: Instant,
   fileInfo: Option[FileInfo]
 )
 

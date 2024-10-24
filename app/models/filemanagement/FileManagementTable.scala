@@ -17,14 +17,11 @@
 package models.filemanagement
 
 import helpers.FileManagementTableComponentHelper
-import models.{DownloadData, DownloadDataSummary, FileInfo}
-import play.api.i18n.{Lang, Messages}
+import models.{DownloadData, DownloadDataSummary}
+import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.{HeadCell, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.table.TableRow
-import utils.DateTimeFormats.dateTimeFormat
-
-import java.time.temporal.ChronoUnit
-import java.time.{Instant, ZoneOffset}
+import utils.DateTimeFormats
 
 trait FileManagementTable {
   val caption: String
@@ -48,86 +45,72 @@ case class AvailableFilesTable(availableFileRows: Seq[Seq[TableRow]])(implicit m
   override val rows: Seq[Seq[TableRow]] = availableFileRows
 }
 
-object FileManagementTable {
-  def convertToDateString(instant: Instant)(implicit messages: Messages): String = {
-    implicit val lang: Lang = messages.lang
-    instant.atZone(ZoneOffset.UTC).toLocalDateTime.format(dateTimeFormat())
-  }
+object AvailableFilesTable {
+  def apply(
+    availableFiles: Option[Seq[(DownloadDataSummary, DownloadData)]]
+  )(implicit
+    messages: Messages,
+    fileManagementTableComponentHelper: FileManagementTableComponentHelper
+  ): Option[AvailableFilesTable] = {
 
-  def retentionTimeToExpirationDate(fileInfo: FileInfo)(implicit messages: Messages): String = convertToDateString(
-    fileInfo.fileCreated
-      .plus(fileInfo.retentionDays.toInt, ChronoUnit.DAYS)
-  )
+    val availableFileRows = availableFiles.map {
+      _.map { availableFile =>
+        val (summary, data) = availableFile
 
-  object AvailableFilesTable {
-    def apply(
-      availableFiles: Option[Seq[(DownloadDataSummary, DownloadData)]]
-    )(implicit
-      messages: Messages,
-      fileManagementTableComponentHelper: FileManagementTableComponentHelper
-    ): Option[AvailableFilesTable] = {
+        val fileCreated        = DateTimeFormats.convertToDateTimeString(summary.createdAt)
+        val fileExpirationDate = DateTimeFormats.convertToDateTimeString(summary.expiresAt)
+        val fileLink           = fileManagementTableComponentHelper.createLink(
+          messages("fileManagement.availableFiles.downloadText"),
+          messages("fileManagement.availableFiles.downloadText.hidden", fileCreated),
+          data.downloadURL
+        )
 
-      val availableFileRows = availableFiles.map {
-        _.flatMap { availableFile =>
-          val (summary, data) = availableFile
-
-          summary.fileInfo.map { fileInfo =>
-            val fileCreated        = convertToDateString(summary.createdAt)
-            val fileExpirationDate = retentionTimeToExpirationDate(fileInfo)
-            val fileLink           = fileManagementTableComponentHelper.createLink(
-              messages("fileManagement.availableFiles.downloadText"),
-              messages("fileManagement.availableFiles.downloadText.hidden", fileCreated),
-              data.downloadURL
-            )
-
-            Seq(
-              TableRow(
-                content = Text(fileCreated)
-              ),
-              TableRow(
-                content = Text(fileExpirationDate)
-              ),
-              TableRow(
-                content = fileLink
-              )
-            )
-          }
-        }
-      }
-
-      availableFileRows.map {
-        new AvailableFilesTable(_)
+        Seq(
+          TableRow(
+            content = Text(fileCreated)
+          ),
+          TableRow(
+            content = Text(fileExpirationDate)
+          ),
+          TableRow(
+            content = fileLink
+          )
+        )
       }
     }
+
+    availableFileRows.map {
+      new AvailableFilesTable(_)
+    }
   }
+}
 
-  object PendingFilesTable {
-    def apply(
-      pendingFiles: Option[Seq[DownloadDataSummary]]
-    )(implicit
-      messages: Messages,
-      fileManagementTableComponentHelper: FileManagementTableComponentHelper
-    ): Option[PendingFilesTable] = {
+object PendingFilesTable {
+  def apply(
+    pendingFiles: Option[Seq[DownloadDataSummary]]
+  )(implicit
+    messages: Messages,
+    fileManagementTableComponentHelper: FileManagementTableComponentHelper
+  ): Option[PendingFilesTable] = {
 
-      val pendingFilesRows = pendingFiles.map {
-        _.flatMap { pendingFile =>
-          val fileCreated = convertToDateString(pendingFile.createdAt)
-          val fileLink    = fileManagementTableComponentHelper.createTag(messages("fileManagement.pendingFiles.fileText"))
+    val pendingFilesRows = pendingFiles.map {
+      _.flatMap { pendingFile =>
+        val fileCreated = DateTimeFormats.convertToDateTimeString(pendingFile.createdAt)
+        val fileLink    = fileManagementTableComponentHelper.createTag(messages("fileManagement.pendingFiles.fileText"))
 
-          Seq(
-            TableRow(
-              content = Text(fileCreated)
-            ),
-            TableRow(
-              content = fileLink
-            )
+        Seq(
+          TableRow(
+            content = Text(fileCreated)
+          ),
+          TableRow(
+            content = fileLink
           )
-        }
+        )
       }
+    }
 
-      pendingFilesRows.map { tableRows =>
-        new PendingFilesTable(Seq(tableRows))
-      }
+    pendingFilesRows.map { tableRows =>
+      new PendingFilesTable(Seq(tableRows))
     }
   }
 }

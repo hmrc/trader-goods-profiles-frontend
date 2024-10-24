@@ -85,8 +85,8 @@ object FileManagementViewModel {
           downloadDataConnector.updateSeenStatus(eori)
         }
 
-        val availableFilesTable = FileManagementTable.AvailableFilesTable(availableFiles)
-        val pendingFilesTable   = FileManagementTable.PendingFilesTable(pendingFiles)
+        val availableFilesTable = AvailableFilesTable(availableFiles)
+        val pendingFilesTable   = PendingFilesTable(pendingFiles)
 
         new FileManagementViewModel(availableFilesTable, pendingFilesTable)
       }

@@ -27,7 +27,6 @@ import utils.DateTimeFormats.dateFormat
 import views.html.FileReadyView
 
 import java.time.{Instant, ZoneOffset}
-import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -65,10 +64,9 @@ class FileReadyController @Inject() (
         view(
           fileInfo.fileSize,
           downloadData.downloadURL,
-          convertToDateString(fileInfo.fileCreated),
+          convertToDateString(downloadDataSummary.createdAt),
           convertToDateString(
-            fileInfo.fileCreated
-              .plus(fileInfo.retentionDays.toInt, ChronoUnit.DAYS)
+            downloadDataSummary.expiresAt
           )
         )
       )).recover { case _ => navigator.journeyRecovery() }

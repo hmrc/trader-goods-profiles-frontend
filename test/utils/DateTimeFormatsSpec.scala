@@ -16,14 +16,14 @@
 
 package utils
 
-import org.scalatest.freespec.AnyFreeSpec
+import base.SpecBase
 import org.scalatest.matchers.must.Matchers
-import play.api.i18n.Lang
+import play.api.i18n.{Lang, Messages}
 import utils.DateTimeFormats.dateFormat
 
-import java.time.LocalDate
+import java.time.{Instant, LocalDate}
 
-class DateTimeFormatsSpec extends AnyFreeSpec with Matchers {
+class DateTimeFormatsSpec extends SpecBase with Matchers {
 
   ".dateTimeFormat" - {
 
@@ -43,6 +43,17 @@ class DateTimeFormatsSpec extends AnyFreeSpec with Matchers {
       val formatter = dateFormat()(Lang("de"))
       val result    = LocalDate.of(2023, 1, 1).format(formatter)
       result mustEqual "1 January 2023"
+    }
+  }
+
+  "convertToDateTimeString" - {
+    "must return correct date time string" in {
+      val application                     = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .build()
+      implicit val messagesImpl: Messages = messages(application)
+
+      val instant = Instant.parse("2024-04-22T10:05:00Z")
+      DateTimeFormats.convertToDateTimeString(instant) mustEqual "22 April 2024 10:05"
     }
   }
 }

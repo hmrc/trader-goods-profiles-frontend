@@ -47,11 +47,10 @@ class DownloadDataIndexControllerSpec extends SpecBase with BeforeAndAfterEach {
 
   "DownloadDataIndexController" - {
     "must redirect to correct page" - {
-      "when download summary is RequestFile" in {
-        val downloadDataSummary =
-          Seq(DownloadDataSummary("eori", RequestFile, Instant.now(), Some(FileInfo("file", 1, Instant.now(), "30"))))
+      "when download summary is None" in {
+
         when(mockDownloadDataConnector.getDownloadDataSummary(any())(any()))
-          .thenReturn(Future.successful(Some(downloadDataSummary)))
+          .thenReturn(Future.successful(None))
 
         val app = application
 
@@ -68,7 +67,7 @@ class DownloadDataIndexControllerSpec extends SpecBase with BeforeAndAfterEach {
       "when download summary is FileInProgress" in {
         val downloadDataSummary =
           Seq(
-            DownloadDataSummary("eori", FileInProgress, Instant.now(), Some(FileInfo("file", 1, Instant.now(), "30")))
+            DownloadDataSummary("eori", FileInProgress, Instant.now(), Instant.now(), Some(FileInfo("file", 1, "30")))
           )
         when(mockDownloadDataConnector.getDownloadDataSummary(any())(any()))
           .thenReturn(Future.successful(Some(downloadDataSummary)))
@@ -88,7 +87,7 @@ class DownloadDataIndexControllerSpec extends SpecBase with BeforeAndAfterEach {
       "when download summary is FileReadyUnseen" in {
         val downloadDataSummary =
           Seq(
-            DownloadDataSummary("eori", FileReadyUnseen, Instant.now(), Some(FileInfo("file", 1, Instant.now(), "30")))
+            DownloadDataSummary("eori", FileReadyUnseen, Instant.now(), Instant.now(), Some(FileInfo("file", 1, "30")))
           )
         when(mockDownloadDataConnector.getDownloadDataSummary(any())(any()))
           .thenReturn(Future.successful(Some(downloadDataSummary)))
@@ -107,7 +106,7 @@ class DownloadDataIndexControllerSpec extends SpecBase with BeforeAndAfterEach {
 
       "when download summary is FileReadySeen" in {
         val downloadDataSummary =
-          Seq(DownloadDataSummary("eori", FileReadySeen, Instant.now(), Some(FileInfo("file", 1, Instant.now(), "30"))))
+          Seq(DownloadDataSummary("eori", FileReadySeen, Instant.now(), Instant.now(), Some(FileInfo("file", 1, "30"))))
         when(mockDownloadDataConnector.getDownloadDataSummary(any())(any()))
           .thenReturn(Future.successful(Some(downloadDataSummary)))
 

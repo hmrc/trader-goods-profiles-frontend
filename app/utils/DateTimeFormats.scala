@@ -16,8 +16,9 @@
 
 package utils
 
-import play.api.i18n.Lang
+import play.api.i18n.{Lang, Messages}
 
+import java.time.{Instant, ZoneOffset}
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
@@ -25,7 +26,7 @@ object DateTimeFormats {
 
   private val dateFormatter     = DateTimeFormatter.ofPattern("d MMMM yyyy")
   private val dateTimeFormatter =
-    DateTimeFormatter.ofPattern("d MMMM yyyy HH:mm") // TODO: Do we want to show 06:01 or 6:11
+    DateTimeFormatter.ofPattern("d MMMM yyyy H:mm")
 
   private def localisedDateTimeFormatters(formatter: DateTimeFormatter): Map[String, DateTimeFormatter] = Map(
     "en" -> formatter,
@@ -40,4 +41,9 @@ object DateTimeFormats {
 
   val dateTimeHintFormat: DateTimeFormatter =
     DateTimeFormatter.ofPattern("d M yyyy")
+
+  def convertToDateTimeString(instant: Instant)(implicit messages: Messages): String = {
+    implicit val lang: Lang = messages.lang
+    instant.atZone(ZoneOffset.UTC).toLocalDateTime.format(dateTimeFormat())
+  }
 }

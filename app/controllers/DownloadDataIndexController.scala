@@ -47,7 +47,7 @@ class DownloadDataIndexController @Inject() (
   private def getDownloadLinkRoute(opt: Option[Seq[DownloadDataSummary]]): Call =
     opt
       .map(_.head)
-      .map(_.status) match { // TODO: Double check this, are we going to preserve the old page functionallity until they are removed?
+      .map(_.status) match {
       case Some(FileInProgress)                        =>
         routes.FileInProgressController.onPageLoad()
       case Some(FileReadyUnseen) | Some(FileReadySeen) =>

@@ -41,21 +41,6 @@ class FileManagementTableSpec extends SpecBase with Generators {
 
     val tableRows = arbitrarySeqTableRows.sample.value
 
-    "convertToDateString" - {
-      "must return correct date string" in {
-        val instant = Instant.parse("2024-04-22T10:05:00Z")
-        FileManagementTable.convertToDateString(instant) mustEqual "22 April 2024 10:05"
-      }
-    }
-
-    "retentionTimeToExpirationDate" - {
-      "must return correct expiration date" in {
-        val instant  = Instant.parse("2024-04-22T10:05:00Z")
-        val fileInfo = FileInfo("url.csv", 1, instant, "30")
-        FileManagementTable.retentionTimeToExpirationDate(fileInfo) mustEqual "22 May 2024 10:05"
-      }
-    }
-
     "AvailableFilesTable" - {
       val table = AvailableFilesTable(tableRows)
 
@@ -78,16 +63,18 @@ class FileManagementTableSpec extends SpecBase with Generators {
       ".apply" - {
         "must return convert Option[Seq[(DownloadDataSummary, DownloadData)]] into correct table rows" - {
           "when None" in {
-            FileManagementTable.AvailableFilesTable(None) mustBe None
+            AvailableFilesTable(None) mustBe None
           }
 
           "when populated with both DownloadDataSummary and DownloadData" in {
 
-            val instant = Instant.parse("2024-04-22T10:05:00Z")
+            val fileCreated = Instant.parse("2024-04-22T10:05:00Z")
+            val fileExpiry  = Instant.parse("2024-05-22T10:05:00Z")
 
             val fileName            = "url.csv"
-            val fileInfo            = FileInfo(fileName, 1, instant, "30")
-            val downloadDataSummary = DownloadDataSummary("testEori", FileReadyUnseen, instant, Some(fileInfo))
+            val fileInfo            = FileInfo(fileName, 1, "30")
+            val downloadDataSummary =
+              DownloadDataSummary("testEori", FileReadyUnseen, fileCreated, fileExpiry, Some(fileInfo))
             val downloadData        = DownloadData(fileName, fileName, 1, Seq.empty)
 
             val tableParameter = Some(Seq((downloadDataSummary, downloadData)))
@@ -114,7 +101,7 @@ class FileManagementTableSpec extends SpecBase with Generators {
               )
             )
 
-            FileManagementTable.AvailableFilesTable(tableParameter).value.availableFileRows mustBe tableRows
+            AvailableFilesTable(tableParameter).value.availableFileRows mustBe tableRows
           }
         }
       }
@@ -143,14 +130,14 @@ class FileManagementTableSpec extends SpecBase with Generators {
       ".apply" - {
         "must return convert Option[Seq[(DownloadDataSummary]] into correct table rows" - {
           "when None" in {
-            FileManagementTable.PendingFilesTable(None) mustBe None
+            PendingFilesTable(None) mustBe None
           }
 
           "when populated with DownloadDataSummary" in {
 
             val instant = Instant.parse("2024-04-22T10:05:00Z")
 
-            val downloadDataSummary = DownloadDataSummary("testEori", FileInProgress, instant, None)
+            val downloadDataSummary = DownloadDataSummary("testEori", FileInProgress, instant, Instant.now(), None)
 
             val tableParameter = Some(Seq(downloadDataSummary))
 
@@ -168,7 +155,7 @@ class FileManagementTableSpec extends SpecBase with Generators {
               )
             )
 
-            FileManagementTable.PendingFilesTable(tableParameter).value.pendingFileRows mustBe tableRows
+            PendingFilesTable(tableParameter).value.pendingFileRows mustBe tableRows
           }
         }
       }

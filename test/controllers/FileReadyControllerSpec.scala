@@ -19,7 +19,7 @@ package controllers
 import base.SpecBase
 import base.TestConstants.testEori
 import connectors.{DownloadDataConnector, TraderProfileConnector}
-import models.DownloadDataStatus.{FileReadySeen, RequestFile}
+import models.DownloadDataStatus.{FileInProgress, FileReadySeen}
 import models.{DownloadData, DownloadDataSummary, FileInfo, Metadata}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, verify, when}
@@ -70,8 +70,9 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
         val downloadDataSummary      = DownloadDataSummary(
           testEori,
           FileReadySeen,
-          Instant.now(),
-          Some(FileInfo(fileName, fileSize, fileCreated, retentionDays))
+          fileCreated,
+          fileCreated.plus(retentionDays.toInt, java.time.temporal.ChronoUnit.DAYS),
+          Some(FileInfo(fileName, fileSize, retentionDays))
         )
 
         val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
@@ -118,7 +119,8 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
             testEori,
             FileReadySeen,
             Instant.now(),
-            Some(FileInfo(fileName, fileSize, fileCreated, retentionDays))
+            fileCreated,
+            Some(FileInfo(fileName, fileSize, retentionDays))
           )
 
           val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
@@ -152,6 +154,7 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
             testEori,
             FileReadySeen,
             Instant.now(),
+            Instant.now(),
             None
           )
 
@@ -184,7 +187,8 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
 
           val downloadDataSummary = DownloadDataSummary(
             testEori,
-            RequestFile,
+            FileInProgress,
+            Instant.now(),
             Instant.now(),
             None
           )
