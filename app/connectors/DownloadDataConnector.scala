@@ -99,15 +99,15 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
         }
       }
 
-  def updateSeenStatus(eori: String)(implicit hc: HeaderCarrier): Future[Boolean] =
+  def updateSeenStatus(eori: String)(implicit hc: HeaderCarrier): Future[Done] =
     httpClient
       .patch(downloadDataSummaryUrl(eori))
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
-      .map { response =>
+      .flatMap { response =>
         response.status match {
-          case NO_CONTENT => true
-          case _          => false
+          case NO_CONTENT => Future.successful(Done)
+          case _          => Future.failed(UpstreamErrorResponse(response.body, response.status))
         }
       }
 }

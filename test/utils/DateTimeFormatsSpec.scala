@@ -47,13 +47,22 @@ class DateTimeFormatsSpec extends SpecBase with Matchers {
   }
 
   "convertToDateTimeString" - {
-    "must return correct date time string" in {
+    "must return correct date time string when am" in {
       val application                     = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .build()
       implicit val messagesImpl: Messages = messages(application)
 
       val instant = Instant.parse("2024-04-22T10:05:00Z")
-      DateTimeFormats.convertToDateTimeString(instant) mustEqual "22 April 2024 10:05"
+      DateTimeFormats.convertToDateTimeString(instant) mustEqual "22 April 2024 10:05am"
+    }
+
+    "must return correct date time string when pm" in {
+      val application                     = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .build()
+      implicit val messagesImpl: Messages = messages(application)
+
+      val instant = Instant.parse("2024-04-22T13:11:00Z")
+      DateTimeFormats.convertToDateTimeString(instant) mustEqual "22 April 2024 1:11pm"
     }
   }
 }

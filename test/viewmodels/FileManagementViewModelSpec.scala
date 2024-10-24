@@ -23,6 +23,7 @@ import helpers.FileManagementTableComponentHelper
 import models.DownloadDataStatus.{FileInProgress, FileReadyUnseen}
 import models.filemanagement.{AvailableFilesTable, PendingFilesTable}
 import models.{DownloadData, DownloadDataSummary, FileInfo}
+import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{never, times, verify, when}
 import org.scalacheck.Gen
@@ -199,7 +200,7 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
               )
 
               when(mockDownloadDataConnector.updateSeenStatus(any())(any())) thenReturn Future.successful(
-                true
+                Done
               )
 
               val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -244,7 +245,7 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
               )
 
               when(mockDownloadDataConnector.updateSeenStatus(any())(any())) thenReturn Future.successful(
-                true
+                Done
               )
 
               val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))

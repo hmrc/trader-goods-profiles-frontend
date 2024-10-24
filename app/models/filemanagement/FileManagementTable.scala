@@ -94,7 +94,7 @@ object PendingFilesTable {
   ): Option[PendingFilesTable] = {
 
     val pendingFilesRows = pendingFiles.map {
-      _.flatMap { pendingFile =>
+      _.map { pendingFile =>
         val fileCreated = DateTimeFormats.convertToDateTimeString(pendingFile.createdAt)
         val fileLink    = fileManagementTableComponentHelper.createTag(messages("fileManagement.pendingFiles.fileText"))
 
@@ -110,7 +110,7 @@ object PendingFilesTable {
     }
 
     pendingFilesRows.map { tableRows =>
-      new PendingFilesTable(Seq(tableRows))
+      new PendingFilesTable(tableRows)
     }
   }
 }

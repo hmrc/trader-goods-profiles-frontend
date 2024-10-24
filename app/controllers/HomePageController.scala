@@ -54,7 +54,7 @@ class HomePageController @Inject() (
     downloadDataSummary
       .flatMap(
         _.collectFirst {
-          case summary if summary.status == FileReadyUnseen => true // TODO: Set to ReadySeen on seen
+          case summary if summary.status == FileReadyUnseen => true
         }
       )
       .getOrElse(false)

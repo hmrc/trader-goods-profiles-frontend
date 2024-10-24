@@ -229,7 +229,7 @@ class DownloadDataConnectorSpec
             .willReturn(status(errorResponses.sample.value))
         )
 
-      val result = connector.requestDownloadData(testEori)
+      val result = connector.getEmail(testEori)
 
       result.failed.futureValue
     }
@@ -237,14 +237,14 @@ class DownloadDataConnectorSpec
 
   ".updateSeenStatus" - {
 
-    "must return true on NO_CONTENT" in {
+    "must return Done on NO_CONTENT" in {
 
       wireMockServer.stubFor(
         patch(urlEqualTo(downloadDataSummaryUrl))
           .willReturn(noContent())
       )
 
-      connector.updateSeenStatus(testEori).futureValue mustBe true
+      connector.updateSeenStatus(testEori).futureValue mustBe Done
     }
 
     "must return exception on 4xx+ responses" in {

@@ -79,11 +79,11 @@ class FileManagementTableSpec extends SpecBase with Generators {
 
             val tableParameter = Some(Seq((downloadDataSummary, downloadData)))
 
-            val dateTime   = "22 April 2024 10:05"
-            val expiryDate = "22 May 2024 10:05"
+            val dateTime   = "22 April 2024 10:05am"
+            val expiryDate = "22 May 2024 10:05am"
             val file       = fileManagementTableComponentHelper.createLink(
               "Download file",
-              "requested on 22 April 2024 10:05",
+              "requested on 22 April 2024 10:05am",
               fileName
             )
 
@@ -141,7 +141,7 @@ class FileManagementTableSpec extends SpecBase with Generators {
 
             val tableParameter = Some(Seq(downloadDataSummary))
 
-            val dateTime = "22 April 2024 10:05"
+            val dateTime = "22 April 2024 10:05am"
             val file     = fileManagementTableComponentHelper.createTag("File not ready")
 
             val tableRows = Seq(
