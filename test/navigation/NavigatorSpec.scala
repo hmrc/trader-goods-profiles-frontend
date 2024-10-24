@@ -3014,8 +3014,9 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
         }
       }
 
-      "in New UKIMS Number update Journey" - {
-        "must go from UkimsNumberUpdatePage to CyaMaintainProfilePage" in {
+      "in the new UKIMS number update journey" - {
+
+        "must go from CyaNewUkimsNumberPage to ???" in {
 
           // TODO Needs to be updated according to navigation TGP-2700
           navigator.nextPage(
