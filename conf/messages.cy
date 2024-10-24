@@ -388,7 +388,7 @@ categoryGuidance.p3.2 = Categori 2 – nwyddau sy’n cael eu rheoli ac sydd ang
 categoryGuidance.p3.3 = Safonol – nwyddau sy’n gallu defnyddio SPIMM
 categoryGuidance.p4 = Bydd angen i chi wybod rhif tystysgrif neu enw unrhyw eithriadau s’n berthnasol ar gyfer eich nwyddau. Rhifau tystysgrif enghreifftiol yw C644, Y929 neu C640. Os byddwch yn cael eithriad newydd, byddwch yn gallu ei newid yn nes ymlaen.
 
-assessment.title = Cwestiwn categoreiddio
+assessment.title = Asesiadau categori {0} o {1}
 assessment.heading = Asesiadau categori {0} o {1}
 assessment.linkText = Defnyddiwch yr Offeryn Tariff Ar-lein (yn agor tab newydd) i chwilio am god nwyddau.
 assessment.question = Pa un o'r eithriadau hyn sydd gennych ar gyfer {0}?
