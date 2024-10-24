@@ -270,7 +270,7 @@ traderReference.error.traderRefNotUnique = This trader reference is already in y
 traderReference.checkYourAnswersLabel = Trader reference
 traderReference.change.hidden = Trader reference
 
-assessment.title = Categorisation question
+assessment.title = Category assessment {0} of {1}
 assessment.heading = Category assessment {0} of {1}
 assessment.guidance = You need to confirm which of these exclusions you hold for {0}. The theme for this assessment is:
 assessment.linkText = Search for a commodity code on the Online Tariff Tool (opens in new tab)
