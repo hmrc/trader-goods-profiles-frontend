@@ -128,8 +128,10 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
 
               val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
 
-              when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(None)
-              when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(None)
+              when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
+                Seq.empty
+              )
+              when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(Seq.empty)
 
               val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
                 .overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector))
@@ -154,12 +156,12 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
               val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
 
               val downloadDataSummary =
-                Some(Seq(DownloadDataSummary("eori", FileInProgress, Instant.now(), Instant.now(), None)))
+                Seq(DownloadDataSummary("id", "eori", FileInProgress, Instant.now(), Instant.now(), None))
 
               when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
                 downloadDataSummary
               )
-              when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(None)
+              when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(Seq.empty)
 
               val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
                 .overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector))
@@ -171,7 +173,7 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
 
               val result = viewModelProvider.apply("eori", mockDownloadDataConnector)(messagesImp, ec, hc).futureValue
 
-              val pendingFilesTable = PendingFilesTable(downloadDataSummary)
+              val pendingFilesTable = PendingFilesTable(Some(downloadDataSummary))
 
               result.pendingFilesTable mustBe pendingFilesTable
               result.availableFilesTable mustBe None
@@ -189,14 +191,14 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
 
               val fileInfo            = FileInfo(fileName, 1, "30")
               val downloadDataSummary =
-                DownloadDataSummary("eori", FileReadyUnseen, Instant.now(), Instant.now(), Some(fileInfo))
+                DownloadDataSummary("id", "eori", FileReadyUnseen, Instant.now(), Instant.now(), Some(fileInfo))
               val downloadData        = DownloadData("file", fileName, 1, Seq.empty)
 
               when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
-                Some(Seq(downloadDataSummary))
+                Seq(downloadDataSummary)
               )
               when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(
-                Some(Seq(downloadData))
+                Seq(downloadData)
               )
 
               when(mockDownloadDataConnector.updateSeenStatus(any())(any())) thenReturn Future.successful(
@@ -231,17 +233,17 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
 
               val fileInfo            = FileInfo(fileName, 1, "30")
               val downloadDataSummary = Seq(
-                DownloadDataSummary("eori", FileReadyUnseen, Instant.now(), Instant.now(), Some(fileInfo)),
-                DownloadDataSummary("eori", FileInProgress, Instant.now(), Instant.now(), None)
+                DownloadDataSummary("id", "eori", FileReadyUnseen, Instant.now(), Instant.now(), Some(fileInfo)),
+                DownloadDataSummary("id", "eori", FileInProgress, Instant.now(), Instant.now(), None)
               )
 
               val downloadData = DownloadData("file", fileName, 1, Seq.empty)
 
               when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
-                Some(downloadDataSummary)
+                downloadDataSummary
               )
               when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(
-                Some(Seq(downloadData))
+                Seq(downloadData)
               )
 
               when(mockDownloadDataConnector.updateSeenStatus(any())(any())) thenReturn Future.successful(
@@ -278,14 +280,14 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
 
               val fileInfo            = FileInfo(fileName, 1, "30")
               val downloadDataSummary = Seq(
-                DownloadDataSummary("eori", FileReadyUnseen, Instant.now(), Instant.now(), Some(fileInfo))
+                DownloadDataSummary("id", "eori", FileReadyUnseen, Instant.now(), Instant.now(), Some(fileInfo))
               )
 
               when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
-                Some(downloadDataSummary)
+                downloadDataSummary
               )
               when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(
-                None
+                Seq.empty
               )
 
               val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -314,15 +316,15 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
 
               val fileInfo            = FileInfo(fileName, 1, "30")
               val downloadDataSummary = Seq(
-                DownloadDataSummary("eori", FileReadyUnseen, Instant.now(), Instant.now(), Some(fileInfo))
+                DownloadDataSummary("id", "eori", FileReadyUnseen, Instant.now(), Instant.now(), Some(fileInfo))
               )
               val downloadData        = DownloadData("unmatched", "unmatched", 1, Seq.empty)
 
               when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
-                Some(downloadDataSummary)
+                downloadDataSummary
               )
               when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(
-                Some(Seq(downloadData))
+                Seq(downloadData)
               )
 
               val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))

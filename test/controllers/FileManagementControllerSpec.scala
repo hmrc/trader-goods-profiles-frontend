@@ -19,7 +19,8 @@ package controllers
 import base.SpecBase
 import connectors.DownloadDataConnector
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{never, reset, verify, when}
+import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.i18n.Messages
 import play.api.inject.bind
@@ -30,18 +31,25 @@ import views.html.FileManagementView
 
 import scala.concurrent.Future
 
-class FileManagementControllerSpec extends SpecBase with MockitoSugar {
+class FileManagementControllerSpec extends SpecBase with MockitoSugar with BeforeAndAfterEach {
 
   private lazy val fileManagementRoute = routes.FileManagementController.onPageLoad().url
 
-  "FileReadyController" - {
+  private val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
 
-    val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+  override def beforeEach(): Unit = {
 
-    "must return OK and view for a GET" in {
+    reset(mockDownloadDataConnector)
 
-      when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(None)
-      when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(None)
+    super.beforeEach()
+  }
+
+  "FileManagementController" - {
+
+    "must return OK and view for a GET if download data feature is enabled" in {
+
+      when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(Seq.empty)
+      when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(Seq.empty)
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector))
@@ -62,6 +70,30 @@ class FileManagementControllerSpec extends SpecBase with MockitoSugar {
         ).toString
 
       }
+
+      verify(mockDownloadDataConnector).getDownloadDataSummary(any())(any())
+      verify(mockDownloadDataConnector).getDownloadData(any())(any())
+    }
+
+    "must return SEE_OTHER and redirect to journey recovery if download feature is disabled" in {
+
+      when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(Seq.empty)
+      when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(Seq.empty)
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .configure("features.download-file-enabled" -> false)
+        .overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector))
+        .build()
+
+      running(application) {
+        val request = FakeRequest(GET, fileManagementRoute)
+        val result  = route(application, request).value
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController.onPageLoad().url
+      }
+
+      verify(mockDownloadDataConnector, never()).getDownloadDataSummary(any())(any())
+      verify(mockDownloadDataConnector, never()).getDownloadData(any())(any())
     }
 
   }

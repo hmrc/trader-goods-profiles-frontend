@@ -21,6 +21,7 @@ import play.api.libs.json.{Json, OFormat}
 import java.time.Instant
 
 final case class DownloadDataSummary(
+  summaryId: String,
   eori: String,
   status: DownloadDataStatus,
   createdAt: Instant,

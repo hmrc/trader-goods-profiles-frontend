@@ -59,6 +59,7 @@ class HomePageControllerSpec extends SpecBase {
 
         val downloadDataSummary = Seq(
           DownloadDataSummary(
+            "id",
             testEori,
             FileReadyUnseen,
             Instant.now(),
@@ -72,7 +73,7 @@ class HomePageControllerSpec extends SpecBase {
 
         val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
         when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
-          Some(downloadDataSummary)
+          downloadDataSummary
         )
 
         val mockGoodsRecordConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
@@ -109,6 +110,7 @@ class HomePageControllerSpec extends SpecBase {
 
         val downloadDataSummary = Seq(
           DownloadDataSummary(
+            "id",
             testEori,
             FileReadySeen,
             Instant.now(),
@@ -119,7 +121,7 @@ class HomePageControllerSpec extends SpecBase {
 
         val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
         when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
-          Some(downloadDataSummary)
+          downloadDataSummary
         )
 
         val mockGoodsRecordConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
@@ -156,7 +158,7 @@ class HomePageControllerSpec extends SpecBase {
 
           val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
           when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
-            None
+            Seq.empty
           )
 
           val mockGoodsRecordConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
@@ -189,6 +191,7 @@ class HomePageControllerSpec extends SpecBase {
         "when downloadDataSummary is FileInProgress" in {
           val downloadDataSummary = Seq(
             DownloadDataSummary(
+              "id",
               testEori,
               FileInProgress,
               Instant.now(),
@@ -202,7 +205,7 @@ class HomePageControllerSpec extends SpecBase {
 
           val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
           when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
-            Some(downloadDataSummary)
+            downloadDataSummary
           )
 
           val mockGoodsRecordConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
@@ -235,6 +238,7 @@ class HomePageControllerSpec extends SpecBase {
         "when downloadDataSummary is FileReadyUnseen" in {
           val downloadDataSummary = Seq(
             DownloadDataSummary(
+              "id",
               testEori,
               FileReadyUnseen,
               Instant.now(),
@@ -248,7 +252,7 @@ class HomePageControllerSpec extends SpecBase {
 
           val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
           when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
-            Some(downloadDataSummary)
+            downloadDataSummary
           )
 
           val mockGoodsRecordConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
@@ -281,6 +285,7 @@ class HomePageControllerSpec extends SpecBase {
         "when downloadDataSummary is FileReadySeen" in {
           val downloadDataSummary = Seq(
             DownloadDataSummary(
+              "id",
               testEori,
               FileReadySeen,
               Instant.now(),
@@ -294,7 +299,7 @@ class HomePageControllerSpec extends SpecBase {
 
           val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
           when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
-            Some(downloadDataSummary)
+            downloadDataSummary
           )
 
           val mockGoodsRecordConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
@@ -338,7 +343,7 @@ class HomePageControllerSpec extends SpecBase {
 
         val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
         when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
-          None
+          Seq.empty
         )
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))

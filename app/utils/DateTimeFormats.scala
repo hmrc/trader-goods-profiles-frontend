@@ -47,4 +47,9 @@ object DateTimeFormats {
     val formattedDate       = instant.atZone(ZoneOffset.UTC).toLocalDateTime.format(dateTimeFormat())
     formattedDate.replace("AM", "am").replace("PM", "pm")
   }
+
+  def convertToDateString(instant: Instant)(implicit messages: Messages): String = {
+    implicit val lang: Lang = messages.lang
+    instant.atZone(ZoneOffset.UTC).toLocalDate.format(dateFormat())
+  }
 }

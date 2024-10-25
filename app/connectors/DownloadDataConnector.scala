@@ -19,7 +19,7 @@ package connectors
 import config.FrontendAppConfig
 import models.{DownloadData, DownloadDataSummary, Email, LegacyRawReads}
 import org.apache.pekko.Done
-import play.api.http.Status.{ACCEPTED, NOT_FOUND, NO_CONTENT, OK}
+import play.api.http.Status.{ACCEPTED, NO_CONTENT, OK}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.client.HttpClientV2
 
@@ -53,39 +53,35 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
         }
       }
 
-  def getDownloadDataSummary(eori: String)(implicit hc: HeaderCarrier): Future[Option[Seq[DownloadDataSummary]]] =
+  def getDownloadDataSummary(eori: String)(implicit hc: HeaderCarrier): Future[Seq[DownloadDataSummary]] =
     if (config.downloadFileEnabled) {
       httpClient
         .get(downloadDataSummaryUrl(eori))
         .execute[HttpResponse]
         .map { response =>
           response.status match {
-            case OK => Some(response.json.as[Seq[DownloadDataSummary]])
-            case _  => None
+            case OK => response.json.as[Seq[DownloadDataSummary]]
+            case _  => Seq.empty
           }
         }
-        .recover {
-          case x: UpstreamErrorResponse if x.statusCode == NOT_FOUND =>
-            None
-        }
     } else {
-      Future.successful(None)
+      Future.successful(Seq.empty)
     }
 
-  def getDownloadData(eori: String)(implicit hc: HeaderCarrier): Future[Option[Seq[DownloadData]]] =
-    httpClient
-      .get(downloadDataUrl(eori))
-      .execute[HttpResponse]
-      .map { response =>
-        response.status match {
-          case OK => Some(response.json.as[Seq[DownloadData]])
-          case _  => None
+  def getDownloadData(eori: String)(implicit hc: HeaderCarrier): Future[Seq[DownloadData]] =
+    if (config.downloadFileEnabled) {
+      httpClient
+        .get(downloadDataUrl(eori))
+        .execute[HttpResponse]
+        .map { response =>
+          response.status match {
+            case OK => response.json.as[Seq[DownloadData]]
+            case _  => Seq.empty
+          }
         }
-      }
-      .recover {
-        case x: UpstreamErrorResponse if x.statusCode == NOT_FOUND =>
-          None
-      }
+    } else {
+      Future.successful(Seq.empty)
+    }
 
   def getEmail(eori: String)(implicit hc: HeaderCarrier): Future[Email] =
     httpClient

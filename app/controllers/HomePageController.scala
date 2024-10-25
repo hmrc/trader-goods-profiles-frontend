@@ -18,7 +18,7 @@ package controllers
 
 import connectors.{DownloadDataConnector, GoodsRecordConnector}
 import controllers.actions._
-import models.DownloadDataStatus.{FileInProgress, FileReadySeen, FileReadyUnseen}
+import models.DownloadDataStatus.FileReadyUnseen
 import models.DownloadDataSummary
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -50,26 +50,19 @@ class HomePageController @Inject() (
     }
   }
 
-  private def downloadReady(downloadDataSummary: Option[Seq[DownloadDataSummary]]): Boolean =
+  private def downloadReady(downloadDataSummary: Seq[DownloadDataSummary]): Boolean =
     downloadDataSummary
-      .flatMap(
-        _.collectFirst {
-          case summary if summary.status == FileReadyUnseen => true
-        }
-      )
+      .collectFirst {
+        case summary if summary.status == FileReadyUnseen => true
+      }
       .getOrElse(false)
 
-  private def getDownloadLinkMessagesKey(opt: Option[Seq[DownloadDataSummary]], doesGoodsRecordExist: Boolean): String =
-    if (doesGoodsRecordExist) {
-      opt
-        .flatMap(
-          _.collectFirst {
-            case summary if Seq(FileInProgress, FileReadyUnseen, FileReadySeen).contains(summary.status) =>
-              "homepage.downloadLinkText.filesRequested"
-          }
-        )
-        .getOrElse("homepage.downloadLinkText.noFilesRequested")
-    } else {
-      "homepage.downloadLinkText.noGoodsRecords"
-    }
+  private def getDownloadLinkMessagesKey(
+    downloadDataSummaries: Seq[DownloadDataSummary],
+    doesGoodsRecordExist: Boolean
+  ): String = doesGoodsRecordExist match {
+    case true if downloadDataSummaries.nonEmpty => "homepage.downloadLinkText.filesRequested"
+    case true if downloadDataSummaries.isEmpty  => "homepage.downloadLinkText.noFilesRequested"
+    case _                                      => "homepage.downloadLinkText.noGoodsRecords"
+  }
 }

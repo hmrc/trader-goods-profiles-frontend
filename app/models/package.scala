@@ -18,6 +18,13 @@ import play.api.libs.json._
 
 package object models {
 
+  implicit class SeqOps[T](seq: Seq[T]) {
+    def filterToOption(predicate: T => Boolean): Option[Seq[T]] = {
+      val filtered = seq.filter(predicate)
+      if (filtered.nonEmpty) Some(filtered) else None
+    }
+  }
+
   implicit class RichJsObject(jsObject: JsObject) {
 
     def setObject(path: JsPath, value: JsValue): JsResult[JsObject] =

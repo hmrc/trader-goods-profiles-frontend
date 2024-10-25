@@ -16,6 +16,7 @@
 
 package controllers
 
+import config.FrontendAppConfig
 import connectors.DownloadDataConnector
 import controllers.actions._
 import play.api.i18n.MessagesApi
@@ -24,7 +25,7 @@ import viewmodels.FileManagementViewModel.FileManagementViewModelProvider
 import views.html.FileManagementView
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class FileManagementController @Inject() (
   override val messagesApi: MessagesApi,
@@ -35,14 +36,19 @@ class FileManagementController @Inject() (
   downloadDataConnector: DownloadDataConnector,
   viewModelProvider: FileManagementViewModelProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: FileManagementView
+  view: FileManagementView,
+  config: FrontendAppConfig
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
   def onPageLoad(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData).async {
     implicit request =>
-      viewModelProvider(request.eori, downloadDataConnector).map { viewModel =>
-        Ok(view(viewModel))
+      if (config.downloadFileEnabled) {
+        viewModelProvider(request.eori, downloadDataConnector).map { viewModel =>
+          Ok(view(viewModel))
+        }
+      } else {
+        Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))
       }
   }
 }

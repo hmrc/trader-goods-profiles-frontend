@@ -61,23 +61,21 @@ object FileManagementViewModel {
         downloadDataSummary <- downloadDataConnector.getDownloadDataSummary(eori)
         downloadData        <- downloadDataConnector.getDownloadData(eori)
 
-        availableDataSummaries =
-          downloadDataSummary
-            .map(_.filter(summary => summary.status == FileReadySeen || summary.status == FileReadyUnseen))
-            .filter(_.nonEmpty)
+        availableDataSummaries = downloadDataSummary.filterToOption(summary =>
+                                   summary.status == FileReadySeen || summary.status == FileReadyUnseen
+                                 )
 
         availableFiles = availableDataSummaries.flatMap { availableFilesSeq =>
                            val files = for {
                              availableFile    <- availableFilesSeq
                              fileInfo         <- availableFile.fileInfo
-                             downloadDataSeq  <- downloadData
-                             matchingDownload <- downloadDataSeq.find(_.filename == fileInfo.fileName)
+                             matchingDownload <- downloadData.find(_.filename == fileInfo.fileName)
                            } yield (availableFile, matchingDownload)
 
                            if (files.nonEmpty) Some(files) else None
                          }
 
-        pendingFiles = downloadDataSummary.map(_.filter(_.status == FileInProgress)).filter(_.nonEmpty)
+        pendingFiles = downloadDataSummary.filterToOption(_.status == FileInProgress)
 
       } yield {
 

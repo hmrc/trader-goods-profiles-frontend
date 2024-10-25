@@ -44,14 +44,15 @@ class DownloadDataIndexController @Inject() (
       }
   }
 
-  private def getDownloadLinkRoute(opt: Option[Seq[DownloadDataSummary]]): Call =
-    opt
-      .map(_.head)
-      .map(_.status) match {
-      case Some(FileInProgress)                        =>
-        routes.FileInProgressController.onPageLoad()
-      case Some(FileReadyUnseen) | Some(FileReadySeen) =>
-        routes.FileReadyController.onPageLoad()
-      case _                                           => routes.RequestDataController.onPageLoad()
+  private def getDownloadLinkRoute(opt: Seq[DownloadDataSummary]): Call =
+    if (opt.isEmpty) {
+      routes.RequestDataController.onPageLoad()
+    } else {
+      opt.maxBy(_.createdAt).status match {
+        case FileReadyUnseen | FileReadySeen =>
+          routes.FileReadyController.onPageLoad()
+        case _                               =>
+          routes.FileInProgressController.onPageLoad()
+      }
     }
 }

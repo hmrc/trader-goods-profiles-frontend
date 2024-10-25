@@ -47,10 +47,10 @@ class DownloadDataIndexControllerSpec extends SpecBase with BeforeAndAfterEach {
 
   "DownloadDataIndexController" - {
     "must redirect to correct page" - {
-      "when download summary is None" in {
+      "when download summary is Seq.empty" in {
 
         when(mockDownloadDataConnector.getDownloadDataSummary(any())(any()))
-          .thenReturn(Future.successful(None))
+          .thenReturn(Future.successful(Seq.empty))
 
         val app = application
 
@@ -67,10 +67,17 @@ class DownloadDataIndexControllerSpec extends SpecBase with BeforeAndAfterEach {
       "when download summary is FileInProgress" in {
         val downloadDataSummary =
           Seq(
-            DownloadDataSummary("eori", FileInProgress, Instant.now(), Instant.now(), Some(FileInfo("file", 1, "30")))
+            DownloadDataSummary(
+              "id",
+              "eori",
+              FileInProgress,
+              Instant.now(),
+              Instant.now(),
+              Some(FileInfo("file", 1, "30"))
+            )
           )
         when(mockDownloadDataConnector.getDownloadDataSummary(any())(any()))
-          .thenReturn(Future.successful(Some(downloadDataSummary)))
+          .thenReturn(Future.successful(downloadDataSummary))
 
         val app = application
 
@@ -87,10 +94,17 @@ class DownloadDataIndexControllerSpec extends SpecBase with BeforeAndAfterEach {
       "when download summary is FileReadyUnseen" in {
         val downloadDataSummary =
           Seq(
-            DownloadDataSummary("eori", FileReadyUnseen, Instant.now(), Instant.now(), Some(FileInfo("file", 1, "30")))
+            DownloadDataSummary(
+              "id",
+              "eori",
+              FileReadyUnseen,
+              Instant.now(),
+              Instant.now(),
+              Some(FileInfo("file", 1, "30"))
+            )
           )
         when(mockDownloadDataConnector.getDownloadDataSummary(any())(any()))
-          .thenReturn(Future.successful(Some(downloadDataSummary)))
+          .thenReturn(Future.successful(downloadDataSummary))
 
         val app = application
 
@@ -106,9 +120,18 @@ class DownloadDataIndexControllerSpec extends SpecBase with BeforeAndAfterEach {
 
       "when download summary is FileReadySeen" in {
         val downloadDataSummary =
-          Seq(DownloadDataSummary("eori", FileReadySeen, Instant.now(), Instant.now(), Some(FileInfo("file", 1, "30"))))
+          Seq(
+            DownloadDataSummary(
+              "id",
+              "eori",
+              FileReadySeen,
+              Instant.now(),
+              Instant.now(),
+              Some(FileInfo("file", 1, "30"))
+            )
+          )
         when(mockDownloadDataConnector.getDownloadDataSummary(any())(any()))
-          .thenReturn(Future.successful(Some(downloadDataSummary)))
+          .thenReturn(Future.successful(downloadDataSummary))
 
         val app = application
 

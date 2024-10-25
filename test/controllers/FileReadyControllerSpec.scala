@@ -68,6 +68,7 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
           )
         )
         val downloadDataSummary      = DownloadDataSummary(
+          "id",
           testEori,
           FileReadySeen,
           fileCreated,
@@ -78,10 +79,10 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
         val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
 
         when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
-          Some(Seq(downloadDataSummary))
+          Seq(downloadDataSummary)
         )
         when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(
-          Some(Seq(downloadData))
+          Seq(downloadData)
         )
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -106,6 +107,86 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
 
       }
 
+      "must OK and display the latest downloadDataSummary correct view when link is got successfully" in {
+
+        val fileName          = "fileName"
+        val fileSize          = 600
+        val fileCreated       = Instant.parse("2025-03-01T18:35:24.00Z")
+        val fileCreatedLatest = Instant.parse("2025-04-01T18:35:24.00Z")
+
+        val retentionDays = "30"
+        val url           = "/some-url"
+
+        val fileRoleMetadata         = Metadata("FileRole", "C79Certificate")
+        val periodStartYearMetadata  = Metadata("PeriodStartYear", "2020")
+        val retentionDaysMetadata    = Metadata("RETENTION_DAYS", retentionDays)
+        val periodStartMonthMetadata = Metadata("PeriodStartMonth", "08")
+
+        val createdDateLatest    = "1 April 2025"
+        val availableUntilLatest = "1 May 2025"
+
+        val downloadData = DownloadData(
+          url,
+          fileName,
+          fileSize,
+          Seq(
+            fileRoleMetadata,
+            periodStartYearMetadata,
+            retentionDaysMetadata,
+            periodStartMonthMetadata
+          )
+        )
+
+        val downloadDataSummary = Seq(
+          DownloadDataSummary(
+            "id",
+            testEori,
+            FileReadySeen,
+            fileCreatedLatest,
+            fileCreatedLatest.plus(retentionDays.toInt, java.time.temporal.ChronoUnit.DAYS),
+            Some(FileInfo(fileName, fileSize, retentionDays))
+          ),
+          DownloadDataSummary(
+            "id",
+            testEori,
+            FileReadySeen,
+            fileCreated,
+            fileCreated.plus(retentionDays.toInt, java.time.temporal.ChronoUnit.DAYS),
+            Some(FileInfo(fileName, fileSize, retentionDays))
+          )
+        )
+
+        val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+
+        when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
+          downloadDataSummary
+        )
+        when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(
+          Seq(downloadData)
+        )
+
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+          .overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector))
+          .build()
+
+        running(application) {
+          val request = FakeRequest(GET, fileReadyRoute)
+          val result  = route(application, request).value
+          val view    = application.injector.instanceOf[FileReadyView]
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(fileSize, url, createdDateLatest, availableUntilLatest)(
+            request,
+            messages(application)
+          ).toString
+
+          verify(mockDownloadDataConnector).getDownloadDataSummary(eqTo(testEori))(any())
+          verify(mockDownloadDataConnector).getDownloadData(eqTo(testEori))(any())
+
+        }
+
+      }
+
       "redirect to journey recovery if the link cannot be retrieved" - {
 
         "because download data is not found" in {
@@ -116,6 +197,7 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
           val retentionDays = "30"
 
           val downloadDataSummary = DownloadDataSummary(
+            "id",
             testEori,
             FileReadySeen,
             Instant.now(),
@@ -126,9 +208,9 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
           val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
 
           when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
-            Some(Seq(downloadDataSummary))
+            Seq(downloadDataSummary)
           )
-          when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(None)
+          when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(Seq.empty)
 
           val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
@@ -151,6 +233,7 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
         "because fileInfo is not present" in {
 
           val downloadDataSummary = DownloadDataSummary(
+            "id",
             testEori,
             FileReadySeen,
             Instant.now(),
@@ -161,9 +244,9 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
           val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
 
           when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
-            Some(Seq(downloadDataSummary))
+            Seq(downloadDataSummary)
           )
-          when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(None)
+          when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(Seq.empty)
 
           val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
@@ -179,13 +262,58 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
               .url
 
             verify(mockDownloadDataConnector).getDownloadDataSummary(eqTo(testEori))(any())
-            verify(mockDownloadDataConnector, never()).getDownloadData(eqTo(testEori))(any())
+            verify(mockDownloadDataConnector).getDownloadData(eqTo(testEori))(any())
+          }
+        }
+
+        "because no matching fileName in downloadData is present" in {
+
+          val fileSize = 500
+
+          val fileInfo = FileInfo("fileName", fileSize, "30")
+
+          val downloadDataSummary = DownloadDataSummary(
+            "id",
+            testEori,
+            FileReadySeen,
+            Instant.now(),
+            Instant.now(),
+            Some(fileInfo)
+          )
+
+          val downloadData = DownloadData("/some-url", "anotherFileName", fileSize, Seq.empty)
+
+          val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+
+          when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
+            Seq(downloadDataSummary)
+          )
+          when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(
+            Seq(downloadData)
+          )
+
+          val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+            .overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector))
+            .build()
+
+          running(application) {
+            val request = FakeRequest(GET, fileReadyRoute)
+            val result  = route(application, request).value
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).value mustEqual routes.JourneyRecoveryController
+              .onPageLoad()
+              .url
+
+            verify(mockDownloadDataConnector).getDownloadDataSummary(eqTo(testEori))(any())
+            verify(mockDownloadDataConnector).getDownloadData(eqTo(testEori))(any())
           }
         }
 
         "because status is not FileReady (seen or unseen)" in {
 
           val downloadDataSummary = DownloadDataSummary(
+            "id",
             testEori,
             FileInProgress,
             Instant.now(),
@@ -196,9 +324,9 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
           val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
 
           when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
-            Some(Seq(downloadDataSummary))
+            Seq(downloadDataSummary)
           )
-          when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(None)
+          when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(Seq.empty)
 
           val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
@@ -223,9 +351,9 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
           val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
 
           when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
-            None
+            Seq.empty
           )
-          when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(None)
+          when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(Seq.empty)
 
           val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))

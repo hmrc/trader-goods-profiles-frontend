@@ -74,7 +74,7 @@ class FileManagementTableSpec extends SpecBase with Generators {
             val fileName            = "url.csv"
             val fileInfo            = FileInfo(fileName, 1, "30")
             val downloadDataSummary =
-              DownloadDataSummary("testEori", FileReadyUnseen, fileCreated, fileExpiry, Some(fileInfo))
+              DownloadDataSummary("id", "testEori", FileReadyUnseen, fileCreated, fileExpiry, Some(fileInfo))
             val downloadData        = DownloadData(fileName, fileName, 1, Seq.empty)
 
             val tableParameter = Some(Seq((downloadDataSummary, downloadData)))
@@ -137,7 +137,8 @@ class FileManagementTableSpec extends SpecBase with Generators {
 
             val instant = Instant.parse("2024-04-22T10:05:00Z")
 
-            val downloadDataSummary = DownloadDataSummary("testEori", FileInProgress, instant, Instant.now(), None)
+            val downloadDataSummary =
+              DownloadDataSummary("id", "testEori", FileInProgress, instant, Instant.now(), None)
 
             val tableParameter = Some(Seq(downloadDataSummary))
 
