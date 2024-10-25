@@ -18,7 +18,7 @@ package controllers
 
 import connectors.{DownloadDataConnector, GoodsRecordConnector}
 import controllers.actions._
-import models.DownloadDataStatus.{FileInProgress, FileReadySeen, FileReadyUnseen}
+import models.DownloadDataStatus.FileReadyUnseen
 import models.DownloadDataSummary
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -46,24 +46,23 @@ class HomePageController @Inject() (
       doesGoodsRecordExist = goodsRecords.exists(_.goodsItemRecords.nonEmpty)
     } yield {
       val downloadLinkMessagesKey = getDownloadLinkMessagesKey(downloadDataSummary, doesGoodsRecordExist)
-      downloadDataSummary match {
-        case Some(downloadDataSummary) if downloadDataSummary.status == FileReadyUnseen =>
-          Ok(view(downloadReady = true, downloadLinkMessagesKey))
-        case _                                                                          =>
-          Ok(view(downloadReady = false, downloadLinkMessagesKey))
-      }
+      Ok(view(downloadReady(downloadDataSummary), downloadLinkMessagesKey))
     }
   }
 
-  private def getDownloadLinkMessagesKey(opt: Option[DownloadDataSummary], doesGoodsRecordExist: Boolean): String =
-    if (doesGoodsRecordExist) {
-      opt.map(_.status) match {
-        case Some(FileInProgress) | Some(FileReadyUnseen) | Some(FileReadySeen) =>
-          "homepage.downloadLinkText.filesRequested"
-        case _                                                                  =>
-          "homepage.downloadLinkText.noFilesRequested"
+  private def downloadReady(downloadDataSummary: Seq[DownloadDataSummary]): Boolean =
+    downloadDataSummary
+      .collectFirst {
+        case summary if summary.status == FileReadyUnseen => true
       }
-    } else {
-      "homepage.downloadLinkText.noGoodsRecords"
-    }
+      .getOrElse(false)
+
+  private def getDownloadLinkMessagesKey(
+    downloadDataSummaries: Seq[DownloadDataSummary],
+    doesGoodsRecordExist: Boolean
+  ): String = doesGoodsRecordExist match {
+    case true if downloadDataSummaries.nonEmpty => "homepage.downloadLinkText.filesRequested"
+    case true if downloadDataSummaries.isEmpty  => "homepage.downloadLinkText.noFilesRequested"
+    case _                                      => "homepage.downloadLinkText.noGoodsRecords"
+  }
 }

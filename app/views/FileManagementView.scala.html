@@ -1,0 +1,63 @@
+@*
+ * Copyright 2024 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import models.filemanagement.FileManagementTable
+@import viewmodels.FileManagementViewModel
+@import uk.gov.hmrc.govukfrontend.views.html.components.GovukTable
+@import uk.gov.hmrc.govukfrontend.views.Aliases.Table
+
+@this(
+        layout: templates.Layout,
+        govukTable: GovukTable
+)
+
+@(viewModel: FileManagementViewModel)(implicit request: Request[_], messages: Messages)
+
+@layout(pageTitle = titleNoForm(viewModel.title)) {
+
+    <h1 class="govuk-heading-l">@viewModel.heading</h1>
+
+    <p class="govuk-body">@viewModel.paragraph1</p>
+
+    @if(viewModel.isFiles) {
+
+        @viewModel.availableFilesTable.map { table: FileManagementTable =>
+            @govukTable(Table(
+                caption = Some(table.caption),
+                head = Some(table.headRows),
+                rows = table.rows
+            )
+          )
+        }
+
+        @viewModel.pendingFilesTable.map { table: FileManagementTable =>
+                <h2 class="govuk-heading-m">@table.caption</h2>
+                @table.body.map{ body =>
+                    <p class="govuk-body">@body</p>
+                }
+            @govukTable(Table(
+                caption = None,
+                head = Some(table.headRows),
+                rows = table.rows
+            )
+          )
+        }
+    }
+
+    <p class="govuk-body"><a href="@routes.RequestDataController.onPageLoad().url" class="govuk-link" >@viewModel.tgpRecordsLink</a></p>
+    <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad().url" class="govuk-link" >@viewModel.goBackHomeLink</a></p>
+
+}

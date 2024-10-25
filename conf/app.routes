@@ -304,6 +304,8 @@ GET         /download-data/request-received                                     
 
 GET         /download-data/router                                                           controllers.DownloadDataIndexController.redirect()
 
+GET         /download/tgp-record-files                                                      controllers.FileManagementController.onPageLoad()
+
 GET         /download-data/request-file                                                     controllers.RequestDataController.onPageLoad()
 POST        /download-data/request-file                                                     controllers.RequestDataController.onSubmit()
 

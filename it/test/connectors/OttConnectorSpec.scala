@@ -34,7 +34,7 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.test.WireMockSupport
-import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, Upstream4xxResponse, Upstream5xxResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, UpstreamErrorResponse}
 
 import java.time.{Instant, LocalDate}
 import scala.concurrent.Future
@@ -150,7 +150,7 @@ class OttConnectorSpec
           .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, "CX", None)
           .failed
           .futureValue
-        connectorFailure.isInstanceOf[Upstream4xxResponse] mustBe true
+        connectorFailure.isInstanceOf[UpstreamErrorResponse] mustBe true
 
         withClue("must have audited the request") {
           verify(auditService).auditOttCall(any, any, any, any, any, any)(any)
@@ -168,7 +168,7 @@ class OttConnectorSpec
           .getCommodityCode("123456", testEori, AffinityGroup.Individual, CreateRecordJourney, "CX", None)
           .failed
           .futureValue
-        connectorFailure.isInstanceOf[Upstream5xxResponse] mustBe true
+        connectorFailure.isInstanceOf[UpstreamErrorResponse] mustBe true
 
         withClue("must have audited the request") {
           verify(auditService).auditOttCall(any, any, any, any, any, any)(any)
@@ -293,7 +293,7 @@ class OttConnectorSpec
         )
 
         val connectorFailure = connector.getCountries.failed.futureValue
-        connectorFailure.isInstanceOf[Upstream5xxResponse] mustBe true
+        connectorFailure.isInstanceOf[UpstreamErrorResponse] mustBe true
       }
     }
 
@@ -330,7 +330,7 @@ class OttConnectorSpec
           .getCategorisationInfo("123456", testEori, AffinityGroup.Individual, Some(testRecordId), "CX", LocalDate.now())
           .failed
           .futureValue
-        connectorFailure.isInstanceOf[Upstream4xxResponse] mustEqual true
+        connectorFailure.isInstanceOf[UpstreamErrorResponse] mustEqual true
 
         withClue("must have audited the request") {
           verify(auditService).auditOttCall(any, any, any, any, any, any)(
@@ -350,7 +350,7 @@ class OttConnectorSpec
           .getCategorisationInfo("123456", testEori, AffinityGroup.Individual, Some(testRecordId), "CX", LocalDate.now())
           .failed
           .futureValue
-        connectorFailure.isInstanceOf[Upstream5xxResponse] mustBe true
+        connectorFailure.isInstanceOf[UpstreamErrorResponse] mustBe true
 
         withClue("must have audited the request") {
           verify(auditService).auditOttCall(any, any, any, any, any, any)(
