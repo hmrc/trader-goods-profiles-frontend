@@ -63,24 +63,20 @@ class AssessmentController @Inject() (
             .get(CategorisationDetailsQuery(recordId))
             .flatMap { categorisationInfo =>
               categorisationInfo.getAssessmentFromIndex(index).map { assessment =>
-                val listItems = assessment.getExemptionListItems
-                val form      = formProvider(listItems.size)
-
-                val preparedForm = request.userAnswers.get(AssessmentPage(recordId, index)) match {
-                  case Some(value) => form.fill(value)
-                  case None        => form
-                }
-
-                val submitAction = routes.AssessmentController.onSubmit(mode, recordId, number)
+                val codesAndDescriptions = assessment.getCodesZippedWithDescriptions
+                val preparedForm         = prepareForm(AssessmentPage(recordId, index), formProvider())
+                val submitAction         = routes.AssessmentController.onSubmit(mode, recordId, number)
                 Ok(
                   view(
                     preparedForm,
                     mode,
                     recordId,
                     number,
-                    listItems,
+                    codesAndDescriptions,
                     categorisationInfo.commodityCode,
-                    submitAction
+                    submitAction,
+                    assessment.themeDescription,
+                    categorisationInfo.categoryAssessments.size
                   )
                 )
               }
@@ -98,13 +94,8 @@ class AssessmentController @Inject() (
             .get(LongerCategorisationDetailsQuery(recordId))
             .flatMap { categorisationInfo =>
               categorisationInfo.getAssessmentFromIndex(index).map { assessment =>
-                val listItems = assessment.getExemptionListItems
-                val form      = formProvider(listItems.size)
-
-                val preparedForm = request.userAnswers.get(ReassessmentPage(recordId, index)) match {
-                  case Some(value) => form.fill(value.answer)
-                  case None        => form
-                }
+                val codesAndDescriptions = assessment.getCodesZippedWithDescriptions
+                val preparedForm         = prepareForm(ReassessmentPage(recordId, index), formProvider())
 
                 val submitAction = routes.AssessmentController.onSubmitReassessment(mode, recordId, number)
 
@@ -114,9 +105,11 @@ class AssessmentController @Inject() (
                     mode,
                     recordId,
                     number,
-                    listItems,
+                    codesAndDescriptions,
                     categorisationInfo.commodityCode,
-                    submitAction
+                    submitAction,
+                    assessment.themeDescription,
+                    categorisationInfo.categoryAssessments.size
                   )
                 )
               }
@@ -134,9 +127,9 @@ class AssessmentController @Inject() (
             .get(CategorisationDetailsQuery(recordId))
             .flatMap { categorisationInfo =>
               categorisationInfo.getAssessmentFromIndex(index).map { assessment =>
-                val listItems    = assessment.getExemptionListItems
-                val form         = formProvider(listItems.size)
-                val submitAction = routes.AssessmentController.onSubmit(mode, recordId, number)
+                val codesAndDescriptions = assessment.getCodesZippedWithDescriptions
+                val form                 = formProvider()
+                val submitAction         = routes.AssessmentController.onSubmit(mode, recordId, number)
 
                 form
                   .bindFromRequest()
@@ -149,9 +142,11 @@ class AssessmentController @Inject() (
                             mode,
                             recordId,
                             number,
-                            listItems,
+                            codesAndDescriptions,
                             categorisationInfo.commodityCode,
-                            submitAction
+                            submitAction,
+                            assessment.themeDescription,
+                            categorisationInfo.categoryAssessments.size
                           )
                         )
                       ),
@@ -182,9 +177,9 @@ class AssessmentController @Inject() (
             .get(LongerCategorisationDetailsQuery(recordId))
             .flatMap { categorisationInfo =>
               categorisationInfo.getAssessmentFromIndex(index).map { assessment =>
-                val listItems    = assessment.getExemptionListItems
-                val form         = formProvider(listItems.size)
-                val submitAction = routes.AssessmentController.onSubmitReassessment(mode, recordId, number)
+                val codesAndDescriptions = assessment.getCodesZippedWithDescriptions
+                val form                 = formProvider()
+                val submitAction         = routes.AssessmentController.onSubmitReassessment(mode, recordId, number)
 
                 form
                   .bindFromRequest()
@@ -197,9 +192,11 @@ class AssessmentController @Inject() (
                             mode,
                             recordId,
                             number,
-                            listItems,
+                            codesAndDescriptions,
                             categorisationInfo.commodityCode,
-                            submitAction
+                            submitAction,
+                            assessment.themeDescription,
+                            categorisationInfo.categoryAssessments.size
                           )
                         )
                       ),

@@ -20,7 +20,7 @@ import cats.data
 import logging.Logging
 import models.ValidationError
 import models.requests.DataRequest
-import pages.QuestionPage
+import pages.{QuestionPage, ReassessmentPage}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.libs.json.Reads
@@ -52,11 +52,18 @@ trait BaseController extends FrontendBaseController with I18nSupport with Loggin
     Redirect(routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(continueCall.url))))
   }
 
-  def prepareForm[T](page: QuestionPage[T], form: Form[T])(implicit
+  def prepareForm[T, T2](page: QuestionPage[T], form: Form[T2])(implicit
     request: DataRequest[AnyContent],
-    reads: Reads[T]
-  ): Form[T] =
-    request.userAnswers.get(page).map(form.fill).getOrElse(form)
+    reads: Reads[T2]
+  ): Form[T2] =
+    if (page.isInstanceOf[ReassessmentPage]) {
+      request.userAnswers.get(page.asInstanceOf[ReassessmentPage]) match {
+        case Some(value) => form.fill(value.answer.asInstanceOf[T2])
+        case None        => form
+      }
+    } else {
+      request.userAnswers.get(page.asInstanceOf[QuestionPage[T2]]).map(form.fill).getOrElse(form)
+    }
 
   def getMessage(key: String)(implicit messages: Messages): String = messages(key)
 }

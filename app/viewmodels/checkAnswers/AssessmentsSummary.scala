@@ -22,9 +22,9 @@ import models.{AssessmentAnswer, CheckMode, UserAnswers}
 import pages.{AssessmentPage, ReassessmentPage}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
-import viewmodels.{AssessmentCyaKey, AssessmentCyaValue}
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
+import viewmodels.{AssessmentCyaKey, AssessmentCyaValue}
 object AssessmentsSummary {
 
   def row(
@@ -40,8 +40,14 @@ object AssessmentsSummary {
       val descriptions = assessment.exemptions.map(_.description)
 
       SummaryListRowViewModel(
-        key = KeyViewModel(AssessmentCyaKey(codes, descriptions, (indexOfThisAssessment + 1).toString).content),
-        value = ValueViewModel(AssessmentCyaValue(codes, descriptions).content).withCssClass("govuk-!-width-one-half"),
+        key = KeyViewModel(AssessmentCyaKey((indexOfThisAssessment + 1).toString).content),
+        value = ValueViewModel(
+          if (answer == AssessmentAnswer.NoExemption) {
+            messages("assessment.none")
+          } else {
+            AssessmentCyaValue(answer, codes, descriptions).content
+          }
+        ).withCssClass("govuk-!-width-one-half"),
         actions = Seq(
           ActionItemViewModel(
             "site.change",

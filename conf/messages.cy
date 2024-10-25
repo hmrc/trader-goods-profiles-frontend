@@ -388,20 +388,19 @@ categoryGuidance.p3.2 = Categori 2 – nwyddau sy’n cael eu rheoli ac sydd ang
 categoryGuidance.p3.3 = Safonol – nwyddau sy’n gallu defnyddio SPIMM
 categoryGuidance.p4 = Bydd angen i chi wybod rhif tystysgrif neu enw unrhyw eithriadau s’n berthnasol ar gyfer eich nwyddau. Rhifau tystysgrif enghreifftiol yw C644, Y929 neu C640. Os byddwch yn cael eithriad newydd, byddwch yn gallu ei newid yn nes ymlaen.
 
-assessment.title = Cwestiwn categoreiddio
-assessment.heading = Asesiadau categori {0}
-assessment.guidance = Mae angen i chi gadarnhau p’un o’r eithriadau hyn sy’n berthnasol ar gyfer {0}. Mae angen yr wybodaeth hon arnom er mwyn gallu categoreiddio’ch nwyddau.
+assessment.title = Asesiadau categori {0} o {1}
+assessment.heading = Asesiadau categori {0} o {1}
 assessment.linkText = Defnyddiwch yr Offeryn Tariff Ar-lein (yn agor tab newydd) i chwilio am god nwyddau.
-assessment.question = A ydych yn bodloni unrhyw un o’r eithriadau canlynol, ac a allwch roi’r cod dogfen perthnasol ar gyfer eich symudiadau?
-assessment.question.onlyOne = A ydych yn bodloni’r amod canlynol, ac a allwch roi’r cod dogfen perthnasol ar gyfer eich symudiad?
-assessment.hint = Dewiswch un ateb.
+assessment.question = Pa un o'r eithriadau hyn sydd gennych ar gyfer {0}?
+assessment.hint = Dewiswch bob un sy’n berthnasol.
 assessment.exemption = {0} – {1}
 assessment.exemption.none = Dim un o’r uchod
-assessment.error.required = Dewiswch ‘Iawn’ os ydych yn bodloni unrhyw un o’r eithriadau
-assessment.error.required.onlyOne = Dewiswch ‘Iawn’ os ydych yn bodloni’r amod
 assessment.exemption.none.checkYourAnswersLabel = Dim wedi’i ddewis
 assessment.checkYourAnswersLabel = Asesiadau categori {0} o {1}
-assessment.insetText = Mae’n bosibl y bydd gofyn i chi gytuno ar hyd at 10 asesiad categori gwahanol ar gyfer pob un o’r nwyddau ar wahân.
+assessment.none = Dim
+assessment.guidance = Mae angen i chi gadarnhau p’un o’r eithriadau hyn sydd gennych ar gyfer {0}. Y thema ar gyfer yr asesiad hwn yw:
+assessment.error.required = Dewiswch yr eithriadau sydd gennych, neu dewiswch ‘Dim un o’r uchod’
+
 
 expiredCommodityCode.title = Mae problem wedi codi
 expiredCommodityCode.heading = Mae problem wedi codi

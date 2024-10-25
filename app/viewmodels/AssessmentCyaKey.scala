@@ -20,7 +20,7 @@ import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 
-case class AssessmentCyaKey(codes: Seq[String], descriptions: Seq[String], assessmentNum: String)(implicit
+case class AssessmentCyaKey(assessmentNum: String)(implicit
   messages: Messages
 ) {
   def content: HtmlContent =

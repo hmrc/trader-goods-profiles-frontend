@@ -57,7 +57,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       CategoryAssessmentRelationship("assessmentId2")
     ),
     includedElements = Seq(
-      ThemeResponse("themeId1", 1),
+      ThemeResponse("themeId1", 1, "theme description"),
       CategoryAssessmentResponse(
         "assessmentId2",
         "themeId2",
@@ -66,10 +66,10 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           ExemptionResponse("exemptionId2", ResponseExemptionType.AdditionalCode)
         )
       ),
-      ThemeResponse("themeId2", 2),
+      ThemeResponse("themeId2", 2, "theme description"),
       CertificateResponse("exemptionId1", "code1", "description1"),
       AdditionalCodeResponse("exemptionId2", "code2", "description2"),
-      ThemeResponse("ignoredTheme", 3),
+      ThemeResponse("ignoredTheme", 3, "theme description"),
       CertificateResponse("ignoredExemption", "code3", "description3")
     ),
     descendents = Seq.empty[Descendant]
@@ -144,7 +144,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           Seq(
             Certificate("exemptionId1", "code1", "description1"),
             AdditionalCode("exemptionId2", "code2", "description2")
-          )
+          ),
+          "theme description"
         )
       )
 
@@ -258,7 +259,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           1,
           Seq(
             Certificate("cert1", "cert1code", "cert1desc")
-          )
+          ),
+          "theme description"
         )
 
         val assessment2 = CategoryAssessment(
@@ -266,7 +268,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           1,
           Seq(
             Certificate("cert2", "cert2code", "cert2desc")
-          )
+          ),
+          "theme description"
         )
 
         val assessment3 = CategoryAssessment(
@@ -274,13 +277,15 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           2,
           Seq(
             Certificate("cert3", "cert3code", "cert3desc")
-          )
+          ),
+          "theme description"
         )
 
         val assessment4 = CategoryAssessment(
           "ass4",
           2,
-          Seq.empty
+          Seq.empty,
+          "theme description"
         )
 
         val categorisationInfo = CategorisationInfo(
@@ -302,7 +307,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
           .success
           .value
-          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("Y903")))
           .success
           .value
           .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.NoExemption)
@@ -323,7 +328,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           1,
           Seq(
             Certificate(NiphlCode, "cert1code", "cert1desc")
-          )
+          ),
+          "theme description"
         )
 
         val assessment2 = CategoryAssessment(
@@ -331,13 +337,15 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           1,
           Seq(
             Certificate(NiphlCode, "cert2code", "cert2desc")
-          )
+          ),
+          "theme description"
         )
 
         val assessment3 = CategoryAssessment(
           "ass3",
           2,
-          Seq.empty
+          Seq.empty,
+          "theme description"
         )
 
         val categorisationInfo = CategorisationInfo(
@@ -372,7 +380,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           1,
           Seq(
             Certificate(NiphlCode, "cert1code", "cert1desc")
-          )
+          ),
+          "theme description"
         )
 
         val assessment2 = CategoryAssessment(
@@ -380,13 +389,15 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           1,
           Seq(
             Certificate("Y992", "cert2code", "cert2desc")
-          )
+          ),
+          "theme description"
         )
 
         val assessment3 = CategoryAssessment(
           "ass3",
           2,
-          Seq.empty
+          Seq.empty,
+          "theme description"
         )
 
         val categorisationInfo = CategorisationInfo(
@@ -493,16 +504,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           "BV",
           Some(validityEndDate),
           Seq(
-            CategoryAssessment(
-              "ass1",
-              1,
-              Seq.empty
-            ),
-            CategoryAssessment(
-              "ass2",
-              1,
-              Seq(Certificate("cert1", "cert1c", "cert1desc"))
-            )
+            CategoryAssessment("ass1", 1, Seq.empty, "theme description"),
+            CategoryAssessment("ass2", 1, Seq(Certificate("cert1", "cert1c", "cert1desc")), "theme description")
           ),
           Seq.empty,
           None,
@@ -528,19 +531,22 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           1,
           Seq(
             Certificate(NiphlCode, "cert1code", "cert1desc")
-          )
+          ),
+          "theme description"
         )
 
         val assessment2 = CategoryAssessment(
           "ass2",
           1,
-          Seq.empty
+          Seq.empty,
+          "theme description"
         )
 
         val assessment3 = CategoryAssessment(
           "ass3",
           2,
-          Seq.empty
+          Seq.empty,
+          "theme description"
         )
 
         val categorisationInfo = CategorisationInfo(
@@ -638,10 +644,10 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
           .success
           .value
-          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("Y903")))
           .success
           .value
-          .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+          .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("Y903")))
           .success
           .value
           .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
@@ -662,16 +668,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           "BV",
           Some(validityEndDate),
           Seq(
-            CategoryAssessment(
-              "ass1",
-              2,
-              Seq.empty
-            ),
-            CategoryAssessment(
-              "ass2",
-              2,
-              Seq(Certificate("cert1", "cert1c", "cert1desc"))
-            )
+            CategoryAssessment("ass1", 2, Seq.empty, "theme description"),
+            CategoryAssessment("ass2", 2, Seq(Certificate("cert1", "cert1c", "cert1desc")), "theme description")
           ),
           Seq.empty,
           None,
@@ -697,7 +695,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           1,
           Seq(
             Certificate("cert1", "cert1code", "cert1desc")
-          )
+          ),
+          "theme description"
         )
 
         val assessment2 = CategoryAssessment(
@@ -705,7 +704,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           1,
           Seq(
             Certificate("cert2", "cert2code", "cert2desc")
-          )
+          ),
+          "theme description"
         )
 
         val assessment3 = CategoryAssessment(
@@ -713,13 +713,15 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           2,
           Seq(
             Certificate("cert3", "cert3code", "cert3desc")
-          )
+          ),
+          "theme description"
         )
 
         val assessment4 = CategoryAssessment(
           "ass4",
           2,
-          Seq.empty
+          Seq.empty,
+          "theme description"
         )
 
         val categorisationInfo = CategorisationInfo(
@@ -741,10 +743,10 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
           .success
           .value
-          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("Y903")))
           .success
           .value
-          .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+          .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("Y903")))
           .success
           .value
 
@@ -763,7 +765,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             1,
             Seq(
               Certificate(NiphlCode, "cert1code", "cert1desc")
-            )
+            ),
+            "theme description"
           )
 
           val assessment2 = CategoryAssessment(
@@ -771,14 +774,11 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             1,
             Seq(
               Certificate(NiphlCode, "cert2code", "cert2desc")
-            )
+            ),
+            "theme description"
           )
 
-          val assessment3 = CategoryAssessment(
-            "ass3",
-            2,
-            Seq.empty
-          )
+          val assessment3 = CategoryAssessment("ass3", 2, Seq.empty, "theme description")
 
           val categorisationInfo = CategorisationInfo(
             "1234567890",
@@ -813,7 +813,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             1,
             Seq(
               Certificate("cert1", "cert1code", "cert1desc")
-            )
+            ),
+            "theme description"
           )
 
           val assessment2 = CategoryAssessment(
@@ -821,14 +822,11 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             1,
             Seq(
               Certificate(NiphlCode, "cert2code", "cert2desc")
-            )
+            ),
+            "theme description"
           )
 
-          val assessment3 = CategoryAssessment(
-            "ass3",
-            2,
-            Seq.empty
-          )
+          val assessment3 = CategoryAssessment("ass3", 2, Seq.empty, "theme description")
 
           val categorisationInfo = CategorisationInfo(
             "1234567890",
@@ -849,7 +847,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("Y903")))
             .success
             .value
 
@@ -866,7 +864,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             1,
             Seq(
               Certificate("cert1", "cert1code", "cert1desc")
-            )
+            ),
+            "theme description"
           )
 
           val assessment2 = CategoryAssessment(
@@ -874,7 +873,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             1,
             Seq(
               Certificate(NiphlCode, "cert2code", "cert2desc")
-            )
+            ),
+            "theme description"
           )
 
           val assessment3 = CategoryAssessment(
@@ -882,7 +882,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             1,
             Seq(
               Certificate("cert3", "cert3code", "cert3desc")
-            )
+            ),
+            "theme description"
           )
 
           val categorisationInfo = CategorisationInfo(
@@ -904,10 +905,10 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("Y903")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("Y903")))
             .success
             .value
             .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
@@ -931,7 +932,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             1,
             Seq(
               Certificate("cert2", "cert2code", "cert2desc")
-            )
+            ),
+            "theme description"
           )
 
           val assessment3 = CategoryAssessment(
@@ -939,7 +941,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             2,
             Seq(
               Certificate("cert3", "cert3code", "cert3desc")
-            )
+            ),
+            "theme description"
           )
 
           val categorisationInfo = CategorisationInfo(
@@ -960,10 +963,10 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("Y903")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("Y903")))
             .success
             .value
 
@@ -1035,7 +1038,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             1,
             Seq(
               Certificate("cert2", "cert2code", "cert2desc")
-            )
+            ),
+            "theme description"
           )
 
           val assessment3 = CategoryAssessment(
@@ -1043,7 +1047,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             2,
             Seq(
               Certificate("cert3", "cert3code", "cert3desc")
-            )
+            ),
+            "theme description"
           )
 
           val categorisationInfo = CategorisationInfo(
@@ -1065,7 +1070,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("Y903")))
             .success
             .value
             .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.NoExemption)
@@ -1086,7 +1091,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             1,
             Seq(
               Certificate("cert2", "cert2code", "cert2desc")
-            )
+            ),
+            "theme description"
           )
 
           val assessment3 = CategoryAssessment(
@@ -1094,7 +1100,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             2,
             Seq(
               Certificate("cert3", "cert3code", "cert3desc")
-            )
+            ),
+            "theme description"
           )
 
           val categorisationInfo = CategorisationInfo(
@@ -1115,7 +1122,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("Y903")))
             .success
             .value
             .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.NoExemption)
@@ -1166,13 +1173,13 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
           .success
           .value
-          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("Y903")))
           .success
           .value
-          .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+          .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("Y903")))
           .success
           .value
-          .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption)
+          .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("Y903")))
           .success
           .value
 
@@ -1192,7 +1199,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             2,
             Seq(
               Certificate(NirmsCode, "cert1code", "cert1desc")
-            )
+            ),
+            "theme description"
           )
 
           val assessment2 = CategoryAssessment(
@@ -1200,7 +1208,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             1,
             Seq(
               Certificate("cert2", "cert2code", "cert2desc")
-            )
+            ),
+            "theme description"
           )
 
           val assessment3 = CategoryAssessment(
@@ -1208,7 +1217,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             2,
             Seq(
               Certificate("cert3", "cert3code", "cert3desc")
-            )
+            ),
+            "theme description"
           )
 
           val categorisationInfo = CategorisationInfo(
@@ -1230,10 +1240,10 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("Y903")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("Y903")))
             .success
             .value
 
@@ -1307,19 +1317,19 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       val expectedUserAnswers = userAnswersForCategorisation
         .set(
           ReassessmentPage(testRecordId, 0),
-          ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true)
+          ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE")), isAnswerCopiedFromPreviousAssessment = true)
         )
         .success
         .value
         .set(
           ReassessmentPage(testRecordId, 1),
-          ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true)
+          ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE")), isAnswerCopiedFromPreviousAssessment = true)
         )
         .success
         .value
         .set(
           ReassessmentPage(testRecordId, 2),
-          ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true)
+          ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE")), isAnswerCopiedFromPreviousAssessment = true)
         )
         .success
         .value
@@ -1337,7 +1347,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
     }
 
     "should not copy across the old answers if all the assessments are different" in {
-      val newCat                     = CategoryAssessment("0", 1, Seq(Certificate("Y199", "Y199", "Goods are not from warzone")))
+      val newCat                     =
+        CategoryAssessment("0", 1, Seq(Certificate("Y199", "Y199", "Goods are not from warzone")), "theme description")
       val newCommodityCategorisation = CategorisationInfo(
         "12345",
         "BV",
@@ -1367,7 +1378,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         category1,
         category2,
         category3,
-        CategoryAssessment("0", 1, Seq(Certificate("Y199", "Y199", "Goods are not from warzone")))
+        CategoryAssessment("0", 1, Seq(Certificate("Y199", "Y199", "Goods are not from warzone")), "theme description")
       )
       val newCommodityCategorisation = CategorisationInfo(
         "1234567890",
@@ -1388,16 +1399,23 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         .success
         .value
       result.get(ReassessmentPage(testRecordId, 0)) shouldBe
-        Some(ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true))
+        Some(
+          ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE")), isAnswerCopiedFromPreviousAssessment = true)
+        )
       result.get(ReassessmentPage(testRecordId, 1)) shouldBe
-        Some(ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true))
+        Some(
+          ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE")), isAnswerCopiedFromPreviousAssessment = true)
+        )
       result.get(ReassessmentPage(testRecordId, 2)) shouldBe
-        Some(ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true))
+        Some(
+          ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE")), isAnswerCopiedFromPreviousAssessment = true)
+        )
     }
 
     "should copy the old answers to the right position if they are in different order in the new categorisation" in {
 
-      val category4                  = CategoryAssessment("0", 1, Seq(Certificate("Y199", "Y199", "Goods are not from warzone")))
+      val category4                  =
+        CategoryAssessment("0", 1, Seq(Certificate("Y199", "Y199", "Goods are not from warzone")), "theme description")
       val newCommodityCategorisation = CategorisationInfo(
         "1234567890",
         "BV",
@@ -1415,13 +1433,13 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         .set(LongerCategorisationDetailsQuery(testRecordId), newCommodityCategorisation)
         .success
         .value
-        .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+        .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("Y903")))
         .success
         .value
-        .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+        .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("Y903")))
         .success
         .value
-        .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption)
+        .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("Y903")))
         .success
         .value
 
@@ -1435,13 +1453,13 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         .success
         .value
       newUserAnswers.get(ReassessmentPage(testRecordId, 0)) mustBe
-        Some(ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true))
+        Some(ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("Y903")), isAnswerCopiedFromPreviousAssessment = true))
       newUserAnswers.get(ReassessmentPage(testRecordId, 1)) mustBe
-        Some(ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true))
+        Some(ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("Y903")), isAnswerCopiedFromPreviousAssessment = true))
       newUserAnswers.get(ReassessmentPage(testRecordId, 2)) mustBe
         Some(ReassessmentAnswer(AssessmentAnswer.NotAnsweredYet))
       newUserAnswers.get(ReassessmentPage(testRecordId, 3)) mustBe
-        Some(ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true))
+        Some(ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("Y903")), isAnswerCopiedFromPreviousAssessment = true))
     }
 
     "should move the old answers to the right position if only some are in the new categorisation" in {
@@ -1450,17 +1468,18 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
         .success
         .value
-        .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+        .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("Y903")))
         .success
         .value
-        .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+        .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("Y903")))
         .success
         .value
-        .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption)
+        .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("Y903")))
         .success
         .value
 
-      val category4                  = CategoryAssessment("0", 1, Seq(Certificate("Y199", "Y199", "Goods are not from warzone")))
+      val category4                  =
+        CategoryAssessment("0", 1, Seq(Certificate("Y199", "Y199", "Goods are not from warzone")), "theme description")
       val newCommodityCategorisation = CategorisationInfo(
         "1234567890",
         "BV",
@@ -1481,7 +1500,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         .success
         .value
       newUserAnswers.get(ReassessmentPage(testRecordId, 0)) mustBe
-        Some(ReassessmentAnswer(AssessmentAnswer.Exemption, isAnswerCopiedFromPreviousAssessment = true))
+        Some(ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("Y903")), isAnswerCopiedFromPreviousAssessment = true))
       newUserAnswers.get(ReassessmentPage(testRecordId, 1)) mustBe
         Some(ReassessmentAnswer(AssessmentAnswer.NotAnsweredYet))
       newUserAnswers.get(ReassessmentPage(testRecordId, 2)) mustBe None

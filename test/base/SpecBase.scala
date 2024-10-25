@@ -157,10 +157,20 @@ trait SpecBase
       .value
 
   lazy val category1: CategoryAssessment =
-    CategoryAssessment("1azbfb-1-dfsdaf-2", 1, Seq(Certificate("Y994", "Y994", "Goods are not from warzone")))
+    CategoryAssessment(
+      "1azbfb-1-dfsdaf-2",
+      1,
+      Seq(Certificate("Y994", "Y994", "Goods are not from warzone")),
+      "measure description"
+    )
 
   lazy val category2: CategoryAssessment =
-    CategoryAssessment("2nghjghg4-fsdff4-hfgdhfg", 1, Seq(AdditionalCode("NC123", "NC123", "Not required")))
+    CategoryAssessment(
+      "2nghjghg4-fsdff4-hfgdhfg",
+      1,
+      Seq(AdditionalCode("NC123", "NC123", "Not required")),
+      "measure description"
+    )
 
   lazy val category3: CategoryAssessment = CategoryAssessment(
     "3fsdfsdf-r234fds-bfgbdfg",
@@ -168,14 +178,25 @@ trait SpecBase
     Seq(
       Certificate("Y737", "Y737", "Goods not containing ivory"),
       Certificate("X812", "X812", "Goods not containing seal products")
-    )
+    ),
+    "measure description"
   )
 
   lazy val category1Niphl: CategoryAssessment =
-    CategoryAssessment("1azbfb-1-dfsdaf-3", 1, Seq(OtherExemption(NiphlCode, "Y994", "Goods are not from warzone")))
+    CategoryAssessment(
+      "1azbfb-1-dfsdaf-3",
+      1,
+      Seq(OtherExemption(NiphlCode, "Y994", "Goods are not from warzone")),
+      "measure description"
+    )
 
   lazy val category2Nirms: CategoryAssessment =
-    CategoryAssessment("1azbfb-1-dfsdaf-3", 2, Seq(OtherExemption(NirmsCode, "Y990", "Nirms description")))
+    CategoryAssessment(
+      "1azbfb-1-dfsdaf-3",
+      2,
+      Seq(OtherExemption(NirmsCode, "Y990", "Nirms description")),
+      "measure description"
+    )
 
   lazy val categorisationInfo: CategorisationInfo                         = CategorisationInfo(
     "1234567890",
@@ -222,21 +243,21 @@ trait SpecBase
     .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
     .success
     .value
-    .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption)
+    .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
     .success
     .value
-    .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption)
+    .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
     .success
     .value
-    .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption)
+    .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
     .success
     .value
 
   lazy val category1NoExemptions: CategoryAssessment =
-    CategoryAssessment("1azbfb-1-dfsdaf-2", 1, Seq())
+    CategoryAssessment("1azbfb-1-dfsdaf-2", 1, Seq(), "measure description")
 
   lazy val category2NoExemptions: CategoryAssessment =
-    CategoryAssessment("1azbfb-1-dfsdaf-2", 2, Seq())
+    CategoryAssessment("1azbfb-1-dfsdaf-2", 2, Seq(), "measure description")
 
   def goodsRecordResponse(
     createdDateTime: Instant = Instant.now,

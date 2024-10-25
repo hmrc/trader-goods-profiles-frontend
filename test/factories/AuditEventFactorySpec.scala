@@ -825,7 +825,7 @@ class AuditEventFactorySpec extends SpecBase {
             ),
             includedElements = Seq(
               CategoryAssessmentResponse("assessmentId1", "themeId1", Nil),
-              ThemeResponse("themeId1", 1),
+              ThemeResponse("themeId1", 1, "theme description"),
               CategoryAssessmentResponse(
                 "assessmentId2",
                 "themeId2",
@@ -834,10 +834,10 @@ class AuditEventFactorySpec extends SpecBase {
                   ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode)
                 )
               ),
-              ThemeResponse("themeId2", 2),
+              ThemeResponse("themeId2", 2, "theme description"),
               CertificateResponse("exemptionId1", "code1", "description1"),
               AdditionalCodeResponse("exemptionId2", "code2", "description2"),
-              ThemeResponse("ignoredTheme", 3),
+              ThemeResponse("ignoredTheme", 3, "theme description"),
               CertificateResponse("ignoredExemption", "code3", "description3")
             ),
             descendents = Seq.empty[Descendant]
