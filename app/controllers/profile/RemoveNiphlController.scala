@@ -14,34 +14,35 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.profile
 
 import connectors.TraderProfileConnector
 import controllers.actions._
-import forms.RemoveNirmsFormProvider
+import controllers.{BaseController, routes}
+import forms.RemoveNiphlFormProvider
 import models.NormalMode
-import navigation.Navigator
-import pages.{NirmsNumberUpdatePage, RemoveNirmsPage}
+import navigation.profile.Navigator
+import pages.{NiphlNumberUpdatePage, RemoveNiphlPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import views.html.RemoveNirmsView
+import views.html.RemoveNiphlView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Success, Try}
 
-class RemoveNirmsController @Inject() (
+class RemoveNiphlController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: Navigator,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
-  formProvider: RemoveNirmsFormProvider,
   profileAuth: ProfileAuthenticateAction,
+  formProvider: RemoveNiphlFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: RemoveNirmsView,
+  view: RemoveNiphlView,
   traderProfileConnector: TraderProfileConnector
 )(implicit ec: ExecutionContext)
     extends BaseController {
@@ -50,7 +51,7 @@ class RemoveNirmsController @Inject() (
 
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
     implicit request =>
-      val preparedForm = prepareForm(RemoveNirmsPage, form)
+      val preparedForm = prepareForm(RemoveNiphlPage, form)
       Ok(view(preparedForm))
   }
 
@@ -62,10 +63,10 @@ class RemoveNirmsController @Inject() (
           formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
           value =>
             if (value) {
-              request.userAnswers.set(RemoveNirmsPage, value) match {
+              request.userAnswers.set(RemoveNiphlPage, value) match {
                 case Success(answers) =>
                   sessionRepository.set(answers).map { _ =>
-                    Redirect(navigator.nextPage(RemoveNirmsPage, NormalMode, answers))
+                    Redirect(navigator.nextPage(RemoveNiphlPage, NormalMode, answers))
                   }
                 case _                => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
               }
@@ -73,13 +74,13 @@ class RemoveNirmsController @Inject() (
 
               for {
                 traderProfile     <- traderProfileConnector.getTraderProfile(request.eori)
-                nirmsNumberOpt     = request.userAnswers.get(NirmsNumberUpdatePage).orElse(traderProfile.nirmsNumber)
-                nirmsNumber       <- Future.fromTry(Try(nirmsNumberOpt.get))
-                uaWithRemoveValue <- Future.fromTry(request.userAnswers.set(RemoveNirmsPage, value))
-                uaWithNirmsNumber <-
-                  Future.fromTry(uaWithRemoveValue.set(NirmsNumberUpdatePage, nirmsNumber))
-                _                 <- sessionRepository.set(uaWithNirmsNumber)
-              } yield Redirect(navigator.nextPage(RemoveNirmsPage, NormalMode, uaWithNirmsNumber))
+                niphlNumberOpt     = request.userAnswers.get(NiphlNumberUpdatePage).orElse(traderProfile.niphlNumber)
+                niphlNumber       <- Future.fromTry(Try(niphlNumberOpt.get))
+                uaWithRemoveValue <- Future.fromTry(request.userAnswers.set(RemoveNiphlPage, value))
+                uaWithNiphlNumber <-
+                  Future.fromTry(uaWithRemoveValue.set(NiphlNumberUpdatePage, niphlNumber))
+                _                 <- sessionRepository.set(uaWithNiphlNumber)
+              } yield Redirect(navigator.nextPage(RemoveNiphlPage, NormalMode, uaWithNiphlNumber))
 
             }
         )

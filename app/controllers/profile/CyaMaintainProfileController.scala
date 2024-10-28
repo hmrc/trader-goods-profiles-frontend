@@ -14,25 +14,29 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.profile
 
 import cats.data
 import cats.data.EitherNec
 import connectors.TraderProfileConnector
 import controllers.actions._
 import models.{NormalMode, TraderProfile, ValidationError}
-import navigation.Navigator
+import navigation.profile.Navigator
 import org.apache.pekko.Done
 import pages._
-import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents, Result}
 import services.AuditService
+import uk.gov.hmrc.http._
+
+import play.api.Logging
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.Constants._
 import utils.SessionData._
 import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
 import views.html.CyaMaintainProfileView
-import uk.gov.hmrc.http._
-import utils.Constants.{hasNiphlKey, hasNirmsKey, niphlNumberKey, nirmsNumberKey, ukimsNumberKey}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -49,7 +53,31 @@ class CyaMaintainProfileController @Inject() (
   navigator: Navigator,
   auditService: AuditService
 )(implicit ec: ExecutionContext)
-    extends BaseController {
+    extends FrontendBaseController
+    with I18nSupport
+    with Logging {
+
+  def logErrorsAndContinue(
+    errorMessage: String,
+    continueCall: Call,
+    errors: data.NonEmptyChain[ValidationError]
+  ): Result = {
+
+    val errorsAsString = errors.toChain.toList.map(_.message).mkString(", ")
+    val completeError  = s"$errorMessage Missing pages: $errorsAsString"
+
+    logErrorsAndContinue(completeError, continueCall)
+  }
+
+  def logErrorsAndContinue(
+    errorMessage: String,
+    continueCall: Call
+  ): Result = {
+
+    logger.warn(s"$errorMessage")
+
+    Redirect(routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(continueCall.url))))
+  }
 
   private val errorMessage: String = "Unable to update Trader profile."
 

@@ -14,21 +14,22 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.profile
 
 import connectors.TraderProfileConnector
 import controllers.actions._
+import controllers.BaseController
+import controllers.profile.routes
 import forms.NirmsNumberFormProvider
-
-import javax.inject.Inject
 import models.Mode
-import navigation.Navigator
+import navigation.profile.Navigator
 import pages.{HasNirmsUpdatePage, NirmsNumberPage, NirmsNumberUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import views.html.NirmsNumberView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class NirmsNumberController @Inject() (

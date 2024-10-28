@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.profile
 
+import controllers.BaseController
 import controllers.actions._
-import javax.inject.Inject
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import views.html.UkimsKickOutView
+
+import javax.inject.Inject
 
 class UkimsKickOutController @Inject() (
   override val messagesApi: MessagesApi,

@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.profile
 
 import controllers.actions._
+import controllers.BaseController
+import controllers.profile.routes
 import forms.UseExistingUkimsNumberFormProvider
 import models.NormalMode
-import navigation.Navigator
+import navigation.profile.Navigator
 import pages.{UkimsNumberPage, UseExistingUkimsNumberPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}

@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.profile
 
+import controllers.BaseController
 import controllers.actions._
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}

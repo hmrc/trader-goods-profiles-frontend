@@ -14,24 +14,25 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.profile
 
 import connectors.TraderProfileConnector
 import controllers.actions._
-import forms.HasNiphlFormProvider
+import controllers.BaseController
+import controllers.profile.routes
+import forms.UkimsNumberFormProvider
 import models.Mode
-import navigation.Navigator
-import pages.{HasNiphlPage, HasNiphlUpdatePage}
+import navigation.profile.Navigator
+import pages.{UkimsNumberPage, UkimsNumberUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.TraderProfileQuery
 import repositories.SessionRepository
-import views.html.HasNiphlView
+import views.html.UkimsNumberView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class HasNiphlController @Inject() (
+class UkimsNumberController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: Navigator,
@@ -39,10 +40,10 @@ class HasNiphlController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   checkProfile: ProfileCheckAction,
-  formProvider: HasNiphlFormProvider,
+  formProvider: UkimsNumberFormProvider,
   traderProfileConnector: TraderProfileConnector,
   val controllerComponents: MessagesControllerComponents,
-  view: HasNiphlView
+  view: UkimsNumberView
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
@@ -50,8 +51,12 @@ class HasNiphlController @Inject() (
 
   def onPageLoadCreate(mode: Mode): Action[AnyContent] =
     (identify andThen checkProfile andThen getData andThen requireData) { implicit request =>
-      val preparedForm = prepareForm(HasNiphlPage, form)
-      Ok(view(preparedForm, routes.HasNiphlController.onSubmitCreate(mode)))
+      val preparedForm = request.userAnswers.get(UkimsNumberPage) match {
+        case None        => form
+        case Some(value) => form.fill(value)
+      }
+
+      Ok(view(preparedForm, routes.UkimsNumberController.onSubmitCreate(mode), isCreateJourney = true))
     }
 
   def onSubmitCreate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
@@ -60,29 +65,29 @@ class HasNiphlController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors =>
-            Future.successful(BadRequest(view(formWithErrors, routes.HasNiphlController.onSubmitCreate(mode)))),
+            Future.successful(BadRequest(view(formWithErrors, routes.UkimsNumberController.onSubmitCreate(mode)))),
           value =>
             for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(HasNiphlPage, value))
+              updatedAnswers <- Future.fromTry(request.userAnswers.set(UkimsNumberPage, value))
               _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(HasNiphlPage, mode, updatedAnswers))
+            } yield Redirect(navigator.nextPage(UkimsNumberPage, mode, updatedAnswers))
         )
   }
 
   def onPageLoadUpdate(mode: Mode): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      request.userAnswers.get(HasNiphlUpdatePage) match {
+      request.userAnswers.get(UkimsNumberUpdatePage) match {
         case None        =>
           for {
             traderProfile  <- traderProfileConnector.getTraderProfile(request.eori)
             updatedAnswers <-
-              Future.fromTry(request.userAnswers.set(HasNiphlUpdatePage, traderProfile.niphlNumber.isDefined))
+              Future.fromTry(request.userAnswers.set(UkimsNumberUpdatePage, traderProfile.ukimsNumber))
             _              <- sessionRepository.set(updatedAnswers)
           } yield Ok(
-            view(form.fill(traderProfile.niphlNumber.isDefined), routes.HasNiphlController.onSubmitUpdate(mode))
+            view(form.fill(traderProfile.ukimsNumber), routes.UkimsNumberController.onSubmitUpdate(mode: Mode))
           )
         case Some(value) =>
-          Future.successful(Ok(view(form.fill(value), routes.HasNiphlController.onSubmitUpdate(mode))))
+          Future.successful(Ok(view(form.fill(value), routes.UkimsNumberController.onSubmitUpdate(mode: Mode))))
       }
     }
 
@@ -92,16 +97,13 @@ class HasNiphlController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors =>
-            Future.successful(BadRequest(view(formWithErrors, routes.HasNiphlController.onSubmitUpdate(mode)))),
+            Future
+              .successful(BadRequest(view(formWithErrors, routes.UkimsNumberController.onSubmitUpdate(mode: Mode)))),
           value =>
-            traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
-              for {
-                updatedAnswers                  <- Future.fromTry(request.userAnswers.set(HasNiphlUpdatePage, value))
-                updatedAnswersWithTraderProfile <-
-                  Future.fromTry(updatedAnswers.set(TraderProfileQuery, traderProfile))
-                _                               <- sessionRepository.set(updatedAnswersWithTraderProfile)
-              } yield Redirect(navigator.nextPage(HasNiphlUpdatePage, mode, updatedAnswersWithTraderProfile))
-            }
+            for {
+              updatedAnswers <- Future.fromTry(request.userAnswers.set(UkimsNumberUpdatePage, value))
+              _              <- sessionRepository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(UkimsNumberUpdatePage, mode, updatedAnswers))
         )
   }
 }

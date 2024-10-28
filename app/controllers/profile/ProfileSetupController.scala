@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.profile
 
 import config.FrontendAppConfig
 import connectors.TraderProfileConnector
+import controllers.BaseController
 import controllers.actions._
 import models.{HistoricProfileData, NormalMode, UserAnswers}
-import navigation.Navigator
+import navigation.profile.Navigator
 import pages.{ProfileSetupPage, UkimsNumberPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}

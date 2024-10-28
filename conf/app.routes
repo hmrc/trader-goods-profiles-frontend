@@ -2,6 +2,8 @@
 
 ->          /hmrc-frontend                                                                  hmrcfrontend.Routes
 
+->          /profile                                                                        profile.Routes
+
 GET         /                                                                               controllers.IndexController.onPageLoad()
 
 GET         /assets/*file                                                                   controllers.Assets.versioned(path="/public", file: Asset)
@@ -12,9 +14,6 @@ GET         /refresh-session                                                    
 
 GET         /problem/technical-issue                                                        controllers.JourneyRecoveryController.onPageLoad(continueUrl: Option[RedirectUrl] ?= None)
 
-GET         /create-profile/check-your-answers                                              controllers.CyaCreateProfileController.onPageLoad()
-POST        /create-profile/check-your-answers                                              controllers.CyaCreateProfileController.onSubmit()
-
 GET         /account/sign-out-survey                                                        controllers.auth.AuthController.signOut()
 GET         /account/sign-out                                                               controllers.auth.AuthController.signOutNoSurvey()
 GET         /account/sign-out-no-session                                                    controllers.auth.AuthController.signOutNoSession()
@@ -23,79 +22,6 @@ GET         /signed-out                                                         
 GET         /problem/unauthorised-sign-in                                                   controllers.UnauthorisedController.onPageLoad()
 GET         /problem/unauthorised-service-user                                              controllers.UnauthorisedServiceUserController.onPageLoad()
 GET         /problem/unauthorised-cds-enrolment                                             controllers.UnauthorisedCdsEnrolmentController.onPageLoad()
-
-GET         /create-profile/niphl-question                                                  controllers.HasNiphlController.onPageLoadCreate(mode: Mode = NormalMode)
-POST        /create-profile/niphl-question                                                  controllers.HasNiphlController.onSubmitCreate(mode: Mode = NormalMode)
-GET         /create-profile/niphl-question/check                                            controllers.HasNiphlController.onPageLoadCreate(mode: Mode = CheckMode)
-POST        /create-profile/niphl-question/check                                            controllers.HasNiphlController.onSubmitCreate(mode: Mode = CheckMode)
-
-GET         /update-profile/niphl-question                                                  controllers.HasNiphlController.onPageLoadUpdate(mode: Mode = NormalMode)
-POST        /update-profile/niphl-question                                                  controllers.HasNiphlController.onSubmitUpdate(mode: Mode = NormalMode)
-GET         /update-profile/niphl-question/check                                            controllers.HasNiphlController.onPageLoadUpdate(mode: Mode = CheckMode)
-POST        /update-profile/niphl-question/check                                            controllers.HasNiphlController.onSubmitUpdate(mode: Mode = CheckMode)
-
-
-GET         /create-profile/nirms-question                                                  controllers.HasNirmsController.onPageLoadCreate(mode: Mode = NormalMode)
-POST        /create-profile/nirms-question                                                  controllers.HasNirmsController.onSubmitCreate(mode: Mode = NormalMode)
-GET         /create-profile/nirms-question/check                                            controllers.HasNirmsController.onPageLoadCreate(mode: Mode = CheckMode)
-POST        /create-profile/nirms-question/check                                            controllers.HasNirmsController.onSubmitCreate(mode: Mode = CheckMode)
-
-GET         /update-profile/nirms-question                                                  controllers.HasNirmsController.onPageLoadUpdate(mode: Mode = NormalMode)
-POST        /update-profile/nirms-question                                                  controllers.HasNirmsController.onSubmitUpdate(mode: Mode = NormalMode)
-GET         /update-profile/nirms-question/check                                            controllers.HasNirmsController.onPageLoadUpdate(mode: Mode = CheckMode)
-POST        /update-profile/nirms-question/check                                            controllers.HasNirmsController.onSubmitUpdate(mode: Mode = CheckMode)
-
-GET         /create-profile/niphl-number                                                    controllers.NiphlNumberController.onPageLoadCreate(mode: Mode = NormalMode)
-POST        /create-profile/niphl-number                                                    controllers.NiphlNumberController.onSubmitCreate(mode: Mode = NormalMode)
-GET         /create-profile/niphl-number/check                                              controllers.NiphlNumberController.onPageLoadCreate(mode: Mode = CheckMode)
-POST        /create-profile/niphl-number/check                                              controllers.NiphlNumberController.onSubmitCreate(mode: Mode = CheckMode)
-
-GET         /update-profile/niphl-number                                                    controllers.NiphlNumberController.onPageLoadUpdate(mode: Mode = NormalMode)
-POST        /update-profile/niphl-number                                                    controllers.NiphlNumberController.onSubmitUpdate(mode: Mode = NormalMode)
-GET         /update-profile/niphl-number/check                                              controllers.NiphlNumberController.onPageLoadUpdate(mode: Mode = CheckMode)
-POST        /update-profile/niphl-number/check                                              controllers.NiphlNumberController.onSubmitUpdate(mode: Mode = CheckMode)
-
-GET         /create-profile/nirms-number                                                    controllers.NirmsNumberController.onPageLoadCreate(mode: Mode = NormalMode)
-POST        /create-profile/nirms-number                                                    controllers.NirmsNumberController.onSubmitCreate(mode: Mode = NormalMode)
-GET         /create-profile/nirms-number/check                                              controllers.NirmsNumberController.onPageLoadCreate(mode: Mode = CheckMode)
-POST        /create-profile/nirms-number/check                                              controllers.NirmsNumberController.onSubmitCreate(mode: Mode = CheckMode)
-GET         /update-profile/check-your-answers/nirms-registered                             controllers.CyaMaintainProfileController.onPageLoadNirms()
-POST        /update-profile/check-your-answers/nirms-registered                             controllers.CyaMaintainProfileController.onSubmitNirms()
-
-GET         /update-profile/check-your-answers/niphl-registered                             controllers.CyaMaintainProfileController.onPageLoadNiphl()
-POST        /update-profile/check-your-answers/niphl-registered                             controllers.CyaMaintainProfileController.onSubmitNiphl()
-
-GET         /update-profile/nirms-number                                                    controllers.NirmsNumberController.onPageLoadUpdate(mode: Mode = NormalMode)
-POST        /update-profile/nirms-number                                                    controllers.NirmsNumberController.onSubmitUpdate(mode: Mode = NormalMode)
-GET         /update-profile/nirms-number/check                                              controllers.NirmsNumberController.onPageLoadUpdate(mode: Mode = CheckMode)
-POST        /update-profile/nirms-number/check                                              controllers.NirmsNumberController.onSubmitUpdate(mode: Mode = CheckMode)
-
-GET         /update-profile/check-your-answers/nirms-number                                 controllers.CyaMaintainProfileController.onPageLoadNirmsNumber()
-POST        /update-profile/check-your-answers/nirms-number                                 controllers.CyaMaintainProfileController.onSubmitNirmsNumber()
-
-GET         /update-profile/check-your-answers/niphl-number                                 controllers.CyaMaintainProfileController.onPageLoadNiphlNumber()
-POST        /update-profile/check-your-answers/niphl-number                                 controllers.CyaMaintainProfileController.onSubmitNiphlNumber()
-
-GET         /create-profile/start                                                           controllers.ProfileSetupController.onPageLoad()
-POST        /create-profile/start                                                           controllers.ProfileSetupController.onSubmit()
-
-GET         /create-profile/success                                                         controllers.CreateProfileSuccessController.onPageLoad()
-
-GET         /create-profile/ukims-number                                                    controllers.UkimsNumberController.onPageLoadCreate(mode: Mode = NormalMode)
-POST        /create-profile/ukims-number                                                    controllers.UkimsNumberController.onSubmitCreate(mode: Mode = NormalMode)
-GET         /create-profile/ukims-number/check                                              controllers.UkimsNumberController.onPageLoadCreate(mode: Mode = CheckMode)
-POST        /create-profile/ukims-number/check                                              controllers.UkimsNumberController.onSubmitCreate(mode: Mode = CheckMode)
-
-GET         /update-profile/ukims-number                                                    controllers.UkimsNumberController.onPageLoadUpdate(mode: Mode = NormalMode)
-POST        /update-profile/ukims-number                                                    controllers.UkimsNumberController.onSubmitUpdate(mode: Mode = NormalMode)
-GET         /update-profile/ukims-number/check                                              controllers.UkimsNumberController.onPageLoadUpdate(mode: Mode = CheckMode)
-POST        /update-profile/ukims-number/check                                              controllers.UkimsNumberController.onSubmitUpdate(mode: Mode = CheckMode)
-
-GET         /update-profile/check-your-answers/ukims-number                                 controllers.CyaMaintainProfileController.onPageLoadUkimsNumber()
-POST        /update-profile/check-your-answers/ukims-number                                 controllers.CyaMaintainProfileController.onSubmitUkimsNumber()
-
-GET         /create-profile/existing-ukims-number                                          controllers.UseExistingUkimsNumberController.onPageLoad()
-POST        /create-profile/existing-ukims-number                                          controllers.UseExistingUkimsNumberController.onSubmit()
 
 GET         /update-record/:recordId/categorisation/start                                   controllers.CategoryGuidanceController.onPageLoad(recordId: String)
 POST        /update-record/:recordId/categorisation/start                                   controllers.CategoryGuidanceController.onSubmit(recordId: String)
@@ -174,10 +100,6 @@ GET         /update-record/:recordId/recategorise/category-assessment/:number   
 POST        /update-record/:recordId/recategorise/category-assessment/:number                controllers.AssessmentController.onSubmitReassessment(mode: Mode = NormalMode, recordId: String, number: Int)
 GET         /update-record/:recordId/recategorise/category-assessment/:number/check          controllers.AssessmentController.onPageLoadReassessment(mode: Mode = CheckMode, recordId: String, number: Int)
 POST        /update-record/:recordId/recategorise/category-assessment/:number/check          controllers.AssessmentController.onSubmitReassessment(mode: Mode = CheckMode, recordId: String, number: Int)
-
-GET         /create-profile/ukims-kickout                                                   controllers.UkimsKickOutController.onPageLoad()
-
-GET         /new/ukims-number-change                                                        controllers.UkimsNumberChangeController.onPageLoad()
 
 GET         /update-record/:recordId/categorisation/result/category-1                       controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = Category1Scenario)
 GET         /update-record/:recordId/categorisation/result/category-2                       controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = Category2Scenario)
@@ -280,14 +202,6 @@ POST        /update-record/:recordId/check-your-answers/trader-reference        
 GET         /update-record/:recordId/check-your-answers/commodity-code                      controllers.CyaUpdateRecordController.onPageLoadCommodityCode(recordId: String)
 POST        /update-record/:recordId/check-your-answers/commodity-code                      controllers.CyaUpdateRecordController.onSubmitCommodityCode(recordId: String)
 
-GET         /update-profile/profile-information                                             controllers.ProfileController.onPageLoad()
-
-GET         /update-profile/removing-nirms-number                                           controllers.RemoveNirmsController.onPageLoad()
-POST        /update-profile/removing-nirms-number                                           controllers.RemoveNirmsController.onSubmit()
-
-GET         /update-profile/removing-niphl-number                                           controllers.RemoveNiphlController.onPageLoad()
-POST        /update-profile/removing-niphl-number                                           controllers.RemoveNiphlController.onSubmit()
-
 GET         /help-and-support                                                               controllers.HelpAndSupportController.onPageLoad()
 
 GET         /loading-records                                                                controllers.GoodsRecordsLoadingController.onPageLoad(continueUrl: Option[RedirectUrl] ?= None)
@@ -314,9 +228,6 @@ GET         /download-data/file-in-progress                                     
 GET         /download-data/file-ready                                                       controllers.FileReadyController.onPageLoad()
 
 GET         /problem/:recordId/expired-commodity-code                                       controllers.ExpiredCommodityCodeController.onPageLoad(recordId:String)
-
-GET         /new/ukims-number-cya                                                           controllers.CyaNewUkimsNumberController.onPageLoad()
-POST        /new/ukims-number-cya                                                           controllers.CyaNewUkimsNumberController.onSubmit()
 
 # this url must be the last url on this page so it becomes the default if no other urls match
 GET         /*path                                                                          controllers.PageNotFoundController.onPageLoad(path: String)

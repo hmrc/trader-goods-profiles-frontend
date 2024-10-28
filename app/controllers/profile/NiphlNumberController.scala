@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.profile
 
 import connectors.TraderProfileConnector
 import controllers.actions._
+import controllers.BaseController
+import controllers.profile.routes
+
 import forms.NiphlNumberFormProvider
 import models.Mode
-import navigation.Navigator
+import navigation.profile.Navigator
 import pages.{HasNiphlUpdatePage, NiphlNumberPage, NiphlNumberUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}

@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.profile
 
 import cats.data
 import cats.data.EitherNec
 import connectors.TraderProfileConnector
 import controllers.actions._
+import controllers.{BaseController, routes}
 import models.{NormalMode, TraderProfile, ValidationError}
-import navigation.Navigator
+import navigation.profile.Navigator
 import pages._
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}

@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.profile
 
 import com.google.inject.Inject
 import connectors.TraderProfileConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileCheckAction}
-import models.{NormalMode, TraderProfile}
+import controllers.BaseController
 import models.helper.CreateProfileJourney
-import navigation.Navigator
+import models.{NormalMode, TraderProfile}
+import navigation.profile.Navigator
 import pages.CyaCreateProfilePage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
