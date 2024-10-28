@@ -4887,7 +4887,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             }
           }
 
-          "to a later reassessment if the next one is answered yes" - {
+          "to a the next reassessment even if the next one is answered yes" - {
 
             "and the one after is not set" in {
               val userAnswers =
@@ -4915,7 +4915,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .value
 
               navigator.nextPage(ReassessmentPage(testRecordId, 0), CheckMode, userAnswers) mustEqual
-                routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, 3)
+                routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, 2)
 
             }
 
@@ -4951,7 +4951,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .value
 
               navigator.nextPage(ReassessmentPage(testRecordId, 0), CheckMode, userAnswers) mustEqual
-                routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, 3)
+                routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, 2)
 
             }
 
@@ -4993,72 +4993,6 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .value
 
               navigator.nextPage(ReassessmentPage(testRecordId, 2), CheckMode, userAnswers) mustEqual
-                routes.CyaCategorisationController.onPageLoad(testRecordId)
-
-            }
-
-            "if answer is yes and the next one is answered no" in {
-              val userAnswers =
-                emptyUserAnswers
-                  .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
-                  .success
-                  .value
-                  .set(
-                    ReassessmentPage(testRecordId, 0),
-                    ReassessmentAnswer(
-                      AssessmentAnswer.Exemption(Seq("TEST_CODE")),
-                      isAnswerCopiedFromPreviousAssessment = true
-                    )
-                  )
-                  .success
-                  .value
-                  .set(
-                    ReassessmentPage(testRecordId, 1),
-                    ReassessmentAnswer(AssessmentAnswer.NoExemption, isAnswerCopiedFromPreviousAssessment = true)
-                  )
-                  .success
-                  .value
-
-              navigator.nextPage(ReassessmentPage(testRecordId, 0), CheckMode, userAnswers) mustEqual
-                routes.CyaCategorisationController.onPageLoad(testRecordId)
-
-            }
-
-            "if answer is yes and the next question is answered" in {
-              val userAnswers =
-                emptyUserAnswers
-                  .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
-                  .success
-                  .value
-                  .set(
-                    ReassessmentPage(testRecordId, 0),
-                    ReassessmentAnswer(
-                      AssessmentAnswer.Exemption(Seq("TEST_CODE")),
-                      isAnswerCopiedFromPreviousAssessment = true
-                    )
-                  )
-                  .success
-                  .value
-                  .set(
-                    ReassessmentPage(testRecordId, 1),
-                    ReassessmentAnswer(
-                      AssessmentAnswer.Exemption(Seq("TEST_CODE")),
-                      isAnswerCopiedFromPreviousAssessment = true
-                    )
-                  )
-                  .success
-                  .value
-                  .set(
-                    ReassessmentPage(testRecordId, 2),
-                    ReassessmentAnswer(
-                      AssessmentAnswer.Exemption(Seq("TEST_CODE")),
-                      isAnswerCopiedFromPreviousAssessment = true
-                    )
-                  )
-                  .success
-                  .value
-
-              navigator.nextPage(ReassessmentPage(testRecordId, 1), CheckMode, userAnswers) mustEqual
                 routes.CyaCategorisationController.onPageLoad(testRecordId)
 
             }

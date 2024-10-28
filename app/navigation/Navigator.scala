@@ -548,7 +548,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
         if (reassessmentAnswerIsEmpty(firstAnswer) || !firstAnswer.get.isAnswerCopiedFromPreviousAssessment) {
           routes.AssessmentController.onPageLoadReassessment(CheckMode, recordId, firstAssessmentNumber)
         } else {
-          navigateFromReassessmentCheck(ReassessmentPage(recordId, firstAssessmentIndex))(answers)
+          navigateFromReassessmentCheck(ReassessmentPage(recordId, firstAssessmentIndex), shouldSkipAnsweredOnes = true)(answers)
         }
 
       case Some(catInfo) =>
@@ -563,7 +563,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     }
   }
 
-  private def navigateFromReassessmentCheck(assessmentPage: ReassessmentPage)(answers: UserAnswers): Call = {
+  private def navigateFromReassessmentCheck(assessmentPage: ReassessmentPage, shouldSkipAnsweredOnes: Boolean = false)(answers: UserAnswers): Call = {
     val recordId   = assessmentPage.recordId
     val nextIndex  = assessmentPage.index + 1
     val nextNumber = nextIndex + 1
@@ -580,8 +580,10 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
             _.isAnswerCopiedFromPreviousAssessment
           )) =>
         routes.AssessmentController.onPageLoadReassessment(CheckMode, recordId, nextNumber)
+      case AssessmentAnswer.Exemption(_) if nextIndex < assessmentCount && shouldSkipAnsweredOnes =>
+        navigateFromReassessmentCheck(ReassessmentPage(recordId, nextIndex), shouldSkipAnsweredOnes)(answers)
       case AssessmentAnswer.Exemption(_) if nextIndex < assessmentCount =>
-        navigateFromReassessmentCheck(ReassessmentPage(recordId, nextIndex))(answers)
+        routes.AssessmentController.onPageLoadReassessment(CheckMode, recordId, nextNumber)
       case AssessmentAnswer.NoExemption
           if shouldGoToSupplementaryUnitCheck(answers, categorisationInfo, assessmentQuestion, recordId) =>
         routes.HasSupplementaryUnitController.onPageLoad(CheckMode, recordId)
