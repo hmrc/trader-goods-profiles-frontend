@@ -22,6 +22,7 @@ import models.TraderProfile
 import models.requests.IdentifierRequest
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.http.HeaderCarrier
+import controllers.profile.{routes => profileRoutes}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -37,14 +38,14 @@ class IndexController @Inject() (
     traderProfileConnector.checkTraderProfile(request.eori).flatMap {
       case true  =>
         eoriChanged(request)
-      case false => Future.successful(Redirect(routes.ProfileSetupController.onPageLoad()))
+      case false => Future.successful(Redirect(profileRoutes.ProfileSetupController.onPageLoad()))
     }
   }
 
   private def eoriChanged(request: IdentifierRequest[AnyContent])(implicit hc: HeaderCarrier) =
     traderProfileConnector.getTraderProfile(request.eori).map {
       case TraderProfile(_, _, _, _, eoriChanged) if eoriChanged =>
-        Redirect(routes.UkimsNumberChangeController.onPageLoad())
+        Redirect(profileRoutes.UkimsNumberChangeController.onPageLoad())
       case _                                                     =>
         Redirect(routes.HomePageController.onPageLoad())
     }

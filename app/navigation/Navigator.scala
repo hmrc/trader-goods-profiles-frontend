@@ -24,7 +24,7 @@ import models.ott.{CategorisationInfo, CategoryAssessment}
 import pages._
 import play.api.mvc.{Call, Result}
 import play.api.mvc.Results.Redirect
-import queries.{CategorisationDetailsQuery, HistoricProfileDataQuery, LongerCategorisationDetailsQuery, LongerCommodityQuery, TraderProfileQuery}
+import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery, LongerCommodityQuery}
 import services.CategorisationService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants.{Category1AsInt, Category2AsInt, firstAssessmentIndex, firstAssessmentNumber, minimumLengthOfCommodityCode}

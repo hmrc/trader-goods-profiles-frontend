@@ -13,15 +13,15 @@ POST        /update-profile/niphl-question                                      
 GET         /update-profile/niphl-question/check                                            controllers.profile.HasNiphlController.onPageLoadUpdate(mode: Mode = CheckMode)
 POST        /update-profile/niphl-question/check                                            controllers.profile.HasNiphlController.onSubmitUpdate(mode: Mode = CheckMode)
 
-GET         /create-profile/nirms-question                                                  controllers.HasNirmsController.onPageLoadCreate(mode: Mode = NormalMode)
-POST        /create-profile/nirms-question                                                  controllers.HasNirmsController.onSubmitCreate(mode: Mode = NormalMode)
-GET         /create-profile/nirms-question/check                                            controllers.HasNirmsController.onPageLoadCreate(mode: Mode = CheckMode)
-POST        /create-profile/nirms-question/check                                            controllers.HasNirmsController.onSubmitCreate(mode: Mode = CheckMode)
+GET         /create-profile/nirms-question                                                  controllers.profile.HasNirmsController.onPageLoadCreate(mode: Mode = NormalMode)
+POST        /create-profile/nirms-question                                                  controllers.profile.HasNirmsController.onSubmitCreate(mode: Mode = NormalMode)
+GET         /create-profile/nirms-question/check                                            controllers.profile.HasNirmsController.onPageLoadCreate(mode: Mode = CheckMode)
+POST        /create-profile/nirms-question/check                                            controllers.profile.HasNirmsController.onSubmitCreate(mode: Mode = CheckMode)
 
-GET         /update-profile/nirms-question                                                  controllers.HasNirmsController.onPageLoadUpdate(mode: Mode = NormalMode)
-POST        /update-profile/nirms-question                                                  controllers.HasNirmsController.onSubmitUpdate(mode: Mode = NormalMode)
-GET         /update-profile/nirms-question/check                                            controllers.HasNirmsController.onPageLoadUpdate(mode: Mode = CheckMode)
-POST        /update-profile/nirms-question/check                                            controllers.HasNirmsController.onSubmitUpdate(mode: Mode = CheckMode)
+GET         /update-profile/nirms-question                                                  controllers.profile.HasNirmsController.onPageLoadUpdate(mode: Mode = NormalMode)
+POST        /update-profile/nirms-question                                                  controllers.profile.HasNirmsController.onSubmitUpdate(mode: Mode = NormalMode)
+GET         /update-profile/nirms-question/check                                            controllers.profile.HasNirmsController.onPageLoadUpdate(mode: Mode = CheckMode)
+POST        /update-profile/nirms-question/check                                            controllers.profile.HasNirmsController.onSubmitUpdate(mode: Mode = CheckMode)
 
 GET         /create-profile/niphl-number                                                    controllers.profile.NiphlNumberController.onPageLoadCreate(mode: Mode = NormalMode)
 POST        /create-profile/niphl-number                                                    controllers.profile.NiphlNumberController.onSubmitCreate(mode: Mode = NormalMode)

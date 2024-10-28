@@ -27,34 +27,34 @@
 
 @(form: Form[_])(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("removeNiphl.title"))) {
+@layout(pageTitle = title(form, messages("removeNirms.title"))) {
 
     @if(form.errors.nonEmpty) {
         @govukErrorSummary(ErrorSummaryViewModel(form))
     }
 
-        <h1 class="govuk-heading-l">@messages("removeNiphl.h1")</h1>
+    <h1 class="govuk-heading-l">@messages("removeNirms.h1")</h1>
+          <p class="govuk-body">@messages("removeNirms.p1")</p>
+          <p class="govuk-body">@messages("removeNirms.p2")</p>
 
-            <p class="govuk-body">@messages("removeNiphl.p1")</p>
-            <p class="govuk-body">@messages("removeNiphl.p2")</p>
+     @govukWarningText(WarningText(
+            iconFallbackText = Some(messages("removeNirms.warning")),
+            content = Text(messages("removeNirms.warningText"))
+                ))
 
-         @govukWarningText(WarningText(
-            iconFallbackText = Some(messages("removeNiphl.warning")),
-            content = Text(messages("removeNiphl.warningText"))
-             ))
-
-    @formHelper(action = routes.RemoveNiphlController.onSubmit(), Symbol("autoComplete") -> "off") {
+    @formHelper(action = profile.routes.RemoveNirmsController.onSubmit(), Symbol("autoComplete") -> "off") {
 
         @govukRadios(
-                RadiosViewModel.apply(
-                    field = form("value"),
-                    legend = Legend(content = "removeNiphl.h2").asSecondaryHeading(Medium),
-                    items = Seq(
-                    RadioItem(content = messages("removeNiphl.yes"), value = Some("true"), id = Some(s"value")),
-                    RadioItem(content = messages("removeNiphl.no"), value = Some("false"), id = Some(s"value-no"))
-                                )
+            RadiosViewModel.apply(
+                field = form("value"),
+                legend = Legend(content = "removeNirms.h2").asSecondaryHeading(Medium),
+            items = Seq(
+                RadioItem(content = messages("removeNirms.yes"), value = Some("true"),id = Some(s"value")),
+                RadioItem(content = messages("removeNirms.no"), value = Some("false"),id = Some(s"value-no"))
+                        )
                                 )
                     )
+
         @govukButton(
             ButtonViewModel(messages("site.save.continue"))
         )
@@ -63,3 +63,4 @@
     <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad().url" class="govuk-link" >@messages("site.goBackToHomePage")</a></p>
 
 }
+

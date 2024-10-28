@@ -17,7 +17,7 @@
 package controllers.actions
 
 import connectors.TraderProfileConnector
-import controllers.routes
+import controllers.profile.routes
 import models.requests.IdentifierRequest
 import play.api.mvc.Results.Redirect
 import play.api.mvc._
