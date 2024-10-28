@@ -4887,7 +4887,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             }
           }
 
-          "to a the next reassessment even if the next one is answered yes" - {
+          "to the next reassessment even if the next one is answered yes" - {
 
             "and the one after is not set" in {
               val userAnswers =
