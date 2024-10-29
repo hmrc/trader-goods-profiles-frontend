@@ -40,7 +40,7 @@
 
     @paragraphBody(message = messages("downloadRequestSuccess.p1", link(
         text = messages("downloadRequestSuccess.p1.linkText"),
-        call = controllers.routes.DownloadDataIndexController.redirect(),
+        call = controllers.routes.FileManagementController.onPageLoad(),
         id = None
     ), email))
 

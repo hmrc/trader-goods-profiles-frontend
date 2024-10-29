@@ -65,7 +65,7 @@
         @if(downloadLinkMessagesKey == "homepage.downloadLinkText.noGoodsRecords") {
             <p class="govuk-body">@messages(downloadLinkMessagesKey)</p>
         } else {
-            <p class="govuk-body"><a href="@controllers.routes.DownloadDataIndexController.redirect()" class="govuk-link">@messages(downloadLinkMessagesKey)</a></p>
+            <p class="govuk-body"><a href="@controllers.routes.FileManagementController.onPageLoad()" class="govuk-link">@messages(downloadLinkMessagesKey)</a></p>
         }
     }
 
