@@ -47,7 +47,7 @@ class ProfileAuthenticateActionSpec extends SpecBase with MockitoSugar {
       val action = new Harness(mockTraderProfileConnector)
       val result =
         action.callFilter(IdentifierRequest(FakeRequest(), "id", testEori, AffinityGroup.Individual)).futureValue
-      result mustBe Some(Redirect("/trader-goods-profiles/create-profile/start"))
+      result mustBe Some(Redirect(controllers.profile.routes.ProfileSetupController.onPageLoad().url))
     }
 
     "must not redirect when profile does exist" in {

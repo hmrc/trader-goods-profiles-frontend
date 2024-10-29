@@ -17,10 +17,12 @@
 package controllers.profile
 
 import base.SpecBase
+import controllers.routes
+import controllers.profile.{routes => profileRoutes}
 import base.TestConstants.testEori
 import config.FrontendAppConfig
 import connectors.TraderProfileConnector
-import navigation.{FakeNavigator, Navigator}
+import navigation.profile.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
@@ -29,6 +31,7 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
+import views.html.profile.ProfileSetupView
 
 import scala.concurrent.Future
 
@@ -50,7 +53,7 @@ class ProfileSetupControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, routes.ProfileSetupController.onPageLoad().url)
+          val request = FakeRequest(GET, profileRoutes.ProfileSetupController.onPageLoad().url)
 
           val result = route(application, request).value
 
@@ -73,7 +76,7 @@ class ProfileSetupControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, routes.ProfileSetupController.onPageLoad().url)
+          val request = FakeRequest(GET, profileRoutes.ProfileSetupController.onPageLoad().url)
 
           val result = route(application, request).value
 
@@ -109,7 +112,7 @@ class ProfileSetupControllerSpec extends SpecBase with MockitoSugar {
               .build()
 
           running(application) {
-            val request = FakeRequest(POST, routes.ProfileSetupController.onSubmit().url)
+            val request = FakeRequest(POST, profileRoutes.ProfileSetupController.onSubmit().url)
 
             val result = route(application, request).value
 
@@ -139,7 +142,7 @@ class ProfileSetupControllerSpec extends SpecBase with MockitoSugar {
               .build()
 
           running(application) {
-            val request = FakeRequest(POST, routes.ProfileSetupController.onSubmit().url)
+            val request = FakeRequest(POST, profileRoutes.ProfileSetupController.onSubmit().url)
 
             val result = route(application, request).value
 

@@ -17,11 +17,13 @@
 package controllers.profile
 
 import base.SpecBase
+import controllers.routes
+import controllers.profile.{routes => profileRoutes}
 import base.TestConstants.{testEori, userAnswersId}
 import connectors.TraderProfileConnector
 import forms.RemoveNiphlFormProvider
 import models.{TraderProfile, UserAnswers}
-import navigation.{FakeNavigator, Navigator}
+import navigation.profile.{FakeNavigator, Navigator}
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -32,6 +34,7 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
+import views.html.profile.RemoveNiphlView
 
 import scala.concurrent.Future
 
@@ -42,7 +45,7 @@ class RemoveNiphlControllerSpec extends SpecBase with MockitoSugar {
   val formProvider = new RemoveNiphlFormProvider()
   private val form = formProvider()
 
-  private lazy val removeNiphlRoute = routes.RemoveNiphlController.onPageLoad().url
+  private lazy val removeNiphlRoute = profileRoutes.RemoveNiphlController.onPageLoad().url
 
   private val mockTraderProfileConnector = mock[TraderProfileConnector]
   when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)

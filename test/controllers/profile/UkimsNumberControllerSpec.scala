@@ -18,10 +18,12 @@ package controllers.profile
 
 import base.SpecBase
 import base.TestConstants.{testEori, userAnswersId}
+import controllers.routes
+import controllers.profile.{routes => profileRoutes}
 import connectors.TraderProfileConnector
 import forms.UkimsNumberFormProvider
 import models.{CheckMode, NormalMode, TraderProfile, UserAnswers}
-import navigation.{FakeNavigator, Navigator}
+import navigation.profile.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
@@ -32,6 +34,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
 import services.AuditService
+import views.html.profile.UkimsNumberView
 
 import scala.concurrent.Future
 
@@ -52,7 +55,7 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
     ".create" - {
 
-      val ukimsNumberRoute = routes.UkimsNumberController.onPageLoadCreate(NormalMode).url
+      val ukimsNumberRoute = profileRoutes.UkimsNumberController.onPageLoadCreate(NormalMode).url
 
       "must return OK and the correct view for a GET" in {
 
@@ -73,7 +76,7 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             form,
-            routes.UkimsNumberController.onSubmitCreate(NormalMode),
+            profileRoutes.UkimsNumberController.onSubmitCreate(NormalMode),
             isCreateJourney = true
           )(
             request,
@@ -103,7 +106,7 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             form.fill("answer"),
-            routes.UkimsNumberController.onSubmitCreate(NormalMode),
+            profileRoutes.UkimsNumberController.onSubmitCreate(NormalMode),
             isCreateJourney = true
           )(
             request,
@@ -152,7 +155,10 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(boundForm, routes.UkimsNumberController.onSubmitCreate(NormalMode))(
+          contentAsString(result) mustEqual view(
+            boundForm,
+            profileRoutes.UkimsNumberController.onSubmitCreate(NormalMode)
+          )(
             request,
             messages(application)
           ).toString
@@ -217,7 +223,7 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
     ".update" - {
 
-      val ukimsNumberRoute = routes.UkimsNumberController.onPageLoadUpdate(NormalMode).url
+      val ukimsNumberRoute = profileRoutes.UkimsNumberController.onPageLoadUpdate(NormalMode).url
 
       "must return OK and the correct view for a GET with all trader profile complete" in {
 
@@ -250,7 +256,7 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             form.fill("1"),
-            routes.UkimsNumberController.onSubmitUpdate(NormalMode)
+            profileRoutes.UkimsNumberController.onSubmitUpdate(NormalMode)
           )(
             request,
             messages(application)
@@ -264,7 +270,7 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       "must return OK and the correct view for a GET with all trader profile complete if the user is returning from the CYA page and UKIMS number should be filled in" in {
 
-        val ukimsNumberCheckRoute = routes.UkimsNumberController.onPageLoadUpdate(CheckMode).url
+        val ukimsNumberCheckRoute = profileRoutes.UkimsNumberController.onPageLoadUpdate(CheckMode).url
         val newUkims              = "newUkims"
         val mockAuditService      = mock[AuditService]
 
@@ -291,7 +297,7 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             form.fill(newUkims),
-            routes.UkimsNumberController.onSubmitUpdate(CheckMode)
+            profileRoutes.UkimsNumberController.onSubmitUpdate(CheckMode)
           )(
             request,
             messages(application)
@@ -350,7 +356,10 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(boundForm, routes.UkimsNumberController.onSubmitUpdate(NormalMode))(
+          contentAsString(result) mustEqual view(
+            boundForm,
+            profileRoutes.UkimsNumberController.onSubmitUpdate(NormalMode)
+          )(
             request,
             messages(application)
           ).toString

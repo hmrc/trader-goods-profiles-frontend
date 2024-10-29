@@ -17,6 +17,8 @@
 package controllers.profile
 
 import base.SpecBase
+import controllers.routes
+import controllers.profile.{routes => profileRoutes}
 import base.TestConstants.testEori
 import connectors.TraderProfileConnector
 import models.helper.CreateProfileJourney
@@ -36,6 +38,7 @@ import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import viewmodels.checkAnswers._
 import viewmodels.govuk.SummaryListFluency
+import views.html.profile.CyaCreateProfileView
 
 import scala.concurrent.Future
 
@@ -70,7 +73,7 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, routes.CyaCreateProfileController.onPageLoad().url)
+          val request = FakeRequest(GET, profileRoutes.CyaCreateProfileController.onPageLoad().url)
 
           val result = route(application, request).value
 
@@ -93,7 +96,7 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, routes.CyaCreateProfileController.onPageLoad().url)
+          val request = FakeRequest(GET, profileRoutes.CyaCreateProfileController.onPageLoad().url)
 
           val result = route(application, request).value
 
@@ -112,10 +115,10 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
             bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
           )
           .build()
-        val continueUrl = RedirectUrl(routes.ProfileSetupController.onPageLoad().url)
+        val continueUrl = RedirectUrl(profileRoutes.ProfileSetupController.onPageLoad().url)
 
         running(application) {
-          val request = FakeRequest(GET, routes.CyaCreateProfileController.onPageLoad().url)
+          val request = FakeRequest(GET, profileRoutes.CyaCreateProfileController.onPageLoad().url)
 
           val result = route(application, request).value
 
@@ -134,7 +137,7 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, routes.CyaCreateProfileController.onPageLoad().url)
+          val request = FakeRequest(GET, profileRoutes.CyaCreateProfileController.onPageLoad().url)
 
           val result = route(application, request).value
 
@@ -153,7 +156,7 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, routes.CyaCreateProfileController.onPageLoad().url)
+          val request = FakeRequest(GET, profileRoutes.CyaCreateProfileController.onPageLoad().url)
 
           val result = route(application, request).value
 
@@ -188,14 +191,14 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
               .build()
 
           running(application) {
-            val request = FakeRequest(POST, routes.CyaCreateProfileController.onSubmit().url)
+            val request = FakeRequest(POST, profileRoutes.CyaCreateProfileController.onSubmit().url)
 
             val result = route(application, request).value
 
             val expectedPayload = TraderProfile(testEori, "1", None, None, eoriChanged = false)
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.CreateProfileSuccessController.onPageLoad().url
+            redirectLocation(result).value mustEqual profileRoutes.CreateProfileSuccessController.onPageLoad().url
             verify(mockConnector).submitTraderProfile(eqTo(expectedPayload), eqTo(testEori))(any())
 
             withClue("must call the audit connector with the supplied details") {
@@ -217,7 +220,7 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
 
           val mockConnector    = mock[TraderProfileConnector]
           val mockAuditService = mock[AuditService]
-          val continueUrl      = RedirectUrl(routes.ProfileSetupController.onSubmit().url)
+          val continueUrl      = RedirectUrl(profileRoutes.ProfileSetupController.onSubmit().url)
 
           val sessionRepository = mock[SessionRepository]
           when(sessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
@@ -230,7 +233,7 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
               .build()
 
           running(application) {
-            val request = FakeRequest(POST, routes.CyaCreateProfileController.onPageLoad().url)
+            val request = FakeRequest(POST, profileRoutes.CyaCreateProfileController.onPageLoad().url)
 
             val result = route(application, request).value
 
@@ -270,7 +273,7 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
             .build()
 
         running(application) {
-          val request = FakeRequest(POST, routes.CyaCreateProfileController.onSubmit().url)
+          val request = FakeRequest(POST, profileRoutes.CyaCreateProfileController.onSubmit().url)
           intercept[RuntimeException] {
             await(route(application, request).value)
           }
@@ -290,7 +293,7 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
         val application = applicationBuilder(userAnswers = None).build()
 
         running(application) {
-          val request = FakeRequest(POST, routes.CyaCreateProfileController.onSubmit().url)
+          val request = FakeRequest(POST, profileRoutes.CyaCreateProfileController.onSubmit().url)
 
           val result = route(application, request).value
 

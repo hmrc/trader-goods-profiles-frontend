@@ -30,6 +30,7 @@ import repositories.SessionRepository
 import uk.gov.hmrc.http.NotFoundException
 import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
+import views.html.profile.ProfileView
 
 import scala.concurrent.Future
 

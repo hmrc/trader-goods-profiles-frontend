@@ -17,11 +17,13 @@
 package controllers.profile
 
 import base.SpecBase
+import controllers.routes
+import controllers.profile.{routes => profileRoutes}
 import base.TestConstants.userAnswersId
 import connectors.TraderProfileConnector
 import forms.UseExistingUkimsNumberFormProvider
 import models.UserAnswers
-import navigation.{FakeNavigator, Navigator}
+import navigation.profile.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -31,6 +33,7 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
+import views.html.profile.UseExistingUkimsNumberView
 
 import scala.concurrent.Future
 
@@ -44,8 +47,8 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
   private val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
   private val mockSessionRepository: SessionRepository           = mock[SessionRepository]
 
-  private lazy val onPageLoadRoute = routes.UseExistingUkimsNumberController.onPageLoad().url
-  private lazy val onSubmitRoute   = routes.UseExistingUkimsNumberController.onSubmit().url
+  private lazy val onPageLoadRoute = profileRoutes.UseExistingUkimsNumberController.onPageLoad().url
+  private lazy val onSubmitRoute   = profileRoutes.UseExistingUkimsNumberController.onSubmit().url
 
   when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
 
@@ -77,7 +80,7 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(
           form,
-          routes.UseExistingUkimsNumberController.onSubmit(),
+          profileRoutes.UseExistingUkimsNumberController.onSubmit(),
           ukimsNumber
         )(
           request,
@@ -147,7 +150,7 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
         status(result) mustEqual BAD_REQUEST
         contentAsString(result) mustEqual view(
           boundForm,
-          routes.UseExistingUkimsNumberController.onSubmit(),
+          profileRoutes.UseExistingUkimsNumberController.onSubmit(),
           ukimsNumber
         )(
           request,

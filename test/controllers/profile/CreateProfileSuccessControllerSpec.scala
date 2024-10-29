@@ -24,6 +24,7 @@ import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import views.html.profile.CreateProfileSuccessView
 
 import scala.concurrent.Future
 

@@ -17,6 +17,7 @@
 package controllers
 
 import base.SpecBase
+import controllers.profile.{routes => profileRoutes}
 import connectors.TraderProfileConnector
 import models.TraderProfile
 import org.mockito.ArgumentMatchers.any
@@ -49,7 +50,7 @@ class IndexControllerSpec extends SpecBase {
 
         status(result) mustEqual SEE_OTHER
 
-        redirectLocation(result).value mustEqual routes.ProfileSetupController.onPageLoad().url
+        redirectLocation(result).value mustEqual profileRoutes.ProfileSetupController.onPageLoad().url
       }
     }
 
@@ -70,7 +71,7 @@ class IndexControllerSpec extends SpecBase {
 
         status(result) mustEqual SEE_OTHER
 
-        redirectLocation(result).value mustEqual routes.ProfileSetupController.onPageLoad().url
+        redirectLocation(result).value mustEqual profileRoutes.ProfileSetupController.onPageLoad().url
       }
     }
     "must redirect to HomePageController if no profile present and eori has not changed" in {
@@ -118,7 +119,7 @@ class IndexControllerSpec extends SpecBase {
 
         status(result) mustEqual SEE_OTHER
 
-        redirectLocation(result).value mustEqual routes.UkimsNumberChangeController.onPageLoad().url
+        redirectLocation(result).value mustEqual profileRoutes.UkimsNumberChangeController.onPageLoad().url
       }
     }
   }

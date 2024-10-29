@@ -17,6 +17,8 @@
 package controllers.profile
 
 import base.SpecBase
+import controllers.routes
+import controllers.profile.{routes => profileRoutes}
 import connectors.TraderProfileConnector
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -24,6 +26,7 @@ import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import views.html.profile.UkimsKickOutView
 
 import scala.concurrent.Future
 
@@ -43,7 +46,7 @@ class UkimsKickOutControllerSpec extends SpecBase {
         .build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.UkimsKickOutController.onPageLoad().url)
+        val request = FakeRequest(GET, profileRoutes.UkimsKickOutController.onPageLoad().url)
 
         val result = route(application, request).value
 
@@ -66,7 +69,7 @@ class UkimsKickOutControllerSpec extends SpecBase {
         .build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.UkimsKickOutController.onPageLoad().url)
+        val request = FakeRequest(GET, profileRoutes.UkimsKickOutController.onPageLoad().url)
 
         val result = route(application, request).value
 

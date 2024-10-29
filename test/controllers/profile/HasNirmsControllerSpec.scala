@@ -17,11 +17,13 @@
 package controllers.profile
 
 import base.SpecBase
+import controllers.routes
+import controllers.profile.{routes => profileRoutes}
 import base.TestConstants.{testEori, userAnswersId}
 import connectors.TraderProfileConnector
 import forms.HasNirmsFormProvider
 import models.{NormalMode, TraderProfile, UserAnswers}
-import navigation.{FakeNavigator, Navigator}
+import navigation.profile.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -31,6 +33,7 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
+import views.html.profile.HasNirmsView
 
 import scala.concurrent.Future
 
@@ -51,7 +54,7 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
 
     ".create" - {
 
-      val hasNirmsRoute = routes.HasNirmsController.onPageLoadCreate(NormalMode).url
+      val hasNirmsRoute = profileRoutes.HasNirmsController.onPageLoadCreate(NormalMode).url
 
       "must return OK and the correct view for a GET" in {
 
@@ -69,7 +72,7 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
           val view = application.injector.instanceOf[HasNirmsView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form, routes.HasNirmsController.onSubmitCreate(NormalMode))(
+          contentAsString(result) mustEqual view(form, profileRoutes.HasNirmsController.onSubmitCreate(NormalMode))(
             request,
             messages(application)
           ).toString
@@ -94,7 +97,10 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form.fill(true), routes.HasNirmsController.onSubmitCreate(NormalMode))(
+          contentAsString(result) mustEqual view(
+            form.fill(true),
+            profileRoutes.HasNirmsController.onSubmitCreate(NormalMode)
+          )(
             request,
             messages(application)
           ).toString
@@ -146,7 +152,10 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(boundForm, routes.HasNirmsController.onSubmitCreate(NormalMode))(
+          contentAsString(result) mustEqual view(
+            boundForm,
+            profileRoutes.HasNirmsController.onSubmitCreate(NormalMode)
+          )(
             request,
             messages(application)
           ).toString
@@ -214,7 +223,7 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
 
     ".update" - {
 
-      val hasNirmsRoute = routes.HasNirmsController.onPageLoadUpdate(NormalMode).url
+      val hasNirmsRoute = profileRoutes.HasNirmsController.onPageLoadUpdate(NormalMode).url
 
       "must return OK and the correct view for a GET with saved answers" in {
 
@@ -243,7 +252,10 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
           val view = application.injector.instanceOf[HasNirmsView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form.fill(true), routes.HasNirmsController.onSubmitUpdate(NormalMode))(
+          contentAsString(result) mustEqual view(
+            form.fill(true),
+            profileRoutes.HasNirmsController.onSubmitUpdate(NormalMode)
+          )(
             request,
             messages(application)
           ).toString
@@ -268,7 +280,10 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form.fill(true), routes.HasNirmsController.onSubmitUpdate(NormalMode))(
+          contentAsString(result) mustEqual view(
+            form.fill(true),
+            profileRoutes.HasNirmsController.onSubmitUpdate(NormalMode)
+          )(
             request,
             messages(application)
           ).toString
@@ -350,7 +365,10 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(boundForm, routes.HasNirmsController.onSubmitUpdate(NormalMode))(
+          contentAsString(result) mustEqual view(
+            boundForm,
+            profileRoutes.HasNirmsController.onSubmitUpdate(NormalMode)
+          )(
             request,
             messages(application)
           ).toString

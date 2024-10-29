@@ -17,11 +17,13 @@
 package controllers.profile
 
 import base.SpecBase
+import controllers.routes
+import controllers.profile.{routes => profileRoutes}
 import base.TestConstants.{testEori, userAnswersId}
 import connectors.TraderProfileConnector
 import forms.NirmsNumberFormProvider
 import models.{NormalMode, TraderProfile, UserAnswers}
-import navigation.{FakeNavigator, Navigator}
+import navigation.profile.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
@@ -33,6 +35,7 @@ import play.api.test.Helpers._
 import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
+import views.html.profile.NirmsNumberView
 
 import scala.concurrent.Future
 
@@ -53,7 +56,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
     ".create" - {
 
-      val nirmsNumberRoute = routes.NirmsNumberController.onPageLoadCreate(NormalMode).url
+      val nirmsNumberRoute = profileRoutes.NirmsNumberController.onPageLoadCreate(NormalMode).url
 
       "must return OK and the correct view for a GET" in {
 
@@ -71,7 +74,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
           val view = application.injector.instanceOf[NirmsNumberView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form, routes.NirmsNumberController.onSubmitCreate(NormalMode))(
+          contentAsString(result) mustEqual view(form, profileRoutes.NirmsNumberController.onSubmitCreate(NormalMode))(
             request,
             messages(application)
           ).toString
@@ -98,7 +101,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             form.fill("answer"),
-            routes.NirmsNumberController.onSubmitCreate(NormalMode)
+            profileRoutes.NirmsNumberController.onSubmitCreate(NormalMode)
           )(request, messages(application)).toString
         }
       }
@@ -143,7 +146,10 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(boundForm, routes.NirmsNumberController.onSubmitCreate(NormalMode))(
+          contentAsString(result) mustEqual view(
+            boundForm,
+            profileRoutes.NirmsNumberController.onSubmitCreate(NormalMode)
+          )(
             request,
             messages(application)
           ).toString
@@ -207,7 +213,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
     ".update" - {
 
-      val nirmsNumberRoute = routes.NirmsNumberController.onPageLoadUpdate(NormalMode).url
+      val nirmsNumberRoute = profileRoutes.NirmsNumberController.onPageLoadUpdate(NormalMode).url
 
       "must return OK and the correct view for a GET when HasNirms hasn't been answered when there is a nirms number" in {
 
@@ -240,7 +246,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             form.fill("2"),
-            routes.NirmsNumberController.onSubmitUpdate(NormalMode)
+            profileRoutes.NirmsNumberController.onSubmitUpdate(NormalMode)
           )(
             request,
             messages(application)
@@ -285,7 +291,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             form.fill("2"),
-            routes.NirmsNumberController.onSubmitUpdate(NormalMode)
+            profileRoutes.NirmsNumberController.onSubmitUpdate(NormalMode)
           )(
             request,
             messages(application)
@@ -328,7 +334,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
           val view = application.injector.instanceOf[NirmsNumberView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form, routes.NirmsNumberController.onSubmitUpdate(NormalMode))(
+          contentAsString(result) mustEqual view(form, profileRoutes.NirmsNumberController.onSubmitUpdate(NormalMode))(
             request,
             messages(application)
           ).toString
@@ -374,7 +380,9 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.CyaMaintainProfileController.onPageLoadNirmsNumber().url
+          redirectLocation(result).value mustEqual profileRoutes.CyaMaintainProfileController
+            .onPageLoadNirmsNumber()
+            .url
         }
       }
 
@@ -394,7 +402,10 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(boundForm, routes.NirmsNumberController.onSubmitUpdate(NormalMode))(
+          contentAsString(result) mustEqual view(
+            boundForm,
+            profileRoutes.NirmsNumberController.onSubmitUpdate(NormalMode)
+          )(
             request,
             messages(application)
           ).toString
@@ -425,7 +436,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
         val expectedRedirectLocation =
           routes.JourneyRecoveryController
             .onPageLoad(
-              Some(RedirectUrl(routes.ProfileController.onPageLoad().url))
+              Some(RedirectUrl(profileRoutes.ProfileController.onPageLoad().url))
             )
             .url
 
@@ -465,7 +476,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
         val expectedRedirectLocation =
           routes.JourneyRecoveryController
             .onPageLoad(
-              Some(RedirectUrl(routes.ProfileController.onPageLoad().url))
+              Some(RedirectUrl(profileRoutes.ProfileController.onPageLoad().url))
             )
             .url
 

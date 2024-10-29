@@ -17,11 +17,13 @@
 package controllers.profile
 
 import base.SpecBase
+import controllers.routes
+import controllers.profile.{routes => profileRoutes}
 import base.TestConstants.{testEori, userAnswersId}
 import connectors.TraderProfileConnector
 import forms.HasNiphlFormProvider
 import models.{NormalMode, TraderProfile, UserAnswers}
-import navigation.{FakeNavigator, Navigator}
+import navigation.profile.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -31,6 +33,7 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
+import views.html.profile.HasNiphlView
 
 import scala.concurrent.Future
 
@@ -47,9 +50,9 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
 
   when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
 
-  private lazy val hasNiphlRouteCreate = routes.HasNiphlController.onPageLoadCreate(NormalMode).url
+  private lazy val hasNiphlRouteCreate = profileRoutes.HasNiphlController.onPageLoadCreate(NormalMode).url
 
-  private lazy val hasNiphlRouteUpdate = routes.HasNiphlController.onPageLoadUpdate(NormalMode).url
+  private lazy val hasNiphlRouteUpdate = profileRoutes.HasNiphlController.onPageLoadUpdate(NormalMode).url
 
   "HasNiphlController" - {
 
@@ -71,7 +74,7 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
           val view = application.injector.instanceOf[HasNiphlView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form, routes.HasNiphlController.onSubmitCreate(NormalMode))(
+          contentAsString(result) mustEqual view(form, profileRoutes.HasNiphlController.onSubmitCreate(NormalMode))(
             request,
             messages(application)
           ).toString
@@ -96,7 +99,10 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form.fill(true), routes.HasNiphlController.onSubmitCreate(NormalMode))(
+          contentAsString(result) mustEqual view(
+            form.fill(true),
+            profileRoutes.HasNiphlController.onSubmitCreate(NormalMode)
+          )(
             request,
             messages(application)
           ).toString
@@ -148,7 +154,10 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(boundForm, routes.HasNiphlController.onSubmitCreate(NormalMode))(
+          contentAsString(result) mustEqual view(
+            boundForm,
+            profileRoutes.HasNiphlController.onSubmitCreate(NormalMode)
+          )(
             request,
             messages(application)
           ).toString
@@ -243,7 +252,10 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
           val view = application.injector.instanceOf[HasNiphlView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form.fill(true), routes.HasNiphlController.onSubmitUpdate(NormalMode))(
+          contentAsString(result) mustEqual view(
+            form.fill(true),
+            profileRoutes.HasNiphlController.onSubmitUpdate(NormalMode)
+          )(
             request,
             messages(application)
           ).toString
@@ -268,7 +280,10 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form.fill(true), routes.HasNiphlController.onSubmitUpdate(NormalMode))(
+          contentAsString(result) mustEqual view(
+            form.fill(true),
+            profileRoutes.HasNiphlController.onSubmitUpdate(NormalMode)
+          )(
             request,
             messages(application)
           ).toString
@@ -350,7 +365,10 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(boundForm, routes.HasNiphlController.onSubmitUpdate(NormalMode))(
+          contentAsString(result) mustEqual view(
+            boundForm,
+            profileRoutes.HasNiphlController.onSubmitUpdate(NormalMode)
+          )(
             request,
             messages(application)
           ).toString

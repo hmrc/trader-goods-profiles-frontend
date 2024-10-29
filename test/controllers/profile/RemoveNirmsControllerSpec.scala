@@ -17,11 +17,13 @@
 package controllers.profile
 
 import base.SpecBase
+import controllers.routes
+import controllers.profile.{routes => profileRoutes}
 import base.TestConstants.{testEori, userAnswersId}
 import connectors.TraderProfileConnector
 import forms.RemoveNirmsFormProvider
 import models.{TraderProfile, UserAnswers}
-import navigation.{FakeNavigator, Navigator}
+import navigation.profile.{FakeNavigator, Navigator}
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -32,6 +34,7 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
+import views.html.profile.RemoveNirmsView
 
 import scala.concurrent.Future
 
@@ -42,7 +45,7 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
   val formProvider = new RemoveNirmsFormProvider()
   private val form = formProvider()
 
-  private lazy val removeNirmsRoute = routes.RemoveNirmsController.onPageLoad().url
+  private lazy val removeNirmsRoute = profileRoutes.RemoveNirmsController.onPageLoad().url
 
   private val mockTraderProfileConnector = mock[TraderProfileConnector]
   when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
