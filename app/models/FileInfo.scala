@@ -18,12 +18,9 @@ package models
 
 import play.api.libs.json.{Json, OFormat}
 
-import java.time.Instant
-
 final case class FileInfo(
   fileName: String,
   fileSize: Int,
-  fileCreated: Instant,
   retentionDays: String
 )
 

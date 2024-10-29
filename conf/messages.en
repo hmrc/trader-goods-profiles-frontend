@@ -692,3 +692,22 @@ cyaMaintainProfile.warningText = You need to make sure these details are correct
 
 cyaNewUkimsNumber.title = Check your answers for your new UKIMS number
 cyaNewUkimsNumber.heading = Check your answers for your new UKIMS number
+
+# TODO: Welsh translation for the file management page (TGP-2753)
+fileManagement.title = TGP records files
+fileManagement.heading = TGP records files
+fileManagement.files.paragraph1 = Files are available for 30 days from when we email you that it is ready to download.
+fileManagement.noFiles.paragraph1 = You do not have any TGP record files ready for download. Files expire after 30 days.
+fileManagement.availableFiles.table.caption = TGP records files
+fileManagement.availableFiles.table.header1 = Date and time requested
+fileManagement.availableFiles.table.header2 = Expiry date
+fileManagement.availableFiles.table.header3 = File
+fileManagement.availableFiles.downloadText = Download file
+fileManagement.availableFiles.downloadText.hidden = requested on {0}
+fileManagement.pendingFiles.table.caption = Pending files
+fileManagement.pendingFiles.table.body = These are requests you''ve made but the file is not ready yet. We''ll email you when the file is ready.
+fileManagement.pendingFiles.table.header1 = Date and time requested
+fileManagement.pendingFiles.table.header2 = File
+fileManagement.pendingFiles.fileText = File not ready
+fileManagement.files.requestRecord.linkText = Get a new TGP records file
+fileManagement.noFiles.requestRecord.linkText = Get a TGP records file

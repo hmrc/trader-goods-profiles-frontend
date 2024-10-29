@@ -19,7 +19,7 @@ package connectors
 import config.FrontendAppConfig
 import models.{DownloadData, DownloadDataSummary, Email, LegacyRawReads}
 import org.apache.pekko.Done
-import play.api.http.Status.{ACCEPTED, NOT_FOUND, OK}
+import play.api.http.Status.{ACCEPTED, NO_CONTENT, OK}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.client.HttpClientV2
 
@@ -53,39 +53,35 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
         }
       }
 
-  def getDownloadDataSummary(eori: String)(implicit hc: HeaderCarrier): Future[Option[DownloadDataSummary]] =
+  def getDownloadDataSummary(eori: String)(implicit hc: HeaderCarrier): Future[Seq[DownloadDataSummary]] =
     if (config.downloadFileEnabled) {
       httpClient
         .get(downloadDataSummaryUrl(eori))
         .execute[HttpResponse]
         .map { response =>
           response.status match {
-            case OK => Some(response.json.as[DownloadDataSummary])
-            case _  => None
+            case OK => response.json.as[Seq[DownloadDataSummary]]
+            case _  => Seq.empty
           }
         }
-        .recover {
-          case x: UpstreamErrorResponse if x.statusCode == NOT_FOUND =>
-            None
-        }
     } else {
-      Future.successful(None)
+      Future.successful(Seq.empty)
     }
 
-  def getDownloadData(eori: String)(implicit hc: HeaderCarrier): Future[Option[DownloadData]] =
-    httpClient
-      .get(downloadDataUrl(eori))
-      .execute[HttpResponse]
-      .map { response =>
-        response.status match {
-          case OK => Some(response.json.as[DownloadData])
-          case _  => None
+  def getDownloadData(eori: String)(implicit hc: HeaderCarrier): Future[Seq[DownloadData]] =
+    if (config.downloadFileEnabled) {
+      httpClient
+        .get(downloadDataUrl(eori))
+        .execute[HttpResponse]
+        .map { response =>
+          response.status match {
+            case OK => response.json.as[Seq[DownloadData]]
+            case _  => Seq.empty
+          }
         }
-      }
-      .recover {
-        case x: UpstreamErrorResponse if x.statusCode == NOT_FOUND =>
-          None
-      }
+    } else {
+      Future.successful(Seq.empty)
+    }
 
   def getEmail(eori: String)(implicit hc: HeaderCarrier): Future[Email] =
     httpClient
@@ -96,6 +92,18 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
           //TODO this also retunrs a 404 but we are choosing to ignore it because at some point we are going to put in a check when anyone enters our service to check that they have a verified and deliverable email so this should never be 404
           case OK => Future.successful(response.json.as[Email])
           case _  => Future.failed(UpstreamErrorResponse(response.body, response.status))
+        }
+      }
+
+  def updateSeenStatus(eori: String)(implicit hc: HeaderCarrier): Future[Done] =
+    httpClient
+      .patch(downloadDataSummaryUrl(eori))
+      .setHeader(clientIdHeader)
+      .execute[HttpResponse]
+      .flatMap { response =>
+        response.status match {
+          case NO_CONTENT => Future.successful(Done)
+          case _          => Future.failed(UpstreamErrorResponse(response.body, response.status))
         }
       }
 }
