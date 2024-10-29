@@ -549,7 +549,7 @@ removeNirms.error.required = Cadarnhewch eich bod am ddileu’r manylion ynghylc
 removeNirms.yes = Iawn, rwyf am i chi ddileu’r manylion ynghylch fy NIRMS
 removeNirms.no = Na, peidiwch â dileu’r manylion ynghylch fy NIRMS
 removeNirms.warning = Rhybudd
-removeNirms.warningText = Os ydych yn symud nwyddau o dan SPIMM, ac nad ydynt yn gymwys i ddefnyddio’r broses hon, gallech fod yn atebol am unrhyw nwyddau a gafodd eu datgan yn anghywir.
+removeNirms.warningText = Os ydych yn symud nwyddau o dan SPIMM, ac nad ydynt yn gymwys ddefnyddio’r broses hon, gallech fod yn atebol am unrhyw nwyddau a gafodd eu datgan yn anghywir.
 
 removeNiphl.title = Tynnu manylion NIPHL
 removeNiphl.h1 = Tynnu manylion NIPHL
@@ -560,9 +560,7 @@ removeNiphl.error.required = Cadarnhewch eich bod am ddileu’r manylion ynghylc
 removeNiphl.yes = Iawn, rwyf am i chi ddileu’r manylion ynghylch fy NIPHL
 removeNiphl.no = Na, peidiwch â dileu’r manylion ynghylch fy NIPHL
 removeNiphl.warning = Rhybudd
-removeNiphl.warningText = Os ydych yn symud nwyddau o dan SPIMM, ac nad ydynt yn gymwys i ddefnyddio’r broses hon, gallech fod yn atebol am unrhyw nwyddau a gafodd eu datgan yn anghywir.
-
-
+removeNiphl.warningText = Os ydych yn symud nwyddau o dan SPIMM, ac nad ydynt yn gymwys ddefnyddio’r broses hon, gallech fod yn atebol am unrhyw nwyddau a gafodd eu datgan yn anghywir.
 
 helpAndSupport.title = Help a chymorth
 helpAndSupport.h1 = Help a chymorth
