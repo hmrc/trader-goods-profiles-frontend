@@ -26,7 +26,7 @@ import pages.{NiphlNumberUpdatePage, RemoveNiphlPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import views.html.RemoveNiphlView
+import views.html.profile.RemoveNiphlView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}

@@ -30,7 +30,7 @@ import repositories.SessionRepository
 import services.AuditService
 import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
-import views.html.CyaNewUkimsNumberView
+import views.html.profile.CyaNewUkimsNumberView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}

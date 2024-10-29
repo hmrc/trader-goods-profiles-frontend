@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.profile
 
 import base.SpecBase
 import base.TestConstants.testEori
@@ -36,7 +36,6 @@ import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import viewmodels.checkAnswers._
 import viewmodels.govuk.SummaryListFluency
-import views.html.CyaCreateProfileView
 
 import scala.concurrent.Future
 

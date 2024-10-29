@@ -14,34 +14,33 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.profile
 
 import base.SpecBase
 import base.TestConstants.{testEori, userAnswersId}
 import connectors.TraderProfileConnector
-import forms.NirmsNumberFormProvider
+import forms.NiphlNumberFormProvider
 import models.{NormalMode, TraderProfile, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
+import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{HasNirmsUpdatePage, NirmsNumberPage, NirmsNumberUpdatePage}
+import pages.{HasNiphlUpdatePage, NiphlNumberPage, NiphlNumberUpdatePage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
 import services.AuditService
-import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import views.html.NirmsNumberView
 
 import scala.concurrent.Future
 
-class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
+class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
   private def onwardRoute = Call("GET", "/foo")
 
-  val formProvider = new NirmsNumberFormProvider()
+  val formProvider = new NiphlNumberFormProvider()
   private val form = formProvider()
 
   val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
@@ -50,11 +49,13 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
   when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
 
-  "NirmsNumber Controller" - {
+  private lazy val niphlNumberRouteCreate = routes.NiphlNumberController.onPageLoadCreate(NormalMode).url
+
+  private lazy val niphlNumberRouteUpdate = routes.NiphlNumberController.onPageLoadUpdate(NormalMode).url
+
+  "NiphlNumber Controller" - {
 
     ".create" - {
-
-      val nirmsNumberRoute = routes.NirmsNumberController.onPageLoadCreate(NormalMode).url
 
       "must return OK and the correct view for a GET" in {
 
@@ -65,14 +66,14 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, nirmsNumberRoute)
+          val request = FakeRequest(GET, niphlNumberRouteCreate)
 
           val result = route(application, request).value
 
-          val view = application.injector.instanceOf[NirmsNumberView]
+          val view = application.injector.instanceOf[NiphlNumberView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form, routes.NirmsNumberController.onSubmitCreate(NormalMode))(
+          contentAsString(result) mustEqual view(form, routes.NiphlNumberController.onSubmitCreate(NormalMode))(
             request,
             messages(application)
           ).toString
@@ -81,7 +82,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       "must populate the view correctly on a GET when the question has previously been answered" in {
 
-        val userAnswers = UserAnswers(userAnswersId).set(NirmsNumberPage, "answer").success.value
+        val userAnswers = UserAnswers(userAnswersId).set(NiphlNumberPage, "answer").success.value
 
         val application = applicationBuilder(userAnswers = Some(userAnswers))
           .overrides(
@@ -90,16 +91,16 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, nirmsNumberRoute)
+          val request = FakeRequest(GET, niphlNumberRouteCreate)
 
-          val view = application.injector.instanceOf[NirmsNumberView]
+          val view = application.injector.instanceOf[NiphlNumberView]
 
           val result = route(application, request).value
 
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             form.fill("answer"),
-            routes.NirmsNumberController.onSubmitCreate(NormalMode)
+            routes.NiphlNumberController.onSubmitCreate(NormalMode)
           )(request, messages(application)).toString
         }
       }
@@ -118,8 +119,8 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, nirmsNumberRoute)
-              .withFormUrlEncodedBody(("value", "RMS-GB-123456"))
+            FakeRequest(POST, niphlNumberRouteCreate)
+              .withFormUrlEncodedBody(("value", "SN12345"))
 
           val result = route(application, request).value
 
@@ -134,17 +135,17 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, nirmsNumberRoute)
+            FakeRequest(POST, niphlNumberRouteCreate)
               .withFormUrlEncodedBody(("value", ""))
 
           val boundForm = form.bind(Map("value" -> ""))
 
-          val view = application.injector.instanceOf[NirmsNumberView]
+          val view = application.injector.instanceOf[NiphlNumberView]
 
           val result = route(application, request).value
 
           status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(boundForm, routes.NirmsNumberController.onSubmitCreate(NormalMode))(
+          contentAsString(result) mustEqual view(boundForm, routes.NiphlNumberController.onSubmitCreate(NormalMode))(
             request,
             messages(application)
           ).toString
@@ -160,7 +161,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, nirmsNumberRoute)
+          val request = FakeRequest(GET, niphlNumberRouteCreate)
 
           val result = route(application, request).value
 
@@ -180,7 +181,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, nirmsNumberRoute)
+          val request = FakeRequest(GET, niphlNumberRouteCreate)
 
           val result = route(application, request).value
 
@@ -195,7 +196,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, nirmsNumberRoute)
+            FakeRequest(POST, niphlNumberRouteCreate)
               .withFormUrlEncodedBody(("value", "answer"))
 
           val result = route(application, request).value
@@ -208,9 +209,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
     ".update" - {
 
-      val nirmsNumberRoute = routes.NirmsNumberController.onPageLoadUpdate(NormalMode).url
-
-      "must return OK and the correct view for a GET when HasNirms hasn't been answered when there is a nirms number" in {
+      "must return OK and the correct view for a GET when HasNiphl hasn't been answered when there is a niphl number" in {
 
         val traderProfile    = TraderProfile(testEori, "1", Some("2"), Some("3"), false)
         val mockAuditService = mock[AuditService]
@@ -232,16 +231,16 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, nirmsNumberRoute)
+          val request = FakeRequest(GET, niphlNumberRouteUpdate)
 
           val result = route(application, request).value
 
-          val view = application.injector.instanceOf[NirmsNumberView]
+          val view = application.injector.instanceOf[NiphlNumberView]
 
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
-            form.fill("2"),
-            routes.NirmsNumberController.onSubmitUpdate(NormalMode)
+            form.fill("3"),
+            routes.NiphlNumberController.onSubmitUpdate(NormalMode)
           )(
             request,
             messages(application)
@@ -253,7 +252,47 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
         }
       }
 
-      "must return OK and the correct view for a GET when HasNirms has been answered when there is a nirms number" in {
+      "must return OK and the correct view for a GET when HasNiphl hasn't been answered when there isn't a niphl number" in {
+
+        val traderProfile    = TraderProfile(testEori, "1", Some("2"), None, eoriChanged = false)
+        val mockAuditService = mock[AuditService]
+
+        when(mockTraderProfileConnector.getTraderProfile(eqTo(testEori))(any())) thenReturn Future.successful(
+          traderProfile
+        )
+
+        when(mockSessionRepository.set(any())) thenReturn Future.successful(
+          true
+        )
+
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[AuditService].toInstance(mockAuditService)
+          )
+          .build()
+
+        running(application) {
+          val request = FakeRequest(GET, niphlNumberRouteUpdate)
+
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[NiphlNumberView]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(form, routes.NiphlNumberController.onSubmitUpdate(NormalMode))(
+            request,
+            messages(application)
+          ).toString
+
+          withClue("must not try and submit an audit") {
+            verify(mockAuditService, never()).auditMaintainProfile(any(), any(), any())(any())
+          }
+        }
+      }
+
+      "must return OK and the correct view for a GET when HasNiphl has been answered when there is a niphl number" in {
 
         val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"), false)
 
@@ -268,7 +307,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
         )
 
         val application =
-          applicationBuilder(userAnswers = Some(emptyUserAnswers.set(HasNirmsUpdatePage, true).success.value))
+          applicationBuilder(userAnswers = Some(emptyUserAnswers.set(HasNiphlUpdatePage, true).success.value))
             .overrides(
               bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
               bind[SessionRepository].toInstance(mockSessionRepository),
@@ -277,16 +316,16 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
             .build()
 
         running(application) {
-          val request = FakeRequest(GET, nirmsNumberRoute)
+          val request = FakeRequest(GET, niphlNumberRouteUpdate)
 
           val result = route(application, request).value
 
-          val view = application.injector.instanceOf[NirmsNumberView]
+          val view = application.injector.instanceOf[NiphlNumberView]
 
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
-            form.fill("2"),
-            routes.NirmsNumberController.onSubmitUpdate(NormalMode)
+            form.fill("3"),
+            routes.NiphlNumberController.onSubmitUpdate(NormalMode)
           )(
             request,
             messages(application)
@@ -298,9 +337,9 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
         }
       }
 
-      "must return OK and the correct view for a GET when HasNirms has been answered when there isn't a nirms number" in {
+      "must return OK and the correct view for a GET when HasNiphl has been answered when there isn't a niphl number" in {
 
-        val traderProfile = TraderProfile(testEori, "1", None, Some("3"), eoriChanged = false)
+        val traderProfile = TraderProfile(testEori, "1", Some("3"), None, eoriChanged = false)
 
         val mockAuditService = mock[AuditService]
 
@@ -313,7 +352,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
         )
 
         val application =
-          applicationBuilder(userAnswers = Some(emptyUserAnswers.set(HasNirmsUpdatePage, true).success.value))
+          applicationBuilder(userAnswers = Some(emptyUserAnswers.set(HasNiphlUpdatePage, true).success.value))
             .overrides(
               bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
               bind[SessionRepository].toInstance(mockSessionRepository),
@@ -322,14 +361,14 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
             .build()
 
         running(application) {
-          val request = FakeRequest(GET, nirmsNumberRoute)
+          val request = FakeRequest(GET, niphlNumberRouteUpdate)
 
           val result = route(application, request).value
 
-          val view = application.injector.instanceOf[NirmsNumberView]
+          val view = application.injector.instanceOf[NiphlNumberView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form, routes.NirmsNumberController.onSubmitUpdate(NormalMode))(
+          contentAsString(result) mustEqual view(form, routes.NiphlNumberController.onSubmitUpdate(NormalMode))(
             request,
             messages(application)
           ).toString
@@ -340,18 +379,63 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
         }
       }
 
-      "must redirect to CyaMaintainProfile for a POST" in {
-        val answer = "RMS-GB-123456"
+      "must redirect to Profile for a POST and submit data if value is different from original" in {
+        val answer = "SN12345"
 
-        val traderProfile = TraderProfile(testEori, "1", Some(answer), Some("3"), eoriChanged = false)
+        val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"), false)
+        val userAnswers   = emptyUserAnswers
+          .set(HasNiphlUpdatePage, true)
+          .success
+          .value
+          .set(NiphlNumberUpdatePage, answer)
+          .success
+          .value
+
+        val mockAuditService = mock[AuditService]
+
+        when(mockAuditService.auditMaintainProfile(any(), any(), any())(any))
+          .thenReturn(Future.successful(Done))
+
+        when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+        when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
+
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(
+              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[SessionRepository].toInstance(mockSessionRepository),
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+              bind[AuditService].toInstance(mockAuditService)
+            )
+            .build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, niphlNumberRouteUpdate)
+              .withFormUrlEncodedBody(("value", answer))
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual onwardRoute.url
+        }
+      }
+
+      "must redirect to Profile for a POST and not submit data if value is the same as original" in {
+        val answer = "SN12345"
+
+        val traderProfile = TraderProfile(testEori, "1", Some("2"), Some(answer), eoriChanged = false)
 
         val userAnswers = emptyUserAnswers
-          .set(HasNirmsUpdatePage, true)
+          .set(HasNiphlUpdatePage, true)
           .success
           .value
-          .set(NirmsNumberUpdatePage, answer)
+          .set(NiphlNumberUpdatePage, answer)
           .success
           .value
+
+        val mockAuditService = mock[AuditService]
 
         when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
@@ -363,19 +447,26 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
               bind[SessionRepository].toInstance(mockSessionRepository),
-              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+              bind[AuditService].toInstance(mockAuditService)
             )
             .build()
 
         running(application) {
           val request =
-            FakeRequest(POST, nirmsNumberRoute)
+            FakeRequest(POST, niphlNumberRouteUpdate)
               .withFormUrlEncodedBody(("value", answer))
 
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.CyaMaintainProfileController.onPageLoadNirmsNumber().url
+          redirectLocation(result).value mustEqual routes.CyaMaintainProfileController.onPageLoadNiphlNumber().url
+          verify(mockTraderProfileConnector, never())
+            .submitTraderProfile(any(), any())(any())
+
+          withClue("must not try and submit an audit") {
+            verify(mockAuditService, never()).auditMaintainProfile(any(), any(), any())(any())
+          }
         }
       }
 
@@ -385,98 +476,20 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, nirmsNumberRoute)
+            FakeRequest(POST, niphlNumberRouteUpdate)
               .withFormUrlEncodedBody(("value", ""))
 
           val boundForm = form.bind(Map("value" -> ""))
 
-          val view = application.injector.instanceOf[NirmsNumberView]
+          val view = application.injector.instanceOf[NiphlNumberView]
 
           val result = route(application, request).value
 
           status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(boundForm, routes.NirmsNumberController.onSubmitUpdate(NormalMode))(
+          contentAsString(result) mustEqual view(boundForm, routes.NiphlNumberController.onSubmitUpdate(NormalMode))(
             request,
             messages(application)
           ).toString
-        }
-      }
-
-      "must redirect to Journey Recovery for a GET if HasNirms hasn't been answered and trader profile has no nirms number" in {
-
-        val traderProfile    = TraderProfile(testEori, "1", None, Some("3"), eoriChanged = false)
-        val mockAuditService = mock[AuditService]
-
-        when(mockTraderProfileConnector.getTraderProfile(eqTo(testEori))(any())) thenReturn Future.successful(
-          traderProfile
-        )
-
-        when(mockSessionRepository.set(any())) thenReturn Future.successful(
-          true
-        )
-
-        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-            bind[SessionRepository].toInstance(mockSessionRepository),
-            bind[AuditService].toInstance(mockAuditService)
-          )
-          .build()
-
-        val expectedRedirectLocation =
-          routes.JourneyRecoveryController
-            .onPageLoad(
-              Some(RedirectUrl(routes.ProfileController.onPageLoad().url))
-            )
-            .url
-
-        running(application) {
-          val request = FakeRequest(GET, nirmsNumberRoute)
-
-          val result = route(application, request).value
-
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual expectedRedirectLocation
-        }
-      }
-
-      "must redirect to Journey Recovery for a GET if HasNirms has been answered no" in {
-
-        val traderProfile    = TraderProfile(testEori, "1", Some("2"), Some("3"), false)
-        val mockAuditService = mock[AuditService]
-
-        when(mockTraderProfileConnector.getTraderProfile(eqTo(testEori))(any())) thenReturn Future.successful(
-          traderProfile
-        )
-
-        when(mockSessionRepository.set(any())) thenReturn Future.successful(
-          true
-        )
-
-        val userAnswers = emptyUserAnswers.set(HasNirmsUpdatePage, false).success.value
-
-        val application = applicationBuilder(userAnswers = Some(userAnswers))
-          .overrides(
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-            bind[SessionRepository].toInstance(mockSessionRepository),
-            bind[AuditService].toInstance(mockAuditService)
-          )
-          .build()
-
-        val expectedRedirectLocation =
-          routes.JourneyRecoveryController
-            .onPageLoad(
-              Some(RedirectUrl(routes.ProfileController.onPageLoad().url))
-            )
-            .url
-
-        running(application) {
-          val request = FakeRequest(GET, nirmsNumberRoute)
-
-          val result = route(application, request).value
-
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual expectedRedirectLocation
         }
       }
 
@@ -486,7 +499,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, nirmsNumberRoute)
+          val request = FakeRequest(GET, niphlNumberRouteUpdate)
 
           val result = route(application, request).value
 
@@ -501,7 +514,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, nirmsNumberRoute)
+            FakeRequest(POST, niphlNumberRouteUpdate)
               .withFormUrlEncodedBody(("value", "answer"))
 
           val result = route(application, request).value
@@ -510,7 +523,6 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
           redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
         }
       }
-
     }
   }
 }

@@ -26,7 +26,7 @@ import pages.{NirmsNumberUpdatePage, RemoveNirmsPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import views.html.RemoveNirmsView
+import views.html.profile.RemoveNirmsView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}

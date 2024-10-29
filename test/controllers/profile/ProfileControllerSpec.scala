@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.profile
 
 import base.SpecBase
 import connectors.TraderProfileConnector
@@ -30,7 +30,6 @@ import repositories.SessionRepository
 import uk.gov.hmrc.http.NotFoundException
 import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
-import views.html.ProfileView
 
 import scala.concurrent.Future
 

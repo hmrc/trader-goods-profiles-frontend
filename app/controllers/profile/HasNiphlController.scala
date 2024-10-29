@@ -28,7 +28,7 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.TraderProfileQuery
 import repositories.SessionRepository
-import views.html.HasNiphlView
+import views.html.profile.HasNiphlView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}

@@ -20,7 +20,7 @@ import controllers.BaseController
 import controllers.actions._
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import views.html.CreateProfileSuccessView
+import views.html.profile.CreateProfileSuccessView
 
 import javax.inject.Inject
 

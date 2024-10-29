@@ -27,7 +27,7 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.HistoricProfileDataQuery
 import repositories.SessionRepository
-import views.html.ProfileSetupView
+import views.html.profile.ProfileSetupView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}

@@ -57,7 +57,7 @@
     <h2 class="govuk-heading-m">@messages("homepage.h2.2")</h2>
 
     <p class="govuk-body">
-        <a href="@profile.routes.ProfileController.onPageLoad().url" class="govuk-link">@messages("homepage.p5.linkText")</a>
+        <a href="@controllers.profile.routes.ProfileController.onPageLoad().url" class="govuk-link">@messages("homepage.p5.linkText")</a>
     </p>
 
     @if(appConfig.downloadFileEnabled) {

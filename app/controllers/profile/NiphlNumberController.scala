@@ -28,7 +28,7 @@ import pages.{HasNiphlUpdatePage, NiphlNumberPage, NiphlNumberUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import views.html.NiphlNumberView
+import views.html.profile.NiphlNumberView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}

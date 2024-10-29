@@ -42,7 +42,7 @@
             content = Text(messages("removeNirms.warningText"))
                 ))
 
-    @formHelper(action = profile.routes.RemoveNirmsController.onSubmit(), Symbol("autoComplete") -> "off") {
+    @formHelper(action = controllers.profile.routes.RemoveNirmsController.onSubmit(), Symbol("autoComplete") -> "off") {
 
         @govukRadios(
             RadiosViewModel.apply(

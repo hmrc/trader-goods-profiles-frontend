@@ -29,7 +29,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{AuditService, DataCleansingService}
 import viewmodels.checkAnswers._
 import viewmodels.govuk.summarylist._
-import views.html.CyaCreateProfileView
+import views.html.profile.CyaCreateProfileView
 
 import scala.concurrent.{ExecutionContext, Future}
 

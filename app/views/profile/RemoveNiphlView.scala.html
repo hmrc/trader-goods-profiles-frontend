@@ -43,7 +43,7 @@
             content = Text(messages("removeNiphl.warningText"))
              ))
 
-    @formHelper(action = profile.routes.RemoveNiphlController.onSubmit(), Symbol("autoComplete") -> "off") {
+    @formHelper(action = controllers.profile.routes.RemoveNiphlController.onSubmit(), Symbol("autoComplete") -> "off") {
 
         @govukRadios(
                 RadiosViewModel.apply(

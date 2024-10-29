@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.profile
 
 import base.SpecBase
 import base.TestConstants.testEori
@@ -29,7 +29,6 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
-import views.html.ProfileSetupView
 
 import scala.concurrent.Future
 

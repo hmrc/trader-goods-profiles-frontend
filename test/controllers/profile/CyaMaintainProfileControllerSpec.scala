@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.profile
 
 import base.SpecBase
 import base.TestConstants.testEori
@@ -25,7 +25,7 @@ import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{HasNiphlUpdatePage, HasNirmsUpdatePage, NiphlNumberUpdatePage, NirmsNumberUpdatePage, RemoveNiphlPage, RemoveNirmsPage, UkimsNumberUpdatePage}
+import pages._
 import play.api.Application
 import play.api.inject.bind
 import play.api.mvc.Call
@@ -36,10 +36,9 @@ import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import utils.Constants.{hasNiphlKey, hasNirmsKey, niphlNumberKey, nirmsNumberKey, ukimsNumberKey}
-import viewmodels.checkAnswers.{HasNiphlSummary, HasNirmsSummary, NiphlNumberSummary, NirmsNumberSummary, UkimsNumberSummary}
+import utils.Constants._
+import viewmodels.checkAnswers._
 import viewmodels.govuk.SummaryListFluency
-import views.html.CyaMaintainProfileView
 
 import scala.concurrent.Future
 

@@ -27,7 +27,7 @@ import pages.{HasNirmsUpdatePage, NirmsNumberPage, NirmsNumberUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import views.html.NirmsNumberView
+import views.html.profile.NirmsNumberView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}

@@ -14,32 +14,31 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.profile
 
 import base.SpecBase
 import base.TestConstants.{testEori, userAnswersId}
 import connectors.TraderProfileConnector
-import forms.HasNirmsFormProvider
+import forms.HasNiphlFormProvider
 import models.{NormalMode, TraderProfile, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{HasNirmsPage, HasNirmsUpdatePage}
+import pages.{HasNiphlPage, HasNiphlUpdatePage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
-import views.html.HasNirmsView
 
 import scala.concurrent.Future
 
-class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
+class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
 
   private def onwardRoute = Call("GET", "/foo")
 
-  val formProvider = new HasNirmsFormProvider()
+  val formProvider = new HasNiphlFormProvider()
   private val form = formProvider()
 
   val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
@@ -48,11 +47,13 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
 
   when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
 
-  "HasNirmsController" - {
+  private lazy val hasNiphlRouteCreate = routes.HasNiphlController.onPageLoadCreate(NormalMode).url
+
+  private lazy val hasNiphlRouteUpdate = routes.HasNiphlController.onPageLoadUpdate(NormalMode).url
+
+  "HasNiphlController" - {
 
     ".create" - {
-
-      val hasNirmsRoute = routes.HasNirmsController.onPageLoadCreate(NormalMode).url
 
       "must return OK and the correct view for a GET" in {
 
@@ -63,14 +64,14 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, hasNirmsRoute)
+          val request = FakeRequest(GET, hasNiphlRouteCreate)
 
           val result = route(application, request).value
 
-          val view = application.injector.instanceOf[HasNirmsView]
+          val view = application.injector.instanceOf[HasNiphlView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form, routes.HasNirmsController.onSubmitCreate(NormalMode))(
+          contentAsString(result) mustEqual view(form, routes.HasNiphlController.onSubmitCreate(NormalMode))(
             request,
             messages(application)
           ).toString
@@ -79,7 +80,7 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
 
       "must populate the view correctly on a GET when the question has previously been answered" in {
 
-        val userAnswers = UserAnswers(userAnswersId).set(HasNirmsPage, true).success.value
+        val userAnswers = UserAnswers(userAnswersId).set(HasNiphlPage, true).success.value
 
         val application = applicationBuilder(userAnswers = Some(userAnswers))
           .overrides(
@@ -88,14 +89,14 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, hasNirmsRoute)
+          val request = FakeRequest(GET, hasNiphlRouteCreate)
 
-          val view = application.injector.instanceOf[HasNirmsView]
+          val view = application.injector.instanceOf[HasNiphlView]
 
           val result = route(application, request).value
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form.fill(true), routes.HasNirmsController.onSubmitCreate(NormalMode))(
+          contentAsString(result) mustEqual view(form.fill(true), routes.HasNiphlController.onSubmitCreate(NormalMode))(
             request,
             messages(application)
           ).toString
@@ -117,7 +118,7 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, hasNirmsRoute)
+            FakeRequest(POST, hasNiphlRouteCreate)
               .withFormUrlEncodedBody(("value", "true"))
 
           val result = route(application, request).value
@@ -137,17 +138,17 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, hasNirmsRoute)
+            FakeRequest(POST, hasNiphlRouteCreate)
               .withFormUrlEncodedBody(("value", ""))
 
           val boundForm = form.bind(Map("value" -> ""))
 
-          val view = application.injector.instanceOf[HasNirmsView]
+          val view = application.injector.instanceOf[HasNiphlView]
 
           val result = route(application, request).value
 
           status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(boundForm, routes.HasNirmsController.onSubmitCreate(NormalMode))(
+          contentAsString(result) mustEqual view(boundForm, routes.HasNiphlController.onSubmitCreate(NormalMode))(
             request,
             messages(application)
           ).toString
@@ -163,7 +164,7 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, hasNirmsRoute)
+          val request = FakeRequest(GET, hasNiphlRouteCreate)
 
           val result = route(application, request).value
 
@@ -183,7 +184,7 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, hasNirmsRoute)
+          val request = FakeRequest(GET, hasNiphlRouteCreate)
 
           val result = route(application, request).value
 
@@ -202,7 +203,7 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, hasNirmsRoute)
+            FakeRequest(POST, hasNiphlRouteCreate)
               .withFormUrlEncodedBody(("value", "true"))
 
           val result = route(application, request).value
@@ -214,8 +215,6 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
     }
 
     ".update" - {
-
-      val hasNirmsRoute = routes.HasNirmsController.onPageLoadUpdate(NormalMode).url
 
       "must return OK and the correct view for a GET with saved answers" in {
 
@@ -237,14 +236,14 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, hasNirmsRoute)
+          val request = FakeRequest(GET, hasNiphlRouteUpdate)
 
           val result = route(application, request).value
 
-          val view = application.injector.instanceOf[HasNirmsView]
+          val view = application.injector.instanceOf[HasNiphlView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form.fill(true), routes.HasNirmsController.onSubmitUpdate(NormalMode))(
+          contentAsString(result) mustEqual view(form.fill(true), routes.HasNiphlController.onSubmitUpdate(NormalMode))(
             request,
             messages(application)
           ).toString
@@ -253,7 +252,7 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
 
       "must populate the view correctly on a GET when the question has previously been answered" in {
 
-        val userAnswers = UserAnswers(userAnswersId).set(HasNirmsUpdatePage, true).success.value
+        val userAnswers = UserAnswers(userAnswersId).set(HasNiphlUpdatePage, true).success.value
 
         val application = applicationBuilder(userAnswers = Some(userAnswers))
           .overrides(
@@ -262,14 +261,14 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, hasNirmsRoute)
+          val request = FakeRequest(GET, hasNiphlRouteUpdate)
 
-          val view = application.injector.instanceOf[HasNirmsView]
+          val view = application.injector.instanceOf[HasNiphlView]
 
           val result = route(application, request).value
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form.fill(true), routes.HasNirmsController.onSubmitUpdate(NormalMode))(
+          contentAsString(result) mustEqual view(form.fill(true), routes.HasNiphlController.onSubmitUpdate(NormalMode))(
             request,
             messages(application)
           ).toString
@@ -280,7 +279,7 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
 
         when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
-        val traderProfile = TraderProfile(testEori, "1", None, Some("3"), eoriChanged = false)
+        val traderProfile = TraderProfile(testEori, "1", Some("2"), None, eoriChanged = false)
 
         when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
 
@@ -295,7 +294,7 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, hasNirmsRoute)
+            FakeRequest(POST, hasNiphlRouteUpdate)
               .withFormUrlEncodedBody(("value", "true"))
 
           val result = route(application, request).value
@@ -324,7 +323,7 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, hasNirmsRoute)
+            FakeRequest(POST, hasNiphlRouteUpdate)
               .withFormUrlEncodedBody(("value", "true"))
 
           val result = route(application, request).value
@@ -341,17 +340,17 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, hasNirmsRoute)
+            FakeRequest(POST, hasNiphlRouteUpdate)
               .withFormUrlEncodedBody(("value", ""))
 
           val boundForm = form.bind(Map("value" -> ""))
 
-          val view = application.injector.instanceOf[HasNirmsView]
+          val view = application.injector.instanceOf[HasNiphlView]
 
           val result = route(application, request).value
 
           status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(boundForm, routes.HasNirmsController.onSubmitUpdate(NormalMode))(
+          contentAsString(result) mustEqual view(boundForm, routes.HasNiphlController.onSubmitUpdate(NormalMode))(
             request,
             messages(application)
           ).toString
@@ -364,7 +363,7 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, hasNirmsRoute)
+          val request = FakeRequest(GET, hasNiphlRouteUpdate)
 
           val result = route(application, request).value
 
@@ -380,7 +379,7 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, hasNirmsRoute)
+            FakeRequest(POST, hasNiphlRouteUpdate)
               .withFormUrlEncodedBody(("value", "true"))
 
           val result = route(application, request).value

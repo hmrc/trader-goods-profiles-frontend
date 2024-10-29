@@ -34,7 +34,7 @@ import utils.Constants._
 import utils.SessionData._
 import viewmodels.checkAnswers.{HasNiphlSummary, HasNirmsSummary, NiphlNumberSummary, NirmsNumberSummary, UkimsNumberSummary}
 import viewmodels.govuk.summarylist._
-import views.html.CyaMaintainProfileView
+import views.html.profile.CyaMaintainProfileView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}

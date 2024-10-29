@@ -14,39 +14,26 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.profile
 
 import base.SpecBase
-import connectors.TraderProfileConnector
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
-import org.scalatestplus.mockito.MockitoSugar.mock
-import play.api.inject
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import views.html.CreateProfileSuccessView
 
-import scala.concurrent.Future
+class UkimsNumberChangeControllerSpec extends SpecBase {
 
-class CreateProfileSuccessControllerSpec extends SpecBase {
-
-  "CreateRecordSuccess Controller" - {
+  "UkimsNumberChangeController Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
-      val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-      when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
-
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(inject.bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
-        .build()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.CreateProfileSuccessController.onPageLoad().url)
+        val request = FakeRequest(GET, routes.UkimsNumberChangeController.onPageLoad().url)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[CreateProfileSuccessView]
+        val view = application.injector.instanceOf[UkimsNumberChangeView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view()(request, messages(application)).toString

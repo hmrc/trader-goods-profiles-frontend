@@ -27,7 +27,7 @@ import pages.{UkimsNumberPage, UkimsNumberUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import views.html.UkimsNumberView
+import views.html.profile.UkimsNumberView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}

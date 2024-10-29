@@ -14,41 +14,40 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.profile
 
 import base.SpecBase
 import base.TestConstants.{testEori, userAnswersId}
 import connectors.TraderProfileConnector
-import forms.RemoveNiphlFormProvider
+import forms.RemoveNirmsFormProvider
 import models.{TraderProfile, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{HasNiphlUpdatePage, NiphlNumberUpdatePage, RemoveNiphlPage}
+import pages.{HasNirmsUpdatePage, NirmsNumberUpdatePage, RemoveNirmsPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
-import views.html.RemoveNiphlView
 
 import scala.concurrent.Future
 
-class RemoveNiphlControllerSpec extends SpecBase with MockitoSugar {
+class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
 
   private def onwardRoute = Call("GET", "/foo")
 
-  val formProvider = new RemoveNiphlFormProvider()
+  val formProvider = new RemoveNirmsFormProvider()
   private val form = formProvider()
 
-  private lazy val removeNiphlRoute = routes.RemoveNiphlController.onPageLoad().url
+  private lazy val removeNirmsRoute = routes.RemoveNirmsController.onPageLoad().url
 
   private val mockTraderProfileConnector = mock[TraderProfileConnector]
   when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
-  "RemoveNiphl Controller" - {
+  "RemoveNirms Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
@@ -57,11 +56,11 @@ class RemoveNiphlControllerSpec extends SpecBase with MockitoSugar {
         .build()
 
       running(application) {
-        val request = FakeRequest(GET, removeNiphlRoute)
+        val request = FakeRequest(GET, removeNirmsRoute)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[RemoveNiphlView]
+        val view = application.injector.instanceOf[RemoveNirmsView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form)(request, messages(application)).toString
@@ -70,17 +69,17 @@ class RemoveNiphlControllerSpec extends SpecBase with MockitoSugar {
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(RemoveNiphlPage, true).success.value
+      val userAnswers = UserAnswers(userAnswersId).set(RemoveNirmsPage, true).success.value
       val application = applicationBuilder(userAnswers = Some(userAnswers))
         .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
         .build()
 
       running(application) {
-        val request = FakeRequest(GET, removeNiphlRoute)
+        val request = FakeRequest(GET, removeNirmsRoute)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[RemoveNiphlView]
+        val view = application.injector.instanceOf[RemoveNirmsView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form.fill(true))(request, messages(application)).toString
@@ -93,7 +92,7 @@ class RemoveNiphlControllerSpec extends SpecBase with MockitoSugar {
       when(mockSessionRepository.set(finalUserAnswersCaptor.capture())).thenReturn(Future.successful(true))
 
       when(mockTraderProfileConnector.getTraderProfile(any())(any())).thenReturn(
-        Future.successful(TraderProfile(testEori, "1", None, Some("SN12345"), eoriChanged = false))
+        Future.successful(TraderProfile(testEori, "1", Some("RMS-GB-848211"), None, eoriChanged = false))
       )
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -106,7 +105,7 @@ class RemoveNiphlControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, removeNiphlRoute)
+          FakeRequest(POST, removeNirmsRoute)
             .withFormUrlEncodedBody(("value", "false"))
 
         val result = route(application, request).value
@@ -117,37 +116,38 @@ class RemoveNiphlControllerSpec extends SpecBase with MockitoSugar {
         val finalUserAnswers = finalUserAnswersCaptor.getValue
 
         withClue("must have saved the answer") {
-          finalUserAnswers.get(RemoveNiphlPage).get mustBe false
+          finalUserAnswers.get(RemoveNirmsPage).get mustBe false
         }
 
-        withClue("must have saved the niphl number as future items will depend on it") {
-          finalUserAnswers.get(NiphlNumberUpdatePage).get mustBe "SN12345"
+        withClue("must have saved the nirms number as future items will depend on it") {
+          finalUserAnswers.get(NirmsNumberUpdatePage).get mustBe "RMS-GB-848211"
         }
 
       }
     }
 
-    "must redirect to the next page when No submitted and not overwrite the existing niphl value" in {
+    "must redirect to the next page when No submitted and not overwrite the existing nirms value" in {
       val mockSessionRepository                               = mock[SessionRepository]
       val finalUserAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
       when(mockSessionRepository.set(finalUserAnswersCaptor.capture())).thenReturn(Future.successful(true))
 
       when(mockTraderProfileConnector.getTraderProfile(any())(any())).thenReturn(
-        Future.successful(TraderProfile(testEori, "1", None, Some("SN12345"), eoriChanged = false))
+        Future.successful(TraderProfile(testEori, "1", Some("RMS-GB-848211"), None, eoriChanged = false))
       )
 
-      val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers.set(NiphlNumberUpdatePage, "SN12346").success.value))
-          .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-            bind[SessionRepository].toInstance(mockSessionRepository)
-          )
-          .build()
+      val application = applicationBuilder(userAnswers =
+        Some(emptyUserAnswers.set(NirmsNumberUpdatePage, "RMS-XI-111333").success.value)
+      )
+        .overrides(
+          bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+          bind[SessionRepository].toInstance(mockSessionRepository)
+        )
+        .build()
 
       running(application) {
         val request =
-          FakeRequest(POST, removeNiphlRoute)
+          FakeRequest(POST, removeNirmsRoute)
             .withFormUrlEncodedBody(("value", "false"))
 
         val result = route(application, request).value
@@ -158,28 +158,27 @@ class RemoveNiphlControllerSpec extends SpecBase with MockitoSugar {
         val finalUserAnswers = finalUserAnswersCaptor.getValue
 
         withClue("must have saved the answer") {
-          finalUserAnswers.get(RemoveNiphlPage).get mustBe false
+          finalUserAnswers.get(RemoveNirmsPage).get mustBe false
         }
 
-        withClue("must not overwrite the user entered niphl") {
-          finalUserAnswers.get(NiphlNumberUpdatePage).get mustBe "SN12346"
+        withClue("must not overwrite the user entered nirms") {
+          finalUserAnswers.get(NirmsNumberUpdatePage).get mustBe "RMS-XI-111333"
         }
 
       }
     }
 
-    "must redirect to the next page when Yes submitted" in {
-
+    "must redirect to the next page when Yes submitted and save the answers" in {
       val mockSessionRepository                               = mock[SessionRepository]
       val finalUserAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
       when(mockSessionRepository.set(finalUserAnswersCaptor.capture())).thenReturn(Future.successful(true))
 
       when(mockTraderProfileConnector.getTraderProfile(any())(any())).thenReturn(
-        Future.successful(TraderProfile(testEori, "1", None, Some("933844"), eoriChanged = false))
+        Future.successful(TraderProfile(testEori, "1", Some("RMS-GB-848211"), None, eoriChanged = false))
       )
 
       val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers.set(HasNiphlUpdatePage, false).success.value))
+        applicationBuilder(userAnswers = Some(emptyUserAnswers.set(HasNirmsUpdatePage, false).success.value))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
@@ -189,7 +188,7 @@ class RemoveNiphlControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, removeNiphlRoute)
+          FakeRequest(POST, removeNirmsRoute)
             .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
@@ -200,11 +199,11 @@ class RemoveNiphlControllerSpec extends SpecBase with MockitoSugar {
         val finalUserAnswers = finalUserAnswersCaptor.getValue
 
         withClue("must have saved the answer") {
-          finalUserAnswers.get(RemoveNiphlPage).get mustBe true
+          finalUserAnswers.get(RemoveNirmsPage).get mustBe true
         }
 
         withClue("must not have saved the nirms number as not needed") {
-          finalUserAnswers.get(NiphlNumberUpdatePage) mustBe None
+          finalUserAnswers.get(NirmsNumberUpdatePage) mustBe None
         }
       }
     }
@@ -217,12 +216,12 @@ class RemoveNiphlControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, removeNiphlRoute)
+          FakeRequest(POST, removeNirmsRoute)
             .withFormUrlEncodedBody(("value", ""))
 
         val boundForm = form.bind(Map("value" -> ""))
 
-        val view = application.injector.instanceOf[RemoveNiphlView]
+        val view = application.injector.instanceOf[RemoveNirmsView]
 
         val result = route(application, request).value
 
@@ -238,7 +237,7 @@ class RemoveNiphlControllerSpec extends SpecBase with MockitoSugar {
         .build()
 
       running(application) {
-        val request = FakeRequest(GET, removeNiphlRoute)
+        val request = FakeRequest(GET, removeNirmsRoute)
 
         val result = route(application, request).value
 
@@ -255,7 +254,7 @@ class RemoveNiphlControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, removeNiphlRoute)
+          FakeRequest(POST, removeNirmsRoute)
             .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
@@ -264,6 +263,5 @@ class RemoveNiphlControllerSpec extends SpecBase with MockitoSugar {
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
     }
-
   }
 }
