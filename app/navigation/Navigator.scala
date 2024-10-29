@@ -564,26 +564,25 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
   }
 
   private def navigateFromReassessmentCheck(assessmentPage: ReassessmentPage)(answers: UserAnswers): Call = {
-    val recordId = assessmentPage.recordId
-    val nextIndex = assessmentPage.index + 1
+    val recordId   = assessmentPage.recordId
+    val nextIndex  = assessmentPage.index + 1
     val nextNumber = nextIndex + 1
 
     for {
       categorisationInfo <- answers.get(LongerCategorisationDetailsQuery(recordId))
-      assessmentCount = categorisationInfo.categoryAssessmentsThatNeedAnswers.size
+      assessmentCount     = categorisationInfo.categoryAssessmentsThatNeedAnswers.size
       assessmentQuestion <- categorisationInfo.getAssessmentFromIndex(assessmentPage.index)
-      assessmentAnswer <- answers.get(assessmentPage)
-      nextAnswer = answers.get(ReassessmentPage(recordId, nextIndex))
+      assessmentAnswer   <- answers.get(assessmentPage)
+      nextAnswer          = answers.get(ReassessmentPage(recordId, nextIndex))
     } yield assessmentAnswer.answer match {
-      case AssessmentAnswer.Exemption(_)
-        if nextIndex < assessmentCount && reassessmentAnswerIsEmpty(nextAnswer) =>
+      case AssessmentAnswer.Exemption(_) if nextIndex < assessmentCount && reassessmentAnswerIsEmpty(nextAnswer) =>
         routes.AssessmentController.onPageLoadReassessment(CheckMode, recordId, nextNumber)
-      case AssessmentAnswer.Exemption(_) if nextIndex < assessmentCount =>
+      case AssessmentAnswer.Exemption(_) if nextIndex < assessmentCount                                          =>
         navigateFromReassessmentCheck(ReassessmentPage(recordId, nextIndex))(answers)
       case AssessmentAnswer.NoExemption
-        if shouldGoToSupplementaryUnitCheck(answers, categorisationInfo, assessmentQuestion, recordId) =>
+          if shouldGoToSupplementaryUnitCheck(answers, categorisationInfo, assessmentQuestion, recordId) =>
         routes.HasSupplementaryUnitController.onPageLoad(CheckMode, recordId)
-      case _ =>
+      case _                                                                                                     =>
         routes.CyaCategorisationController.onPageLoad(recordId)
     }
   } getOrElse routes.JourneyRecoveryController.onPageLoad()
