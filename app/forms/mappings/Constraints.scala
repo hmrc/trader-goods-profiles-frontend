@@ -17,9 +17,9 @@
 package forms.mappings
 
 import org.apache.commons.validator.routines.EmailValidator
+import play.api.data.validation.{Constraint, Invalid, Valid}
 
 import java.time.LocalDate
-import play.api.data.validation.{Constraint, Invalid, Valid}
 
 trait Constraints {
 

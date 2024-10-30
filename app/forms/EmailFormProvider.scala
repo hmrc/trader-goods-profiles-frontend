@@ -16,6 +16,7 @@
 
 package forms
 
+import javax.inject.Inject
 import forms.mappings.Mappings
 import forms.mappings.helpers.FormatAnswers.removeWhitespace
 import forms.mappings.helpers.StopOnFirstFail
@@ -23,7 +24,6 @@ import models.StringFieldRegex
 import play.api.data.Form
 import utils.Constants
 
-import javax.inject.Inject
 class EmailFormProvider @Inject() extends Mappings {
 
   def apply(): Form[String] =
