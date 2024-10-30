@@ -489,7 +489,7 @@ removeNirms.error.required = Confirm if you want to remove your NIRMS details
 removeNirms.yes = Yes, remove my NIRMS details
 removeNirms.no = No, do not remove my NIRMS details
 removeNirms.warning = Warning
-removeNirms.warningText = If you move goods under SPIMM and they are not eligible to, you could be liable for any incorrectly declared goods.
+removeNirms.warningText = If you move goods under SPIMM and they are not eligible, you could be liable for any incorrectly declared goods.
 
 removeNiphl.title = Removing NIPHL details
 removeNiphl.h1 = Removing NIPHL details
@@ -500,7 +500,7 @@ removeNiphl.error.required = Confirm if you want to remove your NIPHL details
 removeNiphl.yes = Yes, remove my NIPHL details
 removeNiphl.no = No, do not remove my NIPHL details
 removeNiphl.warning = Warning
-removeNiphl.warningText = If you move goods under SPIMM and they are not eligible to, you could be liable for any incorrectly declared goods.
+removeNiphl.warningText = If you move goods under SPIMM and they are not eligible, you could be liable for any incorrectly declared goods.
 
 helpAndSupport.title = Help and support
 helpAndSupport.h1 = Help and support
