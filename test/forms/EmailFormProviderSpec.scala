@@ -25,11 +25,12 @@ class EmailFormProviderSpec extends StringFieldBehaviours {
   val lengthKey        = "email.error.length"
   val invalidFormatKey = "email.error.invalidFormat"
 
-  val validEmail           = "test@test.co.uk"
-  val validEmailWithSpaces = "test @test.co.uk"
-  val invalidEmail         = "test"
-  val longValidEmail       =
+  val validEmail             = "test@test.co.uk"
+  val validEmailWithSpaces   = "test @test.co.uk"
+  val invalidEmail           = "test"
+  val longValidEmail         =
     "123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890@test.co.uk"
+  val emailWithInvalidDomain = "test@sddffr.dcvsd"
 
   val form = new EmailFormProvider()()
 
@@ -68,6 +69,16 @@ class EmailFormProviderSpec extends StringFieldBehaviours {
         form,
         fieldName,
         invalidEmail,
+        invalidError = FormError(fieldName, invalidFormatKey)
+      )
+    }
+
+    "invalid email domain" - {
+
+      behave like fieldThatErrorsOnInvalidData(
+        form,
+        fieldName,
+        emailWithInvalidDomain,
         invalidError = FormError(fieldName, invalidFormatKey)
       )
     }

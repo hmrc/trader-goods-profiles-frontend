@@ -21,14 +21,33 @@ import forms.mappings.Mappings
 import forms.mappings.helpers.FormatAnswers.removeWhitespace
 import models.StringFieldRegex
 import play.api.data.Form
-
+import play.api.data.validation.{Constraint, Invalid, Valid}
+import org.apache.commons.validator.routines.EmailValidator
+import utils.Constants
 class EmailFormProvider @Inject() extends Mappings {
 
   def apply(): Form[String] =
     Form(
       "value" -> text("email.error.required")
         .transform(removeWhitespace, identity[String])
-        .verifying(maxLength(254, "email.error.length"))
-        .verifying(regexp(StringFieldRegex.emailRegex, "email.error.invalidFormat"))
+        .verifying(emailConstraint)
     )
+
+  private def emailConstraint: Constraint[String] = {
+    val maxLengthConstraint = maxLength(Constants.maximumEmailLength, "email.error.length")
+    val regexConstraint     = regexp(StringFieldRegex.emailRegex, "email.error.invalidFormat")
+    val emailValidator      = EmailValidator.getInstance(true)
+
+    Constraint { email =>
+      maxLengthConstraint(email) match {
+        case Valid            =>
+          regexConstraint(email) match {
+            case Valid if emailValidator.isValid(email) => Valid
+            case Valid                                  => Invalid("email.error.invalidFormat") // Returns if the email fails the EmailValidator check
+            case invalid: Invalid                       => invalid // Returns if the email fails the regex pattern check
+          }
+        case invalid: Invalid => invalid // Returns if the email exceeds the maximum length
+      }
+    }
+  }
 }
