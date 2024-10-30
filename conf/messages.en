@@ -477,7 +477,7 @@ profile.h1 = Profile details
 profile.h2 = UKIMS, NIRMS and NIPHL
 profile.p1 = Check the details on your profile are correct. You can change your UKIMS number or add, change and remove NIRMS and NIPHL information.
 profile.warning = Warning
-profile.warningText = You need to make sure these details are correct. Any movements you use details from TGP to create, will not be valid if they are wrong.
+profile.warningText = You need to make sure these details are correct before using them to create a movement.
 profile.back = Back to homepage
 
 removeNirms.title = Removing NIRMS details

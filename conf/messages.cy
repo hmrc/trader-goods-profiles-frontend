@@ -535,10 +535,8 @@ profile.h1 = Manylion y proffil
 profile.h2 = UKIMS, NIRMS a’r NIPHL
 profile.p1 = Gwiriwch fod y manylion ar eich proffil yn gywir. Gallwch newid eich rhif UKIMS neu ychwanegu, newid a dileu gwybodaeth NIRMS a NIPHL.
 profile.warning = Rhybudd
-profile.warningText = Mae angen i chi wneud yn siŵr bod y manylion hyn yn gywir. Ni fydd unrhyw symudiadau y byddwch yn defnyddio manylion o’r TGP i’w creu yn ddilys os byddant yn anghywir.
+profile.warningText = Mae angen i chi wneud yn siŵr bod y manylion hyn yn gywir cyn eu defnyddio i greu symudiad.
 profile.back = Yn ôl i’r hafan
-
-
 
 removeNirms.title = Tynnu manylion y contract
 removeNirms.h1 = Tynnu manylion y contract
