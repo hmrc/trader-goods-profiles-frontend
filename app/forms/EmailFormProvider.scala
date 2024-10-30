@@ -16,38 +16,26 @@
 
 package forms
 
-import javax.inject.Inject
 import forms.mappings.Mappings
 import forms.mappings.helpers.FormatAnswers.removeWhitespace
+import forms.mappings.helpers.StopOnFirstFail
 import models.StringFieldRegex
 import play.api.data.Form
-import play.api.data.validation.{Constraint, Invalid, Valid}
-import org.apache.commons.validator.routines.EmailValidator
 import utils.Constants
+
+import javax.inject.Inject
 class EmailFormProvider @Inject() extends Mappings {
 
   def apply(): Form[String] =
     Form(
       "value" -> text("email.error.required")
         .transform(removeWhitespace, identity[String])
-        .verifying(emailConstraint)
+        .verifying(
+          StopOnFirstFail[String](
+            maxLength(Constants.maximumEmailLength, "email.error.length"),
+            regexp(StringFieldRegex.emailRegex, "email.error.invalidFormat"),
+            email("email.error.invalidFormat")
+          )
+        )
     )
-
-  private def emailConstraint: Constraint[String] = {
-    val maxLengthConstraint = maxLength(Constants.maximumEmailLength, "email.error.length")
-    val regexConstraint     = regexp(StringFieldRegex.emailRegex, "email.error.invalidFormat")
-    val emailValidator      = EmailValidator.getInstance(true)
-
-    Constraint { email =>
-      maxLengthConstraint(email) match {
-        case Valid            =>
-          regexConstraint(email) match {
-            case Valid if emailValidator.isValid(email) => Valid
-            case Valid                                  => Invalid("email.error.invalidFormat") // Returns if the email fails the EmailValidator check
-            case invalid: Invalid                       => invalid // Returns if the email fails the regex pattern check
-          }
-        case invalid: Invalid => invalid // Returns if the email exceeds the maximum length
-      }
-    }
-  }
 }
