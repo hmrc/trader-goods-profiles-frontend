@@ -649,7 +649,7 @@ singleRecord.recordLocked = Mae’r cofnod hwn wedi’i gloi gan eich bod wedi g
 
 previousMovementRecords.title = Cofnodion symud blaenorol
 previousMovementRecords.h1 = Cofnodion symud blaenorol
-previousMovementRecords.p1 = Mae gan Broffil Nwyddau Masnachwr (TGP) eich gwybodaeth symud flaenorol o 01/04/2023 i 19/06/2024 wedi’i chadw fel cofnodion unigol. Mae CThEF wedi tynnu unrhyw gofnodion dyblyg. Mae’n bosibl y byddwch am wirio bod gwybodaeth y cofnod yn gywir cyn eu defnyddio ar symudiad.
+previousMovementRecords.p1 = Mae gan Broffil Nwyddau Masnachwr (TGP) eich gwybodaeth symud flaenorol o 1 Ebrill 2023 i 19 Mehefin 2024 wedi’i chadw fel cofnodion unigol. Mae CThEF wedi tynnu unrhyw gofnodion dyblyg. Mae’n bosibl y byddwch am wirio bod gwybodaeth y cofnod yn gywir cyn eu defnyddio ar symudiad.
 previousMovementRecords.p2 = Mae TGP wedi creu cyfeirnodau masnachwr o wybodaeth sydd gennym eisoes. Gallwch newid y cyfeirnod masnachwr at unrhyw beth i’ch helpu i nodi’r cofnod.
 previousMovementRecords.h2 = Gwladwriaethau
 previousMovementRecords.p3 = Bydd TGP yn rhoi gwybod i chi a yw cofnod yn barod i symud o dan Gwybodaeth Symud Marchnad Fewnol (IMMI) trwy ddefnyddio gwladwriaethau. Gallwch weld y gwladwriaethau ar eich rhestr cofnodion nwyddau.

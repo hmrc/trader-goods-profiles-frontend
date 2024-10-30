@@ -382,7 +382,7 @@ longerCommodityCode.change.hidden = LongerCommodityCode
 
 previousMovementRecords.title = Previous movement records
 previousMovementRecords.h1 = Previous movement records
-previousMovementRecords.p1 = Trader Goods Profile (TGP) has your previous movement information from 01/04/2023 to 19/06/2024 saved as individual records. HMRC have removed any duplicate records. You may want to check record information is correct before using them on a movement.
+previousMovementRecords.p1 = Trader Goods Profile (TGP) has your previous movement information from 1 April 2023 to 19 June 2024 saved as individual records. HMRC have removed any duplicate records. You may want to check record information is correct before using them on a movement.
 previousMovementRecords.p2 = TGP has created trader references from information we already have. You can change the trader reference to anything to help you identify the record.
 previousMovementRecords.h2 = States
 previousMovementRecords.p3 = TGP will let you know if a record is ready to move under Internal Market Movement Information (IMMI) by using states. You’ll be able to see the states on your goods records list.
