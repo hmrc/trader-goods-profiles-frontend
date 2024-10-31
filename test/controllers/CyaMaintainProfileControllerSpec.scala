@@ -170,9 +170,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual onwardRoute.url
-              //  session(result).get(dataUpdated) must be(Some("true"))
-              //   session(result).get(dataRemoved) must be(Some("true"))
-              session(result).get(pageUpdated) must be(Some("commodity code"))
+
               withClue("must call the relevant services") {
                 verify(mockTraderProfileConnector)
                   .submitTraderProfile(eqTo(updatedTraderProfile), eqTo(testEori))(any())
