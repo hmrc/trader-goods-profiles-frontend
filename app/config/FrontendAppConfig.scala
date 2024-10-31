@@ -46,6 +46,7 @@ class FrontendAppConfig @Inject() (configuration: Configuration) {
   val exitSurveyUrl: String             = s"$exitSurveyBaseUrl/feedback/trader-goods-profiles-frontend"
 
   val dataStoreBaseUrl: Service = configuration.get[Service]("microservice.services.trader-goods-profiles-data-store")
+  val customsEmailUrl: Service  = configuration.get[Service]("microservice.services.customs-email-frontend")
 
   val languageTranslationEnabled: Boolean =
     configuration.get[Boolean]("features.welsh-translation")

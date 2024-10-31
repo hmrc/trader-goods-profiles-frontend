@@ -19,7 +19,7 @@ package connectors
 import config.FrontendAppConfig
 import models.{DownloadData, DownloadDataSummary, Email, LegacyRawReads}
 import org.apache.pekko.Done
-import play.api.http.Status.{ACCEPTED, NO_CONTENT, OK}
+import play.api.http.Status.{ACCEPTED, NOT_FOUND, NO_CONTENT, OK}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.client.HttpClientV2
 
@@ -83,16 +83,20 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
       Future.successful(Seq.empty)
     }
 
-  def getEmail(eori: String)(implicit hc: HeaderCarrier): Future[Email] =
+  def getEmail(eori: String)(implicit hc: HeaderCarrier): Future[Option[Email]] =
     httpClient
       .get(emailUrl(eori))
       .execute[HttpResponse]
       .flatMap { response =>
         response.status match {
-          //TODO this also retunrs a 404 but we are choosing to ignore it because at some point we are going to put in a check when anyone enters our service to check that they have a verified and deliverable email so this should never be 404
-//          case OK => Future.successful(response.json.as[Email])
-          case _  => Future.failed(UpstreamErrorResponse(response.body, response.status))
+          case OK        => Future.successful(Some(response.json.as[Email]))
+          case NOT_FOUND => Future.successful(None)
+          case _         => Future.failed(UpstreamErrorResponse(response.body, response.status))
         }
+      }
+      .recover {
+        case x: UpstreamErrorResponse if x.statusCode == NOT_FOUND =>
+          None
       }
 
   def updateSeenStatus(eori: String)(implicit hc: HeaderCarrier): Future[Done] =
