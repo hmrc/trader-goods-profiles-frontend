@@ -37,7 +37,6 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants.{hasNiphlKey, hasNirmsKey, niphlNumberKey, nirmsNumberKey, ukimsNumberKey}
-import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
 import viewmodels.checkAnswers.{HasNiphlSummary, HasNirmsSummary, NiphlNumberSummary, NirmsNumberSummary, UkimsNumberSummary}
 import viewmodels.govuk.SummaryListFluency
 import views.html.CyaMaintainProfileView
