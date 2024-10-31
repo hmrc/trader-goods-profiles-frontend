@@ -422,18 +422,7 @@ unauthorisedCdsEnrolment.p2.part1 = Os ydych wedi tanysgrifio i CDS,
 unauthorisedCdsEnrolment.p2.linkText = allgofnodwch
 unauthorisedCdsEnrolment.p2.part2 = ac yna mewngofnodwch gan ddefnyddio’r manylion cywir.
 
-fileReady.title = Mae’ch ffeil yn barod i lawrlwytho
-fileReady.heading = Mae’ch ffeil yn barod i lawrlwytho
-fileReady.p1 = Dyma ffeil CSV (gwerthoedd wedi’u gwahanu gan goma) sy’n dangos yr holl wybodaeth o ran eich TGP. Gwnaethom greu’r ffeil hon ar {0} a bydd ar gael tan {1}
-fileReady.p2.linkText = Lawrlwythwch eich data TGP (csv, {0}kb)
-fileReady.p3 = Os oes angen ffeil newydd arnoch, sy’n cynnwys eich data TGP, gallwch
-fileReady.p3.linkText = ofyn am ffeil arall
 
-fileInProgress.title = Rydym wrthi’n paratoi’ch ffeil
-fileInProgress.heading = Rydym wrthi’n paratoi’ch ffeil
-fileInProgress.p1 = Byddwn yn anfon e-bost at {0} pan fydd eich ffeil yn barod.
-fileInProgress.p2 = Gallwch wneud cais am ffeil newydd. Bydd gwneud hyn yn canslo’ch cais presennol, a bydd yn rhaid i chi aros i’r ffeil newydd i fod yn barod.
-fileInProgress.linkText1 = Gofyn am ffeil newydd
 
 requestData.title = Gwneud cais i lawrlwytho’ch data TGP
 requestData.heading = Gwneud cais i lawrlwytho’ch data TGP
