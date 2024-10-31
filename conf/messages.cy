@@ -50,8 +50,8 @@ homepage.h2.2 = Rheoli''ch proffil
 homepage.p5.linkText = Rheoli manylion eich proffil
 homepage.h2.4 = Help a chysylltu
 homepage.p6.linkText = Dewch o hyd i gymorth ychwanegol a chysylltiadau i''ch helpu
-homepage.downloadBanner.content = Mae’r ffeil y gofynnoch amdani, sy’n cynnwys eich data TGP, yn barod i’w lawrlwytho.
-homepage.downloadBanner.linkText = Ewch i’r dudalen lawrlwytho i gael mynediad at eich ffeil.
+homepage.downloadBanner.content = Mae’r ffeil y gofynnoch amdano, sy’n cynnwys eich cofnodion TGP, yn barod i’w lawrlwytho.
+homepage.downloadBanner.linkText = Ewch i’r dudalen ffeiliau cofnodion TGP i lawrlwytho’r ffeil.
 homepage.h2.3 = Lawrlwytho data TGP
 homepage.downloadLinkText.noGoodsRecords = Nid oes gennych unrhyw gofnodion nwyddau TGP i’w lawrlwytho.
 homepage.downloadLinkText.noFilesRequested = Cael eich ffeil cofnodion TGP
@@ -526,6 +526,7 @@ hasGoodsDescriptionChange.p1 = Bydd newid disgrifiad y nwyddau ar y cofnod nwydd
 hasGoodsDescriptionChange.h2 = A ydych am newid disgrifiad y nwyddau?
 hasGoodsDescriptionChange.error.required = Dewiswch os ydych am newid disgrifiad y nwyddau
 
+
 ukimsNumberChangeController.paragraph = Gan fod gennych rif EORI newydd, mae gennych hefyd rif UKIMS newydd. Mae angen i chi ddiweddaru’ch rhif UKIMS ar eich Proffil Nwyddau Masnachwyr (TGP). Mae cadw’ch rhif UKIMS wedi’i ddiweddaru yn bwysig oherwydd y gellir ei ddefnyddio ar symudiadau.
 ukimsNumberChangeController.button = Diweddaru rhif UKIMS
 
@@ -533,7 +534,7 @@ ukimsNumberChangeController.button = Diweddaru rhif UKIMS
 
 hasCountryOfOriginChange.title = Newid gwybodaeth y cofnod
 hasCountryOfOriginChange.h1 = Newid gwybodaeth y cofnod
-hasCountryOfOriginChange.p1 = Bydd angen i chi gategoreiddio’r cofnod nwyddau hwn os byddwch yn newid y wlad wreiddiol.
+hasCountryOfOriginChange.p1 = Bydd angen i chi ail-gategoreiddio’r cofnod nwyddau os byddwch yn newid y wlad wreiddiol.
 hasCountryOfOriginChange.h2 = A ydych am newid y wlad wreiddiol?
 hasCountryOfOriginChange.error.required = Dewiswch os ydych am newid y wlad wreiddiol
 
