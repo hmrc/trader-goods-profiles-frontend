@@ -90,7 +90,7 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
       .flatMap { response =>
         response.status match {
           //TODO this also retunrs a 404 but we are choosing to ignore it because at some point we are going to put in a check when anyone enters our service to check that they have a verified and deliverable email so this should never be 404
-          case OK => Future.successful(response.json.as[Email])
+//          case OK => Future.successful(response.json.as[Email])
           case _  => Future.failed(UpstreamErrorResponse(response.body, response.status))
         }
       }

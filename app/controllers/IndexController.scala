@@ -16,12 +16,14 @@
 
 package controllers
 
-import connectors.TraderProfileConnector
+import config.{FrontendAppConfig, Service}
+import connectors.{DownloadDataConnector, TraderProfileConnector}
 import controllers.actions.IdentifierAction
 import models.TraderProfile
 import models.requests.IdentifierRequest
+import play.api.Configuration
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -29,16 +31,24 @@ import scala.concurrent.{ExecutionContext, Future}
 class IndexController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   identify: IdentifierAction,
-  traderProfileConnector: TraderProfileConnector
+  traderProfileConnector: TraderProfileConnector,
+  downloadDataConnector: DownloadDataConnector,
+  config: Configuration
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
+  val customsEmailUrl = config.get[Service]("microservice.services.customs-email-frontend")
+
   def onPageLoad: Action[AnyContent] = identify.async { implicit request =>
-    traderProfileConnector.checkTraderProfile(request.eori).flatMap {
-      case true  =>
-        eoriChanged(request)
-      case false => Future.successful(Redirect(routes.ProfileSetupController.onPageLoad()))
-    }
+    downloadDataConnector.getEmail(request.eori).flatMap { _ =>
+      traderProfileConnector.checkTraderProfile(request.eori).flatMap {
+        case true =>
+          eoriChanged(request)
+        case false => Future.successful(Redirect(routes.ProfileSetupController.onPageLoad()))
+      }
+    }.recover(_ =>
+      Redirect(url"$customsEmailUrl/manage-email-cds/service/trader-goods-profiles".toString)
+    )
   }
 
   private def eoriChanged(request: IdentifierRequest[AnyContent])(implicit hc: HeaderCarrier) =
