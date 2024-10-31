@@ -693,7 +693,6 @@ cyaMaintainProfile.warningText = You need to make sure these details are correct
 cyaNewUkimsNumber.title = Check your answers for your new UKIMS number
 cyaNewUkimsNumber.heading = Check your answers for your new UKIMS number
 
-# TODO: Welsh translation for the file management page (TGP-2753)
 fileManagement.title = TGP records files
 fileManagement.heading = TGP records files
 fileManagement.files.paragraph1 = Files are available for 30 days from when we email you that it is ready to download.
