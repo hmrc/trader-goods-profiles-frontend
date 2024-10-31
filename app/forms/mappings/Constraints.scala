@@ -18,6 +18,7 @@ package forms.mappings
 
 import java.time.LocalDate
 
+import org.apache.commons.validator.routines.EmailValidator
 import play.api.data.validation.{Constraint, Invalid, Valid}
 
 trait Constraints {
@@ -102,4 +103,15 @@ trait Constraints {
       case _                   =>
         Invalid(errorKey)
     }
+
+  protected def email(errorKey: String): Constraint[String] = {
+    val emailValidator = EmailValidator.getInstance(true)
+
+    Constraint {
+      case str if emailValidator.isValid(str) =>
+        Valid
+      case _                                  =>
+        Invalid(errorKey)
+    }
+  }
 }
