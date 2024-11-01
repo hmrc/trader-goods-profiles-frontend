@@ -52,13 +52,15 @@
 
     <p class="govuk-body">@messages("profile.p1")</p>
 
-    <h2 class="govuk-heading-m">@messages("profile.h2")</h2>
-    @govukSummaryList(detailsList)
-
     @govukWarningText(WarningText(
         iconFallbackText = Some(messages("profile.warning")),
         content = Text(messages("profile.warningText"))
     ))
+
+    <h2 class="govuk-heading-m">@messages("profile.h2")</h2>
+    @govukSummaryList(detailsList)
+
+
 
     <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad().url" class="govuk-link" >@messages("site.goBackToHomePage")</a></p>
 }

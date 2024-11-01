@@ -477,7 +477,7 @@ profile.h1 = Profile details
 profile.h2 = UKIMS, NIRMS and NIPHL
 profile.p1 = Check the details on your profile are correct. You can change your UKIMS number or add, change and remove NIRMS and NIPHL information.
 profile.warning = Warning
-profile.warningText = You need to make sure these details are correct. Any movements you use details from TGP to create, will not be valid if they are wrong.
+profile.warningText = You need to make sure these details are correct before using them to create a movement.
 profile.back = Back to homepage
 
 removeNirms.title = Removing NIRMS details
@@ -630,7 +630,7 @@ pageNotFound.p3 = If the web address is correct or you selected a link or button
 pageNotFound.p3.linkText = contact the Trader Goods Profile helpline
 pageNotFound.p3.1 = if you need to speak to someone about your Trader Goods Profile.
 
-singleRecord.recordLocked = This record is locked as you''ve asked HMRC for advice if it is correct. You cannot make any changes to this record until HMRC have made a decision, or you withdraw your request.
+singleRecord.recordLocked = This record is locked as you''ve asked HMRC for advice if it is correct. You cannot make any changes, or remove  this record until HMRC have made a decision, or you withdraw your request.
 
 requestData.title = Making a request to download your TGP data
 requestData.heading = Making a request to download your TGP data
@@ -638,12 +638,6 @@ requestData.p1 = Once you request the file, we''ll email {0} to let you know whe
 requestData.p2 = You''ll also be able to check the progress on the TGP records files page.
 requestData.button = Get TGP records file
 
-fileReady.title = Your file is ready to download
-fileReady.heading = Your file is ready to download
-fileReady.p1 = This is a comma separated value file with all of your TGP information. We created the file on {0} and it will be available until {1}
-fileReady.p2.linkText = Download your TGP data (csv, {0}kb)
-fileReady.p3 = If you need a new file of your TGP data, you can
-fileReady.p3.linkText = request another file
 
 downloadRequestSuccess.title = We''ve received your request for a file of your TGP data
 downloadRequestSuccess.h1 = We''ve received your request for a file of your TGP data
@@ -653,11 +647,6 @@ downloadRequestSuccess.p1.linkText = download TGP data page
 downloadRequestSuccess.p2 = You will have a notification when you sign in to your TGP with a link to the file download page. The file is in a .csv format.
 downloadRequestSuccess.p3 = The TGP records file will be available for 30 days from when we let you know it is ready.
 
-fileInProgress.title = We''re still preparing your file
-fileInProgress.heading = We''re still preparing your file
-fileInProgress.p1 = We''ll email {0} when your file is ready.
-fileInProgress.p2 = You can request a new file. Doing this will cancel your existing request and you''ll have to wait for the new file to be ready.
-fileInProgress.linkText1 = Request a new file
 
 existingUkimsNumber.title = UK Internal Market Scheme (UKIMS) number
 existingUkimsNumber.h1 = UK Internal Market Scheme (UKIMS) number
