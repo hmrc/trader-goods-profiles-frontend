@@ -455,7 +455,8 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       "must redirect to the next page when valid data is submitted" in {
 
-        val traderProfile = TraderProfile(testEori, "XIUKIM47699357400020231115081801", Some("2"), Some("3"), eoriChanged = false)
+        val traderProfile =
+          TraderProfile(testEori, "XIUKIM47699357400020231115081801", Some("2"), Some("3"), eoriChanged = false)
         when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
         when(mockTraderProfileConnector.getTraderProfile(eqTo(testEori))(any())) thenReturn Future.successful(
           traderProfile
@@ -507,7 +508,8 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       "must return a Bad Request and errors when the same UKIMS number is submitted" in {
 
-        val traderProfile = TraderProfile(testEori, "XIUKIM47699357400020231115081800", Some("2"), Some("3"), eoriChanged = false)
+        val traderProfile =
+          TraderProfile(testEori, "XIUKIM47699357400020231115081800", Some("2"), Some("3"), eoriChanged = false)
 
         when(mockTraderProfileConnector.getTraderProfile(eqTo(testEori))(any())) thenReturn Future.successful(
           traderProfile
