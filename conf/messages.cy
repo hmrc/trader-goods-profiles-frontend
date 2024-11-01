@@ -51,7 +51,8 @@ homepage.p5.linkText = Rheoli manylion eich proffil
 homepage.h2.4 = Help a chysylltu
 homepage.p6.linkText = Dewch o hyd i gymorth ychwanegol a chysylltiadau i''ch helpu
 homepage.downloadBanner.content = Mae’r ffeil y gofynnoch amdano, sy’n cynnwys eich cofnodion TGP, yn barod i’w lawrlwytho.
-homepage.downloadBanner.linkText = Ewch i’r dudalen ffeiliau cofnodion TGP i lawrlwytho’r ffeil.
+homepage.downloadBanner.important = Pwysig
+homepage.downloadBanner.linkText = Ewch i’r dudalen ffeiliau cofnodion TGP i lawrlwytho’r ffeil
 homepage.h2.3 = Lawrlwytho data TGP
 homepage.downloadLinkText.noGoodsRecords = Nid oes gennych unrhyw gofnodion nwyddau TGP i’w lawrlwytho.
 homepage.downloadLinkText.noFilesRequested = Cael eich ffeil cofnodion TGP
@@ -515,6 +516,8 @@ cyaMaintainProfile.title.hasNiphl = Gwiriwch eich atebion ar gyfer newid eich co
 cyaMaintainProfile.heading.hasNiphl = Gwiriwch eich atebion ar gyfer newid eich cofrestriad NIPHL
 cyaMaintainProfile.title.niphlNumber = Gwiriwch eich atebion ar gyfer newid eich rhif NIPHL
 cyaMaintainProfile.heading.niphlNumber = Gwiriwch eich atebion ar gyfer newid eich rhif NIPHL
+
+cyaMaintainProfile.warningText = Mae angen i chi wneud yn siŵr bod y manylion hyn yn gywir. Ni fydd unrhyw symudiadau y byddwch yn defnyddio manylion or TGP iw creu yn ddilys os byddant yn anghywir.
 
 cyaNewUkimsNumber.title = Gwiriwch eich atebion ar gyfer eich rhif UKIMS newydd
 cyaNewUkimsNumber.heading = Gwiriwch eich atebion ar gyfer eich rhif UKIMS newydd
