@@ -20,7 +20,7 @@ import base.SpecBase
 import connectors.{DownloadDataConnector, TraderProfileConnector}
 import models.Email
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{atLeastOnce, never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject
 import play.api.test.FakeRequest
@@ -63,6 +63,9 @@ class DownloadRequestSuccessControllerSpec extends SpecBase {
           request,
           messages(application)
         ).toString
+
+        verify(mockTraderProfileConnector, never()).checkTraderProfile(any())(any())
+        verify(mockDownloadDataConnector, atLeastOnce()).getEmail(any())(any())
       }
     }
   }

@@ -20,7 +20,7 @@ import base.SpecBase
 import base.TestConstants.testRecordId
 import connectors.{GoodsRecordConnector, TraderProfileConnector}
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.bind
 import play.api.test.FakeRequest
@@ -63,6 +63,8 @@ class ReviewReasonControllerSpec extends SpecBase with MockitoSugar {
             val view    = application.injector.instanceOf[ReviewReasonView]
             status(result) mustEqual OK
             contentAsString(result) mustEqual view(testRecordId, reviewReason)(request, messages(application)).toString
+
+            verify(mockGoodsRecordConnector, times(1)).getRecord(any(), any())(any())
           }
         }
 
@@ -87,6 +89,8 @@ class ReviewReasonControllerSpec extends SpecBase with MockitoSugar {
           val view    = application.injector.instanceOf[ReviewReasonView]
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(testRecordId, "inadequate")(request, messages(application)).toString
+
+          verify(mockGoodsRecordConnector, times(1)).getRecord(any(), any())(any())
         }
 
       }
@@ -109,6 +113,8 @@ class ReviewReasonControllerSpec extends SpecBase with MockitoSugar {
           val result  = route(application, request).value
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual routes.SingleRecordController.onPageLoad(testRecordId).url
+
+          verify(mockGoodsRecordConnector, times(1)).getRecord(any(), any())(any())
         }
       }
 
@@ -131,6 +137,8 @@ class ReviewReasonControllerSpec extends SpecBase with MockitoSugar {
           val result  = route(application, request).value
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+
+          verify(mockGoodsRecordConnector, times(1)).getRecord(any(), any())(any())
         }
       }
 

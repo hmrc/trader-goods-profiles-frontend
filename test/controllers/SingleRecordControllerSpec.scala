@@ -23,7 +23,7 @@ import models.helper.SupplementaryUnitUpdateJourney
 import models.{Country, NormalMode, UserAnswers}
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{times, verify, when}
+import org.mockito.Mockito.{never, times, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage, TraderReferenceUpdatePage}
@@ -181,7 +181,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
         uaCaptor.getValue.data mustEqual userAnswers.data
 
         withClue("must cleanse the user answers data") {
-          verify(mockSessionRepository).clearData(eqTo(userAnswers.id), eqTo(SupplementaryUnitUpdateJourney))
+          verify(mockSessionRepository, times(1)).clearData(eqTo(userAnswers.id), eqTo(SupplementaryUnitUpdateJourney))
         }
       }
     }
@@ -296,7 +296,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
         uaCaptor.getValue.data mustEqual userAnswers.data
 
         withClue("must cleanse the user answers data") {
-          verify(mockSessionRepository).clearData(eqTo(userAnswers.id), eqTo(SupplementaryUnitUpdateJourney))
+          verify(mockSessionRepository, times(1)).clearData(eqTo(userAnswers.id), eqTo(SupplementaryUnitUpdateJourney))
         }
       }
     }
@@ -461,6 +461,9 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           await(route(application, request).value)
         }
 
+        verify(mockGoodsRecordConnector, times(4)).getRecord(any(), any())(any())
+        verify(mockOttConnector, times(4)).getCountries(any())
+
       }
     }
 
@@ -536,6 +539,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
         intercept[Exception] {
           await(result)
         }
+
+        verify(mockGoodsRecordConnector, times(5)).getRecord(any(), any())(any())
       }
     }
 

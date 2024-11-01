@@ -23,7 +23,7 @@ import forms.UseExistingUkimsNumberFormProvider
 import models.UserAnswers
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.UkimsNumberPage
 import play.api.inject.bind
@@ -104,6 +104,7 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        verify(mockTraderProfileConnector, times(2)).checkTraderProfile(any())(any())
       }
     }
   }
@@ -127,6 +128,7 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
+        verify(mockSessionRepository).set(any())
       }
     }
 
@@ -172,6 +174,7 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
         intercept[RuntimeException] {
           await(route(application, request).value)
+          verify(mockSessionRepository).set(any())
         }
       }
     }

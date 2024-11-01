@@ -23,8 +23,8 @@ import forms.SupplementaryUnitFormProvider
 import models.helper.SupplementaryUnitUpdate
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{never, verify, when}
+import org.mockito.ArgumentMatchers.{any, anyInt, eq => eqTo}
+import org.mockito.Mockito.{never, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{HasSupplementaryUnitUpdatePage, SupplementaryUnitPage, SupplementaryUnitUpdatePage}
 import play.api.inject.bind
@@ -212,6 +212,8 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
 
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual onwardRoute.url
+
+              verify(mockSessionRepository, times(1)).set(any())
             }
           }
 
@@ -432,6 +434,8 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
 
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual onwardRoute.url
+
+              verify(mockSessionRepository, times(1)).set(any())
             }
           }
 
@@ -542,7 +546,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
           ).toString
 
           withClue("must call the audit service with the correct details") {
-            verify(mockAuditService)
+            verify(mockAuditService, times(1))
               .auditStartUpdateGoodsRecord(
                 eqTo(testEori),
                 eqTo(AffinityGroup.Individual),
@@ -550,6 +554,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
                 eqTo(testRecordId),
                 any()
               )(any())
+            verify(mockGoodsRecordConnector, times(1)).getRecord(any(), any())(any())
           }
         }
       }
@@ -603,6 +608,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
                 any(),
                 any()
               )(any())
+            verify(mockGoodsRecordConnector, times(1)).getRecord(any(), any())(any())
           }
         }
       }
@@ -656,6 +662,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
                 eqTo(testRecordId),
                 any()
               )(any())
+            verify(mockGoodsRecordConnector, times(1)).getRecord(any(), any())(any())
           }
         }
       }
@@ -686,6 +693,9 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
+
+          verify(mockSessionRepository, times(1)).set(any())
+          verify(mockOttService, times(1)).getMeasurementUnit(any(), any())(any())
         }
       }
 
@@ -724,6 +734,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
             request,
             messages(application)
           ).toString
+          verify(mockOttService, times(1)).getMeasurementUnit(any(), any())(any())
         }
       }
 
@@ -783,6 +794,8 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual SEE_OTHER
 
           redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+
+          verify(mockOttService, never()).getMeasurementUnit(any(), any())(any())
         }
       }
 
@@ -812,7 +825,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
           redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
 
           withClue("must call the audit service with the correct details") {
-            verify(mockAuditService)
+            verify(mockAuditService, times(1))
               .auditStartUpdateGoodsRecord(
                 eqTo(testEori),
                 eqTo(AffinityGroup.Individual),
@@ -820,6 +833,8 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
                 eqTo(testRecordId),
                 any()
               )(any())
+
+            verify(mockGoodsRecordConnector, times(1)).getRecord(any(), any())(any())
           }
         }
       }

@@ -20,7 +20,7 @@ import base.SpecBase
 import base.TestConstants.testRecordId
 import connectors.TraderProfileConnector
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{atLeastOnce, never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.bind
 import play.api.test.FakeRequest
@@ -51,6 +51,7 @@ class WithdrawAdviceSuccessControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(testRecordId)(request, messages(application)).toString
+        verify(mockTraderProfileConnector, never()).checkTraderProfile(any())(any())
       }
     }
   }

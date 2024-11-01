@@ -581,7 +581,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual onwardRoute.url
 
-              verify(mockConnector)
+              verify(mockConnector, times(1))
                 .updateCategoryAndComcodeForGoodsRecord(
                   eqTo(testEori),
                   eqTo(testRecordId),
@@ -592,11 +592,11 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
                 )
 
               withClue("audit event has been fired") {
-                verify(mockAuditService)
+                verify(mockAuditService, times(1))
                   .auditFinishCategorisation(eqTo(testEori), any, eqTo(testRecordId), eqTo(expectedPayload))(any)
               }
               withClue("must cleanse the user answers data") {
-                verify(mockSessionRepository).clearData(eqTo(userAnswers.id), eqTo(CategorisationJourney))
+                verify(mockSessionRepository, times(1)).clearData(eqTo(userAnswers.id), eqTo(CategorisationJourney))
               }
 
             }
@@ -643,7 +643,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               redirectLocation(result).value mustEqual onwardRoute.url
 
               withClue("connector was called even though audit failed") {
-                verify(mockConnector)
+                verify(mockConnector, times(1))
                   .updateCategoryAndComcodeForGoodsRecord(
                     eqTo(testEori),
                     eqTo(testRecordId),
@@ -689,7 +689,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
             verify(mockConnector, never()).updateCategoryAndComcodeForGoodsRecord(any(), any(), any(), any())(any())
             withClue("must cleanse the user answers data") {
-              verify(sessionRepository).clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
+              verify(sessionRepository, times(1)).clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
             }
           }
         }
@@ -739,7 +739,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               .auditFinishCategorisation(eqTo(testEori), any, eqTo(testRecordId), eqTo(expectedCategoryRecord))(any)
           }
           withClue("must not cleanse the user answers data when connector fails") {
-            verify(sessionRepository, times(0)).clearData(eqTo(userAnswers.id), eqTo(CategorisationJourney))
+            verify(sessionRepository, never()).clearData(eqTo(userAnswers.id), eqTo(CategorisationJourney))
           }
         }
       }

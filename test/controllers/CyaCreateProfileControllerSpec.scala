@@ -280,7 +280,7 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
               .auditProfileSetUp(any(), any())(any())
           }
           withClue("must not cleanse the user answers data when connector fails") {
-            verify(sessionRepository, times(0)).clearData(eqTo(userAnswers.id), eqTo(CreateProfileJourney))
+            verify(sessionRepository, never()).clearData(eqTo(userAnswers.id), eqTo(CreateProfileJourney))
           }
 
         }
