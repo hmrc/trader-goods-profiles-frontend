@@ -19,8 +19,7 @@ package controllers
 import base.SpecBase
 import connectors.TraderProfileConnector
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito
-import org.mockito.Mockito.{atLeastOnce, never, verify, when}
+import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject
 import play.api.test.FakeRequest

@@ -20,7 +20,7 @@ import base.SpecBase
 import connectors.TraderProfileConnector
 import models.TraderProfile
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{atLeastOnce, never, times, verify, when}
+import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject.bind
 import play.api.test.FakeRequest

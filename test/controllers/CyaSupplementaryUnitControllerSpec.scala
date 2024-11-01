@@ -23,7 +23,7 @@ import models.helper.SupplementaryUnitUpdateJourney
 import models.{NormalMode, SupplementaryRequest, UserAnswers}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{atLeastOnce, never, times, verify, when}
+import org.mockito.Mockito.{atLeastOnce, never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{HasSupplementaryUnitUpdatePage, SupplementaryUnitUpdatePage}
 import play.api.i18n.Messages
