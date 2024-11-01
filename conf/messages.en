@@ -630,7 +630,7 @@ pageNotFound.p3 = If the web address is correct or you selected a link or button
 pageNotFound.p3.linkText = contact the Trader Goods Profile helpline
 pageNotFound.p3.1 = if you need to speak to someone about your Trader Goods Profile.
 
-singleRecord.recordLocked = This record is locked as you''ve asked HMRC for advice if it is correct. You cannot make any changes to this record until HMRC have made a decision, or you withdraw your request.
+singleRecord.recordLocked = This record is locked as you''ve asked HMRC for advice if it is correct. You cannot make any changes, or remove  this record until HMRC have made a decision, or you withdraw your request.
 
 requestData.title = Making a request to download your TGP data
 requestData.heading = Making a request to download your TGP data

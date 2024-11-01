@@ -632,7 +632,7 @@ reasonForWithdrawAdvice.hint = Mae hyn yn ddewisol a gallwch dynnu’ch cais yn 
 reasonForWithdrawAdvice.continue = Tynnu’r cais yn ôl
 reasonForWithdrawAdvice.error.length = Mae’n rhaid i’r rheswm fod yn 512 o gymeriadau neu lai
 
-singleRecord.recordLocked = Mae’r cofnod hwn wedi’i gloi gan eich bod wedi gofyn i CThEF am gyngor os yw’n gywir. Ni allwch wneud unrhyw newidiadau i’r cofnod hwn nes bod CThEF wedi gwneud penderfyniad, neu eich bod yn tynnu’ch cais yn ôl.
+singleRecord.recordLocked = Mae’r cofnod hwn wedi’i gloi gan eich bod wedi gofyn i CThEF a yw’n gywir. Ni allwch wneud unrhyw newidiadau na dileu’r cofnod hwn hyd nes y bydd CThEF wedi gwneud penderfyniad, neu eich bod yn tynnu’ch cais yn ôl.
 
 previousMovementRecords.title = Cofnodion symud blaenorol
 previousMovementRecords.h1 = Cofnodion symud blaenorol
