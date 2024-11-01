@@ -19,7 +19,7 @@ package controllers
 import base.SpecBase
 import connectors.DownloadDataConnector
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{never, reset, verify, when}
+import org.mockito.Mockito.{atLeastOnce, never, reset, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.i18n.Messages
@@ -71,8 +71,8 @@ class FileManagementControllerSpec extends SpecBase with MockitoSugar with Befor
 
       }
 
-      verify(mockDownloadDataConnector).getDownloadDataSummary(any())(any())
-      verify(mockDownloadDataConnector).getDownloadData(any())(any())
+      verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())(any())
+      verify(mockDownloadDataConnector, atLeastOnce()).getDownloadData(any())(any())
     }
 
     "must return SEE_OTHER and redirect to journey recovery if download feature is disabled" in {

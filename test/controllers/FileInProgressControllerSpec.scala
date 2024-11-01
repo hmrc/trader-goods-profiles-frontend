@@ -20,7 +20,7 @@ import base.SpecBase
 import connectors.{DownloadDataConnector, TraderProfileConnector}
 import models.Email
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{atLeastOnce, never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject
 import play.api.test.FakeRequest
@@ -60,6 +60,9 @@ class FileInProgressControllerSpec extends SpecBase {
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(email.address)(request, messages(application)).toString
+
+        verify(mockTraderProfileConnector, never()).checkTraderProfile(any())(any())
+        verify(mockDownloadDataConnector, atLeastOnce()).getEmail(any())(any())
       }
     }
   }

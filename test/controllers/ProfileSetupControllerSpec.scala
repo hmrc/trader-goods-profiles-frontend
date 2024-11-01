@@ -22,7 +22,7 @@ import config.FrontendAppConfig
 import connectors.TraderProfileConnector
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{times, verify, when}
+import org.mockito.Mockito.{atLeastOnce, never, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.bind
 import play.api.mvc.Call
@@ -59,6 +59,7 @@ class ProfileSetupControllerSpec extends SpecBase with MockitoSugar {
 
           status(result) mustEqual OK
           contentAsString(result) mustEqual view()(request, messages(application)).toString
+          verify(mockTraderProfileConnector, atLeastOnce()).checkTraderProfile(any())(any())
         }
       }
 
@@ -80,6 +81,7 @@ class ProfileSetupControllerSpec extends SpecBase with MockitoSugar {
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual routes.HomePageController.onPageLoad().url
+          verify(mockTraderProfileConnector, atLeastOnce()).checkTraderProfile(any())(any())
         }
       }
     }
@@ -117,7 +119,7 @@ class ProfileSetupControllerSpec extends SpecBase with MockitoSugar {
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual onwardRoute.url
 
-            verify(mockTraderProfileConnector).getHistoricProfileData(eqTo(testEori))(any())
+            verify(mockTraderProfileConnector, atLeastOnce()).getHistoricProfileData(eqTo(testEori))(any())
           }
         }
 
@@ -148,7 +150,7 @@ class ProfileSetupControllerSpec extends SpecBase with MockitoSugar {
             redirectLocation(result).value mustEqual onwardRoute.url
 
             withClue("should not have requested historic data") {
-              verify(mockTraderProfileConnector, times(0)).getHistoricProfileData(eqTo(testEori))(any())
+              verify(mockTraderProfileConnector, never()).getHistoricProfileData(eqTo(testEori))(any())
             }
           }
         }

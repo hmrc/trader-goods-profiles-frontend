@@ -23,7 +23,7 @@ import forms.HasNiphlFormProvider
 import models.{NormalMode, TraderProfile, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{atLeastOnce, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{HasNiphlPage, HasNiphlUpdatePage}
 import play.api.inject.bind
@@ -191,6 +191,7 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual routes.HomePageController.onPageLoad().url
+          verify(mockTraderProfileConnector, atLeastOnce()).checkTraderProfile(any())(any())
         }
       }
 
@@ -248,6 +249,7 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
             request,
             messages(application)
           ).toString
+          verify(mockTraderProfileConnector, atLeastOnce()).getTraderProfile(eqTo(testEori))(any())
         }
       }
 
@@ -302,6 +304,7 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
+          verify(mockTraderProfileConnector, atLeastOnce()).getTraderProfile(any())(any())
         }
       }
 
@@ -331,6 +334,7 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
+          verify(mockTraderProfileConnector, atLeastOnce()).getTraderProfile(eqTo(testEori))(any())
         }
       }
 

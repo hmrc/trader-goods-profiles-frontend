@@ -22,7 +22,7 @@ import models.Email
 import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{atLeastOnce, never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject
 import play.api.inject.bind
@@ -67,6 +67,9 @@ class RequestDataControllerSpec extends SpecBase {
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(email.address)(request, messages(application)).toString
+
+        verify(mockTraderProfileConnector, never()).checkTraderProfile(any())(any())
+        verify(mockDownloadDataConnector, atLeastOnce()).getEmail(any())(any())
       }
     }
 
@@ -99,6 +102,8 @@ class RequestDataControllerSpec extends SpecBase {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
+        verify(mockTraderProfileConnector, never()).checkTraderProfile(any())(any())
+        verify(mockDownloadDataConnector, never()).getEmail(any())(any())
       }
     }
   }

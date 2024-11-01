@@ -20,7 +20,7 @@ import base.SpecBase
 import connectors.TraderProfileConnector
 import models.TraderProfile
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{atLeastOnce, never, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject.bind
 import play.api.test.FakeRequest
@@ -50,6 +50,9 @@ class IndexControllerSpec extends SpecBase {
         status(result) mustEqual SEE_OTHER
 
         redirectLocation(result).value mustEqual routes.ProfileSetupController.onPageLoad().url
+
+        verify(mockConnector, times(1)).checkTraderProfile(any())(any())
+
       }
     }
 
@@ -71,6 +74,7 @@ class IndexControllerSpec extends SpecBase {
         status(result) mustEqual SEE_OTHER
 
         redirectLocation(result).value mustEqual routes.ProfileSetupController.onPageLoad().url
+        verify(mockConnector, times(1)).checkTraderProfile(any())(any())
       }
     }
     "must redirect to HomePageController if no profile present and eori has not changed" in {
@@ -95,6 +99,8 @@ class IndexControllerSpec extends SpecBase {
         status(result) mustEqual SEE_OTHER
 
         redirectLocation(result).value mustEqual routes.HomePageController.onPageLoad().url
+        verify(mockConnector, times(1)).checkTraderProfile(any())(any())
+        verify(mockConnector, times(1)).getTraderProfile(any())(any())
       }
     }
     "must redirect to UkimsNumberChangeController if no profile present and eori has changed" in {
@@ -119,6 +125,8 @@ class IndexControllerSpec extends SpecBase {
         status(result) mustEqual SEE_OTHER
 
         redirectLocation(result).value mustEqual routes.UkimsNumberChangeController.onPageLoad().url
+        verify(mockConnector, times(1)).checkTraderProfile(any())(any())
+        verify(mockConnector, times(1)).getTraderProfile(any())(any())
       }
     }
   }

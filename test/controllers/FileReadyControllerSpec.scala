@@ -22,7 +22,7 @@ import connectors.{DownloadDataConnector, TraderProfileConnector}
 import models.DownloadDataStatus.{FileInProgress, FileReadySeen}
 import models.{DownloadData, DownloadDataSummary, FileInfo, Metadata}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{never, verify, when}
+import org.mockito.Mockito.{atLeastOnce, never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.bind
 import play.api.test.FakeRequest
@@ -100,8 +100,8 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
             messages(application)
           ).toString
 
-          verify(mockDownloadDataConnector).getDownloadDataSummary(eqTo(testEori))(any())
-          verify(mockDownloadDataConnector).getDownloadData(eqTo(testEori))(any())
+          verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(eqTo(testEori))(any())
+          verify(mockDownloadDataConnector, atLeastOnce()).getDownloadData(eqTo(testEori))(any())
 
         }
 
@@ -180,8 +180,8 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
             messages(application)
           ).toString
 
-          verify(mockDownloadDataConnector).getDownloadDataSummary(eqTo(testEori))(any())
-          verify(mockDownloadDataConnector).getDownloadData(eqTo(testEori))(any())
+          verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(eqTo(testEori))(any())
+          verify(mockDownloadDataConnector, atLeastOnce()).getDownloadData(eqTo(testEori))(any())
 
         }
 
@@ -225,8 +225,8 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
               .onPageLoad()
               .url
 
-            verify(mockDownloadDataConnector).getDownloadDataSummary(eqTo(testEori))(any())
-            verify(mockDownloadDataConnector).getDownloadData(eqTo(testEori))(any())
+            verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(eqTo(testEori))(any())
+            verify(mockDownloadDataConnector, atLeastOnce()).getDownloadData(eqTo(testEori))(any())
           }
         }
 
@@ -261,8 +261,8 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
               .onPageLoad()
               .url
 
-            verify(mockDownloadDataConnector).getDownloadDataSummary(eqTo(testEori))(any())
-            verify(mockDownloadDataConnector).getDownloadData(eqTo(testEori))(any())
+            verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(eqTo(testEori))(any())
+            verify(mockDownloadDataConnector, atLeastOnce()).getDownloadData(eqTo(testEori))(any())
           }
         }
 
@@ -305,8 +305,8 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
               .onPageLoad()
               .url
 
-            verify(mockDownloadDataConnector).getDownloadDataSummary(eqTo(testEori))(any())
-            verify(mockDownloadDataConnector).getDownloadData(eqTo(testEori))(any())
+            verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(eqTo(testEori))(any())
+            verify(mockDownloadDataConnector, atLeastOnce()).getDownloadData(eqTo(testEori))(any())
           }
         }
 
@@ -341,7 +341,7 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
               .onPageLoad()
               .url
 
-            verify(mockDownloadDataConnector).getDownloadDataSummary(eqTo(testEori))(any())
+            verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(eqTo(testEori))(any())
             verify(mockDownloadDataConnector, never()).getDownloadData(eqTo(testEori))(any())
           }
         }
@@ -368,7 +368,7 @@ class FileReadyControllerSpec extends SpecBase with MockitoSugar {
               .onPageLoad()
               .url
 
-            verify(mockDownloadDataConnector).getDownloadDataSummary(eqTo(testEori))(any())
+            verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(eqTo(testEori))(any())
             verify(mockDownloadDataConnector, never()).getDownloadData(eqTo(testEori))(any())
           }
         }
