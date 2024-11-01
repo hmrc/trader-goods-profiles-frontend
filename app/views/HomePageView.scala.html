@@ -28,6 +28,7 @@
 
 @layout(pageTitle = s"${messages("homepage.title")} - ${messages("site.govuk")}", showBackLink = false, headerShouldHaveServiceLink = false) {
 
+    @if(downloadReady) {
         @govukNotificationBanner(NotificationBanner(
             title = Text(messages("homepage.downloadBanner.important")),
             content = HtmlContent(
@@ -38,6 +39,7 @@
             </h3>"""),
             role = Some("alert"))
         )
+    }
 
     <h1 class="govuk-heading-l">@messages("homepage.h1")</h1>
     <p class="govuk-body">@messages("homepage.p1")</p>
