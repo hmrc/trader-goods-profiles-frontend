@@ -422,18 +422,7 @@ unauthorisedCdsEnrolment.p2.part1 = Os ydych wedi tanysgrifio i CDS,
 unauthorisedCdsEnrolment.p2.linkText = allgofnodwch
 unauthorisedCdsEnrolment.p2.part2 = ac yna mewngofnodwch gan ddefnyddio’r manylion cywir.
 
-fileReady.title = Mae’ch ffeil yn barod i lawrlwytho
-fileReady.heading = Mae’ch ffeil yn barod i lawrlwytho
-fileReady.p1 = Dyma ffeil CSV (gwerthoedd wedi’u gwahanu gan goma) sy’n dangos yr holl wybodaeth o ran eich TGP. Gwnaethom greu’r ffeil hon ar {0} a bydd ar gael tan {1}
-fileReady.p2.linkText = Lawrlwythwch eich data TGP (csv, {0}kb)
-fileReady.p3 = Os oes angen ffeil newydd arnoch, sy’n cynnwys eich data TGP, gallwch
-fileReady.p3.linkText = ofyn am ffeil arall
 
-fileInProgress.title = Rydym wrthi’n paratoi’ch ffeil
-fileInProgress.heading = Rydym wrthi’n paratoi’ch ffeil
-fileInProgress.p1 = Byddwn yn anfon e-bost at {0} pan fydd eich ffeil yn barod.
-fileInProgress.p2 = Gallwch wneud cais am ffeil newydd. Bydd gwneud hyn yn canslo’ch cais presennol, a bydd yn rhaid i chi aros i’r ffeil newydd i fod yn barod.
-fileInProgress.linkText1 = Gofyn am ffeil newydd
 
 requestData.title = Gwneud cais i lawrlwytho’ch data TGP
 requestData.heading = Gwneud cais i lawrlwytho’ch data TGP
@@ -535,10 +524,8 @@ profile.h1 = Manylion y proffil
 profile.h2 = UKIMS, NIRMS a’r NIPHL
 profile.p1 = Gwiriwch fod y manylion ar eich proffil yn gywir. Gallwch newid eich rhif UKIMS neu ychwanegu, newid a dileu gwybodaeth NIRMS a NIPHL.
 profile.warning = Rhybudd
-profile.warningText = Mae angen i chi wneud yn siŵr bod y manylion hyn yn gywir. Ni fydd unrhyw symudiadau y byddwch yn defnyddio manylion o’r TGP i’w creu yn ddilys os byddant yn anghywir.
+profile.warningText = Mae angen i chi wneud yn siŵr bod y manylion hyn yn gywir cyn eu defnyddio i greu symudiad.
 profile.back = Yn ôl i’r hafan
-
-
 
 removeNirms.title = Tynnu manylion y contract
 removeNirms.h1 = Tynnu manylion y contract
@@ -549,7 +536,7 @@ removeNirms.error.required = Cadarnhewch eich bod am ddileu’r manylion ynghylc
 removeNirms.yes = Iawn, rwyf am i chi ddileu’r manylion ynghylch fy NIRMS
 removeNirms.no = Na, peidiwch â dileu’r manylion ynghylch fy NIRMS
 removeNirms.warning = Rhybudd
-removeNirms.warningText = Os ydych yn symud nwyddau o dan SPIMM, ac nad ydynt yn gymwys i ddefnyddio’r broses hon, gallech fod yn atebol am unrhyw nwyddau a gafodd eu datgan yn anghywir.
+removeNirms.warningText = Os ydych yn symud nwyddau o dan SPIMM, ac nad ydynt yn gymwys ddefnyddio’r broses hon, gallech fod yn atebol am unrhyw nwyddau a gafodd eu datgan yn anghywir.
 
 removeNiphl.title = Tynnu manylion NIPHL
 removeNiphl.h1 = Tynnu manylion NIPHL
@@ -560,9 +547,7 @@ removeNiphl.error.required = Cadarnhewch eich bod am ddileu’r manylion ynghylc
 removeNiphl.yes = Iawn, rwyf am i chi ddileu’r manylion ynghylch fy NIPHL
 removeNiphl.no = Na, peidiwch â dileu’r manylion ynghylch fy NIPHL
 removeNiphl.warning = Rhybudd
-removeNiphl.warningText = Os ydych yn symud nwyddau o dan SPIMM, ac nad ydynt yn gymwys i ddefnyddio’r broses hon, gallech fod yn atebol am unrhyw nwyddau a gafodd eu datgan yn anghywir.
-
-
+removeNiphl.warningText = Os ydych yn symud nwyddau o dan SPIMM, ac nad ydynt yn gymwys ddefnyddio’r broses hon, gallech fod yn atebol am unrhyw nwyddau a gafodd eu datgan yn anghywir.
 
 helpAndSupport.title = Help a chymorth
 helpAndSupport.h1 = Help a chymorth
@@ -647,11 +632,11 @@ reasonForWithdrawAdvice.hint = Mae hyn yn ddewisol a gallwch dynnu’ch cais yn 
 reasonForWithdrawAdvice.continue = Tynnu’r cais yn ôl
 reasonForWithdrawAdvice.error.length = Mae’n rhaid i’r rheswm fod yn 512 o gymeriadau neu lai
 
-singleRecord.recordLocked = Mae’r cofnod hwn wedi’i gloi gan eich bod wedi gofyn i CThEF am gyngor os yw’n gywir. Ni allwch wneud unrhyw newidiadau i’r cofnod hwn nes bod CThEF wedi gwneud penderfyniad, neu eich bod yn tynnu’ch cais yn ôl.
+singleRecord.recordLocked = Mae’r cofnod hwn wedi’i gloi gan eich bod wedi gofyn i CThEF a yw’n gywir. Ni allwch wneud unrhyw newidiadau na dileu’r cofnod hwn hyd nes y bydd CThEF wedi gwneud penderfyniad, neu eich bod yn tynnu’ch cais yn ôl.
 
 previousMovementRecords.title = Cofnodion symud blaenorol
 previousMovementRecords.h1 = Cofnodion symud blaenorol
-previousMovementRecords.p1 = Mae gan Broffil Nwyddau Masnachwr (TGP) eich gwybodaeth symud flaenorol o 01/04/2023 i 19/06/2024 wedi’i chadw fel cofnodion unigol. Mae CThEF wedi tynnu unrhyw gofnodion dyblyg. Mae’n bosibl y byddwch am wirio bod gwybodaeth y cofnod yn gywir cyn eu defnyddio ar symudiad.
+previousMovementRecords.p1 = Mae gan Broffil Nwyddau Masnachwr (TGP) eich gwybodaeth symud flaenorol o 1 Ebrill 2023 i 19 Mehefin 2024 wedi’i chadw fel cofnodion unigol. Mae CThEF wedi tynnu unrhyw gofnodion dyblyg. Mae’n bosibl y byddwch am wirio bod gwybodaeth y cofnod yn gywir cyn eu defnyddio ar symudiad.
 previousMovementRecords.p2 = Mae TGP wedi creu cyfeirnodau masnachwr o wybodaeth sydd gennym eisoes. Gallwch newid y cyfeirnod masnachwr at unrhyw beth i’ch helpu i nodi’r cofnod.
 previousMovementRecords.h2 = Gwladwriaethau
 previousMovementRecords.p3 = Bydd TGP yn rhoi gwybod i chi a yw cofnod yn barod i symud o dan Gwybodaeth Symud Marchnad Fewnol (IMMI) trwy ddefnyddio gwladwriaethau. Gallwch weld y gwladwriaethau ar eich rhestr cofnodion nwyddau.

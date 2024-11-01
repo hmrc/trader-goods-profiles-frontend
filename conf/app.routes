@@ -302,16 +302,12 @@ POST        /update-record/:recordId/withdraw-request/reason                    
 
 GET         /download-data/request-received                                                 controllers.DownloadRequestSuccessController.onPageLoad()
 
-GET         /download-data/router                                                           controllers.DownloadDataIndexController.redirect()
 
 GET         /download/tgp-record-files                                                      controllers.FileManagementController.onPageLoad()
 
 GET         /download-data/request-file                                                     controllers.RequestDataController.onPageLoad()
 POST        /download-data/request-file                                                     controllers.RequestDataController.onSubmit()
 
-GET         /download-data/file-in-progress                                                 controllers.FileInProgressController.onPageLoad()
-
-GET         /download-data/file-ready                                                       controllers.FileReadyController.onPageLoad()
 
 GET         /problem/:recordId/expired-commodity-code                                       controllers.ExpiredCommodityCodeController.onPageLoad(recordId:String)
 

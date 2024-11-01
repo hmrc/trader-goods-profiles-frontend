@@ -47,7 +47,7 @@
     isFullWidth: Boolean = false,
     extraHead: Html = HtmlFormat.empty,
     headerShouldHaveServiceLink: Boolean = true
-    )(contentBlock: Html)(implicit request: Request[_], messages: Messages)
+    )(contentBlock: Html)(implicit request: RequestHeader, messages: Messages)
 
 @head = {
 

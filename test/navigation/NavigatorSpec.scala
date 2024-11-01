@@ -4861,30 +4861,6 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, 2)
 
             }
-
-            "and next question is answered but was not copied from shorter assessment" in {
-              val userAnswers =
-                emptyUserAnswers
-                  .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
-                  .success
-                  .value
-                  .set(
-                    ReassessmentPage(testRecordId, 0),
-                    ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE")))
-                  )
-                  .success
-                  .value
-                  .set(
-                    ReassessmentPage(testRecordId, 1),
-                    ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE")))
-                  )
-                  .success
-                  .value
-
-              navigator.nextPage(ReassessmentPage(testRecordId, 0), CheckMode, userAnswers) mustEqual
-                routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, 2)
-
-            }
           }
 
           "to a later reassessment if the next one is answered yes" - {
@@ -4946,6 +4922,30 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .set(
                     ReassessmentPage(testRecordId, 2),
                     ReassessmentAnswer(AssessmentAnswer.NotAnsweredYet, isAnswerCopiedFromPreviousAssessment = true)
+                  )
+                  .success
+                  .value
+
+              navigator.nextPage(ReassessmentPage(testRecordId, 0), CheckMode, userAnswers) mustEqual
+                routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, 3)
+
+            }
+
+            "and next question is answered but was not copied from shorter assessment" in {
+              val userAnswers =
+                emptyUserAnswers
+                  .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
+                  .success
+                  .value
+                  .set(
+                    ReassessmentPage(testRecordId, 0),
+                    ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+                  )
+                  .success
+                  .value
+                  .set(
+                    ReassessmentPage(testRecordId, 1),
+                    ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE")), true)
                   )
                   .success
                   .value

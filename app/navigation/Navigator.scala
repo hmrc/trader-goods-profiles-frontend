@@ -575,17 +575,14 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
       assessmentAnswer   <- answers.get(assessmentPage)
       nextAnswer          = answers.get(ReassessmentPage(recordId, nextIndex))
     } yield assessmentAnswer.answer match {
-      case AssessmentAnswer.Exemption(_)
-          if nextIndex < assessmentCount && (reassessmentAnswerIsEmpty(nextAnswer) || !nextAnswer.exists(
-            _.isAnswerCopiedFromPreviousAssessment
-          )) =>
+      case AssessmentAnswer.Exemption(_) if nextIndex < assessmentCount && reassessmentAnswerIsEmpty(nextAnswer) =>
         routes.AssessmentController.onPageLoadReassessment(CheckMode, recordId, nextNumber)
-      case AssessmentAnswer.Exemption(_) if nextIndex < assessmentCount =>
+      case AssessmentAnswer.Exemption(_) if nextIndex < assessmentCount                                          =>
         navigateFromReassessmentCheck(ReassessmentPage(recordId, nextIndex))(answers)
       case AssessmentAnswer.NoExemption
           if shouldGoToSupplementaryUnitCheck(answers, categorisationInfo, assessmentQuestion, recordId) =>
         routes.HasSupplementaryUnitController.onPageLoad(CheckMode, recordId)
-      case _                                                            =>
+      case _                                                                                                     =>
         routes.CyaCategorisationController.onPageLoad(recordId)
     }
   } getOrElse routes.JourneyRecoveryController.onPageLoad()
