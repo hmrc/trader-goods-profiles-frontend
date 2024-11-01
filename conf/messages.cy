@@ -452,6 +452,7 @@ downloadRequestSuccess.p1 = Gallwch wirio cynnydd eich ffeil ar y dudalen ddata 
 downloadRequestSuccess.p2 = Byddwch yn gweld hysbysiad pan fyddwch yn mewngofnodi i’ch TGP a fydd yn dangos cysylltiad i’r dudalen lawrlwytho. Mae’r ffeil mewn fformat .csv.
 downloadRequestSuccess.p3 = Bydd y ffeil cofnodion TGP ar gael am 30 diwrnod ar ôl i ni roi gwybod i chi ei bod yn barod.
 downloadRequestSuccess.p3.1 = Ar ôl 30 diwrnod, bydd angen i chi wneud cais am ffeil newydd.
+downloadRequestSuccess.p1.linkText = tudalen lawrlwytho data TGP
 
 fileManagement.title = Ffeiliau cofnodion TGP
 fileManagement.heading = Ffeiliau cofnodion TGP
