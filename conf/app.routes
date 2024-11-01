@@ -86,6 +86,11 @@ POST        /create-profile/ukims-number                                        
 GET         /create-profile/ukims-number/check                                              controllers.UkimsNumberController.onPageLoadCreate(mode: Mode = CheckMode)
 POST        /create-profile/ukims-number/check                                              controllers.UkimsNumberController.onSubmitCreate(mode: Mode = CheckMode)
 
+GET         /new/ukims-number                                                               controllers.UkimsNumberController.onPageLoadCreateNew(mode: Mode = NormalMode)
+POST        /new/ukims-number                                                               controllers.UkimsNumberController.onSubmitCreateNew(mode: Mode = NormalMode)
+GET         /new/ukims-number/check                                                         controllers.UkimsNumberController.onPageLoadCreateNew(mode: Mode = CheckMode)
+POST        /new/ukims-number/check                                                         controllers.UkimsNumberController.onSubmitCreateNew(mode: Mode = CheckMode)
+
 GET         /update-profile/ukims-number                                                    controllers.UkimsNumberController.onPageLoadUpdate(mode: Mode = NormalMode)
 POST        /update-profile/ukims-number                                                    controllers.UkimsNumberController.onSubmitUpdate(mode: Mode = NormalMode)
 GET         /update-profile/ukims-number/check                                              controllers.UkimsNumberController.onPageLoadUpdate(mode: Mode = CheckMode)

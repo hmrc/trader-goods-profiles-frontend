@@ -22,10 +22,12 @@ import forms.UkimsNumberFormProvider
 import models.Mode
 import navigation.Navigator
 import pages.{UkimsNumberPage, UkimsNumberUpdatePage}
-import play.api.i18n.MessagesApi
+import play.api.data.{Form, FormError}
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import views.html.UkimsNumberView
+import views.html.NewUkimsNumberView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -41,7 +43,8 @@ class UkimsNumberController @Inject() (
   formProvider: UkimsNumberFormProvider,
   traderProfileConnector: TraderProfileConnector,
   val controllerComponents: MessagesControllerComponents,
-  view: UkimsNumberView
+  view: UkimsNumberView,
+  newView: NewUkimsNumberView
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
@@ -104,4 +107,45 @@ class UkimsNumberController @Inject() (
             } yield Redirect(navigator.nextPage(UkimsNumberUpdatePage, mode, updatedAnswers))
         )
   }
+
+  def onPageLoadCreateNew(mode: Mode): Action[AnyContent] =
+    (identify andThen checkProfile andThen getData andThen requireData) { implicit request =>
+      val preparedForm = request.userAnswers.get(UkimsNumberPage) match {
+        case None        => form
+        case Some(value) => form.fill(value)
+      }
+
+      Ok(newView(preparedForm, routes.UkimsNumberController.onSubmitCreateNew(mode), isCreateJourney = true))
+    }
+
+  def onSubmitCreateNew(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+    implicit request =>
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors =>
+            Future
+              .successful(BadRequest(newView(formWithErrors, routes.UkimsNumberController.onSubmitCreateNew(mode)))),
+          value =>
+            for {
+              profile        <- traderProfileConnector.getTraderProfile(request.eori)
+              updatedAnswers <- Future.fromTry(request.userAnswers.set(UkimsNumberPage, value))
+              _              <- sessionRepository.set(updatedAnswers)
+            } yield
+              if (value == profile.ukimsNumber) {
+                val formWithApiErrors =
+                  createFormWithErrors(form, value, "ukimsNumberChangeController.duplicateUkimsNumber")
+                BadRequest(view(formWithApiErrors, routes.UkimsNumberController.onSubmitCreateNew(mode)))
+              } else {
+                Redirect(navigator.nextPage(UkimsNumberPage, mode, updatedAnswers))
+              }
+        )
+  }
+
+  private def createFormWithErrors[T](form: Form[T], value: T, errorMessageKey: String, field: String = "value")(
+    implicit messages: Messages
+  ): Form[T] =
+    form
+      .fill(value)
+      .copy(errors = Seq(FormError(field, messages(errorMessageKey))))
 }

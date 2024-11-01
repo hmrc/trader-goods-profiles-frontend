@@ -471,6 +471,7 @@ ukimsNumberChangeController.title = UK Internal Market Scheme(UKIMS) number chan
 ukimsNumberChangeController.heading = UK Internal Market Scheme(UKIMS) number change
 ukimsNumberChangeController.paragraph = As you have a new EORI number, you also have a new UKIMS number. You need to update your UKIMS number on your TGP. Keeping your UKIMS number up to date is important as it can be used on movements.
 ukimsNumberChangeController.button = Update UKIMS number
+ukimsNumberChangeController.duplicateUkimsNumber = You've entered the previous UKIMS number. Enter the new UKIMS number.
 
 profile.title = Profile details
 profile.h1 = Profile details
