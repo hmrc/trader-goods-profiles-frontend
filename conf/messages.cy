@@ -464,7 +464,7 @@ fileManagement.pendingFiles.table.header1 = Dyddiad ac amser y gofynnwyd amdanyn
 fileManagement.pendingFiles.table.header2 = Ffeil
 fileManagement.pendingFiles.table.caption = Ffeiliau sy’n aros
 fileManagement.pendingFiles.table.body = Mae’r rhain yn geisiadau rydych wedi’u gwneud ond nid yw’r ffeil yn barod eto. Byddwn yn anfon e-bost atoch pan fydd y ffeil yn barod.
-fileManagement.pendingFiles.fileText = Ffeil heb ei ddarllen
+fileManagement.pendingFiles.fileText = Nid yw’r ffeil yn barod
 fileManagement.files.requestRecord.linkText = Cael ffeil cofnodion TGP newydd
 
 goodsRecords.title = Proffil Nwyddau
