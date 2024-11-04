@@ -31,6 +31,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
 import views.html.RequestDataView
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 
 import java.time.Instant
 import scala.concurrent.Future
