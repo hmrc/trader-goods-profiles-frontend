@@ -34,6 +34,30 @@ class DownloadRequestSuccessControllerSpec extends SpecBase {
 
   "DownloadRequestSuccess Controller" - {
 
+    "must redirect to Journey Recovery for a GET if no email is found" in {
+
+      val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+      when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+
+      val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+      when(mockDownloadDataConnector.getEmail(any())(any())) thenReturn Future.successful(None)
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(inject.bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+        .overrides(inject.bind[DownloadDataConnector].toInstance(mockDownloadDataConnector))
+        .build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.DownloadRequestSuccessController.onPageLoad().url)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+
+      }
+    }
+
     "must return OK and the correct view for a GET" in {
 
       val address   = "somebody@email.com"
