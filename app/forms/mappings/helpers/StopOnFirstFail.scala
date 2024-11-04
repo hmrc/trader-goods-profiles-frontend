@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,18 +12,18 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@import views.ViewUtils.titleNoForm
+package forms.mappings.helpers
 
-@this(
-layout: templates.Layout
-)
+import play.api.data.validation.{Constraint, Valid}
 
-@(pageTitle: String, heading: String, message: String)(implicit request: RequestHeader, messages: Messages)
+object StopOnFirstFail {
 
-@layout(pageTitle = titleNoForm(pageTitle)) {
-    <h1 class="govuk-heading-xl">@messages(heading)</h1>
-
-    <p class="govuk-body">@messages(message)</p>
+  def apply[T](constraints: Constraint[T]*): Constraint[T] = Constraint { field =>
+    constraints.toList dropWhile (_(field) == Valid) match {
+      case Nil             => Valid
+      case constraint :: _ => constraint(field)
+    }
+  }
 }

@@ -116,7 +116,7 @@ class FileManagementTableSpec extends SpecBase with Generators {
 
       "must return correct body" in {
         table.body mustBe Some(
-          "These are requests you've made but the file is not ready yet. We'll email you when the file is ready."
+          "These are requests you’ve made but the file is not ready yet. We’ll email you when the file is ready."
         )
       }
 
