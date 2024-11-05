@@ -26,14 +26,13 @@ import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{UkimsNumberPage, UkimsNumberUpdatePage}
-import play.api.data.FormError
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
 import services.AuditService
-import views.html.{NewUkimsNumberView, UkimsNumberView}
+import views.html.UkimsNumberView
 
 import scala.concurrent.Future
 

@@ -53,7 +53,7 @@ class NewUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
     ".create" - {
 
-      val newUkimsNumberRoute = routes.NewUkimsNumberController.onPageLoadCreate(NormalMode).url
+      val newUkimsNumberRoute = routes.NewUkimsNumberController.onPageLoad(NormalMode).url
 
       "must return OK and the correct view for a GET" in {
 
@@ -74,8 +74,7 @@ class NewUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             form,
-            routes.NewUkimsNumberController.onSubmitCreate(NormalMode),
-            isCreateJourney = true
+            routes.NewUkimsNumberController.onSubmit(NormalMode)
           )(
             request,
             messages(application)
@@ -104,8 +103,7 @@ class NewUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             form.fill("answer"),
-            routes.NewUkimsNumberController.onSubmitCreate(NormalMode),
-            isCreateJourney = true
+            routes.NewUkimsNumberController.onSubmit(NormalMode)
           )(
             request,
             messages(application)
@@ -159,7 +157,7 @@ class NewUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(boundForm, routes.NewUkimsNumberController.onSubmitCreate(NormalMode))(
+          contentAsString(result) mustEqual view(boundForm, routes.NewUkimsNumberController.onSubmit(NormalMode))(
             request,
             messages(application)
           ).toString
@@ -189,7 +187,7 @@ class NewUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           val boundForm = form
             .fill("XIUKIM47699357400020231115081800")
             .copy(errors =
-              Seq(elems = FormError("value", "You've entered the previous UKIMS number. Enter the new UKIMS number."))
+              Seq(elems = FormError("value", "You’ve entered the previous UKIMS number. Enter the new UKIMS number."))
             )
 
           val view = application.injector.instanceOf[NewUkimsNumberView]
@@ -197,7 +195,7 @@ class NewUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(boundForm, routes.NewUkimsNumberController.onSubmitCreate(NormalMode))(
+          contentAsString(result) mustEqual view(boundForm, routes.NewUkimsNumberController.onSubmit(NormalMode))(
             request,
             messages(application)
           ).toString

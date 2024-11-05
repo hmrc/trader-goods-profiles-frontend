@@ -86,10 +86,10 @@ POST        /create-profile/ukims-number                                        
 GET         /create-profile/ukims-number/check                                              controllers.UkimsNumberController.onPageLoadCreate(mode: Mode = CheckMode)
 POST        /create-profile/ukims-number/check                                              controllers.UkimsNumberController.onSubmitCreate(mode: Mode = CheckMode)
 
-GET         /new/ukims-number                                                               controllers.NewUkimsNumberController.onPageLoadCreate(mode: Mode = NormalMode)
-POST        /new/ukims-number                                                               controllers.NewUkimsNumberController.onSubmitCreate(mode: Mode = NormalMode)
-GET         /new/ukims-number/check                                                         controllers.NewUkimsNumberController.onPageLoadCreate(mode: Mode = CheckMode)
-POST        /new/ukims-number/check                                                         controllers.NewUkimsNumberController.onSubmitCreate(mode: Mode = CheckMode)
+GET         /new/ukims-number                                                               controllers.NewUkimsNumberController.onPageLoad(mode: Mode = NormalMode)
+POST        /new/ukims-number                                                               controllers.NewUkimsNumberController.onSubmit(mode: Mode = NormalMode)
+GET         /new/ukims-number/check                                                         controllers.NewUkimsNumberController.onPageLoad(mode: Mode = CheckMode)
+POST        /new/ukims-number/check                                                         controllers.NewUkimsNumberController.onSubmit(mode: Mode = CheckMode)
 
 GET         /update-profile/ukims-number                                                    controllers.UkimsNumberController.onPageLoadUpdate(mode: Mode = NormalMode)
 POST        /update-profile/ukims-number                                                    controllers.UkimsNumberController.onSubmitUpdate(mode: Mode = NormalMode)

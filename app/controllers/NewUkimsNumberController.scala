@@ -21,7 +21,7 @@ import controllers.actions._
 import forms.UkimsNumberFormProvider
 import models.Mode
 import navigation.Navigator
-import pages.NewUkimsNumberPage
+import pages.{NewUkimsNumberPage, UkimsNumberPage}
 import play.api.data.{Form, FormError}
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -48,24 +48,24 @@ class NewUkimsNumberController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoadCreate(mode: Mode): Action[AnyContent] =
+  def onPageLoad(mode: Mode): Action[AnyContent] =
     (identify andThen getData andThen requireData) { implicit request =>
-      val preparedForm = request.userAnswers.get(NewUkimsNumberPage) match {
+      val preparedForm = request.userAnswers.get(UkimsNumberPage) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
 
-      Ok(newView(preparedForm, routes.NewUkimsNumberController.onSubmitCreate(mode), isCreateJourney = true))
+      Ok(newView(preparedForm, routes.NewUkimsNumberController.onSubmit(mode)))
     }
 
-  def onSubmitCreate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
       form
         .bindFromRequest()
         .fold(
           formWithErrors =>
             Future
-              .successful(BadRequest(newView(formWithErrors, routes.NewUkimsNumberController.onSubmitCreate(mode)))),
+              .successful(BadRequest(newView(formWithErrors, routes.NewUkimsNumberController.onSubmit(mode)))),
           value =>
             for {
               profile        <- traderProfileConnector.getTraderProfile(request.eori)
@@ -75,7 +75,7 @@ class NewUkimsNumberController @Inject() (
               if (value == profile.ukimsNumber) {
                 val formWithApiErrors =
                   createFormWithErrors(form, value, "ukimsNumberChangeController.duplicateUkimsNumber")
-                BadRequest(view(formWithApiErrors, routes.NewUkimsNumberController.onSubmitCreate(mode)))
+                BadRequest(view(formWithApiErrors, routes.NewUkimsNumberController.onSubmit(mode)))
               } else {
                 Redirect(navigator.nextPage(NewUkimsNumberPage, mode, updatedAnswers))
               }
