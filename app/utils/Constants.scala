@@ -41,4 +41,6 @@ case object Constants {
   val goodsDescriptionKey = "goodsDescription"
   val countryOfOriginKey  = "countryOfOrigin"
   val commodityCodeKey    = "commodityCode"
+
+  val maximumEmailLength: Int = 254
 }
