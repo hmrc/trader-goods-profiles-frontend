@@ -29,7 +29,7 @@ import repositories.SessionRepository
 import views.html.{NewUkimsNumberView, UkimsNumberView}
 
 import javax.inject.Inject
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class NewUkimsNumberController @Inject() (
   override val messagesApi: MessagesApi,
@@ -43,7 +43,7 @@ class NewUkimsNumberController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: UkimsNumberView,
   newView: NewUkimsNumberView
-)
+)(implicit ec: ExecutionContext)
     extends BaseController {
 
   private val form = formProvider()
