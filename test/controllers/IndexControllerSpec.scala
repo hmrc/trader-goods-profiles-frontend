@@ -22,7 +22,6 @@ import connectors.{DownloadDataConnector, TraderProfileConnector}
 import models.{Email, TraderProfile}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import org.scalatest.matchers.must.Matchers.contain
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject.bind
 import play.api.test.FakeRequest
