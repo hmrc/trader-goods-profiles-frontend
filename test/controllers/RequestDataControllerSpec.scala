@@ -31,6 +31,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
 import views.html.RequestDataView
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 
 import java.time.Instant
 import scala.concurrent.Future
@@ -40,6 +41,31 @@ class RequestDataControllerSpec extends SpecBase {
   private def onwardRoute = Call("GET", "/foo")
 
   "RequestData Controller" - {
+
+    "must redirect to Journey Recovery for a GET if no email is found" in {
+
+      val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+      when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+
+      val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+      when(mockDownloadDataConnector.getEmail(any())(any())) thenReturn Future.successful(None)
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(inject.bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+        .overrides(inject.bind[DownloadDataConnector].toInstance(mockDownloadDataConnector))
+        .build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.RequestDataController.onPageLoad().url)
+
+        val result = route(application, request).value
+
+        val redirectUrl = Some(RedirectUrl(routes.IndexController.onPageLoad.url))
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(redirectUrl).url
+      }
+    }
 
     "must return OK and the correct view for a GET" in {
 
@@ -51,7 +77,7 @@ class RequestDataControllerSpec extends SpecBase {
       when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
       val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
-      when(mockDownloadDataConnector.getEmail(any())(any())) thenReturn Future.successful(email)
+      when(mockDownloadDataConnector.getEmail(any())(any())) thenReturn Future.successful(Some(email))
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(inject.bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
