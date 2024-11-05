@@ -29,25 +29,25 @@
 
 @(form: Form[_], action: Call, isCreateJourney: Boolean = false)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("ukimsNumber.title"))) {
+@layout(pageTitle = title(form, messages("newUkimsNumber.title"))) {
 
     @if(form.errors.nonEmpty) {
         @govukErrorSummary(ErrorSummaryViewModel(form))
     }
 
-    <h1 class="govuk-heading-l">@messages("ukimsNumber.h1")</h1>
-    <p class="govuk-body">@messages("ukimsNumber.p1")</p>
-    <p class="govuk-body">@messages("ukimsNumber.p2")</p>
+    <h1 class="govuk-heading-l">@messages("newUkimsNumber.h1")</h1>
+    <p class="govuk-body">@messages("newUkimsNumber.p1")</p>
+    <p class="govuk-body">@messages("newUkimsNumber.p2")</p>
 
     @formHelper(action = action, Symbol("autoComplete") -> "off") {
 
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(messages("ukimsNumber.heading")).withSize(Medium)
+                label = LabelViewModel(messages("newUkimsNumber.heading")).withSize(Medium)
             )
             .withHint(
-                HintViewModel(messages("ukimsNumber.hint"))
+                HintViewModel(messages("newUkimsNumber.hint"))
                 .withCssClass("text-overflow")
                 .withAttribute(("style", "word-wrap: break-word"))
             )
@@ -61,7 +61,7 @@
 
     @if(isCreateJourney) {
         <p class="govuk-body">
-            <a href="@routes.UkimsKickOutController.onPageLoad().url" class="govuk-link">@messages("ukimsNumber.linkText")</a>
+            <a href="@routes.UkimsKickOutController.onPageLoad().url" class="govuk-link">@messages("newUkimsNumber.linkText")</a>
         </p>
     }
 

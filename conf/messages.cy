@@ -106,6 +106,18 @@ ukimsNumber.error.invalidFormat = Nodwch eich rhif UKIMS yn y fformat cywir
 ukimsNumber.checkYourAnswersLabel = Rhif UKIMS
 ukimsNumber.change.hidden = Rhif UKIMS
 
+newUkimsNumber.title = Rhif Cynllun Marchnad Fewnol y DU (UKIMS)
+newUkimsNumber.h1 = Rhif Cynllun Marchnad Fewnol y DU (UKIMS)
+newUkimsNumber.p1 = Mae CThEF yn anfon llythyr gyda rhif awdurdodi UKIMS ar ôl i chi wneud cais. Os nad ydych wedi cofrestru ar gyfer yr UKIMS, ni allwch ddefnyddio''r Proffil Nwyddau Masnachwyr (TGP).
+newUkimsNumber.p2 = Mae rhif UKIMS yn dechrau â GB neu XI, wedi''u dilyn gan UKIM, ac mae''ch rhif EORI heb y GB neu''r XI, ac yna wedi''i ddilyn gan 14 o rifau.
+newUkimsNumber.heading = Beth yw''ch rhif UKIMS?
+newUkimsNumber.hint = Er enghraifft, XIUKIM47699357400020231115081800
+newUkimsNumber.linkText = Nid ydwyf wedi fy nghofrestru ar gyfer yr UKIMS
+newUkimsNumber.error.required = Nodwch eich rhif UKIMS
+newUkimsNumber.error.invalidFormat = Nodwch eich rhif UKIMS yn y fformat cywir
+newUkimsNumber.checkYourAnswersLabel = Rhif UKIMS
+newUkimsNumber.change.hidden = Rhif UKIMS
+
 hasNirms.title = Cynllun Symud Nwyddau Manwerthu Gogledd Iwerddon (NIRMS)
 hasNirms.h1 = Cynllun Symud Nwyddau Manwerthu Gogledd Iwerddon (NIRMS)
 hasNirms.h2 = A ydych wedi cofrestru ar gyfer y NIRMS?

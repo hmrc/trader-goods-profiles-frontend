@@ -104,5 +104,4 @@ class UkimsNumberController @Inject() (
             } yield Redirect(navigator.nextPage(UkimsNumberUpdatePage, mode, updatedAnswers))
         )
   }
-
 }
