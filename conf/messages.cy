@@ -520,6 +520,8 @@ hasCommodityCodeChange.advice = Bydd newid y cod nwyddau ar y cofnod nwyddau hwn
 hasCommodityCodeChange.category = YBydd angen i chi gategoreiddio’r cofnod nwyddau hwn os byddwch yn newid y cod nwyddau.
 hasCommodityCodeChange.error.required = Dewiswch os ydych am newid y cod nwyddau
 
+# TODO: Need Welsh Translation for ukimsNumberChangeController.duplicateUkimsNumber. Comment has been added for content designer on TGP-2699
+
 
 removeGoodsRecord.title = Tynnu’r cofnod nwyddau
 removeGoodsRecord.heading = Tynnu’r cofnod nwyddau
