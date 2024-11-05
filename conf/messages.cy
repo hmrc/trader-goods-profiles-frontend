@@ -49,7 +49,7 @@ homepage.p3.linkText = Creu cofnod nwyddau newydd
 homepage.h2.2 = Rheoli’ch proffil
 homepage.p5.linkText = Rheoli manylion eich proffil
 homepage.h2.4 = Help a chysylltu
-homepage.p6.linkText = Dewch o hyd i gymorth ychwanegol a chysylltiadau i''ch helpu
+homepage.p6.linkText = Dewch o hyd i gymorth ychwanegol a chysylltiadau i’ch helpu
 homepage.downloadBanner.content = Mae’r ffeil y gofynnoch amdano, sy’n cynnwys eich cofnodion TGP, yn barod i’w lawrlwytho.
 homepage.downloadBanner.important = Pwysig
 homepage.downloadBanner.linkText = Ewch i’r dudalen ffeiliau cofnodion TGP i lawrlwytho’r ffeil
@@ -457,6 +457,8 @@ fileManagement.pendingFiles.table.caption = Ffeiliau sy’n aros
 fileManagement.pendingFiles.table.body = Mae’r rhain yn geisiadau rydych wedi’u gwneud ond nid yw’r ffeil yn barod eto. Byddwn yn anfon e-bost atoch pan fydd y ffeil yn barod.
 fileManagement.pendingFiles.fileText = Nid yw’r ffeil yn barod
 fileManagement.files.requestRecord.linkText = Cael ffeil cofnodion TGP newydd
+fileManagement.noFiles.requestRecord.linkText = Cael ffeil cofnodion TGP
+
 
 goodsRecords.title = Proffil Nwyddau
 goodsRecords.title.withPage = Proffil Nwyddau – tudalen {0} o {1}
@@ -517,6 +519,8 @@ hasGoodsDescriptionChange.p1 = Bydd newid disgrifiad y nwyddau ar y cofnod nwydd
 hasGoodsDescriptionChange.h2 = A ydych am newid disgrifiad y nwyddau?
 hasGoodsDescriptionChange.error.required = Dewiswch os ydych am newid disgrifiad y nwyddau
 
+ukimsNumberChangeController.title = Newid Rhif Cynllun Marchnad Fewnol y DU (UKIMS)
+ukimsNumberChangeController.heading = Newid Rhif Cynllun Marchnad Fewnol y DU (UKIMS)
 ukimsNumberChangeController.paragraph = Gan fod gennych rif EORI newydd, mae gennych hefyd rif UKIMS newydd. Mae angen i chi ddiweddaru’ch rhif UKIMS ar eich Proffil Nwyddau Masnachwyr (TGP). Mae cadw’ch rhif UKIMS wedi’i ddiweddaru yn bwysig oherwydd y gellir ei ddefnyddio ar symudiadau.
 ukimsNumberChangeController.button = Diweddaru rhif UKIMS
 
