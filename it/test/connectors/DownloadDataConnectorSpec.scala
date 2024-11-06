@@ -37,7 +37,7 @@ import utils.GetRecordsResponseUtil
 import java.time.Instant
 
 class DownloadDataConnectorSpec
-  extends AnyFreeSpec
+    extends AnyFreeSpec
     with Matchers
     with WireMockSupport
     with ScalaFutures
@@ -56,14 +56,13 @@ class DownloadDataConnectorSpec
 
   implicit private lazy val hc: HeaderCarrier = HeaderCarrier()
 
-  private val xClientIdName: String = "X-Client-ID"
-  private val xClientId: String = "tgp-frontend"
+  private val xClientIdName: String  = "X-Client-ID"
+  private val xClientId: String      = "tgp-frontend"
   private val downloadDataSummaryUrl =
     s"/trader-goods-profiles-data-store/traders/$testEori/download-data-summary"
 
   private val downloadDataUrl =
     s"/trader-goods-profiles-data-store/traders/$testEori/download-data"
-
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -113,10 +112,10 @@ class DownloadDataConnectorSpec
 
     "must get download data data" in {
 
-      val downloadURL = "downloadURL"
-      val fileName = "fileName"
-      val fileSize = 600
-      val metadata = Seq.empty
+      val downloadURL  = "downloadURL"
+      val fileName     = "fileName"
+      val fileSize     = 600
+      val metadata     = Seq.empty
       val downloadData = Seq(DownloadData(downloadURL, fileName, fileSize, metadata))
 
       wireMockServer.stubFor(
@@ -158,7 +157,8 @@ class DownloadDataConnectorSpec
 
     ".getDownloadDataSummary" - {
 
-      val downloadDataSummary = Seq(DownloadDataSummary("id", testEori, FileInProgress, Instant.now(), Instant.now(), None))
+      val downloadDataSummary =
+        Seq(DownloadDataSummary("id", testEori, FileInProgress, Instant.now(), Instant.now(), None))
 
       "must get download data summary" in {
 
@@ -197,9 +197,9 @@ class DownloadDataConnectorSpec
       val emailUrl =
         s"/trader-goods-profiles-data-store/traders/$testEori/email"
 
-      val address = "somebody@email.com"
+      val address   = "somebody@email.com"
       val timestamp = Instant.now
-      val email = Email(address, timestamp)
+      val email     = Email(address, timestamp)
       "must get email" in {
 
         wireMockServer.stubFor(
@@ -207,7 +207,7 @@ class DownloadDataConnectorSpec
             .willReturn(ok().withBody(Json.toJson(email).toString))
         )
 
-        connector.getEmail(testEori).futureValue mustBe email
+        connector.getEmail(testEori).futureValue mustBe Some(email)
       }
 
       "must return a failed future when the server returns an error" in {
@@ -220,16 +220,14 @@ class DownloadDataConnectorSpec
         connector.getEmail(testEori).failed.futureValue
       }
 
-      "must return a failed future when anything but Ok is returned" in {
+      "must return None when the email isn't found" in {
 
         wireMockServer.stubFor(
           get(urlEqualTo(emailUrl))
-            .willReturn(status(errorResponses.sample.value))
+            .willReturn(notFound())
         )
 
-        val result = connector.getEmail(testEori)
-
-        result.failed.futureValue
+        connector.getEmail(testEori).futureValue mustBe None
       }
     }
 

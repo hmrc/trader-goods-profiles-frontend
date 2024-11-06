@@ -226,7 +226,7 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       "must return OK and the correct view for a GET with all trader profile complete" in {
 
-        val traderProfile    = TraderProfile(testEori, "1", Some("2"), Some("3"), false)
+        val traderProfile    = TraderProfile(testEori, "1", Some("2"), Some("3"), eoriChanged = false)
         val mockAuditService = mock[AuditService]
 
         when(mockTraderProfileConnector.getTraderProfile(eqTo(testEori))(any())) thenReturn Future.successful(

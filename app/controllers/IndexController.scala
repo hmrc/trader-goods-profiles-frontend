@@ -16,12 +16,13 @@
 
 package controllers
 
-import connectors.TraderProfileConnector
+import config.FrontendAppConfig
+import connectors.{DownloadDataConnector, TraderProfileConnector}
 import controllers.actions.IdentifierAction
 import models.TraderProfile
 import models.requests.IdentifierRequest
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -29,15 +30,23 @@ import scala.concurrent.{ExecutionContext, Future}
 class IndexController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   identify: IdentifierAction,
-  traderProfileConnector: TraderProfileConnector
+  traderProfileConnector: TraderProfileConnector,
+  downloadDataConnector: DownloadDataConnector,
+  config: FrontendAppConfig
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
   def onPageLoad: Action[AnyContent] = identify.async { implicit request =>
-    traderProfileConnector.checkTraderProfile(request.eori).flatMap {
-      case true  =>
-        eoriChanged(request)
-      case false => Future.successful(Redirect(controllers.profile.routes.ProfileSetupController.onPageLoad()))
+    downloadDataConnector.getEmail(request.eori).flatMap {
+      case Some(_) =>
+        traderProfileConnector.checkTraderProfile(request.eori).flatMap {
+          case true  => eoriChanged(request)
+          case false => Future.successful(Redirect(controllers.profile.routes.ProfileSetupController.onPageLoad()))
+        }
+      case None    =>
+        Future.successful(
+          Redirect(url"${config.customsEmailUrl}/manage-email-cds/service/trader-goods-profiles".toString)
+        )
     }
   }
 

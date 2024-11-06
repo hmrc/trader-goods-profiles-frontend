@@ -10,6 +10,11 @@ POST        /create-profile/ukims-number                               controlle
 GET         /update-profile/ukims-number                               controllers.profile.UkimsNumberController.onPageLoadUpdate(mode: Mode = NormalMode)
 POST        /update-profile/ukims-number                               controllers.profile.UkimsNumberController.onSubmitUpdate(mode: Mode = NormalMode)
 
+GET         /new/ukims-number                                          controllers.profile.NewUkimsNumberController.onPageLoad(mode: Mode = NormalMode)
+POST        /new/ukims-number                                          controllers.profile.NewUkimsNumberController.onSubmit(mode: Mode = NormalMode)
+GET         /new/ukims-number/check                                    controllers.profile.NewUkimsNumberController.onPageLoad(mode: Mode = CheckMode)
+POST        /new/ukims-number/check                                    controllers.profile.NewUkimsNumberController.onSubmit(mode: Mode = CheckMode)
+
 GET         /new/ukims-number-change                                   controllers.profile.UkimsNumberChangeController.onPageLoad()
 GET         /new/ukims-number-cya                                      controllers.profile.CyaNewUkimsNumberController.onPageLoad()
 POST        /new/ukims-number-cya                                      controllers.profile.CyaNewUkimsNumberController.onSubmit()
