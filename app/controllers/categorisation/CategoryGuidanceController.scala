@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.categorisation
 
+import controllers.BaseController
 import controllers.actions._
 import models.NormalMode
-import navigation.Navigator
-import pages.CategoryGuidancePage
+import navigation.CategorisationNavigator
+import pages.categorisation.CategoryGuidancePage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import views.html.CategoryGuidanceView
+import views.html.categorisation.CategoryGuidanceView
 
 import javax.inject.Inject
 
@@ -34,7 +35,7 @@ class CategoryGuidanceController @Inject() (
   profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
   view: CategoryGuidanceView,
-  navigator: Navigator
+  navigator: CategorisationNavigator
 ) extends BaseController {
 
   def onPageLoad(recordId: String): Action[AnyContent] =

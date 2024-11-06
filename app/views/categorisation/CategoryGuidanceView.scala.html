@@ -36,7 +36,7 @@
     <h2 class="govuk-heading-m">@messages("categoryGuidance.subheading")</h2>
     <p class="govuk-body">@messages("categoryGuidance.p4")</p>
 
-    @formHelper(action = CategoryGuidanceController.onSubmit(recordId)) {
+    @formHelper(action = controllers.categorisation.routes.CategoryGuidanceController.onSubmit(recordId)) {
         @govukButton(
             ButtonViewModel(messages("site.continue"))
         )

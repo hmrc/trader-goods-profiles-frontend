@@ -1,6 +1,7 @@
 # microservice specific routes
 
 ->          /                                                                                       app.profile.Routes
+->          /                                                                                       app.categorisation.Routes
 ->          /hmrc-frontend                                                                          hmrcfrontend.Routes
 
 GET         /                                                                                       controllers.IndexController.onPageLoad()
@@ -21,9 +22,6 @@ GET         /signed-out                                                         
 GET         /problem/unauthorised-sign-in                                                           controllers.UnauthorisedController.onPageLoad()
 GET         /problem/unauthorised-service-user                                                      controllers.UnauthorisedServiceUserController.onPageLoad()
 GET         /problem/unauthorised-cds-enrolment                                                     controllers.UnauthorisedCdsEnrolmentController.onPageLoad()
-
-GET         /update-record/:recordId/categorisation/start                                           controllers.CategoryGuidanceController.onPageLoad(recordId: String)
-POST        /update-record/:recordId/categorisation/start                                           controllers.CategoryGuidanceController.onSubmit(recordId: String)
 
 GET         /create-record/commodity-code                                                           controllers.CommodityCodeController.onPageLoadCreate(mode: Mode = NormalMode)
 POST        /create-record/commodity-code                                                           controllers.CommodityCodeController.onSubmitCreate(mode: Mode = NormalMode)

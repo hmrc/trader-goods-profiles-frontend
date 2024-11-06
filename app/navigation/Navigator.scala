@@ -22,6 +22,7 @@ import models.Scenario.getResultAsInt
 import models._
 import models.ott.{CategorisationInfo, CategoryAssessment}
 import pages._
+import pages.categorisation.CategoryGuidancePage
 import play.api.mvc.Call
 import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery, LongerCommodityQuery}
 import services.CategorisationService
@@ -223,7 +224,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
       case Some(catInfo) if catInfo.isCommCodeExpired                           =>
         routes.ExpiredCommodityCodeController.onPageLoad(recordId)
       case Some(catInfo) if catInfo.categoryAssessmentsThatNeedAnswers.nonEmpty =>
-        routes.CategoryGuidanceController.onPageLoad(recordId)
+        controllers.categorisation.routes.CategoryGuidanceController.onPageLoad(recordId)
 
       case Some(catInfo) =>
         val scenario = categorisationService.calculateResult(catInfo, answers, recordId)

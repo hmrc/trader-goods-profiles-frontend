@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-package forms.profile
+package forms
 
 import forms.behaviours.BooleanFieldBehaviours
+import forms.profile.RemoveNirmsFormProvider
 import play.api.data.FormError
 
-class UseExistingUkimsNumberFormProviderSpec extends BooleanFieldBehaviours {
+class RemoveNirmsFormProviderSpec extends BooleanFieldBehaviours {
 
-  val requiredKey = "existingUkimsNumber.error.required"
+  val requiredKey = "removeNirms.error.required"
   val invalidKey  = "error.boolean"
 
-  val form = new UseExistingUkimsNumberFormProvider()()
+  val form = new RemoveNirmsFormProvider()()
 
   ".value" - {
 

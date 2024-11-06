@@ -410,7 +410,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 .value
 
               navigator.nextPage(CategorisationPreparationPage(testRecordId), NormalMode, userAnswers) mustEqual
-                routes.CategoryGuidanceController.onPageLoad(testRecordId)
+                controllers.categorisation.routes.CategoryGuidanceController.onPageLoad(testRecordId)
 
             }
 
@@ -436,7 +436,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 CategorisationPreparationPage(testRecordId),
                 NormalMode,
                 userAnswers
-              ) mustBe routes.CategoryGuidanceController.onPageLoad(testRecordId)
+              ) mustBe controllers.categorisation.routes.CategoryGuidanceController.onPageLoad(testRecordId)
 
             }
 
@@ -462,7 +462,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 CategorisationPreparationPage(testRecordId),
                 NormalMode,
                 userAnswers
-              ) mustBe routes.CategoryGuidanceController.onPageLoad(testRecordId)
+              ) mustBe controllers.categorisation.routes.CategoryGuidanceController.onPageLoad(testRecordId)
 
             }
 
@@ -488,7 +488,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 CategorisationPreparationPage(testRecordId),
                 NormalMode,
                 userAnswers
-              ) mustBe routes.CategoryGuidanceController.onPageLoad(testRecordId)
+              ) mustBe controllers.categorisation.routes.CategoryGuidanceController.onPageLoad(testRecordId)
 
             }
 
@@ -513,7 +513,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 CategorisationPreparationPage(testRecordId),
                 NormalMode,
                 userAnswers
-              ) mustBe routes.CategoryGuidanceController.onPageLoad(testRecordId)
+              ) mustBe controllers.categorisation.routes.CategoryGuidanceController.onPageLoad(testRecordId)
 
             }
 
@@ -538,7 +538,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 CategorisationPreparationPage(testRecordId),
                 NormalMode,
                 userAnswers
-              ) mustBe routes.CategoryGuidanceController.onPageLoad(testRecordId)
+              ) mustBe controllers.categorisation.routes.CategoryGuidanceController.onPageLoad(testRecordId)
 
             }
           }
@@ -1054,13 +1054,6 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               emptyUserAnswers
             ) mustBe routes.JourneyRecoveryController.onPageLoad()
           }
-        }
-
-        "must go from category guidance to the first assessment page" in {
-
-          navigator.nextPage(CategoryGuidancePage(testRecordId), NormalMode, emptyUserAnswers) mustEqual
-            routes.AssessmentController.onPageLoad(NormalMode, testRecordId, firstAssessmentNumber)
-
         }
 
         "must go from assessment page" - {

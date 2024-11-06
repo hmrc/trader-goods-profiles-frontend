@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
-package pages
+package pages.categorisation
+
+import pages.Page
 
 case class CategoryGuidancePage(recordId: String) extends Page

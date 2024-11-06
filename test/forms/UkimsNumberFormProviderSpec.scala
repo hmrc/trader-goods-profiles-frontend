@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package forms.profile
+package forms
 
 import forms.behaviours.StringFieldBehaviours
+import forms.profile.UkimsNumberFormProvider
 import org.scalacheck.Gen
 import play.api.data.{Form, FormError}
 

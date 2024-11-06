@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.categorisation
 
 import base.SpecBase
 import base.TestConstants.testRecordId
-import navigation.{FakeNavigator, Navigator}
+import navigation.{CategorisationNavigator, FakeCategorisationNavigator}
 import play.api.inject._
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import views.html.CategoryGuidanceView
+import views.html.categorisation.CategoryGuidanceView
 
 class CategoryGuidanceControllerSpec extends SpecBase {
 
@@ -35,7 +35,8 @@ class CategoryGuidanceControllerSpec extends SpecBase {
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
+        val request =
+          FakeRequest(GET, controllers.categorisation.routes.CategoryGuidanceController.onPageLoad(testRecordId).url)
 
         val result = route(application, request).value
 
@@ -50,12 +51,13 @@ class CategoryGuidanceControllerSpec extends SpecBase {
 
       val application = applicationBuilder(userAnswers = Some(userAnswersForCategorisation))
         .overrides(
-          bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
+          bind[CategorisationNavigator].toInstance(new FakeCategorisationNavigator(onwardRoute))
         )
         .build()
 
       running(application) {
-        val request = FakeRequest(POST, routes.CategoryGuidanceController.onSubmit(testRecordId).url)
+        val request =
+          FakeRequest(POST, controllers.categorisation.routes.CategoryGuidanceController.onSubmit(testRecordId).url)
 
         val result = route(application, request).value
 
