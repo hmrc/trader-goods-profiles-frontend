@@ -16,7 +16,6 @@
 
 package viewmodels.checkAnswers
 
-import controllers.routes
 import models.{CheckMode, NormalMode, UserAnswers}
 import pages.{NirmsNumberPage, NirmsNumberUpdatePage}
 import play.api.i18n.Messages
@@ -33,7 +32,7 @@ object NirmsNumberSummary {
         key = "nirmsNumber.checkYourAnswersLabel",
         value = ValueViewModel(HtmlFormat.escape(answer).toString),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.NirmsNumberController.onPageLoadCreate(CheckMode).url)
+          ActionItemViewModel("site.change", controllers.profile.routes.NirmsNumberController.onPageLoadCreate(CheckMode).url)
             .withVisuallyHiddenText(messages("nirmsNumber.change.hidden"))
         )
       )
@@ -45,7 +44,7 @@ object NirmsNumberSummary {
         key = "nirmsNumber.checkYourAnswersLabel",
         value = ValueViewModel(HtmlFormat.escape(nirmsNumber).toString),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.NirmsNumberController.onPageLoadUpdate(NormalMode).url)
+          ActionItemViewModel("site.change", controllers.profile.routes.NirmsNumberController.onPageLoadUpdate(NormalMode).url)
             .withVisuallyHiddenText(messages("nirmsNumber.change.hidden"))
         )
       )
@@ -57,7 +56,7 @@ object NirmsNumberSummary {
         key = "nirmsNumber.checkYourAnswersLabel",
         value = ValueViewModel(HtmlFormat.escape(nirmsNumber).toString),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.NirmsNumberController.onPageLoadUpdate(CheckMode).url)
+          ActionItemViewModel("site.change", controllers.profile.routes.NirmsNumberController.onPageLoadUpdate(CheckMode).url)
             .withVisuallyHiddenText(messages("nirmsNumber.change.hidden"))
         )
       )

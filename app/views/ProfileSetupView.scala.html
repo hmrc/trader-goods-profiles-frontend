@@ -52,7 +52,7 @@
         <a target="_self" href="https://www.gov.uk/guidance/moving-plants-from-great-britain-to-northern-ireland" class="govuk-link" >@messages("profileSetup.p9.linkText")</a>.
     </p>
 
-    @formHelper(action = routes.ProfileSetupController.onSubmit()) {
+    @formHelper(action = controllers.profile.routes.ProfileSetupController.onSubmit()) {
         @govukButton(ButtonViewModel(messages("site.continue")))
     }
 }

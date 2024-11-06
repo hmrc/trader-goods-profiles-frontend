@@ -16,7 +16,6 @@
 
 package viewmodels.checkAnswers
 
-import controllers.routes
 import models.{CheckMode, Mode, UserAnswers}
 import pages.{HasNirmsPage, HasNirmsUpdatePage}
 import play.api.i18n.Messages
@@ -35,7 +34,7 @@ object HasNirmsSummary {
         key = "hasNirms.checkYourAnswersLabel",
         value = ValueViewModel(value),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.HasNirmsController.onPageLoadCreate(CheckMode).url)
+          ActionItemViewModel("site.change", controllers.profile.routes.HasNirmsController.onPageLoadCreate(CheckMode).url)
             .withVisuallyHiddenText(messages("hasNirms.change.hidden"))
         )
       )
@@ -47,7 +46,7 @@ object HasNirmsSummary {
       key = "hasNirms.checkYourAnswersLabel",
       value = ValueViewModel(HtmlFormat.escape(textValue).toString),
       actions = Seq(
-        ActionItemViewModel("site.change", routes.HasNirmsController.onPageLoadUpdate(mode).url)
+        ActionItemViewModel("site.change", controllers.profile.routes.HasNirmsController.onPageLoadUpdate(mode).url)
           .withVisuallyHiddenText(messages("hasNirms.change.hidden"))
       )
     )
@@ -61,7 +60,7 @@ object HasNirmsSummary {
         key = "hasNirms.checkYourAnswersLabel",
         value = ValueViewModel(value),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.HasNirmsController.onPageLoadUpdate(CheckMode).url)
+          ActionItemViewModel("site.change", controllers.profile.routes.HasNirmsController.onPageLoadUpdate(CheckMode).url)
             .withVisuallyHiddenText(messages("hasNirms.change.hidden"))
         )
       )

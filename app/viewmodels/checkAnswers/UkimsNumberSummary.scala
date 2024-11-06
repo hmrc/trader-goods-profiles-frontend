@@ -16,7 +16,6 @@
 
 package viewmodels.checkAnswers
 
-import controllers.routes
 import models.{CheckMode, NormalMode, UserAnswers}
 import pages.{UkimsNumberPage, UkimsNumberUpdatePage}
 import play.api.i18n.Messages
@@ -33,7 +32,7 @@ object UkimsNumberSummary {
         key = "ukimsNumber.checkYourAnswersLabel",
         value = ValueViewModel(HtmlFormat.escape(answer).toString),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.UkimsNumberController.onPageLoadCreate(CheckMode).url)
+          ActionItemViewModel("site.change", controllers.profile.routes.UkimsNumberController.onPageLoadCreate(CheckMode).url)
             .withVisuallyHiddenText(messages("ukimsNumber.change.hidden"))
         )
       )
@@ -44,7 +43,7 @@ object UkimsNumberSummary {
       key = "ukimsNumber.checkYourAnswersLabel",
       value = ValueViewModel(HtmlFormat.escape(value).toString),
       actions = Seq(
-        ActionItemViewModel("site.change", routes.UkimsNumberController.onPageLoadUpdate(NormalMode).url)
+        ActionItemViewModel("site.change", controllers.profile.routes.UkimsNumberController.onPageLoadUpdate(NormalMode).url)
           .withVisuallyHiddenText(messages("ukimsNumber.change.hidden"))
       )
     )
@@ -55,7 +54,7 @@ object UkimsNumberSummary {
         key = "ukimsNumber.checkYourAnswersLabel",
         value = ValueViewModel(answer),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.UkimsNumberController.onPageLoadUpdate(CheckMode).url)
+          ActionItemViewModel("site.change", controllers.profile.routes.UkimsNumberController.onPageLoadUpdate(CheckMode).url)
             .withVisuallyHiddenText(messages("ukimsNumber.change.hidden"))
         )
       )

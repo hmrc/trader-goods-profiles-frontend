@@ -36,19 +36,19 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
   private val normalRoutes: Page => UserAnswers => Call = {
     case ProfileSetupPage                          => navigateFromProfileSetUp
     case UseExistingUkimsNumberPage                => navigateFromUseExistingUkimsNumber
-    case UkimsNumberPage                           => _ => routes.HasNirmsController.onPageLoadCreate(NormalMode)
+    case UkimsNumberPage                           => _ => controllers.profile.routes.HasNirmsController.onPageLoadCreate(NormalMode)
     case HasNirmsPage                              => navigateFromHasNirms
-    case NirmsNumberPage                           => _ => routes.HasNiphlController.onPageLoadCreate(NormalMode)
+    case NirmsNumberPage                           => _ => controllers.profile.routes.HasNiphlController.onPageLoadCreate(NormalMode)
     case HasNiphlPage                              => navigateFromHasNiphl
-    case NiphlNumberPage                           => _ => routes.CyaCreateProfileController.onPageLoad()
-    case UkimsNumberUpdatePage                     => _ => routes.CyaMaintainProfileController.onPageLoadUkimsNumber()
+    case NiphlNumberPage                           => _ => controllers.profile.routes.CyaCreateProfileController.onPageLoad()
+    case UkimsNumberUpdatePage                     => _ => controllers.profile.routes.CyaMaintainProfileController.onPageLoadUkimsNumber()
     case HasNirmsUpdatePage                        => answers => navigateFromHasNirmsUpdate(answers, NormalMode)
-    case NirmsNumberUpdatePage                     => _ => routes.CyaMaintainProfileController.onPageLoadNirmsNumber()
+    case NirmsNumberUpdatePage                     => _ => controllers.profile.routes.CyaMaintainProfileController.onPageLoadNirmsNumber()
     case RemoveNirmsPage                           => navigateFromRemoveNirmsPage
     case HasNiphlUpdatePage                        => userAnswers => navigateFromHasNiphlUpdate(userAnswers, NormalMode)
-    case NiphlNumberUpdatePage                     => _ => routes.CyaMaintainProfileController.onPageLoadNiphlNumber()
+    case NiphlNumberUpdatePage                     => _ => controllers.profile.routes.CyaMaintainProfileController.onPageLoadNiphlNumber()
     case RemoveNiphlPage                           => navigateFromRemoveNiphlPage
-    case CyaMaintainProfilePage                    => _ => routes.ProfileController.onPageLoad()
+    case CyaMaintainProfilePage                    => _ => controllers.profile.routes.ProfileController.onPageLoad()
     case CreateRecordStartPage                     => _ => routes.TraderReferenceController.onPageLoadCreate(NormalMode)
     case TraderReferencePage                       => _ => routes.GoodsDescriptionController.onPageLoadCreate(NormalMode)
     case p: TraderReferenceUpdatePage              => _ => routes.CyaUpdateRecordController.onPageLoadTraderReference(p.recordId)
@@ -87,7 +87,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     case p: ReasonForWithdrawAdvicePage            => _ => routes.WithdrawAdviceSuccessController.onPageLoad(p.recordId)
     case p: CyaCreateRecordPage                    => _ => routes.CreateRecordSuccessController.onPageLoad(p.recordId)
     case p: CyaRequestAdvicePage                   => _ => routes.AdviceSuccessController.onPageLoad(p.recordId)
-    case CyaCreateProfilePage                      => _ => routes.CreateProfileSuccessController.onPageLoad()
+    case CyaCreateProfilePage                      => _ => controllers.profile.routes.CreateProfileSuccessController.onPageLoad()
     case p: CyaUpdateRecordPage                    => _ => routes.SingleRecordController.onPageLoad(p.recordId)
     case p: CyaSupplementaryUnitPage               => _ => routes.SingleRecordController.onPageLoad(p.recordId)
     case PreviousMovementRecordsPage               => _ => routes.GoodsRecordsController.onPageLoad(firstPage)
@@ -99,8 +99,8 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     answers
       .get(UseExistingUkimsNumberPage)
       .map {
-        case true  => routes.HasNirmsController.onPageLoadCreate(NormalMode)
-        case false => routes.UkimsNumberController.onPageLoadCreate(NormalMode)
+        case true  => controllers.profile.routes.HasNirmsController.onPageLoadCreate(NormalMode)
+        case false => controllers.profile.routes.UkimsNumberController.onPageLoadCreate(NormalMode)
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
@@ -208,8 +208,8 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     answers
       .get(HasNirmsPage)
       .map {
-        case true  => routes.NirmsNumberController.onPageLoadCreate(NormalMode)
-        case false => routes.HasNiphlController.onPageLoadCreate(NormalMode)
+        case true  => controllers.profile.routes.NirmsNumberController.onPageLoadCreate(NormalMode)
+        case false => controllers.profile.routes.HasNiphlController.onPageLoadCreate(NormalMode)
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
@@ -217,34 +217,34 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     answers
       .get(RemoveNirmsPage)
       .map {
-        case false => routes.CyaMaintainProfileController.onPageLoadNirmsNumber()
-        case true  => routes.CyaMaintainProfileController.onPageLoadNirms()
+        case false => controllers.profile.routes.CyaMaintainProfileController.onPageLoadNirmsNumber()
+        case true  => controllers.profile.routes.CyaMaintainProfileController.onPageLoadNirms()
       }
-      .getOrElse(routes.ProfileController.onPageLoad())
+      .getOrElse(controllers.profile.routes.ProfileController.onPageLoad())
 
   private def navigateFromRemoveNiphlPage(answers: UserAnswers): Call =
     answers
       .get(RemoveNiphlPage)
       .map {
-        case false => routes.CyaMaintainProfileController.onPageLoadNiphlNumber()
-        case true  => routes.CyaMaintainProfileController.onPageLoadNiphl()
+        case false => controllers.profile.routes.CyaMaintainProfileController.onPageLoadNiphlNumber()
+        case true  => controllers.profile.routes.CyaMaintainProfileController.onPageLoadNiphl()
       }
-      .getOrElse(routes.ProfileController.onPageLoad())
+      .getOrElse(controllers.profile.routes.ProfileController.onPageLoad())
 
   private def navigateFromHasNirmsUpdate(answers: UserAnswers, mode: Mode): Call = {
-    val continueUrl = RedirectUrl(routes.ProfileController.onPageLoad().url)
+    val continueUrl = RedirectUrl(controllers.profile.routes.ProfileController.onPageLoad().url)
     answers
       .get(HasNirmsUpdatePage)
       .map {
-        case true  => routes.NirmsNumberController.onPageLoadUpdate(mode)
+        case true  => controllers.profile.routes.NirmsNumberController.onPageLoadUpdate(mode)
         case false =>
           answers
             .get(TraderProfileQuery)
             .map { userProfile =>
               if (userProfile.nirmsNumber.isDefined) {
-                routes.RemoveNirmsController.onPageLoad()
+                controllers.profile.routes.RemoveNirmsController.onPageLoad()
               } else {
-                routes.CyaMaintainProfileController.onPageLoadNirms()
+                controllers.profile.routes.CyaMaintainProfileController.onPageLoadNirms()
               }
             }
             .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
@@ -256,25 +256,25 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     answers
       .get(HasNiphlPage)
       .map {
-        case true  => routes.NiphlNumberController.onPageLoadCreate(NormalMode)
-        case false => routes.CyaCreateProfileController.onPageLoad()
+        case true  => controllers.profile.routes.NiphlNumberController.onPageLoadCreate(NormalMode)
+        case false => controllers.profile.routes.CyaCreateProfileController.onPageLoad()
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
   private def navigateFromHasNiphlUpdate(answers: UserAnswers, mode: Mode): Call = {
-    val continueUrl = RedirectUrl(routes.ProfileController.onPageLoad().url)
+    val continueUrl = RedirectUrl(controllers.profile.routes.ProfileController.onPageLoad().url)
     answers
       .get(HasNiphlUpdatePage)
       .map {
-        case true  => routes.NiphlNumberController.onPageLoadUpdate(mode)
+        case true  => controllers.profile.routes.NiphlNumberController.onPageLoadUpdate(mode)
         case false =>
           answers
             .get(TraderProfileQuery)
             .map { userProfile =>
               if (userProfile.niphlNumber.isDefined) {
-                routes.RemoveNiphlController.onPageLoad()
+                controllers.profile.routes.RemoveNiphlController.onPageLoad()
               } else {
-                routes.CyaMaintainProfileController.onPageLoadNiphl()
+                controllers.profile.routes.CyaMaintainProfileController.onPageLoadNiphl()
               }
             }
             .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
@@ -441,18 +441,18 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
   }
 
   private val checkRouteMap: Page => UserAnswers => Call = {
-    case CyaMaintainProfilePage                    => _ => routes.ProfileController.onPageLoad()
-    case UkimsNumberPage                           => _ => routes.CyaCreateProfileController.onPageLoad()
+    case CyaMaintainProfilePage                    => _ => controllers.profile.routes.ProfileController.onPageLoad()
+    case UkimsNumberPage                           => _ => controllers.profile.routes.CyaCreateProfileController.onPageLoad()
     case HasNirmsPage                              => navigateFromHasNirmsCheck
-    case NirmsNumberPage                           => _ => routes.CyaCreateProfileController.onPageLoad()
-    case NirmsNumberUpdatePage                     => _ => routes.CyaMaintainProfileController.onPageLoadNirmsNumber()
+    case NirmsNumberPage                           => _ => controllers.profile.routes.CyaCreateProfileController.onPageLoad()
+    case NirmsNumberUpdatePage                     => _ => controllers.profile.routes.CyaMaintainProfileController.onPageLoadNirmsNumber()
     case RemoveNirmsPage                           => navigateFromRemoveNirmsPage
     case HasNirmsUpdatePage                        => answers => navigateFromHasNirmsUpdate(answers, CheckMode)
     case HasNiphlPage                              => navigateFromHasNiphlCheck
-    case NiphlNumberPage                           => _ => routes.CyaCreateProfileController.onPageLoad()
+    case NiphlNumberPage                           => _ => controllers.profile.routes.CyaCreateProfileController.onPageLoad()
     case HasNiphlUpdatePage                        => answers => navigateFromHasNiphlUpdate(answers, CheckMode)
-    case NiphlNumberUpdatePage                     => _ => routes.CyaMaintainProfileController.onPageLoadNiphlNumber()
-    case UkimsNumberUpdatePage                     => _ => routes.CyaMaintainProfileController.onPageLoadUkimsNumber()
+    case NiphlNumberUpdatePage                     => _ => controllers.profile.routes.CyaMaintainProfileController.onPageLoadNiphlNumber()
+    case UkimsNumberUpdatePage                     => _ => controllers.profile.routes.CyaMaintainProfileController.onPageLoadUkimsNumber()
     case TraderReferencePage                       => _ => routes.CyaCreateRecordController.onPageLoad()
     case p: TraderReferenceUpdatePage              => _ => routes.CyaUpdateRecordController.onPageLoadTraderReference(p.recordId)
     case GoodsDescriptionPage                      => _ => routes.CyaCreateRecordController.onPageLoad()
@@ -487,11 +487,11 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
       .map {
         case true  =>
           if (answers.isDefined(NirmsNumberPage)) {
-            routes.CyaCreateProfileController.onPageLoad()
+            controllers.profile.routes.CyaCreateProfileController.onPageLoad()
           } else {
-            routes.NirmsNumberController.onPageLoadCreate(CheckMode)
+            controllers.profile.routes.NirmsNumberController.onPageLoadCreate(CheckMode)
           }
-        case false => routes.CyaCreateProfileController.onPageLoad()
+        case false => controllers.profile.routes.CyaCreateProfileController.onPageLoad()
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
@@ -501,11 +501,11 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
       .map {
         case true  =>
           if (answers.isDefined(NiphlNumberPage)) {
-            routes.CyaCreateProfileController.onPageLoad()
+            controllers.profile.routes.CyaCreateProfileController.onPageLoad()
           } else {
-            routes.NiphlNumberController.onPageLoadCreate(CheckMode)
+            controllers.profile.routes.NiphlNumberController.onPageLoadCreate(CheckMode)
           }
-        case false => routes.CyaCreateProfileController.onPageLoad()
+        case false => controllers.profile.routes.CyaCreateProfileController.onPageLoad()
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
@@ -658,8 +658,8 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     answers
       .get(HistoricProfileDataQuery) match {
       case Some(_) =>
-        routes.UseExistingUkimsNumberController.onPageLoad()
-      case None    => routes.UkimsNumberController.onPageLoadCreate(NormalMode)
+        controllers.profile.routes.UseExistingUkimsNumberController.onPageLoad()
+      case None    => controllers.profile.routes.UkimsNumberController.onPageLoadCreate(NormalMode)
     }
 
   def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = mode match {
