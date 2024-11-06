@@ -17,6 +17,7 @@ site.govuk = GOV.UK
 site.or = neu
 site.search = Chwilio
 site.removeThisGoodsRecord = Tynnwch y cofnod nwyddau hwn
+site.goBackToTGPRecords = Ewch i ffeiliau cofnodion TGP
 
 
 date.day = Diwrnod
@@ -49,9 +50,12 @@ homepage.h2.2 = Rheoli’ch proffil
 homepage.p5.linkText = Rheoli manylion eich proffil
 homepage.h2.4 = Help a chysylltu
 homepage.p6.linkText = Dewch o hyd i gymorth ychwanegol a chysylltiadau i’ch helpu
-homepage.downloadBanner.content = Mae’r ffeil y gofynnoch amdani, sy’n cynnwys eich data TGP, yn barod i’w lawrlwytho.
-homepage.downloadBanner.linkText = Ewch i’r dudalen lawrlwytho i gael mynediad at eich ffeil.
-# TODO: Awaiting welsh translation for download link text (Ticket: TGP-2753)
+homepage.downloadBanner.content = Mae’r ffeil y gofynnoch amdano, sy’n cynnwys eich cofnodion TGP, yn barod i’w lawrlwytho.
+homepage.downloadBanner.important = Pwysig
+homepage.downloadBanner.linkText = Ewch i’r dudalen ffeiliau cofnodion TGP i lawrlwytho’r ffeil
+homepage.h2.3 = Lawrlwytho data TGP
+homepage.downloadLinkText.noGoodsRecords = Nid oes gennych unrhyw gofnodion nwyddau TGP i’w lawrlwytho.
+homepage.downloadLinkText.noFilesRequested = Cael eich ffeil cofnodion TGP
 
 unauthorised.title = Mae problem wedi codi
 unauthorised.heading = Mae problem wedi codi
@@ -438,17 +442,35 @@ unauthorisedCdsEnrolment.p2.part2 = ac yna mewngofnodwch gan ddefnyddio’r many
 
 requestData.title = Gwneud cais i lawrlwytho’ch data TGP
 requestData.heading = Gwneud cais i lawrlwytho’ch data TGP
-requestData.p1 = Unwaith y byddwch yn gwneud cais am y ffeil, byddwn yn anfon e-bost at {0} i roi gwybod i chi pryd y bydd yn barod i lawrlwytho. Fel arfer bydd y ffeil yn barod cyn pen pum munud, ond gall gymryd hyd at 24 awr.
-requestData.button = Gwneud cais am ddata TGP
+requestData.p1 = Unwaith y byddwch yn gwneud cais am y ffeil, byddwn yn anfon e-bost at {0} i roi gwybod i chi pan fydd yn barod i’w lawrlwytho. Fel arfer bydd y ffeil yn barod cyn pen pum munud, ond gall gymryd hyd at 24 awr.
+requestData.p2 = Byddwch hefyd yn gallu gwirio’r cynnydd ar dudalen ffeiliau cofnodion TGP.
+requestData.button = Cael ffeil cofnodion TGP
 
 downloadRequestSuccess.title = Mae’ch cais i gael ffeil sy’n cynnwys eich data TGP wedi dod i law
 downloadRequestSuccess.h1 = Mae’ch cais i gael ffeil sy’n cynnwys eich data TGP wedi dod i law
 downloadRequestSuccess.h2 = Yr hyn sy’n digwydd nesaf
-# TODO: Awaiting welsh translation of the new changes brought in from TGP-2677 (Will include key changes - see lines 644 to 650 of English messages) (Ticket Number: TGP-2753)
-downloadRequestSuccess.p1 = Byddwn yn anfon e-bost at {0} i roi gwybod i chi pryd bydd y ffeil yn barod i lawrlwytho.
-downloadRequestSuccess.p2 = Byddwch yn gweld hysbysiad pan fyddwch yn mewngofnodi i’ch TGP a fydd yn dangos cysylltiad i’r dudalen lawrlwytho. Mae’r ffeil ar ffurf CSV (gwerthoedd wedi’u gwahanu gan goma).
-downloadRequestSuccess.p3 = Bydd y ffeil hon ar gael am 30 diwrnod ar ôl i ni roi gwybod i chi ei bod yn barod.
+downloadRequestSuccess.p1 = Gallwch wirio cynnydd eich ffeil ar y dudalen ddata TGP lawrlwytho. Byddwn hefyd yn anfon e-bost at {0} i roi gwybod i chi pan fydd eich ffeil cofnodion TGP yn barod.
+downloadRequestSuccess.p2 = Byddwch yn gweld hysbysiad pan fyddwch yn mewngofnodi i’ch TGP a fydd yn dangos cysylltiad i’r dudalen lawrlwytho. Mae’r ffeil mewn fformat .csv.
+downloadRequestSuccess.p3 = Bydd y ffeil cofnodion TGP ar gael am 30 diwrnod ar ôl i ni roi gwybod i chi ei bod yn barod.
 downloadRequestSuccess.p3.1 = Ar ôl 30 diwrnod, bydd angen i chi wneud cais am ffeil newydd.
+downloadRequestSuccess.p1.linkText = tudalen lawrlwytho data TGP
+
+fileManagement.title = Ffeiliau cofnodion TGP
+fileManagement.heading = Ffeiliau cofnodion TGP
+fileManagement.files.paragraph1 = Mae ffeiliau ar gael am 30 diwrnod ar ôl i ni anfon e-bost atoch ei bod yn barod i’w lawrlwytho.
+fileManagement.availableFiles.table.caption = Ffeiliau cofnodion TGP
+fileManagement.availableFiles.table.header1 = Dyddiad ac amser y gofynnwyd amdanynt
+fileManagement.availableFiles.table.header2 = Dyddiad dod i ben
+fileManagement.availableFiles.table.header3 = Ffeil
+fileManagement.availableFiles.downloadText = Lawrlwytho’r ffeil
+fileManagement.pendingFiles.table.header1 = Dyddiad ac amser y gofynnwyd amdanynt
+fileManagement.pendingFiles.table.header2 = Ffeil
+fileManagement.pendingFiles.table.caption = Ffeiliau sy’n aros
+fileManagement.pendingFiles.table.body = Mae’r rhain yn geisiadau rydych wedi’u gwneud ond nid yw’r ffeil yn barod eto. Byddwn yn anfon e-bost atoch pan fydd y ffeil yn barod.
+fileManagement.pendingFiles.fileText = Nid yw’r ffeil yn barod
+fileManagement.files.requestRecord.linkText = Cael ffeil cofnodion TGP newydd
+fileManagement.noFiles.requestRecord.linkText = Cael ffeil cofnodion TGP
+
 
 goodsRecords.title = Proffil Nwyddau
 goodsRecords.title.withPage = Proffil Nwyddau – tudalen {0} o {1}
@@ -484,6 +506,8 @@ goodsRecordSearchResultEmptyView.title = Does dim canlyniadau cyfatebol
 goodsRecordSearchResultEmptyView.h1 = Does dim canlyniadau cyfatebol
 goodsRecordSearchResultEmptyView.p1 = Roeddech yn chwilio am y term {0}.
 
+existingUkimsNumber.title = Rhif Cynllun Marchnad Fewnol y DU (UKIMS)
+existingUkimsNumber.h1 = Rhif Cynllun Marchnad Fewnol y DU (UKIMS)
 existingUkimsNumber.h2 = Ai dyma’r rhif UKIMS cywir ar eich cyfer o hyd?
 
 cyaMaintainProfile.title.ukimsNumber = Gwiriwch eich atebion ar gyfer newid eich rhif UKIMS
@@ -496,6 +520,9 @@ cyaMaintainProfile.title.hasNiphl = Gwiriwch eich atebion ar gyfer newid eich co
 cyaMaintainProfile.heading.hasNiphl = Gwiriwch eich atebion ar gyfer newid eich cofrestriad NIPHL
 cyaMaintainProfile.title.niphlNumber = Gwiriwch eich atebion ar gyfer newid eich rhif NIPHL
 cyaMaintainProfile.heading.niphlNumber = Gwiriwch eich atebion ar gyfer newid eich rhif NIPHL
+cyaMaintainProfile.warningText = Mae angen i chi wneud yn siŵr bod y manylion hyn yn gywir. Ni fydd unrhyw symudiadau y byddwch yn defnyddio manylion or TGP iw creu yn ddilys os byddant yn anghywir.
+cyaNewUkimsNumber.title = Gwiriwch eich atebion ar gyfer eich rhif UKIMS newydd
+cyaNewUkimsNumber.heading = Gwiriwch eich atebion ar gyfer eich rhif UKIMS newydd
 
 
 hasGoodsDescriptionChange.title = Newid gwybodaeth y cofnod
@@ -504,11 +531,14 @@ hasGoodsDescriptionChange.p1 = Bydd newid disgrifiad y nwyddau ar y cofnod nwydd
 hasGoodsDescriptionChange.h2 = A ydych am newid disgrifiad y nwyddau?
 hasGoodsDescriptionChange.error.required = Dewiswch os ydych am newid disgrifiad y nwyddau
 
-
+ukimsNumberChangeController.title = Newid Rhif Cynllun Marchnad Fewnol y DU (UKIMS)
+ukimsNumberChangeController.heading = Newid Rhif Cynllun Marchnad Fewnol y DU (UKIMS)
+ukimsNumberChangeController.paragraph = Gan fod gennych rif EORI newydd, mae gennych hefyd rif UKIMS newydd. Mae angen i chi ddiweddaru’ch rhif UKIMS ar eich Proffil Nwyddau Masnachwyr (TGP). Mae cadw’ch rhif UKIMS wedi’i ddiweddaru yn bwysig oherwydd y gellir ei ddefnyddio ar symudiadau.
+ukimsNumberChangeController.button = Diweddaru rhif UKIMS
 
 hasCountryOfOriginChange.title = Newid gwybodaeth y cofnod
 hasCountryOfOriginChange.h1 = Newid gwybodaeth y cofnod
-hasCountryOfOriginChange.p1 = Bydd angen i chi gategoreiddio’r cofnod nwyddau hwn os byddwch yn newid y wlad wreiddiol.
+hasCountryOfOriginChange.p1 = Bydd angen i chi ail-gategoreiddio’r cofnod nwyddau os byddwch yn newid y wlad wreiddiol.
 hasCountryOfOriginChange.h2 = A ydych am newid y wlad wreiddiol?
 hasCountryOfOriginChange.error.required = Dewiswch os ydych am newid y wlad wreiddiol
 
@@ -517,7 +547,7 @@ hasCommodityCodeChange.title = Newid gwybodaeth y cofnod
 hasCommodityCodeChange.h1 = Newid gwybodaeth y cofnod
 hasCommodityCodeChange.h2 = A ydych am newid y cod nwyddau?
 hasCommodityCodeChange.advice = Bydd newid y cod nwyddau ar y cofnod nwyddau hwn yn dileu’r statws cyngor. Os ydych am wirio bod y cod nwyddau yn gywir ac yn cyd-fynd â’r disgrifiad, bydd angen i chi ofyn am gyngor eto.
-hasCommodityCodeChange.category = YBydd angen i chi gategoreiddio’r cofnod nwyddau hwn os byddwch yn newid y cod nwyddau.
+hasCommodityCodeChange.category = Bydd angen i chi ail-gategoreiddio’r cofnod nwyddau os byddwch yn newid y cod nwyddau.
 hasCommodityCodeChange.error.required = Dewiswch os ydych am newid y cod nwyddau
 
 # TODO: Need Welsh Translation for ukimsNumberChangeController.duplicateUkimsNumber. Comment has been added for content designer on TGP-2699
