@@ -22,18 +22,18 @@ import connectors.TraderProfileConnector
 import controllers.BaseController
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
 import models.{NormalMode, TraderProfile, ValidationError}
-import navigation.Navigator
+import navigation.ProfileNavigator
 import org.apache.pekko.Done
-import pages.CyaMaintainProfilePage
+import pages.profile.CyaMaintainProfilePage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.AuditService
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.Constants.{hasNiphlKey, hasNirmsKey, niphlNumberKey, nirmsNumberKey, ukimsNumberKey}
-import utils.SessionData.{dataAdded, dataRemoved, dataUpdated, hasNiphlUpdatePage, hasNirmsUpdatePage, niphlNumberUpdatePage, nirmsNumberUpdatePage, pageUpdated, ukimsNumberUpdatePage}
-import viewmodels.checkAnswers.{HasNiphlSummary, HasNirmsSummary, NiphlNumberSummary, NirmsNumberSummary, UkimsNumberSummary}
+import utils.Constants._
+import utils.SessionData._
+import viewmodels.checkAnswers.profile._
 import viewmodels.govuk.all.SummaryListViewModel
-import views.html.CyaMaintainProfileView
+import views.html.profile.CyaMaintainProfileView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -48,7 +48,7 @@ class CyaMaintainProfileController @Inject()(
                                               val controllerComponents: MessagesControllerComponents,
                                               view: CyaMaintainProfileView,
                                               traderProfileConnector: TraderProfileConnector,
-                                              navigator: Navigator,
+                                              navigator: ProfileNavigator,
                                               auditService: AuditService
                                             )(implicit ec: ExecutionContext)
   extends BaseController {

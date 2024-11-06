@@ -21,12 +21,12 @@ import base.TestConstants.testEori
 import connectors.TraderProfileConnector
 import controllers.routes
 import models.{TraderProfile, UserAnswers}
-import navigation.{FakeNavigator, Navigator}
+import navigation.{FakeNavigator, FakeProfileNavigator, Navigator, ProfileNavigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages._
+import pages.profile._
 import play.api.Application
 import play.api.inject.bind
 import play.api.mvc.Call
@@ -38,9 +38,9 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants._
-import viewmodels.checkAnswers._
+import viewmodels.checkAnswers.profile._
 import viewmodels.govuk.SummaryListFluency
-import views.html.CyaMaintainProfileView
+import views.html.profile.CyaMaintainProfileView
 
 import scala.concurrent.Future
 

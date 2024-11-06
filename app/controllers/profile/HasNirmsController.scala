@@ -21,13 +21,13 @@ import controllers.BaseController
 import controllers.actions._
 import forms.HasNirmsFormProvider
 import models.Mode
-import navigation.Navigator
-import pages.{HasNirmsPage, HasNirmsUpdatePage}
+import navigation.ProfileNavigator
+import pages.profile.{HasNirmsPage, HasNirmsUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.TraderProfileQuery
 import repositories.SessionRepository
-import views.html.HasNirmsView
+import views.html.profile.HasNirmsView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -35,7 +35,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class HasNirmsController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
-  navigator: Navigator,
+  navigator: ProfileNavigator,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package viewmodels.checkAnswers
+package viewmodels.checkAnswers.profile
 
 import models.{CheckMode, Mode, UserAnswers}
-import pages.{NiphlNumberPage, NiphlNumberUpdatePage}
+import pages.profile.{NiphlNumberPage, NiphlNumberUpdatePage}
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow

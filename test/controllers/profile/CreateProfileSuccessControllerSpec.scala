@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.profile
 
 import base.SpecBase
 import connectors.TraderProfileConnector
@@ -24,7 +24,7 @@ import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import views.html.CreateProfileSuccessView
+import views.html.profile.CreateProfileSuccessView
 
 import scala.concurrent.Future
 

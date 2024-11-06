@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package pages
+package pages.profile
 
+import pages.QuestionPage
 import play.api.libs.json.JsPath
 
-case object HasNirmsUpdatePage extends QuestionPage[Boolean] {
+case object UseExistingUkimsNumberPage extends QuestionPage[Boolean] {
 
   override def path: JsPath = JsPath \ toString
 
-  override def toString: String = "hasNirmsUpdate"
-
+  override def toString: String = "useExistingUkimsNumberPage"
 }

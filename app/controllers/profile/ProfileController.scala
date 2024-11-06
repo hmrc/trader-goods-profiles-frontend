@@ -20,15 +20,15 @@ import connectors.TraderProfileConnector
 import controllers.BaseController
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
 import models.{NormalMode, UserAnswers}
-import pages._
+import pages.profile._
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.TraderProfileQuery
 import repositories.SessionRepository
 import utils.SessionData.{dataAdded, dataRemoved, dataUpdated, pageUpdated}
-import viewmodels.checkAnswers._
+import viewmodels.checkAnswers.profile._
 import viewmodels.govuk.summarylist._
-import views.html.ProfileView
+import views.html.profile.ProfileView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}

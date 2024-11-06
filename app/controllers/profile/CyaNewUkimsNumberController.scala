@@ -22,15 +22,15 @@ import connectors.TraderProfileConnector
 import controllers.actions._
 import controllers.{BaseController, routes}
 import models.{NormalMode, TraderProfile, ValidationError}
-import navigation.Navigator
-import pages._
+import navigation.ProfileNavigator
+import pages.profile.{CyaNewUkimsNumberPage, UkimsNumberUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import services.AuditService
-import viewmodels.checkAnswers._
+import viewmodels.checkAnswers.profile.UkimsNumberSummary
 import viewmodels.govuk.summarylist._
-import views.html.CyaNewUkimsNumberView
+import views.html.profile.CyaNewUkimsNumberView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -44,7 +44,7 @@ class CyaNewUkimsNumberController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: CyaNewUkimsNumberView,
   traderProfileConnector: TraderProfileConnector,
-  navigator: Navigator,
+  navigator: ProfileNavigator,
   auditService: AuditService,
   sessionRepository: SessionRepository
 )(implicit ec: ExecutionContext)

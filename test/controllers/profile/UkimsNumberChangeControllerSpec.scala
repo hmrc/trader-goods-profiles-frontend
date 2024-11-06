@@ -19,7 +19,7 @@ package controllers.profile
 import base.SpecBase
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import views.html.UkimsNumberChangeView
+import views.html.profile.UkimsNumberChangeView
 
 class UkimsNumberChangeControllerSpec extends SpecBase {
 

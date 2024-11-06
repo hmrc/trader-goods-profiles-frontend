@@ -25,7 +25,7 @@ import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import views.html.UkimsKickOutView
+import views.html.profile.UkimsKickOutView
 
 import scala.concurrent.Future
 

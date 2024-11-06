@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
-package pages
+package pages.profile
 
-case object CyaNewUkimsNumberPage extends Page
+import pages.QuestionPage
+import play.api.libs.json.JsPath
+
+case object NirmsNumberUpdatePage extends QuestionPage[String] {
+
+  override def path: JsPath = JsPath \ toString
+
+  override def toString: String = "nirmsNumberUpdate"
+}

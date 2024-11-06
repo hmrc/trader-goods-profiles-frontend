@@ -27,14 +27,14 @@ import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{HasNiphlUpdatePage, NiphlNumberPage, NiphlNumberUpdatePage}
+import pages.profile.{HasNiphlUpdatePage, NiphlNumberPage, NiphlNumberUpdatePage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
 import services.AuditService
-import views.html.NiphlNumberView
+import views.html.profile.NiphlNumberView
 
 import scala.concurrent.Future
 

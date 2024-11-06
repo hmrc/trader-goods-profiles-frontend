@@ -21,12 +21,12 @@ import controllers.BaseController
 import controllers.actions._
 import forms.UkimsNumberFormProvider
 import models.Mode
-import navigation.Navigator
-import pages.{UkimsNumberPage, UkimsNumberUpdatePage}
+import navigation.ProfileNavigator
+import pages.profile.{UkimsNumberPage, UkimsNumberUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import views.html.UkimsNumberView
+import views.html.profile.UkimsNumberView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -34,7 +34,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class UkimsNumberController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
-  navigator: Navigator,
+  navigator: ProfileNavigator,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,

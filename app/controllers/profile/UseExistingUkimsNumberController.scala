@@ -20,12 +20,12 @@ import controllers.BaseController
 import controllers.actions._
 import forms.UseExistingUkimsNumberFormProvider
 import models.NormalMode
-import navigation.Navigator
-import pages.{UkimsNumberPage, UseExistingUkimsNumberPage}
+import navigation.ProfileNavigator
+import pages.profile.{UkimsNumberPage, UseExistingUkimsNumberPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import views.html.UseExistingUkimsNumberView
+import views.html.profile.UseExistingUkimsNumberView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -33,7 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class UseExistingUkimsNumberController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
-  navigator: Navigator,
+  navigator: ProfileNavigator,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,

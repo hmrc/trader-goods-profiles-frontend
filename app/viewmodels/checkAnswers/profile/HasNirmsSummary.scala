@@ -14,28 +14,28 @@
  * limitations under the License.
  */
 
-package viewmodels.checkAnswers
+package viewmodels.checkAnswers.profile
 
 import models.{CheckMode, Mode, UserAnswers}
-import pages.{HasNiphlPage, HasNiphlUpdatePage}
+import pages.profile.{HasNirmsPage, HasNirmsUpdatePage}
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 
-object HasNiphlSummary {
+object HasNirmsSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages): Option[SummaryListRow] =
-    answers.get(HasNiphlPage).map { answer =>
+    answers.get(HasNirmsPage).map { answer =>
       val value = if (answer) "site.yes" else "site.no"
 
       SummaryListRowViewModel(
-        key = "hasNiphl.checkYourAnswersLabel",
+        key = "hasNirms.checkYourAnswersLabel",
         value = ValueViewModel(value),
         actions = Seq(
-          ActionItemViewModel("site.change", controllers.profile.routes.HasNiphlController.onPageLoadCreate(CheckMode).url)
-            .withVisuallyHiddenText(messages("hasNiphl.change.hidden"))
+          ActionItemViewModel("site.change", controllers.profile.routes.HasNirmsController.onPageLoadCreate(CheckMode).url)
+            .withVisuallyHiddenText(messages("hasNirms.change.hidden"))
         )
       )
     }
@@ -43,26 +43,27 @@ object HasNiphlSummary {
   def row(value: Boolean, mode: Mode)(implicit messages: Messages): SummaryListRow = {
     val textValue = if (value) "site.yes" else "site.no"
     SummaryListRowViewModel(
-      key = "hasNiphl.checkYourAnswersLabel",
+      key = "hasNirms.checkYourAnswersLabel",
       value = ValueViewModel(HtmlFormat.escape(textValue).toString),
       actions = Seq(
-        ActionItemViewModel("site.change", controllers.profile.routes.HasNiphlController.onPageLoadUpdate(mode).url)
-          .withVisuallyHiddenText(messages("hasNiphl.change.hidden"))
+        ActionItemViewModel("site.change", controllers.profile.routes.HasNirmsController.onPageLoadUpdate(mode).url)
+          .withVisuallyHiddenText(messages("hasNirms.change.hidden"))
       )
     )
   }
 
   def rowUpdate(answers: UserAnswers)(implicit messages: Messages): Option[SummaryListRow] =
-    answers.get(HasNiphlUpdatePage).map { answer =>
+    answers.get(HasNirmsUpdatePage).map { answer =>
       val value = if (answer) "site.yes" else "site.no"
 
       SummaryListRowViewModel(
-        key = "hasNiphl.checkYourAnswersLabel",
+        key = "hasNirms.checkYourAnswersLabel",
         value = ValueViewModel(value),
         actions = Seq(
-          ActionItemViewModel("site.change", controllers.profile.routes.HasNiphlController.onPageLoadUpdate(CheckMode).url)
-            .withVisuallyHiddenText(messages("hasNiphl.change.hidden"))
+          ActionItemViewModel("site.change", controllers.profile.routes.HasNirmsController.onPageLoadUpdate(CheckMode).url)
+            .withVisuallyHiddenText(messages("hasNirms.change.hidden"))
         )
       )
     }
+
 }

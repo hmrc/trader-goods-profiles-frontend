@@ -21,12 +21,12 @@ import controllers.BaseController
 import controllers.actions._
 import forms.NiphlNumberFormProvider
 import models.Mode
-import navigation.Navigator
-import pages.{HasNiphlUpdatePage, NiphlNumberPage, NiphlNumberUpdatePage}
+import navigation.ProfileNavigator
+import pages.profile.{HasNiphlUpdatePage, NiphlNumberPage, NiphlNumberUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import views.html.NiphlNumberView
+import views.html.profile.NiphlNumberView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -34,7 +34,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class NiphlNumberController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
-  navigator: Navigator,
+  navigator: ProfileNavigator,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,

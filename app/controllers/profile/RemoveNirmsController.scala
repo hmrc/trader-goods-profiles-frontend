@@ -21,12 +21,12 @@ import controllers.actions._
 import controllers.{BaseController, routes}
 import forms.RemoveNirmsFormProvider
 import models.NormalMode
-import navigation.Navigator
-import pages.{NirmsNumberUpdatePage, RemoveNirmsPage}
+import navigation.ProfileNavigator
+import pages.profile.{NirmsNumberUpdatePage, RemoveNirmsPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import views.html.RemoveNirmsView
+import views.html.profile.RemoveNirmsView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -35,7 +35,7 @@ import scala.util.{Success, Try}
 class RemoveNirmsController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
-  navigator: Navigator,
+  navigator: ProfileNavigator,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,

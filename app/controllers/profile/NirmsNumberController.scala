@@ -21,12 +21,12 @@ import controllers.BaseController
 import controllers.actions._
 import forms.NirmsNumberFormProvider
 import models.Mode
-import navigation.Navigator
-import pages.{HasNirmsUpdatePage, NirmsNumberPage, NirmsNumberUpdatePage}
+import navigation.ProfileNavigator
+import pages.profile.{HasNirmsUpdatePage, NirmsNumberPage, NirmsNumberUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import views.html.NirmsNumberView
+import views.html.profile.NirmsNumberView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -34,7 +34,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class NirmsNumberController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
-  navigator: Navigator,
+  navigator: ProfileNavigator,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,

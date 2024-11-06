@@ -34,9 +34,9 @@ import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import viewmodels.checkAnswers._
+import viewmodels.checkAnswers.profile._
 import viewmodels.govuk.SummaryListFluency
-import views.html.CyaCreateProfileView
+import views.html.profile.CyaCreateProfileView
 
 import scala.concurrent.Future
 

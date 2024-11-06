@@ -28,9 +28,9 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
 import uk.gov.hmrc.http.NotFoundException
-import viewmodels.checkAnswers._
+import viewmodels.checkAnswers.profile._
 import viewmodels.govuk.summarylist._
-import views.html.ProfileView
+import views.html.profile.ProfileView
 
 import scala.concurrent.Future
 

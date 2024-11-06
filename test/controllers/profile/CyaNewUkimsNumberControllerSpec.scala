@@ -26,7 +26,7 @@ import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages._
+import pages.profile.UkimsNumberUpdatePage
 import play.api.Application
 import play.api.inject.bind
 import play.api.mvc.Call
@@ -37,9 +37,9 @@ import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import viewmodels.checkAnswers._
+import viewmodels.checkAnswers.profile.UkimsNumberSummary
 import viewmodels.govuk.SummaryListFluency
-import views.html.CyaNewUkimsNumberView
+import views.html.profile.CyaNewUkimsNumberView
 
 import scala.concurrent.Future
 
@@ -119,7 +119,7 @@ class CyaNewUkimsNumberControllerSpec extends SpecBase with SummaryListFluency w
 
       "for a POST" - {
 
-        "must submit the advice request and redirect to HomeController" - {
+        "must submit the advice request and redirect to HomeController" in {
           val newUkims             = "newUkims"
           val traderProfile        = TraderProfile(testEori, "1", Some("2"), Some("3"), eoriChanged = true)
           val updatedTraderProfile = traderProfile.copy(ukimsNumber = newUkims)

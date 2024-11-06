@@ -22,14 +22,14 @@ import controllers.BaseController
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileCheckAction}
 import models.helper.CreateProfileJourney
 import models.{NormalMode, TraderProfile}
-import navigation.Navigator
-import pages.CyaCreateProfilePage
+import navigation.ProfileNavigator
+import pages.profile.CyaCreateProfilePage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{AuditService, DataCleansingService}
-import viewmodels.checkAnswers._
+import viewmodels.checkAnswers.profile._
 import viewmodels.govuk.summarylist._
-import views.html.CyaCreateProfileView
+import views.html.profile.CyaCreateProfileView
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -43,7 +43,7 @@ class CyaCreateProfileController @Inject() (
   view: CyaCreateProfileView,
   traderProfileConnector: TraderProfileConnector,
   auditService: AuditService,
-  navigator: Navigator,
+  navigator: ProfileNavigator,
   dataCleansingService: DataCleansingService
 )(implicit ec: ExecutionContext)
     extends BaseController {

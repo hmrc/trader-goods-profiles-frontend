@@ -26,13 +26,13 @@ import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{HasNirmsPage, HasNirmsUpdatePage}
+import pages.profile.{HasNirmsPage, HasNirmsUpdatePage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
-import views.html.HasNirmsView
+import views.html.profile.HasNirmsView
 
 import scala.concurrent.Future
 

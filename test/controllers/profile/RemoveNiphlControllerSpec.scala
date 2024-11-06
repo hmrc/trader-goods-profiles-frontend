@@ -27,13 +27,13 @@ import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{HasNiphlUpdatePage, NiphlNumberUpdatePage, RemoveNiphlPage}
+import pages.profile.{HasNiphlUpdatePage, NiphlNumberUpdatePage, RemoveNiphlPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
-import views.html.RemoveNiphlView
+import views.html.profile.RemoveNiphlView
 
 import scala.concurrent.Future
 

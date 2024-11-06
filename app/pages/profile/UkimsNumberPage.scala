@@ -14,29 +14,15 @@
  * limitations under the License.
  */
 
-package pages
+package pages.profile
 
-import models.UserAnswers
+import pages.QuestionPage
 import play.api.libs.json.JsPath
+import utils.Constants.ukimsNumberKey
 
-import scala.util.Try
-
-case object RemoveNiphlPage extends QuestionPage[Boolean] {
+case object UkimsNumberPage extends QuestionPage[String] {
 
   override def path: JsPath = JsPath \ toString
 
-  override def toString: String = "removeNiphl"
-
-  override def cleanup(
-    value: Option[Boolean],
-    updatedUserAnswers: UserAnswers,
-    originalUserAnswers: UserAnswers
-  ): Try[UserAnswers] =
-    value
-      .map { answer =>
-        updatedUserAnswers.set(HasNiphlUpdatePage, !answer)
-      }
-      .getOrElse {
-        super.cleanup(value, updatedUserAnswers, originalUserAnswers)
-      }
+  override def toString: String = ukimsNumberKey
 }

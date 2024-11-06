@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
-package pages
+package pages.profile
 
-case object CyaMaintainProfilePage extends Page
+import pages.Page
+
+case object CyaNewUkimsNumberPage extends Page

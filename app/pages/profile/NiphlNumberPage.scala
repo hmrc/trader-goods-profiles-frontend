@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package pages
+package pages.profile
 
+import pages.QuestionPage
 import play.api.libs.json.JsPath
+import utils.Constants.niphlNumberKey
 
-case object UkimsNumberUpdatePage extends QuestionPage[String] {
+case object NiphlNumberPage extends QuestionPage[String] {
 
   override def path: JsPath = JsPath \ toString
 
-  override def toString: String = "ukimsNumberUpdate"
+  override def toString: String = niphlNumberKey
 }

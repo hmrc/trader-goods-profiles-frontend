@@ -22,8 +22,19 @@ import pages._
 import play.api.mvc.Call
 import services.CategorisationService
 
-class FakeNavigator(desiredRoute: Call) extends Navigator(mock[CategorisationService]) {
+class FakeNavigatorTrait(desiredRoute: Call) extends NavigatorTrait {
 
   override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call =
     desiredRoute
+
+  override val normalRoutes: Page => UserAnswers => Call = _ => _ => desiredRoute
+  override val checkRoutes: Page => UserAnswers => Call  = _ => _ => desiredRoute
+}
+
+class FakeNavigator(desiredRoute: Call) extends Navigator(mock[CategorisationService]) {
+  override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = desiredRoute
+} // TODO: THis will be removed once all individual journeys are migrated to own navigators
+
+class FakeProfileNavigator(desiredRoute: Call) extends ProfileNavigator {
+  override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = desiredRoute
 }

@@ -14,28 +14,15 @@
  * limitations under the License.
  */
 
-package pages
+package pages.profile
 
-import models.UserAnswers
+import pages.QuestionPage
 import play.api.libs.json.JsPath
-import utils.Constants.hasNirmsKey
 
-import scala.util.Try
-
-case object HasNirmsPage extends QuestionPage[Boolean] {
+case object HasNirmsUpdatePage extends QuestionPage[Boolean] {
 
   override def path: JsPath = JsPath \ toString
 
-  override def toString: String = hasNirmsKey
-
-  override def cleanup(
-    value: Option[Boolean],
-    updatedUserAnswers: UserAnswers,
-    originalUserAnswers: UserAnswers
-  ): Try[UserAnswers] =
-    updatedUserAnswers.get(HasNirmsPage) match {
-      case Some(false) => updatedUserAnswers.remove(NirmsNumberPage)
-      case _           => super.cleanup(value, updatedUserAnswers, originalUserAnswers)
-    }
+  override def toString: String = "hasNirmsUpdate"
 
 }

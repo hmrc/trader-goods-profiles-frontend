@@ -21,6 +21,7 @@ import models.UserAnswers
 import org.scalatest.{OptionValues, TryValues}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
+import pages.profile.{HasNirmsUpdatePage, NirmsNumberUpdatePage, RemoveNirmsPage}
 
 class RemoveNirmsPageSpec extends AnyFreeSpec with Matchers with TryValues with OptionValues {
 

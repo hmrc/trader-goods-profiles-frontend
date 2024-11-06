@@ -21,13 +21,13 @@ import connectors.TraderProfileConnector
 import controllers.BaseController
 import controllers.actions._
 import models.{HistoricProfileData, NormalMode, UserAnswers}
-import navigation.Navigator
-import pages.{ProfileSetupPage, UkimsNumberPage}
+import navigation.ProfileNavigator
+import pages.profile.{ProfileSetupPage, UkimsNumberPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.HistoricProfileDataQuery
 import repositories.SessionRepository
-import views.html.ProfileSetupView
+import views.html.profile.ProfileSetupView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -38,7 +38,7 @@ class ProfileSetupController @Inject() (
   getData: DataRetrievalAction,
   val controllerComponents: MessagesControllerComponents,
   view: ProfileSetupView,
-  navigator: Navigator,
+  navigator: ProfileNavigator,
   requireData: DataRequiredAction,
   getOrCreate: DataRetrievalOrCreateAction,
   checkProfile: ProfileCheckAction,

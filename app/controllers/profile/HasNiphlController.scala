@@ -21,13 +21,13 @@ import controllers.BaseController
 import controllers.actions._
 import forms.HasNiphlFormProvider
 import models.Mode
-import navigation.Navigator
-import pages.{HasNiphlPage, HasNiphlUpdatePage}
+import navigation.ProfileNavigator
+import pages.profile.{HasNiphlPage, HasNiphlUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.TraderProfileQuery
 import repositories.SessionRepository
-import views.html.HasNiphlView
+import views.html.profile.HasNiphlView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -35,7 +35,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class HasNiphlController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
-  navigator: Navigator,
+  navigator: ProfileNavigator,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
