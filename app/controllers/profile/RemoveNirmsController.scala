@@ -19,7 +19,7 @@ package controllers.profile
 import connectors.TraderProfileConnector
 import controllers.actions._
 import controllers.{BaseController, routes}
-import forms.RemoveNirmsFormProvider
+import forms.profile.RemoveNirmsFormProvider
 import models.NormalMode
 import navigation.ProfileNavigator
 import pages.profile.{NirmsNumberUpdatePage, RemoveNirmsPage}

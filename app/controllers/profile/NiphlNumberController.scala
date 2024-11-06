@@ -19,7 +19,7 @@ package controllers.profile
 import connectors.TraderProfileConnector
 import controllers.BaseController
 import controllers.actions._
-import forms.NiphlNumberFormProvider
+import forms.profile.NiphlNumberFormProvider
 import models.Mode
 import navigation.ProfileNavigator
 import pages.profile.{HasNiphlUpdatePage, NiphlNumberPage, NiphlNumberUpdatePage}

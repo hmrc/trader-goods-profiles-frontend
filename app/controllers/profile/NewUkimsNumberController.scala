@@ -19,7 +19,7 @@ package controllers.profile
 import connectors.TraderProfileConnector
 import controllers.BaseController
 import controllers.actions._
-import forms.UkimsNumberFormProvider
+import forms.profile.UkimsNumberFormProvider
 import models.Mode
 import navigation.Navigator
 import pages.NewUkimsNumberPage

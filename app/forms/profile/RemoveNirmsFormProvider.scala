@@ -14,20 +14,17 @@
  * limitations under the License.
  */
 
-package forms
+package forms.profile
 
-import javax.inject.Inject
 import forms.mappings.Mappings
-import forms.mappings.helpers.FormatAnswers.toUppercaseAndRemoveSpacesAndHyphens
-import models.StringFieldRegex
 import play.api.data.Form
 
-class NiphlNumberFormProvider @Inject() extends Mappings {
+import javax.inject.Inject
 
-  def apply(): Form[String] =
+class RemoveNirmsFormProvider @Inject() extends Mappings {
+
+  def apply(): Form[Boolean] =
     Form(
-      "value" -> text("niphlNumber.error.required")
-        .transform(toUppercaseAndRemoveSpacesAndHyphens, identity[String])
-        .verifying(regexp(StringFieldRegex.niphlRegex, "niphlNumber.error.invalidFormat"))
+      "value" -> boolean("removeNirms.error.required")
     )
 }

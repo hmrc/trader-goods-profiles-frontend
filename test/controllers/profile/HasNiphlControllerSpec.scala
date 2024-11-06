@@ -20,7 +20,7 @@ import base.SpecBase
 import base.TestConstants.{testEori, userAnswersId}
 import connectors.TraderProfileConnector
 import controllers.routes
-import forms.HasNiphlFormProvider
+import forms.profile.HasNiphlFormProvider
 import models.{NormalMode, TraderProfile, UserAnswers}
 import navigation.{FakeProfileNavigator, ProfileNavigator}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}

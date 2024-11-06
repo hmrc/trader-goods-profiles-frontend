@@ -20,7 +20,7 @@ import base.SpecBase
 import base.TestConstants.{testEori, userAnswersId}
 import connectors.TraderProfileConnector
 import controllers.routes
-import forms.UkimsNumberFormProvider
+import forms.profile.UkimsNumberFormProvider
 import models.{CheckMode, NormalMode, TraderProfile, UserAnswers}
 import navigation.{FakeProfileNavigator, ProfileNavigator}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}

@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-package forms
+package forms.profile
 
-import javax.inject.Inject
 import forms.mappings.Mappings
-import forms.mappings.helpers.FormatAnswers.{addHyphensToNirms, toUppercaseAndRemoveSpacesAndHyphens}
-import models.StringFieldRegex
 import play.api.data.Form
 
-class NirmsNumberFormProvider @Inject() extends Mappings {
+import javax.inject.Inject
 
-  def apply(): Form[String] =
+class HasNiphlFormProvider @Inject() extends Mappings {
+
+  def apply(): Form[Boolean] =
     Form(
-      "value" -> text("nirmsNumber.error.required")
-        .transform(toUppercaseAndRemoveSpacesAndHyphens, identity[String])
-        .verifying(regexp(StringFieldRegex.nirmsRegex, "nirmsNumber.error.invalidFormat"))
-        .transform(addHyphensToNirms, identity[String])
+      "value" -> boolean("hasNiphl.error.required")
     )
 }

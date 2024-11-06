@@ -14,32 +14,21 @@
  * limitations under the License.
  */
 
-package forms
+package forms.profile
 
-import forms.behaviours.BooleanFieldBehaviours
-import play.api.data.FormError
+import forms.mappings.Mappings
+import forms.mappings.helpers.FormatAnswers.toUppercaseAndRemoveSpacesAndHyphens
+import models.StringFieldRegex
+import play.api.data.Form
 
-class RemoveNirmsFormProviderSpec extends BooleanFieldBehaviours {
+import javax.inject.Inject
 
-  val requiredKey = "removeNirms.error.required"
-  val invalidKey  = "error.boolean"
+class NiphlNumberFormProvider @Inject() extends Mappings {
 
-  val form = new RemoveNirmsFormProvider()()
-
-  ".value" - {
-
-    val fieldName = "value"
-
-    behave like booleanField(
-      form,
-      fieldName,
-      invalidError = FormError(fieldName, invalidKey)
+  def apply(): Form[String] =
+    Form(
+      "value" -> text("niphlNumber.error.required")
+        .transform(toUppercaseAndRemoveSpacesAndHyphens, identity[String])
+        .verifying(regexp(StringFieldRegex.niphlRegex, "niphlNumber.error.invalidFormat"))
     )
-
-    behave like mandatoryField(
-      form,
-      fieldName,
-      requiredError = FormError(fieldName, requiredKey)
-    )
-  }
 }

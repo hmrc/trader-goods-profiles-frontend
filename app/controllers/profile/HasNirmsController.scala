@@ -19,7 +19,7 @@ package controllers.profile
 import connectors.TraderProfileConnector
 import controllers.BaseController
 import controllers.actions._
-import forms.HasNirmsFormProvider
+import forms.profile.HasNirmsFormProvider
 import models.Mode
 import navigation.ProfileNavigator
 import pages.profile.{HasNirmsPage, HasNirmsUpdatePage}

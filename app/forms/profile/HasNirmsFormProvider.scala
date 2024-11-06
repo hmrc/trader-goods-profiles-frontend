@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package forms
-
-import javax.inject.Inject
+package forms.profile
 
 import forms.mappings.Mappings
 import play.api.data.Form
 
-class RemoveNiphlFormProvider @Inject() extends Mappings {
+import javax.inject.Inject
+
+class HasNirmsFormProvider @Inject() extends Mappings {
 
   def apply(): Form[Boolean] =
     Form(
-      "value" -> boolean("removeNiphl.error.required")
+      "value" -> boolean("hasNirms.error.required")
     )
 }

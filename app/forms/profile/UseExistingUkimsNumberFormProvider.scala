@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package forms
-
-import javax.inject.Inject
+package forms.profile
 
 import forms.mappings.Mappings
 import play.api.data.Form
 
-class HasNirmsFormProvider @Inject() extends Mappings {
+import javax.inject.Inject
+
+class UseExistingUkimsNumberFormProvider @Inject() extends Mappings {
 
   def apply(): Form[Boolean] =
     Form(
-      "value" -> boolean("hasNirms.error.required")
+      "value" -> boolean("existingUkimsNumber.error.required")
     )
 }

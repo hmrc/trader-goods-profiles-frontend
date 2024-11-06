@@ -18,7 +18,7 @@ package controllers.profile
 
 import controllers.BaseController
 import controllers.actions._
-import forms.UseExistingUkimsNumberFormProvider
+import forms.profile.UseExistingUkimsNumberFormProvider
 import models.NormalMode
 import navigation.ProfileNavigator
 import pages.profile.{UkimsNumberPage, UseExistingUkimsNumberPage}

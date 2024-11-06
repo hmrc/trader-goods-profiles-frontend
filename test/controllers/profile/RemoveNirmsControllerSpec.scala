@@ -20,7 +20,7 @@ import base.SpecBase
 import base.TestConstants.{testEori, userAnswersId}
 import connectors.TraderProfileConnector
 import controllers.routes
-import forms.RemoveNirmsFormProvider
+import forms.profile.RemoveNirmsFormProvider
 import models.{TraderProfile, UserAnswers}
 import navigation.{FakeProfileNavigator, ProfileNavigator}
 import org.mockito.ArgumentCaptor

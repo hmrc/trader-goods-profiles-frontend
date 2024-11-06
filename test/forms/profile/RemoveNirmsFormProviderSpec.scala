@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package forms
+package forms.profile
 
 import forms.behaviours.BooleanFieldBehaviours
 import play.api.data.FormError
 
-class HasNiphlFormProviderSpec extends BooleanFieldBehaviours {
+class RemoveNirmsFormProviderSpec extends BooleanFieldBehaviours {
 
-  val requiredKey = "hasNiphl.error.required"
+  val requiredKey = "removeNirms.error.required"
   val invalidKey  = "error.boolean"
 
-  val form = new HasNiphlFormProvider()()
+  val form = new RemoveNirmsFormProvider()()
 
   ".value" - {
 
