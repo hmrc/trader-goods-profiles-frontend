@@ -34,7 +34,10 @@ object HasNiphlSummary {
         key = "hasNiphl.checkYourAnswersLabel",
         value = ValueViewModel(value),
         actions = Seq(
-          ActionItemViewModel("site.change", controllers.profile.routes.HasNiphlController.onPageLoadCreate(CheckMode).url)
+          ActionItemViewModel(
+            "site.change",
+            controllers.profile.routes.HasNiphlController.onPageLoadCreate(CheckMode).url
+          )
             .withVisuallyHiddenText(messages("hasNiphl.change.hidden"))
         )
       )
@@ -60,7 +63,10 @@ object HasNiphlSummary {
         key = "hasNiphl.checkYourAnswersLabel",
         value = ValueViewModel(value),
         actions = Seq(
-          ActionItemViewModel("site.change", controllers.profile.routes.HasNiphlController.onPageLoadUpdate(CheckMode).url)
+          ActionItemViewModel(
+            "site.change",
+            controllers.profile.routes.HasNiphlController.onPageLoadUpdate(CheckMode).url
+          )
             .withVisuallyHiddenText(messages("hasNiphl.change.hidden"))
         )
       )

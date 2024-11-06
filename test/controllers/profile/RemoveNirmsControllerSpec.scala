@@ -22,7 +22,7 @@ import connectors.TraderProfileConnector
 import controllers.routes
 import forms.RemoveNirmsFormProvider
 import models.{TraderProfile, UserAnswers}
-import navigation.{FakeNavigator, Navigator}
+import navigation.{FakeProfileNavigator, ProfileNavigator}
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -99,7 +99,7 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
-          bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+          bind[ProfileNavigator].toInstance(new FakeProfileNavigator(onwardRoute)),
           bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
           bind[SessionRepository].toInstance(mockSessionRepository)
         )
@@ -141,7 +141,7 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
         Some(emptyUserAnswers.set(NirmsNumberUpdatePage, "RMS-XI-111333").success.value)
       )
         .overrides(
-          bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+          bind[ProfileNavigator].toInstance(new FakeProfileNavigator(onwardRoute)),
           bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
           bind[SessionRepository].toInstance(mockSessionRepository)
         )
@@ -182,7 +182,7 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers.set(HasNirmsUpdatePage, false).success.value))
           .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[ProfileNavigator].toInstance(new FakeProfileNavigator(onwardRoute)),
             bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
             bind[SessionRepository].toInstance(mockSessionRepository)
           )

@@ -22,7 +22,7 @@ import connectors.TraderProfileConnector
 import controllers.routes
 import forms.UseExistingUkimsNumberFormProvider
 import models.UserAnswers
-import navigation.{FakeNavigator, Navigator}
+import navigation.{FakeProfileNavigator, ProfileNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -64,7 +64,7 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       val application = applicationBuilder(userAnswers = Some(userAnswersWithUkimsNumber))
         .overrides(
-          bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+          bind[ProfileNavigator].toInstance(new FakeProfileNavigator(onwardRoute)),
           bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
         )
         .build()
@@ -93,7 +93,7 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       val application = applicationBuilder(userAnswers = None)
         .overrides(
-          bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+          bind[ProfileNavigator].toInstance(new FakeProfileNavigator(onwardRoute)),
           bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
         )
         .build()
@@ -116,7 +116,7 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       val application = applicationBuilder(userAnswers = Some(userAnswersWithUkimsNumber))
         .overrides(
-          bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+          bind[ProfileNavigator].toInstance(new FakeProfileNavigator(onwardRoute)),
           bind[SessionRepository].toInstance(mockSessionRepository)
         )
         .build()
@@ -163,7 +163,7 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       val application = applicationBuilder(userAnswers = Some(userAnswersWithUkimsNumber))
         .overrides(
-          bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+          bind[ProfileNavigator].toInstance(new FakeProfileNavigator(onwardRoute)),
           bind[SessionRepository].toInstance(mockSessionRepository)
         )
         .build()

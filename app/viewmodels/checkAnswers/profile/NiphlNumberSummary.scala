@@ -32,7 +32,10 @@ object NiphlNumberSummary {
         key = "niphlNumber.checkYourAnswersLabel",
         value = ValueViewModel(HtmlFormat.escape(answer).toString),
         actions = Seq(
-          ActionItemViewModel("site.change", controllers.profile.routes.NiphlNumberController.onPageLoadCreate(CheckMode).url)
+          ActionItemViewModel(
+            "site.change",
+            controllers.profile.routes.NiphlNumberController.onPageLoadCreate(CheckMode).url
+          )
             .withVisuallyHiddenText(messages("niphlNumber.change.hidden"))
         )
       )
@@ -44,7 +47,10 @@ object NiphlNumberSummary {
         key = "niphlNumber.checkYourAnswersLabel",
         value = ValueViewModel(HtmlFormat.escape(niphlNumber).toString),
         actions = Seq(
-          ActionItemViewModel("site.change", controllers.profile.routes.NiphlNumberController.onPageLoadUpdate(mode).url)
+          ActionItemViewModel(
+            "site.change",
+            controllers.profile.routes.NiphlNumberController.onPageLoadUpdate(mode).url
+          )
             .withVisuallyHiddenText(messages("niphlNumber.change.hidden"))
         )
       )
@@ -56,7 +62,10 @@ object NiphlNumberSummary {
         key = "niphlNumber.checkYourAnswersLabel",
         value = ValueViewModel(HtmlFormat.escape(answer).toString),
         actions = Seq(
-          ActionItemViewModel("site.change", controllers.profile.routes.NiphlNumberController.onPageLoadUpdate(CheckMode).url)
+          ActionItemViewModel(
+            "site.change",
+            controllers.profile.routes.NiphlNumberController.onPageLoadUpdate(CheckMode).url
+          )
             .withVisuallyHiddenText(messages("niphlNumber.change.hidden"))
         )
       )

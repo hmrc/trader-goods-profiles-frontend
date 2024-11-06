@@ -55,7 +55,13 @@ class UkimsNumberController @Inject() (
         case Some(value) => form.fill(value)
       }
 
-      Ok(view(preparedForm, controllers.profile.routes.UkimsNumberController.onSubmitCreate(mode), isCreateJourney = true))
+      Ok(
+        view(
+          preparedForm,
+          controllers.profile.routes.UkimsNumberController.onSubmitCreate(mode),
+          isCreateJourney = true
+        )
+      )
     }
 
   def onSubmitCreate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
@@ -64,7 +70,9 @@ class UkimsNumberController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors =>
-            Future.successful(BadRequest(view(formWithErrors, controllers.profile.routes.UkimsNumberController.onSubmitCreate(mode)))),
+            Future.successful(
+              BadRequest(view(formWithErrors, controllers.profile.routes.UkimsNumberController.onSubmitCreate(mode)))
+            ),
           value =>
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(UkimsNumberPage, value))
@@ -83,10 +91,15 @@ class UkimsNumberController @Inject() (
               Future.fromTry(request.userAnswers.set(UkimsNumberUpdatePage, traderProfile.ukimsNumber))
             _              <- sessionRepository.set(updatedAnswers)
           } yield Ok(
-            view(form.fill(traderProfile.ukimsNumber), controllers.profile.routes.UkimsNumberController.onSubmitUpdate(mode: Mode))
+            view(
+              form.fill(traderProfile.ukimsNumber),
+              controllers.profile.routes.UkimsNumberController.onSubmitUpdate(mode: Mode)
+            )
           )
         case Some(value) =>
-          Future.successful(Ok(view(form.fill(value), controllers.profile.routes.UkimsNumberController.onSubmitUpdate(mode: Mode))))
+          Future.successful(
+            Ok(view(form.fill(value), controllers.profile.routes.UkimsNumberController.onSubmitUpdate(mode: Mode)))
+          )
       }
     }
 
@@ -97,7 +110,11 @@ class UkimsNumberController @Inject() (
         .fold(
           formWithErrors =>
             Future
-              .successful(BadRequest(view(formWithErrors, controllers.profile.routes.UkimsNumberController.onSubmitUpdate(mode: Mode)))),
+              .successful(
+                BadRequest(
+                  view(formWithErrors, controllers.profile.routes.UkimsNumberController.onSubmitUpdate(mode: Mode))
+                )
+              ),
           value =>
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(UkimsNumberUpdatePage, value))

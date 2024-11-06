@@ -51,7 +51,8 @@ class UseExistingUkimsNumberController @Inject() (
       (for {
         ukimsNumber <- request.userAnswers.get(UkimsNumberPage)
         updatedForm  = request.userAnswers.get(UseExistingUkimsNumberPage).map(value => form.fill(value)).getOrElse(form)
-        updatedView  = view(updatedForm, controllers.profile.routes.UseExistingUkimsNumberController.onSubmit(), ukimsNumber)
+        updatedView  =
+          view(updatedForm, controllers.profile.routes.UseExistingUkimsNumberController.onSubmit(), ukimsNumber)
       } yield Ok(updatedView))
         .getOrElse(navigator.journeyRecovery())
     }
@@ -65,7 +66,13 @@ class UseExistingUkimsNumberController @Inject() (
             request.userAnswers
               .get(UkimsNumberPage)
               .map(ukimsNumber =>
-                BadRequest(view(formWithErrors, controllers.profile.routes.UseExistingUkimsNumberController.onSubmit(), ukimsNumber))
+                BadRequest(
+                  view(
+                    formWithErrors,
+                    controllers.profile.routes.UseExistingUkimsNumberController.onSubmit(),
+                    ukimsNumber
+                  )
+                )
               )
               .getOrElse(navigator.journeyRecovery())
           },

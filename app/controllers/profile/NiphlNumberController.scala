@@ -60,7 +60,9 @@ class NiphlNumberController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors =>
-            Future.successful(BadRequest(view(formWithErrors, controllers.profile.routes.NiphlNumberController.onSubmitCreate(mode)))),
+            Future.successful(
+              BadRequest(view(formWithErrors, controllers.profile.routes.NiphlNumberController.onSubmitCreate(mode)))
+            ),
           value =>
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(NiphlNumberPage, value))
@@ -117,7 +119,9 @@ class NiphlNumberController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors =>
-            Future.successful(BadRequest(view(formWithErrors, controllers.profile.routes.NiphlNumberController.onSubmitUpdate(mode)))),
+            Future.successful(
+              BadRequest(view(formWithErrors, controllers.profile.routes.NiphlNumberController.onSubmitUpdate(mode)))
+            ),
           value =>
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(NiphlNumberUpdatePage, value))

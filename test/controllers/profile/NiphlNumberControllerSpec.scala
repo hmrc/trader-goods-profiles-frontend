@@ -22,7 +22,7 @@ import connectors.TraderProfileConnector
 import controllers.routes
 import forms.NiphlNumberFormProvider
 import models.{NormalMode, TraderProfile, UserAnswers}
-import navigation.{FakeNavigator, Navigator}
+import navigation.{FakeProfileNavigator, ProfileNavigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, verify, when}
@@ -119,7 +119,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
         val application =
           applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(
-              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[ProfileNavigator].toInstance(new FakeProfileNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository)
             )
             .build()
@@ -419,7 +419,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
-              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[ProfileNavigator].toInstance(new FakeProfileNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository),
               bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
               bind[AuditService].toInstance(mockAuditService)

@@ -34,7 +34,10 @@ object HasNirmsSummary {
         key = "hasNirms.checkYourAnswersLabel",
         value = ValueViewModel(value),
         actions = Seq(
-          ActionItemViewModel("site.change", controllers.profile.routes.HasNirmsController.onPageLoadCreate(CheckMode).url)
+          ActionItemViewModel(
+            "site.change",
+            controllers.profile.routes.HasNirmsController.onPageLoadCreate(CheckMode).url
+          )
             .withVisuallyHiddenText(messages("hasNirms.change.hidden"))
         )
       )
@@ -60,7 +63,10 @@ object HasNirmsSummary {
         key = "hasNirms.checkYourAnswersLabel",
         value = ValueViewModel(value),
         actions = Seq(
-          ActionItemViewModel("site.change", controllers.profile.routes.HasNirmsController.onPageLoadUpdate(CheckMode).url)
+          ActionItemViewModel(
+            "site.change",
+            controllers.profile.routes.HasNirmsController.onPageLoadUpdate(CheckMode).url
+          )
             .withVisuallyHiddenText(messages("hasNirms.change.hidden"))
         )
       )

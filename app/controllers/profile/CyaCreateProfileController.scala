@@ -81,7 +81,9 @@ class CyaCreateProfileController @Inject() (
 
       case Left(errors) =>
         dataCleansingService.deleteMongoData(request.userAnswers.id, CreateProfileJourney)
-        Future.successful(logErrorsAndContinue(errorMessage, controllers.profile.routes.ProfileSetupController.onPageLoad(), errors))
+        Future.successful(
+          logErrorsAndContinue(errorMessage, controllers.profile.routes.ProfileSetupController.onPageLoad(), errors)
+        )
     }
 
   }

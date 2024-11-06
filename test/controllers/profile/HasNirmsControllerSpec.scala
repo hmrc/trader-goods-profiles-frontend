@@ -22,7 +22,7 @@ import connectors.TraderProfileConnector
 import controllers.routes
 import forms.HasNirmsFormProvider
 import models.{NormalMode, TraderProfile, UserAnswers}
-import navigation.{FakeNavigator, Navigator}
+import navigation.{FakeProfileNavigator, ProfileNavigator}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -116,7 +116,7 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
         val application =
           applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(
-              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[ProfileNavigator].toInstance(new FakeProfileNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository),
               bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
             )
@@ -303,7 +303,7 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
         val application =
           applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(
-              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[ProfileNavigator].toInstance(new FakeProfileNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository),
               bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
             )
@@ -334,7 +334,7 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
             .overrides(
               bind[SessionRepository].toInstance(mockSessionRepository),
               bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-              bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
+              bind[ProfileNavigator].toInstance(new FakeProfileNavigator(onwardRoute))
             )
             .build()
 

@@ -20,7 +20,7 @@ import base.SpecBase
 import base.TestConstants.testEori
 import config.FrontendAppConfig
 import connectors.TraderProfileConnector
-import navigation.{FakeNavigator, Navigator}
+import navigation.{FakeProfileNavigator, ProfileNavigator}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
@@ -104,7 +104,7 @@ class ProfileSetupControllerSpec extends SpecBase with MockitoSugar {
               .overrides(
                 bind[SessionRepository].toInstance(mockSessionRepository),
                 bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-                bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+                bind[ProfileNavigator].toInstance(new FakeProfileNavigator(onwardRoute)),
                 bind[FrontendAppConfig].toInstance(mockAppConfig)
               )
               .build()
@@ -134,7 +134,7 @@ class ProfileSetupControllerSpec extends SpecBase with MockitoSugar {
               .overrides(
                 bind[SessionRepository].toInstance(mockSessionRepository),
                 bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-                bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+                bind[ProfileNavigator].toInstance(new FakeProfileNavigator(onwardRoute)),
                 bind[FrontendAppConfig].toInstance(mockAppConfig)
               )
               .build()

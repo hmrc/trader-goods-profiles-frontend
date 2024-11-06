@@ -21,7 +21,7 @@ import base.TestConstants.testEori
 import connectors.TraderProfileConnector
 import controllers.routes
 import models.{TraderProfile, UserAnswers}
-import navigation.{FakeNavigator, FakeProfileNavigator, Navigator, ProfileNavigator}
+import navigation.{FakeProfileNavigator, ProfileNavigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, verify, when}
@@ -161,7 +161,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
               .overrides(
                 bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
                 bind[AuditService].toInstance(mockAuditService),
-                bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
+                bind[ProfileNavigator].toInstance(new FakeProfileNavigator(onwardRoute))
               )
               .build()
 
@@ -465,7 +465,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
               .overrides(
                 bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
                 bind[AuditService].toInstance(mockAuditService),
-                bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
+                bind[ProfileNavigator].toInstance(new FakeProfileNavigator(onwardRoute))
               )
               .build()
 
@@ -513,7 +513,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
               .overrides(
                 bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
                 bind[AuditService].toInstance(mockAuditService),
-                bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
+                bind[ProfileNavigator].toInstance(new FakeProfileNavigator(onwardRoute))
               )
               .build()
 
@@ -788,7 +788,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
               .overrides(
                 bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
                 bind[AuditService].toInstance(mockAuditService),
-                bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
+                bind[ProfileNavigator].toInstance(new FakeProfileNavigator(onwardRoute))
               )
               .build()
 
@@ -1122,7 +1122,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             .overrides(
               bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
               bind[AuditService].toInstance(mockAuditService),
-              bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
+              bind[ProfileNavigator].toInstance(new FakeProfileNavigator(onwardRoute))
             )
             .build()
 
@@ -1390,7 +1390,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             .overrides(
               bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
               bind[AuditService].toInstance(mockAuditService),
-              bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
+              bind[ProfileNavigator].toInstance(new FakeProfileNavigator(onwardRoute))
             )
             .build()
 

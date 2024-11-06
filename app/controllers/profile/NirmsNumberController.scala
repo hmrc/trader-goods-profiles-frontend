@@ -60,7 +60,9 @@ class NirmsNumberController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors =>
-            Future.successful(BadRequest(view(formWithErrors, controllers.profile.routes.NirmsNumberController.onSubmitCreate(mode)))),
+            Future.successful(
+              BadRequest(view(formWithErrors, controllers.profile.routes.NirmsNumberController.onSubmitCreate(mode)))
+            ),
           value =>
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(NirmsNumberPage, value))
@@ -80,7 +82,8 @@ class NirmsNumberController @Inject() (
         }
 
         val futureOkResult =
-          Future.successful(Ok(view(preparedForm, controllers.profile.routes.NirmsNumberController.onSubmitUpdate(mode))))
+          Future
+            .successful(Ok(view(preparedForm, controllers.profile.routes.NirmsNumberController.onSubmitUpdate(mode))))
 
         request.userAnswers.getPageValue(HasNirmsUpdatePage) match {
           case Right(true)                                    => futureOkResult
@@ -110,7 +113,9 @@ class NirmsNumberController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors =>
-            Future.successful(BadRequest(view(formWithErrors, controllers.profile.routes.NirmsNumberController.onSubmitUpdate(mode)))),
+            Future.successful(
+              BadRequest(view(formWithErrors, controllers.profile.routes.NirmsNumberController.onSubmitUpdate(mode)))
+            ),
           value =>
             for {
               updatedAnswers <-
