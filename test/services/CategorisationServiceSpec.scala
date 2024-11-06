@@ -1530,7 +1530,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         .updatingAnswersForRecategorisation(
           oldUserAnswers,
           testRecordId,
-          categorisationInfo,
+          categorisationInfoForTest,
           newCommodityCategorisation
         )
         .success
