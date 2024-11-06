@@ -159,6 +159,18 @@ ukimsNumber.error.invalidFormat = Enter your UKIMS number in the correct format
 ukimsNumber.checkYourAnswersLabel = UKIMS number
 ukimsNumber.change.hidden = UKIMS number
 
+newUkimsNumber.title = UK Internal Market Scheme (UKIMS) number
+newUkimsNumber.h1 = UK Internal Market Scheme (UKIMS) number
+newUkimsNumber.p1 = HMRC send a letter with a UKIMS authorisation number after you apply. If you are not UKIMS registered, you can not use Trader Goods Profile (TGP).
+newUkimsNumber.p2 = A UKIMS number starts with GB or XI, followed by UKIM, your EORI number without the GB or XI, then 14 numbers.
+newUkimsNumber.heading = What is your UKIMS number?
+newUkimsNumber.hint = For example, XIUKIM47699357400020231115081800
+newUkimsNumber.linkText = I am not UKIMS registered
+newUkimsNumber.error.required = Enter your UKIMS number
+newUkimsNumber.error.invalidFormat = Enter your UKIMS number in the correct format
+newUkimsNumber.checkYourAnswersLabel = UKIMS number
+newUkimsNumber.change.hidden = UKIMS number
+
 categoryGuidance.title = Categorisation
 categoryGuidance.heading = Categorisation
 categoryGuidance.p1 = Categorisation allows you to know what category your goods are in and if they are eligible for Simplified Process for Internal Market Movements (SPIMM).
@@ -471,6 +483,7 @@ ukimsNumberChangeController.title = UK Internal Market Scheme(UKIMS) number chan
 ukimsNumberChangeController.heading = UK Internal Market Scheme(UKIMS) number change
 ukimsNumberChangeController.paragraph = As you have a new EORI number, you also have a new UKIMS number. You need to update your UKIMS number on your TGP. Keeping your UKIMS number up to date is important as it can be used on movements.
 ukimsNumberChangeController.button = Update UKIMS number
+ukimsNumberChangeController.duplicateUkimsNumber = You’ve entered the previous UKIMS number. Enter the new UKIMS number.
 
 profile.title = Profile details
 profile.h1 = Profile details
