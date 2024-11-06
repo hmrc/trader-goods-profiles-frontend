@@ -198,12 +198,22 @@ trait SpecBase
       "measure description"
     )
 
-  lazy val categorisationInfo: CategorisationInfo                         = CategorisationInfo(
+  lazy val categorisationInfo: CategorisationInfo = CategorisationInfo(
     "1234567890",
     "BV",
     Some(validityEndDate),
     Seq(category1, category2, category3),
     Seq(category1, category2, category3),
+    Some("Weight, in kilograms"),
+    1
+  )
+
+  lazy val categorisationInfoForTest: CategorisationInfo                  = CategorisationInfo(
+    "1234567890",
+    "BV",
+    Some(validityEndDate),
+    Seq(category2),
+    Seq(category2),
     Some("Weight, in kilograms"),
     1
   )

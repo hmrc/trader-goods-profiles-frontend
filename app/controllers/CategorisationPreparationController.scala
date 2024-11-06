@@ -129,9 +129,12 @@ class CategorisationPreparationController @Inject() (
                newLongerCategorisationInfo
              )
         _ <- sessionRepository.set(updatedUAReassessmentAnswers)
-      } yield Redirect(
-        navigator.nextPage(RecategorisationPreparationPage(recordId), mode, updatedUAReassessmentAnswers)
-      ))
+      } yield {
+        println("updated user answers: " + updatedUAReassessmentAnswers)
+        Redirect(
+          navigator.nextPage(RecategorisationPreparationPage(recordId), mode, updatedUAReassessmentAnswers)
+        )
+      })
         .recover { e =>
           logger.error(s"Unable to start categorisation for record $recordId: ${e.getMessage}")
           Redirect(routes.JourneyRecoveryController.onPageLoad().url)

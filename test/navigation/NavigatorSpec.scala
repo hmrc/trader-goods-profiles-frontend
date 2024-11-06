@@ -21,7 +21,7 @@ import base.TestConstants.{testRecordId, userAnswersId}
 import controllers.routes
 import models.GoodsRecordsPagination.firstPage
 import models._
-import models.ott.{CategorisationInfo, CategoryAssessment}
+import models.ott.{CategorisationInfo, CategoryAssessment, Certificate}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
@@ -2602,6 +2602,105 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
               val userAnswers = emptyUserAnswers
                 .set(LongerCategorisationDetailsQuery(testRecordId), categoryInfoNoAssessments)
+                .success
+                .value
+
+              when(mockCategorisationService.calculateResult(any(), any(), any()))
+                .thenReturn(Category2Scenario)
+
+              navigator.nextPage(
+                RecategorisationPreparationPage(testRecordId),
+                NormalMode,
+                userAnswers
+              ) mustBe routes.HasSupplementaryUnitController.onPageLoad(NormalMode, testRecordId)
+
+            }
+
+            "new test" in {
+
+              /** **
+                */
+              val categoryInfoNoAssessments = CategorisationInfo(
+                "1234567891",
+                "BV",
+                None,
+                Seq(category2),
+                Seq.empty,
+                Some("kg"),
+                0
+              )
+
+//              val cat = CategorisationInfo(
+//                "44071110",
+//                "VN",
+//                None,
+//                List(
+//                  CategoryAssessment(
+//                    "5667f4515c310042a7349c3aa31bd57e",
+//                    2,
+//                    List(
+//                      Certificate("Y900", "Y900", "Declared goods do not belong to the Washington Convention (CITES)")
+//                    ),
+//                    "Council Regulation (EC) No 338/97 of 9 December 1996 on the protection of species of wild fauna and flora by regulating trade therein"
+//                  ),
+//                  CategoryAssessment(
+//                    "6457f4882e9f044b59282e85a60d214f",
+//                    2,
+//                    List(
+//                      Certificate(
+//                        "Y070",
+//                        "Y070",
+//                        "Exemption from the requirement of presenting FLEGT licence by virtue of Article 4.3 of Council Regulation (EC) No 2173/2005), Certificate(Y057,Y057,Goods not requiring the presentation of a FLEGT import licence for timber"
+//                      )
+//                    ),
+//                    "Council Regulation (EC) No 2173/2005 of 20 December 2005 on the establishment of a FLEGT licensing scheme for imports of timber into the European Community"
+//                  )
+//                ),
+//                List(
+//                  CategoryAssessment(
+//                    "5667f4515c310042a7349c3aa31bd57e",
+//                    2,
+//                    List(
+//                      Certificate("Y900", "Y900", "Declared goods do not belong to the Washington Convention (CITES)")
+//                    ),
+//                    "Council Regulation (EC) No 338/97 of 9 December 1996 on the protection of species of wild fauna and flora by regulating trade therein"
+//                  ),
+//                  CategoryAssessment(
+//                    "6457f4882e9f044b59282e85a60d214f",
+//                    2,
+//                    List(
+//                      Certificate(
+//                        "Y070",
+//                        "Y070",
+//                        "Exemption from the requirement of presenting FLEGT licence by virtue of Article 4.3 of Council Regulation (EC) No 2173/2005"
+//                      ),
+//                      Certificate(
+//                        "Y057",
+//                        "Y057",
+//                        "Goods not requiring the presentation of a FLEGT import licence for timber"
+//                      )
+//                    ),
+//                    "Council Regulation (EC) No 2173/2005 of 20 December 2005 on the establishment of a FLEGT licensing scheme for imports of timber into the European Community"
+//                  )
+//                ),
+//                Some("Cubic metre (m³)"),
+//                0,
+//                true,
+//                false,
+//                false
+//              )
+              val categoryInfoNoAssessmentsPrinted = CategorisationInfo(
+                "1234567891",
+                "BV",
+                None,
+                Seq(category2),
+                Seq.empty,
+                Some("kg"),
+                0
+              )
+
+              val userAnswers = emptyUserAnswers
+                .set(LongerCategorisationDetailsQuery(testRecordId), categoryInfoNoAssessmentsPrinted)
                 .success
                 .value
 

@@ -1506,6 +1506,41 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       newUserAnswers.get(ReassessmentPage(testRecordId, 2)) mustBe None
     }
 
+    "new test" in {
+
+      val oldUserAnswers = emptyUserAnswers
+        .set(CategorisationDetailsQuery(testRecordId), categorisationInfoForTest)
+        .success
+        .value
+        .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.NoExemption)
+        .success
+        .value
+
+      val newCommodityCategorisation = CategorisationInfo(
+        "1234567890",
+        "BV",
+        Some(validityEndDate),
+        Seq(category2, category2),
+        Seq(category2, category2),
+        Some("Weight, in kilograms"),
+        0
+      )
+
+      val newUserAnswers = categorisationService
+        .updatingAnswersForRecategorisation(
+          oldUserAnswers,
+          testRecordId,
+          categorisationInfo,
+          newCommodityCategorisation
+        )
+        .success
+        .value
+      newUserAnswers.get(ReassessmentPage(testRecordId, 0)) mustBe None
+//        Some(ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("Y903")), isAnswerCopiedFromPreviousAssessment = true))
+//      newUserAnswers.get(ReassessmentPage(testRecordId, 1)) mustBe
+//        Some(ReassessmentAnswer(AssessmentAnswer.NotAnsweredYet))
+//      newUserAnswers.get(ReassessmentPage(testRecordId, 2)) mustBe None
+    }
   }
 
 }
