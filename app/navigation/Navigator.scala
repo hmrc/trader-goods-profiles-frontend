@@ -182,38 +182,12 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
         routes.LongerCommodityCodeController.onPageLoad(mode, recordId)
       } else {
 
-        val assessmentAnswersList = LazyList.from(0).takeWhile(i => answers.get(AssessmentPage(recordId, i)).isDefined)
-
-        val lastIndexOpt = assessmentAnswersList.isEmpty match {
-          case true => None
-          case false => Some(assessmentAnswersList.last)
-        }
-
-        val lastAnswer = lastIndexOpt match {
-          case Some(lastIndex) => answers.get(AssessmentPage(recordId, lastIndex))
-          case _ => None
-        }
-
-        val isCat2 = lastIndexOpt match {
-          case Some(lastIndex) => categorisationInfo.getAssessmentFromIndex(index = lastIndex).exists(_.isCategory2)
-          case _ => false
-        }
-
-        lastAnswer match {
-          case Some(NoExemption) if isCat2 =>
-            val scenario = categorisationService.calculateResult(categorisationInfo, answers, recordId)
-            if (shouldGoToSupplementaryUnitFromPrepPage(categorisationInfo, scenario)) {
-              routes.HasSupplementaryUnitController.onPageLoad(NormalMode, recordId)
-            } else {
-              routes.CyaCategorisationController.onPageLoad(recordId)
-            }
-          case _ => answers.get(HasCorrectGoodsLongerCommodityCodePage(recordId)) match {
+        answers.get(HasCorrectGoodsLongerCommodityCodePage(recordId)) match {
             case Some(true) => routes.CategorisationPreparationController.startLongerCategorisation(mode, recordId)
             case Some(false) => routes.LongerCommodityCodeController.onPageLoad(mode, recordId)
             case None => routes.JourneyRecoveryController.onPageLoad()
           }
         }
-      }
   }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
   private def getShortenedCommodityCode(commodity: Commodity) =
