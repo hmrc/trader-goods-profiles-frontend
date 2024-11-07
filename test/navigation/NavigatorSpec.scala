@@ -2603,7 +2603,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             RemoveGoodsRecordPage,
             NormalMode,
             emptyUserAnswers
-          ) mustEqual routes.GoodsRecordsController
+          ) mustEqual controllers.goodsProfile.routes.GoodsRecordsController
             .onPageLoad(firstPage)
         }
 
@@ -2612,7 +2612,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             PreviousMovementRecordsPage,
             NormalMode,
             emptyUserAnswers
-          ) mustEqual routes.GoodsRecordsController
+          ) mustEqual controllers.goodsProfile.routes.GoodsRecordsController
             .onPageLoad(firstPage)
         }
 

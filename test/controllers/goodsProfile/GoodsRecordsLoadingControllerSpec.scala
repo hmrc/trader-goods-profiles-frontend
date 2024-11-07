@@ -19,7 +19,6 @@ package controllers.goodsProfile
 import base.SpecBase
 import base.TestConstants.testEori
 import connectors.GoodsRecordConnector
-import controllers.routes
 import models.RecordsSummary
 import models.RecordsSummary.Update
 import org.mockito.ArgumentMatchers.any
@@ -29,7 +28,7 @@ import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import views.html.GoodsRecordsLoadingView
+import views.html.goodsProfile.GoodsRecordsLoadingView
 
 import java.time.Instant
 import scala.concurrent.Future
@@ -38,7 +37,7 @@ class GoodsRecordsLoadingControllerSpec extends SpecBase {
 
   "GoodsRecordsLoading Controller" - {
 
-    val continueUrl = routes.GoodsRecordsController.onPageLoad(1).url
+    val continueUrl = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url
 
     "must return OK and the correct view for a GET if it's updating" in {
 
@@ -61,7 +60,10 @@ class GoodsRecordsLoadingControllerSpec extends SpecBase {
 
       running(application) {
         val request =
-          FakeRequest(GET, routes.GoodsRecordsLoadingController.onPageLoad(Some(RedirectUrl(continueUrl))).url)
+          FakeRequest(
+            GET,
+            controllers.goodsProfile.routes.GoodsRecordsLoadingController.onPageLoad(Some(RedirectUrl(continueUrl))).url
+          )
 
         val result = route(application, request).value
 
@@ -91,7 +93,10 @@ class GoodsRecordsLoadingControllerSpec extends SpecBase {
 
       running(application) {
         val request =
-          FakeRequest(GET, routes.GoodsRecordsLoadingController.onPageLoad(Some(RedirectUrl(continueUrl))).url)
+          FakeRequest(
+            GET,
+            controllers.goodsProfile.routes.GoodsRecordsLoadingController.onPageLoad(Some(RedirectUrl(continueUrl))).url
+          )
 
         val result = route(application, request).value
 

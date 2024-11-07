@@ -34,7 +34,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.AuditService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import views.html.RemoveGoodsRecordView
+import views.html.goodsProfile.RemoveGoodsRecordView
 
 import scala.concurrent.Future
 
@@ -46,7 +46,7 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
   private val form = formProvider()
 
   private lazy val removeGoodsRecordRoute =
-    routes.RemoveGoodsRecordController.onPageLoad(testRecordId, GoodsRecordLocation).url
+    controllers.goodsProfile.routes.RemoveGoodsRecordController.onPageLoad(testRecordId, GoodsRecordLocation).url
 
   private val mockAuditService = mock[AuditService]
 
@@ -88,7 +88,12 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(GET, routes.RemoveGoodsRecordController.onPageLoad(testRecordId, GoodsProfileLocation).url)
+          FakeRequest(
+            GET,
+            controllers.goodsProfile.routes.RemoveGoodsRecordController
+              .onPageLoad(testRecordId, GoodsProfileLocation)
+              .url
+          )
 
         val result = route(application, request).value
 
@@ -155,7 +160,7 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
             .withFormUrlEncodedBody(("value", "true"))
 
         val result      = route(application, request).value
-        val continueUrl = RedirectUrl(routes.GoodsRecordsController.onPageLoad(firstPage).url)
+        val continueUrl = RedirectUrl(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url)
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
