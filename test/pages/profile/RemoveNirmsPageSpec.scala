@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package pages
+package pages.profile
 
 import base.TestConstants.userAnswersId
 import models.UserAnswers
-import org.scalatest.{OptionValues, TryValues}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
-import pages.profile.{HasNirmsUpdatePage, NirmsNumberUpdatePage, RemoveNirmsPage}
+import org.scalatest.{OptionValues, TryValues}
 
 class RemoveNirmsPageSpec extends AnyFreeSpec with Matchers with TryValues with OptionValues {
 

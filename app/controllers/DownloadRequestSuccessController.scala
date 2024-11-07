@@ -45,7 +45,7 @@ class DownloadRequestSuccessController @Inject() (
         case _           =>
           logErrorsAndContinue(
             "Email was not found",
-            routes.IndexController.onPageLoad
+            routes.IndexController.onPageLoad()
           )
       }
   }
