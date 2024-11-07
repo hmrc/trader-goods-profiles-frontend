@@ -683,7 +683,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           }
 
           withClue("must get category result from categorisation service") {
-            verify(mockCategorisationService, times(1))
+            verify(mockCategorisationService)
               .calculateResult(any(), any(), any())
           }
 

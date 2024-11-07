@@ -27,7 +27,7 @@ import models.{GoodsRecordsPagination, NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{never, times, verify, when}
+import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{TraderReferencePage, TraderReferenceUpdatePage}
 import play.api.data.FormError
@@ -150,8 +150,8 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
 
-          verify(mockSessionRepository, times(1)).set(any())
-          verify(mockGoodsRecordConnector, times(1)).filterRecordsByField(any(), any(), any())(any())
+          verify(mockSessionRepository).set(any())
+          verify(mockGoodsRecordConnector).filterRecordsByField(any(), any(), any())(any())
         }
       }
 
@@ -217,8 +217,8 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
           status(result) mustEqual BAD_REQUEST
           contentAsString(result) mustEqual view(boundForm, onSubmitAction)(request, messages(application)).toString
-          verify(mockSessionRepository, times(1)).set(any())
-          verify(mockGoodsRecordConnector, times(1)).filterRecordsByField(any(), any(), any())(any())
+          verify(mockSessionRepository).set(any())
+          verify(mockGoodsRecordConnector).filterRecordsByField(any(), any(), any())(any())
         }
       }
 
@@ -257,7 +257,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
             .url
 
           verify(mockSessionRepository, never()).set(any())
-          verify(mockGoodsRecordConnector, times(1)).filterRecordsByField(any(), any(), any())(any())
+          verify(mockGoodsRecordConnector).filterRecordsByField(any(), any(), any())(any())
         }
       }
 
@@ -322,7 +322,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
           contentAsString(result) mustEqual view(form, onSubmitAction)(request, messages(application)).toString
 
           withClue("must call the audit service with the correct details") {
-            verify(mockAuditService, times(1))
+            verify(mockAuditService)
               .auditStartUpdateGoodsRecord(
                 eqTo(testEori),
                 eqTo(AffinityGroup.Individual),
@@ -396,9 +396,9 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
 
-          verify(mockSessionRepository, times(1)).set(any())
-          verify(mockGoodsRecordConnector, times(1)).filterRecordsByField(any(), any(), any())(any())
-          verify(mockGoodsRecordConnector, times(1)).getRecord(any(), any())(any())
+          verify(mockSessionRepository).set(any())
+          verify(mockGoodsRecordConnector).filterRecordsByField(any(), any(), any())(any())
+          verify(mockGoodsRecordConnector).getRecord(any(), any())(any())
         }
       }
 
@@ -441,9 +441,9 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
 
-          verify(mockSessionRepository, times(1)).set(any())
-          verify(mockGoodsRecordConnector, times(1)).filterRecordsByField(any(), any(), any())(any())
-          verify(mockGoodsRecordConnector, times(1)).getRecord(any(), any())(any())
+          verify(mockSessionRepository).set(any())
+          verify(mockGoodsRecordConnector).filterRecordsByField(any(), any(), any())(any())
+          verify(mockGoodsRecordConnector).getRecord(any(), any())(any())
         }
       }
 
@@ -490,9 +490,9 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
           session(result).get(dataUpdated) must be(Some("true"))
           session(result).get(pageUpdated) must be(Some("trader reference"))
 
-          verify(mockSessionRepository, times(1)).set(any())
-          verify(mockGoodsRecordConnector, times(1)).filterRecordsByField(any(), any(), any())(any())
-          verify(mockGoodsRecordConnector, times(1)).getRecord(any(), any())(any())
+          verify(mockSessionRepository).set(any())
+          verify(mockGoodsRecordConnector).filterRecordsByField(any(), any(), any())(any())
+          verify(mockGoodsRecordConnector).getRecord(any(), any())(any())
         }
       }
 
@@ -538,9 +538,9 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
           session(result).get(dataUpdated) must be(Some("false"))
 
-          verify(mockSessionRepository, times(1)).set(any())
-          verify(mockGoodsRecordConnector, times(1)).filterRecordsByField(any(), any(), any())(any())
-          verify(mockGoodsRecordConnector, times(1)).getRecord(any(), any())(any())
+          verify(mockSessionRepository).set(any())
+          verify(mockGoodsRecordConnector).filterRecordsByField(any(), any(), any())(any())
+          verify(mockGoodsRecordConnector).getRecord(any(), any())(any())
         }
       }
 
@@ -614,9 +614,9 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual BAD_REQUEST
           contentAsString(result) mustEqual view(boundForm, onSubmitAction)(request, messages(application)).toString
 
-          verify(mockSessionRepository, times(1)).set(any())
-          verify(mockGoodsRecordConnector, times(1)).filterRecordsByField(any(), any(), any())(any())
-          verify(mockGoodsRecordConnector, times(1)).getRecord(any(), any())(any())
+          verify(mockSessionRepository).set(any())
+          verify(mockGoodsRecordConnector).filterRecordsByField(any(), any(), any())(any())
+          verify(mockGoodsRecordConnector).getRecord(any(), any())(any())
         }
       }
 
@@ -662,7 +662,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
             .url
 
           verify(mockSessionRepository, never()).set(any())
-          verify(mockGoodsRecordConnector, times(1)).filterRecordsByField(any(), any(), any())(any())
+          verify(mockGoodsRecordConnector).filterRecordsByField(any(), any(), any())(any())
           verify(mockGoodsRecordConnector, never()).getRecord(any(), any())(any())
         }
       }

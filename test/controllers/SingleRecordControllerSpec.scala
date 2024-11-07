@@ -181,7 +181,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
         uaCaptor.getValue.data mustEqual userAnswers.data
 
         withClue("must cleanse the user answers data") {
-          verify(mockSessionRepository, times(1)).clearData(eqTo(userAnswers.id), eqTo(SupplementaryUnitUpdateJourney))
+          verify(mockSessionRepository).clearData(eqTo(userAnswers.id), eqTo(SupplementaryUnitUpdateJourney))
         }
       }
     }
@@ -296,7 +296,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
         uaCaptor.getValue.data mustEqual userAnswers.data
 
         withClue("must cleanse the user answers data") {
-          verify(mockSessionRepository, times(1)).clearData(eqTo(userAnswers.id), eqTo(SupplementaryUnitUpdateJourney))
+          verify(mockSessionRepository).clearData(eqTo(userAnswers.id), eqTo(SupplementaryUnitUpdateJourney))
         }
       }
     }

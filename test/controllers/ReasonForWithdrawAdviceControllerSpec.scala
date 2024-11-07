@@ -24,7 +24,7 @@ import models.UserAnswers
 import models.helper.WithdrawAdviceJourney
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{atLeastOnce, never, times, verify, when}
+import org.mockito.Mockito.{atLeastOnce, never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReasonForWithdrawAdvicePage
 import play.api.inject.bind
@@ -285,7 +285,7 @@ class ReasonForWithdrawAdviceControllerSpec extends SpecBase with MockitoSugar {
             )(
               any()
             )
-          verify(mockConnector, times(1)).withdrawRequestAccreditation(any(), any(), any())(any())
+          verify(mockConnector).withdrawRequestAccreditation(any(), any(), any())(any())
           verify(mockSessionRepository, never()).clearData(any(), any())
         }
         withClue("must not cleanse the user answers data when connector fails") {

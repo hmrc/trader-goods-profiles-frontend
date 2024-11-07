@@ -25,7 +25,7 @@ import models.filemanagement.{AvailableFilesTable, PendingFilesTable}
 import models.{DownloadData, DownloadDataSummary, FileInfo}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{never, times, verify, when}
+import org.mockito.Mockito.{never, verify, when}
 import org.scalacheck.Gen
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.i18n.Messages
@@ -221,7 +221,7 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
               result.pendingFilesTable mustBe None
               result.availableFilesTable mustBe availableFilesTable
 
-              verify(mockDownloadDataConnector, times(1)).updateSeenStatus(any())(any())
+              verify(mockDownloadDataConnector).updateSeenStatus(any())(any())
             }
 
             "when both files are available and pending" in {
@@ -268,7 +268,7 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
               result.pendingFilesTable mustBe pendingFilesTable
               result.availableFilesTable mustBe availableFilesTable
 
-              verify(mockDownloadDataConnector, times(1)).updateSeenStatus(any())(any())
+              verify(mockDownloadDataConnector).updateSeenStatus(any())(any())
             }
 
             "when files should be available, but there is no DownloadData" in {

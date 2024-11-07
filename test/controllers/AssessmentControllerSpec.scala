@@ -24,7 +24,7 @@ import models.ott.{CategorisationInfo, CategoryAssessment}
 import models.{AssessmentAnswer, NormalMode, ReassessmentAnswer}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{times, verify, when}
+import org.mockito.Mockito.{verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{AssessmentPage, ReassessmentPage}
@@ -166,7 +166,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 .url
 
               withClue("must cleanse the user answers data") {
-                verify(mockSessionRepository, times(1))
+                verify(mockSessionRepository)
                   .clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
               }
             }
@@ -207,7 +207,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 .url
 
               withClue("must cleanse the user answers data") {
-                verify(mockSessionRepository, times(1))
+                verify(mockSessionRepository)
                   .clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
               }
             }
@@ -315,7 +315,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 .url
 
               withClue("must cleanse the user answers data") {
-                verify(mockSessionRepository, times(1))
+                verify(mockSessionRepository)
                   .clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
               }
             }
@@ -356,7 +356,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 .url
 
               withClue("must cleanse the user answers data") {
-                verify(mockSessionRepository, times(1))
+                verify(mockSessionRepository)
                   .clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
               }
             }
@@ -520,7 +520,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 .url
 
               withClue("must cleanse the user answers data") {
-                verify(mockSessionRepository, times(1))
+                verify(mockSessionRepository)
                   .clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
               }
             }
@@ -561,7 +561,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 .url
 
               withClue("must cleanse the user answers data") {
-                verify(mockSessionRepository, times(1))
+                verify(mockSessionRepository)
                   .clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
               }
 
@@ -677,7 +677,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 .url
 
               withClue("must cleanse the user answers data") {
-                verify(mockSessionRepository, times(1))
+                verify(mockSessionRepository)
                   .clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
               }
             }
@@ -718,7 +718,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 .url
 
               withClue("must cleanse the user answers data") {
-                verify(mockSessionRepository, times(1))
+                verify(mockSessionRepository)
                   .clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
               }
             }
@@ -756,7 +756,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 .url
 
               withClue("must cleanse the user answers data") {
-                verify(mockSessionRepo, times(1)).clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
+                verify(mockSessionRepo).clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
               }
 
             }

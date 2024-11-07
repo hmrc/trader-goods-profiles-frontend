@@ -25,7 +25,7 @@ import models.{AssessmentAnswer, Category1Scenario, CategoryRecord, Reassessment
 import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{never, times, verify, when}
+import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages._
 import play.api.i18n.Messages
@@ -581,7 +581,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual onwardRoute.url
 
-              verify(mockConnector, times(1))
+              verify(mockConnector)
                 .updateCategoryAndComcodeForGoodsRecord(
                   eqTo(testEori),
                   eqTo(testRecordId),
@@ -592,11 +592,11 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
                 )
 
               withClue("audit event has been fired") {
-                verify(mockAuditService, times(1))
+                verify(mockAuditService)
                   .auditFinishCategorisation(eqTo(testEori), any, eqTo(testRecordId), eqTo(expectedPayload))(any)
               }
               withClue("must cleanse the user answers data") {
-                verify(mockSessionRepository, times(1)).clearData(eqTo(userAnswers.id), eqTo(CategorisationJourney))
+                verify(mockSessionRepository).clearData(eqTo(userAnswers.id), eqTo(CategorisationJourney))
               }
 
             }
@@ -643,7 +643,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               redirectLocation(result).value mustEqual onwardRoute.url
 
               withClue("connector was called even though audit failed") {
-                verify(mockConnector, times(1))
+                verify(mockConnector)
                   .updateCategoryAndComcodeForGoodsRecord(
                     eqTo(testEori),
                     eqTo(testRecordId),
@@ -689,7 +689,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
             verify(mockConnector, never()).updateCategoryAndComcodeForGoodsRecord(any(), any(), any(), any())(any())
             withClue("must cleanse the user answers data") {
-              verify(sessionRepository, times(1)).clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
+              verify(sessionRepository).clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
             }
           }
         }

@@ -20,7 +20,7 @@ import base.SpecBase
 import base.TestConstants.userAnswersId
 import config.FrontendAppConfig
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{times, verify, when}
+import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.bind
 import play.api.test.FakeRequest
@@ -117,7 +117,7 @@ class AuthControllerSpec extends SpecBase with MockitoSugar {
         redirectLocation(result).value mustEqual expectedRedirectUrl
 
         withClue("must not try and clear session data as none exists") {
-          verify(mockSessionRepository, times(0)).clear(any)
+          verify(mockSessionRepository, never()).clear(any)
         }
       }
     }

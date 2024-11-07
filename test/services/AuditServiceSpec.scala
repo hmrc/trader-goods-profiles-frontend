@@ -25,7 +25,7 @@ import models.ott.response._
 import models.{AdviceRequest, Category1Scenario, CategoryRecord, GoodsRecord, SupplementaryRequest, TraderProfile, UpdateGoodsRecord}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{reset, times, verify, when}
+import org.mockito.Mockito.{never, reset, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
 import pages._
@@ -298,12 +298,12 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       result mustBe Done
 
       withClue("Should not have tried to create the event as the details were invalid") {
-        verify(mockAuditFactory, times(0))
+        verify(mockAuditFactory, never())
           .createSubmitGoodsRecordEventForCreateRecord(any, any, any)(any())
       }
 
       withClue("Should not have tried to submit an event to the audit connector") {
-        verify(mockAuditConnector, times(0)).sendEvent(any)(any(), any())
+        verify(mockAuditConnector, never()).sendEvent(any)(any(), any())
       }
 
     }
