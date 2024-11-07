@@ -102,7 +102,7 @@ class TraderReferenceController @Inject() (
               case None            =>
                 Future.successful(
                   Redirect(
-                    routes.GoodsRecordsLoadingController
+                    controllers.goodsProfile.routes.GoodsRecordsLoadingController
                       .onPageLoad(Some(RedirectUrl(onSubmitAction.url)))
                   )
                 )
@@ -138,7 +138,7 @@ class TraderReferenceController @Inject() (
               case None          =>
                 Future.successful(
                   Redirect(
-                    routes.GoodsRecordsLoadingController
+                    controllers.goodsProfile.routes.GoodsRecordsLoadingController
                       .onPageLoad(Some(RedirectUrl(onSubmitAction.url)))
                   )
                 )

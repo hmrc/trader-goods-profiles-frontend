@@ -23,7 +23,7 @@ import navigation.Navigator
 import pages.goodsProfile.PreviousMovementRecordsPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import views.html.PreviousMovementRecordsView
+import views.html.goodsProfile.PreviousMovementRecordsView
 
 import javax.inject.Inject
 

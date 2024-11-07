@@ -54,7 +54,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
     case p: NamePage                               => _ => routes.EmailController.onPageLoad(NormalMode, p.recordId)
     case p: EmailPage                              => _ => routes.CyaRequestAdviceController.onPageLoad(p.recordId)
     case p: CyaCategorisationPage                  => navigateFromCyaCategorisationPage(p)
-    case RemoveGoodsRecordPage                     => _ => routes.GoodsRecordsController.onPageLoad(firstPage)
+    case RemoveGoodsRecordPage                     => _ => controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage)
     case p: LongerCommodityCodePage                =>
       _ => routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(NormalMode, p.recordId)
     case p: HasCorrectGoodsLongerCommodityCodePage =>
@@ -76,7 +76,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
     case p: CyaRequestAdvicePage                   => _ => routes.AdviceSuccessController.onPageLoad(p.recordId)
     case p: CyaUpdateRecordPage                    => _ => routes.SingleRecordController.onPageLoad(p.recordId)
     case p: CyaSupplementaryUnitPage               => _ => routes.SingleRecordController.onPageLoad(p.recordId)
-    case PreviousMovementRecordsPage               => _ => routes.GoodsRecordsController.onPageLoad(firstPage)
+    case PreviousMovementRecordsPage               => _ => controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage)
     case RequestDataPage                           => _ => routes.DownloadRequestSuccessController.onPageLoad()
     case _                                         => _ => routes.IndexController.onPageLoad()
   }

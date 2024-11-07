@@ -25,7 +25,7 @@ import pages.goodsProfile.GoodsRecordsPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import views.html.{GoodsRecordsSearchResultEmptyView, GoodsRecordsSearchResultView}
+import views.html.goodsProfile.{GoodsRecordsSearchResultEmptyView, GoodsRecordsSearchResultView}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -84,8 +84,8 @@ class GoodsRecordsSearchResultController @Inject() (
               case None                 =>
                 Future.successful(
                   Redirect(
-                    routes.GoodsRecordsLoadingController
-                      .onPageLoad(Some(RedirectUrl(routes.GoodsRecordsSearchResultController.onPageLoad(page).url)))
+                    controllers.goodsProfile.routes.GoodsRecordsLoadingController
+                      .onPageLoad(Some(RedirectUrl(controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(page).url)))
                   )
                 )
 

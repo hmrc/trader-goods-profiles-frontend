@@ -80,19 +80,19 @@ object GoodsRecordsPagination {
           PaginationItem(
             number = Some(page.toString),
             current = Some(currentPage == page),
-            href = routes.GoodsRecordsController.onPageLoad(page).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(page).url,
             ellipsis = Some(ellipsis)
           )
         }),
         previous = if (currentPage == firstPage) {
           None
         } else {
-          Some(PaginationLink(routes.GoodsRecordsController.onPageLoad(currentPage - 1).url))
+          Some(PaginationLink(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(currentPage - 1).url))
         },
         next = if (currentPage == totalPages) {
           None
         } else {
-          Some(PaginationLink(routes.GoodsRecordsController.onPageLoad(currentPage + 1).url))
+          Some(PaginationLink(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(currentPage + 1).url))
         }
       )
     }
@@ -124,19 +124,19 @@ object GoodsRecordsPagination {
           PaginationItem(
             number = Some(page.toString),
             current = Some(currentPage == page),
-            href = routes.GoodsRecordsSearchResultController.onPageLoad(page).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(page).url,
             ellipsis = Some(ellipsis)
           )
         }),
         previous = if (currentPage == firstPage) {
           None
         } else {
-          Some(PaginationLink(routes.GoodsRecordsSearchResultController.onPageLoad(currentPage - 1).url))
+          Some(PaginationLink(controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(currentPage - 1).url))
         },
         next = if (currentPage == totalPages) {
           None
         } else {
-          Some(PaginationLink(routes.GoodsRecordsSearchResultController.onPageLoad(currentPage + 1).url))
+          Some(PaginationLink(controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(currentPage + 1).url))
         }
       )
     }

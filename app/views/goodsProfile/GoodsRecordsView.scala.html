@@ -71,7 +71,7 @@
 
     <p class="govuk-body"><a href="@routes.CreateRecordStartController.onPageLoad().url" class="govuk-link">@messages("goodsRecords.link1")</a></p>
 
-        @formHelper(action = routes.GoodsRecordsController.onSearch(page)) {
+        @formHelper(action = controllers.goodsProfile.routes.GoodsRecordsController.onSearch(page)) {
             <div style="display: flex; align-items: flex-end;">
                 @govukInput(
                     InputViewModel(
@@ -148,7 +148,7 @@
                                     visuallyHiddenContent1 = goodsRecord.traderRef,
                                     visuallyHiddenContent2 = goodsRecord.traderRef,
                                     href1 = routes.ReviewReasonController.onPageLoad(goodsRecord.recordId).url,
-                                    href2 = routes.RemoveGoodsRecordController.onPageLoad(goodsRecord.recordId, GoodsProfileLocation).url
+                                    href2 = controllers.goodsProfile.routes.RemoveGoodsRecordController.onPageLoad(goodsRecord.recordId, GoodsProfileLocation).url
                                 )
                             )
                         )

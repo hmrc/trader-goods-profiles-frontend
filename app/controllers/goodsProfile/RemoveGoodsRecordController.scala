@@ -28,7 +28,7 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.AuditService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import views.html.RemoveGoodsRecordView
+import views.html.goodsProfile.RemoveGoodsRecordView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -73,7 +73,7 @@ class RemoveGoodsRecordController @Inject() (
                     Redirect(navigator.nextPage(RemoveGoodsRecordPage, NormalMode, request.userAnswers))
                   } else {
                     navigator.journeyRecovery(
-                      Some(RedirectUrl(routes.GoodsRecordsController.onPageLoad(firstPage).url))
+                      Some(RedirectUrl(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url))
                     )
                   }
                 }
