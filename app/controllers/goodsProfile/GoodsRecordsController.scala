@@ -21,7 +21,7 @@ import controllers.actions._
 import controllers.BaseController
 import forms.goodsProfile.GoodsRecordsFormProvider
 import models.GoodsRecordsPagination._
-import navigation.Navigator
+import navigation.GoodsProfileNavigator
 import pages.goodsProfile.GoodsRecordsPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -46,7 +46,7 @@ class GoodsRecordsController @Inject() (
   emptyView: GoodsRecordsEmptyView,
   goodsRecordConnector: GoodsRecordConnector,
   ottConnector: OttConnector,
-  navigator: Navigator
+  navigator: GoodsProfileNavigator
 )(implicit ec: ExecutionContext)
     extends BaseController {
 

@@ -19,7 +19,7 @@ package controllers.goodsProfile
 import controllers.BaseController
 import controllers.actions._
 import models.NormalMode
-import navigation.Navigator
+import navigation.GoodsProfileNavigator
 import pages.goodsProfile.PreviousMovementRecordsPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -35,7 +35,7 @@ class PreviousMovementRecordsController @Inject() (
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
   view: PreviousMovementRecordsView,
-  navigator: Navigator
+  navigator: GoodsProfileNavigator
 ) extends BaseController {
 
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth) { implicit request =>

@@ -17,13 +17,11 @@
 package navigation
 
 import controllers.routes
-import models.GoodsRecordsPagination.firstPage
 import models.Scenario.getResultAsInt
 import models._
 import models.ott.{CategorisationInfo, CategoryAssessment}
 import pages._
 import pages.categorisation.CategoryGuidancePage
-import pages.goodsProfile.{PreviousMovementRecordsPage, RemoveGoodsRecordPage}
 import play.api.mvc.Call
 import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery, LongerCommodityQuery}
 import services.CategorisationService
@@ -54,7 +52,6 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
     case p: NamePage                               => _ => routes.EmailController.onPageLoad(NormalMode, p.recordId)
     case p: EmailPage                              => _ => routes.CyaRequestAdviceController.onPageLoad(p.recordId)
     case p: CyaCategorisationPage                  => navigateFromCyaCategorisationPage(p)
-    case RemoveGoodsRecordPage                     => _ => controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage)
     case p: LongerCommodityCodePage                =>
       _ => routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(NormalMode, p.recordId)
     case p: HasCorrectGoodsLongerCommodityCodePage =>
@@ -76,8 +73,6 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
     case p: CyaRequestAdvicePage                   => _ => routes.AdviceSuccessController.onPageLoad(p.recordId)
     case p: CyaUpdateRecordPage                    => _ => routes.SingleRecordController.onPageLoad(p.recordId)
     case p: CyaSupplementaryUnitPage               => _ => routes.SingleRecordController.onPageLoad(p.recordId)
-    case PreviousMovementRecordsPage               =>
-      _ => controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage)
     case RequestDataPage                           => _ => routes.DownloadRequestSuccessController.onPageLoad()
     case _                                         => _ => routes.IndexController.onPageLoad()
   }
