@@ -166,7 +166,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 .url
 
               withClue("must cleanse the user answers data") {
-                verify(mockSessionRepository).clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
+                verify(mockSessionRepository)
+                  .clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
               }
             }
           }
@@ -206,7 +207,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 .url
 
               withClue("must cleanse the user answers data") {
-                verify(mockSessionRepository).clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
+                verify(mockSessionRepository)
+                  .clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
               }
             }
           }
@@ -313,7 +315,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 .url
 
               withClue("must cleanse the user answers data") {
-                verify(mockSessionRepository).clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
+                verify(mockSessionRepository)
+                  .clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
               }
             }
           }
@@ -353,7 +356,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 .url
 
               withClue("must cleanse the user answers data") {
-                verify(mockSessionRepository).clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
+                verify(mockSessionRepository)
+                  .clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
               }
             }
           }
@@ -516,7 +520,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 .url
 
               withClue("must cleanse the user answers data") {
-                verify(mockSessionRepository).clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
+                verify(mockSessionRepository)
+                  .clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
               }
             }
           }
@@ -556,7 +561,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 .url
 
               withClue("must cleanse the user answers data") {
-                verify(mockSessionRepository).clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
+                verify(mockSessionRepository)
+                  .clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
               }
 
             }
@@ -671,7 +677,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 .url
 
               withClue("must cleanse the user answers data") {
-                verify(mockSessionRepository).clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
+                verify(mockSessionRepository)
+                  .clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
               }
             }
           }
@@ -711,7 +718,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 .url
 
               withClue("must cleanse the user answers data") {
-                verify(mockSessionRepository).clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
+                verify(mockSessionRepository)
+                  .clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
               }
             }
           }

@@ -25,7 +25,7 @@ import models.{AssessmentAnswer, Category1Scenario, CategoryRecord, Reassessment
 import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{never, times, verify, when}
+import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages._
 import play.api.i18n.Messages
@@ -739,7 +739,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               .auditFinishCategorisation(eqTo(testEori), any, eqTo(testRecordId), eqTo(expectedCategoryRecord))(any)
           }
           withClue("must not cleanse the user answers data when connector fails") {
-            verify(sessionRepository, times(0)).clearData(eqTo(userAnswers.id), eqTo(CategorisationJourney))
+            verify(sessionRepository, never()).clearData(eqTo(userAnswers.id), eqTo(CategorisationJourney))
           }
         }
       }

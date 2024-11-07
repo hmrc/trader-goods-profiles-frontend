@@ -26,7 +26,7 @@ import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{reset, times, verify, when}
+import org.mockito.Mockito.{never, reset, times, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
 import pages.{HasSupplementaryUnitPage, SupplementaryUnitPage}
@@ -128,12 +128,12 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           }
 
           withClue("must not get category result from categorisation service as not needed") {
-            verify(mockCategorisationService, times(0))
+            verify(mockCategorisationService, never())
               .calculateResult(any(), any(), any())
           }
 
           withClue("must not have updated goods record") {
-            verify(mockGoodsRecordConnector, times(0))
+            verify(mockGoodsRecordConnector, never())
               .updateCategoryAndComcodeForGoodsRecord(any(), any(), any(), any())(
                 any()
               )
@@ -151,7 +151,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           }
 
           withClue("must not call the audit service finish categorisation event") {
-            verify(mockAuditService, times(0)).auditFinishCategorisation(
+            verify(mockAuditService, never()).auditFinishCategorisation(
               any(),
               any(),
               any(),
@@ -194,12 +194,12 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           }
 
           withClue("must not get category result from categorisation service as not needed") {
-            verify(mockCategorisationService, times(0))
+            verify(mockCategorisationService, never())
               .calculateResult(any(), any(), any())
           }
 
           withClue("must not have updated goods record") {
-            verify(mockGoodsRecordConnector, times(0))
+            verify(mockGoodsRecordConnector, never())
               .updateCategoryAndComcodeForGoodsRecord(any(), any(), any(), any())(
                 any()
               )
@@ -217,7 +217,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           }
 
           withClue("must not call the audit service finish categorisation event") {
-            verify(mockAuditService, times(0)).auditFinishCategorisation(
+            verify(mockAuditService, never()).auditFinishCategorisation(
               any(),
               any(),
               any(),
@@ -522,12 +522,12 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           }
 
           withClue("must not get category result from categorisation service as not needed") {
-            verify(mockCategorisationService, times(0))
+            verify(mockCategorisationService, never())
               .calculateResult(any(), any(), any())
           }
 
           withClue("must not have updated goods record") {
-            verify(mockGoodsRecordConnector, times(0))
+            verify(mockGoodsRecordConnector, never())
               .updateCategoryAndComcodeForGoodsRecord(any(), any(), any(), any())(
                 any()
               )
@@ -683,12 +683,12 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           }
 
           withClue("must get category result from categorisation service") {
-            verify(mockCategorisationService, times(1))
+            verify(mockCategorisationService)
               .calculateResult(any(), any(), any())
           }
 
           withClue("must not call the audit service finish categorisation event") {
-            verify(mockAuditService, times(0)).auditFinishCategorisation(any(), any(), any(), any())(any())
+            verify(mockAuditService, never()).auditFinishCategorisation(any(), any(), any(), any())(any())
           }
         }
 
@@ -975,12 +975,12 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
             }
 
             withClue("must not update answers from categorisation service as not needed") {
-              verify(mockCategorisationService, times(0))
+              verify(mockCategorisationService, never())
                 .updatingAnswersForRecategorisation(any(), any(), any(), any())
             }
 
             withClue("must not have updated goods record") {
-              verify(mockGoodsRecordConnector, times(0))
+              verify(mockGoodsRecordConnector, never())
                 .updateCategoryAndComcodeForGoodsRecord(any(), any(), any(), any())(
                   any()
                 )

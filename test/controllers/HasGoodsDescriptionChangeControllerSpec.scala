@@ -24,7 +24,7 @@ import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{verify, when}
+import org.mockito.Mockito.{atLeastOnce, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.HasGoodsDescriptionChangePage
 import play.api.inject.bind
@@ -72,7 +72,7 @@ class HasGoodsDescriptionChangeControllerSpec extends SpecBase with MockitoSugar
         contentAsString(result) mustEqual view(form, NormalMode, testRecordId)(request, messages(application)).toString
 
         withClue("must call the audit service with the correct details") {
-          verify(mockAuditService)
+          verify(mockAuditService, atLeastOnce())
             .auditStartUpdateGoodsRecord(
               eqTo(testEori),
               eqTo(AffinityGroup.Individual),

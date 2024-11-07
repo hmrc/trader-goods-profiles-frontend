@@ -21,7 +21,7 @@ import config.{FrontendAppConfig, Service}
 import connectors.{DownloadDataConnector, TraderProfileConnector}
 import models.{Email, TraderProfile}
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{verify, when}
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject.bind
 import play.api.test.FakeRequest
@@ -62,6 +62,9 @@ class IndexControllerSpec extends SpecBase {
           status(result) mustEqual SEE_OTHER
 
           redirectLocation(result).value mustEqual controllers.profile.routes.ProfileSetupController.onPageLoad().url
+
+          verify(mockTraderProfileConnector).checkTraderProfile(any())(any())
+          verify(mockDownloadDataConnector).getEmail(any())(any())
         }
       }
 
@@ -87,6 +90,9 @@ class IndexControllerSpec extends SpecBase {
           status(result) mustEqual SEE_OTHER
 
           redirectLocation(result).value mustEqual controllers.profile.routes.ProfileSetupController.onPageLoad().url
+
+          verify(mockTraderProfileConnector).checkTraderProfile(any())(any())
+          verify(mockDownloadDataConnector).getEmail(any())(any())
         }
       }
 
@@ -115,6 +121,10 @@ class IndexControllerSpec extends SpecBase {
           status(result) mustEqual SEE_OTHER
 
           redirectLocation(result).value mustEqual routes.HomePageController.onPageLoad().url
+
+          verify(mockTraderProfileConnector).checkTraderProfile(any())(any())
+          verify(mockDownloadDataConnector).getEmail(any())(any())
+          verify(mockTraderProfileConnector).getTraderProfile(any())(any())
         }
       }
 
@@ -146,6 +156,10 @@ class IndexControllerSpec extends SpecBase {
           redirectLocation(result).value mustEqual controllers.profile.routes.UkimsNumberChangeController
             .onPageLoad()
             .url
+
+          verify(mockTraderProfileConnector).checkTraderProfile(any())(any())
+          verify(mockDownloadDataConnector).getEmail(any())(any())
+          verify(mockTraderProfileConnector).getTraderProfile(any())(any())
         }
       }
     }
@@ -173,6 +187,8 @@ class IndexControllerSpec extends SpecBase {
         status(result) mustEqual SEE_OTHER
 
         redirectLocation(result).value contains "/manage-email-cds/service/trader-goods-profiles"
+
+        verify(mockConnector).getEmail(any())(any())
       }
     }
   }

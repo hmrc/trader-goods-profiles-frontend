@@ -461,6 +461,9 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           await(route(application, request).value)
         }
 
+        verify(mockGoodsRecordConnector, times(4)).getRecord(any(), any())(any())
+        verify(mockOttConnector, times(4)).getCountries(any())
+
       }
     }
 
@@ -536,6 +539,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
         intercept[Exception] {
           await(result)
         }
+
+        verify(mockGoodsRecordConnector, times(5)).getRecord(any(), any())(any())
       }
     }
 

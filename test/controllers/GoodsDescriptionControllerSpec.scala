@@ -24,7 +24,7 @@ import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{times, verify, when}
+import org.mockito.Mockito.{never, verify, when}
 import org.scalacheck.Gen
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{GoodsDescriptionPage, GoodsDescriptionUpdatePage, HasGoodsDescriptionChangePage}
@@ -278,7 +278,7 @@ class GoodsDescriptionControllerSpec extends SpecBase with MockitoSugar {
           ).toString
 
           withClue("must not audit as already done on last page") {
-            verify(mockAuditService, times(0))
+            verify(mockAuditService, never())
               .auditStartUpdateGoodsRecord(
                 any(),
                 any(),

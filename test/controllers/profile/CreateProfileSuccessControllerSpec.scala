@@ -19,7 +19,7 @@ package controllers.profile
 import base.SpecBase
 import connectors.TraderProfileConnector
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject
 import play.api.test.FakeRequest
@@ -50,6 +50,7 @@ class CreateProfileSuccessControllerSpec extends SpecBase {
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view()(request, messages(application)).toString
+        verify(mockTraderProfileConnector, never()).checkTraderProfile(any())(any())
       }
     }
   }
