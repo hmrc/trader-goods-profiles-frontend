@@ -61,7 +61,7 @@ class IndexControllerSpec extends SpecBase {
 
           status(result) mustEqual SEE_OTHER
 
-          redirectLocation(result).value mustEqual routes.ProfileSetupController.onPageLoad().url
+          redirectLocation(result).value mustEqual controllers.profile.routes.ProfileSetupController.onPageLoad().url
         }
       }
 
@@ -86,7 +86,7 @@ class IndexControllerSpec extends SpecBase {
 
           status(result) mustEqual SEE_OTHER
 
-          redirectLocation(result).value mustEqual routes.ProfileSetupController.onPageLoad().url
+          redirectLocation(result).value mustEqual controllers.profile.routes.ProfileSetupController.onPageLoad().url
         }
       }
 
@@ -143,7 +143,9 @@ class IndexControllerSpec extends SpecBase {
 
           status(result) mustEqual SEE_OTHER
 
-          redirectLocation(result).value mustEqual routes.UkimsNumberChangeController.onPageLoad().url
+          redirectLocation(result).value mustEqual controllers.profile.routes.UkimsNumberChangeController
+            .onPageLoad()
+            .url
         }
       }
     }

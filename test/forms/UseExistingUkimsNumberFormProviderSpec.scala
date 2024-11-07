@@ -17,6 +17,7 @@
 package forms
 
 import forms.behaviours.BooleanFieldBehaviours
+import forms.profile.UseExistingUkimsNumberFormProvider
 import play.api.data.FormError
 
 class UseExistingUkimsNumberFormProviderSpec extends BooleanFieldBehaviours {

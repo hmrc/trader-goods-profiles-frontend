@@ -16,12 +16,12 @@
 
 package models
 
-import org.scalatest.Inside.inside
 import base.TestConstants.{testEori, userAnswersId}
-import org.scalatest.{OptionValues, TryValues}
+import org.scalatest.Inside.inside
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
-import pages._
+import org.scalatest.{OptionValues, TryValues}
+import pages.profile._
 import queries.TraderProfileQuery
 
 class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with OptionValues {

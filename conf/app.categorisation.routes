@@ -1,0 +1,2 @@
+GET         /update-record/:recordId/categorisation/start                                           controllers.categorisation.CategoryGuidanceController.onPageLoad(recordId: String)
+POST        /update-record/:recordId/categorisation/start                                           controllers.categorisation.CategoryGuidanceController.onSubmit(recordId: String)

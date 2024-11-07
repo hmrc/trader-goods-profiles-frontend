@@ -17,7 +17,6 @@
 package controllers.actions
 
 import connectors.TraderProfileConnector
-import controllers.routes
 import models.requests.IdentifierRequest
 import play.api.mvc.Results.Redirect
 import play.api.mvc._
@@ -35,7 +34,7 @@ class ProfileAuthenticateActionImpl @Inject() (
   def filter[A](request: IdentifierRequest[A]): Future[Option[Result]] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
     traderProfileConnector.checkTraderProfile(request.eori).map {
-      case false => Some(Redirect(routes.ProfileSetupController.onPageLoad()))
+      case false => Some(Redirect(controllers.profile.routes.ProfileSetupController.onPageLoad()))
       case true  => None
     }
   }

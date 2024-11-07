@@ -41,7 +41,7 @@ class IndexController @Inject() (
       case Some(_) =>
         traderProfileConnector.checkTraderProfile(request.eori).flatMap {
           case true  => eoriChanged(request)
-          case false => Future.successful(Redirect(routes.ProfileSetupController.onPageLoad()))
+          case false => Future.successful(Redirect(controllers.profile.routes.ProfileSetupController.onPageLoad()))
         }
       case None    =>
         Future.successful(
@@ -53,7 +53,7 @@ class IndexController @Inject() (
   private def eoriChanged(request: IdentifierRequest[AnyContent])(implicit hc: HeaderCarrier) =
     traderProfileConnector.getTraderProfile(request.eori).map {
       case TraderProfile(_, _, _, _, eoriChanged) if eoriChanged =>
-        Redirect(routes.UkimsNumberChangeController.onPageLoad())
+        Redirect(controllers.profile.routes.UkimsNumberChangeController.onPageLoad())
       case _                                                     =>
         Redirect(routes.HomePageController.onPageLoad())
     }
