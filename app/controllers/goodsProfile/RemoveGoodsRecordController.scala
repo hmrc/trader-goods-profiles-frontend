@@ -18,7 +18,7 @@ package controllers.goodsProfile
 
 import connectors.GoodsRecordConnector
 import controllers.actions._
-import controllers.{BaseController, routes}
+import controllers.BaseController
 import forms.goodsProfile.RemoveGoodsRecordFormProvider
 import models.GoodsRecordsPagination.firstPage
 import models.{Location, NormalMode}
@@ -73,7 +73,9 @@ class RemoveGoodsRecordController @Inject() (
                     Redirect(navigator.nextPage(RemoveGoodsRecordPage, NormalMode, request.userAnswers))
                   } else {
                     navigator.journeyRecovery(
-                      Some(RedirectUrl(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url))
+                      Some(
+                        RedirectUrl(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url)
+                      )
                     )
                   }
                 }

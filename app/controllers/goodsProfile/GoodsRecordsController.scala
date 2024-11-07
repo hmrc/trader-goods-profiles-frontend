@@ -18,7 +18,7 @@ package controllers.goodsProfile
 
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions._
-import controllers.{BaseController, routes}
+import controllers.BaseController
 import forms.goodsProfile.GoodsRecordsFormProvider
 import models.GoodsRecordsPagination._
 import navigation.Navigator
@@ -88,7 +88,9 @@ class GoodsRecordsController @Inject() (
             Future.successful(
               Redirect(
                 controllers.goodsProfile.routes.GoodsRecordsLoadingController
-                  .onPageLoad(Some(RedirectUrl(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(page).url)))
+                  .onPageLoad(
+                    Some(RedirectUrl(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(page).url))
+                  )
               )
             )
         }

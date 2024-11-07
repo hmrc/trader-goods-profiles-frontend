@@ -18,7 +18,7 @@ package controllers.goodsProfile
 
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
-import controllers.{BaseController, routes}
+import controllers.BaseController
 import models.GoodsRecordsPagination.{getFirstRecordIndex, getLastRecordIndex, getSearchPagination}
 import navigation.Navigator
 import pages.goodsProfile.GoodsRecordsPage
@@ -85,7 +85,13 @@ class GoodsRecordsSearchResultController @Inject() (
                 Future.successful(
                   Redirect(
                     controllers.goodsProfile.routes.GoodsRecordsLoadingController
-                      .onPageLoad(Some(RedirectUrl(controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(page).url)))
+                      .onPageLoad(
+                        Some(
+                          RedirectUrl(
+                            controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(page).url
+                          )
+                        )
+                      )
                   )
                 )
 

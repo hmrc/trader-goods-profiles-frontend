@@ -16,7 +16,6 @@
 
 package models
 
-import controllers.routes
 import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.govukfrontend.views.Aliases.Pagination
 import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.{PaginationItem, PaginationLink}
@@ -131,12 +130,20 @@ object GoodsRecordsPagination {
         previous = if (currentPage == firstPage) {
           None
         } else {
-          Some(PaginationLink(controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(currentPage - 1).url))
+          Some(
+            PaginationLink(
+              controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(currentPage - 1).url
+            )
+          )
         },
         next = if (currentPage == totalPages) {
           None
         } else {
-          Some(PaginationLink(controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(currentPage + 1).url))
+          Some(
+            PaginationLink(
+              controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(currentPage + 1).url
+            )
+          )
         }
       )
     }

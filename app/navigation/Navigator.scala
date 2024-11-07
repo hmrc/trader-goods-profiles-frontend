@@ -76,7 +76,8 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
     case p: CyaRequestAdvicePage                   => _ => routes.AdviceSuccessController.onPageLoad(p.recordId)
     case p: CyaUpdateRecordPage                    => _ => routes.SingleRecordController.onPageLoad(p.recordId)
     case p: CyaSupplementaryUnitPage               => _ => routes.SingleRecordController.onPageLoad(p.recordId)
-    case PreviousMovementRecordsPage               => _ => controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage)
+    case PreviousMovementRecordsPage               =>
+      _ => controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage)
     case RequestDataPage                           => _ => routes.DownloadRequestSuccessController.onPageLoad()
     case _                                         => _ => routes.IndexController.onPageLoad()
   }
