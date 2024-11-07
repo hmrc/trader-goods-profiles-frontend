@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.goodsProfile
 
 import base.SpecBase
 import base.TestConstants.{testEori, userAnswersId}
 import connectors.{GoodsRecordConnector, OttConnector}
+import controllers.routes
 import models.GoodsRecordsPagination.firstPage
 import models.router.responses.GetRecordsResponse
 import models.{Country, GoodsRecordsPagination, UserAnswers}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.GoodsRecordsPage
+import pages.goodsProfile.GoodsRecordsPage
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._

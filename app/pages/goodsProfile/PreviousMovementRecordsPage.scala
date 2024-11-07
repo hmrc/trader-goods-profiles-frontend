@@ -14,18 +14,8 @@
  * limitations under the License.
  */
 
-package forms
+package pages.goodsProfile
 
-import javax.inject.Inject
+import pages.Page
 
-import forms.mappings.Mappings
-import play.api.data.Form
-
-class GoodsRecordsFormProvider @Inject() extends Mappings {
-
-  def apply(): Form[String] =
-    Form(
-      "value" -> text("goodsRecords.error.required")
-        .verifying(maxLength(100, "goodsRecords.error.length"))
-    )
-}
+case object PreviousMovementRecordsPage extends Page

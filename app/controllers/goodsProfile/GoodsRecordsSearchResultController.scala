@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.goodsProfile
 
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
+import controllers.{BaseController, routes}
 import models.GoodsRecordsPagination.{getFirstRecordIndex, getLastRecordIndex, getSearchPagination}
 import navigation.Navigator
-import pages.GoodsRecordsPage
+import pages.goodsProfile.GoodsRecordsPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl

@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.goodsProfile
 
 import connectors.GoodsRecordConnector
 import controllers.actions._
-import forms.RemoveGoodsRecordFormProvider
+import controllers.{BaseController, routes}
+import forms.goodsProfile.RemoveGoodsRecordFormProvider
 import models.GoodsRecordsPagination.firstPage
-
-import javax.inject.Inject
 import models.{Location, NormalMode}
 import navigation.Navigator
-import pages.RemoveGoodsRecordPage
+import pages.goodsProfile.RemoveGoodsRecordPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.AuditService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import views.html.RemoveGoodsRecordView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class RemoveGoodsRecordController @Inject() (

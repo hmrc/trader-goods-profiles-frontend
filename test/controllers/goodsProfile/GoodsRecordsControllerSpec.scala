@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.goodsProfile
 
 import base.SpecBase
 import base.TestConstants.testEori
 import connectors.{GoodsRecordConnector, OttConnector}
-import forms.GoodsRecordsFormProvider
+import controllers.routes
+import forms.goodsProfile.GoodsRecordsFormProvider
 import models.GoodsRecordsPagination.firstPage
 import models.router.responses.GetRecordsResponse
 import models.{Country, GoodsRecordsPagination}

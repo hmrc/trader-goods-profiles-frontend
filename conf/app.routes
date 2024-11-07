@@ -152,23 +152,23 @@ POST        /update-record/:recordId/categorisation/supplementary-unit-amount/up
 GET         /update-record/:recordId/categorisation/check-your-answers/supplementary-unit           controllers.CyaSupplementaryUnitController.onPageLoad(recordId: String)
 POST        /update-record/:recordId/categorisation/check-your-answers/supplementary-unit           controllers.CyaSupplementaryUnitController.onSubmit(recordId: String)
 
-GET         /previous-movement-records                                                              controllers.PreviousMovementRecordsController.onPageLoad()
-POST        /previous-movement-records                                                              controllers.PreviousMovementRecordsController.onSubmit()
+GET         /previous-movement-records                                                              controllers.goodsProfile.PreviousMovementRecordsController.onPageLoad()
+POST        /previous-movement-records                                                              controllers.goodsProfile.PreviousMovementRecordsController.onSubmit()
 
 GET         /update-record/:recordId/categorisation/longer-commodity-code                           controllers.LongerCommodityCodeController.onPageLoad(mode: Mode = NormalMode, recordId: String)
 POST        /update-record/:recordId/categorisation/longer-commodity-code                           controllers.LongerCommodityCodeController.onSubmit(mode: Mode = NormalMode, recordId: String)
 GET         /update-record/:recordId/categorisation/longer-commodity-code/check                     controllers.LongerCommodityCodeController.onPageLoad(mode: Mode = CheckMode, recordId: String)
 POST        /update-record/:recordId/categorisation/longer-commodity-code/check                     controllers.LongerCommodityCodeController.onSubmit(mode: Mode = CheckMode, recordId: String)
 
-GET         /goods-profile                                                                          controllers.GoodsRecordsController.onPageLoad(page: Int)
-POST        /goods-profile                                                                          controllers.GoodsRecordsController.onSearch(page: Int)
+GET         /goods-profile                                                                          controllers.goodsProfile.GoodsRecordsController.onPageLoad(page: Int)
+POST        /goods-profile                                                                          controllers.goodsProfile.GoodsRecordsController.onSearch(page: Int)
 
-GET         /goods-profile/search-results                                                           controllers.GoodsRecordsSearchResultController.onPageLoad(page: Int)
+GET         /goods-profile/search-results                                                           controllers.goodsProfile.GoodsRecordsSearchResultController.onPageLoad(page: Int)
 
-GET         /remove-record/:recordId/goods-profile                                                  controllers.RemoveGoodsRecordController.onPageLoad(recordId: String, location: Location = GoodsProfileLocation)
-GET         /remove-record/:recordId/goods-record                                                   controllers.RemoveGoodsRecordController.onPageLoad(recordId: String, location: Location = GoodsRecordLocation)
-POST        /remove-record/:recordId/goods-profile                                                  controllers.RemoveGoodsRecordController.onSubmit(recordId: String, location: Location = GoodsProfileLocation)
-POST        /remove-record/:recordId/goods-record                                                   controllers.RemoveGoodsRecordController.onSubmit(recordId: String, location: Location = GoodsRecordLocation)
+GET         /remove-record/:recordId/goods-profile                                                  controllers.goodsProfile.RemoveGoodsRecordController.onPageLoad(recordId: String, location: Location = GoodsProfileLocation)
+GET         /remove-record/:recordId/goods-record                                                   controllers.goodsProfile.RemoveGoodsRecordController.onPageLoad(recordId: String, location: Location = GoodsRecordLocation)
+POST        /remove-record/:recordId/goods-profile                                                  controllers.goodsProfile.RemoveGoodsRecordController.onSubmit(recordId: String, location: Location = GoodsProfileLocation)
+POST        /remove-record/:recordId/goods-record                                                   controllers.goodsProfile.RemoveGoodsRecordController.onSubmit(recordId: String, location: Location = GoodsRecordLocation)
 
 GET         /goods-record/:recordId                                                                 controllers.SingleRecordController.onPageLoad(recordId: String)
 
@@ -202,7 +202,7 @@ POST        /update-record/:recordId/check-your-answers/commodity-code          
 
 GET         /help-and-support                                                                       controllers.HelpAndSupportController.onPageLoad()
 
-GET         /loading-records                                                                        controllers.GoodsRecordsLoadingController.onPageLoad(continueUrl: Option[RedirectUrl] ?= None)
+GET         /loading-records                                                                        controllers.goodsProfile.GoodsRecordsLoadingController.onPageLoad(continueUrl: Option[RedirectUrl] ?= None)
 
 GET         /update-record/:recordId/withdraw-request                                               controllers.WithdrawAdviceStartController.onPageLoad(recordId: String)
 POST        /update-record/:recordId/withdraw-request                                               controllers.WithdrawAdviceStartController.onSubmit(recordId: String)

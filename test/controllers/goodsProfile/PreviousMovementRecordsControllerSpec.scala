@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.goodsProfile
 
 import base.SpecBase
+import controllers.routes
 import models.GoodsRecordsPagination.firstPage
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.test.FakeRequest

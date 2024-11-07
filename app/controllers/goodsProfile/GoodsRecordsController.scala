@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.goodsProfile
 
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions._
-import forms.GoodsRecordsFormProvider
+import controllers.{BaseController, routes}
+import forms.goodsProfile.GoodsRecordsFormProvider
 import models.GoodsRecordsPagination._
 import navigation.Navigator
-import pages.GoodsRecordsPage
+import pages.goodsProfile.GoodsRecordsPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository

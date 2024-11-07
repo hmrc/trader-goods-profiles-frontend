@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.goodsProfile
 
+import controllers.BaseController
 import controllers.actions._
 import models.NormalMode
 import navigation.Navigator
-import pages.PreviousMovementRecordsPage
+import pages.goodsProfile.PreviousMovementRecordsPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import views.html.PreviousMovementRecordsView

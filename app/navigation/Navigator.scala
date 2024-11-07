@@ -23,6 +23,7 @@ import models._
 import models.ott.{CategorisationInfo, CategoryAssessment}
 import pages._
 import pages.categorisation.CategoryGuidancePage
+import pages.goodsProfile.{PreviousMovementRecordsPage, RemoveGoodsRecordPage}
 import play.api.mvc.Call
 import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery, LongerCommodityQuery}
 import services.CategorisationService

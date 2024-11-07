@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.goodsProfile
 
 import base.SpecBase
 import base.TestConstants.testEori
 import connectors.GoodsRecordConnector
+import controllers.routes
 import models.RecordsSummary
 import models.RecordsSummary.Update
 import org.mockito.ArgumentMatchers.any
