@@ -62,7 +62,10 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
         implicit val localMessages: Messages = messages(application)
 
         running(application) {
-          val request = FakeRequest(GET, routes.CyaSupplementaryUnitController.onPageLoad(testRecordId).url)
+          val request = FakeRequest(
+            GET,
+            controllers.categorisation.routes.CyaSupplementaryUnitController.onPageLoad(testRecordId).url
+          )
 
           val result = route(application, request).value
 
@@ -86,7 +89,10 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
         val application = applicationBuilder(userAnswers = None).build()
 
         running(application) {
-          val request = FakeRequest(GET, routes.CyaSupplementaryUnitController.onPageLoad("recordId").url)
+          val request = FakeRequest(
+            GET,
+            controllers.categorisation.routes.CyaSupplementaryUnitController.onPageLoad("recordId").url
+          )
 
           val result = route(application, request).value
 
@@ -100,13 +106,20 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
         "must not submit anything, and redirect to Journey Recovery" in {
 
           val continueUrl =
-            RedirectUrl(routes.HasSupplementaryUnitController.onPageLoadUpdate(NormalMode, testRecordId).url)
+            RedirectUrl(
+              controllers.categorisation.routes.HasSupplementaryUnitController
+                .onPageLoadUpdate(NormalMode, testRecordId)
+                .url
+            )
 
           val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .build()
 
           running(application) {
-            val request = FakeRequest(GET, routes.CyaSupplementaryUnitController.onPageLoad(testRecordId).url)
+            val request = FakeRequest(
+              GET,
+              controllers.categorisation.routes.CyaSupplementaryUnitController.onPageLoad(testRecordId).url
+            )
 
             val result = route(application, request).value
 
@@ -146,7 +159,10 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
             .build()
 
           running(application) {
-            val request = FakeRequest(POST, routes.CyaSupplementaryUnitController.onSubmit(testRecordId).url)
+            val request = FakeRequest(
+              POST,
+              controllers.categorisation.routes.CyaSupplementaryUnitController.onSubmit(testRecordId).url
+            )
 
             val result = route(application, request).value
 
@@ -208,7 +224,10 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
 
           running(application) {
             val controller = application.injector.instanceOf[CyaSupplementaryUnitController]
-            val request    = FakeRequest(POST, routes.CyaSupplementaryUnitController.onSubmit(testRecordId).url)
+            val request    = FakeRequest(
+              POST,
+              controllers.categorisation.routes.CyaSupplementaryUnitController.onSubmit(testRecordId).url
+            )
               .withSession(
                 initialValueOfHasSuppUnit -> "false"
               )
@@ -260,7 +279,10 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
 
           running(application) {
             val controller = application.injector.instanceOf[CyaSupplementaryUnitController]
-            val request    = FakeRequest(POST, routes.CyaSupplementaryUnitController.onSubmit(testRecordId).url)
+            val request    = FakeRequest(
+              POST,
+              controllers.categorisation.routes.CyaSupplementaryUnitController.onSubmit(testRecordId).url
+            )
               .withSession(
                 initialValueOfHasSuppUnit -> "true",
                 initialValueOfSuppUnit    -> "300"
@@ -313,7 +335,10 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
 
           running(application) {
             val controller = application.injector.instanceOf[CyaSupplementaryUnitController]
-            val request    = FakeRequest(POST, routes.CyaSupplementaryUnitController.onSubmit(testRecordId).url)
+            val request    = FakeRequest(
+              POST,
+              controllers.categorisation.routes.CyaSupplementaryUnitController.onSubmit(testRecordId).url
+            )
               .withSession(
                 initialValueOfHasSuppUnit -> "true",
                 initialValueOfSuppUnit    -> "200"
@@ -360,7 +385,10 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
 
         running(application) {
           val controller = application.injector.instanceOf[CyaSupplementaryUnitController]
-          val request    = FakeRequest(POST, routes.CyaSupplementaryUnitController.onSubmit(testRecordId).url)
+          val request    = FakeRequest(
+            POST,
+            controllers.categorisation.routes.CyaSupplementaryUnitController.onSubmit(testRecordId).url
+          )
             .withSession(
               initialValueOfHasSuppUnit -> "true"
             )
@@ -402,7 +430,10 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
           .build()
 
         running(application) {
-          val request = FakeRequest(POST, routes.CyaSupplementaryUnitController.onSubmit(testRecordId).url)
+          val request = FakeRequest(
+            POST,
+            controllers.categorisation.routes.CyaSupplementaryUnitController.onSubmit(testRecordId).url
+          )
 
           intercept[RuntimeException] {
             await(route(application, request).value)
@@ -423,7 +454,8 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
         val application = applicationBuilder(userAnswers = None).build()
 
         running(application) {
-          val request = FakeRequest(POST, routes.CyaSupplementaryUnitController.onSubmit("recordId").url)
+          val request =
+            FakeRequest(POST, controllers.categorisation.routes.CyaSupplementaryUnitController.onSubmit("recordId").url)
 
           val result = route(application, request).value
 
@@ -440,7 +472,11 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
 
           val mockGoodsRecordConnector = mock[GoodsRecordConnector]
           val continueUrl              =
-            RedirectUrl(routes.HasSupplementaryUnitController.onPageLoadUpdate(NormalMode, testRecordId).url)
+            RedirectUrl(
+              controllers.categorisation.routes.HasSupplementaryUnitController
+                .onPageLoadUpdate(NormalMode, testRecordId)
+                .url
+            )
 
           val sessionRepository = mock[SessionRepository]
           when(sessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
@@ -454,7 +490,10 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
             .build()
 
           running(application) {
-            val request = FakeRequest(POST, routes.CyaSupplementaryUnitController.onSubmit(testRecordId).url)
+            val request = FakeRequest(
+              POST,
+              controllers.categorisation.routes.CyaSupplementaryUnitController.onSubmit(testRecordId).url
+            )
 
             val result = route(application, request).value
 

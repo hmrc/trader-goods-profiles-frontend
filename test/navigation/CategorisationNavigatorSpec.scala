@@ -39,7 +39,9 @@ class CategorisationNavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
     "return AssessmentController.onPageLoad for CategoryGuidancePage in normalRoutes" in {
 
-      navigator.normalRoutes(CategoryGuidancePage(recordId))(userAnswers) mustBe routes.AssessmentController
+      navigator.normalRoutes(CategoryGuidancePage(recordId))(
+        userAnswers
+      ) mustBe controllers.categorisation.routes.AssessmentController
         .onPageLoad(NormalMode, recordId, Constants.firstAssessmentNumber)
     }
 

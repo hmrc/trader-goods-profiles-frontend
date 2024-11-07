@@ -18,8 +18,8 @@ package controllers.categorisation
 
 import com.google.inject.Inject
 import connectors.GoodsRecordConnector
+import controllers.BaseController
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
-import controllers.{BaseController, routes}
 import models.helper.SupplementaryUnitUpdateJourney
 import models.{NormalMode, SupplementaryRequest}
 import navigation.Navigator

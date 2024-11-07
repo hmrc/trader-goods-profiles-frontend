@@ -45,10 +45,14 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
   private def onwardRoute     = Call("GET", "/foo")
   private val formProvider    = new AssessmentFormProvider()
   private def assessmentRoute =
-    routes.AssessmentController.onPageLoad(NormalMode, testRecordId, Constants.firstAssessmentNumber).url
+    controllers.categorisation.routes.AssessmentController
+      .onPageLoad(NormalMode, testRecordId, Constants.firstAssessmentNumber)
+      .url
 
   private def reassessmentRoute =
-    routes.AssessmentController.onPageLoadReassessment(NormalMode, testRecordId, Constants.firstAssessmentNumber).url
+    controllers.categorisation.routes.AssessmentController
+      .onPageLoadReassessment(NormalMode, testRecordId, Constants.firstAssessmentNumber)
+      .url
 
   "AssessmentController" - {
 
@@ -70,7 +74,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               val result = route(application, request).value
 
               val onSubmitAction               =
-                routes.AssessmentController.onSubmit(NormalMode, testRecordId, Constants.firstAssessmentNumber)
+                controllers.categorisation.routes.AssessmentController
+                  .onSubmit(NormalMode, testRecordId, Constants.firstAssessmentNumber)
               val view                         = application.injector.instanceOf[AssessmentView]
               val form                         = formProvider()
               val expectedCodesAndDescriptions =
@@ -115,7 +120,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               val result = route(application, request).value
 
               val onSubmitAction               =
-                routes.AssessmentController.onSubmit(NormalMode, testRecordId, Constants.firstAssessmentNumber)
+                controllers.categorisation.routes.AssessmentController
+                  .onSubmit(NormalMode, testRecordId, Constants.firstAssessmentNumber)
               val view                         = application.injector.instanceOf[AssessmentView]
               val form                         = formProvider().fill(AssessmentAnswer.NoExemption)
               val expectedCodesAndDescriptions =
@@ -161,7 +167,13 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual routes.JourneyRecoveryController
                 .onPageLoad(
-                  Some(RedirectUrl(routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
+                  Some(
+                    RedirectUrl(
+                      controllers.categorisation.routes.CategorisationPreparationController
+                        .startCategorisation(testRecordId)
+                        .url
+                    )
+                  )
                 )
                 .url
 
@@ -201,7 +213,13 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual routes.JourneyRecoveryController
                 .onPageLoad(
-                  Some(RedirectUrl(routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
+                  Some(
+                    RedirectUrl(
+                      controllers.categorisation.routes.CategorisationPreparationController
+                        .startCategorisation(testRecordId)
+                        .url
+                    )
+                  )
                 )
                 .url
 
@@ -262,7 +280,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
             val result = route(application, request).value
 
             val onSubmitAction               =
-              routes.AssessmentController.onSubmit(NormalMode, testRecordId, Constants.firstAssessmentNumber)
+              controllers.categorisation.routes.AssessmentController
+                .onSubmit(NormalMode, testRecordId, Constants.firstAssessmentNumber)
             val view                         = application.injector.instanceOf[AssessmentView]
             val form                         = formProvider().fill(AssessmentAnswer.NoExemption)
             val boundForm                    = form.bind(Map("value" -> ""))
@@ -308,7 +327,13 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual routes.JourneyRecoveryController
                 .onPageLoad(
-                  Some(RedirectUrl(routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
+                  Some(
+                    RedirectUrl(
+                      controllers.categorisation.routes.CategorisationPreparationController
+                        .startCategorisation(testRecordId)
+                        .url
+                    )
+                  )
                 )
                 .url
 
@@ -348,7 +373,13 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual routes.JourneyRecoveryController
                 .onPageLoad(
-                  Some(RedirectUrl(routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
+                  Some(
+                    RedirectUrl(
+                      controllers.categorisation.routes.CategorisationPreparationController
+                        .startCategorisation(testRecordId)
+                        .url
+                    )
+                  )
                 )
                 .url
 
@@ -385,7 +416,13 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual routes.JourneyRecoveryController
                 .onPageLoad(
-                  Some(RedirectUrl(routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
+                  Some(
+                    RedirectUrl(
+                      controllers.categorisation.routes.CategorisationPreparationController
+                        .startCategorisation(testRecordId)
+                        .url
+                    )
+                  )
                 )
                 .url
 
@@ -418,7 +455,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
               val result = route(application, request).value
 
-              val onSubmitAction               = routes.AssessmentController
+              val onSubmitAction               = controllers.categorisation.routes.AssessmentController
                 .onSubmitReassessment(NormalMode, testRecordId, Constants.firstAssessmentNumber)
               val view                         = application.injector.instanceOf[AssessmentView]
               val form                         = formProvider()
@@ -458,7 +495,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
             val application    = applicationBuilder(userAnswers = Some(answers)).build()
             val onSubmitAction =
-              routes.AssessmentController
+              controllers.categorisation.routes.AssessmentController
                 .onSubmitReassessment(NormalMode, testRecordId, Constants.firstAssessmentNumber)
 
             running(application) {
@@ -511,7 +548,13 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual routes.JourneyRecoveryController
                 .onPageLoad(
-                  Some(RedirectUrl(routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
+                  Some(
+                    RedirectUrl(
+                      controllers.categorisation.routes.CategorisationPreparationController
+                        .startCategorisation(testRecordId)
+                        .url
+                    )
+                  )
                 )
                 .url
 
@@ -551,7 +594,13 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual routes.JourneyRecoveryController
                 .onPageLoad(
-                  Some(RedirectUrl(routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
+                  Some(
+                    RedirectUrl(
+                      controllers.categorisation.routes.CategorisationPreparationController
+                        .startCategorisation(testRecordId)
+                        .url
+                    )
+                  )
                 )
                 .url
 
@@ -619,7 +668,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
             val result = route(application, request).value
 
             val onSubmitAction               =
-              routes.AssessmentController
+              controllers.categorisation.routes.AssessmentController
                 .onSubmitReassessment(NormalMode, testRecordId, Constants.firstAssessmentNumber)
             val view                         = application.injector.instanceOf[AssessmentView]
             val form                         = formProvider().fill(AssessmentAnswer.NoExemption)
@@ -666,7 +715,13 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual routes.JourneyRecoveryController
                 .onPageLoad(
-                  Some(RedirectUrl(routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
+                  Some(
+                    RedirectUrl(
+                      controllers.categorisation.routes.CategorisationPreparationController
+                        .startCategorisation(testRecordId)
+                        .url
+                    )
+                  )
                 )
                 .url
 
@@ -706,7 +761,13 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual routes.JourneyRecoveryController
                 .onPageLoad(
-                  Some(RedirectUrl(routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
+                  Some(
+                    RedirectUrl(
+                      controllers.categorisation.routes.CategorisationPreparationController
+                        .startCategorisation(testRecordId)
+                        .url
+                    )
+                  )
                 )
                 .url
 
@@ -743,7 +804,13 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual routes.JourneyRecoveryController
                 .onPageLoad(
-                  Some(RedirectUrl(routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
+                  Some(
+                    RedirectUrl(
+                      controllers.categorisation.routes.CategorisationPreparationController
+                        .startCategorisation(testRecordId)
+                        .url
+                    )
+                  )
                 )
                 .url
 

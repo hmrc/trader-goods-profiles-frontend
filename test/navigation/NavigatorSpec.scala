@@ -580,7 +580,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 CategorisationPreparationPage(testRecordId),
                 NormalMode,
                 userAnswers
-              ) mustBe routes.CategorisationResultController
+              ) mustBe controllers.categorisation.routes.CategorisationResultController
                 .onPageLoad(testRecordId, StandardGoodsNoAssessmentsScenario)
 
             }
@@ -609,7 +609,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 CategorisationPreparationPage(testRecordId),
                 NormalMode,
                 userAnswers
-              ) mustBe routes.CategorisationResultController
+              ) mustBe controllers.categorisation.routes.CategorisationResultController
                 .onPageLoad(testRecordId, Category1NoExemptionsScenario)
 
             }
@@ -638,7 +638,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 CategorisationPreparationPage(testRecordId),
                 NormalMode,
                 userAnswers
-              ) mustBe routes.CategorisationResultController
+              ) mustBe controllers.categorisation.routes.CategorisationResultController
                 .onPageLoad(testRecordId, Category1Scenario)
 
             }
@@ -668,7 +668,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 CategorisationPreparationPage(testRecordId),
                 NormalMode,
                 userAnswers
-              ) mustBe routes.CategorisationResultController
+              ) mustBe controllers.categorisation.routes.CategorisationResultController
                 .onPageLoad(testRecordId, Category2Scenario)
 
             }
@@ -697,7 +697,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 CategorisationPreparationPage(testRecordId),
                 NormalMode,
                 userAnswers
-              ) mustBe routes.CategorisationResultController
+              ) mustBe controllers.categorisation.routes.CategorisationResultController
                 .onPageLoad(testRecordId, Category1Scenario)
 
             }
@@ -727,7 +727,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 CategorisationPreparationPage(testRecordId),
                 NormalMode,
                 userAnswers
-              ) mustBe routes.CategorisationResultController
+              ) mustBe controllers.categorisation.routes.CategorisationResultController
                 .onPageLoad(testRecordId, StandardGoodsScenario)
 
             }
@@ -755,7 +755,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 CategorisationPreparationPage(testRecordId),
                 NormalMode,
                 userAnswers
-              ) mustBe routes.CategorisationResultController
+              ) mustBe controllers.categorisation.routes.CategorisationResultController
                 .onPageLoad(testRecordId, Category2Scenario)
 
             }
@@ -783,7 +783,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 CategorisationPreparationPage(testRecordId),
                 NormalMode,
                 userAnswers
-              ) mustBe routes.CategorisationResultController
+              ) mustBe controllers.categorisation.routes.CategorisationResultController
                 .onPageLoad(testRecordId, Category2Scenario)
 
             }
@@ -816,7 +816,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 CategorisationPreparationPage(testRecordId),
                 NormalMode,
                 userAnswers
-              ) mustBe routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId)
+              ) mustBe controllers.categorisation.routes.LongerCommodityCodeController
+                .onPageLoad(NormalMode, testRecordId)
 
             }
 
@@ -844,7 +845,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 CategorisationPreparationPage(testRecordId),
                 NormalMode,
                 userAnswers
-              ) mustBe routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId)
+              ) mustBe controllers.categorisation.routes.LongerCommodityCodeController
+                .onPageLoad(NormalMode, testRecordId)
 
             }
 
@@ -871,7 +873,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 CategorisationPreparationPage(testRecordId),
                 NormalMode,
                 userAnswers
-              ) mustBe routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId)
+              ) mustBe controllers.categorisation.routes.LongerCommodityCodeController
+                .onPageLoad(NormalMode, testRecordId)
 
             }
 
@@ -903,7 +906,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 CategorisationPreparationPage(testRecordId),
                 NormalMode,
                 userAnswers
-              ) mustBe routes.HasSupplementaryUnitController.onPageLoad(NormalMode, testRecordId)
+              ) mustBe controllers.categorisation.routes.HasSupplementaryUnitController
+                .onPageLoad(NormalMode, testRecordId)
 
             }
 
@@ -931,7 +935,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 CategorisationPreparationPage(testRecordId),
                 NormalMode,
                 userAnswers
-              ) mustBe routes.HasSupplementaryUnitController.onPageLoad(NormalMode, testRecordId)
+              ) mustBe controllers.categorisation.routes.HasSupplementaryUnitController
+                .onPageLoad(NormalMode, testRecordId)
 
             }
 
@@ -958,7 +963,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 CategorisationPreparationPage(testRecordId),
                 NormalMode,
                 userAnswers
-              ) mustBe routes.HasSupplementaryUnitController.onPageLoad(NormalMode, testRecordId)
+              ) mustBe controllers.categorisation.routes.HasSupplementaryUnitController
+                .onPageLoad(NormalMode, testRecordId)
 
             }
 
@@ -986,7 +992,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 CategorisationPreparationPage(testRecordId),
                 NormalMode,
                 userAnswers
-              ) mustBe routes.HasSupplementaryUnitController.onPageLoad(NormalMode, testRecordId)
+              ) mustBe controllers.categorisation.routes.HasSupplementaryUnitController
+                .onPageLoad(NormalMode, testRecordId)
 
             }
 
@@ -1014,7 +1021,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 CategorisationPreparationPage(testRecordId),
                 NormalMode,
                 userAnswers
-              ) mustBe routes.HasSupplementaryUnitController.onPageLoad(NormalMode, testRecordId)
+              ) mustBe controllers.categorisation.routes.HasSupplementaryUnitController
+                .onPageLoad(NormalMode, testRecordId)
 
             }
 
@@ -1041,7 +1049,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 CategorisationPreparationPage(testRecordId),
                 NormalMode,
                 userAnswers
-              ) mustBe routes.HasSupplementaryUnitController.onPageLoad(NormalMode, testRecordId)
+              ) mustBe controllers.categorisation.routes.HasSupplementaryUnitController
+                .onPageLoad(NormalMode, testRecordId)
 
             }
 
@@ -1069,7 +1078,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 .value
 
             navigator.nextPage(AssessmentPage(testRecordId, 0), NormalMode, userAnswers) mustEqual
-              routes.AssessmentController.onPageLoad(NormalMode, testRecordId, 2)
+              controllers.categorisation.routes.AssessmentController.onPageLoad(NormalMode, testRecordId, 2)
 
           }
 
@@ -1093,7 +1102,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                     .value
 
                 navigator.nextPage(AssessmentPage(testRecordId, 2), NormalMode, userAnswers) mustEqual
-                  routes.CyaCategorisationController.onPageLoad(testRecordId)
+                  controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
 
               }
 
@@ -1118,7 +1127,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                       .value
 
                   navigator.nextPage(AssessmentPage(testRecordId, 1), NormalMode, userAnswers) mustEqual
-                    routes.CyaCategorisationController.onPageLoad(testRecordId)
+                    controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
 
                 }
 
@@ -1140,7 +1149,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                       .value
 
                   navigator.nextPage(AssessmentPage(testRecordId, 1), NormalMode, userAnswers) mustEqual
-                    routes.CyaCategorisationController.onPageLoad(testRecordId)
+                    controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
                 }
 
                 "and unanswerable category 2 questions and the commodity code length is 8 digits" in {
@@ -1162,7 +1171,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                       .value
 
                   navigator.nextPage(AssessmentPage(testRecordId, 1), NormalMode, userAnswers) mustEqual
-                    routes.CyaCategorisationController.onPageLoad(testRecordId)
+                    controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
                 }
 
                 "and unanswerable category 2 questions and the commodity code length is 6 digits with no descendants" in {
@@ -1185,7 +1194,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                       .value
 
                   navigator.nextPage(AssessmentPage(testRecordId, 1), NormalMode, userAnswers) mustEqual
-                    routes.CyaCategorisationController.onPageLoad(testRecordId)
+                    controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
                 }
 
               }
@@ -1203,7 +1212,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .value
 
               navigator.nextPage(AssessmentPage(testRecordId, 0), NormalMode, userAnswers) mustEqual
-                routes.CyaCategorisationController.onPageLoad(testRecordId)
+                controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
 
             }
 
@@ -1224,7 +1233,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .value
 
               navigator.nextPage(AssessmentPage(testRecordId, 2), NormalMode, userAnswers) mustEqual
-                routes.CyaCategorisationController.onPageLoad(testRecordId)
+                controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
 
             }
 
@@ -1247,7 +1256,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .value
 
               navigator.nextPage(AssessmentPage(testRecordId, 2), NormalMode, userAnswers) mustEqual
-                routes.CyaCategorisationController.onPageLoad(testRecordId)
+                controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
 
             }
 
@@ -1275,7 +1284,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .value
 
               navigator.nextPage(AssessmentPage(testRecordId, 2), NormalMode, userAnswers) mustEqual
-                routes.CyaCategorisationController.onPageLoad(testRecordId)
+                controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
 
             }
 
@@ -1302,7 +1311,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .value
 
               navigator.nextPage(AssessmentPage(testRecordId, 0), NormalMode, userAnswers) mustEqual
-                routes.CyaCategorisationController.onPageLoad(testRecordId)
+                controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
             }
           }
 
@@ -1324,7 +1333,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .value
 
               navigator.nextPage(AssessmentPage(testRecordId, 2), NormalMode, userAnswers) mustEqual
-                routes.HasSupplementaryUnitController.onPageLoad(NormalMode, testRecordId)
+                controllers.categorisation.routes.HasSupplementaryUnitController.onPageLoad(NormalMode, testRecordId)
 
             }
 
@@ -1347,7 +1356,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .value
 
               navigator.nextPage(AssessmentPage(testRecordId, 2), NormalMode, userAnswers) mustEqual
-                routes.HasSupplementaryUnitController.onPageLoad(NormalMode, testRecordId)
+                controllers.categorisation.routes.HasSupplementaryUnitController.onPageLoad(NormalMode, testRecordId)
 
             }
 
@@ -1370,7 +1379,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .value
 
               navigator.nextPage(AssessmentPage(testRecordId, 2), NormalMode, userAnswers) mustEqual
-                routes.HasSupplementaryUnitController.onPageLoad(NormalMode, testRecordId)
+                controllers.categorisation.routes.HasSupplementaryUnitController.onPageLoad(NormalMode, testRecordId)
 
             }
 
@@ -1399,7 +1408,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                     .value
 
                 navigator.nextPage(AssessmentPage(testRecordId, 2), NormalMode, userAnswers) mustEqual
-                  routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId)
+                  controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId)
 
               }
 
@@ -1422,7 +1431,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                     .value
 
                 navigator.nextPage(AssessmentPage(testRecordId, 2), NormalMode, userAnswers) mustEqual
-                  routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId)
+                  controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId)
 
               }
 
@@ -1445,7 +1454,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                     .value
 
                 navigator.nextPage(AssessmentPage(testRecordId, 2), NormalMode, userAnswers) mustEqual
-                  routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId)
+                  controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId)
 
               }
 
@@ -1473,7 +1482,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                       .value
 
                   navigator.nextPage(AssessmentPage(testRecordId, 1), NormalMode, userAnswers) mustEqual
-                    routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId)
+                    controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId)
 
                 }
 
@@ -1492,7 +1501,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                       .value
 
                   navigator.nextPage(AssessmentPage(testRecordId, 1), NormalMode, userAnswers) mustEqual
-                    routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId)
+                    controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId)
 
                 }
 
@@ -1511,7 +1520,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                       .value
 
                   navigator.nextPage(AssessmentPage(testRecordId, 1), NormalMode, userAnswers) mustEqual
-                    routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId)
+                    controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId)
 
                 }
               }
@@ -1574,7 +1583,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               .value
 
             navigator.nextPage(HasSupplementaryUnitPage(testRecordId), NormalMode, userAnswers) mustBe
-              routes.SupplementaryUnitController.onPageLoad(NormalMode, testRecordId)
+              controllers.categorisation.routes.SupplementaryUnitController.onPageLoad(NormalMode, testRecordId)
 
           }
 
@@ -1586,7 +1595,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               .value
 
             navigator.nextPage(HasSupplementaryUnitPage(testRecordId), NormalMode, userAnswers) mustBe
-              routes.CyaCategorisationController.onPageLoad(testRecordId)
+              controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
 
           }
 
@@ -1605,7 +1614,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
         "must go from the supplementary unit page to the check your answers" in {
 
           navigator.nextPage(SupplementaryUnitPage(testRecordId), NormalMode, emptyUserAnswers) mustBe
-            routes.CyaCategorisationController.onPageLoad(testRecordId)
+            controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
 
         }
 
@@ -1621,7 +1630,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             when(mockCategorisationService.calculateResult(any(), any(), any())).thenReturn(Category1Scenario)
 
             navigator.nextPage(CyaCategorisationPage(testRecordId), NormalMode, userAnswers) mustBe
-              routes.CategorisationResultController.onPageLoad(testRecordId, Category1Scenario)
+              controllers.categorisation.routes.CategorisationResultController
+                .onPageLoad(testRecordId, Category1Scenario)
           }
 
           "to category 2 result when categorisation result is so" in {
@@ -1634,7 +1644,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             when(mockCategorisationService.calculateResult(any(), any(), any())).thenReturn(Category2Scenario)
 
             navigator.nextPage(CyaCategorisationPage(testRecordId), NormalMode, userAnswers) mustBe
-              routes.CategorisationResultController.onPageLoad(testRecordId, Category2Scenario)
+              controllers.categorisation.routes.CategorisationResultController
+                .onPageLoad(testRecordId, Category2Scenario)
           }
 
           "to standard goods result when categorisation result is so" in {
@@ -1647,7 +1658,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             when(mockCategorisationService.calculateResult(any(), any(), any())).thenReturn(StandardGoodsScenario)
 
             navigator.nextPage(CyaCategorisationPage(testRecordId), NormalMode, userAnswers) mustBe
-              routes.CategorisationResultController.onPageLoad(testRecordId, StandardGoodsScenario)
+              controllers.categorisation.routes.CategorisationResultController
+                .onPageLoad(testRecordId, StandardGoodsScenario)
           }
 
           "use recategorisation answers if longer commodity code entered" in {
@@ -1668,13 +1680,20 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               .thenReturn(Category2Scenario)
 
             navigator.nextPage(CyaCategorisationPage(testRecordId), NormalMode, userAnswers) mustBe
-              routes.CategorisationResultController.onPageLoad(testRecordId, Category2Scenario)
+              controllers.categorisation.routes.CategorisationResultController
+                .onPageLoad(testRecordId, Category2Scenario)
           }
 
           "to journey recovery when no categorisation info is found" in {
             navigator.nextPage(CyaCategorisationPage(testRecordId), NormalMode, emptyUserAnswers) mustBe
               routes.JourneyRecoveryController.onPageLoad(
-                Some(RedirectUrl(routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
+                Some(
+                  RedirectUrl(
+                    controllers.categorisation.routes.CategorisationPreparationController
+                      .startCategorisation(testRecordId)
+                      .url
+                  )
+                )
               )
           }
         }
@@ -1706,7 +1725,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               NormalMode,
               userAnswers
             ) mustEqual
-              routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId)
+              controllers.categorisation.routes.CategorisationPreparationController
+                .startLongerCategorisation(NormalMode, testRecordId)
 
           }
 
@@ -1731,7 +1751,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               NormalMode,
               userAnswers
             ) mustEqual
-              routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId)
+              controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId)
 
           }
 
@@ -1756,7 +1776,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               NormalMode,
               userAnswers
             ) mustEqual
-              routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId)
+              controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId)
 
           }
 
@@ -1811,7 +1831,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 .value
 
               navigator.nextPage(RecategorisationPreparationPage(testRecordId), NormalMode, userAnswers) mustEqual
-                routes.AssessmentController.onPageLoadReassessment(NormalMode, testRecordId, firstAssessmentNumber)
+                controllers.categorisation.routes.AssessmentController
+                  .onPageLoadReassessment(NormalMode, testRecordId, firstAssessmentNumber)
 
             }
 
@@ -1825,7 +1846,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 .value
 
               navigator.nextPage(RecategorisationPreparationPage(testRecordId), NormalMode, userAnswers) mustEqual
-                routes.AssessmentController.onPageLoadReassessment(NormalMode, testRecordId, firstAssessmentNumber)
+                controllers.categorisation.routes.AssessmentController
+                  .onPageLoadReassessment(NormalMode, testRecordId, firstAssessmentNumber)
 
             }
 
@@ -1842,7 +1864,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 .value
 
               navigator.nextPage(RecategorisationPreparationPage(testRecordId), NormalMode, userAnswers) mustEqual
-                routes.AssessmentController.onPageLoadReassessment(NormalMode, testRecordId, firstAssessmentNumber)
+                controllers.categorisation.routes.AssessmentController
+                  .onPageLoadReassessment(NormalMode, testRecordId, firstAssessmentNumber)
 
             }
           }
@@ -1874,7 +1897,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 .value
 
               navigator.nextPage(RecategorisationPreparationPage(testRecordId), NormalMode, userAnswers) mustEqual
-                routes.AssessmentController.onPageLoadReassessment(NormalMode, testRecordId, 3)
+                controllers.categorisation.routes.AssessmentController
+                  .onPageLoadReassessment(NormalMode, testRecordId, 3)
 
             }
 
@@ -1906,7 +1930,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 .value
 
               navigator.nextPage(RecategorisationPreparationPage(testRecordId), NormalMode, userAnswers) mustEqual
-                routes.AssessmentController.onPageLoadReassessment(NormalMode, testRecordId, 3)
+                controllers.categorisation.routes.AssessmentController
+                  .onPageLoadReassessment(NormalMode, testRecordId, 3)
 
             }
 
@@ -1936,7 +1961,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 .value
 
               navigator.nextPage(RecategorisationPreparationPage(testRecordId), NormalMode, userAnswers) mustBe
-                routes.CyaCategorisationController.onPageLoad(testRecordId)
+                controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
 
             }
 
@@ -1974,7 +1999,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 .value
 
               navigator.nextPage(RecategorisationPreparationPage(testRecordId), NormalMode, userAnswers) mustBe
-                routes.CyaCategorisationController.onPageLoad(testRecordId)
+                controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
 
             }
 
@@ -2006,7 +2031,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 RecategorisationPreparationPage(testRecordId),
                 NormalMode,
                 userAnswers
-              ) mustBe routes.CategorisationResultController
+              ) mustBe controllers.categorisation.routes.CategorisationResultController
                 .onPageLoad(testRecordId, StandardGoodsNoAssessmentsScenario)
 
             }
@@ -2035,7 +2060,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 RecategorisationPreparationPage(testRecordId),
                 NormalMode,
                 userAnswers
-              ) mustBe routes.CategorisationResultController
+              ) mustBe controllers.categorisation.routes.CategorisationResultController
                 .onPageLoad(testRecordId, Category1NoExemptionsScenario)
 
             }
@@ -2068,7 +2093,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 RecategorisationPreparationPage(testRecordId),
                 NormalMode,
                 userAnswers
-              ) mustBe routes.HasSupplementaryUnitController.onPageLoad(NormalMode, testRecordId)
+              ) mustBe controllers.categorisation.routes.HasSupplementaryUnitController
+                .onPageLoad(NormalMode, testRecordId)
 
             }
 
@@ -2096,7 +2122,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 RecategorisationPreparationPage(testRecordId),
                 NormalMode,
                 userAnswers
-              ) mustBe routes.HasSupplementaryUnitController.onPageLoad(NormalMode, testRecordId)
+              ) mustBe controllers.categorisation.routes.HasSupplementaryUnitController
+                .onPageLoad(NormalMode, testRecordId)
 
             }
 
@@ -2123,7 +2150,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 RecategorisationPreparationPage(testRecordId),
                 NormalMode,
                 userAnswers
-              ) mustBe routes.HasSupplementaryUnitController.onPageLoad(NormalMode, testRecordId)
+              ) mustBe controllers.categorisation.routes.HasSupplementaryUnitController
+                .onPageLoad(NormalMode, testRecordId)
 
             }
 
@@ -2151,7 +2179,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 RecategorisationPreparationPage(testRecordId),
                 NormalMode,
                 userAnswers
-              ) mustBe routes.HasSupplementaryUnitController.onPageLoad(NormalMode, testRecordId)
+              ) mustBe controllers.categorisation.routes.HasSupplementaryUnitController
+                .onPageLoad(NormalMode, testRecordId)
 
             }
 
@@ -2179,7 +2208,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 RecategorisationPreparationPage(testRecordId),
                 NormalMode,
                 userAnswers
-              ) mustBe routes.HasSupplementaryUnitController.onPageLoad(NormalMode, testRecordId)
+              ) mustBe controllers.categorisation.routes.HasSupplementaryUnitController
+                .onPageLoad(NormalMode, testRecordId)
 
             }
 
@@ -2206,7 +2236,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 RecategorisationPreparationPage(testRecordId),
                 NormalMode,
                 userAnswers
-              ) mustBe routes.HasSupplementaryUnitController.onPageLoad(NormalMode, testRecordId)
+              ) mustBe controllers.categorisation.routes.HasSupplementaryUnitController
+                .onPageLoad(NormalMode, testRecordId)
 
             }
 
@@ -2239,7 +2270,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .value
 
               navigator.nextPage(ReassessmentPage(testRecordId, 0), NormalMode, userAnswers) mustEqual
-                routes.AssessmentController.onPageLoadReassessment(NormalMode, testRecordId, 2)
+                controllers.categorisation.routes.AssessmentController
+                  .onPageLoadReassessment(NormalMode, testRecordId, 2)
 
             }
 
@@ -2260,7 +2292,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .value
 
               navigator.nextPage(ReassessmentPage(testRecordId, 0), NormalMode, userAnswers) mustEqual
-                routes.AssessmentController.onPageLoadReassessment(NormalMode, testRecordId, 2)
+                controllers.categorisation.routes.AssessmentController
+                  .onPageLoadReassessment(NormalMode, testRecordId, 2)
 
             }
 
@@ -2284,7 +2317,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .value
 
               navigator.nextPage(ReassessmentPage(testRecordId, 0), NormalMode, userAnswers) mustEqual
-                routes.AssessmentController.onPageLoadReassessment(NormalMode, testRecordId, 2)
+                controllers.categorisation.routes.AssessmentController
+                  .onPageLoadReassessment(NormalMode, testRecordId, 2)
 
             }
 
@@ -2318,7 +2352,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .value
 
               navigator.nextPage(ReassessmentPage(testRecordId, 0), NormalMode, userAnswers) mustEqual
-                routes.AssessmentController.onPageLoadReassessment(NormalMode, testRecordId, 3)
+                controllers.categorisation.routes.AssessmentController
+                  .onPageLoadReassessment(NormalMode, testRecordId, 3)
 
             }
 
@@ -2354,7 +2389,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .value
 
               navigator.nextPage(ReassessmentPage(testRecordId, 0), NormalMode, userAnswers) mustEqual
-                routes.AssessmentController.onPageLoadReassessment(NormalMode, testRecordId, 3)
+                controllers.categorisation.routes.AssessmentController
+                  .onPageLoadReassessment(NormalMode, testRecordId, 3)
 
             }
 
@@ -2389,7 +2425,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                     .value
 
                 navigator.nextPage(ReassessmentPage(testRecordId, 2), NormalMode, userAnswers) mustEqual
-                  routes.CyaCategorisationController.onPageLoad(testRecordId)
+                  controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
 
               }
 
@@ -2416,7 +2452,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                     .value
 
                 navigator.nextPage(ReassessmentPage(testRecordId, 0), NormalMode, userAnswers) mustEqual
-                  routes.CyaCategorisationController.onPageLoad(testRecordId)
+                  controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
 
               }
 
@@ -2455,7 +2491,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                     .value
 
                 navigator.nextPage(ReassessmentPage(testRecordId, 0), NormalMode, userAnswers) mustEqual
-                  routes.CyaCategorisationController.onPageLoad(testRecordId)
+                  controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
 
               }
             }
@@ -2471,7 +2507,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .value
 
               navigator.nextPage(ReassessmentPage(testRecordId, 0), NormalMode, userAnswers) mustEqual
-                routes.CyaCategorisationController.onPageLoad(testRecordId)
+                controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
 
             }
 
@@ -2498,7 +2534,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .value
 
               navigator.nextPage(ReassessmentPage(testRecordId, 2), NormalMode, userAnswers) mustEqual
-                routes.CyaCategorisationController.onPageLoad(testRecordId)
+                controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
 
             }
 
@@ -2527,7 +2563,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 .value
 
             navigator.nextPage(ReassessmentPage(testRecordId, 2), NormalMode, userAnswers) mustEqual
-              routes.HasSupplementaryUnitController.onPageLoad(NormalMode, testRecordId)
+              controllers.categorisation.routes.HasSupplementaryUnitController.onPageLoad(NormalMode, testRecordId)
 
           }
 
@@ -2629,7 +2665,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasSupplementaryUnitUpdatePage(testRecordId),
               NormalMode,
               answers
-            ) mustBe routes.SupplementaryUnitController
+            ) mustBe controllers.categorisation.routes.SupplementaryUnitController
               .onPageLoadUpdate(
                 NormalMode,
                 testRecordId
@@ -2644,7 +2680,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasSupplementaryUnitUpdatePage(testRecordId),
               NormalMode,
               answers
-            ) mustBe routes.CyaSupplementaryUnitController
+            ) mustBe controllers.categorisation.routes.CyaSupplementaryUnitController
               .onPageLoad(
                 testRecordId
               )
@@ -2667,7 +2703,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             SupplementaryUnitUpdatePage(testRecordId),
             NormalMode,
             emptyUserAnswers
-          ) mustBe routes.CyaSupplementaryUnitController.onPageLoad(
+          ) mustBe controllers.categorisation.routes.CyaSupplementaryUnitController.onPageLoad(
             testRecordId
           )
         }
@@ -2727,7 +2763,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasSupplementaryUnitUpdatePage(testRecordId),
               CheckMode,
               answers
-            ) mustBe routes.SupplementaryUnitController
+            ) mustBe controllers.categorisation.routes.SupplementaryUnitController
               .onPageLoadUpdate(
                 CheckMode,
                 testRecordId
@@ -2748,7 +2784,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasSupplementaryUnitUpdatePage(testRecordId),
               CheckMode,
               answers
-            ) mustBe routes.CyaSupplementaryUnitController
+            ) mustBe controllers.categorisation.routes.CyaSupplementaryUnitController
               .onPageLoad(testRecordId)
           }
 
@@ -2763,7 +2799,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasSupplementaryUnitUpdatePage(testRecordId),
               CheckMode,
               answers
-            ) mustBe routes.CyaSupplementaryUnitController
+            ) mustBe controllers.categorisation.routes.CyaSupplementaryUnitController
               .onPageLoad(testRecordId)
           }
 
@@ -2784,7 +2820,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             SupplementaryUnitUpdatePage(testRecordId),
             CheckMode,
             emptyUserAnswers
-          ) mustBe routes.CyaSupplementaryUnitController
+          ) mustBe controllers.categorisation.routes.CyaSupplementaryUnitController
             .onPageLoad(testRecordId)
         }
       }
@@ -3011,7 +3047,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 .value
 
             navigator.nextPage(AssessmentPage(testRecordId, 0), CheckMode, userAnswers) mustEqual
-              routes.AssessmentController.onPageLoad(CheckMode, testRecordId, 2)
+              controllers.categorisation.routes.AssessmentController.onPageLoad(CheckMode, testRecordId, 2)
 
           }
 
@@ -3035,7 +3071,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                     .value
 
                 navigator.nextPage(AssessmentPage(testRecordId, 2), CheckMode, userAnswers) mustEqual
-                  routes.CyaCategorisationController.onPageLoad(testRecordId)
+                  controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
 
               }
 
@@ -3060,7 +3096,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                       .value
 
                   navigator.nextPage(AssessmentPage(testRecordId, 1), CheckMode, userAnswers) mustEqual
-                    routes.CyaCategorisationController.onPageLoad(testRecordId)
+                    controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
 
                 }
 
@@ -3082,7 +3118,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                       .value
 
                   navigator.nextPage(AssessmentPage(testRecordId, 1), CheckMode, userAnswers) mustEqual
-                    routes.CyaCategorisationController.onPageLoad(testRecordId)
+                    controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
                 }
 
                 "and unanswerable category 2 questions and the commodity code length is 8 digits" in {
@@ -3104,7 +3140,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                       .value
 
                   navigator.nextPage(AssessmentPage(testRecordId, 1), CheckMode, userAnswers) mustEqual
-                    routes.CyaCategorisationController.onPageLoad(testRecordId)
+                    controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
                 }
 
                 "and unanswerable category 2 questions and the commodity code length is 6 digits with no descendants" in {
@@ -3127,7 +3163,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                       .value
 
                   navigator.nextPage(AssessmentPage(testRecordId, 1), CheckMode, userAnswers) mustEqual
-                    routes.CyaCategorisationController.onPageLoad(testRecordId)
+                    controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
                 }
 
               }
@@ -3145,7 +3181,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .value
 
               navigator.nextPage(AssessmentPage(testRecordId, 0), CheckMode, userAnswers) mustEqual
-                routes.CyaCategorisationController.onPageLoad(testRecordId)
+                controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
 
             }
 
@@ -3166,7 +3202,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .value
 
               navigator.nextPage(AssessmentPage(testRecordId, 2), CheckMode, userAnswers) mustEqual
-                routes.CyaCategorisationController.onPageLoad(testRecordId)
+                controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
 
             }
 
@@ -3189,7 +3225,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .value
 
               navigator.nextPage(AssessmentPage(testRecordId, 2), CheckMode, userAnswers) mustEqual
-                routes.CyaCategorisationController.onPageLoad(testRecordId)
+                controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
 
             }
 
@@ -3217,7 +3253,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .value
 
               navigator.nextPage(AssessmentPage(testRecordId, 2), CheckMode, userAnswers) mustEqual
-                routes.CyaCategorisationController.onPageLoad(testRecordId)
+                controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
 
             }
 
@@ -3241,7 +3277,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .value
 
               navigator.nextPage(AssessmentPage(testRecordId, 2), CheckMode, userAnswers) mustEqual
-                routes.CyaCategorisationController.onPageLoad(testRecordId)
+                controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
 
             }
 
@@ -3267,7 +3303,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                     .value
 
                 navigator.nextPage(AssessmentPage(testRecordId, 2), CheckMode, userAnswers) mustEqual
-                  routes.HasSupplementaryUnitController.onPageLoad(CheckMode, testRecordId)
+                  controllers.categorisation.routes.HasSupplementaryUnitController.onPageLoad(CheckMode, testRecordId)
 
               }
 
@@ -3290,7 +3326,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                     .value
 
                 navigator.nextPage(AssessmentPage(testRecordId, 2), CheckMode, userAnswers) mustEqual
-                  routes.HasSupplementaryUnitController.onPageLoad(CheckMode, testRecordId)
+                  controllers.categorisation.routes.HasSupplementaryUnitController.onPageLoad(CheckMode, testRecordId)
 
               }
 
@@ -3313,7 +3349,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                     .value
 
                 navigator.nextPage(AssessmentPage(testRecordId, 2), CheckMode, userAnswers) mustEqual
-                  routes.HasSupplementaryUnitController.onPageLoad(CheckMode, testRecordId)
+                  controllers.categorisation.routes.HasSupplementaryUnitController.onPageLoad(CheckMode, testRecordId)
 
               }
 
@@ -3343,7 +3379,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                     .value
 
                 navigator.nextPage(AssessmentPage(testRecordId, 2), CheckMode, userAnswers) mustEqual
-                  routes.LongerCommodityCodeController.onPageLoad(CheckMode, testRecordId)
+                  controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(CheckMode, testRecordId)
 
               }
 
@@ -3366,7 +3402,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                     .value
 
                 navigator.nextPage(AssessmentPage(testRecordId, 2), CheckMode, userAnswers) mustEqual
-                  routes.LongerCommodityCodeController.onPageLoad(CheckMode, testRecordId)
+                  controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(CheckMode, testRecordId)
 
               }
 
@@ -3389,7 +3425,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                     .value
 
                 navigator.nextPage(AssessmentPage(testRecordId, 2), CheckMode, userAnswers) mustEqual
-                  routes.LongerCommodityCodeController.onPageLoad(CheckMode, testRecordId)
+                  controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(CheckMode, testRecordId)
 
               }
 
@@ -3417,7 +3453,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                       .value
 
                   navigator.nextPage(AssessmentPage(testRecordId, 1), CheckMode, userAnswers) mustEqual
-                    routes.LongerCommodityCodeController.onPageLoad(CheckMode, testRecordId)
+                    controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(CheckMode, testRecordId)
 
                 }
 
@@ -3436,7 +3472,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                       .value
 
                   navigator.nextPage(AssessmentPage(testRecordId, 1), CheckMode, userAnswers) mustEqual
-                    routes.LongerCommodityCodeController.onPageLoad(CheckMode, testRecordId)
+                    controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(CheckMode, testRecordId)
 
                 }
 
@@ -3455,7 +3491,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                       .value
 
                   navigator.nextPage(AssessmentPage(testRecordId, 1), CheckMode, userAnswers) mustEqual
-                    routes.LongerCommodityCodeController.onPageLoad(CheckMode, testRecordId)
+                    controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(CheckMode, testRecordId)
 
                 }
               }
@@ -3535,7 +3571,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               CheckMode,
               userAnswers
             ) mustEqual
-              routes.CategorisationPreparationController.startLongerCategorisation(CheckMode, testRecordId)
+              controllers.categorisation.routes.CategorisationPreparationController
+                .startLongerCategorisation(CheckMode, testRecordId)
 
           }
 
@@ -3560,7 +3597,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               CheckMode,
               userAnswers
             ) mustEqual
-              routes.LongerCommodityCodeController.onPageLoad(CheckMode, testRecordId)
+              controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(CheckMode, testRecordId)
 
           }
 
@@ -3585,7 +3622,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               CheckMode,
               userAnswers
             ) mustEqual
-              routes.LongerCommodityCodeController.onPageLoad(CheckMode, testRecordId)
+              controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(CheckMode, testRecordId)
 
           }
 
@@ -3595,7 +3632,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 HasCorrectGoodsLongerCommodityCodePage(testRecordId),
                 CheckMode,
                 emptyUserAnswers
-              ) mustBe routes.JourneyRecoveryController.onPageLoad()
+              ) mustBe controllers.routes.JourneyRecoveryController.onPageLoad()
             }
 
             "when longer commodity query is not set" in {
@@ -3641,7 +3678,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 .value
 
               navigator.nextPage(RecategorisationPreparationPage(testRecordId), CheckMode, userAnswers) mustEqual
-                routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, firstAssessmentNumber)
+                controllers.categorisation.routes.AssessmentController
+                  .onPageLoadReassessment(CheckMode, testRecordId, firstAssessmentNumber)
 
             }
 
@@ -3655,7 +3693,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 .value
 
               navigator.nextPage(RecategorisationPreparationPage(testRecordId), CheckMode, userAnswers) mustEqual
-                routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, firstAssessmentNumber)
+                controllers.categorisation.routes.AssessmentController
+                  .onPageLoadReassessment(CheckMode, testRecordId, firstAssessmentNumber)
 
             }
 
@@ -3672,7 +3711,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 .value
 
               navigator.nextPage(RecategorisationPreparationPage(testRecordId), CheckMode, userAnswers) mustEqual
-                routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, firstAssessmentNumber)
+                controllers.categorisation.routes.AssessmentController
+                  .onPageLoadReassessment(CheckMode, testRecordId, firstAssessmentNumber)
 
             }
           }
@@ -3704,7 +3744,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 .value
 
               navigator.nextPage(RecategorisationPreparationPage(testRecordId), CheckMode, userAnswers) mustEqual
-                routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, 3)
+                controllers.categorisation.routes.AssessmentController
+                  .onPageLoadReassessment(CheckMode, testRecordId, 3)
 
             }
 
@@ -3736,7 +3777,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 .value
 
               navigator.nextPage(RecategorisationPreparationPage(testRecordId), CheckMode, userAnswers) mustEqual
-                routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, 3)
+                controllers.categorisation.routes.AssessmentController
+                  .onPageLoadReassessment(CheckMode, testRecordId, 3)
 
             }
 
@@ -3766,7 +3808,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 .value
 
               navigator.nextPage(RecategorisationPreparationPage(testRecordId), CheckMode, userAnswers) mustBe
-                routes.CyaCategorisationController.onPageLoad(testRecordId)
+                controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
 
             }
 
@@ -3804,7 +3846,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 .value
 
               navigator.nextPage(RecategorisationPreparationPage(testRecordId), CheckMode, userAnswers) mustBe
-                routes.CyaCategorisationController.onPageLoad(testRecordId)
+                controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
 
             }
 
@@ -3836,7 +3878,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 RecategorisationPreparationPage(testRecordId),
                 CheckMode,
                 userAnswers
-              ) mustBe routes.CategorisationResultController
+              ) mustBe controllers.categorisation.routes.CategorisationResultController
                 .onPageLoad(testRecordId, StandardGoodsNoAssessmentsScenario)
 
             }
@@ -3865,7 +3907,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 RecategorisationPreparationPage(testRecordId),
                 CheckMode,
                 userAnswers
-              ) mustBe routes.CategorisationResultController
+              ) mustBe controllers.categorisation.routes.CategorisationResultController
                 .onPageLoad(testRecordId, Category1NoExemptionsScenario)
 
             }
@@ -3898,7 +3940,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 RecategorisationPreparationPage(testRecordId),
                 CheckMode,
                 userAnswers
-              ) mustBe routes.HasSupplementaryUnitController.onPageLoad(CheckMode, testRecordId)
+              ) mustBe controllers.categorisation.routes.HasSupplementaryUnitController
+                .onPageLoad(CheckMode, testRecordId)
 
             }
 
@@ -3926,7 +3969,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 RecategorisationPreparationPage(testRecordId),
                 CheckMode,
                 userAnswers
-              ) mustBe routes.HasSupplementaryUnitController.onPageLoad(CheckMode, testRecordId)
+              ) mustBe controllers.categorisation.routes.HasSupplementaryUnitController
+                .onPageLoad(CheckMode, testRecordId)
 
             }
 
@@ -3953,7 +3997,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 RecategorisationPreparationPage(testRecordId),
                 CheckMode,
                 userAnswers
-              ) mustBe routes.HasSupplementaryUnitController.onPageLoad(CheckMode, testRecordId)
+              ) mustBe controllers.categorisation.routes.HasSupplementaryUnitController
+                .onPageLoad(CheckMode, testRecordId)
 
             }
 
@@ -3981,7 +4026,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 RecategorisationPreparationPage(testRecordId),
                 CheckMode,
                 userAnswers
-              ) mustBe routes.HasSupplementaryUnitController.onPageLoad(CheckMode, testRecordId)
+              ) mustBe controllers.categorisation.routes.HasSupplementaryUnitController
+                .onPageLoad(CheckMode, testRecordId)
 
             }
 
@@ -4009,7 +4055,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 RecategorisationPreparationPage(testRecordId),
                 CheckMode,
                 userAnswers
-              ) mustBe routes.HasSupplementaryUnitController.onPageLoad(CheckMode, testRecordId)
+              ) mustBe controllers.categorisation.routes.HasSupplementaryUnitController
+                .onPageLoad(CheckMode, testRecordId)
 
             }
 
@@ -4036,7 +4083,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 RecategorisationPreparationPage(testRecordId),
                 CheckMode,
                 userAnswers
-              ) mustBe routes.HasSupplementaryUnitController.onPageLoad(CheckMode, testRecordId)
+              ) mustBe controllers.categorisation.routes.HasSupplementaryUnitController
+                .onPageLoad(CheckMode, testRecordId)
 
             }
 
@@ -4069,7 +4117,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .value
 
               navigator.nextPage(ReassessmentPage(testRecordId, 0), CheckMode, userAnswers) mustEqual
-                routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, 2)
+                controllers.categorisation.routes.AssessmentController
+                  .onPageLoadReassessment(CheckMode, testRecordId, 2)
 
             }
 
@@ -4090,7 +4139,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .value
 
               navigator.nextPage(ReassessmentPage(testRecordId, 0), CheckMode, userAnswers) mustEqual
-                routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, 2)
+                controllers.categorisation.routes.AssessmentController
+                  .onPageLoadReassessment(CheckMode, testRecordId, 2)
 
             }
           }
@@ -4123,7 +4173,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .value
 
               navigator.nextPage(ReassessmentPage(testRecordId, 0), CheckMode, userAnswers) mustEqual
-                routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, 3)
+                controllers.categorisation.routes.AssessmentController
+                  .onPageLoadReassessment(CheckMode, testRecordId, 3)
 
             }
 
@@ -4159,7 +4210,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .value
 
               navigator.nextPage(ReassessmentPage(testRecordId, 0), CheckMode, userAnswers) mustEqual
-                routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, 3)
+                controllers.categorisation.routes.AssessmentController
+                  .onPageLoadReassessment(CheckMode, testRecordId, 3)
 
             }
 
@@ -4186,7 +4238,8 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .value
 
               navigator.nextPage(ReassessmentPage(testRecordId, 0), CheckMode, userAnswers) mustEqual
-                routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, 3)
+                controllers.categorisation.routes.AssessmentController
+                  .onPageLoadReassessment(CheckMode, testRecordId, 3)
 
             }
 
@@ -4228,7 +4281,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .value
 
               navigator.nextPage(ReassessmentPage(testRecordId, 2), CheckMode, userAnswers) mustEqual
-                routes.CyaCategorisationController.onPageLoad(testRecordId)
+                controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
 
             }
 
@@ -4255,7 +4308,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .value
 
               navigator.nextPage(ReassessmentPage(testRecordId, 0), CheckMode, userAnswers) mustEqual
-                routes.CyaCategorisationController.onPageLoad(testRecordId)
+                controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
 
             }
 
@@ -4294,7 +4347,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .value
 
               navigator.nextPage(ReassessmentPage(testRecordId, 1), CheckMode, userAnswers) mustEqual
-                routes.CyaCategorisationController.onPageLoad(testRecordId)
+                controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
 
             }
 
@@ -4309,7 +4362,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .value
 
               navigator.nextPage(ReassessmentPage(testRecordId, 0), CheckMode, userAnswers) mustEqual
-                routes.CyaCategorisationController.onPageLoad(testRecordId)
+                controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
 
             }
 
@@ -4336,7 +4389,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                   .value
 
               navigator.nextPage(ReassessmentPage(testRecordId, 2), CheckMode, userAnswers) mustEqual
-                routes.CyaCategorisationController.onPageLoad(testRecordId)
+                controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
 
             }
 
@@ -4365,7 +4418,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 .value
 
             navigator.nextPage(ReassessmentPage(testRecordId, 2), CheckMode, userAnswers) mustEqual
-              routes.HasSupplementaryUnitController.onPageLoad(CheckMode, testRecordId)
+              controllers.categorisation.routes.HasSupplementaryUnitController.onPageLoad(CheckMode, testRecordId)
 
           }
 
@@ -4433,7 +4486,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               .value
 
             navigator.nextPage(HasSupplementaryUnitPage(testRecordId), CheckMode, userAnswers) mustBe
-              routes.SupplementaryUnitController.onPageLoad(CheckMode, testRecordId)
+              controllers.categorisation.routes.SupplementaryUnitController.onPageLoad(CheckMode, testRecordId)
 
           }
 
@@ -4445,7 +4498,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               .value
 
             navigator.nextPage(HasSupplementaryUnitPage(testRecordId), CheckMode, userAnswers) mustBe
-              routes.CyaCategorisationController.onPageLoad(testRecordId)
+              controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
 
           }
 
@@ -4460,7 +4513,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               .value
 
             navigator.nextPage(HasSupplementaryUnitPage(testRecordId), CheckMode, userAnswers) mustBe
-              routes.CyaCategorisationController.onPageLoad(testRecordId)
+              controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
 
           }
 
@@ -4479,7 +4532,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
         "must go from the supplementary unit page to the check your answers" in {
 
           navigator.nextPage(SupplementaryUnitPage(testRecordId), CheckMode, emptyUserAnswers) mustBe
-            routes.CyaCategorisationController.onPageLoad(testRecordId)
+            controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
 
         }
 

@@ -36,7 +36,12 @@ class CategorisationResultControllerSpec extends SpecBase {
 
         running(application) {
           val request =
-            FakeRequest(GET, routes.CategorisationResultController.onPageLoad(testRecordId, Category1Scenario).url)
+            FakeRequest(
+              GET,
+              controllers.categorisation.routes.CategorisationResultController
+                .onPageLoad(testRecordId, Category1Scenario)
+                .url
+            )
 
           val result = route(application, request).value
 
@@ -57,7 +62,12 @@ class CategorisationResultControllerSpec extends SpecBase {
 
         running(application) {
           val request =
-            FakeRequest(GET, routes.CategorisationResultController.onPageLoad(testRecordId, Category2Scenario).url)
+            FakeRequest(
+              GET,
+              controllers.categorisation.routes.CategorisationResultController
+                .onPageLoad(testRecordId, Category2Scenario)
+                .url
+            )
 
           val result = route(application, request).value
 
@@ -78,7 +88,12 @@ class CategorisationResultControllerSpec extends SpecBase {
 
         running(application) {
           val request =
-            FakeRequest(GET, routes.CategorisationResultController.onPageLoad(testRecordId, StandardGoodsScenario).url)
+            FakeRequest(
+              GET,
+              controllers.categorisation.routes.CategorisationResultController
+                .onPageLoad(testRecordId, StandardGoodsScenario)
+                .url
+            )
 
           val result = route(application, request).value
 
@@ -101,7 +116,9 @@ class CategorisationResultControllerSpec extends SpecBase {
           val request =
             FakeRequest(
               GET,
-              routes.CategorisationResultController.onPageLoad(testRecordId, StandardGoodsNoAssessmentsScenario).url
+              controllers.categorisation.routes.CategorisationResultController
+                .onPageLoad(testRecordId, StandardGoodsNoAssessmentsScenario)
+                .url
             )
 
           val result = route(application, request).value
@@ -125,7 +142,9 @@ class CategorisationResultControllerSpec extends SpecBase {
           val request =
             FakeRequest(
               GET,
-              routes.CategorisationResultController.onPageLoad(testRecordId, Category1NoExemptionsScenario).url
+              controllers.categorisation.routes.CategorisationResultController
+                .onPageLoad(testRecordId, Category1NoExemptionsScenario)
+                .url
             )
 
           val result = route(application, request).value

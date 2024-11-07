@@ -51,7 +51,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
   private def onwardRoute = Call("GET", "/foo")
 
   private lazy val longerCommodityCodeRoute2 =
-    routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId).url
+    controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId).url
 
   "LongerCommodityCode Controller" - {
 

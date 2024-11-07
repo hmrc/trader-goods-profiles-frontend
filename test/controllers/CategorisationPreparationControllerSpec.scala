@@ -110,7 +110,12 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
         running(app) {
 
           val request =
-            FakeRequest(GET, routes.CategorisationPreparationController.startCategorisation(testRecordId).url)
+            FakeRequest(
+              GET,
+              controllers.categorisation.routes.CategorisationPreparationController
+                .startCategorisation(testRecordId)
+                .url
+            )
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
@@ -174,7 +179,12 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
         running(app) {
 
           val request =
-            FakeRequest(GET, routes.CategorisationPreparationController.startCategorisation(testRecordId).url)
+            FakeRequest(
+              GET,
+              controllers.categorisation.routes.CategorisationPreparationController
+                .startCategorisation(testRecordId)
+                .url
+            )
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
@@ -246,7 +256,12 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
         running(app) {
 
           val request =
-            FakeRequest(GET, routes.CategorisationPreparationController.startCategorisation(testRecordId).url)
+            FakeRequest(
+              GET,
+              controllers.categorisation.routes.CategorisationPreparationController
+                .startCategorisation(testRecordId)
+                .url
+            )
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
@@ -320,7 +335,12 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
         running(app) {
           val request =
-            FakeRequest(GET, routes.CategorisationPreparationController.startCategorisation(testRecordId).url)
+            FakeRequest(
+              GET,
+              controllers.categorisation.routes.CategorisationPreparationController
+                .startCategorisation(testRecordId)
+                .url
+            )
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
@@ -337,7 +357,12 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
         running(app) {
           val request =
-            FakeRequest(GET, routes.CategorisationPreparationController.startCategorisation(testRecordId).url)
+            FakeRequest(
+              GET,
+              controllers.categorisation.routes.CategorisationPreparationController
+                .startCategorisation(testRecordId)
+                .url
+            )
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
@@ -356,7 +381,12 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
         running(app) {
           val request =
-            FakeRequest(GET, routes.CategorisationPreparationController.startCategorisation(testRecordId).url)
+            FakeRequest(
+              GET,
+              controllers.categorisation.routes.CategorisationPreparationController
+                .startCategorisation(testRecordId)
+                .url
+            )
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
@@ -391,7 +421,12 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
         val app = application()
         running(app) {
           val request =
-            FakeRequest(GET, routes.CategorisationPreparationController.startCategorisation(testRecordId).url)
+            FakeRequest(
+              GET,
+              controllers.categorisation.routes.CategorisationPreparationController
+                .startCategorisation(testRecordId)
+                .url
+            )
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
@@ -434,7 +469,12 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
         val app = application(userAnswersThatWontBuild)
         running(app) {
           val request =
-            FakeRequest(GET, routes.CategorisationPreparationController.startCategorisation(testRecordId).url)
+            FakeRequest(
+              GET,
+              controllers.categorisation.routes.CategorisationPreparationController
+                .startCategorisation(testRecordId)
+                .url
+            )
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
@@ -490,7 +530,9 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           val request =
             FakeRequest(
               GET,
-              routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId).url
+              controllers.categorisation.routes.CategorisationPreparationController
+                .startLongerCategorisation(NormalMode, testRecordId)
+                .url
             )
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
@@ -572,7 +614,9 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           val request =
             FakeRequest(
               GET,
-              routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId).url
+              controllers.categorisation.routes.CategorisationPreparationController
+                .startLongerCategorisation(NormalMode, testRecordId)
+                .url
             )
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
@@ -671,7 +715,9 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           val request =
             FakeRequest(
               GET,
-              routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId).url
+              controllers.categorisation.routes.CategorisationPreparationController
+                .startLongerCategorisation(NormalMode, testRecordId)
+                .url
             )
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
@@ -728,7 +774,9 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           val request =
             FakeRequest(
               GET,
-              routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId).url
+              controllers.categorisation.routes.CategorisationPreparationController
+                .startLongerCategorisation(NormalMode, testRecordId)
+                .url
             )
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
@@ -789,7 +837,9 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           val request =
             FakeRequest(
               GET,
-              routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId).url
+              controllers.categorisation.routes.CategorisationPreparationController
+                .startLongerCategorisation(NormalMode, testRecordId)
+                .url
             )
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
@@ -845,7 +895,9 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           val request =
             FakeRequest(
               GET,
-              routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId).url
+              controllers.categorisation.routes.CategorisationPreparationController
+                .startLongerCategorisation(NormalMode, testRecordId)
+                .url
             )
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
@@ -906,7 +958,9 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           val request =
             FakeRequest(
               GET,
-              routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId).url
+              controllers.categorisation.routes.CategorisationPreparationController
+                .startLongerCategorisation(NormalMode, testRecordId)
+                .url
             )
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
@@ -963,7 +1017,9 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
             val request =
               FakeRequest(
                 GET,
-                routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId).url
+                controllers.categorisation.routes.CategorisationPreparationController
+                  .startLongerCategorisation(NormalMode, testRecordId)
+                  .url
               )
             val result  = route(app, request).value
             status(result) mustEqual SEE_OTHER
@@ -1004,7 +1060,9 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           val request =
             FakeRequest(
               GET,
-              routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId).url
+              controllers.categorisation.routes.CategorisationPreparationController
+                .startLongerCategorisation(NormalMode, testRecordId)
+                .url
             )
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
@@ -1024,7 +1082,9 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           val request =
             FakeRequest(
               GET,
-              routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId).url
+              controllers.categorisation.routes.CategorisationPreparationController
+                .startLongerCategorisation(NormalMode, testRecordId)
+                .url
             )
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
@@ -1041,7 +1101,9 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           val request =
             FakeRequest(
               GET,
-              routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId).url
+              controllers.categorisation.routes.CategorisationPreparationController
+                .startLongerCategorisation(NormalMode, testRecordId)
+                .url
             )
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
@@ -1063,7 +1125,9 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           val request =
             FakeRequest(
               GET,
-              routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId).url
+              controllers.categorisation.routes.CategorisationPreparationController
+                .startLongerCategorisation(NormalMode, testRecordId)
+                .url
             )
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
@@ -1095,7 +1159,9 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           val request =
             FakeRequest(
               GET,
-              routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId).url
+              controllers.categorisation.routes.CategorisationPreparationController
+                .startLongerCategorisation(NormalMode, testRecordId)
+                .url
             )
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
@@ -1132,7 +1198,9 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           val request =
             FakeRequest(
               GET,
-              routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId).url
+              controllers.categorisation.routes.CategorisationPreparationController
+                .startLongerCategorisation(NormalMode, testRecordId)
+                .url
             )
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
@@ -1181,7 +1249,9 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           val request =
             FakeRequest(
               GET,
-              routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId).url
+              controllers.categorisation.routes.CategorisationPreparationController
+                .startLongerCategorisation(NormalMode, testRecordId)
+                .url
             )
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
@@ -1219,7 +1289,9 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           val request =
             FakeRequest(
               GET,
-              routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId).url
+              controllers.categorisation.routes.CategorisationPreparationController
+                .startLongerCategorisation(NormalMode, testRecordId)
+                .url
             )
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER

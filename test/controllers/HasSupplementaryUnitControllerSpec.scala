@@ -49,15 +49,16 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
   private val recordId     = "record id"
 
   private lazy val hasSupplementaryUnitRoute =
-    routes.HasSupplementaryUnitController.onPageLoad(NormalMode, recordId).url
+    controllers.categorisation.routes.HasSupplementaryUnitController.onPageLoad(NormalMode, recordId).url
 
-  private lazy val onSubmitAction: Call = routes.HasSupplementaryUnitController.onSubmit(NormalMode, recordId)
+  private lazy val onSubmitAction: Call =
+    controllers.categorisation.routes.HasSupplementaryUnitController.onSubmit(NormalMode, recordId)
 
   private lazy val hasSupplementaryUnitUpdateRoute =
-    routes.HasSupplementaryUnitController.onPageLoadUpdate(NormalMode, recordId).url
+    controllers.categorisation.routes.HasSupplementaryUnitController.onPageLoadUpdate(NormalMode, recordId).url
 
   private lazy val onSubmitUpdateAction: Call =
-    routes.HasSupplementaryUnitController.onSubmitUpdate(NormalMode, recordId)
+    controllers.categorisation.routes.HasSupplementaryUnitController.onSubmitUpdate(NormalMode, recordId)
 
   val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
   when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
@@ -304,7 +305,12 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(GET, routes.HasSupplementaryUnitController.onPageLoadUpdate(NormalMode, recordId).url)
+            FakeRequest(
+              GET,
+              controllers.categorisation.routes.HasSupplementaryUnitController
+                .onPageLoadUpdate(NormalMode, recordId)
+                .url
+            )
 
           val view = application.injector.instanceOf[HasSupplementaryUnitView]
 
@@ -315,7 +321,7 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
             form.fill(true),
             NormalMode,
             recordId,
-            routes.HasSupplementaryUnitController.onSubmitUpdate(NormalMode, recordId)
+            controllers.categorisation.routes.HasSupplementaryUnitController.onSubmitUpdate(NormalMode, recordId)
           )(
             request,
             messages(application)
@@ -350,7 +356,10 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, routes.HasSupplementaryUnitController.onSubmitUpdate(NormalMode, recordId).url)
+            FakeRequest(
+              POST,
+              controllers.categorisation.routes.HasSupplementaryUnitController.onSubmitUpdate(NormalMode, recordId).url
+            )
               .withFormUrlEncodedBody(("value", "true"))
 
           val result = route(application, request).value
@@ -367,7 +376,10 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, routes.HasSupplementaryUnitController.onSubmitUpdate(NormalMode, recordId).url)
+            FakeRequest(
+              POST,
+              controllers.categorisation.routes.HasSupplementaryUnitController.onSubmitUpdate(NormalMode, recordId).url
+            )
               .withFormUrlEncodedBody(("value", ""))
 
           val boundForm = form.bind(Map("value" -> ""))
@@ -381,7 +393,7 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
             boundForm,
             NormalMode,
             recordId,
-            routes.HasSupplementaryUnitController.onSubmitUpdate(NormalMode, recordId)
+            controllers.categorisation.routes.HasSupplementaryUnitController.onSubmitUpdate(NormalMode, recordId)
           )(
             request,
             messages(application)
@@ -396,7 +408,12 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(GET, routes.HasSupplementaryUnitController.onPageLoadUpdate(NormalMode, recordId).url)
+            FakeRequest(
+              GET,
+              controllers.categorisation.routes.HasSupplementaryUnitController
+                .onPageLoadUpdate(NormalMode, recordId)
+                .url
+            )
 
           val result = route(application, request).value
 
@@ -412,7 +429,10 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, routes.HasSupplementaryUnitController.onSubmitUpdate(NormalMode, recordId).url)
+            FakeRequest(
+              POST,
+              controllers.categorisation.routes.HasSupplementaryUnitController.onSubmitUpdate(NormalMode, recordId).url
+            )
               .withFormUrlEncodedBody(("value", "true"))
 
           val result = route(application, request).value

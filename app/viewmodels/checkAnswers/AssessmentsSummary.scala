@@ -16,7 +16,6 @@
 
 package viewmodels.checkAnswers
 
-import controllers.routes
 import models.ott.CategoryAssessment
 import models.{AssessmentAnswer, CheckMode, UserAnswers}
 import pages.{AssessmentPage, ReassessmentPage}

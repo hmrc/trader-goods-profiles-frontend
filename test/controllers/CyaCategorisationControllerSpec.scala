@@ -17,6 +17,7 @@
 package controllers
 
 import base.SpecBase
+import controllers.categorisation.routes
 import base.TestConstants.{testEori, testRecordId}
 import connectors.GoodsRecordConnector
 import models.helper.CategorisationJourney
@@ -414,7 +415,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
             status(result) mustEqual SEE_OTHER
 
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController
+            redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController
               .onPageLoad(
                 Some(RedirectUrl(routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
               )
@@ -431,7 +432,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController
+            redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController
               .onPageLoad(
                 Some(RedirectUrl(routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
               )
@@ -449,7 +450,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+            redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController.onPageLoad().url
           }
         }
 
@@ -480,7 +481,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController
+            redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController
               .onPageLoad(
                 Some(RedirectUrl(routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
               )
@@ -510,7 +511,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController
+            redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController
               .onPageLoad(
                 Some(RedirectUrl(routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
               )
@@ -681,7 +682,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController
+            redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController
               .onPageLoad(
                 Some(RedirectUrl(routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
               )
@@ -754,7 +755,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController.onPageLoad().url
         }
       }
     }

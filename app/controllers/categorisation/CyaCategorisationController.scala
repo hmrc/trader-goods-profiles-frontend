@@ -19,8 +19,8 @@ package controllers.categorisation
 import cats.data
 import com.google.inject.Inject
 import connectors.GoodsRecordConnector
+import controllers.BaseController
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
-import controllers.{BaseController, routes}
 import models.helper.CategorisationJourney
 import models.ott.CategorisationInfo
 import models.requests.DataRequest

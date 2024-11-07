@@ -576,7 +576,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           )
 
           row.actions mustBe defined
-          row.actions.value.items.head.href mustEqual routes.CategorisationPreparationController
+          row.actions.value.items.head.href mustEqual controllers.categorisation.routes.CategorisationPreparationController
             .startCategorisation(testRecordId)
             .url
         }
@@ -622,7 +622,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           )
 
           row.get.actions mustBe defined
-          row.get.actions.value.items.head.href mustEqual routes.SupplementaryUnitController
+          row.get.actions.value.items.head.href mustEqual controllers.categorisation.routes.SupplementaryUnitController
             .onPageLoadUpdate(NormalMode, testRecordId)
             .url
         }
