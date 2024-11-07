@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.categorisation
 
+
+import controllers.BaseController
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import forms.AssessmentFormProvider
-import models.helper.CategorisationJourney
 import models.{Mode, ReassessmentAnswer}
+import models.helper.CategorisationJourney
 import navigation.Navigator
 import pages.{AssessmentPage, ReassessmentPage}
 import play.api.i18n.MessagesApi
@@ -34,7 +36,7 @@ import views.html.AssessmentView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class AssessmentController @Inject() (
+class AssessmentController @Inject()(
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: Navigator,
@@ -129,7 +131,7 @@ class AssessmentController @Inject() (
               categorisationInfo.getAssessmentFromIndex(index).map { assessment =>
                 val codesAndDescriptions = assessment.getCodesZippedWithDescriptions
                 val form                 = formProvider()
-                val submitAction         = controllers.categorisation.routes.AssessmentController.onSubmit(mode, recordId, number)
+                val submitAction         = routes.AssessmentController.onSubmit(mode, recordId, number)
 
                 form
                   .bindFromRequest()
@@ -179,7 +181,7 @@ class AssessmentController @Inject() (
               categorisationInfo.getAssessmentFromIndex(index).map { assessment =>
                 val codesAndDescriptions = assessment.getCodesZippedWithDescriptions
                 val form                 = formProvider()
-                val submitAction         = controllers.categorisation.routes.AssessmentController.onSubmitReassessment(mode, recordId, number)
+                val submitAction         = routes.AssessmentController.onSubmitReassessment(mode, recordId, number)
 
                 form
                   .bindFromRequest()

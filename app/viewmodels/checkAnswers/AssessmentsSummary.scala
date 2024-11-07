@@ -61,14 +61,14 @@ object AssessmentsSummary {
       answers.get(ReassessmentPage(recordId, indexOfThisAssessment)).map { answer =>
         createSummaryListRowHelper(
           answer.answer,
-          routes.AssessmentController.onPageLoadReassessment(CheckMode, recordId, indexOfThisAssessment + 1).url
+          controllers.categorisation.routes.AssessmentController.onPageLoadReassessment(CheckMode, recordId, indexOfThisAssessment + 1).url
         )
       }
     } else {
       answers.get(AssessmentPage(recordId, indexOfThisAssessment)).map { answer =>
         createSummaryListRowHelper(
           answer,
-          routes.AssessmentController.onPageLoad(CheckMode, recordId, indexOfThisAssessment + 1).url
+          controllers.categorisation.routes.AssessmentController.onPageLoad(CheckMode, recordId, indexOfThisAssessment + 1).url
         )
       }
     }

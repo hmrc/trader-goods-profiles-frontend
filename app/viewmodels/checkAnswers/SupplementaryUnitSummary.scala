@@ -39,7 +39,7 @@ object SupplementaryUnitSummary {
         key = "supplementaryUnit.checkYourAnswersLabel",
         value = ValueViewModel(value),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.SupplementaryUnitController.onPageLoad(CheckMode, recordId).url)
+          ActionItemViewModel("site.change", controllers.categorisation.routes.SupplementaryUnitController.onPageLoad(CheckMode, recordId).url)
             .withVisuallyHiddenText(messages("supplementaryUnit.change.hidden"))
         )
       )
@@ -59,7 +59,7 @@ object SupplementaryUnitSummary {
         actions = Seq(
           ActionItemViewModel(
             "site.change",
-            routes.SupplementaryUnitController.onPageLoadUpdate(CheckMode, recordId).url
+            controllers.categorisation.routes.SupplementaryUnitController.onPageLoadUpdate(CheckMode, recordId).url
           )
             .withVisuallyHiddenText(messages("supplementaryUnit.change.hidden"))
         )
@@ -91,7 +91,7 @@ object SupplementaryUnitSummary {
             Seq(
               ActionItemViewModel(
                 "site.change",
-                routes.SupplementaryUnitController.onPageLoadUpdate(NormalMode, recordId).url
+                controllers.categorisation.routes.SupplementaryUnitController.onPageLoadUpdate(NormalMode, recordId).url
               )
                 .withVisuallyHiddenText(messages("supplementaryUnit.change.hidden"))
             )

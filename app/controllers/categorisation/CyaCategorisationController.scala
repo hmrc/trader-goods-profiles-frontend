@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.categorisation
 
 import cats.data
 import com.google.inject.Inject
 import connectors.GoodsRecordConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
+import controllers.{BaseController, routes}
 import models.helper.CategorisationJourney
 import models.ott.CategorisationInfo
 import models.requests.DataRequest
@@ -72,7 +73,7 @@ class CyaCategorisationController @Inject() (
               dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
               logErrorsAndContinue(
                 "Failed to get categorisation details",
-                routes.CategorisationPreparationController.startCategorisation(recordId)
+                controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(recordId)
               )
             }
       }
@@ -148,7 +149,7 @@ class CyaCategorisationController @Inject() (
     dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
     logErrorsAndContinue(
       errorMessage,
-      routes.CategorisationPreparationController.startCategorisation(recordId),
+      controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(recordId),
       errors
     )
   }
@@ -187,7 +188,7 @@ class CyaCategorisationController @Inject() (
           Future.successful(
             logErrorsAndContinue(
               errorMessage,
-              routes.CategorisationPreparationController.startCategorisation(recordId),
+              controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(recordId),
               errors
             )
           )

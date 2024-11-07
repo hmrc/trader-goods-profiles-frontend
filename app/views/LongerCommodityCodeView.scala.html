@@ -39,7 +39,7 @@
     <p class="govuk-body">@messages("longerCommodityCode.p2")</p>
     <p class="govuk-inset-text">@messages("longerCommodityCode.insetText")</p>
 
-    @formHelper(action = routes.LongerCommodityCodeController.onSubmit(mode, recordId), Symbol("autoComplete") -> "off") {
+    @formHelper(action = controllers.categorisation.routes.LongerCommodityCodeController.onSubmit(mode, recordId), Symbol("autoComplete") -> "off") {
 
         @govukInput(
             InputViewModel(

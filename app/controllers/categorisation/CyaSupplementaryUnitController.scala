@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.categorisation
 
 import com.google.inject.Inject
 import connectors.GoodsRecordConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
+import controllers.{BaseController, routes}
 import models.helper.SupplementaryUnitUpdateJourney
 import models.{NormalMode, SupplementaryRequest}
 import navigation.Navigator
@@ -50,7 +51,7 @@ class CyaSupplementaryUnitController @Inject() (
 
   private val errorMessage: String                = "Unable to create Supplementary Unit."
   private def continueUrl(recordId: String): Call =
-    routes.HasSupplementaryUnitController.onPageLoadUpdate(NormalMode, recordId)
+    controllers.categorisation.routes.HasSupplementaryUnitController.onPageLoadUpdate(NormalMode, recordId)
 
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>

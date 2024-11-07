@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.categorisation
 
 import connectors.GoodsRecordConnector
 import controllers.actions._
+import controllers.{BaseController, routes}
 import forms.SupplementaryUnitFormProvider
 import models.Mode
 import models.helper.SupplementaryUnitUpdate
@@ -63,7 +64,7 @@ class SupplementaryUnitController @Inject() (
       catInfo
         .map { categorisationInfo =>
           val measurementUnit = categorisationInfo.measurementUnit
-          val submitAction    = routes.SupplementaryUnitController.onSubmit(mode, recordId)
+          val submitAction    = controllers.categorisation.routes.SupplementaryUnitController.onSubmit(mode, recordId)
           Ok(view(preparedForm, mode, recordId, measurementUnit, submitAction))
         }
         .getOrElse(navigator.journeyRecovery())
@@ -83,7 +84,7 @@ class SupplementaryUnitController @Inject() (
             catInfo
               .map { categorisationInfo =>
                 val measurementUnit = categorisationInfo.measurementUnit
-                val submitAction    = routes.SupplementaryUnitController.onSubmit(mode, recordId)
+                val submitAction    = controllers.categorisation.routes.SupplementaryUnitController.onSubmit(mode, recordId)
                 Future.successful(BadRequest(view(formWithErrors, mode, recordId, measurementUnit, submitAction)))
               }
               .getOrElse(Future.successful(navigator.journeyRecovery()))
@@ -127,7 +128,7 @@ class SupplementaryUnitController @Inject() (
           }
 
           preparedFormFuture.map { case (preparedForm, measurementUnit) =>
-            val onSubmitAction: Call = routes.SupplementaryUnitController.onSubmitUpdate(mode, recordId)
+            val onSubmitAction: Call = controllers.categorisation.routes.SupplementaryUnitController.onSubmitUpdate(mode, recordId)
             Ok(view(preparedForm, mode, recordId, measurementUnit, onSubmitAction))
               .addingToSession(
                 initialValueOfSuppUnit -> initialValue
@@ -143,7 +144,7 @@ class SupplementaryUnitController @Inject() (
 
   def onSubmitUpdate(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val onSubmitAction: Call = routes.SupplementaryUnitController.onSubmitUpdate(mode, recordId)
+      val onSubmitAction: Call = controllers.categorisation.routes.SupplementaryUnitController.onSubmitUpdate(mode, recordId)
       form
         .bindFromRequest()
         .fold(

@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.categorisation
 
 import connectors.{GoodsRecordConnector, OttConnector}
+import controllers.BaseController
 import controllers.actions._
 import forms.LongerCommodityCodeFormProvider
 import models.helper.UpdateRecordJourney

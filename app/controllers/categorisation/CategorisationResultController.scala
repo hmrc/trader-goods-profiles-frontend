@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.categorisation
 
+import controllers.BaseController
 import controllers.actions._
 import models.Scenario
 import play.api.i18n.MessagesApi

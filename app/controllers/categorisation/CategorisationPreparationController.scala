@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.categorisation
 
 import connectors.GoodsRecordConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
+import controllers.{BaseController, routes}
 import models.Scenario.getResultAsInt
 import models.helper.CategorisationUpdate
 import models.ott.CategorisationInfo

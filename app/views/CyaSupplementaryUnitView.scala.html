@@ -29,7 +29,7 @@
 
     @govukSummaryList(supplementaryUnitList)
 
-    @formHelper(action = routes.CyaSupplementaryUnitController.onSubmit(recordId)) {
+    @formHelper(action = controllers.categorisation.routes.CyaSupplementaryUnitController.onSubmit(recordId)) {
         @govukButton(ButtonViewModel(messages("site.save.continue")))
     }
 }

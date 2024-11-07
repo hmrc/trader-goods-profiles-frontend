@@ -88,29 +88,6 @@ POST        /update-record/:recordId/trader-reference                           
 GET         /update-record/:recordId/trader-reference/check                                         controllers.TraderReferenceController.onPageLoadUpdate(mode: Mode = CheckMode, recordId: String)
 POST        /update-record/:recordId/trader-reference/check                                         controllers.TraderReferenceController.onSubmitUpdate(mode: Mode = CheckMode, recordId: String)
 
-GET         /update-record/:recordId/categorisation/category-assessment/:number                     controllers.AssessmentController.onPageLoad(mode: Mode = NormalMode, recordId: String, number: Int)
-POST        /update-record/:recordId/categorisation/category-assessment/:number                     controllers.AssessmentController.onSubmit(mode: Mode = NormalMode, recordId: String, number: Int)
-GET         /update-record/:recordId/categorisation/category-assessment/:number/check               controllers.AssessmentController.onPageLoad(mode: Mode = CheckMode, recordId: String, number: Int)
-POST        /update-record/:recordId/categorisation/category-assessment/:number/check               controllers.AssessmentController.onSubmit(mode: Mode = CheckMode, recordId: String, number: Int)
-
-GET         /update-record/:recordId/recategorise/category-assessment/:number                       controllers.AssessmentController.onPageLoadReassessment(mode: Mode = NormalMode, recordId: String, number: Int)
-POST        /update-record/:recordId/recategorise/category-assessment/:number                       controllers.AssessmentController.onSubmitReassessment(mode: Mode = NormalMode, recordId: String, number: Int)
-GET         /update-record/:recordId/recategorise/category-assessment/:number/check                 controllers.AssessmentController.onPageLoadReassessment(mode: Mode = CheckMode, recordId: String, number: Int)
-POST        /update-record/:recordId/recategorise/category-assessment/:number/check                 controllers.AssessmentController.onSubmitReassessment(mode: Mode = CheckMode, recordId: String, number: Int)
-
-GET         /update-record/:recordId/categorisation/result/category-1                               controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = Category1Scenario)
-GET         /update-record/:recordId/categorisation/result/category-2                               controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = Category2Scenario)
-GET         /update-record/:recordId/categorisation/result/standard                                 controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = StandardGoodsScenario)
-GET         /update-record/:recordId/categorisation/result/category-1-no-exemptions                 controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = Category1NoExemptionsScenario)
-GET         /update-record/:recordId/categorisation/result/standard-no-assessments                  controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = StandardGoodsNoAssessmentsScenario)
-
-GET         /update-record/:recordId/categorisation/check-your-answers                              controllers.CyaCategorisationController.onPageLoad(recordId:String)
-POST        /update-record/:recordId/categorisation/check-your-answers                              controllers.CyaCategorisationController.onSubmit(recordId:String)
-
-GET         /update-record/:recordId/categorisation/categorisation-preparation                      controllers.CategorisationPreparationController.startCategorisation(recordId:String)
-GET         /update-record/:recordId/categorisation/recategorisation-preparation                    controllers.CategorisationPreparationController.startLongerCategorisation(mode: Mode = NormalMode, recordId:String)
-GET         /update-record/:recordId/categorisation/recategorisation-preparation/check              controllers.CategorisationPreparationController.startLongerCategorisation(mode: Mode = CheckMode, recordId:String)
-
 GET         /update-record/:recordId/create-advice/start                                            controllers.AdviceStartController.onPageLoad(recordId:String)
 POST        /update-record/:recordId/create-advice/start                                            controllers.AdviceStartController.onSubmit(recordId:String)
 
@@ -129,36 +106,8 @@ POST        /update-record/:recordId/create-advice/name                         
 GET         /update-record/:recordId/create-advice/name/check                                       controllers.NameController.onPageLoad(mode: Mode = CheckMode, recordId: String)
 POST        /update-record/:recordId/create-advice/name/check                                       controllers.NameController.onSubmit(mode: Mode = CheckMode, recordId: String)
 
-GET         /update-record/:recordId/categorisation/supplementary-unit-question/create              controllers.HasSupplementaryUnitController.onPageLoad(mode: Mode = NormalMode, recordId: String)
-POST        /update-record/:recordId/categorisation/supplementary-unit-question/create              controllers.HasSupplementaryUnitController.onSubmit(mode: Mode = NormalMode, recordId: String)
-GET         /update-record/:recordId/categorisation/supplementary-unit-question/create/check        controllers.HasSupplementaryUnitController.onPageLoad(mode: Mode = CheckMode, recordId: String)
-POST        /update-record/:recordId/categorisation/supplementary-unit-question/create/check        controllers.HasSupplementaryUnitController.onSubmit(mode: Mode = CheckMode, recordId: String)
-
-GET         /update-record/:recordId/categorisation/supplementary-unit-question/update              controllers.HasSupplementaryUnitController.onPageLoadUpdate(mode: Mode = NormalMode, recordId: String)
-POST        /update-record/:recordId/categorisation/supplementary-unit-question/update              controllers.HasSupplementaryUnitController.onSubmitUpdate(mode: Mode = NormalMode, recordId: String)
-GET         /update-record/:recordId/categorisation/supplementary-unit-question/update/check        controllers.HasSupplementaryUnitController.onPageLoadUpdate(mode: Mode = CheckMode, recordId: String)
-POST        /update-record/:recordId/categorisation/supplementary-unit-question/update/check        controllers.HasSupplementaryUnitController.onSubmitUpdate(mode: Mode = CheckMode, recordId: String)
-
-GET         /update-record/:recordId/categorisation/supplementary-unit-amount/create                controllers.SupplementaryUnitController.onPageLoad(mode: Mode = NormalMode, recordId: String)
-POST        /update-record/:recordId/categorisation/supplementary-unit-amount/create                controllers.SupplementaryUnitController.onSubmit(mode: Mode = NormalMode, recordId: String)
-GET         /update-record/:recordId/categorisation/supplementary-unit-amount/create/check          controllers.SupplementaryUnitController.onPageLoad(mode: Mode = CheckMode, recordId: String)
-POST        /update-record/:recordId/categorisation/supplementary-unit-amount/create/check          controllers.SupplementaryUnitController.onSubmit(mode: Mode = CheckMode, recordId: String)
-
-GET         /update-record/:recordId/categorisation/supplementary-unit-amount/update                controllers.SupplementaryUnitController.onPageLoadUpdate(mode: Mode = NormalMode, recordId: String)
-POST        /update-record/:recordId/categorisation/supplementary-unit-amount/update                controllers.SupplementaryUnitController.onSubmitUpdate(mode: Mode = NormalMode, recordId: String)
-GET         /update-record/:recordId/categorisation/supplementary-unit-amount/update/check          controllers.SupplementaryUnitController.onPageLoadUpdate(mode: Mode = CheckMode, recordId: String)
-POST        /update-record/:recordId/categorisation/supplementary-unit-amount/update/check          controllers.SupplementaryUnitController.onSubmitUpdate(mode: Mode = CheckMode, recordId: String)
-
-GET         /update-record/:recordId/categorisation/check-your-answers/supplementary-unit           controllers.CyaSupplementaryUnitController.onPageLoad(recordId: String)
-POST        /update-record/:recordId/categorisation/check-your-answers/supplementary-unit           controllers.CyaSupplementaryUnitController.onSubmit(recordId: String)
-
 GET         /previous-movement-records                                                              controllers.PreviousMovementRecordsController.onPageLoad()
 POST        /previous-movement-records                                                              controllers.PreviousMovementRecordsController.onSubmit()
-
-GET         /update-record/:recordId/categorisation/longer-commodity-code                           controllers.LongerCommodityCodeController.onPageLoad(mode: Mode = NormalMode, recordId: String)
-POST        /update-record/:recordId/categorisation/longer-commodity-code                           controllers.LongerCommodityCodeController.onSubmit(mode: Mode = NormalMode, recordId: String)
-GET         /update-record/:recordId/categorisation/longer-commodity-code/check                     controllers.LongerCommodityCodeController.onPageLoad(mode: Mode = CheckMode, recordId: String)
-POST        /update-record/:recordId/categorisation/longer-commodity-code/check                     controllers.LongerCommodityCodeController.onSubmit(mode: Mode = CheckMode, recordId: String)
 
 GET         /goods-profile                                                                          controllers.GoodsRecordsController.onPageLoad(page: Int)
 POST        /goods-profile                                                                          controllers.GoodsRecordsController.onSearch(page: Int)
@@ -198,7 +147,6 @@ GET         /update-record/:recordId/check-your-answers/trader-reference        
 POST        /update-record/:recordId/check-your-answers/trader-reference                            controllers.CyaUpdateRecordController.onSubmitTraderReference(recordId: String)
 GET         /update-record/:recordId/check-your-answers/commodity-code                              controllers.CyaUpdateRecordController.onPageLoadCommodityCode(recordId: String)
 POST        /update-record/:recordId/check-your-answers/commodity-code                              controllers.CyaUpdateRecordController.onSubmitCommodityCode(recordId: String)
-
 
 GET         /help-and-support                                                                       controllers.HelpAndSupportController.onPageLoad()
 
