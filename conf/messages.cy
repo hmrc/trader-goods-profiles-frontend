@@ -4,7 +4,7 @@ site.no = Na
 site.continue = Yn eich blaen
 site.change = Newid
 site.startAgain = Dechrau eto
-site.goToHomePage = Ewch i''r hafan
+site.goToHomePage = Ewch i’r hafan
 site.signIn = Mewngofnodi
 site.save.continue = Cadw ac yn eich blaen
 site.back = Yn ôl
@@ -17,6 +17,7 @@ site.govuk = GOV.UK
 site.or = neu
 site.search = Chwilio
 site.removeThisGoodsRecord = Tynnwch y cofnod nwyddau hwn
+site.goBackToTGPRecords = Ewch i ffeiliau cofnodion TGP
 
 
 date.day = Diwrnod
@@ -45,33 +46,36 @@ homepage.p1 = Gallwch reoli eich cofnodion nwyddau, gofyn i CThEF am farn ar gof
 homepage.h2.1 = Cofnodion nwyddau
 homepage.p2.linkText = Bwrw golwg dros eich cofnodion nwyddau neu eu diweddaru
 homepage.p3.linkText = Creu cofnod nwyddau newydd
-homepage.h2.2 = Rheoli''ch proffil
+homepage.h2.2 = Rheoli’ch proffil
 homepage.p5.linkText = Rheoli manylion eich proffil
 homepage.h2.4 = Help a chysylltu
-homepage.p6.linkText = Dewch o hyd i gymorth ychwanegol a chysylltiadau i''ch helpu
-homepage.downloadBanner.content = Mae’r ffeil y gofynnoch amdani, sy’n cynnwys eich data TGP, yn barod i’w lawrlwytho.
-homepage.downloadBanner.linkText = Ewch i’r dudalen lawrlwytho i gael mynediad at eich ffeil.
-# TODO: Awaiting welsh translation for download link text (Ticket: TGP-2753)
+homepage.p6.linkText = Dewch o hyd i gymorth ychwanegol a chysylltiadau i’ch helpu
+homepage.downloadBanner.content = Mae’r ffeil y gofynnoch amdano, sy’n cynnwys eich cofnodion TGP, yn barod i’w lawrlwytho.
+homepage.downloadBanner.important = Pwysig
+homepage.downloadBanner.linkText = Ewch i’r dudalen ffeiliau cofnodion TGP i lawrlwytho’r ffeil
+homepage.h2.3 = Lawrlwytho data TGP
+homepage.downloadLinkText.noGoodsRecords = Nid oes gennych unrhyw gofnodion nwyddau TGP i’w lawrlwytho.
+homepage.downloadLinkText.noFilesRequested = Cael eich ffeil cofnodion TGP
 
 unauthorised.title = Mae problem wedi codi
 unauthorised.heading = Mae problem wedi codi
-unauthorised.p1 = Nid yw''r manylion sydd wedi''u mewngofnodi i GOV.UK wedi''u cysylltu â Phroffil Nwyddau Masnachwyr.
+unauthorised.p1 = Nid yw’r manylion sydd wedi’u mewngofnodi i GOV.UK wedi’u cysylltu â Phroffil Nwyddau Masnachwyr.
 unauthorised.p2.part1 = Os oes gennych Broffil Nwyddau Masnachwyr,
 unauthorised.p2.linkText = dylech allgofnodi
-unauthorised.p2.part2 = a mewngofnodi eto gan ddefnyddio''r manylion cywir.
+unauthorised.p2.part2 = a mewngofnodi eto gan ddefnyddio’r manylion cywir.
 
-journeyRecovery.continue.title = Mae rhywbeth wedi mynd o''i le
-journeyRecovery.continue.heading = Mae rhywbeth wedi mynd o''i le
-journeyRecovery.continue.guidance = Mae rhywbeth wedi mynd o''i le – bydd angen i chi ddechrau eto.
-journeyRecovery.startAgain.title = Mae rhywbeth wedi mynd o''i le
-journeyRecovery.startAgain.heading = Mae rhywbeth wedi mynd o''i le
-journeyRecovery.startAgain.guidance = Mae rhywbeth wedi mynd o''i le – ewch i hafan y Proffil Nwyddau Masnachwyr.
+journeyRecovery.continue.title = Mae rhywbeth wedi mynd o’i le
+journeyRecovery.continue.heading = Mae rhywbeth wedi mynd o’i le
+journeyRecovery.continue.guidance = Mae rhywbeth wedi mynd o’i le – bydd angen i chi ddechrau eto.
+journeyRecovery.startAgain.title = Mae rhywbeth wedi mynd o’i le
+journeyRecovery.startAgain.heading = Mae rhywbeth wedi mynd o’i le
+journeyRecovery.startAgain.guidance = Mae rhywbeth wedi mynd o’i le – ewch i hafan y Proffil Nwyddau Masnachwyr.
 
-pageNotFound.title = Heb ddod o hyd i''r dudalen
-pageNotFound.h1 = Heb ddod o hyd i''r dudalen
-pageNotFound.p1 = Os gwnaethoch deipio''r cyfeiriad gwe, gwiriwch ei fod yn gywir.
-pageNotFound.p2 = Os gwnaethoch ludo''r cyfeiriad gwe, gwiriwch eich bod wedi copïo''r cyfeiriad yn llawn.
-pageNotFound.p3 = Os yw''r cyfeiriad gwe yn gywir, neu os dewisoch gysylltiad neu fotwm
+pageNotFound.title = Heb ddod o hyd i’r dudalen
+pageNotFound.h1 = Heb ddod o hyd i’r dudalen
+pageNotFound.p1 = Os gwnaethoch deipio’r cyfeiriad gwe, gwiriwch ei fod yn gywir.
+pageNotFound.p2 = Os gwnaethoch ludo’r cyfeiriad gwe, gwiriwch eich bod wedi copïo’r cyfeiriad yn llawn.
+pageNotFound.p3 = Os yw’r cyfeiriad gwe yn gywir, neu os dewisoch gysylltiad neu fotwm
 pageNotFound.p3.linkText = cysylltwch â llinell gymorth y Proffil Nwyddau Masnachwyr
 pageNotFound.p3.1 = os oes angen i chi siarad â rhywun am eich proffil.
 
@@ -79,26 +83,26 @@ profileSetup.title = Sefydlu eich proffil
 profileSetup.h1 = Sefydlu eich proffil
 profileSetup.intro = Rydym am ofyn rhai cwestiynau i chi, yna byddwn yn gofyn am beth o wybodaeth gennych yn dibynnu ar eich atebion.
 profileSetup.ukimsNumber.h2 = Cynllun Marchnad Fewnol y DU (UKIMS)
-profileSetup.p1 = Mae''n rhaid i''r masnachwr sy''n cofrestru ar gyfer Proffil Nwyddau Masnachwyr fod wedi''i gofrestru ar gyfer yr UKIMS. Bydd angen eich rhifau UKIMS arnoch er mwyn sefydlu eich proffil.
-profileSetup.p2 = Os ydych wedi gwneud cais i''r UKIMS, bydd CThEF yn anfon llythyr atoch gyda''ch rhif awdurdodi UKIMS.
+profileSetup.p1 = Mae’n rhaid i’r masnachwr sy’n cofrestru ar gyfer Proffil Nwyddau Masnachwyr fod wedi’i gofrestru ar gyfer yr UKIMS. Bydd angen eich rhifau UKIMS arnoch er mwyn sefydlu eich proffil.
+profileSetup.p2 = Os ydych wedi gwneud cais i’r UKIMS, bydd CThEF yn anfon llythyr atoch gyda’ch rhif awdurdodi UKIMS.
 profileSetup.p3 = Os nad ydych wedi cofrestru ar gyfer yr UKIMS, gallwch wirio yma i ddarganfod
-profileSetup.p3.linkText = pwy all wneud cais i''r UKIMS.
+profileSetup.p3.linkText = pwy all wneud cais i’r UKIMS.
 profileSetup.nirms.h2 = Cynllun Symud Nwyddau Manwerthu Gogledd Iwerddon (NIRMS)
-profileSetup.p4 = Mae busnesau sy''n gyfrifol am werthu a chynorthwyo symud bwyd ar gyfer defnydd terfynol yng Ngogledd Iwerddon yn gymwys i gael mantais o drefniadau''r NIRMS.
-profileSetup.p5 = Gall masnachwyr sydd wedi''u cofrestru ar gyfer y NIRMS ychwanegu eu hawdurdodiad NIRMS at eu Proffil Nwyddau Masnachwyr. Bydd gwneud hyn yn helpu gyda chategoreiddio nwyddau sy''n destun y NIRMS.
-profileSetup.p6 = Mae awdurdodiad y NIRMS yn ddewisol ar gyfer Proffil Nwyddau Masnachwyr. Os nad ydych yn siŵr a ddylech fod wedi''ch awdurdodi ar gyfer y NIRMS, dysgwch ragor am y
+profileSetup.p4 = Mae busnesau sy’n gyfrifol am werthu a chynorthwyo symud bwyd ar gyfer defnydd terfynol yng Ngogledd Iwerddon yn gymwys i gael mantais o drefniadau’r NIRMS.
+profileSetup.p5 = Gall masnachwyr sydd wedi’u cofrestru ar gyfer y NIRMS ychwanegu eu hawdurdodiad NIRMS at eu Proffil Nwyddau Masnachwyr. Bydd gwneud hyn yn helpu gyda chategoreiddio nwyddau sy’n destun y NIRMS.
+profileSetup.p6 = Mae awdurdodiad y NIRMS yn ddewisol ar gyfer Proffil Nwyddau Masnachwyr. Os nad ydych yn siŵr a ddylech fod wedi’ch awdurdodi ar gyfer y NIRMS, dysgwch ragor am y
 profileSetup.p6.linkText = Cynllun Symud Nwyddau Manwerthu Gogledd Iwerddon
 profileSetup.niphl.h2 = Label Iechyd Planhigion Gogledd Iwerddon (NIPHL)
-profileSetup.p7 = Mae''r cynllun NIPHL yn ffordd i dyfwyr a masnachwyr ym Mhrydain Fawr (Cymru, Lloegr a''r Alban) symud cynhyrchion penodol i Ogledd Iwerddon.
-profileSetup.p8 = Gall masnachwyr sydd wedi''u cofrestru ar gyfer y NIPHL ychwanegu eu hawdurdodiad NIPHL at eu Proffil Nwyddau Masnachwyr. Bydd gwneud hyn yn helpu gyda chategoreiddio nwyddau sy''n destun y NIPHL.
-profileSetup.p9 = Mae awdurdodiad y NIPHL yn ddewisol ar gyfer Proffil Nwyddau Masnachwyr. Os nad ydych yn siŵr a ddylech fod wedi''ch awdurdodi ar gyfer y NIPHL, dysgwch ragor am
+profileSetup.p7 = Mae’r cynllun NIPHL yn ffordd i dyfwyr a masnachwyr ym Mhrydain Fawr (Cymru, Lloegr a’r Alban) symud cynhyrchion penodol i Ogledd Iwerddon.
+profileSetup.p8 = Gall masnachwyr sydd wedi’u cofrestru ar gyfer y NIPHL ychwanegu eu hawdurdodiad NIPHL at eu Proffil Nwyddau Masnachwyr. Bydd gwneud hyn yn helpu gyda chategoreiddio nwyddau sy’n destun y NIPHL.
+profileSetup.p9 = Mae awdurdodiad y NIPHL yn ddewisol ar gyfer Proffil Nwyddau Masnachwyr. Os nad ydych yn siŵr a ddylech fod wedi’ch awdurdodi ar gyfer y NIPHL, dysgwch ragor am
 profileSetup.p9.linkText = Symud planhigion o Brydain Fawr i Ogledd Iwerddon
 
 ukimsNumber.title = Rhif Cynllun Marchnad Fewnol y DU (UKIMS)
 ukimsNumber.h1 = Rhif Cynllun Marchnad Fewnol y DU (UKIMS)
-ukimsNumber.p1 = Mae CThEF yn anfon llythyr gyda rhif awdurdodi UKIMS ar ôl i chi wneud cais. Os nad ydych wedi cofrestru ar gyfer yr UKIMS, ni allwch ddefnyddio''r Proffil Nwyddau Masnachwyr (TGP).
-ukimsNumber.p2 = Mae rhif UKIMS yn dechrau â GB neu XI, wedi''u dilyn gan UKIM, ac mae''ch rhif EORI heb y GB neu''r XI, ac yna wedi''i ddilyn gan 14 o rifau.
-ukimsNumber.heading = Beth yw''ch rhif UKIMS?
+ukimsNumber.p1 = Mae CThEF yn anfon llythyr gyda rhif awdurdodi UKIMS ar ôl i chi wneud cais. Os nad ydych wedi cofrestru ar gyfer yr UKIMS, ni allwch ddefnyddio’r Proffil Nwyddau Masnachwyr (TGP).
+ukimsNumber.p2 = Mae rhif UKIMS yn dechrau â GB neu XI, wedi’u dilyn gan UKIM, ac mae’ch rhif EORI heb y GB neu’r XI, ac yna wedi’i ddilyn gan 14 o rifau.
+ukimsNumber.heading = Beth yw’ch rhif UKIMS?
 ukimsNumber.hint = Er enghraifft, XIUKIM47699357400020231115081800
 ukimsNumber.linkText = Nid ydwyf wedi fy nghofrestru ar gyfer yr UKIMS
 ukimsNumber.error.required = Nodwch eich rhif UKIMS
@@ -106,18 +110,30 @@ ukimsNumber.error.invalidFormat = Nodwch eich rhif UKIMS yn y fformat cywir
 ukimsNumber.checkYourAnswersLabel = Rhif UKIMS
 ukimsNumber.change.hidden = Rhif UKIMS
 
+newUkimsNumber.title = Rhif Cynllun Marchnad Fewnol y DU (UKIMS)
+newUkimsNumber.h1 = Rhif Cynllun Marchnad Fewnol y DU (UKIMS)
+newUkimsNumber.p1 = Mae CThEF yn anfon llythyr gyda rhif awdurdodi UKIMS ar ôl i chi wneud cais. Os nad ydych wedi cofrestru ar gyfer yr UKIMS, ni allwch ddefnyddio''r Proffil Nwyddau Masnachwyr (TGP).
+newUkimsNumber.p2 = Mae rhif UKIMS yn dechrau â GB neu XI, wedi''u dilyn gan UKIM, ac mae''ch rhif EORI heb y GB neu''r XI, ac yna wedi''i ddilyn gan 14 o rifau.
+newUkimsNumber.heading = Beth yw''ch rhif UKIMS?
+newUkimsNumber.hint = Er enghraifft, XIUKIM47699357400020231115081800
+newUkimsNumber.linkText = Nid ydwyf wedi fy nghofrestru ar gyfer yr UKIMS
+newUkimsNumber.error.required = Nodwch eich rhif UKIMS
+newUkimsNumber.error.invalidFormat = Nodwch eich rhif UKIMS yn y fformat cywir
+newUkimsNumber.checkYourAnswersLabel = Rhif UKIMS
+newUkimsNumber.change.hidden = Rhif UKIMS
+
 hasNirms.title = Cynllun Symud Nwyddau Manwerthu Gogledd Iwerddon (NIRMS)
 hasNirms.h1 = Cynllun Symud Nwyddau Manwerthu Gogledd Iwerddon (NIRMS)
 hasNirms.h2 = A ydych wedi cofrestru ar gyfer y NIRMS?
-hasNirms.p1 = Gall busnesau sy''n gwerthu, neu gynorthwyo symud, bwyd ar gyfer defnydd terfynol yng Ngogledd Iwerddon ddefnyddio''r NIRMS.
+hasNirms.p1 = Gall busnesau sy’n gwerthu, neu gynorthwyo symud, bwyd ar gyfer defnydd terfynol yng Ngogledd Iwerddon ddefnyddio’r NIRMS.
 hasNirms.p2 = Dysgwch ragor am
 hasNirms.p2.linkText = ba gynhyrchion y gellir eu symud o dan y NIRMS
 hasNirms.checkYourAnswersLabel = A ydych wedi cofrestru ar gyfer y NIRMS?
 hasNirms.error.required = Dewiswch ‘Iawn’ os ydych wedi cofrestru ar gyfer Cynllun Symud Nwyddau Manwerthu Gogledd Iwerddon
 hasNirms.change.hidden = Wedi cofrestru ar gyfer y NIRMS
 
-nirmsNumber.title = Beth yw''ch rhif NIRMS?
-nirmsNumber.heading = Beth yw''ch rhif NIRMS?
+nirmsNumber.title = Beth yw’ch rhif NIRMS?
+nirmsNumber.heading = Beth yw’ch rhif NIRMS?
 nirmsNumber.hint = Mae rhifau NIRMS yn dechrau ag RMS, wedi’i ddilyn gan GB neu NI, ac yna 6 o rifau. Er enghraifft, RMS-GB-123456 neu RMS NI 456789.
 nirmsNumber.checkYourAnswersLabel = Rhif NIRMS
 nirmsNumber.error.required = Nodwch eich rhif NIRMS
@@ -126,17 +142,17 @@ nirmsNumber.change.hidden = Rhif NIRMS
 
 hasNiphl.title = Label iechyd planhigion Gogledd Iwerddon (NIPHL)
 hasNiphl.heading = Label iechyd planhigion Gogledd Iwerddon (NIPHL)
-hasNiphl.p1 = Gall tyfwyr a masnachwyr symud nwyddau i Ogledd Iwerddon gan ddefnyddio''r cynllun Label iechyd planhigion Gogledd Iwerddon (NIPHL).
+hasNiphl.p1 = Gall tyfwyr a masnachwyr symud nwyddau i Ogledd Iwerddon gan ddefnyddio’r cynllun Label iechyd planhigion Gogledd Iwerddon (NIPHL).
 hasNiphl.p2 = Dysgwch ragor am
 hasNiphl.p2.linkText = symud planhigion o Brydain Fawr i Ogledd Iwerddon.
 hasNiphl.h2 = A ydych wedi cofrestru ar gyfer NIPHL?
 hasNiphl.checkYourAnswersLabel = A ydych wedi cofrestru ar gyfer NIPHL?
-hasNiphl.error.required = Dewiswch ‘Iawn'' os ydych wedi cofrestru ar gyfer cynllun Label iechyd planhigion Gogledd Iwerddon
+hasNiphl.error.required = Dewiswch ‘Iawn’ os ydych wedi cofrestru ar gyfer cynllun Label iechyd planhigion Gogledd Iwerddon
 hasNiphl.change.hidden = Wedi cofrestru ar gyfer y NIPHL
 
 niphlNumber.title = Rhif cofrestru NIPHL
 niphlNumber.heading = Rhif cofrestru NIPHL
-niphlNumber.p1 = Mae gan rifau cofrestru NIPHL sawl fformat. Gallai''r naill neu''r llall o''r canlynol fod yn wir amdanynt:
+niphlNumber.p1 = Mae gan rifau cofrestru NIPHL sawl fformat. Gallai’r naill neu’r llall o’r canlynol fod yn wir amdanynt:
 niphlNumber.li1 = maent yn 4 i 6 o rifau
 niphlNumber.li2 = maent yn dechrau ag un llythyren, ac yna 5 o rifau
 niphlNumber.li3 = maent yn dechrau â 2 lythyren, ac yna 5 o rifau
@@ -153,7 +169,7 @@ cyaCreateProfile.li1 = Cynllun Marchnad Fewnol y DU (UKIMS)
 cyaCreateProfile.li2 = Cynllun Symud Nwyddau Manwerthu Gogledd Iwerddon (NIRMS)
 cyaCreateProfile.li3 = Label iechyd planhigion Gogledd Iwerddon (NIPHL)
 cyaCreateProfile.warning = Rhybudd
-cyaCreateProfile.warningText = Mae angen i chi wneud yn siŵr bod y manylion hyn yn gywir. Ni fydd unrhyw symudiadau y byddwch yn defnyddio manylion o''r TGP i''w creu yn ddilys os byddant yn anghywir.
+cyaCreateProfile.warningText = Mae angen i chi wneud yn siŵr bod y manylion hyn yn gywir. Ni fydd unrhyw symudiadau y byddwch yn defnyddio manylion o’r TGP i’w creu yn ddilys os byddant yn anghywir.
 
 cyaUpdateRecord.title.traderReference = Gwiriwch eich atebion ar gyfer newid cyfeirnod masnachwr
 cyaUpdateRecord.h1.traderReference = Gwiriwch eich atebion ar gyfer newid cyfeirnod masnachwr
@@ -175,23 +191,23 @@ cyaSupplementaryUnit.heading = Gwiriwch eich atebion ar gyfer newid yr uned atod
 
 ukimsKickOut.title = Mae angen i chi wneud cais ar gyfer Cynllun Marchnad Fewnol y DU (UKIMS)
 ukimsKickOut.h1 = Mae angen i chi wneud cais ar gyfer Cynllun Marchnad Fewnol y DU (UKIMS)
-ukimsKickOut.p1 = Ni allwch ddefnyddio''r Proffil Nwyddau Masnachwyr (TGP) os nad ydych wedi cofrestru ar gyfer yr UKIMS.
+ukimsKickOut.p1 = Ni allwch ddefnyddio’r Proffil Nwyddau Masnachwyr (TGP) os nad ydych wedi cofrestru ar gyfer yr UKIMS.
 ukimsKickOut.p2 = Dysgwch sut i
 ukimsKickOut.linkText = gofrestru ar gyfer yr UKIMS (yn agor tab newydd)
 
 adviceStart.title = Gofyn i CThEF am gyngor
 adviceStart.heading = Gofyn i CThEF am gyngor
-adviceStart.p1 = Mae gofyn i CThEF am gyngor yn golygu y cewch wybod os yw CThEF o''r farn bod y cod nwyddau yn cyd-fynd â''r wybodaeth sydd yn eich cofnod nwyddau.
+adviceStart.p1 = Mae gofyn i CThEF am gyngor yn golygu y cewch wybod os yw CThEF o’r farn bod y cod nwyddau yn cyd-fynd â’r wybodaeth sydd yn eich cofnod nwyddau.
 adviceStart.warning = Rhybudd
-adviceStart.warningText = Nid yw''r cyngor hwn yn gyfreithiol rwymol.
-adviceStart.p2 = Os ydych am gael penderfyniad sy''n gyfreithiol rwymol,
-adviceStart.p2.linkText = gwnewch gais am benderfyniad ynghylch gwybodaeth am Dariff sy''n Rhwymo
+adviceStart.warningText = Nid yw’r cyngor hwn yn gyfreithiol rwymol.
+adviceStart.p2 = Os ydych am gael penderfyniad sy’n gyfreithiol rwymol,
+adviceStart.p2.linkText = gwnewch gais am benderfyniad ynghylch gwybodaeth am Dariff sy’n Rhwymo
 adviceStart.subheading1 = Yr hyn y mae ei angen ar CThEF
-adviceStart.p3 = Byddwn yn gofyn am eich enw a''ch cyfeiriad e-bost. Bydd gweithiwr achos CThEF yn edrych ar y cofnod nwyddau dan sylw.
-adviceStart.subheading2 = Yr hyn sy''n digwydd tra bo CThEF yn edrych ar eich cofnod
-adviceStart.p4 = Ni fydd modd i chi wneud unrhyw newidiadau i''ch cofnod tra bo CThEF yn ei adolygu. Sylwer – efallai na fydd cyfathrebu drwy e-bost bob amser yn ddiogel, gan ei bod hi''n bosib y gall e-byst gael eu darllen neu eu newid gan rywun arall.
+adviceStart.p3 = Byddwn yn gofyn am eich enw a’ch cyfeiriad e-bost. Bydd gweithiwr achos CThEF yn edrych ar y cofnod nwyddau dan sylw.
+adviceStart.subheading2 = Yr hyn sy’n digwydd tra bo CThEF yn edrych ar eich cofnod
+adviceStart.p4 = Ni fydd modd i chi wneud unrhyw newidiadau i’ch cofnod tra bo CThEF yn ei adolygu. Sylwer – efallai na fydd cyfathrebu drwy e-bost bob amser yn ddiogel, gan ei bod hi’n bosib y gall e-byst gael eu darllen neu eu newid gan rywun arall.
 adviceStart.p5 = Os ydych am anfon rhagor o wybodaeth am y cofnod nwyddau at weithiwr achos CThEF, gallwch wneud hyn drwy anfon e-bost.
-adviceStart.p6 = Dylech gael ymateb i''ch cais cyn pen 5 diwrnod gwaith, ond gallai gymryd yn hirach.
+adviceStart.p6 = Dylech gael ymateb i’ch cais cyn pen 5 diwrnod gwaith, ond gallai gymryd yn hirach.
 
 name.title = Beth yw eich enw?
 name.heading = Beth yw eich enw?
@@ -200,9 +216,9 @@ name.checkYourAnswersLabel = Enw
 name.error.required = Nodwch eich enw
 name.change.hidden = Enw
 
-email.title = Beth yw''ch cyfeiriad e-bost?
-email.heading = Beth yw''ch cyfeiriad e-bost?
-email.hint = Byddwn ond yn defnyddio''ch e-bost i gysylltu â chi ynglŷn â''ch cais.
+email.title = Beth yw’ch cyfeiriad e-bost?
+email.heading = Beth yw’ch cyfeiriad e-bost?
+email.hint = Byddwn ond yn defnyddio’ch e-bost i gysylltu â chi ynglŷn â’ch cais.
 email.checkYourAnswersLabel = E-bost
 email.error.required = Nodwch eich cyfeiriad e-bost
 email.change.hidden = E-bost
@@ -211,19 +227,19 @@ cyaRequestAdvice.title = Gwiriwch eich atebion cyn anfon eich cais am gyngor
 cyaRequestAdvice.heading = Gwiriwch eich atebion cyn anfon eich cais am gyngor
 cyaRequestAdvice.subheading = Manylion cyswllt
 
-adviceSuccess.title = Cais am gyngor wedi''i gwblhau
-adviceSuccess.h1 = Cais am gyngor wedi''i gwblhau
-adviceSuccess.h2 = Yr hyn sy''n digwydd nesaf
+adviceSuccess.title = Cais am gyngor wedi’i gwblhau
+adviceSuccess.h1 = Cais am gyngor wedi’i gwblhau
+adviceSuccess.h2 = Yr hyn sy’n digwydd nesaf
 adviceSuccess.p1 = Bydd CThEF yn cysylltu â chi i roi gwybod am ei benderfyniad.
-adviceSuccess.p2 = Gallai''r penderfyniad fod yn un o''r canlynol:
+adviceSuccess.p2 = Gallai’r penderfyniad fod yn un o’r canlynol:
 adviceSuccess.p2.1 = cytuno bod y cod nwyddau yn gywir
 adviceSuccess.p2.2 = gofyn am ragor o wybodaeth am y nwyddau
-adviceSuccess.p2.3 = cynnig newid i''r cod nwyddau neu i ddisgrifiad y nwyddau
+adviceSuccess.p2.3 = cynnig newid i’r cod nwyddau neu i ddisgrifiad y nwyddau
 adviceSuccess.p2.4 = nodi bod y cofnod yn anghywir, ac yn esbonio pam
-adviceSuccess.p3 = Gallwch anfon rhagor o wybodaeth am eich nwyddau at CThEF yn [email address] – cofiwch nodi''ch rhif EORI.
+adviceSuccess.p3 = Gallwch anfon rhagor o wybodaeth am eich nwyddau at CThEF yn [email address] – cofiwch nodi’ch rhif EORI.
 adviceSuccess.p4 = Nid yw e-bost yn ddull diogel o gyfathrebu, felly peidiwch â chynnwys unrhyw fanylion personol yn eich e-bost at CThEF.
-adviceSuccess.p5 = Dylech gael ymateb i''ch cais cyn pen 5 diwrnod gwaith, ond gallai gymryd yn hirach.
-adviceSuccess.p7.linkText = Ewch i''r hafan
+adviceSuccess.p5 = Dylech gael ymateb i’ch cais cyn pen 5 diwrnod gwaith, ond gallai gymryd yn hirach.
+adviceSuccess.p7.linkText = Ewch i’r hafan
 
 createRecordStart.title = Creu cofnod nwyddau
 createRecordStart.h1 = Creu cofnod nwyddau
@@ -300,15 +316,15 @@ commodityCode.error.invalid = Nodwch god nwyddau go iawn
 hasCorrectGoods.title = Canlyniadau ar gyfer {0}
 hasCorrectGoods.heading = Canlyniadau ar gyfer {0}
 hasCorrectGoods.p1 = Dynodiad:
-hasCorrectGoods.h2 = Ai dyma''r nwyddau cywir?
-hasCorrectGoods.error.required = Dewiswch ai dyma''r nwyddau cywir
+hasCorrectGoods.h2 = Ai dyma’r nwyddau cywir?
+hasCorrectGoods.error.required = Dewiswch ai dyma’r nwyddau cywir
 hasCorrectGoods.p2.linkText = Chwiliwch am god nwyddau ar yr Offeryn Tariff Ar-lein (yn agor tab newydd)
 
 
 singleRecord.title = Cofnod nwyddau
 singleRecord.h1 = Cofnod nwyddau
 singleRecord.p1 = Gwiriwch a yw manylion y cofnod hwn yn gywir.
-singleRecord.p2 = Os oes angen i chi gategoreiddio''r daioni hwn, byddwn yn dweud mwy wrthych am sut i wneud hyn yn y camau nesaf.
+singleRecord.p2 = Os oes angen i chi gategoreiddio’r daioni hwn, byddwn yn dweud mwy wrthych am sut i wneud hyn yn y camau nesaf.
 singleRecord.h2.goodsDetails = Manylion nwyddau
 singleRecord.warning = Rhybudd
 singleRecord.warningText = Rydych yn atebol dros yr wybodaeth am unrhyw symudiadau a grëir gennych chi, neu ar eich rhan gan ddefnyddio eich cofnodion Proffil Nwyddau Masnachwr.
@@ -336,19 +352,19 @@ countryOfOrigin.p1 = Mae ‘gwlad tarddiad’ yn cyfeirio at y wlad lle cafodd y
 countryOfOrigin.p2 =  Pan fydd y nwyddau’n cael eu datgan wrth y ffin, os yw’r wlad tarddiad yn wahanol i’r wlad ymadael, efallai y bydd y rheoliadau, y dreth a’r tollau yn wahanol i’r arweiniad sydd ar y gwasanaeth hwn.
 countryOfOrigin.p2.linkText = Gwirio a yw’r nwyddau’n bodloni’r rheolau o ran tarddiad (yn agor tab newydd)
 countryOfOrigin.heading = Beth yw gwlad tarddiad y nwyddau?
-countryOfOrigin.error.required = Ewch i mewn i''r wlad tarddiad
+countryOfOrigin.error.required = Ewch i mewn i’r wlad tarddiad
 countryOfOrigin.error.invalid = Rhowch wlad wreiddiol wreiddiol
 countryOfOrigin.checkYourAnswersLabel = Gwlad tarddiad
 countryOfOrigin.change.hidden = Gwlad tarddiad
 
 feedback.header = Dywedwch wrthym beth yw eich barn
 feedback.line.1 = Mae hwn yn wasanaeth newydd ac rydym eisiau gwybod beth yw eich barn amdano.
-feedback.line.2 = {0}. Bydd eich meddyliau a''ch syniadau yn ein helpu i wneud gwelliannau.
+feedback.line.2 = {0}. Bydd eich meddyliau a’ch syniadau yn ein helpu i wneud gwelliannau.
 feedback.link = Anfonwch eich adborth atom
 
 profileSuccess.title = Rydych wedi creu eich Proffil Nwyddau Masnachwyr
 profileSuccess.h1 = Rydych wedi creu eich Proffil Nwyddau Masnachwyr
-profileSuccess.h2 = Yr hyn sy''n digwydd nesaf
+profileSuccess.h2 = Yr hyn sy’n digwydd nesaf
 profileSuccess.p1 = Gallwch fynd i’ch hafan TGP a naill ai fwrw golwg dros restr o gofnodion symud blaenorol, neu greu cofnod newydd.
 
 categorisationResult.title = Categoreiddio wedi’i gwblhau
@@ -426,17 +442,35 @@ unauthorisedCdsEnrolment.p2.part2 = ac yna mewngofnodwch gan ddefnyddio’r many
 
 requestData.title = Gwneud cais i lawrlwytho’ch data TGP
 requestData.heading = Gwneud cais i lawrlwytho’ch data TGP
-requestData.p1 = Unwaith y byddwch yn gwneud cais am y ffeil, byddwn yn anfon e-bost at {0} i roi gwybod i chi pryd y bydd yn barod i lawrlwytho. Fel arfer bydd y ffeil yn barod cyn pen pum munud, ond gall gymryd hyd at 24 awr.
-requestData.button = Gwneud cais am ddata TGP
+requestData.p1 = Unwaith y byddwch yn gwneud cais am y ffeil, byddwn yn anfon e-bost at {0} i roi gwybod i chi pan fydd yn barod i’w lawrlwytho. Fel arfer bydd y ffeil yn barod cyn pen pum munud, ond gall gymryd hyd at 24 awr.
+requestData.p2 = Byddwch hefyd yn gallu gwirio’r cynnydd ar dudalen ffeiliau cofnodion TGP.
+requestData.button = Cael ffeil cofnodion TGP
 
 downloadRequestSuccess.title = Mae’ch cais i gael ffeil sy’n cynnwys eich data TGP wedi dod i law
 downloadRequestSuccess.h1 = Mae’ch cais i gael ffeil sy’n cynnwys eich data TGP wedi dod i law
 downloadRequestSuccess.h2 = Yr hyn sy’n digwydd nesaf
-# TODO: Awaiting welsh translation of the new changes brought in from TGP-2677 (Will include key changes - see lines 644 to 650 of English messages) (Ticket Number: TGP-2753)
-downloadRequestSuccess.p1 = Byddwn yn anfon e-bost at {0} i roi gwybod i chi pryd bydd y ffeil yn barod i lawrlwytho.
-downloadRequestSuccess.p2 = Byddwch yn gweld hysbysiad pan fyddwch yn mewngofnodi i’ch TGP a fydd yn dangos cysylltiad i’r dudalen lawrlwytho. Mae’r ffeil ar ffurf CSV (gwerthoedd wedi’u gwahanu gan goma).
-downloadRequestSuccess.p3 = Bydd y ffeil hon ar gael am 30 diwrnod ar ôl i ni roi gwybod i chi ei bod yn barod.
+downloadRequestSuccess.p1 = Gallwch wirio cynnydd eich ffeil ar y dudalen ddata TGP lawrlwytho. Byddwn hefyd yn anfon e-bost at {0} i roi gwybod i chi pan fydd eich ffeil cofnodion TGP yn barod.
+downloadRequestSuccess.p2 = Byddwch yn gweld hysbysiad pan fyddwch yn mewngofnodi i’ch TGP a fydd yn dangos cysylltiad i’r dudalen lawrlwytho. Mae’r ffeil mewn fformat .csv.
+downloadRequestSuccess.p3 = Bydd y ffeil cofnodion TGP ar gael am 30 diwrnod ar ôl i ni roi gwybod i chi ei bod yn barod.
 downloadRequestSuccess.p3.1 = Ar ôl 30 diwrnod, bydd angen i chi wneud cais am ffeil newydd.
+downloadRequestSuccess.p1.linkText = tudalen lawrlwytho data TGP
+
+fileManagement.title = Ffeiliau cofnodion TGP
+fileManagement.heading = Ffeiliau cofnodion TGP
+fileManagement.files.paragraph1 = Mae ffeiliau ar gael am 30 diwrnod ar ôl i ni anfon e-bost atoch ei bod yn barod i’w lawrlwytho.
+fileManagement.availableFiles.table.caption = Ffeiliau cofnodion TGP
+fileManagement.availableFiles.table.header1 = Dyddiad ac amser y gofynnwyd amdanynt
+fileManagement.availableFiles.table.header2 = Dyddiad dod i ben
+fileManagement.availableFiles.table.header3 = Ffeil
+fileManagement.availableFiles.downloadText = Lawrlwytho’r ffeil
+fileManagement.pendingFiles.table.header1 = Dyddiad ac amser y gofynnwyd amdanynt
+fileManagement.pendingFiles.table.header2 = Ffeil
+fileManagement.pendingFiles.table.caption = Ffeiliau sy’n aros
+fileManagement.pendingFiles.table.body = Mae’r rhain yn geisiadau rydych wedi’u gwneud ond nid yw’r ffeil yn barod eto. Byddwn yn anfon e-bost atoch pan fydd y ffeil yn barod.
+fileManagement.pendingFiles.fileText = Nid yw’r ffeil yn barod
+fileManagement.files.requestRecord.linkText = Cael ffeil cofnodion TGP newydd
+fileManagement.noFiles.requestRecord.linkText = Cael ffeil cofnodion TGP
+
 
 goodsRecords.title = Proffil Nwyddau
 goodsRecords.title.withPage = Proffil Nwyddau – tudalen {0} o {1}
@@ -472,6 +506,8 @@ goodsRecordSearchResultEmptyView.title = Does dim canlyniadau cyfatebol
 goodsRecordSearchResultEmptyView.h1 = Does dim canlyniadau cyfatebol
 goodsRecordSearchResultEmptyView.p1 = Roeddech yn chwilio am y term {0}.
 
+existingUkimsNumber.title = Rhif Cynllun Marchnad Fewnol y DU (UKIMS)
+existingUkimsNumber.h1 = Rhif Cynllun Marchnad Fewnol y DU (UKIMS)
 existingUkimsNumber.h2 = Ai dyma’r rhif UKIMS cywir ar eich cyfer o hyd?
 
 cyaMaintainProfile.title.ukimsNumber = Gwiriwch eich atebion ar gyfer newid eich rhif UKIMS
@@ -484,6 +520,9 @@ cyaMaintainProfile.title.hasNiphl = Gwiriwch eich atebion ar gyfer newid eich co
 cyaMaintainProfile.heading.hasNiphl = Gwiriwch eich atebion ar gyfer newid eich cofrestriad NIPHL
 cyaMaintainProfile.title.niphlNumber = Gwiriwch eich atebion ar gyfer newid eich rhif NIPHL
 cyaMaintainProfile.heading.niphlNumber = Gwiriwch eich atebion ar gyfer newid eich rhif NIPHL
+cyaMaintainProfile.warningText = Mae angen i chi wneud yn siŵr bod y manylion hyn yn gywir. Ni fydd unrhyw symudiadau y byddwch yn defnyddio manylion or TGP iw creu yn ddilys os byddant yn anghywir.
+cyaNewUkimsNumber.title = Gwiriwch eich atebion ar gyfer eich rhif UKIMS newydd
+cyaNewUkimsNumber.heading = Gwiriwch eich atebion ar gyfer eich rhif UKIMS newydd
 
 
 hasGoodsDescriptionChange.title = Newid gwybodaeth y cofnod
@@ -492,11 +531,15 @@ hasGoodsDescriptionChange.p1 = Bydd newid disgrifiad y nwyddau ar y cofnod nwydd
 hasGoodsDescriptionChange.h2 = A ydych am newid disgrifiad y nwyddau?
 hasGoodsDescriptionChange.error.required = Dewiswch os ydych am newid disgrifiad y nwyddau
 
-
+ukimsNumberChangeController.title = Newid Rhif Cynllun Marchnad Fewnol y DU (UKIMS)
+ukimsNumberChangeController.heading = Newid Rhif Cynllun Marchnad Fewnol y DU (UKIMS)
+ukimsNumberChangeController.paragraph = Gan fod gennych rif EORI newydd, mae gennych hefyd rif UKIMS newydd. Mae angen i chi ddiweddaru’ch rhif UKIMS ar eich Proffil Nwyddau Masnachwyr (TGP). Mae cadw’ch rhif UKIMS wedi’i ddiweddaru yn bwysig oherwydd y gellir ei ddefnyddio ar symudiadau.
+ukimsNumberChangeController.button = Diweddaru rhif UKIMS
+ukimsNumberChangeController.duplicateUkimsNumber = Yr ydych wedi nodi’r rhif UKIMS blaenorol. Nodwch y rhif UKIMS newydd.
 
 hasCountryOfOriginChange.title = Newid gwybodaeth y cofnod
 hasCountryOfOriginChange.h1 = Newid gwybodaeth y cofnod
-hasCountryOfOriginChange.p1 = Bydd angen i chi gategoreiddio’r cofnod nwyddau hwn os byddwch yn newid y wlad wreiddiol.
+hasCountryOfOriginChange.p1 = Bydd angen i chi ail-gategoreiddio’r cofnod nwyddau os byddwch yn newid y wlad wreiddiol.
 hasCountryOfOriginChange.h2 = A ydych am newid y wlad wreiddiol?
 hasCountryOfOriginChange.error.required = Dewiswch os ydych am newid y wlad wreiddiol
 
@@ -505,9 +548,8 @@ hasCommodityCodeChange.title = Newid gwybodaeth y cofnod
 hasCommodityCodeChange.h1 = Newid gwybodaeth y cofnod
 hasCommodityCodeChange.h2 = A ydych am newid y cod nwyddau?
 hasCommodityCodeChange.advice = Bydd newid y cod nwyddau ar y cofnod nwyddau hwn yn dileu’r statws cyngor. Os ydych am wirio bod y cod nwyddau yn gywir ac yn cyd-fynd â’r disgrifiad, bydd angen i chi ofyn am gyngor eto.
-hasCommodityCodeChange.category = YBydd angen i chi gategoreiddio’r cofnod nwyddau hwn os byddwch yn newid y cod nwyddau.
+hasCommodityCodeChange.category = Bydd angen i chi ail-gategoreiddio’r cofnod nwyddau os byddwch yn newid y cod nwyddau.
 hasCommodityCodeChange.error.required = Dewiswch os ydych am newid y cod nwyddau
-
 
 removeGoodsRecord.title = Tynnu’r cofnod nwyddau
 removeGoodsRecord.heading = Tynnu’r cofnod nwyddau

@@ -17,6 +17,7 @@
 package forms
 
 import forms.behaviours.BooleanFieldBehaviours
+import forms.profile.RemoveNirmsFormProvider
 import play.api.data.FormError
 
 class RemoveNirmsFormProviderSpec extends BooleanFieldBehaviours {

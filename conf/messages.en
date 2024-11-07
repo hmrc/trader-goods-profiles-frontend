@@ -72,10 +72,10 @@ cyaCategorisation.assessmentKey = Exclusions for category assessment {0}
 
 journeyRecovery.continue.title = Something has gone wrong
 journeyRecovery.continue.heading = Something has gone wrong
-journeyRecovery.continue.guidance = Something has gone wrong and you''ll need to start again.
+journeyRecovery.continue.guidance = Something has gone wrong and you’ll need to start again.
 journeyRecovery.startAgain.title = Something has gone wrong
 journeyRecovery.startAgain.heading = Something has gone wrong
-journeyRecovery.startAgain.guidance = Something has gone wrong and you''ll need to go to the Trader Goods Profile homepage.
+journeyRecovery.startAgain.guidance = Something has gone wrong and you’ll need to go to the Trader Goods Profile homepage.
 
 signedOut.title = You have now signed out
 signedOut.heading = You have now signed out
@@ -159,6 +159,18 @@ ukimsNumber.error.invalidFormat = Enter your UKIMS number in the correct format
 ukimsNumber.checkYourAnswersLabel = UKIMS number
 ukimsNumber.change.hidden = UKIMS number
 
+newUkimsNumber.title = UK Internal Market Scheme (UKIMS) number
+newUkimsNumber.h1 = UK Internal Market Scheme (UKIMS) number
+newUkimsNumber.p1 = HMRC send a letter with a UKIMS authorisation number after you apply. If you are not UKIMS registered, you can not use Trader Goods Profile (TGP).
+newUkimsNumber.p2 = A UKIMS number starts with GB or XI, followed by UKIM, your EORI number without the GB or XI, then 14 numbers.
+newUkimsNumber.heading = What is your UKIMS number?
+newUkimsNumber.hint = For example, XIUKIM47699357400020231115081800
+newUkimsNumber.linkText = I am not UKIMS registered
+newUkimsNumber.error.required = Enter your UKIMS number
+newUkimsNumber.error.invalidFormat = Enter your UKIMS number in the correct format
+newUkimsNumber.checkYourAnswersLabel = UKIMS number
+newUkimsNumber.change.hidden = UKIMS number
+
 categoryGuidance.title = Categorisation
 categoryGuidance.heading = Categorisation
 categoryGuidance.p1 = Categorisation allows you to know what category your goods are in and if they are eligible for Simplified Process for Internal Market Movements (SPIMM).
@@ -229,8 +241,8 @@ createRecordStart.p6 = Categorisation will let you know if your goods are eligib
 createRecordStart.p7 = To complete categorisation, you may need to know the exclusions your goods move under.
 createRecordStart.p8 = You’ll need to complete categorisation before you can use the goods record on movements.
 
-createRecordSuccess.title = You''ve created a goods record
-createRecordSuccess.h1 = You''ve created a goods record
+createRecordSuccess.title = You’ve created a goods record
+createRecordSuccess.h1 = You’ve created a goods record
 createRecordSuccess.h2 = What happens next
 createRecordSuccess.p2 = You still need to categorise the goods before you can use it on movements.
 createRecordSuccess.p3 = You do not have to categorise this record now. You can review the record from your list of goods records and start categorisation later.
@@ -359,9 +371,9 @@ hasSupplementaryUnit.checkYourAnswersLabel = Do you want to add the supplementar
 hasSupplementaryUnit.error.required = Select yes if you want to add the supplementary unit
 hasSupplementaryUnit.change.hidden = HasSupplementaryUnit
 
-supplementaryUnit.title = What is the good''s supplementary unit?
-supplementaryUnit.h1 = What is the good''s supplementary unit?
-supplementaryUnit.checkYourAnswersLabel = What is the good''s supplementary unit?
+supplementaryUnit.title = What is the good’s supplementary unit?
+supplementaryUnit.h1 = What is the good’s supplementary unit?
+supplementaryUnit.checkYourAnswersLabel = What is the good’s supplementary unit?
 supplementaryUnit.error.nonNumeric = Enter a supplementary unit in the correct format
 supplementaryUnit.error.required = Enter the goods supplementary unit
 supplementaryUnit.change.hidden = SupplementaryUnit
@@ -430,7 +442,7 @@ removeGoodsRecord.noRecord = No, return to goods record
 singleRecord.title = Goods record
 singleRecord.h1 = Goods record
 singleRecord.p1 = Check if the details of this record are correct.
-singleRecord.p2 = If you need to categorise this good, we''ll tell you more about how to do this in the next steps.
+singleRecord.p2 = If you need to categorise this good, we’ll tell you more about how to do this in the next steps.
 singleRecord.h2.goodsDetails = Goods details
 singleRecord.warning = Warning
 singleRecord.warningText = You are liable for the information on any movements created by you, or on your behalf using your TGP records.
@@ -450,27 +462,28 @@ singleRecord.back = Back to goods profile
 
 hasCountryOfOriginChange.title = Change record information
 hasCountryOfOriginChange.h1 = Change record information
-hasCountryOfOriginChange.p1 = You''ll need to recategorise this goods record if you change the country of origin
+hasCountryOfOriginChange.p1 = You’ll need to recategorise this goods record if you change the country of origin
 hasCountryOfOriginChange.h2 = Do you want to change the country of origin?
 hasCountryOfOriginChange.error.required = Select if you want to change the country of origin
 
 hasCommodityCodeChange.title = Change record information
 hasCommodityCodeChange.h1 = Change record information
 hasCommodityCodeChange.h2 = Do you want to change the commodity code?
-hasCommodityCodeChange.advice = Changing the commodity code on this goods record will remove the advice status. If you want to check the commodity code is correct and matches the description, you''ll need to ask for advice again.
-hasCommodityCodeChange.category = You''ll need to recategorise this goods record if you change the commodity code.
+hasCommodityCodeChange.advice = Changing the commodity code on this goods record will remove the advice status. If you want to check the commodity code is correct and matches the description, you’ll need to ask for advice again.
+hasCommodityCodeChange.category = You’ll need to recategorise this goods record if you change the commodity code.
 hasCommodityCodeChange.error.required = Select if you want to change the commodity code
 
 hasGoodsDescriptionChange.title = Change record information
 hasGoodsDescriptionChange.h1 = Change record information
-hasGoodsDescriptionChange.p1 = Changing the goods description on this goods record will remove the advice status. If you want to check the commodity code is correct and matches the goods description, you''ll need to ask for advice again.
+hasGoodsDescriptionChange.p1 = Changing the goods description on this goods record will remove the advice status. If you want to check the commodity code is correct and matches the goods description, you’ll need to ask for advice again.
 hasGoodsDescriptionChange.h2 = Do you want to change the goods description?
 hasGoodsDescriptionChange.error.required = Select if you want to change the goods description
 
-ukimsNumberChangeController.title = UK Internal Market Scheme(UKIMS) number change
-ukimsNumberChangeController.heading = UK Internal Market Scheme(UKIMS) number change
+ukimsNumberChangeController.title = UK Internal Market Scheme (UKIMS) number change
+ukimsNumberChangeController.heading = UK Internal Market Scheme (UKIMS) number change
 ukimsNumberChangeController.paragraph = As you have a new EORI number, you also have a new UKIMS number. You need to update your UKIMS number on your TGP. Keeping your UKIMS number up to date is important as it can be used on movements.
 ukimsNumberChangeController.button = Update UKIMS number
+ukimsNumberChangeController.duplicateUkimsNumber = You’ve entered the previous UKIMS number. Enter the new UKIMS number.
 
 profile.title = Profile details
 profile.h1 = Profile details
@@ -553,40 +566,40 @@ feedback.line.1 = This is a new service and we want to know what you think of it
 feedback.line.2 = {0}. Your thoughts and ideas will help us to make improvements.
 feedback.link = Send us your feedback
 
-goodsRecordsLoading.title = We''re loading your records
-goodsRecordsLoading.heading = We''re loading your records
-goodsRecordsLoading.p1 = We''re loading {0} records. We will take you to your goods records page when they''re ready to view.
-goodsRecordsLoading.p2 = We''ve currently loaded {0} out of {1} records.
+goodsRecordsLoading.title = We’re loading your records
+goodsRecordsLoading.heading = We’re loading your records
+goodsRecordsLoading.p1 = We’re loading {0} records. We will take you to your goods records page when they’re ready to view.
+goodsRecordsLoading.p2 = We’ve currently loaded {0} out of {1} records.
 goodsRecordsLoading.p3.1 = You can
 goodsRecordsLoading.p3.2 = refresh this page
 goodsRecordsLoading.p3.3 = to check the progress of loading your records.
 
 reviewReason.commodity.title = There is a problem with this record
 reviewReason.commodity.heading = There is a problem with this record
-reviewReason.commodity.p1 = The commodity code has expired. If you want to see if you can use the record within an IMMI, you''ll need to:
+reviewReason.commodity.p1 = The commodity code has expired. If you want to see if you can use the record within an IMMI, you’ll need to:
 reviewReason.commodity.li1 = change the commodity code
 reviewReason.commodity.li2 = categorise the goods
 
 reviewReason.measure.title = There is a problem with this record
 reviewReason.measure.heading = There is a problem with this record
-reviewReason.measure.p1 = The commodity code or restrictions have changed. You''ll need to categorise the record.
+reviewReason.measure.p1 = The commodity code or restrictions have changed. You’ll need to categorise the record.
 
 reviewReason.unclear.title = This record needs to be reviewed
 reviewReason.unclear.heading = This record needs to be reviewed
-reviewReason.unclear.p1 = HMRC have reviewed the record. The goods description is unclear. If you want to use this record on an IMMI, you''ll need to amend the goods description.
+reviewReason.unclear.p1 = HMRC have reviewed the record. The goods description is unclear. If you want to use this record on an IMMI, you’ll need to amend the goods description.
 reviewReason.unclear.p2 = A goods description should contain a plain language description of the goods. This does not have to match the trade tariff description.
 
 reviewReason.inadequate.title = This record needs to be reviewed
 reviewReason.inadequate.heading = This record needs to be reviewed
-reviewReason.inadequate.p1 = HMRC have reviewed this record. The goods description does not have enough detail. If you want to use this record on an IMMI, you''ll need to amend the goods description.
+reviewReason.inadequate.p1 = HMRC have reviewed this record. The goods description does not have enough detail. If you want to use this record on an IMMI, you’ll need to amend the goods description.
 reviewReason.inadequate.p2 = A goods description should contain a plain language description of the goods. This does not have to match the trade tariff description.
 
 reviewReason.mismatch.title = This record needs to be reviewed
 reviewReason.mismatch.heading = This record needs to be reviewed
-reviewReason.mismatch.p1 = HMRC have reviewed this record. The commodity code and goods description do not match. If you want to use this record on an IMMI, you''ll need to amend the commodity code and the goods description.
+reviewReason.mismatch.p1 = HMRC have reviewed this record. The commodity code and goods description do not match. If you want to use this record on an IMMI, you’ll need to amend the commodity code and the goods description.
 
-profileSuccess.title = You''ve created your Trader Goods Profile
-profileSuccess.h1 = You''ve created your Trader Goods Profile
+profileSuccess.title = You’ve created your Trader Goods Profile
+profileSuccess.h1 = You’ve created your Trader Goods Profile
 profileSuccess.h2 = What happens next
 profileSuccess.p1 = You can go to your TGP homepage and either view a list of any previous movement records or create a new record.
 
@@ -607,7 +620,7 @@ withdrawAdviceStart.title = Withdrawing your request
 withdrawAdviceStart.h1 = Withdrawing your request
 withdrawAdviceStart.h2 = Are you sure you want to withdraw your request for advice?
 withdrawAdviceStart.p1 = Withdrawing your request will mean HMRC will not contact you with a decision.
-withdrawAdviceStart.p2 = We''ll unlock your goods record if you withdraw your request. This means you''ll be able to update the goods record.
+withdrawAdviceStart.p2 = We’ll unlock your goods record if you withdraw your request. This means you’ll be able to update the goods record.
 withdrawAdviceStart.radio1 = Yes, remove my request for advice
 withdrawAdviceStart.radio2 = No, do not remove my request for advice
 withdrawAdviceStart.error.required = Select if you want to withdraw your request for advice
@@ -616,8 +629,8 @@ withdrawAdviceSuccess.title = Request for advice withdrawn
 withdrawAdviceSuccess.h1 = Request for advice withdrawn
 withdrawAdviceSuccess.p1 = We have unlocked the goods record and you can now make changes to it.
 
-reasonForWithdrawAdvice.title = Can you tell us why you''re withdrawing your request for advice?
-reasonForWithdrawAdvice.h1 = Can you tell us why you''re withdrawing your request for advice?
+reasonForWithdrawAdvice.title = Can you tell us why you’re withdrawing your request for advice?
+reasonForWithdrawAdvice.h1 = Can you tell us why you’re withdrawing your request for advice?
 reasonForWithdrawAdvice.hint = This is optional and you can withdraw your request without giving us a reason. Telling us why can help us improve the service.
 reasonForWithdrawAdvice.continue = Withdraw request
 reasonForWithdrawAdvice.error.length = The reason must be 512 characters or less
@@ -630,19 +643,19 @@ pageNotFound.p3 = If the web address is correct or you selected a link or button
 pageNotFound.p3.linkText = contact the Trader Goods Profile helpline
 pageNotFound.p3.1 = if you need to speak to someone about your Trader Goods Profile.
 
-singleRecord.recordLocked = This record is locked as you''ve asked HMRC for advice if it is correct. You cannot make any changes, or remove  this record until HMRC have made a decision, or you withdraw your request.
+singleRecord.recordLocked = This record is locked as you’ve asked HMRC for advice if it is correct. You cannot make any changes, or remove  this record until HMRC have made a decision, or you withdraw your request.
 
 requestData.title = Making a request to download your TGP data
 requestData.heading = Making a request to download your TGP data
-requestData.p1 = Once you request the file, we''ll email {0} to let you know when it is ready to download. This is usually ready within five minutes but it could take up to 24 hours.
-requestData.p2 = You''ll also be able to check the progress on the TGP records files page.
+requestData.p1 = Once you request the file, we’ll email {0} to let you know when it is ready to download. This is usually ready within five minutes but it could take up to 24 hours.
+requestData.p2 = You’ll also be able to check the progress on the TGP records files page.
 requestData.button = Get TGP records file
 
 
-downloadRequestSuccess.title = We''ve received your request for a file of your TGP data
-downloadRequestSuccess.h1 = We''ve received your request for a file of your TGP data
+downloadRequestSuccess.title = We’ve received your request for a file of your TGP data
+downloadRequestSuccess.h1 = We’ve received your request for a file of your TGP data
 downloadRequestSuccess.h2 = What happens next
-downloadRequestSuccess.p1 = You can check the progress of your file on the {0}. We''ll also send an email to {1} to let you know when your TGP records file is ready.
+downloadRequestSuccess.p1 = You can check the progress of your file on the {0}. We’ll also send an email to {1} to let you know when your TGP records file is ready.
 downloadRequestSuccess.p1.linkText = download TGP data page
 downloadRequestSuccess.p2 = You will have a notification when you sign in to your TGP with a link to the file download page. The file is in a .csv format.
 downloadRequestSuccess.p3 = The TGP records file will be available for 30 days from when we let you know it is ready.
@@ -651,7 +664,7 @@ downloadRequestSuccess.p3 = The TGP records file will be available for 30 days f
 existingUkimsNumber.title = UK Internal Market Scheme (UKIMS) number
 existingUkimsNumber.h1 = UK Internal Market Scheme (UKIMS) number
 existingUkimsNumber.h2 = Is this still the correct UKIMS number for you?
-existingUkimsNumber.p1 = You''ve used UKIMS number {0} on previous declarations.
+existingUkimsNumber.p1 = You’ve used UKIMS number {0} on previous declarations.
 existingUkimsNumber.error.required = Select if this is the correct UKIMS number
 
 expiredCommodityCode.title = There is a problem
@@ -682,7 +695,6 @@ cyaMaintainProfile.warningText = You need to make sure these details are correct
 cyaNewUkimsNumber.title = Check your answers for your new UKIMS number
 cyaNewUkimsNumber.heading = Check your answers for your new UKIMS number
 
-# TODO: Welsh translation for the file management page (TGP-2753)
 fileManagement.title = TGP records files
 fileManagement.heading = TGP records files
 fileManagement.files.paragraph1 = Files are available for 30 days from when we email you that it is ready to download.
@@ -694,7 +706,7 @@ fileManagement.availableFiles.table.header3 = File
 fileManagement.availableFiles.downloadText = Download file
 fileManagement.availableFiles.downloadText.hidden = requested on {0}
 fileManagement.pendingFiles.table.caption = Pending files
-fileManagement.pendingFiles.table.body = These are requests you''ve made but the file is not ready yet. We''ll email you when the file is ready.
+fileManagement.pendingFiles.table.body = These are requests you’ve made but the file is not ready yet. We’ll email you when the file is ready.
 fileManagement.pendingFiles.table.header1 = Date and time requested
 fileManagement.pendingFiles.table.header2 = File
 fileManagement.pendingFiles.fileText = File not ready
