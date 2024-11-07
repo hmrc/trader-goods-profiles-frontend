@@ -53,7 +53,7 @@ class DownloadRequestSuccessControllerSpec extends SpecBase {
 
         val result = route(application, request).value
 
-        val redirectUrl = Some(RedirectUrl(routes.IndexController.onPageLoad.url))
+        val redirectUrl = Some(RedirectUrl(routes.IndexController.onPageLoad().url))
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(redirectUrl).url
