@@ -22,7 +22,7 @@ import controllers.BaseController
 import forms.goodsProfile.RemoveGoodsRecordFormProvider
 import models.GoodsRecordsPagination.firstPage
 import models.{Location, NormalMode}
-import navigation.Navigator
+import navigation.GoodsProfileNavigator
 import pages.goodsProfile.RemoveGoodsRecordPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -36,7 +36,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class RemoveGoodsRecordController @Inject() (
   override val messagesApi: MessagesApi,
   goodsRecordConnector: GoodsRecordConnector,
-  navigator: Navigator,
+  navigator: GoodsProfileNavigator,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,

@@ -42,3 +42,7 @@ class FakeProfileNavigator(desiredRoute: Call) extends ProfileNavigator {
 class FakeCategorisationNavigator(desiredRoute: Call) extends CategorisationNavigator(mock[CategorisationService]) {
   override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = desiredRoute
 }
+
+class FakeGoodsProfileNavigator(desiredRoute: Call) extends GoodsProfileNavigator {
+  override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = desiredRoute
+}
