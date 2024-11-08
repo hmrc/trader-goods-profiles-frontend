@@ -30,6 +30,7 @@ import queries.CountriesQuery
 import repositories.SessionRepository
 import services.{AuditService, DataCleansingService}
 import viewmodels.checkAnswers._
+import viewmodels.checkAnswers.goodsRecord.{CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, TraderReferenceSummary}
 import viewmodels.govuk.summarylist._
 import views.html.CyaCreateRecordView
 

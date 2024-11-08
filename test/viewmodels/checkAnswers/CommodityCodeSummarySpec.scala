@@ -23,6 +23,7 @@ import models.NormalMode
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.Actions
 import utils.Constants.adviceProvided
+import viewmodels.checkAnswers.goodsRecord.CommodityCodeSummary
 
 class CommodityCodeSummarySpec extends SpecBase {
 

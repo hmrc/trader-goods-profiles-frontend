@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package viewmodels.checkAnswers
+package viewmodels.checkAnswers.goodsRecord
 
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat

@@ -38,6 +38,7 @@ import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants.{commodityCodeKey, countryOfOriginKey, goodsDescriptionKey, traderReferenceKey}
 import utils.SessionData.fromExpiredCommodityCodePage
 import viewmodels.checkAnswers._
+import viewmodels.checkAnswers.goodsRecord.{CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, TraderReferenceSummary}
 import viewmodels.govuk.summarylist._
 import views.html.CyaUpdateRecordView
 

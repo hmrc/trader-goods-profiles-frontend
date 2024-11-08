@@ -38,6 +38,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import uk.gov.hmrc.http.NotFoundException
 import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
 import viewmodels.checkAnswers._
+import viewmodels.checkAnswers.goodsRecord.{CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, TraderReferenceSummary}
 import viewmodels.govuk.summarylist._
 import views.html.SingleRecordView
 

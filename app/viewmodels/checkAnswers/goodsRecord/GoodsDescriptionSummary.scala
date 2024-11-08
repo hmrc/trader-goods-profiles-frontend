@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package viewmodels.checkAnswers
+package viewmodels.checkAnswers.goodsRecord
 
 import controllers.routes
 import models.router.responses.GetGoodsRecordResponse
 import models.{CheckMode, Mode, UserAnswers}
-import pages.CommodityCodePage
+import pages.GoodsDescriptionPage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
@@ -27,50 +27,48 @@ import utils.Constants.adviceProvided
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 
-object CommodityCodeSummary {
+object GoodsDescriptionSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages): Option[SummaryListRow] =
-    answers.get(CommodityCodePage).map { answer =>
+    answers.get(GoodsDescriptionPage).map { answer =>
       SummaryListRowViewModel(
-        key = "commodityCode.checkYourAnswersLabel",
+        key = "goodsDescription.checkYourAnswersLabel",
         value = ValueViewModel(HtmlFormat.escape(answer).toString),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.CommodityCodeController.onPageLoadCreate(CheckMode).url)
-            .withVisuallyHiddenText(messages("commodityCode.change.hidden"))
+          ActionItemViewModel("site.change", routes.GoodsDescriptionController.onPageLoadCreate(CheckMode).url)
+            .withVisuallyHiddenText(messages("goodsDescription.change.hidden"))
         )
       )
     }
 
-  def rowUpdateCya(value: String, recordId: String, mode: Mode)(implicit messages: Messages): SummaryListRow = {
-    val changeLink = routes.CommodityCodeController.onPageLoadUpdate(mode, recordId).url
+  def rowUpdateCya(value: String, recordId: String, mode: Mode)(implicit messages: Messages): SummaryListRow =
     SummaryListRowViewModel(
-      key = "commodityCode.checkYourAnswersLabel",
+      key = "goodsDescription.checkYourAnswersLabel",
       value = ValueViewModel(HtmlFormat.escape(value).toString),
       actions = Seq(
-        ActionItemViewModel("site.change", changeLink)
-          .withVisuallyHiddenText(messages("commodityCode.change.hidden"))
+        ActionItemViewModel("site.change", routes.GoodsDescriptionController.onPageLoadUpdate(mode, recordId).url)
+          .withVisuallyHiddenText(messages("goodsDescription.change.hidden"))
       )
     )
-  }
 
   def rowUpdate(record: GetGoodsRecordResponse, recordId: String, mode: Mode, recordLocked: Boolean)(implicit
     messages: Messages
   ): SummaryListRow = {
-    val changeLink = if (record.category.isDefined || record.adviceStatus == adviceProvided) {
-      routes.HasCommodityCodeChangeController.onPageLoad(mode, recordId).url
+    val changeLink = if (record.adviceStatus == adviceProvided) {
+      routes.HasGoodsDescriptionChangeController.onPageLoad(mode, recordId).url
     } else {
-      routes.CommodityCodeController.onPageLoadUpdate(mode, recordId).url
+      routes.GoodsDescriptionController.onPageLoadUpdate(mode, recordId).url
     }
 
     SummaryListRowViewModel(
-      key = "commodityCode.checkYourAnswersLabel",
-      value = ValueViewModel(HtmlFormat.escape(record.comcode).toString),
+      key = "goodsDescription.checkYourAnswersLabel",
+      value = ValueViewModel(HtmlFormat.escape(record.goodsDescription).toString),
       actions = if (recordLocked) {
         Seq.empty
       } else {
         Seq(
           ActionItemViewModel("site.change", changeLink)
-            .withVisuallyHiddenText(messages("commodityCode.change.hidden"))
+            .withVisuallyHiddenText(messages("goodsDescription.change.hidden"))
         )
       }
     )

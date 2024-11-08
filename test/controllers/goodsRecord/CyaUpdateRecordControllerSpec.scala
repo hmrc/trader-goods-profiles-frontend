@@ -39,6 +39,7 @@ import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants.{commodityCodeKey, countryOfOriginKey, goodsDescriptionKey, traderReferenceKey}
 import viewmodels.checkAnswers._
+import viewmodels.checkAnswers.goodsRecord.UpdateRecordSummary
 import viewmodels.govuk.SummaryListFluency
 import views.html.CyaUpdateRecordView
 

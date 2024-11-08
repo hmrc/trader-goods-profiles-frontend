@@ -22,6 +22,7 @@ import controllers.routes
 import models.NormalMode
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.Actions
+import viewmodels.checkAnswers.goodsRecord.TraderReferenceSummary
 
 class TraderReferenceSummarySpec extends SpecBase {
   implicit private val messages: Messages = messages(applicationBuilder().build())

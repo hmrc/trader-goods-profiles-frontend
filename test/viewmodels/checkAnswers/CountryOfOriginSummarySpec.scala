@@ -22,6 +22,7 @@ import controllers.routes
 import models.{Country, NormalMode}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.Actions
+import viewmodels.checkAnswers.goodsRecord.CountryOfOriginSummary
 
 class CountryOfOriginSummarySpec extends SpecBase {
 
