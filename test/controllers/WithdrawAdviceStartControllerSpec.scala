@@ -20,7 +20,7 @@ import base.SpecBase
 import base.TestConstants.{testRecordId, userAnswersId}
 import forms.WithdrawAdviceStartFormProvider
 import models.UserAnswers
-import navigation.{FakeNavigator, Navigator}
+import navigation.{FakeNavigation, Navigation}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
@@ -93,7 +93,7 @@ class WithdrawAdviceStartControllerSpec extends SpecBase with MockitoSugar {
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository)
           )
           .build()

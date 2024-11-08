@@ -23,7 +23,7 @@ import models.GoodsRecordsPagination.firstPage
 
 import javax.inject.Inject
 import models.{Location, NormalMode}
-import navigation.Navigator
+import navigation.Navigation
 import pages.RemoveGoodsRecordPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -36,7 +36,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class RemoveGoodsRecordController @Inject() (
   override val messagesApi: MessagesApi,
   goodsRecordConnector: GoodsRecordConnector,
-  navigator: Navigator,
+  navigator: Navigation,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,

@@ -27,7 +27,7 @@ import utils.Constants.firstAssessmentNumber
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class CategorisationNavigator @Inject() (categorisationService: CategorisationService) extends NavigatorTrait {
+class CategorisationNavigator @Inject() (categorisationService: CategorisationService) extends Navigator {
 
   val normalRoutes: Page => UserAnswers => Call = {
     case p: CategoryGuidancePage =>

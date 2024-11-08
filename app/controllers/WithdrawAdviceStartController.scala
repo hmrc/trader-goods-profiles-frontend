@@ -19,7 +19,7 @@ package controllers
 import controllers.actions._
 import forms.WithdrawAdviceStartFormProvider
 import models.NormalMode
-import navigation.Navigator
+import navigation.Navigation
 import pages.WithdrawAdviceStartPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -33,7 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class WithdrawAdviceStartController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
-  navigator: Navigator,
+  navigator: Navigation,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,

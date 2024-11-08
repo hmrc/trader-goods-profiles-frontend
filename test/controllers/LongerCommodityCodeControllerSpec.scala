@@ -21,7 +21,7 @@ import base.TestConstants.testRecordId
 import connectors.{GoodsRecordConnector, OttConnector}
 import forms.LongerCommodityCodeFormProvider
 import models.{Commodity, NormalMode, UserAnswers}
-import navigation.{FakeNavigator, Navigator}
+import navigation.{FakeNavigation, Navigation}
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{any, anyString}
 import org.mockito.Mockito.{atLeastOnce, verify, when}
@@ -189,7 +189,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
-              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository),
               bind[OttConnector].toInstance(mockOttConnector),
               bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)

@@ -35,10 +35,10 @@ import utils.Constants.firstAssessmentNumber
 
 import java.time.Instant
 
-class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
+class NavigationSpec extends SpecBase with BeforeAndAfterEach {
 
   private val mockCategorisationService = mock[CategorisationService]
-  private val navigator                 = new Navigator(mockCategorisationService)
+  private val navigator                 = new Navigation(mockCategorisationService)
 
   override def beforeEach(): Unit = {
     reset(mockCategorisationService)

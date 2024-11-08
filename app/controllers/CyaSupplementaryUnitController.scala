@@ -21,7 +21,7 @@ import connectors.GoodsRecordConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import models.helper.SupplementaryUnitUpdateJourney
 import models.{NormalMode, SupplementaryRequest}
-import navigation.Navigator
+import navigation.Navigation
 import pages.CyaSupplementaryUnitPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
@@ -43,7 +43,7 @@ class CyaSupplementaryUnitController @Inject() (
   dataCleansingService: DataCleansingService,
   val controllerComponents: MessagesControllerComponents,
   view: CyaSupplementaryUnitView,
-  navigator: Navigator,
+  navigator: Navigation,
   auditService: AuditService
 )(implicit ec: ExecutionContext)
     extends BaseController {

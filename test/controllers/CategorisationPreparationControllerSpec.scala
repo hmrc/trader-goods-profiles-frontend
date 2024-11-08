@@ -22,7 +22,7 @@ import connectors.GoodsRecordConnector
 import models.helper.CategorisationUpdate
 import models.ott.CategorisationInfo
 import models.{Category2Scenario, CategoryRecord, Commodity, NormalMode, StandardGoodsNoAssessmentsScenario, UserAnswers}
-import navigation.{FakeNavigator, Navigator}
+import navigation.{FakeNavigation, Navigation}
 import org.apache.pekko.Done
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
@@ -74,7 +74,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
         bind[CategorisationService].toInstance(mockCategorisationService),
         bind[SessionRepository].toInstance(mockSessionRepository),
         bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-        bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+        bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
         bind[AuditService].toInstance(mockAuditService)
       )
       .build()

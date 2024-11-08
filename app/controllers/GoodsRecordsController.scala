@@ -20,7 +20,7 @@ import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions._
 import forms.GoodsRecordsFormProvider
 import models.GoodsRecordsPagination._
-import navigation.Navigator
+import navigation.Navigation
 import pages.GoodsRecordsPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -45,7 +45,7 @@ class GoodsRecordsController @Inject() (
   emptyView: GoodsRecordsEmptyView,
   goodsRecordConnector: GoodsRecordConnector,
   ottConnector: OttConnector,
-  navigator: Navigator
+  navigator: Navigation
 )(implicit ec: ExecutionContext)
     extends BaseController {
 

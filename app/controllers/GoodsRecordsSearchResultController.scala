@@ -19,7 +19,7 @@ package controllers
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import models.GoodsRecordsPagination.{getFirstRecordIndex, getLastRecordIndex, getSearchPagination}
-import navigation.Navigator
+import navigation.Navigation
 import pages.GoodsRecordsPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -39,7 +39,7 @@ class GoodsRecordsSearchResultController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: GoodsRecordsSearchResultView,
   emptyView: GoodsRecordsSearchResultEmptyView,
-  navigator: Navigator
+  navigator: Navigation
 )(implicit ec: ExecutionContext)
     extends BaseController {
 

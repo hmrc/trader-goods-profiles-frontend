@@ -27,7 +27,7 @@ import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class ProfileNavigator @Inject() extends NavigatorTrait {
+class ProfileNavigator @Inject() extends Navigator {
 
   val normalRoutes: Page => UserAnswers => Call = {
     case ProfileSetupPage           => navigateFromProfileSetUp

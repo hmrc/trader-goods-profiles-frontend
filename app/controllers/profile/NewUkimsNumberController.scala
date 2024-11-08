@@ -21,7 +21,7 @@ import controllers.BaseController
 import controllers.actions._
 import forms.profile.UkimsNumberFormProvider
 import models.Mode
-import navigation.Navigator
+import navigation.Navigation
 import pages.NewUkimsNumberPage
 import pages.profile.UkimsNumberPage
 import play.api.data.{Form, FormError}
@@ -36,7 +36,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class NewUkimsNumberController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
-  navigator: Navigator,
+  navigator: Navigation,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,

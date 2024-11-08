@@ -22,7 +22,7 @@ import connectors.GoodsRecordConnector
 import forms.HasCommodityCodeChangeFormProvider
 import models.helper.GoodsDetailsUpdate
 import models.{NormalMode, UserAnswers}
-import navigation.{FakeNavigator, Navigator}
+import navigation.{FakeNavigation, Navigation}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{atLeastOnce, verify, when}
@@ -223,7 +223,7 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository),
             bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
           )
@@ -323,7 +323,7 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository),
             bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
           )

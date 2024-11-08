@@ -19,7 +19,7 @@ package controllers
 import base.SpecBase
 import connectors.{DownloadDataConnector, TraderProfileConnector}
 import models.Email
-import navigation.{FakeNavigator, Navigator}
+import navigation.{FakeNavigation, Navigation}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{atLeastOnce, never, verify, when}
@@ -116,7 +116,7 @@ class RequestDataControllerSpec extends SpecBase {
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository),
             bind[DownloadDataConnector].toInstance(mockDownloadDataConnector),
             bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
