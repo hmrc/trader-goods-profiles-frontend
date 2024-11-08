@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-package forms
+package forms.goodsRecord
 
 import forms.behaviours.StringFieldBehaviours
-import forms.goodsRecord.TraderReferenceFormProvider
 import play.api.data.FormError
 
-class TraderReferenceFormProviderSpec extends StringFieldBehaviours {
+class GoodsDescriptionFormProviderSpec extends StringFieldBehaviours {
 
-  val requiredKey = "traderReference.error.required"
-  val lengthKey   = "traderReference.error.length"
+  val requiredKey = "goodsDescription.error.required"
+  val lengthKey   = "goodsDescription.error.length"
   val maxLength   = 512
 
-  val form = new TraderReferenceFormProvider()()
+  val form = new GoodsDescriptionFormProvider()()
 
   ".value" - {
 

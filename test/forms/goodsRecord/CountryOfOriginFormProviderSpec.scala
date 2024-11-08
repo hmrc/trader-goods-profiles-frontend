@@ -14,33 +14,40 @@
  * limitations under the License.
  */
 
-package forms
+package forms.goodsRecord
 
-import forms.behaviours.BooleanFieldBehaviours
-import forms.goodsRecord.HasGoodsDescriptionChangeFormProvider
+import forms.behaviours.StringFieldBehaviours
+import models.Country
 import play.api.data.FormError
 
-class HasGoodsDescriptionChangeFormProviderSpec extends BooleanFieldBehaviours {
+class CountryOfOriginFormProviderSpec extends StringFieldBehaviours {
 
-  val requiredKey = "hasGoodsDescriptionChange.error.required"
-  val invalidKey  = "error.boolean"
-
-  val form = new HasGoodsDescriptionChangeFormProvider()()
+  private val requiredKey = "countryOfOrigin.error.required"
+  private val invalidKey  = "countryOfOrigin.error.invalid"
+  private val countries   = Seq(Country("CN", "China"))
+  private val form        = new CountryOfOriginFormProvider()(countries)
 
   ".value" - {
 
     val fieldName = "value"
 
-    behave like booleanField(
+    behave like fieldThatBindsValidData(
       form,
       fieldName,
-      invalidError = FormError(fieldName, invalidKey)
+      "CN"
     )
 
     behave like mandatoryField(
       form,
       fieldName,
       requiredError = FormError(fieldName, requiredKey)
+    )
+
+    behave like fieldThatErrorsOnInvalidData(
+      form,
+      fieldName,
+      "TEST",
+      FormError(fieldName, invalidKey)
     )
   }
 }

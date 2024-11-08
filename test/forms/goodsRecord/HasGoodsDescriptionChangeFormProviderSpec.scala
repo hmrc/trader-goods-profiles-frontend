@@ -14,35 +14,26 @@
  * limitations under the License.
  */
 
-package forms
+package forms.goodsRecord
 
-import forms.behaviours.StringFieldBehaviours
-import forms.goodsRecord.GoodsDescriptionFormProvider
+import forms.behaviours.BooleanFieldBehaviours
 import play.api.data.FormError
 
-class GoodsDescriptionFormProviderSpec extends StringFieldBehaviours {
+class HasGoodsDescriptionChangeFormProviderSpec extends BooleanFieldBehaviours {
 
-  val requiredKey = "goodsDescription.error.required"
-  val lengthKey   = "goodsDescription.error.length"
-  val maxLength   = 512
+  val requiredKey = "hasGoodsDescriptionChange.error.required"
+  val invalidKey  = "error.boolean"
 
-  val form = new GoodsDescriptionFormProvider()()
+  val form = new HasGoodsDescriptionChangeFormProvider()()
 
   ".value" - {
 
     val fieldName = "value"
 
-    behave like fieldThatBindsValidData(
+    behave like booleanField(
       form,
       fieldName,
-      stringsWithMaxLength(maxLength)
-    )
-
-    behave like fieldWithMaxLength(
-      form,
-      fieldName,
-      maxLength = maxLength,
-      lengthError = FormError(fieldName, lengthKey, Seq(maxLength))
+      invalidError = FormError(fieldName, invalidKey)
     )
 
     behave like mandatoryField(

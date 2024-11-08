@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-package forms
+package forms.goodsRecord
 
 import forms.behaviours.BooleanFieldBehaviours
-import forms.goodsRecord.HasCountryOfOriginChangeFormProvider
 import play.api.data.FormError
 
-class HasCountryOfOriginChangeFormProviderSpec extends BooleanFieldBehaviours {
+class RemoveGoodsRecordFormProviderSpec extends BooleanFieldBehaviours {
 
-  val requiredKey = "hasCountryOfOriginChange.error.required"
+  val requiredKey = "removeGoodsRecord.error.required"
   val invalidKey  = "error.boolean"
 
-  val form = new HasCountryOfOriginChangeFormProvider()()
+  val form = new RemoveGoodsRecordFormProvider()()
 
   ".value" - {
 

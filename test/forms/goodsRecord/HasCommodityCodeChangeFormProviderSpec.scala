@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-package forms
+package forms.goodsRecord
 
 import forms.behaviours.BooleanFieldBehaviours
-import forms.goodsRecord.RemoveGoodsRecordFormProvider
 import play.api.data.FormError
 
-class RemoveGoodsRecordFormProviderSpec extends BooleanFieldBehaviours {
+class HasCommodityCodeChangeFormProviderSpec extends BooleanFieldBehaviours {
 
-  val requiredKey = "removeGoodsRecord.error.required"
+  val requiredKey = "hasCommodityCodeChange.error.required"
   val invalidKey  = "error.boolean"
 
-  val form = new RemoveGoodsRecordFormProvider()()
+  val form = new HasCommodityCodeChangeFormProvider()()
 
   ".value" - {
 
