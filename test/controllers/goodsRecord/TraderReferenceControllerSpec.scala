@@ -20,7 +20,7 @@ import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import connectors.GoodsRecordConnector
 import controllers.routes
-import forms.TraderReferenceFormProvider
+import forms.goodsRecord.TraderReferenceFormProvider
 import models.GoodsRecordsPagination.firstPage
 import models.helper.GoodsDetailsUpdate
 import models.router.responses.GetRecordsResponse

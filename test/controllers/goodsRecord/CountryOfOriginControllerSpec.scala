@@ -20,7 +20,7 @@ import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import connectors.OttConnector
 import controllers.routes
-import forms.CountryOfOriginFormProvider
+import forms.goodsRecord.CountryOfOriginFormProvider
 import models.helper.GoodsDetailsUpdate
 import models.{Country, NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}

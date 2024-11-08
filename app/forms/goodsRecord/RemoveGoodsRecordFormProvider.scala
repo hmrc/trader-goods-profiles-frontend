@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-package forms
+package forms.goodsRecord
 
-import javax.inject.Inject
 import forms.mappings.Mappings
-import models.Country
 import play.api.data.Form
 
-class CountryOfOriginFormProvider @Inject() extends Mappings {
+import javax.inject.Inject
 
-  def apply(countries: Seq[Country]): Form[String] =
+class RemoveGoodsRecordFormProvider @Inject() extends Mappings {
+
+  def apply(): Form[Boolean] =
     Form(
-      "value" -> text("countryOfOrigin.error.required")
-        .verifying("countryOfOrigin.error.invalid", value => countries.exists(_.id == value))
+      "value" -> boolean("removeGoodsRecord.error.required")
     )
 }

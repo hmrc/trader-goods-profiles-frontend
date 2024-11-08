@@ -19,7 +19,7 @@ package controllers.goodsRecord
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import controllers.routes
-import forms.HasGoodsDescriptionChangeFormProvider
+import forms.goodsRecord.HasGoodsDescriptionChangeFormProvider
 import models.helper.GoodsDetailsUpdate
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}

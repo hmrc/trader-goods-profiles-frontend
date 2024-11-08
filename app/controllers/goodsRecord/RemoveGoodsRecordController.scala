@@ -19,7 +19,7 @@ package controllers.goodsRecord
 import connectors.GoodsRecordConnector
 import controllers.actions._
 import controllers.{BaseController, routes}
-import forms.RemoveGoodsRecordFormProvider
+import forms.goodsRecord.RemoveGoodsRecordFormProvider
 import models.GoodsRecordsPagination.firstPage
 import models.{Location, NormalMode}
 import navigation.Navigator

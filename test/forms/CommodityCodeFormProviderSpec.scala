@@ -17,6 +17,7 @@
 package forms
 
 import forms.behaviours.StringFieldBehaviours
+import forms.goodsRecord.CommodityCodeFormProvider
 import org.scalacheck.Gen
 import play.api.data.{Form, FormError}
 

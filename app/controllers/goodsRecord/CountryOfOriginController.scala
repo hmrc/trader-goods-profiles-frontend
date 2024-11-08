@@ -19,7 +19,7 @@ package controllers.goodsRecord
 import connectors.OttConnector
 import controllers.actions._
 import controllers.{BaseController, routes}
-import forms.CountryOfOriginFormProvider
+import forms.goodsRecord.CountryOfOriginFormProvider
 import models.helper.GoodsDetailsUpdate
 import models.requests.DataRequest
 import models.{Country, Mode, UserAnswers}

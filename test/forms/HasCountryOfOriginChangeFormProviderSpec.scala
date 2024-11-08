@@ -17,6 +17,7 @@
 package forms
 
 import forms.behaviours.BooleanFieldBehaviours
+import forms.goodsRecord.HasCountryOfOriginChangeFormProvider
 import play.api.data.FormError
 
 class HasCountryOfOriginChangeFormProviderSpec extends BooleanFieldBehaviours {

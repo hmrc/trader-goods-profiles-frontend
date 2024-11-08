@@ -17,6 +17,7 @@
 package forms
 
 import forms.behaviours.StringFieldBehaviours
+import forms.goodsRecord.CountryOfOriginFormProvider
 import models.Country
 import play.api.data.FormError
 

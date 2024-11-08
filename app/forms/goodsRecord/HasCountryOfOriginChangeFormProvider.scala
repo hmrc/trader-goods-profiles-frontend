@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package forms
-
-import javax.inject.Inject
+package forms.goodsRecord
 
 import forms.mappings.Mappings
 import play.api.data.Form
 
-class RemoveGoodsRecordFormProvider @Inject() extends Mappings {
+import javax.inject.Inject
+
+class HasCountryOfOriginChangeFormProvider @Inject() extends Mappings {
 
   def apply(): Form[Boolean] =
     Form(
-      "value" -> boolean("removeGoodsRecord.error.required")
+      "value" -> boolean("hasCountryOfOriginChange.error.required")
     )
 }

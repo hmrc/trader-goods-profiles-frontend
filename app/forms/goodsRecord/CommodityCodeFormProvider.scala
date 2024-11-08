@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 
-package forms
+package forms.goodsRecord
+
+import forms.mappings.Mappings
+import forms.mappings.helpers.FormatAnswers.removeWhitespace
+import models.StringFieldRegex
+import play.api.data.Form
 
 import javax.inject.Inject
 
-import forms.mappings.Mappings
-import play.api.data.Form
-
-class GoodsRecordsFormProvider @Inject() extends Mappings {
+class CommodityCodeFormProvider @Inject() extends Mappings {
 
   def apply(): Form[String] =
     Form(
-      "value" -> text("goodsRecords.error.required")
-        .verifying(maxLength(100, "goodsRecords.error.length"))
+      "value" -> text("commodityCode.error.required")
+        .transform(removeWhitespace, identity[String])
+        .verifying(regexp(StringFieldRegex.commodityCodeFormatRegex, "commodityCode.error.invalidFormat"))
     )
 }

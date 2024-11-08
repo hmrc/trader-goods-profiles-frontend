@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 
-package forms
-
-import javax.inject.Inject
+package forms.goodsRecord
 
 import forms.mappings.Mappings
 import play.api.data.Form
-import models.RichString
 
-class TraderReferenceFormProvider @Inject() extends Mappings {
+import javax.inject.Inject
 
-  def apply(): Form[String] =
+class HasCommodityCodeChangeFormProvider @Inject() extends Mappings {
+
+  def apply(): Form[Boolean] =
     Form(
-      "value" -> adaptedText("traderReference.error.required")(_.removeDoubleSpaces())
-        .verifying(maxLength(512, "traderReference.error.length"))
+      "value" -> boolean("hasCommodityCodeChange.error.required")
     )
 }

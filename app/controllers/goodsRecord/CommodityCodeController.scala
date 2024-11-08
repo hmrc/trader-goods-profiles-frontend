@@ -19,7 +19,7 @@ package controllers.goodsRecord
 import connectors.OttConnector
 import controllers.actions._
 import controllers.{BaseController, routes}
-import forms.CommodityCodeFormProvider
+import forms.goodsRecord.CommodityCodeFormProvider
 import models.helper.{CreateRecordJourney, GoodsDetailsUpdate}
 import models.requests.DataRequest
 import models.{Commodity, Mode}

@@ -18,7 +18,7 @@ package controllers.goodsRecord
 
 import controllers.BaseController
 import controllers.actions._
-import forms.HasGoodsDescriptionChangeFormProvider
+import forms.goodsRecord.HasGoodsDescriptionChangeFormProvider
 import models.Mode
 import models.helper.GoodsDetailsUpdate
 import navigation.Navigator

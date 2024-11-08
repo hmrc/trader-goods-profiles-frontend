@@ -19,7 +19,7 @@ package controllers.goodsRecord
 import connectors.GoodsRecordConnector
 import controllers.BaseController
 import controllers.actions._
-import forms.HasCommodityCodeChangeFormProvider
+import forms.goodsRecord.HasCommodityCodeChangeFormProvider
 import models.Mode
 import models.helper.GoodsDetailsUpdate
 import navigation.Navigator

@@ -19,7 +19,7 @@ package controllers.goodsRecord
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions._
 import controllers.{BaseController, routes}
-import forms.GoodsRecordsFormProvider
+import forms.goodsRecord.GoodsRecordsFormProvider
 import models.GoodsRecordsPagination._
 import navigation.Navigator
 import pages.GoodsRecordsPage

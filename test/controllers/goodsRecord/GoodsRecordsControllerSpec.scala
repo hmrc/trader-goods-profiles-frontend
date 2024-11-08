@@ -20,7 +20,7 @@ import base.SpecBase
 import base.TestConstants.testEori
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.routes
-import forms.GoodsRecordsFormProvider
+import forms.goodsRecord.GoodsRecordsFormProvider
 import models.GoodsRecordsPagination.firstPage
 import models.router.responses.GetRecordsResponse
 import models.{Country, GoodsRecordsPagination}

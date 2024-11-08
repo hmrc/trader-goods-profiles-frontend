@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package forms
+package forms.goodsRecord
 
-import javax.inject.Inject
 import forms.mappings.Mappings
-import models.RichString
 import play.api.data.Form
 
-class GoodsDescriptionFormProvider @Inject() extends Mappings {
+import javax.inject.Inject
+
+class GoodsRecordsFormProvider @Inject() extends Mappings {
 
   def apply(): Form[String] =
     Form(
-      "value" -> adaptedText("goodsDescription.error.required")(_.removeDoubleSpaces())
-        .verifying(maxLength(512, "goodsDescription.error.length"))
+      "value" -> text("goodsRecords.error.required")
+        .verifying(maxLength(100, "goodsRecords.error.length"))
     )
 }

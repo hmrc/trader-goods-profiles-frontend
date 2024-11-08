@@ -18,7 +18,7 @@ package controllers.goodsRecord
 
 import controllers.BaseController
 import controllers.actions._
-import forms.HasCountryOfOriginChangeFormProvider
+import forms.goodsRecord.HasCountryOfOriginChangeFormProvider
 import models.Mode
 import models.helper.GoodsDetailsUpdate
 import navigation.Navigator

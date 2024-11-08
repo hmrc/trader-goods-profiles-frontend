@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-package forms
+package forms.goodsRecord
+
+import forms.mappings.Mappings
+import models.Country
+import play.api.data.Form
 
 import javax.inject.Inject
 
-import forms.mappings.Mappings
-import play.api.data.Form
+class CountryOfOriginFormProvider @Inject() extends Mappings {
 
-class HasCountryOfOriginChangeFormProvider @Inject() extends Mappings {
-
-  def apply(): Form[Boolean] =
+  def apply(countries: Seq[Country]): Form[String] =
     Form(
-      "value" -> boolean("hasCountryOfOriginChange.error.required")
+      "value" -> text("countryOfOrigin.error.required")
+        .verifying("countryOfOrigin.error.invalid", value => countries.exists(_.id == value))
     )
 }

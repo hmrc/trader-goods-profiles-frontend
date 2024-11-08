@@ -19,7 +19,7 @@ package controllers.goodsRecord
 import base.SpecBase
 import base.TestConstants.testRecordId
 import controllers.routes
-import forms.HasCorrectGoodsFormProvider
+import forms.goodsRecord.HasCorrectGoodsFormProvider
 import models.{Commodity, NormalMode}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any

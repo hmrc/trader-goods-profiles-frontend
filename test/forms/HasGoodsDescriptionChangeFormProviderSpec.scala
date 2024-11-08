@@ -17,6 +17,7 @@
 package forms
 
 import forms.behaviours.BooleanFieldBehaviours
+import forms.goodsRecord.HasGoodsDescriptionChangeFormProvider
 import play.api.data.FormError
 
 class HasGoodsDescriptionChangeFormProviderSpec extends BooleanFieldBehaviours {

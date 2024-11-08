@@ -19,7 +19,7 @@ package controllers.goodsRecord
 import connectors.GoodsRecordConnector
 import controllers.actions._
 import controllers.{BaseController, routes}
-import forms.TraderReferenceFormProvider
+import forms.goodsRecord.TraderReferenceFormProvider
 import models.Mode
 import models.helper.GoodsDetailsUpdate
 import navigation.Navigator
