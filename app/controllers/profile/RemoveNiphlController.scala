@@ -17,8 +17,8 @@
 package controllers.profile
 
 import connectors.TraderProfileConnector
+import controllers.BaseController
 import controllers.actions._
-import controllers.{BaseController, routes}
 import forms.profile.RemoveNiphlFormProvider
 import models.NormalMode
 import navigation.ProfileNavigator
@@ -68,7 +68,8 @@ class RemoveNiphlController @Inject() (
                   sessionRepository.set(answers).map { _ =>
                     Redirect(navigator.nextPage(RemoveNiphlPage, NormalMode, answers))
                   }
-                case _                => Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad().url))
+                case _                =>
+                  Future.successful(Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad().url))
               }
             } else {
 

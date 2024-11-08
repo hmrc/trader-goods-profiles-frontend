@@ -19,7 +19,6 @@ package controllers.profile
 import base.SpecBase
 import base.TestConstants.{testEori, userAnswersId}
 import connectors.TraderProfileConnector
-import controllers.routes
 import forms.profile.UkimsNumberFormProvider
 import models.{NormalMode, TraderProfile, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
@@ -223,7 +222,7 @@ class NewUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
         }
       }
 
@@ -239,7 +238,7 @@ class NewUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
         }
       }
     }

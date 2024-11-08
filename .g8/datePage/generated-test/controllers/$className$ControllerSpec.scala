@@ -128,7 +128,7 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, getRequest).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
       }
     }
 
@@ -140,7 +140,7 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, postRequest()).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
       }
     }
   }

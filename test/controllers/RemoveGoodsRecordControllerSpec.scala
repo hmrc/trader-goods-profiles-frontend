@@ -157,7 +157,9 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
         val continueUrl = RedirectUrl(routes.GoodsRecordsController.onPageLoad(firstPage).url)
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
+        redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+          .onPageLoad(Some(continueUrl))
+          .url
         verify(mockConnector).removeGoodsRecord(eqTo(testEori), eqTo(testRecordId))(any())
         verify(mockAuditService).auditFinishRemoveGoodsRecord(any(), any(), any())(any())
       }
@@ -222,7 +224,7 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
       }
     }
 
@@ -239,7 +241,7 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
       }
     }
   }

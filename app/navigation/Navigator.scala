@@ -106,7 +106,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
       answers => navigateFromHasCorrectGoodsLongerCommodityCode(p.recordId, answers, CheckMode)
     case p: ReassessmentPage                       => navigateFromReassessmentCheck(p)
     case p: RecategorisationPreparationPage        => navigateFromReassessmentPrepCheck(p)
-    case _                                         => _ => routes.JourneyRecoveryController.onPageLoad()
+    case _                                         => _ => controllers.problem.routes.JourneyRecoveryController.onPageLoad()
   }
 
   private def navigateFromWithdrawAdviceStartPage(answers: UserAnswers, recordId: String): Call = {
@@ -118,7 +118,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
         case false => routes.SingleRecordController.onPageLoad(recordId)
         case true  => routes.ReasonForWithdrawAdviceController.onPageLoad(recordId)
       }
-      .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
+      .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 
   private def navigateFromHasCommodityCodeChangePage(answers: UserAnswers, recordId: String): Call = {
@@ -129,7 +129,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
         case false => routes.SingleRecordController.onPageLoad(recordId)
         case true  => routes.CommodityCodeController.onPageLoadUpdate(NormalMode, recordId)
       }
-      .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
+      .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 
   private def navigateFromHasCountryOfOriginChangePage(answers: UserAnswers, recordId: String): Call = {
@@ -140,7 +140,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
         case false => routes.SingleRecordController.onPageLoad(recordId)
         case true  => routes.CountryOfOriginController.onPageLoadUpdate(NormalMode, recordId)
       }
-      .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
+      .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 
   private def navigateFromHasSupplementaryUnitUpdatePage(answers: UserAnswers, recordId: String): Call = {
@@ -151,7 +151,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
         case false => routes.CyaSupplementaryUnitController.onPageLoad(recordId)
         case true  => routes.SupplementaryUnitController.onPageLoadUpdate(NormalMode, recordId)
       }
-      .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
+      .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 
   private def navigateFromHasGoodsDescriptionChangePage(answers: UserAnswers, recordId: String): Call = {
@@ -162,7 +162,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
         case false => routes.SingleRecordController.onPageLoad(recordId)
         case true  => routes.GoodsDescriptionController.onPageLoadUpdate(NormalMode, recordId)
       }
-      .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
+      .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 
   private def navigateFromHasCorrectGoods(answers: UserAnswers): Call =
@@ -172,7 +172,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
         case true  => routes.CyaCreateRecordController.onPageLoad()
         case false => routes.CommodityCodeController.onPageLoadCreate(NormalMode)
       }
-      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+      .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
 
   private def navigateFromHasCorrectGoodsLongerCommodityCode(
     recordId: String,
@@ -189,10 +189,10 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
         answers.get(HasCorrectGoodsLongerCommodityCodePage(recordId)) match {
           case Some(true)  => routes.CategorisationPreparationController.startLongerCategorisation(mode, recordId)
           case Some(false) => routes.LongerCommodityCodeController.onPageLoad(mode, recordId)
-          case None        => routes.JourneyRecoveryController.onPageLoad()
+          case None        => controllers.problem.routes.JourneyRecoveryController.onPageLoad()
         }
       }
-  }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
+  }.getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
 
   private def getShortenedCommodityCode(commodity: Commodity) =
     commodity.commodityCode.reverse
@@ -208,7 +208,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
         case true  => routes.CyaUpdateRecordController.onPageLoadCommodityCode(recordId)
         case false => routes.CommodityCodeController.onPageLoadUpdate(NormalMode, recordId)
       }
-      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+      .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
 
   private def navigateFromHasSupplementaryUnit(recordId: String)(answers: UserAnswers): Call =
     answers
@@ -217,12 +217,12 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
         case true  => routes.SupplementaryUnitController.onPageLoad(NormalMode, recordId)
         case false => routes.CyaCategorisationController.onPageLoad(recordId)
       }
-      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+      .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
 
   private def navigateFromCategorisationPreparationPage(answers: UserAnswers, recordId: String): Call =
     answers.get(CategorisationDetailsQuery(recordId)) match {
       case Some(catInfo) if catInfo.isCommCodeExpired                           =>
-        routes.ExpiredCommodityCodeController.onPageLoad(recordId)
+        controllers.problem.routes.ExpiredCommodityCodeController.onPageLoad(recordId)
       case Some(catInfo) if catInfo.categoryAssessmentsThatNeedAnswers.nonEmpty =>
         controllers.categorisation.routes.CategoryGuidanceController.onPageLoad(recordId)
 
@@ -237,7 +237,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
           routes.CategorisationResultController.onPageLoad(recordId, scenario)
         }
 
-      case None => routes.JourneyRecoveryController.onPageLoad()
+      case None => controllers.problem.routes.JourneyRecoveryController.onPageLoad()
     }
 
   private def shouldGoToLongerCommodityCodeFromPrepPage(catInfo: CategorisationInfo, scenario: Scenario) =
@@ -269,7 +269,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
           routes.CategorisationResultController.onPageLoad(recordId, scenario)
         }
 
-      case None => routes.JourneyRecoveryController.onPageLoad()
+      case None => controllers.problem.routes.JourneyRecoveryController.onPageLoad()
 
     }
   }
@@ -299,7 +299,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
         case _                                                                                                   =>
           routes.CyaCategorisationController.onPageLoad(recordId)
       }
-    }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
+    }.getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
   }
 
   private def navigateFromAssessment(assessmentPage: AssessmentPage)(answers: UserAnswers): Call = {
@@ -327,7 +327,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
         case _                                                                                                   =>
           routes.CyaCategorisationController.onPageLoad(recordId)
       }
-    }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
+    }.getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
   }
 
   private def shouldGoToLongerCommodityCodeWhenCategory2(
@@ -355,7 +355,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
       scenario            = categorisationService.calculateResult(categorisationInfo, answers, page.recordId)
     } yield routes.CategorisationResultController.onPageLoad(page.recordId, scenario))
       .getOrElse(
-        routes.JourneyRecoveryController.onPageLoad(
+        controllers.problem.routes.JourneyRecoveryController.onPageLoad(
           Some(RedirectUrl(routes.CategorisationPreparationController.startCategorisation(page.recordId).url))
         )
       )
@@ -380,7 +380,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
           }
         case false => routes.CommodityCodeController.onPageLoadCreate(CheckMode)
       }
-      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+      .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
 
   private def navigateFromHasCorrectGoodsUpdateCheck(answers: UserAnswers, recordId: String): Call =
     answers
@@ -394,7 +394,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
           }
         case false => routes.CommodityCodeController.onPageLoadUpdate(CheckMode, recordId)
       }
-      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+      .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
 
   private def navigateFromReassessmentPrepCheck(
     reasessmentPrep: RecategorisationPreparationPage
@@ -417,7 +417,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
         } else {
           routes.CategorisationResultController.onPageLoad(recordId, scenario)
         }
-      case None          => routes.JourneyRecoveryController.onPageLoad()
+      case None          => controllers.problem.routes.JourneyRecoveryController.onPageLoad()
 
     }
   }
@@ -444,7 +444,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
       case _                                                                                                     =>
         routes.CyaCategorisationController.onPageLoad(recordId)
     }
-  } getOrElse routes.JourneyRecoveryController.onPageLoad()
+  } getOrElse controllers.problem.routes.JourneyRecoveryController.onPageLoad()
 
   private def navigateFromAssessmentCheck(assessmentPage: AssessmentPage)(answers: UserAnswers): Call = {
     val recordId   = assessmentPage.recordId
@@ -473,7 +473,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
         case _                                                                                         =>
           routes.CyaCategorisationController.onPageLoad(recordId)
       }
-    }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
+    }.getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
   }
 
   private def shouldGoToSupplementaryUnitCheck(
@@ -497,7 +497,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
           }
         case false => routes.CyaSupplementaryUnitController.onPageLoad(recordId)
       }
-      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+      .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
 
   private def navigateFromHasSupplementaryUnitCheck(recordId: String)(answers: UserAnswers): Call =
     answers
@@ -511,7 +511,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
           }
         case false => routes.CyaCategorisationController.onPageLoad(recordId)
       }
-      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+      .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
 
   private def answerIsEmpty(nextAnswer: Option[AssessmentAnswer]) =
     nextAnswer.isEmpty || nextAnswer.contains(AssessmentAnswer.NotAnsweredYet)

@@ -36,7 +36,7 @@ class CategorisationNavigator @Inject() (categorisationService: CategorisationSe
   }
 
   val checkRoutes: Page => UserAnswers => Call = { case _ =>
-    _ => routes.JourneyRecoveryController.onPageLoad()
+    _ => controllers.problem.routes.JourneyRecoveryController.onPageLoad()
   }
 
 }

@@ -16,14 +16,13 @@
 
 package navigation
 
-import controllers.routes
 import models._
 import pages._
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{Call, Result}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 
-trait NavigatorTrait { // TODO: Rename to Navigator once Navigation has been migrated to seperate files
+trait NavigatorTrait { // TODO: Rename to Navigator once Navigation has been migrated to separate files
 
   val normalRoutes: Page => UserAnswers => Call
   val checkRoutes: Page => UserAnswers => Call
@@ -36,6 +35,6 @@ trait NavigatorTrait { // TODO: Rename to Navigator once Navigation has been mig
   }
 
   def journeyRecovery(continueUrl: Option[RedirectUrl] = None): Result = Redirect(
-    routes.JourneyRecoveryController.onPageLoad(continueUrl)
+    controllers.problem.routes.JourneyRecoveryController.onPageLoad(continueUrl)
   )
 }

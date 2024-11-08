@@ -82,7 +82,7 @@ class CyaUpdateRecordController @Inject() (
                     )
                   )
                   Ok(view(list, onSubmitAction, countryOfOriginKey))
-                case _            => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
+                case _            => Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad().url)
               }
 
             case Left(errors) =>

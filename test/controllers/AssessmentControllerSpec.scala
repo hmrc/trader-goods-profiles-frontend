@@ -159,7 +159,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               val result = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual routes.JourneyRecoveryController
+              redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
                 .onPageLoad(
                   Some(RedirectUrl(routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
                 )
@@ -200,7 +200,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               val result = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual routes.JourneyRecoveryController
+              redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
                 .onPageLoad(
                   Some(RedirectUrl(routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
                 )
@@ -308,7 +308,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               val result = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual routes.JourneyRecoveryController
+              redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
                 .onPageLoad(
                   Some(RedirectUrl(routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
                 )
@@ -349,7 +349,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               val result = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual routes.JourneyRecoveryController
+              redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
                 .onPageLoad(
                   Some(RedirectUrl(routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
                 )
@@ -387,7 +387,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               val result = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual routes.JourneyRecoveryController
+              redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
                 .onPageLoad(
                   Some(RedirectUrl(routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
                 )
@@ -513,7 +513,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               val result = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual routes.JourneyRecoveryController
+              redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
                 .onPageLoad(
                   Some(RedirectUrl(routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
                 )
@@ -554,7 +554,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               val result = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual routes.JourneyRecoveryController
+              redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
                 .onPageLoad(
                   Some(RedirectUrl(routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
                 )
@@ -670,7 +670,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               val result = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual routes.JourneyRecoveryController
+              redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
                 .onPageLoad(
                   Some(RedirectUrl(routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
                 )
@@ -711,7 +711,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               val result = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual routes.JourneyRecoveryController
+              redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
                 .onPageLoad(
                   Some(RedirectUrl(routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
                 )
@@ -749,7 +749,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               val result = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual routes.JourneyRecoveryController
+              redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
                 .onPageLoad(
                   Some(RedirectUrl(routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
                 )

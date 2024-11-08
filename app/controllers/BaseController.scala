@@ -49,7 +49,7 @@ trait BaseController extends FrontendBaseController with I18nSupport with Loggin
 
     logger.warn(s"$errorMessage")
 
-    Redirect(routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(continueCall.url))))
+    Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(continueCall.url))))
   }
 
   def prepareForm[T, T2](page: QuestionPage[T], form: Form[T2])(implicit

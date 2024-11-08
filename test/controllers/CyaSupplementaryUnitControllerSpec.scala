@@ -90,7 +90,7 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
         }
       }
 
@@ -110,7 +110,9 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
+            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad(Some(continueUrl))
+              .url
 
           }
         }
@@ -431,7 +433,7 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
         }
       }
 
@@ -462,7 +464,9 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
+            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad(Some(continueUrl))
+              .url
             verify(mockGoodsRecordConnector, never()).updateSupplementaryUnitForGoodsRecord(any(), any(), any(), any())(
               any()
             )

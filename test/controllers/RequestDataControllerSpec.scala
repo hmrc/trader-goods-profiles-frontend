@@ -30,8 +30,8 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
-import views.html.RequestDataView
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
+import views.html.RequestDataView
 
 import java.time.Instant
 import scala.concurrent.Future
@@ -63,7 +63,9 @@ class RequestDataControllerSpec extends SpecBase {
         val redirectUrl = Some(RedirectUrl(routes.IndexController.onPageLoad().url))
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(redirectUrl).url
+        redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+          .onPageLoad(redirectUrl)
+          .url
       }
     }
 
