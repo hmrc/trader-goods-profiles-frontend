@@ -21,7 +21,7 @@ import controllers.actions._
 import forms.TraderReferenceFormProvider
 import models.Mode
 import models.helper.GoodsDetailsUpdate
-import navigation.Navigator
+import navigation.Navigation
 import pages.{TraderReferencePage, TraderReferenceUpdatePage}
 import play.api.data.{Form, FormError}
 import play.api.i18n.{Messages, MessagesApi}
@@ -38,7 +38,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class TraderReferenceController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
-  navigator: Navigator,
+  navigator: Navigation,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,

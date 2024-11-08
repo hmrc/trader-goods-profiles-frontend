@@ -21,7 +21,7 @@ import base.TestConstants.testRecordId
 import connectors.{GoodsRecordConnector, OttConnector}
 import forms.LongerCommodityCodeFormProvider
 import models.{Commodity, NormalMode, UserAnswers}
-import navigation.{FakeNavigator, Navigator}
+import navigation.{FakeNavigation, Navigation}
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{any, anyString}
 import org.mockito.Mockito.{atLeastOnce, verify, when}
@@ -90,7 +90,9 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
             val result  = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad()
+              .url
           }
         }
 
@@ -104,7 +106,9 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
             val result  = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad()
+              .url
           }
         }
 
@@ -118,7 +122,9 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad()
+              .url
           }
         }
 
@@ -183,7 +189,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
-              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository),
               bind[OttConnector].toInstance(mockOttConnector),
               bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
@@ -303,7 +309,9 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
             val result  = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad()
+              .url
           }
         }
 
@@ -320,7 +328,9 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
             status(result) mustEqual SEE_OTHER
 
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad()
+              .url
           }
         }
       }

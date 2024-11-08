@@ -19,7 +19,6 @@ package controllers.goodsProfile
 import base.SpecBase
 import base.TestConstants.{testEori, userAnswersId}
 import connectors.{GoodsRecordConnector, OttConnector}
-import controllers.routes
 import models.GoodsRecordsPagination.firstPage
 import models.router.responses.GetRecordsResponse
 import models.{Country, GoodsRecordsPagination, UserAnswers}
@@ -371,7 +370,7 @@ class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar 
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
       }
     }
 
@@ -389,7 +388,7 @@ class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar 
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
       }
     }
 

@@ -22,7 +22,7 @@ import models.Scenario.getResultAsInt
 import models.helper.CategorisationUpdate
 import models.ott.CategorisationInfo
 import models.{CategoryRecord, Mode, NormalMode, UserAnswers}
-import navigation.Navigator
+import navigation.Navigation
 import org.apache.pekko.Done
 import pages.{CategorisationPreparationPage, HasSupplementaryUnitPage, RecategorisationPreparationPage}
 import play.api.i18n.MessagesApi
@@ -49,7 +49,7 @@ class CategorisationPreparationController @Inject() (
   categorisationService: CategorisationService,
   goodsRecordsConnector: GoodsRecordConnector,
   sessionRepository: SessionRepository,
-  navigator: Navigator,
+  navigator: Navigation,
   auditService: AuditService
 )(implicit ec: ExecutionContext)
     extends BaseController {
@@ -76,7 +76,7 @@ class CategorisationPreparationController @Inject() (
         .removingFromSession(dataUpdated, pageUpdated, dataRemoved))
         .recover { e =>
           logger.error(s"Unable to start categorisation for record $recordId: ${e.getMessage}")
-          Redirect(routes.JourneyRecoveryController.onPageLoad().url)
+          Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad().url)
         }
 
     }
@@ -134,7 +134,7 @@ class CategorisationPreparationController @Inject() (
       ))
         .recover { e =>
           logger.error(s"Unable to start categorisation for record $recordId: ${e.getMessage}")
-          Redirect(routes.JourneyRecoveryController.onPageLoad().url)
+          Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad().url)
         }
     }
 

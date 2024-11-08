@@ -145,7 +145,9 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
+          redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+            .onPageLoad(Some(continueUrl))
+            .url
 
         }
       }
@@ -160,7 +162,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
         }
       }
     }
@@ -242,7 +244,9 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
+            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad(Some(continueUrl))
+              .url
             verify(mockConnector, never()).submitGoodsRecord(any())(any())
 
             withClue("must not try and submit an audit") {
@@ -304,7 +308,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
         }
       }
     }

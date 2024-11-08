@@ -19,7 +19,6 @@ package controllers.goodsProfile
 import base.SpecBase
 import base.TestConstants.testEori
 import connectors.{GoodsRecordConnector, OttConnector}
-import controllers.routes
 import forms.goodsProfile.GoodsRecordsFormProvider
 import models.GoodsRecordsPagination.firstPage
 import models.router.responses.GetRecordsResponse
@@ -463,7 +462,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
       }
     }
 

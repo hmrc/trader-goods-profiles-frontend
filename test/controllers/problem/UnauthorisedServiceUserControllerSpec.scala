@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.problem
 
 import base.SpecBase
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import views.html.UnauthorisedServiceUserView
+import views.html.problem.UnauthorisedServiceUserView
 
 class UnauthorisedServiceUserControllerSpec extends SpecBase {
 
@@ -30,7 +30,7 @@ class UnauthorisedServiceUserControllerSpec extends SpecBase {
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.UnauthorisedServiceUserController.onPageLoad().url)
+        val request = FakeRequest(GET, controllers.problem.routes.UnauthorisedServiceUserController.onPageLoad().url)
 
         val result = route(application, request).value
 

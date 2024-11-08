@@ -22,7 +22,7 @@ import forms.LongerCommodityCodeFormProvider
 import models.helper.UpdateRecordJourney
 import models.requests.DataRequest
 import models.{Mode, UserAnswers}
-import navigation.Navigator
+import navigation.Navigation
 import pages.LongerCommodityCodePage
 import play.api.data.FormError
 import play.api.i18n.MessagesApi
@@ -39,7 +39,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class LongerCommodityCodeController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
-  navigator: Navigator,
+  navigator: Navigation,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,

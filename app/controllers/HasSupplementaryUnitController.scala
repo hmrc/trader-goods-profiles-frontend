@@ -21,7 +21,7 @@ import controllers.actions._
 import forms.HasSupplementaryUnitFormProvider
 import models.Mode
 import models.helper.SupplementaryUnitUpdate
-import navigation.Navigator
+import navigation.Navigation
 import pages.{HasSupplementaryUnitPage, HasSupplementaryUnitUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
@@ -36,7 +36,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class HasSupplementaryUnitController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
-  navigator: Navigator,
+  navigator: Navigation,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,

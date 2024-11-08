@@ -98,7 +98,9 @@ class CyaNewUkimsNumberControllerSpec extends SpecBase with SummaryListFluency w
             val result = route(application, request).value
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual
-              routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl))).url
+              controllers.problem.routes.JourneyRecoveryController
+                .onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl)))
+                .url
           }
         }
 
@@ -112,7 +114,9 @@ class CyaNewUkimsNumberControllerSpec extends SpecBase with SummaryListFluency w
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad()
+              .url
           }
         }
       }
@@ -198,7 +202,9 @@ class CyaNewUkimsNumberControllerSpec extends SpecBase with SummaryListFluency w
 
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual
-                routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl))).url
+                controllers.problem.routes.JourneyRecoveryController
+                  .onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl)))
+                  .url
 
               verify(mockTraderProfileConnector, never()).getTraderProfile(any())(any())
 
@@ -299,7 +305,9 @@ class CyaNewUkimsNumberControllerSpec extends SpecBase with SummaryListFluency w
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad()
+              .url
           }
         }
       }
