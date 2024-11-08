@@ -21,8 +21,10 @@ import models.GoodsRecordsPagination.firstPage
 import models._
 import pages._
 import play.api.mvc.Call
+import queries.{CategorisationDetailsQuery, LongerCommodityQuery}
 import services.CategorisationService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
+import utils.Constants.minimumLengthOfCommodityCode
 
 import javax.inject.{Inject, Singleton}
 
@@ -56,6 +58,8 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
     case p: CyaUpdateRecordPage                    => _ => routes.SingleRecordController.onPageLoad(p.recordId)
     case PreviousMovementRecordsPage               => _ => routes.GoodsRecordsController.onPageLoad(firstPage)
     case RequestDataPage                           => _ => routes.DownloadRequestSuccessController.onPageLoad()
+    case p: HasCorrectGoodsLongerCommodityCodePage =>
+      answers => navigateFromHasCorrectGoodsLongerCommodityCode(p.recordId, answers, NormalMode)
     case _                                         => _ => routes.IndexController.onPageLoad()
   }
 
@@ -76,7 +80,34 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
 
     case _ => _ => routes.JourneyRecoveryController.onPageLoad()
   }
+  private def navigateFromHasCorrectGoodsLongerCommodityCode(
+                                                              recordId: String,
+                                                              answers: UserAnswers,
+                                                              mode: Mode
+                                                            ): Call = {
+    for {
+      categorisationInfo <- answers.get(CategorisationDetailsQuery(recordId))
+      commodity          <- answers.get(LongerCommodityQuery(recordId))
+    } yield
+      if (categorisationInfo.commodityCode == getShortenedCommodityCode(commodity)) {
+        controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(mode, recordId)
+      } else {
+        answers.get(HasCorrectGoodsLongerCommodityCodePage(recordId)) match {
+          case Some(true)  =>
+            controllers.categorisation.routes.CategorisationPreparationController
+              .startLongerCategorisation(mode, recordId)
+          case Some(false) => controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(mode, recordId)
+          case None        => routes.JourneyRecoveryController.onPageLoad()
+        }
+      }
+  }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
+  private def getShortenedCommodityCode(commodity: Commodity) =
+    commodity.commodityCode.reverse
+      .dropWhile(char => char == '0')
+      .reverse
+      .padTo(minimumLengthOfCommodityCode, '0')
+      .mkString
   private def navigateFromWithdrawAdviceStartPage(answers: UserAnswers, recordId: String): Call = {
 
     val continueUrl = RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)

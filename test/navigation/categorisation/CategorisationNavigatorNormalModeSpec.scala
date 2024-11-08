@@ -26,15 +26,13 @@ import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
-import pages.categorisation._
 import pages._
-import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery, LongerCommodityQuery}
+import pages.categorisation._
+import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery}
 import services.CategorisationService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants
 import utils.Constants.firstAssessmentNumber
-
-import java.time.Instant
 
 class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfterEach {
 
@@ -1190,46 +1188,6 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
       }
     }
 
-    "to journey recovery page" - {
-      "when categorisation details not set" in {
-        navigator.nextPage(
-          HasCorrectGoodsLongerCommodityCodePage(testRecordId),
-          NormalMode,
-          emptyUserAnswers
-        ) mustBe routes.JourneyRecoveryController.onPageLoad()
-      }
-
-      "when longer commodity query is not set" in {
-
-        val userAnswers = emptyUserAnswers
-          .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
-          .success
-          .value
-
-        navigator.nextPage(
-          HasCorrectGoodsLongerCommodityCodePage(testRecordId),
-          NormalMode,
-          userAnswers
-        ) mustBe routes.JourneyRecoveryController.onPageLoad()
-      }
-
-      "when answer is not set" in {
-
-        val userAnswers = emptyUserAnswers
-          .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
-          .success
-          .value
-          .set(LongerCommodityQuery(testRecordId), testCommodity.copy(commodityCode = "998877776"))
-          .success
-          .value
-        navigator.nextPage(
-          HasCorrectGoodsLongerCommodityCodePage(testRecordId),
-          NormalMode,
-          userAnswers
-        ) mustBe routes.JourneyRecoveryController.onPageLoad()
-      }
-    }
-
     "to journey recovery" - {
 
       "if categorisation details are not defined" in {
@@ -1597,88 +1555,11 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
       }
 
     }
+
     "return IndexController.onPageLoad for other pages in normalRoutes" in {
       val page = new Page {}
 
       navigator.normalRoutes(page)(userAnswers) mustBe routes.IndexController.onPageLoad()
-    }
-    "must go from longer commodity result page to" - {
-      "to categorisation preparation page when answer is yes" in {
-        val userAnswers =
-          emptyUserAnswers
-            .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
-            .success
-            .value
-            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo.copy(commodityCode = "123456"))
-            .success
-            .value
-            .set(
-              LongerCommodityQuery(testRecordId),
-              Commodity("123456012", List("Description", "Other"), Instant.now, None)
-            )
-            .success
-            .value
-
-        navigator.nextPage(
-          HasCorrectGoodsLongerCommodityCodePage(testRecordId),
-          NormalMode,
-          userAnswers
-        ) mustEqual
-          controllers.categorisation.routes.CategorisationPreparationController
-            .startLongerCategorisation(NormalMode, testRecordId)
-
-      }
-
-      "to longer commodity page when answer is no" in {
-        val userAnswers =
-          emptyUserAnswers
-            .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), false)
-            .success
-            .value
-            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo.copy(commodityCode = "123456"))
-            .success
-            .value
-            .set(
-              LongerCommodityQuery(testRecordId),
-              Commodity("123456012", List("Description", "Other"), Instant.now, None)
-            )
-            .success
-            .value
-
-        navigator.nextPage(
-          HasCorrectGoodsLongerCommodityCodePage(testRecordId),
-          NormalMode,
-          userAnswers
-        ) mustEqual
-          controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId)
-
-      }
-
-      "to longer commodity code page when the longer commodity code is same as short commodity code" in {
-        val userAnswers =
-          emptyUserAnswers
-            .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
-            .success
-            .value
-            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo.copy(commodityCode = "123456"))
-            .success
-            .value
-            .set(
-              LongerCommodityQuery(testRecordId),
-              Commodity("1234560", List("Description", "Other"), Instant.now, None)
-            )
-            .success
-            .value
-
-        navigator.nextPage(
-          HasCorrectGoodsLongerCommodityCodePage(testRecordId),
-          NormalMode,
-          userAnswers
-        ) mustEqual
-          controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId)
-
-      }
-
     }
 
     "must go from categorisation preparation" - {

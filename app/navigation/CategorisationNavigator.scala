@@ -46,8 +46,7 @@ class CategorisationNavigator @Inject() (categorisationService: CategorisationSe
       _ => controllers.categorisation.routes.CyaCategorisationController.onPageLoad(p.recordId)
     case p: CyaCategorisationPage => navigateFromCyaCategorisationPage(p)
 
-    case p: HasCorrectGoodsLongerCommodityCodePage =>
-      answers => navigateFromHasCorrectGoodsLongerCommodityCode(p.recordId, answers, NormalMode)
+
     case p: HasSupplementaryUnitUpdatePage         => answers => navigateFromHasSupplementaryUnitUpdatePage(answers, p.recordId)
     case p: SupplementaryUnitUpdatePage            =>
       _ => controllers.categorisation.routes.CyaSupplementaryUnitController.onPageLoad(p.recordId)
@@ -74,8 +73,7 @@ class CategorisationNavigator @Inject() (categorisationService: CategorisationSe
       _ => routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(CheckMode, p.recordId)
     case p: ReassessmentPage                       => navigateFromReassessmentCheck(p)
     case p: RecategorisationPreparationPage        => navigateFromReassessmentPrepCheck(p)
-    case p: HasCorrectGoodsLongerCommodityCodePage =>
-      answers => navigateFromHasCorrectGoodsLongerCommodityCode(p.recordId, answers, CheckMode)
+
     case _                                         => _ => routes.JourneyRecoveryController.onPageLoad()
   }
 
@@ -220,38 +218,13 @@ class CategorisationNavigator @Inject() (categorisationService: CategorisationSe
       case None => routes.JourneyRecoveryController.onPageLoad()
     }
 
-  private def getShortenedCommodityCode(commodity: Commodity) =
-    commodity.commodityCode.reverse
-      .dropWhile(char => char == '0')
-      .reverse
-      .padTo(minimumLengthOfCommodityCode, '0')
-      .mkString
+
 
   private def shouldGoToLongerCommodityCodeFromPrepPage(catInfo: CategorisationInfo, scenario: Scenario) =
     catInfo.getMinimalCommodityCode.length == minimumLengthOfCommodityCode && catInfo.descendantCount != 0 &&
       getResultAsInt(scenario) == Category2AsInt
 
-  private def navigateFromHasCorrectGoodsLongerCommodityCode(
-    recordId: String,
-    answers: UserAnswers,
-    mode: Mode
-  ): Call = {
-    for {
-      categorisationInfo <- answers.get(CategorisationDetailsQuery(recordId))
-      commodity          <- answers.get(LongerCommodityQuery(recordId))
-    } yield
-      if (categorisationInfo.commodityCode == getShortenedCommodityCode(commodity)) {
-        controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(mode, recordId)
-      } else {
-        answers.get(HasCorrectGoodsLongerCommodityCodePage(recordId)) match {
-          case Some(true)  =>
-            controllers.categorisation.routes.CategorisationPreparationController
-              .startLongerCategorisation(mode, recordId)
-          case Some(false) => controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(mode, recordId)
-          case None        => routes.JourneyRecoveryController.onPageLoad()
-        }
-      }
-  }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
+
   private def navigateFromReassessment(assessmentPage: ReassessmentPage)(answers: UserAnswers): Call = {
     val recordId   = assessmentPage.recordId
     val nextIndex  = assessmentPage.index + 1
