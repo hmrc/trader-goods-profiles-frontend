@@ -20,7 +20,6 @@ import com.google.inject.Inject
 import config.FrontendAppConfig
 import connectors.UserAllowListConnector
 import connectors.UserAllowListConnector.UserNotAllowedException
-import controllers.routes
 import models.requests.IdentifierRequest
 import org.apache.pekko.Done
 import play.api.Logging
@@ -73,7 +72,7 @@ class AuthenticatedIdentifierAction @Inject() (
       } recover {
       case _: UserNotAllowedException        =>
         logger.info("trader is not on user-allow-list redirecting to UnauthorisedServiceController")
-        Redirect(routes.UnauthorisedServiceUserController.onPageLoad())
+        Redirect(controllers.problem.routes.UnauthorisedServiceUserController.onPageLoad())
       case _: NoActiveSession                =>
         logger.info(s"No Active Session. Redirect to $config.loginContinueUrl")
         Redirect(config.loginUrl, Map("continue" -> Seq(config.loginContinueUrl)))
@@ -81,10 +80,10 @@ class AuthenticatedIdentifierAction @Inject() (
         logger.info(
           "Authorisation failure: No enrolments found for CDS. Redirecting to UnauthorisedCdsEnrolmentController"
         )
-        Redirect(routes.UnauthorisedCdsEnrolmentController.onPageLoad())
+        Redirect(controllers.problem.routes.UnauthorisedCdsEnrolmentController.onPageLoad())
       case exception: AuthorisationException =>
         logger.info(f"Authorisation failure: ${exception.reason}. Redirecting to UnauthorisedController")
-        Redirect(routes.UnauthorisedController.onPageLoad())
+        Redirect(controllers.problem.routes.UnauthorisedController.onPageLoad())
     }
   }
 

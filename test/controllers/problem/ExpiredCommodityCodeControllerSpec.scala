@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.problem
 
 import base.SpecBase
 import base.TestConstants.testRecordId
@@ -26,7 +26,7 @@ import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import views.html.ExpiredCommodityCodeView
+import views.html.problem.ExpiredCommodityCodeView
 
 import scala.concurrent.Future
 
@@ -43,7 +43,8 @@ class ExpiredCommodityCodeControllerSpec extends SpecBase {
         .build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.ExpiredCommodityCodeController.onPageLoad(testRecordId).url)
+        val request =
+          FakeRequest(GET, controllers.problem.routes.ExpiredCommodityCodeController.onPageLoad(testRecordId).url)
 
         val result = route(application, request).value
 

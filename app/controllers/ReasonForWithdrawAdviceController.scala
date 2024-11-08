@@ -21,7 +21,7 @@ import controllers.actions._
 import forms.ReasonForWithdrawAdviceFormProvider
 import models.NormalMode
 import models.helper.WithdrawAdviceJourney
-import navigation.Navigator
+import navigation.Navigation
 import pages.ReasonForWithdrawAdvicePage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -34,7 +34,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ReasonForWithdrawAdviceController @Inject() (
   override val messagesApi: MessagesApi,
-  navigator: Navigator,
+  navigator: Navigation,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,

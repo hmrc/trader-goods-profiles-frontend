@@ -27,7 +27,7 @@ import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class ProfileNavigator @Inject() extends NavigatorTrait {
+class ProfileNavigator @Inject() extends Navigator {
 
   val normalRoutes: Page => UserAnswers => Call = {
     case ProfileSetupPage           => navigateFromProfileSetUp
@@ -62,7 +62,7 @@ class ProfileNavigator @Inject() extends NavigatorTrait {
     case HasNiphlUpdatePage     => answers => navigateFromHasNiphlUpdate(answers, CheckMode)
     case NiphlNumberUpdatePage  => _ => controllers.profile.routes.CyaMaintainProfileController.onPageLoadNiphlNumber()
     case UkimsNumberUpdatePage  => _ => controllers.profile.routes.CyaMaintainProfileController.onPageLoadUkimsNumber()
-    case _                      => _ => routes.JourneyRecoveryController.onPageLoad()
+    case _                      => _ => controllers.problem.routes.JourneyRecoveryController.onPageLoad()
   }
 
   private def navigateFromProfileSetUp(answers: UserAnswers): Call =
@@ -80,7 +80,7 @@ class ProfileNavigator @Inject() extends NavigatorTrait {
         case true  => controllers.profile.routes.HasNirmsController.onPageLoadCreate(NormalMode)
         case false => controllers.profile.routes.UkimsNumberController.onPageLoadCreate(NormalMode)
       }
-      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+      .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
 
   private def navigateFromHasNirms(answers: UserAnswers): Call =
     answers
@@ -89,7 +89,7 @@ class ProfileNavigator @Inject() extends NavigatorTrait {
         case true  => controllers.profile.routes.NirmsNumberController.onPageLoadCreate(NormalMode)
         case false => controllers.profile.routes.HasNiphlController.onPageLoadCreate(NormalMode)
       }
-      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+      .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
 
   private def navigateFromRemoveNirmsPage(answers: UserAnswers): Call =
     answers
@@ -125,9 +125,9 @@ class ProfileNavigator @Inject() extends NavigatorTrait {
                 controllers.profile.routes.CyaMaintainProfileController.onPageLoadNirms()
               }
             }
-            .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
+            .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
       }
-      .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
+      .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 
   private def navigateFromHasNiphl(answers: UserAnswers): Call =
@@ -137,7 +137,7 @@ class ProfileNavigator @Inject() extends NavigatorTrait {
         case true  => controllers.profile.routes.NiphlNumberController.onPageLoadCreate(NormalMode)
         case false => controllers.profile.routes.CyaCreateProfileController.onPageLoad()
       }
-      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+      .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
 
   private def navigateFromHasNiphlUpdate(answers: UserAnswers, mode: Mode): Call = {
     val continueUrl = RedirectUrl(controllers.profile.routes.ProfileController.onPageLoad().url)
@@ -155,9 +155,9 @@ class ProfileNavigator @Inject() extends NavigatorTrait {
                 controllers.profile.routes.CyaMaintainProfileController.onPageLoadNiphl()
               }
             }
-            .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
+            .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
       }
-      .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
+      .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 
   private def navigateFromHasNirmsCheck(answers: UserAnswers): Call =
@@ -172,7 +172,7 @@ class ProfileNavigator @Inject() extends NavigatorTrait {
           }
         case false => controllers.profile.routes.CyaCreateProfileController.onPageLoad()
       }
-      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+      .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
 
   private def navigateFromHasNiphlCheck(answers: UserAnswers): Call =
     answers
@@ -186,6 +186,6 @@ class ProfileNavigator @Inject() extends NavigatorTrait {
           }
         case false => controllers.profile.routes.CyaCreateProfileController.onPageLoad()
       }
-      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
+      .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
 
 }

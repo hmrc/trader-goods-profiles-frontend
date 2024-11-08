@@ -24,7 +24,7 @@ import models.helper.CategorisationJourney
 import models.ott.CategorisationInfo
 import models.requests.DataRequest
 import models.{CategorisationAnswers, CategoryRecord, NormalMode, UserAnswers, ValidationError}
-import navigation.Navigator
+import navigation.Navigation
 import pages.CyaCategorisationPage
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -47,7 +47,7 @@ class CyaCategorisationController @Inject() (
   goodsRecordConnector: GoodsRecordConnector,
   dataCleansingService: DataCleansingService,
   auditService: AuditService,
-  navigator: Navigator,
+  navigator: Navigation,
   categorisationService: CategorisationService
 )(implicit ec: ExecutionContext)
     extends BaseController {

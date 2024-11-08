@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.problem
 
 import controllers.actions._
 import models.NormalMode
@@ -22,7 +22,7 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.SessionData.{dataRemoved, dataUpdated, fromExpiredCommodityCodePage, pageUpdated}
-import views.html.ExpiredCommodityCodeView
+import views.html.problem.ExpiredCommodityCodeView
 
 import javax.inject.Inject
 
