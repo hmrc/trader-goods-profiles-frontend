@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.goodsRecord
 
 import base.SpecBase
 import base.TestConstants.testEori
 import connectors.{GoodsRecordConnector, OttConnector}
+import controllers.routes
 import models.helper.CreateRecordJourney
 import models.{Country, GoodsRecord, UserAnswers}
 import org.apache.pekko.Done

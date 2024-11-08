@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.goodsRecord
 
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import connectors.OttConnector
+import controllers.routes
 import forms.CommodityCodeFormProvider
 import models.helper.GoodsDetailsUpdate
 import models.{Commodity, NormalMode, UserAnswers}

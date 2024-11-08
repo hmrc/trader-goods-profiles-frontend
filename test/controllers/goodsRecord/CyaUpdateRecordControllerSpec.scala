@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.goodsRecord
 
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId}
 import config.FrontendAppConfig
 import connectors.{GoodsRecordConnector, OttConnector}
+import controllers.routes
 import models.{CheckMode, Commodity, Country, UpdateGoodsRecord}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}

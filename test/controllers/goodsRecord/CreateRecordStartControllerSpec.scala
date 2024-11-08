@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.goodsRecord
 
 import base.SpecBase
 import base.TestConstants.testEori
+import controllers.routes
 import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}

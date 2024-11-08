@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.goodsRecord
 
 import base.SpecBase
 import base.TestConstants.testRecordId
+import controllers.routes
 import forms.HasCorrectGoodsFormProvider
 import models.{Commodity, NormalMode}
 import navigation.{FakeNavigator, Navigator}

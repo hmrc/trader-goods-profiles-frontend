@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.goodsRecord
 
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId}
 import connectors.GoodsRecordConnector
+import controllers.routes
 import forms.RemoveGoodsRecordFormProvider
 import models.GoodsRecordsPagination.firstPage
 import models.{GoodsProfileLocation, GoodsRecordLocation}
