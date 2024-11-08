@@ -24,7 +24,7 @@ import models.helper.SupplementaryUnitUpdateJourney
 import models.{NormalMode, SupplementaryRequest, UserAnswers}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{never, times, verify, when}
+import org.mockito.Mockito.{atLeastOnce, never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.SupplementaryUnitUpdatePage
 import pages.categorisation.HasSupplementaryUnitUpdatePage
@@ -403,7 +403,9 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
           session(result).get(pageUpdated) must be(Some("supplementary unit"))
 
           withClue("must submit an audit") {
-            verify(mockAuditService).auditFinishUpdateSupplementaryUnitGoodsRecord(any(), any(), any())(any())
+            verify(mockAuditService, atLeastOnce()).auditFinishUpdateSupplementaryUnitGoodsRecord(any(), any(), any())(
+              any()
+            )
           }
         }
       }
@@ -441,11 +443,13 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
           }
 
           withClue("must submit an audit") {
-            verify(mockAuditService).auditFinishUpdateSupplementaryUnitGoodsRecord(any(), any(), any())(any())
+            verify(mockAuditService, atLeastOnce()).auditFinishUpdateSupplementaryUnitGoodsRecord(any(), any(), any())(
+              any()
+            )
           }
 
           withClue("must not cleanse the user answers data when connector fails") {
-            verify(sessionRepository, times(0)).clearData(eqTo(userAnswers.id), eqTo(SupplementaryUnitUpdateJourney))
+            verify(sessionRepository, never()).clearData(eqTo(userAnswers.id), eqTo(SupplementaryUnitUpdateJourney))
           }
         }
       }
@@ -505,7 +509,8 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
             )
 
             withClue("must cleanse the user answers data") {
-              verify(sessionRepository).clearData(eqTo(emptyUserAnswers.id), eqTo(SupplementaryUnitUpdateJourney))
+              verify(sessionRepository, atLeastOnce())
+                .clearData(eqTo(emptyUserAnswers.id), eqTo(SupplementaryUnitUpdateJourney))
             }
 
             withClue("must not submit an audit") {

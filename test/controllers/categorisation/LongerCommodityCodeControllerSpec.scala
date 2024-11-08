@@ -25,7 +25,7 @@ import models.{Commodity, NormalMode, UserAnswers}
 import navigation.{CategorisationNavigator, FakeCategorisationNavigator}
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{any, anyString}
-import org.mockito.Mockito.{verify, when}
+import org.mockito.Mockito.{atLeastOnce, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.LongerCommodityCodePage
 import play.api.data.FormError
@@ -201,7 +201,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
 
-          verify(mockOttConnector).getCommodityCode(any(), any(), any(), any(), any(), any())(any())
+          verify(mockOttConnector, atLeastOnce()).getCommodityCode(any(), any(), any(), any(), any(), any())(any())
 
           withClue("ensure user answers has set the new commodity query") {
             val finalUserAnswers = uaCaptor.getValue
@@ -287,7 +287,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
               messages(application)
             ).toString
 
-            verify(mockOttConnector).getCommodityCode(any(), any(), any(), any(), any(), any())(any())
+            verify(mockOttConnector, atLeastOnce()).getCommodityCode(any(), any(), any(), any(), any(), any())(any())
           }
 
         }

@@ -23,7 +23,7 @@ import models.helper.RequestAdviceJourney
 import models.{AdviceRequest, UserAnswers}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{never, times, verify, when}
+import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.Application
 import play.api.inject.bind
@@ -233,7 +233,7 @@ class CyaRequestAdviceControllerSpec extends SpecBase with SummaryListFluency wi
               )
           }
           withClue("must not cleanse the user answers data when connector fails") {
-            verify(sessionRepository, times(0)).clearData(eqTo(userAnswers.id), eqTo(RequestAdviceJourney))
+            verify(sessionRepository, never()).clearData(eqTo(userAnswers.id), eqTo(RequestAdviceJourney))
           }
         }
       }

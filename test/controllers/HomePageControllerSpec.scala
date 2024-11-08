@@ -23,7 +23,7 @@ import models.DownloadDataStatus.{FileInProgress, FileReadySeen, FileReadyUnseen
 import models.router.responses.GetRecordsResponse
 import models.{DownloadDataSummary, FileInfo, GoodsRecordsPagination}
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{atLeastOnce, never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject.bind
 import play.api.test.FakeRequest
@@ -100,6 +100,10 @@ class HomePageControllerSpec extends SpecBase {
             downloadReady = true,
             downloadLinkMessagesKey = "homepage.downloadLinkText.filesRequested"
           )(request, messages(application)).toString
+
+          verify(mockTraderProfileConnector, never()).checkTraderProfile(any())(any())
+          verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any(), any())(any())
+          verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())(any())
         }
       }
 
@@ -148,6 +152,10 @@ class HomePageControllerSpec extends SpecBase {
             downloadReady = false,
             downloadLinkMessagesKey = "homepage.downloadLinkText.filesRequested"
           )(request, messages(application)).toString
+
+          verify(mockTraderProfileConnector, never()).checkTraderProfile(any())(any())
+          verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any(), any())(any())
+          verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())(any())
         }
       }
 
@@ -185,6 +193,10 @@ class HomePageControllerSpec extends SpecBase {
               downloadReady = false,
               downloadLinkMessagesKey = "homepage.downloadLinkText.noFilesRequested"
             )(request, messages(application)).toString
+
+            verify(mockTraderProfileConnector, never()).checkTraderProfile(any())(any())
+            verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any(), any())(any())
+            verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())(any())
           }
         }
 
@@ -232,6 +244,10 @@ class HomePageControllerSpec extends SpecBase {
               downloadReady = false,
               downloadLinkMessagesKey = "homepage.downloadLinkText.filesRequested"
             )(request, messages(application)).toString
+
+            verify(mockTraderProfileConnector, never()).checkTraderProfile(any())(any())
+            verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any(), any())(any())
+            verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())(any())
           }
         }
 
@@ -326,6 +342,10 @@ class HomePageControllerSpec extends SpecBase {
               downloadReady = false,
               downloadLinkMessagesKey = "homepage.downloadLinkText.filesRequested"
             )(request, messages(application)).toString
+
+            verify(mockTraderProfileConnector, never()).checkTraderProfile(any())(any())
+            verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any(), any())(any())
+            verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())(any())
           }
         }
       }
@@ -366,6 +386,10 @@ class HomePageControllerSpec extends SpecBase {
             downloadReady = false,
             downloadLinkMessagesKey = "homepage.downloadLinkText.noGoodsRecords"
           )(request, messages(application)).toString
+
+          verify(mockTraderProfileConnector, never()).checkTraderProfile(any())(any())
+          verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any(), any())(any())
+          verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())(any())
         }
       }
     }

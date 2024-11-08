@@ -25,7 +25,7 @@ import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{verify, when}
+import org.mockito.Mockito.{atLeastOnce, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import pages.HasCommodityCodeChangePage
@@ -111,7 +111,7 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
             categoryWarning = true
           )(request, messages(application)).toString
           withClue("must call the audit service with the correct details") {
-            verify(mockAuditService)
+            verify(mockAuditService, atLeastOnce())
               .auditStartUpdateGoodsRecord(
                 eqTo(testEori),
                 eqTo(AffinityGroup.Individual),

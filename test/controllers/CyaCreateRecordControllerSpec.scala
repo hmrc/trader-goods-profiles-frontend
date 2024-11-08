@@ -23,7 +23,7 @@ import models.helper.CreateRecordJourney
 import models.{Country, GoodsRecord, UserAnswers}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{never, times, verify, when}
+import org.mockito.Mockito.{atLeastOnce, never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.Application
 import play.api.inject.bind
@@ -80,6 +80,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(list)(request, messages(application)).toString
+          verify(mockOttConnector, atLeastOnce()).getCountries(any())
         }
       }
 
@@ -109,6 +110,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(list)(request, messages(application)).toString
+          verify(mockOttConnector, atLeastOnce()).getCountries(any())
         }
       }
 
@@ -203,14 +205,14 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual routes.CreateRecordSuccessController.onPageLoad("test").url
-            verify(mockConnector).submitGoodsRecord(eqTo(expectedPayload))(any())
+            verify(mockConnector, atLeastOnce()).submitGoodsRecord(eqTo(expectedPayload))(any())
 
             withClue("must call the audit connector with the supplied details") {
-              verify(mockAuditService)
+              verify(mockAuditService, atLeastOnce())
                 .auditFinishCreateGoodsRecord(eqTo(testEori), eqTo(AffinityGroup.Individual), eqTo(userAnswers))(any())
             }
             withClue("must cleanse the user answers data") {
-              verify(sessionRepository).clearData(eqTo(userAnswers.id), eqTo(CreateRecordJourney))
+              verify(sessionRepository, atLeastOnce()).clearData(eqTo(userAnswers.id), eqTo(CreateRecordJourney))
             }
           }
         }
@@ -286,7 +288,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               .auditFinishCreateGoodsRecord(eqTo(testEori), eqTo(AffinityGroup.Individual), eqTo(userAnswers))(any())
           }
           withClue("must not cleanse the user answers data when connector fails") {
-            verify(sessionRepository, times(0)).clearData(eqTo(userAnswers.id), eqTo(CreateRecordJourney))
+            verify(sessionRepository, never()).clearData(eqTo(userAnswers.id), eqTo(CreateRecordJourney))
           }
 
         }

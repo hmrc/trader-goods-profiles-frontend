@@ -26,7 +26,7 @@ import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{any, anyString, eq => eqTo}
-import org.mockito.Mockito.{times, verify, when}
+import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages._
 import play.api.data.FormError
@@ -107,7 +107,7 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
           if (page == CommodityCodePage) {
             withClue("must not audit") {
-              verify(mockAuditService, times(0)).auditStartUpdateGoodsRecord(any(), any(), any(), any(), any())(any())
+              verify(mockAuditService, never()).auditStartUpdateGoodsRecord(any(), any(), any(), any(), any())(any())
             }
           } else {
             withClue("must call the audit service with the correct details") {
@@ -147,7 +147,7 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
           contentAsString(result) mustEqual view(form, onSubmitAction)(request, messages(application)).toString
 
           withClue("must not audit") {
-            verify(mockAuditService, times(0)).auditStartUpdateGoodsRecord(any(), any(), any(), any(), any())(any())
+            verify(mockAuditService, never()).auditStartUpdateGoodsRecord(any(), any(), any(), any(), any())(any())
           }
 
         }
@@ -437,6 +437,8 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         session(result).get(dataUpdated) must be(Some("true"))
         session(result).get(pageUpdated) must be(Some("commodity code"))
 
+        verify(mockOttConnector).getCommodityCode(anyString(), any(), any(), any(), any(), any())(any())
+
       }
     }
 
@@ -484,6 +486,7 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         redirectLocation(result).value mustEqual onwardRoute.url
 
         session(result).get(dataUpdated) must be(Some("false"))
+        verify(mockOttConnector).getCommodityCode(anyString(), any(), any(), any(), any(), any())(any())
 
       }
     }

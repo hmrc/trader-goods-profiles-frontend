@@ -215,6 +215,8 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
 
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual onwardRoute.url
+
+              verify(mockSessionRepository).set(any())
             }
           }
 
@@ -435,6 +437,8 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
 
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual onwardRoute.url
+
+              verify(mockSessionRepository).set(any())
             }
           }
 
@@ -558,6 +562,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
                 eqTo(testRecordId),
                 any()
               )(any())
+            verify(mockGoodsRecordConnector).getRecord(any(), any())(any())
           }
         }
       }
@@ -616,6 +621,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
                 any(),
                 any()
               )(any())
+            verify(mockGoodsRecordConnector).getRecord(any(), any())(any())
           }
         }
       }
@@ -674,6 +680,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
                 eqTo(testRecordId),
                 any()
               )(any())
+            verify(mockGoodsRecordConnector).getRecord(any(), any())(any())
           }
         }
       }
@@ -707,6 +714,9 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url
+
+          verify(mockSessionRepository).set(any())
+          verify(mockOttService).getMeasurementUnit(any(), any())(any())
         }
       }
 
@@ -748,6 +758,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
             request,
             messages(application)
           ).toString
+          verify(mockOttService).getMeasurementUnit(any(), any())(any())
         }
       }
 
@@ -818,6 +829,8 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual SEE_OTHER
 
           redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+
+          verify(mockOttService, never()).getMeasurementUnit(any(), any())(any())
         }
       }
 
@@ -860,6 +873,8 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
                 eqTo(testRecordId),
                 any()
               )(any())
+
+            verify(mockGoodsRecordConnector).getRecord(any(), any())(any())
           }
         }
       }

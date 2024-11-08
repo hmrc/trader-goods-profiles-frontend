@@ -24,7 +24,7 @@ import models.GoodsRecordsPagination.firstPage
 import models.router.responses.GetRecordsResponse
 import models.{Country, GoodsRecordsPagination}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{atLeastOnce, never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.bind
 import play.api.test.FakeRequest
@@ -165,6 +165,9 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
             request,
             messages(application)
           ).toString
+
+          verify(mockOttConnector, atLeastOnce()).getCountries(any())
+          verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(eqTo(testEori), eqTo(currentPage), any())(any())
         }
       }
 
@@ -208,6 +211,8 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
             request,
             messages(application)
           ).toString
+          verify(mockOttConnector, atLeastOnce()).getCountries(any())
+          verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(eqTo(testEori), eqTo(currentPage), any())(any())
         }
       }
 
@@ -251,6 +256,8 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
             request,
             messages(application)
           ).toString
+          verify(mockOttConnector, atLeastOnce()).getCountries(any())
+          verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(eqTo(testEori), eqTo(currentPage), any())(any())
         }
       }
 
@@ -294,6 +301,8 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
             request,
             messages(application)
           ).toString
+          verify(mockOttConnector, atLeastOnce()).getCountries(any())
+          verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(eqTo(testEori), eqTo(currentPage), any())(any())
         }
       }
     }
@@ -326,6 +335,8 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         redirectLocation(result).value mustEqual routes.GoodsRecordsLoadingController
           .onPageLoad(Some(RedirectUrl(goodsRecordsRoute)))
           .url
+        verify(mockOttConnector, never()).getCountries(any())
+        verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(eqTo(testEori), eqTo(currentPage), any())(any())
       }
     }
 
@@ -406,6 +417,8 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
           request,
           messages(application)
         ).toString
+        verify(mockOttConnector, atLeastOnce()).getCountries(any())
+        verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(eqTo(testEori), eqTo(middlePage), any())(any())
       }
     }
 
@@ -430,6 +443,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view()(request, messages(application)).toString
+        verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(eqTo(testEori), eqTo(currentPage), any())(any())
       }
     }
 
@@ -519,6 +533,8 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
           request,
           messages(application)
         ).toString
+        verify(mockOttConnector, atLeastOnce()).getCountries(any())
+        verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(eqTo(testEori), eqTo(currentPage), any())(any())
       }
     }
   }

@@ -24,7 +24,7 @@ import models.{TraderProfile, UserAnswers}
 import navigation.{FakeProfileNavigator, ProfileNavigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{never, verify, when}
+import org.mockito.Mockito.{atLeastOnce, never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.profile._
 import play.api.Application
@@ -134,7 +134,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
         "when user answers can remove Nirms and update user profile" - {
 
           "must update the profile and redirect to the Profile Page" in {
-            val traderProfile        = TraderProfile(testEori, "1", Some("2"), Some("3"), false)
+            val traderProfile        = TraderProfile(testEori, "1", Some("2"), Some("3"), eoriChanged = false)
             val updatedTraderProfile = TraderProfile(testEori, "1", None, Some("3"), eoriChanged = false)
 
             val userAnswers = emptyUserAnswers
@@ -174,15 +174,21 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual onwardRoute.url
-              verify(mockTraderProfileConnector)
-                .submitTraderProfile(eqTo(updatedTraderProfile), eqTo(testEori))(any())
-            }
 
-            withClue("must call the audit connector with the supplied details") {
-              verify(mockAuditService)
-                .auditMaintainProfile(eqTo(traderProfile), eqTo(updatedTraderProfile), eqTo(AffinityGroup.Individual))(
-                  any()
-                )
+              withClue("must call the relevant services") {
+                verify(mockTraderProfileConnector)
+                  .submitTraderProfile(eqTo(updatedTraderProfile), eqTo(testEori))(any())
+                verify(mockTraderProfileConnector)
+                  .getTraderProfile(eqTo(testEori))(any())
+                verify(mockAuditService)
+                  .auditMaintainProfile(
+                    eqTo(traderProfile),
+                    eqTo(updatedTraderProfile),
+                    eqTo(AffinityGroup.Individual)
+                  )(
+                    any()
+                  )
+              }
             }
           }
         }
@@ -652,7 +658,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             }
 
             withClue("must call the audit connector with the supplied details") {
-              verify(mockAuditService)
+              verify(mockAuditService, atLeastOnce())
                 .auditMaintainProfile(eqTo(traderProfile), eqTo(updatedTraderProfile), eqTo(AffinityGroup.Individual))(
                   any()
                 )
@@ -801,7 +807,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual onwardRoute.url
-              verify(mockTraderProfileConnector)
+              verify(mockTraderProfileConnector, atLeastOnce())
                 .submitTraderProfile(eqTo(updatedTraderProfile), eqTo(testEori))(any())
             }
 
@@ -967,7 +973,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             }
           }
           withClue("must call the audit connector with the supplied details") {
-            verify(mockAuditService)
+            verify(mockAuditService, atLeastOnce())
               .auditMaintainProfile(eqTo(traderProfile), eqTo(updatedTraderProfile), eqTo(AffinityGroup.Individual))(
                 any()
               )
@@ -1135,7 +1141,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual onwardRoute.url
-            verify(mockTraderProfileConnector)
+            verify(mockTraderProfileConnector, atLeastOnce())
               .submitTraderProfile(eqTo(updatedTraderProfile), eqTo(testEori))(any())
           }
 
@@ -1204,7 +1210,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             }
 
             withClue("must call the audit connector with the supplied details") {
-              verify(mockAuditService)
+              verify(mockAuditService, atLeastOnce())
                 .auditMaintainProfile(eqTo(traderProfile), eqTo(updatedTraderProfile), eqTo(AffinityGroup.Individual))(
                   any()
                 )
@@ -1403,12 +1409,12 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual onwardRoute.url
-            verify(mockTraderProfileConnector)
+            verify(mockTraderProfileConnector, atLeastOnce())
               .submitTraderProfile(eqTo(updatedTraderProfile), eqTo(testEori))(any())
           }
 
           withClue("must call the audit connector with the supplied details") {
-            verify(mockAuditService)
+            verify(mockAuditService, atLeastOnce())
               .auditMaintainProfile(eqTo(traderProfile), eqTo(updatedTraderProfile), eqTo(AffinityGroup.Individual))(
                 any()
               )
@@ -1472,7 +1478,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             }
 
             withClue("must call the audit connector with the supplied details") {
-              verify(mockAuditService)
+              verify(mockAuditService, atLeastOnce())
                 .auditMaintainProfile(any(), any(), any())(
                   any()
                 )

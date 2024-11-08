@@ -20,7 +20,7 @@ import base.SpecBase
 import connectors.TraderProfileConnector
 import controllers.routes
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{verify, when}
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject.bind
 import play.api.test.FakeRequest
@@ -53,6 +53,8 @@ class UkimsKickOutControllerSpec extends SpecBase {
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view()(request, messages(application)).toString
+
+        verify(mockTraderProfileConnector).checkTraderProfile(any())(any())
       }
     }
 
@@ -74,6 +76,7 @@ class UkimsKickOutControllerSpec extends SpecBase {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.HomePageController.onPageLoad().url
+        verify(mockTraderProfileConnector).checkTraderProfile(any())(any())
       }
     }
   }

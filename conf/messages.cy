@@ -535,6 +535,7 @@ ukimsNumberChangeController.title = Newid Rhif Cynllun Marchnad Fewnol y DU (UKI
 ukimsNumberChangeController.heading = Newid Rhif Cynllun Marchnad Fewnol y DU (UKIMS)
 ukimsNumberChangeController.paragraph = Gan fod gennych rif EORI newydd, mae gennych hefyd rif UKIMS newydd. Mae angen i chi ddiweddaru’ch rhif UKIMS ar eich Proffil Nwyddau Masnachwyr (TGP). Mae cadw’ch rhif UKIMS wedi’i ddiweddaru yn bwysig oherwydd y gellir ei ddefnyddio ar symudiadau.
 ukimsNumberChangeController.button = Diweddaru rhif UKIMS
+ukimsNumberChangeController.duplicateUkimsNumber = Yr ydych wedi nodi’r rhif UKIMS blaenorol. Nodwch y rhif UKIMS newydd.
 
 hasCountryOfOriginChange.title = Newid gwybodaeth y cofnod
 hasCountryOfOriginChange.h1 = Newid gwybodaeth y cofnod
@@ -549,9 +550,6 @@ hasCommodityCodeChange.h2 = A ydych am newid y cod nwyddau?
 hasCommodityCodeChange.advice = Bydd newid y cod nwyddau ar y cofnod nwyddau hwn yn dileu’r statws cyngor. Os ydych am wirio bod y cod nwyddau yn gywir ac yn cyd-fynd â’r disgrifiad, bydd angen i chi ofyn am gyngor eto.
 hasCommodityCodeChange.category = Bydd angen i chi ail-gategoreiddio’r cofnod nwyddau os byddwch yn newid y cod nwyddau.
 hasCommodityCodeChange.error.required = Dewiswch os ydych am newid y cod nwyddau
-
-# TODO: Need Welsh Translation for ukimsNumberChangeController.duplicateUkimsNumber. Comment has been added for content designer on TGP-2699
-
 
 removeGoodsRecord.title = Tynnu’r cofnod nwyddau
 removeGoodsRecord.heading = Tynnu’r cofnod nwyddau

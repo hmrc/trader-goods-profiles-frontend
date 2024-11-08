@@ -24,7 +24,7 @@ import models.{TraderProfile, UserAnswers}
 import navigation.{FakeProfileNavigator, ProfileNavigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{never, verify, when}
+import org.mockito.Mockito.{atLeastOnce, never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.profile.UkimsNumberUpdatePage
 import play.api.Application
@@ -158,12 +158,12 @@ class CyaNewUkimsNumberControllerSpec extends SpecBase with SummaryListFluency w
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual onwardRoute.url
-            verify(mockTraderProfileConnector)
+            verify(mockTraderProfileConnector, atLeastOnce())
               .submitTraderProfile(eqTo(updatedTraderProfile), eqTo(testEori))(any())
           }
 
           withClue("must call the audit connector with the supplied details") {
-            verify(mockAuditService)
+            verify(mockAuditService, atLeastOnce())
               .auditMaintainProfile(eqTo(traderProfile), eqTo(updatedTraderProfile), eqTo(AffinityGroup.Individual))(
                 any()
               )
@@ -280,7 +280,7 @@ class CyaNewUkimsNumberControllerSpec extends SpecBase with SummaryListFluency w
             }
 
             withClue("must call the audit connector with the supplied details") {
-              verify(mockAuditService)
+              verify(mockAuditService, atLeastOnce())
                 .auditMaintainProfile(eqTo(traderProfile), eqTo(updatedTraderProfile), eqTo(AffinityGroup.Individual))(
                   any()
                 )
