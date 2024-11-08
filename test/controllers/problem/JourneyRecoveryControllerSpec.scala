@@ -34,7 +34,7 @@ class JourneyRecoveryControllerSpec extends SpecBase {
 
         running(application) {
           val continueUrl = RedirectUrl("/foo")
-          val request =
+          val request     =
             FakeRequest(GET, controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url)
 
           val result = route(application, request).value
@@ -58,7 +58,7 @@ class JourneyRecoveryControllerSpec extends SpecBase {
 
         running(application) {
           val continueUrl = RedirectUrl("https://foo.com")
-          val request =
+          val request     =
             FakeRequest(GET, controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url)
 
           val result = route(application, request).value
