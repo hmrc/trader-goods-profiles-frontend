@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.goodsRecord
 
 import connectors.GoodsRecordConnector
 import controllers.actions._
+import controllers.{BaseController, routes}
 import play.api.Configuration
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}

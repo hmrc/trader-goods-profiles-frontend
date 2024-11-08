@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.goodsRecord
 
 import com.google.inject.Inject
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
+import controllers.{BaseController, routes}
 import models.helper.CreateRecordJourney
 import models.{Country, GoodsRecord, NormalMode, UserAnswers}
 import navigation.Navigator
 import pages.CyaCreateRecordPage
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
+import play.api.mvc._
 import queries.CountriesQuery
 import repositories.SessionRepository
 import services.{AuditService, DataCleansingService}

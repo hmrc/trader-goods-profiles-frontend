@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.goodsRecord
 
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions._
+import controllers.{BaseController, routes}
 import forms.GoodsRecordsFormProvider
 import models.GoodsRecordsPagination._
 import navigation.Navigator

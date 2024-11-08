@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.goodsRecord
 
 import connectors.OttConnector
 import controllers.actions._
+import controllers.{BaseController, routes}
 import forms.CountryOfOriginFormProvider
 import models.helper.GoodsDetailsUpdate
 import models.requests.DataRequest
@@ -27,7 +28,7 @@ import pages.{CountryOfOriginPage, CountryOfOriginUpdatePage, HasCountryOfOrigin
 import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.libs.json.Reads
-import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents, Request, Result}
+import play.api.mvc._
 import queries.CountriesQuery
 import repositories.SessionRepository
 import services.AuditService

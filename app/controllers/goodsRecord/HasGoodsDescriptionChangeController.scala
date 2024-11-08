@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.goodsRecord
 
+import controllers.BaseController
 import controllers.actions._
 import forms.HasGoodsDescriptionChangeFormProvider
 import models.Mode

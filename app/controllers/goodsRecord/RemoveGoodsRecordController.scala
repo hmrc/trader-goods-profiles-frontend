@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.goodsRecord
 
 import connectors.GoodsRecordConnector
 import controllers.actions._
+import controllers.{BaseController, routes}
 import forms.RemoveGoodsRecordFormProvider
 import models.GoodsRecordsPagination.firstPage
-
-import javax.inject.Inject
 import models.{Location, NormalMode}
 import navigation.Navigator
 import pages.RemoveGoodsRecordPage
@@ -31,6 +30,7 @@ import services.AuditService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import views.html.RemoveGoodsRecordView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class RemoveGoodsRecordController @Inject() (

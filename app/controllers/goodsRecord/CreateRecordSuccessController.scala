@@ -14,40 +14,28 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.goodsRecord
 
+import controllers.BaseController
 import controllers.actions._
-import models.NormalMode
-import navigation.Navigator
-import pages.CreateRecordStartPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.AuditService
-import views.html.CreateRecordStartView
+import views.html.CreateRecordSuccessView
 
 import javax.inject.Inject
 
-class CreateRecordStartController @Inject() (
+class CreateRecordSuccessController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
-  view: CreateRecordStartView,
-  navigator: Navigator,
-  auditService: AuditService
+  view: CreateRecordSuccessView
 ) extends BaseController {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
-    implicit request =>
-      Ok(view())
-  }
-
-  def onSubmit: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
-    implicit request =>
-      auditService.auditStartCreateGoodsRecord(request.eori, request.affinityGroup)
-
-      Redirect(navigator.nextPage(CreateRecordStartPage, NormalMode, request.userAnswers))
-  }
+  def onPageLoad(recordId: String): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
+      Ok(view(recordId))
+    }
 }

@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.goodsRecord
 
 import connectors.{GoodsRecordConnector, OttConnector}
+import controllers.BaseController
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
 import models.helper.{CategorisationJourney, RequestAdviceJourney, SupplementaryUnitUpdateJourney, WithdrawAdviceJourney}
 import models.requests.DataRequest

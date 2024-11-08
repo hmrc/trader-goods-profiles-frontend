@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.goodsRecord
 
 import connectors.OttConnector
 import controllers.actions._
+import controllers.{BaseController, routes}
 import forms.CommodityCodeFormProvider
-import models.{Commodity, Mode}
 import models.helper.{CreateRecordJourney, GoodsDetailsUpdate}
 import models.requests.DataRequest
+import models.{Commodity, Mode}
 import navigation.Navigator
-import pages.{CommodityCodePage, CommodityCodeUpdatePage, CountryOfOriginPage, CountryOfOriginUpdatePage, HasCommodityCodeChangePage}
+import pages._
 import play.api.data.{Form, FormError}
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents, Request, Result}
+import play.api.mvc._
 import queries.{CommodityQuery, CommodityUpdateQuery}
 import repositories.SessionRepository
 import services.AuditService

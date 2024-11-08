@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.goodsRecord
 
 import cats.data
 import cats.data.EitherNec
@@ -22,6 +22,7 @@ import com.google.inject.Inject
 import config.FrontendAppConfig
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
+import controllers.{BaseController, routes}
 import models.router.requests.PutRecordRequest
 import models.{CheckMode, Country, NormalMode, UpdateGoodsRecord, UserAnswers, ValidationError}
 import navigation.Navigator
