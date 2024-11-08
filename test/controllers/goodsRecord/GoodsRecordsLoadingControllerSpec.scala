@@ -38,7 +38,7 @@ class GoodsRecordsLoadingControllerSpec extends SpecBase {
 
   "GoodsRecordsLoading Controller" - {
 
-    val continueUrl = routes.GoodsRecordsController.onPageLoad(1).url
+    val continueUrl = controllers.goodsRecord.routes.GoodsRecordsController.onPageLoad(1).url
 
     "must return OK and the correct view for a GET if it's updating" in {
 

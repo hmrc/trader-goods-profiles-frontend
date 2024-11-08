@@ -99,7 +99,7 @@
                                 visuallyHiddenContent1 = goodsRecord.traderRef,
                                 visuallyHiddenContent2 = goodsRecord.traderRef,
                                 href1 = routes.ReviewReasonController.onPageLoad(goodsRecord.recordId).url,
-                                href2 = routes.RemoveGoodsRecordController.onPageLoad(goodsRecord.recordId, GoodsProfileLocation).url
+                                href2 = controllers.goodsRecord.routes.RemoveGoodsRecordController.onPageLoad(goodsRecord.recordId, GoodsProfileLocation).url
                             )
                         )
                     )
@@ -114,7 +114,7 @@
         @govukPagination(pagination)
     }
 
-    <p class="govuk-body"><a href="@routes.GoodsRecordsController.onPageLoad(1).url" class="govuk-link" >@messages("site.goBackToGoodsProfile")</a></p>
+    <p class="govuk-body"><a href="@controllers.goodsRecord.routes.GoodsRecordsController.onPageLoad(1).url" class="govuk-link" >@messages("site.goBackToGoodsProfile")</a></p>
 
 </div>
 }

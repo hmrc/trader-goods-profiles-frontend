@@ -47,7 +47,7 @@
  <p class="govuk-body">@messages("createRecordStart.p7")</p>
  <p class="govuk-body">@messages("createRecordStart.p8")</p>
 
- @formHelper(action = routes.CreateRecordStartController.onSubmit()) {
+ @formHelper(action = controllers.goodsRecord.routes.CreateRecordStartController.onSubmit()) {
   @govukButton(ButtonViewModel(messages("site.continue")))
  }
 }

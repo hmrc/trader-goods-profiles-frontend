@@ -155,7 +155,7 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
             .withFormUrlEncodedBody(("value", "true"))
 
         val result      = route(application, request).value
-        val continueUrl = RedirectUrl(routes.GoodsRecordsController.onPageLoad(firstPage).url)
+        val continueUrl = RedirectUrl(controllers.goodsRecord.routes.GoodsRecordsController.onPageLoad(firstPage).url)
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url

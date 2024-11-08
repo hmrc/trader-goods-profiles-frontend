@@ -29,7 +29,7 @@
   <p class="govuk-body">@messages("goodsRecordsLoading.p2", recordsStored, totalRecords)</p>
   <p class="govuk-body">
     @messages("goodsRecordsLoading.p3.1")
-    <a href="@routes.GoodsRecordsLoadingController.onPageLoad(continueUrl).url">@messages("goodsRecordsLoading.p3.2")</a>
+    <a href="@controllers.goodsRecord.routes.GoodsRecordsLoadingController.onPageLoad(continueUrl).url">@messages("goodsRecordsLoading.p3.2")</a>
     @messages("goodsRecordsLoading.p3.3")
   </p>
 }

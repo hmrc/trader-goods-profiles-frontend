@@ -48,7 +48,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
   private val numberOfPages          = 3
   private val firstRecord            = 1
   private val lastRecord             = 10
-  private lazy val goodsRecordsRoute = routes.GoodsRecordsController.onPageLoad(currentPage).url
+  private lazy val goodsRecordsRoute = controllers.goodsRecord.routes.GoodsRecordsController.onPageLoad(currentPage).url
 
   private val records = Seq(
     goodsRecordResponse(
@@ -101,25 +101,25 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         PaginationItem(
           number = Some(currentPage.toString),
           current = Some(true),
-          href = routes.GoodsRecordsController.onPageLoad(currentPage).url,
+          href = controllers.goodsRecord.routes.GoodsRecordsController.onPageLoad(currentPage).url,
           ellipsis = Some(false)
         ),
         PaginationItem(
           number = Some((1 + currentPage).toString),
           current = Some(false),
-          href = routes.GoodsRecordsController.onPageLoad(1 + currentPage).url,
+          href = controllers.goodsRecord.routes.GoodsRecordsController.onPageLoad(1 + currentPage).url,
           ellipsis = Some(false)
         ),
         PaginationItem(
           number = Some((2 + currentPage).toString),
           current = Some(false),
-          href = routes.GoodsRecordsController.onPageLoad(2 + currentPage).url,
+          href = controllers.goodsRecord.routes.GoodsRecordsController.onPageLoad(2 + currentPage).url,
           ellipsis = Some(true)
         )
       )
     ),
     previous = None,
-    next = Some(PaginationLink(routes.GoodsRecordsController.onPageLoad(1 + currentPage).url))
+    next = Some(PaginationLink(controllers.goodsRecord.routes.GoodsRecordsController.onPageLoad(1 + currentPage).url))
   )
 
   "GoodsRecords Controller" - {
@@ -365,7 +365,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         )
         .build()
 
-      val middleGoodsRecordsRoute = routes.GoodsRecordsController.onPageLoad(middlePage).url
+      val middleGoodsRecordsRoute = controllers.goodsRecord.routes.GoodsRecordsController.onPageLoad(middlePage).url
 
       val pagination = Pagination(
         items = Option(
@@ -373,25 +373,25 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
             PaginationItem(
               number = Some((middlePage - 1).toString),
               current = Some(false),
-              href = routes.GoodsRecordsController.onPageLoad(middlePage - 1).url,
+              href = controllers.goodsRecord.routes.GoodsRecordsController.onPageLoad(middlePage - 1).url,
               ellipsis = Some(false)
             ),
             PaginationItem(
               number = Some(middlePage.toString),
               current = Some(true),
-              href = routes.GoodsRecordsController.onPageLoad(middlePage).url,
+              href = controllers.goodsRecord.routes.GoodsRecordsController.onPageLoad(middlePage).url,
               ellipsis = Some(false)
             ),
             PaginationItem(
               number = Some((1 + middlePage).toString),
               current = Some(false),
-              href = routes.GoodsRecordsController.onPageLoad(1 + middlePage).url,
+              href = controllers.goodsRecord.routes.GoodsRecordsController.onPageLoad(1 + middlePage).url,
               ellipsis = Some(false)
             )
           )
         ),
-        previous = Some(PaginationLink(routes.GoodsRecordsController.onPageLoad(middlePage - 1).url)),
-        next = Some(PaginationLink(routes.GoodsRecordsController.onPageLoad(1 + middlePage).url))
+        previous = Some(PaginationLink(controllers.goodsRecord.routes.GoodsRecordsController.onPageLoad(middlePage - 1).url)),
+        next = Some(PaginationLink(controllers.goodsRecord.routes.GoodsRecordsController.onPageLoad(1 + middlePage).url))
       )
 
       running(application) {
@@ -449,7 +449,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to JourneyRecovery when page number is less than 1" in {
-      val badPageRoute = routes.GoodsRecordsController.onPageLoad(0).url
+      val badPageRoute = controllers.goodsRecord.routes.GoodsRecordsController.onPageLoad(0).url
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .build()

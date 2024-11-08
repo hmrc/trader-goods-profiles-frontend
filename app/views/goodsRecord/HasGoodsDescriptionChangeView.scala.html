@@ -36,7 +36,7 @@
 
     <h2 class="govuk-heading-m">@messages("hasGoodsDescriptionChange.h2")</h2>
 
-    @formHelper(action = routes.HasGoodsDescriptionChangeController.onSubmit(mode, recordId), Symbol("autoComplete") -> "off") {
+    @formHelper(action = controllers.goodsRecord.routes.HasGoodsDescriptionChangeController.onSubmit(mode, recordId), Symbol("autoComplete") -> "off") {
 
         @govukRadios(
             RadiosViewModel.yesNo(

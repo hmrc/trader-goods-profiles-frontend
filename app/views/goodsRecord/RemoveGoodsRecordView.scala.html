@@ -40,7 +40,7 @@
         content = Text(messages("removeGoodsRecord.warningText"))
     ))
 
-    @formHelper(action = routes.RemoveGoodsRecordController.onSubmit(recordId, location), Symbol("autoComplete") -> "off") {
+    @formHelper(action = controllers.goodsRecord.routes.RemoveGoodsRecordController.onSubmit(recordId, location), Symbol("autoComplete") -> "off") {
 
         @govukRadios(
             RadiosViewModel.apply(
