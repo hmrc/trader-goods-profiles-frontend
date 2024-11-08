@@ -14,19 +14,29 @@
  * limitations under the License.
  */
 
-package navigation
+package navigation.categorisation
 
 import base.SpecBase
+import base.TestConstants.{testRecordId, userAnswersId}
 import controllers.routes
 import models._
+import models.ott.{CategorisationInfo, CategoryAssessment}
+import navigation.CategorisationNavigator
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
-import pages.Page
-import pages.categorisation.CategoryGuidancePage
+import pages._
+import pages.categorisation._
+import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery, LongerCommodityQuery}
 import services.CategorisationService
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants
+import utils.Constants.firstAssessmentNumber
 
-class CategorisationNavigatorSpec extends SpecBase with BeforeAndAfterEach {
+import java.time.Instant
+
+class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterEach {
 
   private val categorisationService = mock[CategorisationService]
 
@@ -35,23 +45,5 @@ class CategorisationNavigatorSpec extends SpecBase with BeforeAndAfterEach {
   private val recordId    = "dummyRecordId"
   private val userAnswers = UserAnswers(recordId)
 
-  "CategorisationNavigator" - {
-
-    "return AssessmentController.onPageLoad for CategoryGuidancePage in normalRoutes" in {
-
-      navigator.normalRoutes(CategoryGuidancePage(recordId))(
-        userAnswers
-      ) mustBe controllers.categorisation.routes.AssessmentController
-        .onPageLoad(NormalMode, recordId, Constants.firstAssessmentNumber)
-    }
-
-    "return IndexController.onPageLoad for other pages in normalRoutes" in {
-      val page = new Page {}
-
-      navigator.normalRoutes(page)(userAnswers) mustBe routes.IndexController.onPageLoad()
-    }
-
-    "when in Check mode" - {}
-
-  }
+  "CategorisationNavigator" - {}
 }

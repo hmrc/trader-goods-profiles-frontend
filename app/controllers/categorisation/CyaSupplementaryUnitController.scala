@@ -22,7 +22,7 @@ import controllers.BaseController
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import models.helper.SupplementaryUnitUpdateJourney
 import models.{NormalMode, SupplementaryRequest}
-import navigation.Navigator
+import navigation.CategorisationNavigator
 import pages.categorisation.CyaSupplementaryUnitPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
@@ -44,7 +44,7 @@ class CyaSupplementaryUnitController @Inject() (
   dataCleansingService: DataCleansingService,
   val controllerComponents: MessagesControllerComponents,
   view: CyaSupplementaryUnitView,
-  navigator: Navigator,
+  navigator: CategorisationNavigator,
   auditService: AuditService
 )(implicit ec: ExecutionContext)
     extends BaseController {
