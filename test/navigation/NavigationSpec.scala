@@ -1045,11 +1045,39 @@ class NavigationSpec extends SpecBase with BeforeAndAfterEach {
 
             }
 
+            "when user answered None of the above to last category 2 question" in {
+
+              val longerCommodity = categorisationInfo.copy(commodityCode = "1234567890")
+
+              val userAnswers = emptyUserAnswers
+                .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+                .success
+                .value
+                .set(LongerCategorisationDetailsQuery(testRecordId), longerCommodity)
+                .success
+                .value
+                .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+                .success
+                .value
+                .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+                .success
+                .value
+                .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
+                .success
+                .value
+
+              when(mockCategorisationService.calculateResult(any(), any(), any()))
+                .thenReturn(Category2Scenario)
+
+              navigator.nextPage(RecategorisationPreparationPage(testRecordId), NormalMode, userAnswers) mustEqual
+                routes.HasSupplementaryUnitController.onPageLoad(NormalMode, testRecordId)
+            }
+
           }
 
           "to CYA page" - {
 
-            "when user answered no to last category 2 question" in {
+            "when user answered None of the above to last category 2 question" in {
 
               val longerCommodity = categorisationInfo.copy(commodityCode = "1234567890").copy(measurementUnit = None)
 
