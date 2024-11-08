@@ -37,21 +37,19 @@ class CategorisationNavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
   "CategorisationNavigator" - {
 
-    "when in Normal Mode" - {
+    "return AssessmentController.onPageLoad for CategoryGuidancePage in normalRoutes" in {
 
-      "must go to AssessmentController.onPageLoad from CategoryGuidancePage in normalRoutes" in {
-
-        navigator.normalRoutes(CategoryGuidancePage(recordId))(userAnswers) mustBe routes.AssessmentController
-          .onPageLoad(NormalMode, recordId, Constants.firstAssessmentNumber)
-      }
-
-      "must go to IndexController.onPageLoad from other pages in normalRoutes" in {
-        val page = new Page {}
-
-        navigator.normalRoutes(page)(userAnswers) mustBe routes.IndexController.onPageLoad()
-      }
-
+      navigator.normalRoutes(CategoryGuidancePage(recordId))(userAnswers) mustBe routes.AssessmentController
+        .onPageLoad(NormalMode, recordId, Constants.firstAssessmentNumber)
     }
+
+    "return IndexController.onPageLoad for other pages in normalRoutes" in {
+      val page = new Page {}
+
+      navigator.normalRoutes(page)(userAnswers) mustBe routes.IndexController.onPageLoad()
+    }
+
+    "when in Check mode" - {}
 
   }
 }
