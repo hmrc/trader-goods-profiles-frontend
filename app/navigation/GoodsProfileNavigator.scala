@@ -26,12 +26,13 @@ import play.api.mvc.Call
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class GoodsProfileNavigator @Inject()() extends NavigatorTrait {
+class GoodsProfileNavigator @Inject() () extends NavigatorTrait {
 
   val normalRoutes: Page => UserAnswers => Call = {
-    case PreviousMovementRecordsPage => _ => controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage)
-    case RemoveGoodsRecordPage => _ => controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage)
-    case _ => _ => routes.IndexController.onPageLoad()
+    case PreviousMovementRecordsPage =>
+      _ => controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage)
+    case RemoveGoodsRecordPage       => _ => controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage)
+    case _                           => _ => routes.IndexController.onPageLoad()
   }
 
   val checkRoutes: Page => UserAnswers => Call = { case _ =>

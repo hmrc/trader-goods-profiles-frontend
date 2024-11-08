@@ -2597,27 +2597,6 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
         ) mustEqual routes.SingleRecordController.onPageLoad(recordId)
       }
 
-      "in Viewing Goods Record Journey" - {
-        "must go from RemoveGoodsRecordPage to page 1 of GoodsRecordsController" in {
-          navigator.nextPage(
-            RemoveGoodsRecordPage,
-            NormalMode,
-            emptyUserAnswers
-          ) mustEqual controllers.goodsProfile.routes.GoodsRecordsController
-            .onPageLoad(firstPage)
-        }
-
-        "must go from PreviousMovementsRecordsPage to page 1 of the GoodsRecordController" in {
-          navigator.nextPage(
-            PreviousMovementRecordsPage,
-            NormalMode,
-            emptyUserAnswers
-          ) mustEqual controllers.goodsProfile.routes.GoodsRecordsController
-            .onPageLoad(firstPage)
-        }
-
-      }
-
       "in Supplementary Unit Update Journey" - {
 
         "must go from HasSupplementaryUnitUpdatePage" - {
