@@ -23,7 +23,8 @@ import forms.categorisation.SupplementaryUnitFormProvider
 import models.Mode
 import models.helper.SupplementaryUnitUpdate
 import navigation.CategorisationNavigator
-import pages.{HasSupplementaryUnitUpdatePage, SupplementaryUnitPage, SupplementaryUnitUpdatePage}
+import pages.categorisation.{HasSupplementaryUnitUpdatePage, SupplementaryUnitPage}
+import pages.SupplementaryUnitUpdatePage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery, MeasurementQuery}
@@ -84,7 +85,8 @@ class SupplementaryUnitController @Inject() (
             catInfo
               .map { categorisationInfo =>
                 val measurementUnit = categorisationInfo.measurementUnit
-                val submitAction    = controllers.categorisation.routes.SupplementaryUnitController.onSubmit(mode, recordId)
+                val submitAction    =
+                  controllers.categorisation.routes.SupplementaryUnitController.onSubmit(mode, recordId)
                 Future.successful(BadRequest(view(formWithErrors, mode, recordId, measurementUnit, submitAction)))
               }
               .getOrElse(Future.successful(navigator.journeyRecovery()))
@@ -128,7 +130,8 @@ class SupplementaryUnitController @Inject() (
           }
 
           preparedFormFuture.map { case (preparedForm, measurementUnit) =>
-            val onSubmitAction: Call = controllers.categorisation.routes.SupplementaryUnitController.onSubmitUpdate(mode, recordId)
+            val onSubmitAction: Call =
+              controllers.categorisation.routes.SupplementaryUnitController.onSubmitUpdate(mode, recordId)
             Ok(view(preparedForm, mode, recordId, measurementUnit, onSubmitAction))
               .addingToSession(
                 initialValueOfSuppUnit -> initialValue
@@ -144,7 +147,8 @@ class SupplementaryUnitController @Inject() (
 
   def onSubmitUpdate(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val onSubmitAction: Call = controllers.categorisation.routes.SupplementaryUnitController.onSubmitUpdate(mode, recordId)
+      val onSubmitAction: Call =
+        controllers.categorisation.routes.SupplementaryUnitController.onSubmitUpdate(mode, recordId)
       form
         .bindFromRequest()
         .fold(

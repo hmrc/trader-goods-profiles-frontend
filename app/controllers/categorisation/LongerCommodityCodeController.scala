@@ -38,17 +38,17 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class LongerCommodityCodeController @Inject() (
-                                                override val messagesApi: MessagesApi,
-                                                sessionRepository: SessionRepository,
-                                                navigator: CategorisationNavigator,
-                                                identify: IdentifierAction,
-                                                getData: DataRetrievalAction,
-                                                requireData: DataRequiredAction,
-                                                formProvider: LongerCommodityCodeFormProvider,
-                                                ottConnector: OttConnector,
-                                                val controllerComponents: MessagesControllerComponents,
-                                                view: LongerCommodityCodeView,
-                                                goodsRecordConnector: GoodsRecordConnector
+  override val messagesApi: MessagesApi,
+  sessionRepository: SessionRepository,
+  navigator: CategorisationNavigator,
+  identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
+  formProvider: LongerCommodityCodeFormProvider,
+  ottConnector: OttConnector,
+  val controllerComponents: MessagesControllerComponents,
+  view: LongerCommodityCodeView,
+  goodsRecordConnector: GoodsRecordConnector
 )(implicit ec: ExecutionContext)
     extends BaseController {
 

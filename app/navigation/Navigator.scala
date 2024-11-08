@@ -22,7 +22,7 @@ import models.Scenario.getResultAsInt
 import models._
 import models.ott.{CategorisationInfo, CategoryAssessment}
 import pages._
-import pages.categorisation.CategoryGuidancePage
+import pages.categorisation.{AssessmentPage, CategorisationPreparationPage, CategoryGuidancePage, CyaCategorisationPage, CyaSupplementaryUnitPage, HasSupplementaryUnitPage, HasSupplementaryUnitUpdatePage, ReassessmentPage, SupplementaryUnitPage}
 import play.api.mvc.Call
 import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery, LongerCommodityQuery}
 import services.CategorisationService
@@ -48,7 +48,8 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
     case p: HasCorrectGoodsCommodityCodeUpdatePage => answers => navigateFromHasCorrectGoodsUpdate(answers, p.recordId)
     case p: AssessmentPage                         => navigateFromAssessment(p)
     case p: HasSupplementaryUnitPage               => navigateFromHasSupplementaryUnit(p.recordId)
-    case p: SupplementaryUnitPage                  => _ => controllers.categorisation.routes.CyaCategorisationController.onPageLoad(p.recordId)
+    case p: SupplementaryUnitPage                  =>
+      _ => controllers.categorisation.routes.CyaCategorisationController.onPageLoad(p.recordId)
     case p: AdviceStartPage                        => _ => routes.NameController.onPageLoad(NormalMode, p.recordId)
     case p: NamePage                               => _ => routes.EmailController.onPageLoad(NormalMode, p.recordId)
     case p: EmailPage                              => _ => routes.CyaRequestAdviceController.onPageLoad(p.recordId)
@@ -62,11 +63,13 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
     case p: HasCountryOfOriginChangePage           => answers => navigateFromHasCountryOfOriginChangePage(answers, p.recordId)
     case p: HasCommodityCodeChangePage             => answers => navigateFromHasCommodityCodeChangePage(answers, p.recordId)
     case p: HasSupplementaryUnitUpdatePage         => answers => navigateFromHasSupplementaryUnitUpdatePage(answers, p.recordId)
-    case p: SupplementaryUnitUpdatePage            => _ => controllers.categorisation.routes.CyaSupplementaryUnitController.onPageLoad(p.recordId)
+    case p: SupplementaryUnitUpdatePage            =>
+      _ => controllers.categorisation.routes.CyaSupplementaryUnitController.onPageLoad(p.recordId)
     case p: ReviewReasonPage                       => _ => routes.SingleRecordController.onPageLoad(p.recordId)
     case p: CategorisationPreparationPage          => answers => navigateFromCategorisationPreparationPage(answers, p.recordId)
     case p: CategoryGuidancePage                   =>
-      _ => controllers.categorisation.routes.AssessmentController.onPageLoad(NormalMode, p.recordId, firstAssessmentNumber)
+      _ =>
+        controllers.categorisation.routes.AssessmentController.onPageLoad(NormalMode, p.recordId, firstAssessmentNumber)
     case p: ReassessmentPage                       => navigateFromReassessment(p)
     case p: RecategorisationPreparationPage        => navigateFromReassessmentPrep(p)
     case p: WithdrawAdviceStartPage                => answers => navigateFromWithdrawAdviceStartPage(answers, p.recordId)
@@ -96,10 +99,12 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
     case p: EmailPage                              => _ => routes.CyaRequestAdviceController.onPageLoad(p.recordId)
     case p: AssessmentPage                         => navigateFromAssessmentCheck(p)
     case p: HasSupplementaryUnitPage               => navigateFromHasSupplementaryUnitCheck(p.recordId)
-    case p: SupplementaryUnitPage                  => _ => controllers.categorisation.routes.CyaCategorisationController.onPageLoad(p.recordId)
+    case p: SupplementaryUnitPage                  =>
+      _ => controllers.categorisation.routes.CyaCategorisationController.onPageLoad(p.recordId)
     case p: HasSupplementaryUnitUpdatePage         =>
       navigateFromHasSupplementaryUnitUpdateCheck(p.recordId)
-    case p: SupplementaryUnitUpdatePage            => _ => controllers.categorisation.routes.CyaSupplementaryUnitController.onPageLoad(p.recordId)
+    case p: SupplementaryUnitUpdatePage            =>
+      _ => controllers.categorisation.routes.CyaSupplementaryUnitController.onPageLoad(p.recordId)
     case p: LongerCommodityCodePage                =>
       _ => routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(CheckMode, p.recordId)
     case p: HasCorrectGoodsLongerCommodityCodePage =>
@@ -149,7 +154,8 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
       .get(HasSupplementaryUnitUpdatePage(recordId))
       .map {
         case false => controllers.categorisation.routes.CyaSupplementaryUnitController.onPageLoad(recordId)
-        case true  => controllers.categorisation.routes.SupplementaryUnitController.onPageLoadUpdate(NormalMode, recordId)
+        case true  =>
+          controllers.categorisation.routes.SupplementaryUnitController.onPageLoadUpdate(NormalMode, recordId)
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
@@ -187,7 +193,9 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
         controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(mode, recordId)
       } else {
         answers.get(HasCorrectGoodsLongerCommodityCodePage(recordId)) match {
-          case Some(true)  => controllers.categorisation.routes.CategorisationPreparationController.startLongerCategorisation(mode, recordId)
+          case Some(true)  =>
+            controllers.categorisation.routes.CategorisationPreparationController
+              .startLongerCategorisation(mode, recordId)
           case Some(false) => controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(mode, recordId)
           case None        => routes.JourneyRecoveryController.onPageLoad()
         }
@@ -256,7 +264,8 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
       case Some(catInfo) if catInfo.categoryAssessmentsThatNeedAnswers.nonEmpty =>
         val firstAnswer = answers.get(ReassessmentPage(recordId, firstAssessmentIndex))
         if (reassessmentAnswerIsEmpty(firstAnswer) || !firstAnswer.get.isAnswerCopiedFromPreviousAssessment) {
-          controllers.categorisation.routes.AssessmentController.onPageLoadReassessment(NormalMode, recordId, firstAssessmentNumber)
+          controllers.categorisation.routes.AssessmentController
+            .onPageLoadReassessment(NormalMode, recordId, firstAssessmentNumber)
         } else {
           navigateFromReassessment(ReassessmentPage(recordId, firstAssessmentIndex))(answers)
         }
@@ -291,7 +300,8 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
             if nextIndex < assessmentCount && (reassessmentAnswerIsEmpty(nextAnswer) || !nextAnswer.exists(
               _.isAnswerCopiedFromPreviousAssessment
             )) =>
-          controllers.categorisation.routes.AssessmentController.onPageLoadReassessment(NormalMode, recordId, nextNumber)
+          controllers.categorisation.routes.AssessmentController
+            .onPageLoadReassessment(NormalMode, recordId, nextNumber)
         case AssessmentAnswer.Exemption(_) if nextIndex < assessmentCount                                        =>
           navigateFromReassessment(ReassessmentPage(recordId, nextIndex))(answers)
         case AssessmentAnswer.NoExemption if shouldGoToSupplementaryUnit(categorisationInfo, assessmentQuestion) =>
@@ -356,7 +366,13 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
     } yield controllers.categorisation.routes.CategorisationResultController.onPageLoad(page.recordId, scenario))
       .getOrElse(
         routes.JourneyRecoveryController.onPageLoad(
-          Some(RedirectUrl(controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(page.recordId).url))
+          Some(
+            RedirectUrl(
+              controllers.categorisation.routes.CategorisationPreparationController
+                .startCategorisation(page.recordId)
+                .url
+            )
+          )
         )
       )
 
@@ -405,7 +421,8 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
       case Some(catInfo) if catInfo.categoryAssessmentsThatNeedAnswers.nonEmpty =>
         val firstAnswer = answers.get(ReassessmentPage(recordId, firstAssessmentIndex))
         if (reassessmentAnswerIsEmpty(firstAnswer) || !firstAnswer.get.isAnswerCopiedFromPreviousAssessment) {
-          controllers.categorisation.routes.AssessmentController.onPageLoadReassessment(CheckMode, recordId, firstAssessmentNumber)
+          controllers.categorisation.routes.AssessmentController
+            .onPageLoadReassessment(CheckMode, recordId, firstAssessmentNumber)
         } else {
           navigateFromReassessmentCheck(ReassessmentPage(recordId, firstAssessmentIndex))(answers)
         }

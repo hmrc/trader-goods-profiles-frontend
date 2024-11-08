@@ -23,7 +23,7 @@ import forms.categorisation.HasSupplementaryUnitFormProvider
 import models.Mode
 import models.helper.SupplementaryUnitUpdate
 import navigation.CategorisationNavigator
-import pages.{HasSupplementaryUnitPage, HasSupplementaryUnitUpdatePage}
+import pages.categorisation.{HasSupplementaryUnitPage, HasSupplementaryUnitUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -35,18 +35,18 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class HasSupplementaryUnitController @Inject() (
-                                                 override val messagesApi: MessagesApi,
-                                                 sessionRepository: SessionRepository,
-                                                 navigator: CategorisationNavigator,
-                                                 identify: IdentifierAction,
-                                                 getData: DataRetrievalAction,
-                                                 requireData: DataRequiredAction,
-                                                 profileAuth: ProfileAuthenticateAction,
-                                                 goodsRecordConnector: GoodsRecordConnector,
-                                                 formProvider: HasSupplementaryUnitFormProvider,
-                                                 val controllerComponents: MessagesControllerComponents,
-                                                 view: HasSupplementaryUnitView,
-                                                 auditService: AuditService
+  override val messagesApi: MessagesApi,
+  sessionRepository: SessionRepository,
+  navigator: CategorisationNavigator,
+  identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
+  profileAuth: ProfileAuthenticateAction,
+  goodsRecordConnector: GoodsRecordConnector,
+  formProvider: HasSupplementaryUnitFormProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: HasSupplementaryUnitView,
+  auditService: AuditService
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
@@ -55,14 +55,16 @@ class HasSupplementaryUnitController @Inject() (
   def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       val preparedForm         = prepareForm(HasSupplementaryUnitPage(recordId), form)
-      val onSubmitAction: Call = controllers.categorisation.routes.HasSupplementaryUnitController.onSubmit(mode, recordId)
+      val onSubmitAction: Call =
+        controllers.categorisation.routes.HasSupplementaryUnitController.onSubmit(mode, recordId)
 
       Ok(view(preparedForm, mode, recordId, onSubmitAction))
     }
 
   def onSubmit(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val onSubmitAction: Call = controllers.categorisation.routes.HasSupplementaryUnitController.onSubmit(mode, recordId)
+      val onSubmitAction: Call =
+        controllers.categorisation.routes.HasSupplementaryUnitController.onSubmit(mode, recordId)
       form
         .bindFromRequest()
         .fold(
@@ -96,7 +98,8 @@ class HasSupplementaryUnitController @Inject() (
             Future.successful(form.fill(initialValue))
         }
         preparedFormFuture.map { preparedForm =>
-          val onSubmitAction: Call = controllers.categorisation.routes.HasSupplementaryUnitController.onSubmitUpdate(mode, recordId)
+          val onSubmitAction: Call =
+            controllers.categorisation.routes.HasSupplementaryUnitController.onSubmitUpdate(mode, recordId)
           Ok(view(preparedForm, mode, recordId, onSubmitAction))
             .addingToSession(
               initialValueOfHasSuppUnit -> initialValue.toString
@@ -108,7 +111,8 @@ class HasSupplementaryUnitController @Inject() (
 
   def onSubmitUpdate(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val onSubmitAction: Call = controllers.categorisation.routes.HasSupplementaryUnitController.onSubmitUpdate(mode, recordId)
+      val onSubmitAction: Call =
+        controllers.categorisation.routes.HasSupplementaryUnitController.onSubmitUpdate(mode, recordId)
       form
         .bindFromRequest()
         .fold(

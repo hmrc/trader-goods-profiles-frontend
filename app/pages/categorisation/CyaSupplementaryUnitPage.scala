@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-package pages
+package pages.categorisation
 
-import play.api.libs.json.JsPath
+import pages.Page
 
-case class SupplementaryUnitPage(recordId: String) extends QuestionPage[String] {
-
-  override def path: JsPath = JsPath \ toString \ recordId
-
-  override def toString: String = "supplementaryUnit"
-}
+case class CyaSupplementaryUnitPage(recordId: String) extends Page

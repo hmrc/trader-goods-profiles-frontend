@@ -27,7 +27,7 @@ import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{AssessmentPage, ReassessmentPage}
+import pages.categorisation.{AssessmentPage, ReassessmentPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest

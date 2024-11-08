@@ -31,7 +31,8 @@ class CategorisationNavigator @Inject() (categorisationService: CategorisationSe
 
   val normalRoutes: Page => UserAnswers => Call = {
     case p: CategoryGuidancePage =>
-      _ => controllers.categorisation.routes.AssessmentController.onPageLoad(NormalMode, p.recordId, firstAssessmentNumber)
+      _ =>
+        controllers.categorisation.routes.AssessmentController.onPageLoad(NormalMode, p.recordId, firstAssessmentNumber)
     case _                       => _ => routes.IndexController.onPageLoad()
   }
 

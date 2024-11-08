@@ -29,6 +29,7 @@ import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages._
+import pages.categorisation.{AssessmentPage, HasSupplementaryUnitPage, ReassessmentPage, SupplementaryUnitPage}
 import play.api.i18n.Messages
 import play.api.inject.bind
 import play.api.mvc.Call

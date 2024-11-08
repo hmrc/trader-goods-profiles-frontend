@@ -14,26 +14,14 @@
  * limitations under the License.
  */
 
-package pages
+package pages.categorisation
 
-import models.UserAnswers
+import pages.QuestionPage
 import play.api.libs.json.JsPath
 
-import scala.util.Try
-
-case class HasSupplementaryUnitUpdatePage(recordId: String) extends QuestionPage[Boolean] {
+case class SupplementaryUnitPage(recordId: String) extends QuestionPage[String] {
 
   override def path: JsPath = JsPath \ toString \ recordId
 
-  override def toString: String = "hasSupplementaryUnitUpdate"
-
-  override def cleanup(
-    value: Option[Boolean],
-    updatedUserAnswers: UserAnswers,
-    originalUserAnswers: UserAnswers
-  ): Try[UserAnswers] =
-    updatedUserAnswers.get(HasSupplementaryUnitUpdatePage(recordId)) match {
-      case Some(true) => super.cleanup(value, updatedUserAnswers, originalUserAnswers)
-      case _          => updatedUserAnswers.remove(SupplementaryUnitUpdatePage(recordId))
-    }
+  override def toString: String = "supplementaryUnit"
 }

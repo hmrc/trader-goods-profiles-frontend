@@ -26,7 +26,8 @@ import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{HasSupplementaryUnitUpdatePage, SupplementaryUnitUpdatePage}
+import pages.SupplementaryUnitUpdatePage
+import pages.categorisation.HasSupplementaryUnitUpdatePage
 import play.api.i18n.Messages
 import play.api.inject.bind
 import play.api.mvc.Result

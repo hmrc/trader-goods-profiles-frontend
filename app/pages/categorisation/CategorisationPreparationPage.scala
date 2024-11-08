@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
-package pages
+package pages.categorisation
 
-case class CyaSupplementaryUnitPage(recordId: String) extends Page
+import pages.Page
+
+case class CategorisationPreparationPage(recordId: String) extends Page

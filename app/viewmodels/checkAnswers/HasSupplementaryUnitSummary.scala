@@ -18,7 +18,7 @@ package viewmodels.checkAnswers
 
 import models.router.responses.GetGoodsRecordResponse
 import models.{CheckMode, NormalMode, UserAnswers}
-import pages.{HasSupplementaryUnitPage, HasSupplementaryUnitUpdatePage}
+import pages.categorisation.{HasSupplementaryUnitPage, HasSupplementaryUnitUpdatePage}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import utils.Constants.Category2AsInt
@@ -35,7 +35,10 @@ object HasSupplementaryUnitSummary {
         key = "hasSupplementaryUnit.checkYourAnswersLabel",
         value = ValueViewModel(value),
         actions = Seq(
-          ActionItemViewModel("site.change", controllers.categorisation.routes.HasSupplementaryUnitController.onPageLoad(CheckMode, recordId).url)
+          ActionItemViewModel(
+            "site.change",
+            controllers.categorisation.routes.HasSupplementaryUnitController.onPageLoad(CheckMode, recordId).url
+          )
             .withVisuallyHiddenText(messages("hasSupplementaryUnit.change.hidden"))
         )
       )
@@ -78,7 +81,9 @@ object HasSupplementaryUnitSummary {
             Seq(
               ActionItemViewModel(
                 "site.change",
-                controllers.categorisation.routes.HasSupplementaryUnitController.onPageLoadUpdate(NormalMode, recordId).url
+                controllers.categorisation.routes.HasSupplementaryUnitController
+                  .onPageLoadUpdate(NormalMode, recordId)
+                  .url
               )
                 .withVisuallyHiddenText(messages("hasSupplementaryUnit.change.hidden"))
             )

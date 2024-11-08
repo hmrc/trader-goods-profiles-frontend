@@ -21,6 +21,7 @@ import base.TestConstants.testRecordId
 import models.ott.CategorisationInfo
 import org.scalatest.Inside.inside
 import pages._
+import pages.categorisation.{AssessmentPage, HasSupplementaryUnitPage, ReassessmentPage, SupplementaryUnitPage}
 import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery}
 
 class CategorisationAnswersSpec extends SpecBase {

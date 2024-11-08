@@ -29,7 +29,7 @@ import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import org.scalatestplus.mockito.MockitoSugar.mock
-import pages.{AssessmentPage, ReassessmentPage}
+import pages.categorisation.{AssessmentPage, ReassessmentPage}
 import play.api.mvc.AnyContent
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery}

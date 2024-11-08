@@ -16,14 +16,13 @@
 
 package controllers.categorisation
 
-
 import controllers.BaseController
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import forms.AssessmentFormProvider
 import models.helper.CategorisationJourney
 import models.{Mode, ReassessmentAnswer}
 import navigation.CategorisationNavigator
-import pages.{AssessmentPage, ReassessmentPage}
+import pages.categorisation.{AssessmentPage, ReassessmentPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery}
@@ -36,7 +35,7 @@ import views.html.AssessmentView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class AssessmentController @Inject()(
+class AssessmentController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: CategorisationNavigator,
@@ -67,7 +66,8 @@ class AssessmentController @Inject()(
               categorisationInfo.getAssessmentFromIndex(index).map { assessment =>
                 val codesAndDescriptions = assessment.getCodesZippedWithDescriptions
                 val preparedForm         = prepareForm(AssessmentPage(recordId, index), formProvider())
-                val submitAction         = controllers.categorisation.routes.AssessmentController.onSubmit(mode, recordId, number)
+                val submitAction         =
+                  controllers.categorisation.routes.AssessmentController.onSubmit(mode, recordId, number)
                 Ok(
                   view(
                     preparedForm,
@@ -99,7 +99,8 @@ class AssessmentController @Inject()(
                 val codesAndDescriptions = assessment.getCodesZippedWithDescriptions
                 val preparedForm         = prepareForm(ReassessmentPage(recordId, index), formProvider())
 
-                val submitAction = controllers.categorisation.routes.AssessmentController.onSubmitReassessment(mode, recordId, number)
+                val submitAction =
+                  controllers.categorisation.routes.AssessmentController.onSubmitReassessment(mode, recordId, number)
 
                 Ok(
                   view(
@@ -226,7 +227,11 @@ class AssessmentController @Inject()(
   private def handleDataCleansingAndRecovery(userAnswersId: String, recordId: String) = {
     dataCleansingService.deleteMongoData(userAnswersId, CategorisationJourney)
     navigator.journeyRecovery(
-      Some(RedirectUrl(controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(recordId).url))
+      Some(
+        RedirectUrl(
+          controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(recordId).url
+        )
+      )
     )
   }
 }

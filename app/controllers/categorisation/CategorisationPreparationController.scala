@@ -25,7 +25,8 @@ import models.ott.CategorisationInfo
 import models.{CategoryRecord, Mode, NormalMode, UserAnswers}
 import navigation.CategorisationNavigator
 import org.apache.pekko.Done
-import pages.{CategorisationPreparationPage, HasSupplementaryUnitPage, RecategorisationPreparationPage}
+import pages.categorisation.{CategorisationPreparationPage, HasSupplementaryUnitPage}
+import pages.RecategorisationPreparationPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery, LongerCommodityQuery}
@@ -41,17 +42,17 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Success, Try}
 
 class CategorisationPreparationController @Inject() (
-                                                      override val messagesApi: MessagesApi,
-                                                      val controllerComponents: MessagesControllerComponents,
-                                                      identify: IdentifierAction,
-                                                      getData: DataRetrievalAction,
-                                                      requireData: DataRequiredAction,
-                                                      profileAuth: ProfileAuthenticateAction,
-                                                      categorisationService: CategorisationService,
-                                                      goodsRecordsConnector: GoodsRecordConnector,
-                                                      sessionRepository: SessionRepository,
-                                                      navigator: CategorisationNavigator,
-                                                      auditService: AuditService
+  override val messagesApi: MessagesApi,
+  val controllerComponents: MessagesControllerComponents,
+  identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
+  profileAuth: ProfileAuthenticateAction,
+  categorisationService: CategorisationService,
+  goodsRecordsConnector: GoodsRecordConnector,
+  sessionRepository: SessionRepository,
+  navigator: CategorisationNavigator,
+  auditService: AuditService
 )(implicit ec: ExecutionContext)
     extends BaseController {
 

@@ -20,7 +20,8 @@ import cats.data
 import logging.Logging
 import models.ValidationError
 import models.requests.DataRequest
-import pages.{QuestionPage, ReassessmentPage}
+import pages.QuestionPage
+import pages.categorisation.ReassessmentPage
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.libs.json.Reads

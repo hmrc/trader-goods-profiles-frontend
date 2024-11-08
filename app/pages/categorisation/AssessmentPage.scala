@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package pages
+package pages.categorisation
 
 import models.{AssessmentAnswer, UserAnswers}
+import pages.{InconsistentUserAnswersException, QuestionPage}
 import play.api.libs.json.JsPath
 import queries.CategorisationDetailsQuery
 

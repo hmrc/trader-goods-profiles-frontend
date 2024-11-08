@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package pages
+package pages.categorisation
 
 import base.SpecBase
 import base.TestConstants.testRecordId

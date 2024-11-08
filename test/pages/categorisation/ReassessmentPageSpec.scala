@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package pages
+package pages.categorisation
 
 import base.SpecBase
 import base.TestConstants.testRecordId
-import models.{AssessmentAnswer, ReassessmentAnswer}
 import models.ott._
+import models.{AssessmentAnswer, ReassessmentAnswer}
 import queries.LongerCategorisationDetailsQuery
 
 class ReassessmentPageSpec extends SpecBase {

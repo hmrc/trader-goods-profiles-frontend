@@ -27,6 +27,7 @@ import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
 import pages._
+import pages.categorisation.{AssessmentPage, CategorisationPreparationPage, CyaCategorisationPage, CyaSupplementaryUnitPage, HasSupplementaryUnitPage, HasSupplementaryUnitUpdatePage, ReassessmentPage, SupplementaryUnitPage}
 import play.api.http.Status.SEE_OTHER
 import queries._
 import services.CategorisationService
