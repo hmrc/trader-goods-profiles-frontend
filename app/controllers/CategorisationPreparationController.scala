@@ -22,7 +22,7 @@ import models.AssessmentAnswer.NoExemption
 import models.Scenario.getResultAsInt
 import models.helper.CategorisationUpdate
 import models.ott.CategorisationInfo
-import models.{CategoryRecord, Mode, NormalMode, UserAnswers}
+import models.{AssessmentAnswer, CategoryRecord, Mode, NormalMode, UserAnswers}
 import navigation.Navigator
 import org.apache.pekko.Done
 import pages.{AssessmentPage, CategorisationPreparationPage, HasSupplementaryUnitPage, RecategorisationPreparationPage}
@@ -248,19 +248,17 @@ class CategorisationPreparationController @Inject() (
     newCommodityCategorisation: CategorisationInfo
   ): Future[CategorisationInfo] = {
 
-//    val oldCatAssessments = oldCommodityCategorisation.categoryAssessmentsThatNeedAnswers
-//    val newCatAssessments = newCommodityCategorisation.categoryAssessmentsThatNeedAnswers
+    val oldCatAssessments  = oldCommodityCategorisation.categoryAssessmentsThatNeedAnswers
+    val newCatAssessments2 = newCommodityCategorisation.categoryAssessmentsThatNeedAnswers
 
-//    val listOfAnswersToKeep = oldCatAssessments.zipWithIndex.foldLeft(Map.empty[Int, Option[AssessmentAnswer]]) {
-//      (currentMap, assessment) =>
-//        val newAssessmentsTheAnswerAppliesTo =
-//          newCatAssessments.filter(newAssessment => newAssessment.exemptions == assessment._1.exemptions)
-//        newAssessmentsTheAnswerAppliesTo.foldLeft(currentMap) { (current, matchingAssessment) =>
-//          current + (newCatAssessments.indexOf(matchingAssessment) -> userAnswers.get(
-//            AssessmentPage(recordId, assessment._2)
-//          ))
-//        }
-//    }
+    val listOfCategory2AssementsIdsToKeep: Seq[String] =
+      oldCatAssessments.zipWithIndex // Get the index along with each assessment
+        .filter { case (assessment, _) => assessment.category == 2 } // Only category 2 assessments
+        .filter { case (_, index) =>
+          userAnswers.get(AssessmentPage(recordId, index)).isDefined
+        }
+        .map(_._1.id)
+        .filter(id => newCatAssessments2.exists(_.id == id))
 
     val assessmentAnswersList = LazyList.from(0).takeWhile(i => userAnswers.get(AssessmentPage(recordId, i)).isDefined)
 
@@ -282,8 +280,10 @@ class CategorisationPreparationController @Inject() (
     val newAssessments = lastAnswer match {
       case Some(NoExemption) if isCat2 =>
         newCommodityCategorisation.categoryAssessmentsThatNeedAnswers.zipWithIndex
-          .filter { case (assessment, index) =>
-            index == 1 || assessment.category != Category2AsInt // TODO index = 1 should replace with list matching indexes
+          .filter { case (assessment, _) =>
+            listOfCategory2AssementsIdsToKeep.contains(
+              assessment.id
+            ) || assessment.category != Category2AsInt
           }
           .map(_._1)
       case _                           => newCommodityCategorisation.categoryAssessmentsThatNeedAnswers
@@ -291,5 +291,4 @@ class CategorisationPreparationController @Inject() (
 
     Future.successful(newCommodityCategorisation.copy(categoryAssessmentsThatNeedAnswers = newAssessments))
   }
-
 }
