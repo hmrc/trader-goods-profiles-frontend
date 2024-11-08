@@ -28,7 +28,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import services.AuditService
 import utils.SessionData._
-import views.html.GoodsDescriptionView
+import views.html.goodsRecord.GoodsDescriptionView
 
 import javax.inject.Inject
 import scala.annotation.unused
@@ -55,14 +55,14 @@ class GoodsDescriptionController @Inject() (
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       val preparedForm = prepareForm(GoodsDescriptionPage, form)
 
-      val submitAction = routes.GoodsDescriptionController.onSubmitCreate(mode)
+      val submitAction = controllers.goodsRecord.routes.GoodsDescriptionController.onSubmitCreate(mode)
 
       Ok(view(preparedForm, mode, submitAction))
     }
 
   def onSubmitCreate(mode: Mode): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val submitAction = routes.GoodsDescriptionController.onSubmitCreate(mode)
+      val submitAction = controllers.goodsRecord.routes.GoodsDescriptionController.onSubmitCreate(mode)
       form
         .bindFromRequest()
         .fold(
@@ -91,14 +91,14 @@ class GoodsDescriptionController @Inject() (
         case _    =>
       }
 
-      val submitAction = routes.GoodsDescriptionController.onSubmitUpdate(mode, recordId)
+      val submitAction = controllers.goodsRecord.routes.GoodsDescriptionController.onSubmitUpdate(mode, recordId)
 
       Ok(view(preparedForm, mode, submitAction)).removingFromSession(dataRemoved, dataUpdated, pageUpdated)
     }
 
   def onSubmitUpdate(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val submitAction = routes.GoodsDescriptionController.onSubmitUpdate(mode, recordId)
+      val submitAction = controllers.goodsRecord.routes.GoodsDescriptionController.onSubmitUpdate(mode, recordId)
       form
         .bindFromRequest()
         .fold(

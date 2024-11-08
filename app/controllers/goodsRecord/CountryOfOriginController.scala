@@ -34,7 +34,7 @@ import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.SessionData._
-import views.html.CountryOfOriginView
+import views.html.goodsRecord.CountryOfOriginView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}

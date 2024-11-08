@@ -30,7 +30,7 @@ import repositories.SessionRepository
 import services.AuditService
 import utils.Constants.adviceProvided
 import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
-import views.html.HasCommodityCodeChangeView
+import views.html.goodsRecord.HasCommodityCodeChangeView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}

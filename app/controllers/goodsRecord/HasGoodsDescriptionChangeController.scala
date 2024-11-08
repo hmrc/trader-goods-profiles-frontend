@@ -28,7 +28,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import services.AuditService
 import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
-import views.html.HasGoodsDescriptionChangeView
+import views.html.goodsRecord.HasGoodsDescriptionChangeView
 
 import javax.inject.Inject
 import scala.annotation.unused

@@ -32,7 +32,7 @@ import utils.SessionData._
 import viewmodels.checkAnswers._
 import viewmodels.checkAnswers.goodsRecord.{CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, TraderReferenceSummary}
 import viewmodels.govuk.summarylist._
-import views.html.SingleRecordView
+import views.html.goodsRecord.SingleRecordView
 
 import javax.inject.Inject
 import scala.annotation.unused

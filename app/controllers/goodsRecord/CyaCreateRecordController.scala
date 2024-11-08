@@ -18,8 +18,8 @@ package controllers.goodsRecord
 
 import com.google.inject.Inject
 import connectors.{GoodsRecordConnector, OttConnector}
+import controllers.BaseController
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
-import controllers.{BaseController, routes}
 import models.helper.CreateRecordJourney
 import models.{Country, GoodsRecord, NormalMode, UserAnswers}
 import navigation.Navigator
@@ -29,10 +29,9 @@ import play.api.mvc._
 import queries.CountriesQuery
 import repositories.SessionRepository
 import services.{AuditService, DataCleansingService}
-import viewmodels.checkAnswers._
 import viewmodels.checkAnswers.goodsRecord.{CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, TraderReferenceSummary}
 import viewmodels.govuk.summarylist._
-import views.html.CyaCreateRecordView
+import views.html.goodsRecord.CyaCreateRecordView
 
 import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
@@ -70,7 +69,7 @@ class CyaCreateRecordController @Inject() (
       case Left(errors) =>
         dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
         Future.successful(
-          logErrorsAndContinue(errorMessage, routes.CreateRecordStartController.onPageLoad(), errors)
+          logErrorsAndContinue(errorMessage, controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad(), errors)
         )
     }
   }
@@ -98,7 +97,7 @@ class CyaCreateRecordController @Inject() (
       case Left(errors) =>
         dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
         Future.successful(
-          logErrorsAndContinue(errorMessage, routes.CreateRecordStartController.onPageLoad(), errors)
+          logErrorsAndContinue(errorMessage, controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad(), errors)
         )
     }
   }

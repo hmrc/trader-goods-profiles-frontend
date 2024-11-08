@@ -37,10 +37,9 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants.{commodityCodeKey, countryOfOriginKey, goodsDescriptionKey, traderReferenceKey}
 import utils.SessionData.fromExpiredCommodityCodePage
-import viewmodels.checkAnswers._
 import viewmodels.checkAnswers.goodsRecord.{CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, TraderReferenceSummary}
 import viewmodels.govuk.summarylist._
-import views.html.CyaUpdateRecordView
+import views.html.goodsRecord.CyaUpdateRecordView
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -74,7 +73,7 @@ class CyaUpdateRecordController @Inject() (
               recordResponse.category.isDefined
             ) match {
             case Right(_) =>
-              val onSubmitAction = routes.CyaUpdateRecordController.onSubmitCountryOfOrigin(recordId)
+              val onSubmitAction = controllers.goodsRecord.routes.CyaUpdateRecordController.onSubmitCountryOfOrigin(recordId)
               getCountryOfOriginAnswer(request.userAnswers, recordId).map {
                 case Some(answer) =>
                   val list = SummaryListViewModel(
@@ -91,7 +90,7 @@ class CyaUpdateRecordController @Inject() (
               Future.successful(
                 logErrorsAndContinue(
                   errorMessage,
-                  routes.SingleRecordController.onPageLoad(recordId),
+                  controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId),
                   errors
                 )
               )
@@ -100,7 +99,7 @@ class CyaUpdateRecordController @Inject() (
         .recoverWith { case e: Exception =>
           logger.error(s"Unable to fetch record $recordId: ${e.getMessage}")
           Future.successful(
-            navigator.journeyRecovery(Some(RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)))
+            navigator.journeyRecovery(Some(RedirectUrl(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId).url)))
           )
         }
     }
@@ -109,7 +108,7 @@ class CyaUpdateRecordController @Inject() (
     (identify andThen getData andThen requireData) { implicit request =>
       UpdateGoodsRecord.validateGoodsDescription(request.userAnswers, recordId) match {
         case Right(goodsDescription) =>
-          val onSubmitAction = routes.CyaUpdateRecordController.onSubmitGoodsDescription(recordId)
+          val onSubmitAction = controllers.goodsRecord.routes.CyaUpdateRecordController.onSubmitGoodsDescription(recordId)
 
           val list = SummaryListViewModel(
             Seq(GoodsDescriptionSummary.rowUpdateCya(goodsDescription, recordId, CheckMode))
@@ -118,7 +117,7 @@ class CyaUpdateRecordController @Inject() (
         case Left(errors)            =>
           logErrorsAndContinue(
             errorMessage,
-            routes.SingleRecordController.onPageLoad(recordId),
+            controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId),
             errors
           )
       }
@@ -128,7 +127,7 @@ class CyaUpdateRecordController @Inject() (
     (identify andThen getData andThen requireData) { implicit request =>
       UpdateGoodsRecord.validateTraderReference(request.userAnswers, recordId) match {
         case Right(traderReference) =>
-          val onSubmitAction = routes.CyaUpdateRecordController.onSubmitTraderReference(recordId)
+          val onSubmitAction = controllers.goodsRecord.routes.CyaUpdateRecordController.onSubmitTraderReference(recordId)
 
           val list = SummaryListViewModel(
             Seq(TraderReferenceSummary.row(traderReference, recordId, CheckMode, recordLocked = false))
@@ -137,7 +136,7 @@ class CyaUpdateRecordController @Inject() (
         case Left(errors)           =>
           logErrorsAndContinue(
             errorMessage,
-            routes.SingleRecordController.onPageLoad(recordId),
+            controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId),
             errors
           )
       }
@@ -157,7 +156,7 @@ class CyaUpdateRecordController @Inject() (
               isCommCodeExpired
             ) match {
             case Right(commodity) =>
-              val onSubmitAction = routes.CyaUpdateRecordController.onSubmitCommodityCode(recordId)
+              val onSubmitAction = controllers.goodsRecord.routes.CyaUpdateRecordController.onSubmitCommodityCode(recordId)
 
               val list = SummaryListViewModel(
                 Seq(
@@ -174,7 +173,7 @@ class CyaUpdateRecordController @Inject() (
               Future.successful(
                 logErrorsAndContinue(
                   errorMessage,
-                  routes.SingleRecordController.onPageLoad(recordId),
+                  controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId),
                   errors
                 )
               )
@@ -183,7 +182,7 @@ class CyaUpdateRecordController @Inject() (
         .recoverWith { case e: Exception =>
           logger.error(s"Unable to fetch record $recordId: ${e.getMessage}")
           Future.successful(
-            navigator.journeyRecovery(Some(RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)))
+            navigator.journeyRecovery(Some(RedirectUrl(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId).url)))
           )
         }
     }
@@ -282,7 +281,7 @@ class CyaUpdateRecordController @Inject() (
         _                 <- sessionRepository.set(updatedAnswers)
       } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers))).recover {
         case e: GoodsRecordBuildFailure =>
-          logErrorsAndContinue(e.getMessage, routes.SingleRecordController.onPageLoad(recordId))
+          logErrorsAndContinue(e.getMessage, controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
       }
     }
 
@@ -323,7 +322,7 @@ class CyaUpdateRecordController @Inject() (
         _                        <- sessionRepository.set(updatedAnswers)
       } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers))).recover {
         case e: GoodsRecordBuildFailure =>
-          logErrorsAndContinue(e.getMessage, routes.SingleRecordController.onPageLoad(recordId))
+          logErrorsAndContinue(e.getMessage, controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
       }
     }
 
@@ -341,7 +340,7 @@ class CyaUpdateRecordController @Inject() (
         _                 <- sessionRepository.set(updatedAnswers)
       } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers))).recover {
         case e: GoodsRecordBuildFailure =>
-          logErrorsAndContinue(e.getMessage, routes.SingleRecordController.onPageLoad(recordId))
+          logErrorsAndContinue(e.getMessage, controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
       }
     }
 
@@ -389,7 +388,7 @@ class CyaUpdateRecordController @Inject() (
         _                        <- sessionRepository.set(updatedAnswers)
       } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers))).recover {
         case e: GoodsRecordBuildFailure =>
-          logErrorsAndContinue(e.getMessage, routes.SingleRecordController.onPageLoad(recordId))
+          logErrorsAndContinue(e.getMessage, controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
       }
     }
 }

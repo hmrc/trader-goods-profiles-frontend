@@ -26,7 +26,7 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries._
 import repositories.SessionRepository
-import views.html.HasCorrectGoodsView
+import views.html.goodsRecord.HasCorrectGoodsView
 
 import javax.inject.Inject
 import scala.annotation.unused
@@ -50,7 +50,7 @@ class HasCorrectGoodsController @Inject() (
   def onPageLoadCreate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
       val preparedForm = prepareForm(HasCorrectGoodsPage, form)
-      val submitAction = routes.HasCorrectGoodsController.onSubmitCreate(mode)
+      val submitAction = controllers.goodsRecord.routes.HasCorrectGoodsController.onSubmitCreate(mode)
       request.userAnswers.get(CommodityQuery) match {
         case Some(commodity) => Ok(view(preparedForm, commodity, submitAction))
         case None            => navigator.journeyRecovery()
@@ -60,7 +60,7 @@ class HasCorrectGoodsController @Inject() (
   def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData) { implicit request =>
       val preparedForm = prepareForm(HasCorrectGoodsCommodityCodeUpdatePage(recordId), form)
-      val submitAction = routes.HasCorrectGoodsController.onSubmitUpdate(mode, recordId)
+      val submitAction = controllers.goodsRecord.routes.HasCorrectGoodsController.onSubmitUpdate(mode, recordId)
       request.userAnswers.get(CommodityUpdateQuery(recordId)) match {
         case Some(commodity) => Ok(view(preparedForm, commodity, submitAction))
         case None            => navigator.journeyRecovery()
@@ -70,7 +70,7 @@ class HasCorrectGoodsController @Inject() (
   def onPageLoadLongerCommodityCode(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData) { implicit request =>
       val preparedForm = prepareForm(HasCorrectGoodsLongerCommodityCodePage(recordId), form)
-      val submitAction = routes.HasCorrectGoodsController.onSubmitLongerCommodityCode(mode, recordId)
+      val submitAction = controllers.goodsRecord.routes.HasCorrectGoodsController.onSubmitLongerCommodityCode(mode, recordId)
       request.userAnswers.get(LongerCommodityQuery(recordId)) match {
         case Some(commodity) =>
           Ok(
@@ -82,7 +82,7 @@ class HasCorrectGoodsController @Inject() (
 
   def onSubmitCreate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      val submitAction = routes.HasCorrectGoodsController.onSubmitCreate(mode)
+      val submitAction = controllers.goodsRecord.routes.HasCorrectGoodsController.onSubmitCreate(mode)
       form
         .bindFromRequest()
         .fold(
@@ -101,7 +101,7 @@ class HasCorrectGoodsController @Inject() (
 
   def onSubmitLongerCommodityCode(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      val submitAction = routes.HasCorrectGoodsController.onSubmitLongerCommodityCode(mode, recordId)
+      val submitAction = controllers.goodsRecord.routes.HasCorrectGoodsController.onSubmitLongerCommodityCode(mode, recordId)
 
       form
         .bindFromRequest()
@@ -129,7 +129,7 @@ class HasCorrectGoodsController @Inject() (
 
   def onSubmitUpdate(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      val submitAction = routes.HasCorrectGoodsController.onSubmitUpdate(mode, recordId)
+      val submitAction = controllers.goodsRecord.routes.HasCorrectGoodsController.onSubmitUpdate(mode, recordId)
       form
         .bindFromRequest()
         .fold(

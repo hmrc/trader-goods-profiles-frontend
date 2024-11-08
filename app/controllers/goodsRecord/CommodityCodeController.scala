@@ -33,7 +33,7 @@ import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import utils.SessionData._
-import views.html.CommodityCodeView
+import views.html.goodsRecord.CommodityCodeView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}

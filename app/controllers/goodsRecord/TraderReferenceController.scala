@@ -31,7 +31,7 @@ import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.SessionData._
-import views.html.TraderReferenceView
+import views.html.goodsRecord.TraderReferenceView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -57,7 +57,7 @@ class TraderReferenceController @Inject() (
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       val preparedForm = prepareForm(TraderReferencePage, form)
 
-      val onSubmitAction = routes.TraderReferenceController.onSubmitCreate(mode)
+      val onSubmitAction = controllers.goodsRecord.routes.TraderReferenceController.onSubmitCreate(mode)
 
       Ok(view(preparedForm, onSubmitAction))
     }
@@ -74,13 +74,13 @@ class TraderReferenceController @Inject() (
           recordId
         )
 
-      val onSubmitAction = routes.TraderReferenceController.onSubmitUpdate(mode, recordId)
+      val onSubmitAction = controllers.goodsRecord.routes.TraderReferenceController.onSubmitUpdate(mode, recordId)
       Ok(view(preparedForm, onSubmitAction)).removingFromSession(dataRemoved, dataUpdated, pageUpdated)
     }
 
   def onSubmitCreate(mode: Mode): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val onSubmitAction = routes.TraderReferenceController.onSubmitCreate(mode)
+      val onSubmitAction = controllers.goodsRecord.routes.TraderReferenceController.onSubmitCreate(mode)
 
       form
         .bindFromRequest()
@@ -103,7 +103,7 @@ class TraderReferenceController @Inject() (
               case None            =>
                 Future.successful(
                   Redirect(
-                    routes.GoodsRecordsLoadingController
+                    controllers.goodsRecord.routes.GoodsRecordsLoadingController
                       .onPageLoad(Some(RedirectUrl(onSubmitAction.url)))
                   )
                 )
@@ -113,7 +113,7 @@ class TraderReferenceController @Inject() (
 
   def onSubmitUpdate(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val onSubmitAction = routes.TraderReferenceController.onSubmitUpdate(mode, recordId)
+      val onSubmitAction = controllers.goodsRecord.routes.TraderReferenceController.onSubmitUpdate(mode, recordId)
       form
         .bindFromRequest()
         .fold(
@@ -139,7 +139,7 @@ class TraderReferenceController @Inject() (
               case None          =>
                 Future.successful(
                   Redirect(
-                    routes.GoodsRecordsLoadingController
+                    controllers.goodsRecord.routes.GoodsRecordsLoadingController
                       .onPageLoad(Some(RedirectUrl(onSubmitAction.url)))
                   )
                 )

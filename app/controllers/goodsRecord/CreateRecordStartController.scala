@@ -24,7 +24,7 @@ import pages.CreateRecordStartPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.AuditService
-import views.html.CreateRecordStartView
+import views.html.goodsRecord.CreateRecordStartView
 
 import javax.inject.Inject
 
