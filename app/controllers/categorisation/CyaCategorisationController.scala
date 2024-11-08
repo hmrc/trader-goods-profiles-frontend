@@ -25,7 +25,7 @@ import models.helper.CategorisationJourney
 import models.ott.CategorisationInfo
 import models.requests.DataRequest
 import models.{CategorisationAnswers, CategoryRecord, NormalMode, UserAnswers, ValidationError}
-import navigation.Navigator
+import navigation.{CategorisationNavigator, Navigator}
 import pages.CyaCategorisationPage
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -39,17 +39,17 @@ import views.html.CyaCategorisationView
 import scala.concurrent.{ExecutionContext, Future}
 
 class CyaCategorisationController @Inject() (
-  override val messagesApi: MessagesApi,
-  identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
-  val controllerComponents: MessagesControllerComponents,
-  view: CyaCategorisationView,
-  goodsRecordConnector: GoodsRecordConnector,
-  dataCleansingService: DataCleansingService,
-  auditService: AuditService,
-  navigator: Navigator,
-  categorisationService: CategorisationService
+                                              override val messagesApi: MessagesApi,
+                                              identify: IdentifierAction,
+                                              getData: DataRetrievalAction,
+                                              requireData: DataRequiredAction,
+                                              val controllerComponents: MessagesControllerComponents,
+                                              view: CyaCategorisationView,
+                                              goodsRecordConnector: GoodsRecordConnector,
+                                              dataCleansingService: DataCleansingService,
+                                              auditService: AuditService,
+                                              navigator: CategorisationNavigator,
+                                              categorisationService: CategorisationService
 )(implicit ec: ExecutionContext)
     extends BaseController {
 

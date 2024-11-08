@@ -20,9 +20,9 @@ package controllers.categorisation
 import controllers.BaseController
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import forms.AssessmentFormProvider
-import models.{Mode, ReassessmentAnswer}
 import models.helper.CategorisationJourney
-import navigation.Navigator
+import models.{Mode, ReassessmentAnswer}
+import navigation.CategorisationNavigator
 import pages.{AssessmentPage, ReassessmentPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
@@ -39,7 +39,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class AssessmentController @Inject()(
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
-  navigator: Navigator,
+  navigator: CategorisationNavigator,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,

@@ -19,11 +19,11 @@ package controllers.categorisation
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.BaseController
 import controllers.actions._
-import forms.LongerCommodityCodeFormProvider
+import forms.categorisation.LongerCommodityCodeFormProvider
 import models.helper.UpdateRecordJourney
 import models.requests.DataRequest
 import models.{Mode, UserAnswers}
-import navigation.Navigator
+import navigation.CategorisationNavigator
 import pages.LongerCommodityCodePage
 import play.api.data.FormError
 import play.api.i18n.MessagesApi
@@ -38,17 +38,17 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class LongerCommodityCodeController @Inject() (
-  override val messagesApi: MessagesApi,
-  sessionRepository: SessionRepository,
-  navigator: Navigator,
-  identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
-  formProvider: LongerCommodityCodeFormProvider,
-  ottConnector: OttConnector,
-  val controllerComponents: MessagesControllerComponents,
-  view: LongerCommodityCodeView,
-  goodsRecordConnector: GoodsRecordConnector
+                                                override val messagesApi: MessagesApi,
+                                                sessionRepository: SessionRepository,
+                                                navigator: CategorisationNavigator,
+                                                identify: IdentifierAction,
+                                                getData: DataRetrievalAction,
+                                                requireData: DataRequiredAction,
+                                                formProvider: LongerCommodityCodeFormProvider,
+                                                ottConnector: OttConnector,
+                                                val controllerComponents: MessagesControllerComponents,
+                                                view: LongerCommodityCodeView,
+                                                goodsRecordConnector: GoodsRecordConnector
 )(implicit ec: ExecutionContext)
     extends BaseController {
 

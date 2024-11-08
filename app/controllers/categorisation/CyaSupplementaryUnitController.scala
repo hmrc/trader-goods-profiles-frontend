@@ -22,7 +22,7 @@ import controllers.BaseController
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import models.helper.SupplementaryUnitUpdateJourney
 import models.{NormalMode, SupplementaryRequest}
-import navigation.Navigator
+import navigation.{CategorisationNavigator, Navigator}
 import pages.CyaSupplementaryUnitPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
@@ -36,16 +36,16 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
 class CyaSupplementaryUnitController @Inject() (
-  override val messagesApi: MessagesApi,
-  identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
-  goodsRecordConnector: GoodsRecordConnector,
-  dataCleansingService: DataCleansingService,
-  val controllerComponents: MessagesControllerComponents,
-  view: CyaSupplementaryUnitView,
-  navigator: Navigator,
-  auditService: AuditService
+                                                 override val messagesApi: MessagesApi,
+                                                 identify: IdentifierAction,
+                                                 getData: DataRetrievalAction,
+                                                 requireData: DataRequiredAction,
+                                                 goodsRecordConnector: GoodsRecordConnector,
+                                                 dataCleansingService: DataCleansingService,
+                                                 val controllerComponents: MessagesControllerComponents,
+                                                 view: CyaSupplementaryUnitView,
+                                                 navigator: Navigator,
+                                                 auditService: AuditService
 )(implicit ec: ExecutionContext)
     extends BaseController {
 

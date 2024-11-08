@@ -14,32 +14,22 @@
  * limitations under the License.
  */
 
-package forms
+package forms.categorisation
 
-import forms.behaviours.BooleanFieldBehaviours
-import play.api.data.FormError
+import forms.mappings.Mappings
+import forms.mappings.helpers.FormatAnswers.removeWhitespace
+import models.StringFieldRegex.supplementaryUnitRegex
+import play.api.data.Form
 
-class HasSupplementaryUnitFormProviderSpec extends BooleanFieldBehaviours {
+import javax.inject.Inject
 
-  val requiredKey = "hasSupplementaryUnit.error.required"
-  val invalidKey  = "error.boolean"
+class SupplementaryUnitFormProvider @Inject() extends Mappings {
 
-  val form = new HasSupplementaryUnitFormProvider()()
-
-  ".value" - {
-
-    val fieldName = "value"
-
-    behave like booleanField(
-      form,
-      fieldName,
-      invalidError = FormError(fieldName, invalidKey)
+  def apply(): Form[String] =
+    Form(
+      "value" -> text(
+        "supplementaryUnit.error.required"
+      ).transform(removeWhitespace, identity[String])
+        .verifying(regexp(supplementaryUnitRegex, "supplementaryUnit.error.nonNumeric"))
     )
-
-    behave like mandatoryField(
-      form,
-      fieldName,
-      requiredError = FormError(fieldName, requiredKey)
-    )
-  }
 }

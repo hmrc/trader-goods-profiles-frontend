@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package forms
+package forms.categorisation
 
 import forms.behaviours.StringFieldBehaviours
-import play.api.data.FormError
 import generators.SupplementaryUnitAmountGenerator
 import org.scalacheck.Gen
+import play.api.data.FormError
 
 class SupplementaryUnitFormProviderSpec extends StringFieldBehaviours with SupplementaryUnitAmountGenerator {
 

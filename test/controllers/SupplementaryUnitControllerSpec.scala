@@ -19,10 +19,10 @@ package controllers
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import connectors.{GoodsRecordConnector, TraderProfileConnector}
-import forms.SupplementaryUnitFormProvider
+import forms.categorisation.SupplementaryUnitFormProvider
 import models.helper.SupplementaryUnitUpdate
 import models.{NormalMode, UserAnswers}
-import navigation.{FakeNavigator, Navigator}
+import navigation.{CategorisationNavigator, FakeCategorisationNavigator, FakeNavigator}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
@@ -199,7 +199,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
             val application =
               applicationBuilder(userAnswers = Some(userAnswers))
                 .overrides(
-                  bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+                  bind[CategorisationNavigator].toInstance(new FakeCategorisationNavigator(onwardRoute)),
                   bind[SessionRepository].toInstance(mockSessionRepository)
                 )
                 .build()
@@ -419,7 +419,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
             val application =
               applicationBuilder(userAnswers = Some(userAnswers))
                 .overrides(
-                  bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+                  bind[CategorisationNavigator].toInstance(new FakeCategorisationNavigator(onwardRoute)),
                   bind[SessionRepository].toInstance(mockSessionRepository)
                 )
                 .build()
@@ -686,7 +686,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
         val application =
           applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(
-              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[CategorisationNavigator].toInstance(new FakeCategorisationNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository),
               bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
               bind[OttService].toInstance(mockOttService)

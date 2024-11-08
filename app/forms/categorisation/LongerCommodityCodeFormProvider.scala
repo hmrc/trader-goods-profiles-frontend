@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 
-package forms
+package forms.categorisation
 
 import forms.mappings.Mappings
 import forms.mappings.helpers.FormatAnswers.removeWhitespace
-import models.StringFieldRegex.supplementaryUnitRegex
-
-import javax.inject.Inject
+import models.StringFieldRegex
 import play.api.data.Form
 
-class SupplementaryUnitFormProvider @Inject() extends Mappings {
+import javax.inject.Inject
+
+class LongerCommodityCodeFormProvider @Inject() extends Mappings {
 
   def apply(): Form[String] =
     Form(
-      "value" -> text(
-        "supplementaryUnit.error.required"
-      ).transform(removeWhitespace, identity[String])
-        .verifying(regexp(supplementaryUnitRegex, "supplementaryUnit.error.nonNumeric"))
+      "value" -> text("longerCommodityCode.error.required")
+        .transform(removeWhitespace, identity[String])
+        .verifying(
+          regexp(StringFieldRegex.commodityCodeAdditionalNumbersRegex, "longerCommodityCode.error.invalidFormat")
+        )
     )
 }

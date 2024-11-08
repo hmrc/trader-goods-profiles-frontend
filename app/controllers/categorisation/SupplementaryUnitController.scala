@@ -19,10 +19,10 @@ package controllers.categorisation
 import connectors.GoodsRecordConnector
 import controllers.BaseController
 import controllers.actions._
-import forms.SupplementaryUnitFormProvider
+import forms.categorisation.SupplementaryUnitFormProvider
 import models.Mode
 import models.helper.SupplementaryUnitUpdate
-import navigation.Navigator
+import navigation.CategorisationNavigator
 import pages.{HasSupplementaryUnitUpdatePage, SupplementaryUnitPage, SupplementaryUnitUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
@@ -38,7 +38,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class SupplementaryUnitController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
-  navigator: Navigator,
+  navigator: CategorisationNavigator,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,

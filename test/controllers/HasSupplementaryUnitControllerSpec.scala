@@ -19,10 +19,10 @@ package controllers
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import connectors.{GoodsRecordConnector, TraderProfileConnector}
-import forms.HasSupplementaryUnitFormProvider
+import forms.categorisation.HasSupplementaryUnitFormProvider
 import models.helper.SupplementaryUnitUpdate
 import models.{NormalMode, UserAnswers}
-import navigation.{FakeNavigator, Navigator}
+import navigation.{CategorisationNavigator, FakeCategorisationNavigator, FakeNavigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{verify, when}
@@ -126,7 +126,7 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
         val application =
           applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(
-              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[CategorisationNavigator].toInstance(new FakeCategorisationNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository)
             )
             .build()
@@ -348,7 +348,7 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
         val application =
           applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(
-              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[CategorisationNavigator].toInstance(new FakeCategorisationNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository),
               bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
             )

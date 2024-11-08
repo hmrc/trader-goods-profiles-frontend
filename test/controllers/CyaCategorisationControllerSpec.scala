@@ -23,7 +23,7 @@ import connectors.GoodsRecordConnector
 import models.helper.CategorisationJourney
 import models.ott.CategorisationInfo
 import models.{AssessmentAnswer, Category1Scenario, CategoryRecord, ReassessmentAnswer, UserAnswers}
-import navigation.{FakeNavigator, Navigator}
+import navigation.{CategorisationNavigator, FakeCategorisationNavigator, FakeNavigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, times, verify, when}
@@ -49,7 +49,7 @@ import scala.concurrent.Future
 class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency with MockitoSugar {
 
   private val onwardRoute   = Call("GET", "/foo")
-  private val fakeNavigator = new FakeNavigator(onwardRoute)
+  private val fakeNavigator = new FakeCategorisationNavigator(onwardRoute)
 
   "CyaCategorisationController" - {
 
@@ -567,7 +567,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
                   bind[GoodsRecordConnector].toInstance(mockConnector),
                   bind[AuditService].toInstance(mockAuditService),
                   bind[SessionRepository].toInstance(mockSessionRepository),
-                  bind[Navigator].toInstance(fakeNavigator),
+                  bind[CategorisationNavigator].toInstance(fakeNavigator),
                   bind[CategorisationService].toInstance(mockCategorisationService)
                 )
                 .build()
@@ -628,7 +628,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
                 .overrides(
                   bind[GoodsRecordConnector].toInstance(mockConnector),
                   bind[AuditService].toInstance(mockAuditService),
-                  bind[Navigator].toInstance(fakeNavigator),
+                  bind[CategorisationNavigator].toInstance(fakeNavigator),
                   bind[CategorisationService].toInstance(mockCategorisationService)
                 )
                 .build()

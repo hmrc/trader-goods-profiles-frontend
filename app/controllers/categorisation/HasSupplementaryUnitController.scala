@@ -19,10 +19,10 @@ package controllers.categorisation
 import connectors.GoodsRecordConnector
 import controllers.BaseController
 import controllers.actions._
-import forms.HasSupplementaryUnitFormProvider
+import forms.categorisation.HasSupplementaryUnitFormProvider
 import models.Mode
 import models.helper.SupplementaryUnitUpdate
-import navigation.Navigator
+import navigation.CategorisationNavigator
 import pages.{HasSupplementaryUnitPage, HasSupplementaryUnitUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
@@ -35,18 +35,18 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class HasSupplementaryUnitController @Inject() (
-  override val messagesApi: MessagesApi,
-  sessionRepository: SessionRepository,
-  navigator: Navigator,
-  identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
-  profileAuth: ProfileAuthenticateAction,
-  goodsRecordConnector: GoodsRecordConnector,
-  formProvider: HasSupplementaryUnitFormProvider,
-  val controllerComponents: MessagesControllerComponents,
-  view: HasSupplementaryUnitView,
-  auditService: AuditService
+                                                 override val messagesApi: MessagesApi,
+                                                 sessionRepository: SessionRepository,
+                                                 navigator: CategorisationNavigator,
+                                                 identify: IdentifierAction,
+                                                 getData: DataRetrievalAction,
+                                                 requireData: DataRequiredAction,
+                                                 profileAuth: ProfileAuthenticateAction,
+                                                 goodsRecordConnector: GoodsRecordConnector,
+                                                 formProvider: HasSupplementaryUnitFormProvider,
+                                                 val controllerComponents: MessagesControllerComponents,
+                                                 view: HasSupplementaryUnitView,
+                                                 auditService: AuditService
 )(implicit ec: ExecutionContext)
     extends BaseController {
 

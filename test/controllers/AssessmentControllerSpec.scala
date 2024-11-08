@@ -22,7 +22,7 @@ import forms.AssessmentFormProvider
 import models.helper.CategorisationJourney
 import models.ott.{CategorisationInfo, CategoryAssessment}
 import models.{AssessmentAnswer, NormalMode, ReassessmentAnswer}
-import navigation.{FakeNavigator, Navigator}
+import navigation.{CategorisationNavigator, FakeCategorisationNavigator, FakeNavigator}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{verify, when}
 import org.scalatest.BeforeAndAfterEach
@@ -245,7 +245,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
             applicationBuilder(userAnswers = Some(answers))
               .overrides(
                 bind[SessionRepository].toInstance(mockRepository),
-                bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
+                bind[CategorisationNavigator].toInstance(new FakeCategorisationNavigator(onwardRoute))
               )
               .build()
 
@@ -627,7 +627,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
             applicationBuilder(userAnswers = Some(answers))
               .overrides(
                 bind[SessionRepository].toInstance(mockRepository),
-                bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
+                bind[CategorisationNavigator].toInstance(new FakeCategorisationNavigator(onwardRoute))
               )
               .build()
 
