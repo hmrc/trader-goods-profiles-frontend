@@ -24,7 +24,6 @@ import org.mockito.Mockito.{verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.Inside.inside
 import org.scalatestplus.mockito.MockitoSugar.mock
-import pages._
 import pages.categorisation.{AssessmentPage, HasSupplementaryUnitPage, ReassessmentPage, SupplementaryUnitPage}
 import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery}
 import services.CategorisationService

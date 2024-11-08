@@ -18,16 +18,11 @@ package navigation
 
 import controllers.routes
 import models.GoodsRecordsPagination.firstPage
-import models.Scenario.getResultAsInt
 import models._
-import models.ott.{CategorisationInfo, CategoryAssessment}
 import pages._
-import pages.categorisation._
 import play.api.mvc.Call
-import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery, LongerCommodityQuery}
 import services.CategorisationService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import utils.Constants._
 
 import javax.inject.{Inject, Singleton}
 
@@ -78,21 +73,8 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
       answers => navigateFromHasCorrectGoodsUpdateCheck(answers, p.recordId)
     case p: NamePage                               => _ => routes.CyaRequestAdviceController.onPageLoad(p.recordId)
     case p: EmailPage                              => _ => routes.CyaRequestAdviceController.onPageLoad(p.recordId)
-    case p: AssessmentPage                         => navigateFromAssessmentCheck(p)
-    case p: HasSupplementaryUnitPage               => navigateFromHasSupplementaryUnitCheck(p.recordId)
-    case p: SupplementaryUnitPage                  =>
-      _ => controllers.categorisation.routes.CyaCategorisationController.onPageLoad(p.recordId)
-    case p: HasSupplementaryUnitUpdatePage         =>
-      navigateFromHasSupplementaryUnitUpdateCheck(p.recordId)
-    case p: SupplementaryUnitUpdatePage            =>
-      _ => controllers.categorisation.routes.CyaSupplementaryUnitController.onPageLoad(p.recordId)
-    case p: LongerCommodityCodePage                =>
-      _ => routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(CheckMode, p.recordId)
-    case p: HasCorrectGoodsLongerCommodityCodePage =>
-      answers => navigateFromHasCorrectGoodsLongerCommodityCode(p.recordId, answers, CheckMode)
-    case p: ReassessmentPage                       => navigateFromReassessmentCheck(p)
-    case p: RecategorisationPreparationPage        => navigateFromReassessmentPrepCheck(p)
-    case _                                         => _ => routes.JourneyRecoveryController.onPageLoad()
+
+    case _ => _ => routes.JourneyRecoveryController.onPageLoad()
   }
 
   private def navigateFromWithdrawAdviceStartPage(answers: UserAnswers, recordId: String): Call = {
@@ -149,35 +131,6 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
-  private def navigateFromHasCorrectGoodsLongerCommodityCode(
-    recordId: String,
-    answers: UserAnswers,
-    mode: Mode
-  ): Call = {
-    for {
-      categorisationInfo <- answers.get(CategorisationDetailsQuery(recordId))
-      commodity          <- answers.get(LongerCommodityQuery(recordId))
-    } yield
-      if (categorisationInfo.commodityCode == getShortenedCommodityCode(commodity)) {
-        controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(mode, recordId)
-      } else {
-        answers.get(HasCorrectGoodsLongerCommodityCodePage(recordId)) match {
-          case Some(true)  =>
-            controllers.categorisation.routes.CategorisationPreparationController
-              .startLongerCategorisation(mode, recordId)
-          case Some(false) => controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(mode, recordId)
-          case None        => routes.JourneyRecoveryController.onPageLoad()
-        }
-      }
-  }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
-
-  private def getShortenedCommodityCode(commodity: Commodity) =
-    commodity.commodityCode.reverse
-      .dropWhile(char => char == '0')
-      .reverse
-      .padTo(minimumLengthOfCommodityCode, '0')
-      .mkString
-
   private def navigateFromHasCorrectGoodsUpdate(answers: UserAnswers, recordId: String): Call =
     answers
       .get(HasCorrectGoodsCommodityCodeUpdatePage(recordId))
@@ -186,22 +139,6 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
         case false => routes.CommodityCodeController.onPageLoadUpdate(NormalMode, recordId)
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
-
-  private def shouldGoToSupplementaryUnitFromPrepPage(catInfo: CategorisationInfo, scenario: Scenario) =
-    catInfo.measurementUnit.isDefined && getResultAsInt(scenario) == Category2AsInt
-
-  private def shouldGoToLongerCommodityCodeWhenCategory2(
-    categorisationInfo: CategorisationInfo,
-    assessmentQuestion: CategoryAssessment
-  ) =
-    categorisationInfo.getMinimalCommodityCode.length == 6 && categorisationInfo.descendantCount != 0 && assessmentQuestion.category == Category2AsInt
-
-  private def shouldGoToLongerCommodityCodeWhenCategory1(
-    categorisationInfo: CategorisationInfo,
-    assessmentQuestion: CategoryAssessment
-  ) =
-    categorisationInfo.getMinimalCommodityCode.length == minimumLengthOfCommodityCode && categorisationInfo.descendantCount != 0 && assessmentQuestion.category == Category1AsInt && !categorisationInfo.categoryAssessmentsThatNeedAnswers
-      .exists(_.isCategory2) && categorisationInfo.categoryAssessments.exists(_.isCategory2)
 
   private def navigateFromHasCorrectGoodsCheck(answers: UserAnswers): Call =
     answers
@@ -230,129 +167,5 @@ class Navigator @Inject() (categorisationService: CategorisationService) extends
         case false => routes.CommodityCodeController.onPageLoadUpdate(CheckMode, recordId)
       }
       .getOrElse(routes.JourneyRecoveryController.onPageLoad())
-
-  private def navigateFromReassessmentPrepCheck(
-    reasessmentPrep: RecategorisationPreparationPage
-  )(answers: UserAnswers): Call = {
-    val recordId = reasessmentPrep.recordId
-
-    answers.get(LongerCategorisationDetailsQuery(recordId)) match {
-      case Some(catInfo) if catInfo.categoryAssessmentsThatNeedAnswers.nonEmpty =>
-        val firstAnswer = answers.get(ReassessmentPage(recordId, firstAssessmentIndex))
-        if (reassessmentAnswerIsEmpty(firstAnswer) || !firstAnswer.get.isAnswerCopiedFromPreviousAssessment) {
-          controllers.categorisation.routes.AssessmentController
-            .onPageLoadReassessment(CheckMode, recordId, firstAssessmentNumber)
-        } else {
-          navigateFromReassessmentCheck(ReassessmentPage(recordId, firstAssessmentIndex))(answers)
-        }
-
-      case Some(catInfo) =>
-        val scenario = categorisationService.calculateResult(catInfo, answers, recordId)
-        if (shouldGoToSupplementaryUnitFromPrepPage(catInfo, scenario)) {
-          controllers.categorisation.routes.HasSupplementaryUnitController.onPageLoad(CheckMode, recordId)
-        } else {
-          controllers.categorisation.routes.CategorisationResultController.onPageLoad(recordId, scenario)
-        }
-      case None          => routes.JourneyRecoveryController.onPageLoad()
-
-    }
-  }
-
-  private def navigateFromReassessmentCheck(assessmentPage: ReassessmentPage)(answers: UserAnswers): Call = {
-    val recordId   = assessmentPage.recordId
-    val nextIndex  = assessmentPage.index + 1
-    val nextNumber = nextIndex + 1
-
-    for {
-      categorisationInfo <- answers.get(LongerCategorisationDetailsQuery(recordId))
-      assessmentCount     = categorisationInfo.categoryAssessmentsThatNeedAnswers.size
-      assessmentQuestion <- categorisationInfo.getAssessmentFromIndex(assessmentPage.index)
-      assessmentAnswer   <- answers.get(assessmentPage)
-      nextAnswer          = answers.get(ReassessmentPage(recordId, nextIndex))
-    } yield assessmentAnswer.answer match {
-      case AssessmentAnswer.Exemption(_) if nextIndex < assessmentCount && reassessmentAnswerIsEmpty(nextAnswer) =>
-        controllers.categorisation.routes.AssessmentController.onPageLoadReassessment(CheckMode, recordId, nextNumber)
-      case AssessmentAnswer.Exemption(_) if nextIndex < assessmentCount                                          =>
-        navigateFromReassessmentCheck(ReassessmentPage(recordId, nextIndex))(answers)
-      case AssessmentAnswer.NoExemption
-          if shouldGoToSupplementaryUnitCheck(answers, categorisationInfo, assessmentQuestion, recordId) =>
-        controllers.categorisation.routes.HasSupplementaryUnitController.onPageLoad(CheckMode, recordId)
-      case _                                                                                                     =>
-        controllers.categorisation.routes.CyaCategorisationController.onPageLoad(recordId)
-    }
-  } getOrElse routes.JourneyRecoveryController.onPageLoad()
-
-  private def navigateFromAssessmentCheck(assessmentPage: AssessmentPage)(answers: UserAnswers): Call = {
-    val recordId   = assessmentPage.recordId
-    val nextIndex  = assessmentPage.index + 1
-    val nextNumber = nextIndex + 1
-
-    {
-      for {
-        categorisationInfo <- answers.get(CategorisationDetailsQuery(recordId))
-        assessmentCount     = categorisationInfo.categoryAssessmentsThatNeedAnswers.size
-        assessmentQuestion <- categorisationInfo.getAssessmentFromIndex(assessmentPage.index)
-        assessmentAnswer   <- answers.get(assessmentPage)
-        nextAnswer          = answers.get(AssessmentPage(recordId, nextIndex))
-      } yield assessmentAnswer match {
-        case AssessmentAnswer.Exemption(_) if nextIndex < assessmentCount && answerIsEmpty(nextAnswer) =>
-          controllers.categorisation.routes.AssessmentController.onPageLoad(CheckMode, recordId, nextNumber)
-        case AssessmentAnswer.Exemption(_)
-            if shouldGoToLongerCommodityCodeWhenCategory1(categorisationInfo, assessmentQuestion) =>
-          controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(CheckMode, recordId)
-        case AssessmentAnswer.NoExemption
-            if shouldGoToLongerCommodityCodeWhenCategory2(categorisationInfo, assessmentQuestion) =>
-          controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(CheckMode, recordId)
-        case AssessmentAnswer.NoExemption
-            if shouldGoToSupplementaryUnitCheck(answers, categorisationInfo, assessmentQuestion, recordId) =>
-          controllers.categorisation.routes.HasSupplementaryUnitController.onPageLoad(CheckMode, recordId)
-        case _                                                                                         =>
-          controllers.categorisation.routes.CyaCategorisationController.onPageLoad(recordId)
-      }
-    }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
-  }
-
-  private def shouldGoToSupplementaryUnitCheck(
-    userAnswers: UserAnswers,
-    categorisationInfo: CategorisationInfo,
-    assessmentQuestion: CategoryAssessment,
-    recordId: String
-  ) =
-    assessmentQuestion.category == Category2AsInt && categorisationInfo.measurementUnit.isDefined &&
-      userAnswers.get(HasSupplementaryUnitPage(recordId)).isEmpty
-
-  private def navigateFromHasSupplementaryUnitUpdateCheck(recordId: String)(answers: UserAnswers): Call =
-    answers
-      .get(HasSupplementaryUnitUpdatePage(recordId))
-      .map {
-        case true  =>
-          if (answers.isDefined(SupplementaryUnitUpdatePage(recordId))) {
-            controllers.categorisation.routes.CyaSupplementaryUnitController.onPageLoad(recordId)
-          } else {
-            controllers.categorisation.routes.SupplementaryUnitController.onPageLoadUpdate(CheckMode, recordId)
-          }
-        case false => controllers.categorisation.routes.CyaSupplementaryUnitController.onPageLoad(recordId)
-      }
-      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
-
-  private def navigateFromHasSupplementaryUnitCheck(recordId: String)(answers: UserAnswers): Call =
-    answers
-      .get(HasSupplementaryUnitPage(recordId))
-      .map {
-        case true  =>
-          if (answers.isDefined(SupplementaryUnitPage(recordId))) {
-            controllers.categorisation.routes.CyaCategorisationController.onPageLoad(recordId)
-          } else {
-            controllers.categorisation.routes.SupplementaryUnitController.onPageLoad(CheckMode, recordId)
-          }
-        case false => controllers.categorisation.routes.CyaCategorisationController.onPageLoad(recordId)
-      }
-      .getOrElse(routes.JourneyRecoveryController.onPageLoad())
-
-  private def answerIsEmpty(nextAnswer: Option[AssessmentAnswer]) =
-    nextAnswer.isEmpty || nextAnswer.contains(AssessmentAnswer.NotAnsweredYet)
-
-  private def reassessmentAnswerIsEmpty(nextAnswer: Option[ReassessmentAnswer]) =
-    nextAnswer.isEmpty || nextAnswer.exists(reassessment => reassessment.answer == AssessmentAnswer.NotAnsweredYet)
 
 }
