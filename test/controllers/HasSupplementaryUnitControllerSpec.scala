@@ -25,7 +25,7 @@ import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{verify, when}
+import org.mockito.Mockito.{atLeastOnce, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{HasSupplementaryUnitPage, HasSupplementaryUnitUpdatePage}
 import play.api.inject.bind
@@ -230,7 +230,7 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
           ).toString
 
           withClue("must call the audit service with the correct details") {
-            verify(mockAuditService)
+            verify(mockAuditService, atLeastOnce())
               .auditStartUpdateGoodsRecord(
                 eqTo(testEori),
                 eqTo(AffinityGroup.Individual),
@@ -274,7 +274,7 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
           ).toString
 
           withClue("must call the audit service with the correct details") {
-            verify(mockAuditService)
+            verify(mockAuditService, atLeastOnce())
               .auditStartUpdateGoodsRecord(
                 eqTo(testEori),
                 eqTo(AffinityGroup.Individual),
@@ -322,7 +322,7 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
           ).toString
 
           withClue("must call the audit service with the correct details") {
-            verify(mockAuditService)
+            verify(mockAuditService, atLeastOnce())
               .auditStartUpdateGoodsRecord(
                 eqTo(testEori),
                 eqTo(AffinityGroup.Individual),

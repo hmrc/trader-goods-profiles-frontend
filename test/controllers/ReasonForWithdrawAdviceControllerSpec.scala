@@ -24,7 +24,7 @@ import models.UserAnswers
 import models.helper.WithdrawAdviceJourney
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{never, times, verify, when}
+import org.mockito.Mockito.{atLeastOnce, never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ReasonForWithdrawAdvicePage
 import play.api.inject.bind
@@ -125,7 +125,7 @@ class ReasonForWithdrawAdviceControllerSpec extends SpecBase with MockitoSugar {
         redirectLocation(result).value mustEqual routes.WithdrawAdviceSuccessController.onPageLoad(testRecordId).url
 
         withClue("must call the audit connector with the supplied details") {
-          verify(mockAuditService)
+          verify(mockAuditService, atLeastOnce())
             .auditWithdrawAdvice(
               eqTo(AffinityGroup.Individual),
               eqTo(testEori),
@@ -134,6 +134,8 @@ class ReasonForWithdrawAdviceControllerSpec extends SpecBase with MockitoSugar {
             )(
               any()
             )
+          verify(mockConnector, atLeastOnce()).withdrawRequestAccreditation(any(), any(), any())(any())
+          verify(mockSessionRepository, atLeastOnce()).clearData(any(), any())
         }
       }
     }
@@ -163,6 +165,8 @@ class ReasonForWithdrawAdviceControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.WithdrawAdviceSuccessController.onPageLoad(testRecordId).url
+        verify(mockConnector, atLeastOnce()).withdrawRequestAccreditation(any(), any(), any())(any())
+        verify(mockSessionRepository, atLeastOnce()).clearData(any(), any())
       }
     }
 
@@ -201,6 +205,8 @@ class ReasonForWithdrawAdviceControllerSpec extends SpecBase with MockitoSugar {
           boundForm,
           testRecordId
         )(request, messages(application)).toString
+        verify(mockConnector, never()).withdrawRequestAccreditation(any(), any(), any())(any())
+        verify(mockSessionRepository, never()).clearData(any(), any())
       }
     }
 
@@ -270,7 +276,7 @@ class ReasonForWithdrawAdviceControllerSpec extends SpecBase with MockitoSugar {
         }
 
         withClue("must call the audit connector with the supplied details") {
-          verify(mockAuditService)
+          verify(mockAuditService, atLeastOnce())
             .auditWithdrawAdvice(
               eqTo(AffinityGroup.Individual),
               eqTo(testEori),
@@ -279,9 +285,11 @@ class ReasonForWithdrawAdviceControllerSpec extends SpecBase with MockitoSugar {
             )(
               any()
             )
+          verify(mockConnector).withdrawRequestAccreditation(any(), any(), any())(any())
+          verify(mockSessionRepository, never()).clearData(any(), any())
         }
         withClue("must not cleanse the user answers data when connector fails") {
-          verify(mockSessionRepository, times(0)).clearData(eqTo(emptyUserAnswers.id), eqTo(WithdrawAdviceJourney))
+          verify(mockSessionRepository, never()).clearData(eqTo(emptyUserAnswers.id), eqTo(WithdrawAdviceJourney))
         }
       }
     }

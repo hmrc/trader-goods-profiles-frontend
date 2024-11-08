@@ -24,7 +24,7 @@ import models.GoodsRecordsPagination.firstPage
 import models.router.responses.GetRecordsResponse
 import models.{Country, GoodsRecordsPagination, UserAnswers}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{atLeastOnce, never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.goodsProfile.GoodsRecordsPage
 import play.api.inject.bind
@@ -171,6 +171,10 @@ class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar 
           request,
           messages(application)
         ).toString
+
+        verify(mockOttConnector, atLeastOnce()).getCountries(any())
+        verify(mockGoodsRecordConnector, atLeastOnce())
+          .searchRecords(eqTo(testEori), eqTo(searchText), any(), eqTo(currentPage), any())(any())
       }
     }
 
@@ -206,6 +210,10 @@ class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar 
         redirectLocation(result).value mustEqual controllers.goodsProfile.routes.GoodsRecordsLoadingController
           .onPageLoad(Some(RedirectUrl(goodsRecordsRoute)))
           .url
+        verify(mockOttConnector, never()).getCountries(any())
+        verify(mockGoodsRecordConnector, atLeastOnce())
+          .searchRecords(eqTo(testEori), eqTo(searchText), any(), eqTo(currentPage), any())(any())
+
       }
     }
 
@@ -300,6 +308,11 @@ class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar 
           request,
           messages(application)
         ).toString
+
+        verify(mockOttConnector, atLeastOnce()).getCountries(any())
+        verify(mockGoodsRecordConnector, atLeastOnce())
+          .searchRecords(eqTo(testEori), eqTo(searchText), any(), eqTo(middlePage), any())(any())
+
       }
     }
 
@@ -338,6 +351,11 @@ class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar 
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(searchText)(request, messages(application)).toString
+
+        verify(mockOttConnector, never()).getCountries(any())
+        verify(mockGoodsRecordConnector, atLeastOnce())
+          .searchRecords(eqTo(testEori), eqTo(searchText), any(), eqTo(currentPage), any())(any())
+
       }
     }
 

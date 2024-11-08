@@ -22,7 +22,7 @@ import forms.WithdrawAdviceStartFormProvider
 import models.UserAnswers
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.WithdrawAdviceStartPage
 import play.api.inject.bind
@@ -107,13 +107,23 @@ class WithdrawAdviceStartControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
+
+        withClue("must call the relevant services") {
+          verify(mockSessionRepository).set(any())
+        }
       }
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .build()
+      val mockSessionRepository = mock[SessionRepository]
+
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[SessionRepository].toInstance(mockSessionRepository)
+          )
+          .build()
 
       running(application) {
         val request =
@@ -131,6 +141,10 @@ class WithdrawAdviceStartControllerSpec extends SpecBase with MockitoSugar {
           request,
           messages(application)
         ).toString
+
+        withClue("must call the relevant services") {
+          verify(mockSessionRepository, never()).set(any())
+        }
       }
     }
 

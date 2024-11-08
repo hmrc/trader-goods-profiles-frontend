@@ -25,7 +25,7 @@ import models.{Country, NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{times, verify, when}
+import org.mockito.Mockito.{atLeastOnce, never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{CountryOfOriginPage, CountryOfOriginUpdatePage, HasCountryOfOriginChangePage}
 import play.api.inject.bind
@@ -85,6 +85,7 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
             request,
             messages(application)
           ).toString
+          verify(mockOttConnector, atLeastOnce()).getCountries(any())
         }
       }
 
@@ -119,6 +120,7 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
             request,
             messages(application)
           ).toString
+          verify(mockOttConnector, atLeastOnce()).getCountries(any())
         }
       }
 
@@ -303,7 +305,7 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
           ).toString
 
           withClue("must call the audit service with the correct details") {
-            verify(mockAuditService)
+            verify(mockAuditService, atLeastOnce())
               .auditStartUpdateGoodsRecord(
                 eqTo(testEori),
                 eqTo(AffinityGroup.Individual),
@@ -311,6 +313,7 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
                 eqTo(testRecordId),
                 any()
               )(any())
+            verify(mockOttConnector, atLeastOnce()).getCountries(any())
           }
 
         }
@@ -352,7 +355,7 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
           ).toString
 
           withClue("must not call the audit service as this has already been done") {
-            verify(mockAuditService, times(0))
+            verify(mockAuditService, never())
               .auditStartUpdateGoodsRecord(
                 any(),
                 any(),
@@ -360,6 +363,7 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
                 any(),
                 any()
               )(any())
+            verify(mockOttConnector, atLeastOnce()).getCountries(any())
           }
 
         }
@@ -397,6 +401,7 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
             request,
             messages(application)
           ).toString
+          verify(mockOttConnector, atLeastOnce()).getCountries(any())
         }
       }
 
