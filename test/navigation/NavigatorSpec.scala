@@ -19,7 +19,6 @@ package navigation
 import base.SpecBase
 import base.TestConstants.{testRecordId, userAnswersId}
 import controllers.routes
-import models.GoodsRecordsPagination.firstPage
 import models._
 import models.ott.{CategorisationInfo, CategoryAssessment}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
@@ -27,7 +26,6 @@ import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
 import pages._
-import pages.goodsProfile.{PreviousMovementRecordsPage, RemoveGoodsRecordPage}
 import play.api.http.Status.SEE_OTHER
 import queries._
 import services.CategorisationService
