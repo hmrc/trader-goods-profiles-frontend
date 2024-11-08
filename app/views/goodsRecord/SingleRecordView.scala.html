@@ -36,7 +36,7 @@
         </h3>
     }
 
-@layout(backLinkUrl = controllers.controllers.goodsRecord.routes.GoodsRecordsController.onPageLoad(1).url, backLinkMessageKey = "singleRecord.back", pageTitle = titleNoForm(messages("singleRecord.title"))) {
+@layout(backLinkUrl = controllers.goodsRecord.routes.GoodsRecordsController.onPageLoad(1).url, backLinkMessageKey = "singleRecord.back", pageTitle = titleNoForm(messages("singleRecord.title"))) {
 
     @if(changesMade) {
         @govukNotificationBanner(NotificationBanner(

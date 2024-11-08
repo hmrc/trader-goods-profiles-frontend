@@ -48,7 +48,8 @@ import scala.concurrent.Future
 
 class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency with MockitoSugar {
 
-  private lazy val journeyRecoveryContinueUrl = controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId).url
+  private lazy val journeyRecoveryContinueUrl =
+    controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId).url
 
   "CyaUpdateRecordController" - {
 
@@ -301,7 +302,9 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
               val result = route(application, request).value
               status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId).url
+              redirectLocation(result).value mustEqual controllers.goodsRecord.routes.SingleRecordController
+                .onPageLoad(testRecordId)
+                .url
               verify(mockGoodsRecordConnector).updateGoodsRecord(eqTo(expectedPayload))(any())
               verify(mockSessionRepository).set(any())
 
@@ -358,7 +361,9 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
               val result = route(application, request).value
               status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId).url
+              redirectLocation(result).value mustEqual controllers.goodsRecord.routes.SingleRecordController
+                .onPageLoad(testRecordId)
+                .url
               verify(mockGoodsRecordConnector).putGoodsRecord(any(), any())(any())
               verify(mockSessionRepository).set(any())
 
@@ -608,7 +613,9 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               val result = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId).url
+              redirectLocation(result).value mustEqual controllers.goodsRecord.routes.SingleRecordController
+                .onPageLoad(testRecordId)
+                .url
               verify(mockConnector).updateGoodsRecord(eqTo(expectedPayload))(any())
 
               withClue("must call the audit connector with the supplied details") {
@@ -825,7 +832,9 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               val result = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId).url
+              redirectLocation(result).value mustEqual controllers.goodsRecord.routes.SingleRecordController
+                .onPageLoad(testRecordId)
+                .url
               verify(mockConnector, atLeastOnce()).updateGoodsRecord(eqTo(expectedPayload))(any())
               verify(mockConnector, atLeastOnce()).getRecord(eqTo(testEori), eqTo(testRecordId))(any())
 
@@ -879,7 +888,9 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
               val result = route(application, request).value
               status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId).url
+              redirectLocation(result).value mustEqual controllers.goodsRecord.routes.SingleRecordController
+                .onPageLoad(testRecordId)
+                .url
               verify(mockGoodsRecordConnector, atLeastOnce()).patchGoodsRecord(any())(any())
               verify(mockSessionRepository).set(any())
 
@@ -926,7 +937,9 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               val result = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId).url
+              redirectLocation(result).value mustEqual controllers.goodsRecord.routes.SingleRecordController
+                .onPageLoad(testRecordId)
+                .url
               verify(mockConnector, never()).updateGoodsRecord(any())(any())
               verify(mockConnector, atLeastOnce()).getRecord(eqTo(testEori), eqTo(testRecordId))(any())
 
@@ -1259,7 +1272,9 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               val result = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId).url
+              redirectLocation(result).value mustEqual controllers.goodsRecord.routes.SingleRecordController
+                .onPageLoad(testRecordId)
+                .url
               verify(mockGoodsRecordConnector).updateGoodsRecord(eqTo(expectedPayload))(any())
 
               withClue("must call the audit connector with the supplied details") {
@@ -1324,7 +1339,9 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
               val result = route(application, request).value
               status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId).url
+              redirectLocation(result).value mustEqual controllers.goodsRecord.routes.SingleRecordController
+                .onPageLoad(testRecordId)
+                .url
               verify(mockGoodsRecordConnector).putGoodsRecord(any(), any())(any())
               verify(mockSessionRepository).set(any())
 
@@ -1384,7 +1401,9 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               val result = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId).url
+              redirectLocation(result).value mustEqual controllers.goodsRecord.routes.SingleRecordController
+                .onPageLoad(testRecordId)
+                .url
               verify(mockConnector, never()).updateGoodsRecord(any())(any())
               verify(mockConnector).getRecord(eqTo(testEori), eqTo(testRecordId))(any())
 

@@ -16,7 +16,6 @@
 
 package viewmodels.checkAnswers.goodsRecord
 
-import controllers.routes
 import models.router.responses.GetGoodsRecordResponse
 import models.{CheckMode, Country, Mode, UserAnswers}
 import pages.CountryOfOriginPage
@@ -35,14 +34,14 @@ object CountryOfOriginSummary {
         key = "countryOfOrigin.checkYourAnswersLabel",
         value = ValueViewModel(HtmlFormat.escape(description).toString),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.CountryOfOriginController.onPageLoadCreate(CheckMode).url)
+          ActionItemViewModel("site.change", controllers.goodsRecord.routes.CountryOfOriginController.onPageLoadCreate(CheckMode).url)
             .withVisuallyHiddenText(messages("countryOfOrigin.change.hidden"))
         )
       )
     }
 
   def rowUpdateCya(value: String, recordId: String, mode: Mode)(implicit messages: Messages): SummaryListRow = {
-    val changeLink = routes.CountryOfOriginController.onPageLoadUpdate(mode, recordId).url
+    val changeLink = controllers.goodsRecord.routes.CountryOfOriginController.onPageLoadUpdate(mode, recordId).url
     SummaryListRowViewModel(
       key = "countryOfOrigin.checkYourAnswersLabel",
       value = ValueViewModel(HtmlFormat.escape(value).toString),
@@ -66,9 +65,9 @@ object CountryOfOriginSummary {
     val countryName = getCountryName(record.countryOfOrigin, countries)
 
     val changeLink = if (record.category.isDefined) {
-      routes.HasCountryOfOriginChangeController.onPageLoad(mode, recordId).url
+      controllers.goodsRecord.routes.HasCountryOfOriginChangeController.onPageLoad(mode, recordId).url
     } else {
-      routes.CountryOfOriginController.onPageLoadUpdate(mode, recordId).url
+      controllers.goodsRecord.routes.CountryOfOriginController.onPageLoadUpdate(mode, recordId).url
     }
     SummaryListRowViewModel(
       key = "countryOfOrigin.checkYourAnswersLabel",

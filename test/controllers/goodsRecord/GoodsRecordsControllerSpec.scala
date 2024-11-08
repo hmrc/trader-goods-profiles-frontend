@@ -390,8 +390,10 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
             )
           )
         ),
-        previous = Some(PaginationLink(controllers.goodsRecord.routes.GoodsRecordsController.onPageLoad(middlePage - 1).url)),
-        next = Some(PaginationLink(controllers.goodsRecord.routes.GoodsRecordsController.onPageLoad(1 + middlePage).url))
+        previous =
+          Some(PaginationLink(controllers.goodsRecord.routes.GoodsRecordsController.onPageLoad(middlePage - 1).url)),
+        next =
+          Some(PaginationLink(controllers.goodsRecord.routes.GoodsRecordsController.onPageLoad(1 + middlePage).url))
       )
 
       running(application) {

@@ -17,8 +17,8 @@
 package controllers.goodsRecord
 
 import connectors.GoodsRecordConnector
+import controllers.BaseController
 import controllers.actions._
-import controllers.{BaseController, routes}
 import forms.goodsRecord.TraderReferenceFormProvider
 import models.Mode
 import models.helper.GoodsDetailsUpdate

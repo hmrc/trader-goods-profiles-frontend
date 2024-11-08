@@ -16,8 +16,8 @@
 
 package controllers.goodsRecord
 
+import controllers.BaseController
 import controllers.actions._
-import controllers.{BaseController, routes}
 import forms.goodsRecord.HasCorrectGoodsFormProvider
 import models.Mode
 import navigation.Navigator

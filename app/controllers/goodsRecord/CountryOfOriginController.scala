@@ -17,8 +17,8 @@
 package controllers.goodsRecord
 
 import connectors.OttConnector
+import controllers.BaseController
 import controllers.actions._
-import controllers.{BaseController, routes}
 import forms.goodsRecord.CountryOfOriginFormProvider
 import models.helper.GoodsDetailsUpdate
 import models.requests.DataRequest
@@ -67,7 +67,7 @@ class CountryOfOriginController @Inject() (
 
   def onPageLoadCreate(mode: Mode): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val submitAction = routes.CountryOfOriginController.onSubmitCreate(mode)
+      val submitAction = controllers.goodsRecord.routes.CountryOfOriginController.onSubmitCreate(mode)
       request.userAnswers
         .get(CountriesQuery) match {
         case Some(countries) => Future.successful(displayViewCreate(countries, submitAction, request.userAnswers))
@@ -100,7 +100,7 @@ class CountryOfOriginController @Inject() (
       .fold(
         formWithErrors =>
           Future.successful(
-            BadRequest(view(formWithErrors, routes.CountryOfOriginController.onSubmitCreate(mode), countries))
+            BadRequest(view(formWithErrors, controllers.goodsRecord.routes.CountryOfOriginController.onSubmitCreate(mode), countries))
           ),
         value =>
           for {
@@ -121,7 +121,7 @@ class CountryOfOriginController @Inject() (
 
   def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val submitAction = routes.CountryOfOriginController.onSubmitUpdate(mode, recordId)
+      val submitAction = controllers.goodsRecord.routes.CountryOfOriginController.onSubmitUpdate(mode, recordId)
 
       request.userAnswers.get(HasCountryOfOriginChangePage(recordId)) match {
         case None =>
@@ -158,7 +158,7 @@ class CountryOfOriginController @Inject() (
               formWithErrors =>
                 Future.successful(
                   BadRequest(
-                    view(formWithErrors, routes.CountryOfOriginController.onSubmitUpdate(mode, recordId), countries)
+                    view(formWithErrors, controllers.goodsRecord.routes.CountryOfOriginController.onSubmitUpdate(mode, recordId), countries)
                   )
                 ),
               value => {

@@ -16,7 +16,6 @@
 
 package viewmodels.checkAnswers.goodsRecord
 
-import controllers.routes
 import models.router.responses.GetGoodsRecordResponse
 import models.{CheckMode, Mode, UserAnswers}
 import pages.CommodityCodePage
@@ -35,14 +34,14 @@ object CommodityCodeSummary {
         key = "commodityCode.checkYourAnswersLabel",
         value = ValueViewModel(HtmlFormat.escape(answer).toString),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.CommodityCodeController.onPageLoadCreate(CheckMode).url)
+          ActionItemViewModel("site.change", controllers.goodsRecord.routes.CommodityCodeController.onPageLoadCreate(CheckMode).url)
             .withVisuallyHiddenText(messages("commodityCode.change.hidden"))
         )
       )
     }
 
   def rowUpdateCya(value: String, recordId: String, mode: Mode)(implicit messages: Messages): SummaryListRow = {
-    val changeLink = routes.CommodityCodeController.onPageLoadUpdate(mode, recordId).url
+    val changeLink = controllers.goodsRecord.routes.CommodityCodeController.onPageLoadUpdate(mode, recordId).url
     SummaryListRowViewModel(
       key = "commodityCode.checkYourAnswersLabel",
       value = ValueViewModel(HtmlFormat.escape(value).toString),
@@ -57,9 +56,9 @@ object CommodityCodeSummary {
     messages: Messages
   ): SummaryListRow = {
     val changeLink = if (record.category.isDefined || record.adviceStatus == adviceProvided) {
-      routes.HasCommodityCodeChangeController.onPageLoad(mode, recordId).url
+      controllers.goodsRecord.routes.HasCommodityCodeChangeController.onPageLoad(mode, recordId).url
     } else {
-      routes.CommodityCodeController.onPageLoadUpdate(mode, recordId).url
+      controllers.goodsRecord.routes.CommodityCodeController.onPageLoadUpdate(mode, recordId).url
     }
 
     SummaryListRowViewModel(

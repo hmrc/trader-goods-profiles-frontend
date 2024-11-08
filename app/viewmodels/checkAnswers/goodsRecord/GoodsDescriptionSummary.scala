@@ -16,7 +16,6 @@
 
 package viewmodels.checkAnswers.goodsRecord
 
-import controllers.routes
 import models.router.responses.GetGoodsRecordResponse
 import models.{CheckMode, Mode, UserAnswers}
 import pages.GoodsDescriptionPage
@@ -35,7 +34,7 @@ object GoodsDescriptionSummary {
         key = "goodsDescription.checkYourAnswersLabel",
         value = ValueViewModel(HtmlFormat.escape(answer).toString),
         actions = Seq(
-          ActionItemViewModel("site.change", routes.GoodsDescriptionController.onPageLoadCreate(CheckMode).url)
+          ActionItemViewModel("site.change", controllers.goodsRecord.routes.GoodsDescriptionController.onPageLoadCreate(CheckMode).url)
             .withVisuallyHiddenText(messages("goodsDescription.change.hidden"))
         )
       )
@@ -46,7 +45,7 @@ object GoodsDescriptionSummary {
       key = "goodsDescription.checkYourAnswersLabel",
       value = ValueViewModel(HtmlFormat.escape(value).toString),
       actions = Seq(
-        ActionItemViewModel("site.change", routes.GoodsDescriptionController.onPageLoadUpdate(mode, recordId).url)
+        ActionItemViewModel("site.change", controllers.goodsRecord.routes.GoodsDescriptionController.onPageLoadUpdate(mode, recordId).url)
           .withVisuallyHiddenText(messages("goodsDescription.change.hidden"))
       )
     )
@@ -55,9 +54,9 @@ object GoodsDescriptionSummary {
     messages: Messages
   ): SummaryListRow = {
     val changeLink = if (record.adviceStatus == adviceProvided) {
-      routes.HasGoodsDescriptionChangeController.onPageLoad(mode, recordId).url
+      controllers.goodsRecord.routes.HasGoodsDescriptionChangeController.onPageLoad(mode, recordId).url
     } else {
-      routes.GoodsDescriptionController.onPageLoadUpdate(mode, recordId).url
+      controllers.goodsRecord.routes.GoodsDescriptionController.onPageLoadUpdate(mode, recordId).url
     }
 
     SummaryListRowViewModel(

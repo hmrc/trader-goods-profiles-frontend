@@ -17,8 +17,8 @@
 package controllers.goodsRecord
 
 import connectors.OttConnector
+import controllers.BaseController
 import controllers.actions._
-import controllers.{BaseController, routes}
 import forms.goodsRecord.CommodityCodeFormProvider
 import models.helper.{CreateRecordJourney, GoodsDetailsUpdate}
 import models.requests.DataRequest
@@ -60,7 +60,7 @@ class CommodityCodeController @Inject() (
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       val preparedForm = prepareForm(CommodityCodePage, form)
 
-      val onSubmitAction: Call = routes.CommodityCodeController.onSubmitCreate(mode)
+      val onSubmitAction: Call = controllers.goodsRecord.routes.CommodityCodeController.onSubmitCreate(mode)
 
       Ok(view(preparedForm, onSubmitAction))
     }
@@ -81,14 +81,14 @@ class CommodityCodeController @Inject() (
         case _    =>
       }
 
-      val onSubmitAction: Call = routes.CommodityCodeController.onSubmitUpdate(mode, recordId)
+      val onSubmitAction: Call = controllers.goodsRecord.routes.CommodityCodeController.onSubmitUpdate(mode, recordId)
 
       Ok(view(preparedForm, onSubmitAction)).removingFromSession(dataRemoved, dataUpdated, pageUpdated)
     }
 
   def onSubmitCreate(mode: Mode): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val onSubmitAction: Call    = routes.CommodityCodeController.onSubmitCreate(mode)
+      val onSubmitAction: Call    = controllers.goodsRecord.routes.CommodityCodeController.onSubmitCreate(mode)
       val countryOfOrigin: String = request.userAnswers.get(CountryOfOriginPage).get
       form
         .bindFromRequest()
@@ -110,7 +110,7 @@ class CommodityCodeController @Inject() (
 
   def onSubmitUpdate(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      val onSubmitAction: Call    = routes.CommodityCodeController.onSubmitUpdate(mode, recordId)
+      val onSubmitAction: Call    = controllers.goodsRecord.routes.CommodityCodeController.onSubmitUpdate(mode, recordId)
       val countryOfOrigin: String = request.userAnswers.get(CountryOfOriginUpdatePage(recordId)).get
       form
         .bindFromRequest()
