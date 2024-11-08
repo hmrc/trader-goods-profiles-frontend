@@ -181,7 +181,6 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
       if (categorisationInfo.commodityCode == getShortenedCommodityCode(commodity)) {
         routes.LongerCommodityCodeController.onPageLoad(mode, recordId)
       } else {
-
         answers.get(HasCorrectGoodsLongerCommodityCodePage(recordId)) match {
           case Some(true)  => routes.CategorisationPreparationController.startLongerCategorisation(mode, recordId)
           case Some(false) => routes.LongerCommodityCodeController.onPageLoad(mode, recordId)
