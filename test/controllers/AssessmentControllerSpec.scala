@@ -18,10 +18,11 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.testRecordId
+import connectors.GoodsRecordConnector
 import forms.AssessmentFormProvider
 import models.helper.CategorisationJourney
 import models.ott.{CategorisationInfo, CategoryAssessment}
-import models.{AssessmentAnswer, NormalMode, ReassessmentAnswer}
+import models.{AssessmentAnswer, Commodity, NormalMode, ReassessmentAnswer}
 import navigation.{FakeNavigation, Navigation}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{verify, when}
@@ -32,12 +33,14 @@ import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery}
+import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery, LongerCommodityQuery}
 import repositories.SessionRepository
+import services.CategorisationService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants
 import views.html.AssessmentView
 
+import java.time.Instant
 import scala.concurrent.Future
 
 class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAndAfterEach {
@@ -574,16 +577,41 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
         "must save the answer and redirect to the next page when a valid value is submitted" in {
 
+          val longerCommodity = Commodity(
+            "1234567890",
+            List("Class level1 desc", "Class level2 desc", "Class level3 desc"),
+            Instant.now,
+            None
+          )
+          val longCatInfo     = categorisationInfo.copy(longerCode = true)
+
           val mockRepository = mock[SessionRepository]
           when(mockRepository.set(any())).thenReturn(Future.successful(true))
 
+          val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+          when(mockGoodsRecordConnector.getRecord(any(), any())(any()))
+            .thenReturn(Future.successful(goodsRecordResponse()))
+
+          val mockCategorisationService = mock[CategorisationService]
+          when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any())).thenReturn(
+            Future.successful(longCatInfo)
+          )
+
           val answers =
-            emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
+            emptyUserAnswers
+              .set(LongerCategorisationDetailsQuery(testRecordId), longCatInfo)
+              .success
+              .value
+              .set(LongerCommodityQuery(testRecordId), longerCommodity)
+              .success
+              .value
 
           val application =
             applicationBuilder(userAnswers = Some(answers))
               .overrides(
                 bind[SessionRepository].toInstance(mockRepository),
+                bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+                bind[CategorisationService].toInstance(mockCategorisationService),
                 bind[Navigation].toInstance(new FakeNavigation(onwardRoute))
               )
               .build()

@@ -18,13 +18,14 @@ package controllers
 
 import connectors.GoodsRecordConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
+import models.AssessmentAnswer.NoExemption
 import models.Scenario.getResultAsInt
 import models.helper.CategorisationUpdate
 import models.ott.CategorisationInfo
 import models.{CategoryRecord, Mode, NormalMode, UserAnswers}
 import navigation.Navigation
 import org.apache.pekko.Done
-import pages.{CategorisationPreparationPage, HasSupplementaryUnitPage, RecategorisationPreparationPage}
+import pages.{AssessmentPage, CategorisationPreparationPage, HasSupplementaryUnitPage, RecategorisationPreparationPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery, LongerCommodityQuery}
@@ -110,12 +111,22 @@ class CategorisationPreparationController @Inject() (
             )
           )
 
+        reEvaluatednewLongerCategorisationInfo <-
+          filterLongerCatergoryInfoBasedOnUserAnswer(
+            request.userAnswers,
+            recordId,
+            shorterCategorisationInfo,
+            newLongerCategorisationInfo
+          )
+
         updatedUACatInfo <-
-          Future.fromTry(updatedUASuppUnit.set(LongerCategorisationDetailsQuery(recordId), newLongerCategorisationInfo))
+          Future.fromTry(
+            updatedUASuppUnit.set(LongerCategorisationDetailsQuery(recordId), reEvaluatednewLongerCategorisationInfo)
+          )
 
         updatedUAReassessmentAnswers <- updateReassessmentAnswers(
                                           oldLongerCategorisationInfoOpt,
-                                          newLongerCategorisationInfo,
+                                          reEvaluatednewLongerCategorisationInfo,
                                           updatedUACatInfo,
                                           recordId,
                                           shorterCategorisationInfo
@@ -126,7 +137,7 @@ class CategorisationPreparationController @Inject() (
                request.eori,
                request.affinityGroup,
                recordId,
-               newLongerCategorisationInfo
+               reEvaluatednewLongerCategorisationInfo
              )
         _ <- sessionRepository.set(updatedUAReassessmentAnswers)
       } yield Redirect(
@@ -228,5 +239,56 @@ class CategorisationPreparationController @Inject() (
         )
       )
     }
+  }
+
+  def filterLongerCatergoryInfoBasedOnUserAnswer(
+    userAnswers: UserAnswers,
+    recordId: String,
+    oldCommodityCategorisation: CategorisationInfo,
+    newCommodityCategorisation: CategorisationInfo
+  ): Future[CategorisationInfo] = {
+
+    val oldCatAssessments  = oldCommodityCategorisation.categoryAssessmentsThatNeedAnswers
+    val newCatAssessments2 = newCommodityCategorisation.categoryAssessmentsThatNeedAnswers
+
+    val listOfCategory2AssementsIdsToKeep: Seq[String] =
+      oldCatAssessments.zipWithIndex // Get the index along with each assessment
+        .filter { case (assessment, _) => assessment.category == 2 } // Only category 2 assessments
+        .filter { case (_, index) =>
+          userAnswers.get(AssessmentPage(recordId, index)).isDefined
+        }
+        .map(_._1.id)
+        .filter(id => newCatAssessments2.exists(_.id == id))
+
+    val assessmentAnswersList = LazyList.from(0).takeWhile(i => userAnswers.get(AssessmentPage(recordId, i)).isDefined)
+
+    val lastIndexOpt = assessmentAnswersList.isEmpty match {
+      case true  => None
+      case false => Some(assessmentAnswersList.last)
+    }
+
+    val isCat2 = lastIndexOpt match {
+      case Some(lastIndex) => oldCommodityCategorisation.getAssessmentFromIndex(index = lastIndex).exists(_.isCategory2)
+      case _               => false
+    }
+
+    val lastAnswer = lastIndexOpt match {
+      case Some(lastIndex) => userAnswers.get(AssessmentPage(recordId, lastIndex))
+      case _               => None
+    }
+
+    val newAssessments = lastAnswer match {
+      case Some(NoExemption) if isCat2 =>
+        newCommodityCategorisation.categoryAssessmentsThatNeedAnswers.zipWithIndex
+          .filter { case (assessment, _) =>
+            listOfCategory2AssementsIdsToKeep.contains(
+              assessment.id
+            ) || assessment.category != Category2AsInt
+          }
+          .map(_._1)
+      case _                           => newCommodityCategorisation.categoryAssessmentsThatNeedAnswers
+    }
+
+    Future.successful(newCommodityCategorisation.copy(categoryAssessmentsThatNeedAnswers = newAssessments))
   }
 }
