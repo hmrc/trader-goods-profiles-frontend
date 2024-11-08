@@ -373,6 +373,7 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
         }
 
       case None => routes.JourneyRecoveryController.onPageLoad()
+
     })
   }
 
