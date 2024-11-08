@@ -36,7 +36,7 @@ import play.api.test.Helpers._
 import queries.{CategorisationDetailsQuery, LongerCommodityQuery}
 import repositories.SessionRepository
 import uk.gov.hmrc.http.UpstreamErrorResponse
-import views.html.LongerCommodityCodeView
+import views.html.categorisation.LongerCommodityCodeView
 
 import java.time.Instant
 import scala.concurrent.Future

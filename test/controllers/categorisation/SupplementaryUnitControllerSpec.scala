@@ -36,7 +36,7 @@ import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery}
 import repositories.SessionRepository
 import services.{AuditService, OttService}
 import uk.gov.hmrc.auth.core.AffinityGroup
-import views.html.SupplementaryUnitView
+import views.html.categorisation.SupplementaryUnitView
 
 import java.time.Instant
 import scala.concurrent.Future

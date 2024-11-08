@@ -22,7 +22,7 @@ import connectors.{GoodsRecordConnector, TraderProfileConnector}
 import forms.categorisation.HasSupplementaryUnitFormProvider
 import models.helper.SupplementaryUnitUpdate
 import models.{NormalMode, UserAnswers}
-import navigation.{CategorisationNavigator, FakeCategorisationNavigator, FakeNavigator}
+import navigation.{CategorisationNavigator, FakeCategorisationNavigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{verify, when}
@@ -35,7 +35,7 @@ import play.api.test.Helpers._
 import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
-import views.html.HasSupplementaryUnitView
+import views.html.categorisation.HasSupplementaryUnitView
 
 import java.time.Instant
 import scala.concurrent.Future

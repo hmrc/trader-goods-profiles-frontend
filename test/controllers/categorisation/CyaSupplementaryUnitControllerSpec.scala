@@ -40,7 +40,7 @@ import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.SessionData._
 import viewmodels.checkAnswers.{HasSupplementaryUnitSummary, SupplementaryUnitSummary}
 import viewmodels.govuk.SummaryListFluency
-import views.html.CyaSupplementaryUnitView
+import views.html.categorisation.CyaSupplementaryUnitView
 
 import java.time.Instant
 import scala.concurrent.Future

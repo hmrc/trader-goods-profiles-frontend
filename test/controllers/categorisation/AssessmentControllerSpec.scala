@@ -22,7 +22,7 @@ import forms.AssessmentFormProvider
 import models.helper.CategorisationJourney
 import models.ott.{CategorisationInfo, CategoryAssessment}
 import models.{AssessmentAnswer, NormalMode, ReassessmentAnswer}
-import navigation.{CategorisationNavigator, FakeCategorisationNavigator, FakeNavigator}
+import navigation.{CategorisationNavigator, FakeCategorisationNavigator}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{verify, when}
 import org.scalatest.BeforeAndAfterEach
@@ -36,7 +36,7 @@ import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants
-import views.html.AssessmentView
+import views.html.categorisation.AssessmentView
 
 import scala.concurrent.Future
 

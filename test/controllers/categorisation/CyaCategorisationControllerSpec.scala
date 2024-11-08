@@ -17,13 +17,13 @@
 package controllers
 
 import base.SpecBase
-import controllers.categorisation.routes
 import base.TestConstants.{testEori, testRecordId}
 import connectors.GoodsRecordConnector
+import controllers.categorisation.routes
 import models.helper.CategorisationJourney
 import models.ott.CategorisationInfo
 import models.{AssessmentAnswer, Category1Scenario, CategoryRecord, ReassessmentAnswer, UserAnswers}
-import navigation.{CategorisationNavigator, FakeCategorisationNavigator, FakeNavigator}
+import navigation.{CategorisationNavigator, FakeCategorisationNavigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, times, verify, when}
@@ -42,7 +42,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import viewmodels.checkAnswers.{AssessmentsSummary, HasSupplementaryUnitSummary, LongerCommodityCodeSummary, SupplementaryUnitSummary}
 import viewmodels.govuk.SummaryListFluency
-import views.html.CyaCategorisationView
+import views.html.categorisation.CyaCategorisationView
 
 import java.time.Instant
 import scala.concurrent.Future
