@@ -183,11 +183,11 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
       } else {
 
         answers.get(HasCorrectGoodsLongerCommodityCodePage(recordId)) match {
-            case Some(true) => routes.CategorisationPreparationController.startLongerCategorisation(mode, recordId)
-            case Some(false) => routes.LongerCommodityCodeController.onPageLoad(mode, recordId)
-            case None => routes.JourneyRecoveryController.onPageLoad()
-          }
+          case Some(true)  => routes.CategorisationPreparationController.startLongerCategorisation(mode, recordId)
+          case Some(false) => routes.LongerCommodityCodeController.onPageLoad(mode, recordId)
+          case None        => routes.JourneyRecoveryController.onPageLoad()
         }
+      }
   }.getOrElse(routes.JourneyRecoveryController.onPageLoad())
 
   private def getShortenedCommodityCode(commodity: Commodity) =
@@ -327,25 +327,23 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
     val recordId = reasessmentPrep.recordId
 
     (for {
-      categorisationInfo <- answers.get(CategorisationDetailsQuery(recordId))
-      longerCategoryInfo = answers.get(LongerCategorisationDetailsQuery(recordId))
+      categorisationInfo       <- answers.get(CategorisationDetailsQuery(recordId))
       longerCategoryInfoNotOpt <- answers.get(LongerCategorisationDetailsQuery(recordId))
-      assessmentAnswersList = LazyList.from(0).takeWhile(i => answers.get(AssessmentPage(recordId, i)).isDefined)
+      assessmentAnswersList     = LazyList.from(0).takeWhile(i => answers.get(AssessmentPage(recordId, i)).isDefined)
     } yield {
-
       val lastIndexOpt = assessmentAnswersList.isEmpty match {
-        case true => None
+        case true  => None
         case false => Some(assessmentAnswersList.last)
-      }
-
-      val lastAnswer = lastIndexOpt match {
-        case Some(lastIndex) => answers.get(AssessmentPage(recordId, lastIndex))
-        case _ => None
       }
 
       val isCat2 = lastIndexOpt match {
         case Some(lastIndex) => categorisationInfo.getAssessmentFromIndex(index = lastIndex).exists(_.isCategory2)
-        case _ => false
+        case _               => false
+      }
+
+      val lastAnswer = lastIndexOpt match {
+        case Some(lastIndex) => answers.get(AssessmentPage(recordId, lastIndex))
+        case _               => None
       }
 
       lastAnswer match {
@@ -356,29 +354,26 @@ class Navigator @Inject() (categorisationService: CategorisationService) {
           } else {
             routes.CyaCategorisationController.onPageLoad(recordId)
           }
-        case _ => longerCategoryInfo match {
-          case Some(catInfo) if catInfo.categoryAssessmentsThatNeedAnswers.nonEmpty =>
-            val firstAnswer = answers.get(ReassessmentPage(recordId, firstAssessmentIndex))
-            if (reassessmentAnswerIsEmpty(firstAnswer) || !firstAnswer.get.isAnswerCopiedFromPreviousAssessment) {
-              routes.AssessmentController.onPageLoadReassessment(NormalMode, recordId, firstAssessmentNumber)
-            } else {
-              navigateFromReassessment(ReassessmentPage(recordId, firstAssessmentIndex))(answers)
-            }
-
-          case Some(catInfo) =>
-            val scenario = categorisationService.calculateResult(catInfo, answers, recordId)
-            if (shouldGoToSupplementaryUnitFromPrepPage(catInfo, scenario)) {
-              routes.HasSupplementaryUnitController.onPageLoad(NormalMode, recordId)
-            } else {
-              routes.CategorisationResultController.onPageLoad(recordId, scenario)
-            }
-
-          case None => routes.JourneyRecoveryController.onPageLoad()
-
-        }
       }
-    }).getOrElse(routes.JourneyRecoveryController.onPageLoad())
+    }).getOrElse(answers.get(LongerCategorisationDetailsQuery(recordId)) match {
+      case Some(catInfo) if catInfo.categoryAssessmentsThatNeedAnswers.nonEmpty =>
+        val firstAnswer = answers.get(ReassessmentPage(recordId, firstAssessmentIndex))
+        if (reassessmentAnswerIsEmpty(firstAnswer) || !firstAnswer.get.isAnswerCopiedFromPreviousAssessment) {
+          routes.AssessmentController.onPageLoadReassessment(NormalMode, recordId, firstAssessmentNumber)
+        } else {
+          navigateFromReassessment(ReassessmentPage(recordId, firstAssessmentIndex))(answers)
+        }
 
+      case Some(catInfo) =>
+        val scenario = categorisationService.calculateResult(catInfo, answers, recordId)
+        if (shouldGoToSupplementaryUnitFromPrepPage(catInfo, scenario)) {
+          routes.HasSupplementaryUnitController.onPageLoad(NormalMode, recordId)
+        } else {
+          routes.CategorisationResultController.onPageLoad(recordId, scenario)
+        }
+
+      case None => routes.JourneyRecoveryController.onPageLoad()
+    })
   }
 
   private def navigateFromReassessment(assessmentPage: ReassessmentPage)(answers: UserAnswers): Call = {

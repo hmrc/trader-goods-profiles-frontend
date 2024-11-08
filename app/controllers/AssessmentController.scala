@@ -16,6 +16,7 @@
 
 package controllers
 
+import connectors.GoodsRecordConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import forms.AssessmentFormProvider
 import models.helper.CategorisationJourney
@@ -24,15 +25,16 @@ import navigation.Navigator
 import pages.{AssessmentPage, ReassessmentPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery}
+import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery, LongerCommodityQuery}
 import repositories.SessionRepository
-import services.DataCleansingService
+import services.{CategorisationService, DataCleansingService}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants
 import views.html.AssessmentView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Try
 
 class AssessmentController @Inject() (
   override val messagesApi: MessagesApi,
@@ -43,6 +45,8 @@ class AssessmentController @Inject() (
   requireData: DataRequiredAction,
   formProvider: AssessmentFormProvider,
   dataCleansingService: DataCleansingService,
+  categorisationService: CategorisationService,
+  goodsRecordsConnector: GoodsRecordConnector,
   val controllerComponents: MessagesControllerComponents,
   view: AssessmentView
 )(implicit ec: ExecutionContext)
@@ -202,15 +206,31 @@ class AssessmentController @Inject() (
                       ),
                     value =>
                       for {
-                        updatedAnswers <-
+                        goodsRecord                 <- goodsRecordsConnector.getRecord(request.eori, recordId)
+                        longerComCode               <-
+                          Future.fromTry(Try(request.userAnswers.get(LongerCommodityQuery(recordId)).get))
+                        newLongerCategorisationInfo <-
+                          categorisationService
+                            .getCategorisationInfo(
+                              request,
+                              longerComCode.commodityCode,
+                              goodsRecord.countryOfOrigin,
+                              recordId,
+                              longerCode = true
+                            )
+                        updatedAnswers              <-
                           Future
                             .fromTry(
                               request.userAnswers
                                 .set(ReassessmentPage(recordId, index), ReassessmentAnswer(value))
                             )
-                        _              <- sessionRepository.set(updatedAnswers)
+                        updatedUACatInfo            <-
+                          Future.fromTry(
+                            updatedAnswers.set(LongerCategorisationDetailsQuery(recordId), newLongerCategorisationInfo)
+                          )
+                        _                           <- sessionRepository.set(updatedUACatInfo)
                       } yield Redirect(
-                        navigator.nextPage(ReassessmentPage(recordId, index), mode, updatedAnswers)
+                        navigator.nextPage(ReassessmentPage(recordId, index), mode, updatedUACatInfo)
                       )
                   )
               }
