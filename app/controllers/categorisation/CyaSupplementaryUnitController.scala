@@ -22,7 +22,7 @@ import controllers.BaseController
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import models.helper.SupplementaryUnitUpdateJourney
 import models.{NormalMode, SupplementaryRequest}
-import navigation.{CategorisationNavigator, Navigator}
+import navigation.Navigator
 import pages.categorisation.CyaSupplementaryUnitPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
@@ -30,7 +30,7 @@ import services.{AuditService, DataCleansingService}
 import utils.SessionData._
 import viewmodels.checkAnswers.{HasSupplementaryUnitSummary, SupplementaryUnitSummary}
 import viewmodels.govuk.summarylist._
-import views.html.CyaSupplementaryUnitView
+import views.html.categorisation.CyaSupplementaryUnitView
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try

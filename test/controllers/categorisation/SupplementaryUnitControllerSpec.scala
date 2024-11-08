@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.categorisation
 
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import connectors.{GoodsRecordConnector, TraderProfileConnector}
+import controllers.routes
 import forms.categorisation.SupplementaryUnitFormProvider
 import models.helper.SupplementaryUnitUpdate
 import models.{NormalMode, UserAnswers}
-import navigation.{CategorisationNavigator, FakeCategorisationNavigator, FakeNavigator}
+import navigation.{CategorisationNavigator, FakeCategorisationNavigator}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.categorisation.{HasSupplementaryUnitUpdatePage, SupplementaryUnitPage}
 import pages.SupplementaryUnitUpdatePage
+import pages.categorisation.{HasSupplementaryUnitUpdatePage, SupplementaryUnitPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest

@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.categorisation
 
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId}
 import connectors.GoodsRecordConnector
-import controllers.categorisation.routes
 import models.helper.CategorisationJourney
 import models.ott.CategorisationInfo
 import models.{AssessmentAnswer, Category1Scenario, CategoryRecord, ReassessmentAnswer, UserAnswers}

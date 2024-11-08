@@ -20,7 +20,6 @@ import cats.data.{EitherNec, NonEmptyChain}
 import cats.implicits.catsSyntaxTuple2Parallel
 import models.ott.CategorisationInfo
 import org.apache.pekko.Done
-import pages._
 import pages.categorisation.{AssessmentPage, HasSupplementaryUnitPage, ReassessmentPage, SupplementaryUnitPage}
 import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery}
 import utils.Constants.firstAssessmentIndex

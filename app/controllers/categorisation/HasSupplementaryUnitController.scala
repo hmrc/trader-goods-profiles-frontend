@@ -29,7 +29,7 @@ import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import repositories.SessionRepository
 import services.AuditService
 import utils.SessionData._
-import views.html.HasSupplementaryUnitView
+import views.html.categorisation.HasSupplementaryUnitView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}

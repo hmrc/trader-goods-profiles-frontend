@@ -25,7 +25,7 @@ import models.helper.CategorisationJourney
 import models.ott.CategorisationInfo
 import models.requests.DataRequest
 import models.{CategorisationAnswers, CategoryRecord, NormalMode, UserAnswers, ValidationError}
-import navigation.{CategorisationNavigator, Navigator}
+import navigation.CategorisationNavigator
 import pages.categorisation.CyaCategorisationPage
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -34,7 +34,7 @@ import services.{AuditService, CategorisationService, DataCleansingService}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 import viewmodels.checkAnswers.{AssessmentsSummary, HasSupplementaryUnitSummary, LongerCommodityCodeSummary, SupplementaryUnitSummary}
 import viewmodels.govuk.summarylist._
-import views.html.CyaCategorisationView
+import views.html.categorisation.CyaCategorisationView
 
 import scala.concurrent.{ExecutionContext, Future}
 

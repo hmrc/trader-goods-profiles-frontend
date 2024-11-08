@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.categorisation
 
 import base.SpecBase
 import base.TestConstants.testRecordId
 import models.{Category1NoExemptionsScenario, Category1Scenario, Category2Scenario, StandardGoodsNoAssessmentsScenario, StandardGoodsScenario}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import views.html.CategorisationResultView
+import views.html.categorisation.CategorisationResultView
 
 class CategorisationResultControllerSpec extends SpecBase {
 

@@ -23,15 +23,15 @@ import forms.categorisation.SupplementaryUnitFormProvider
 import models.Mode
 import models.helper.SupplementaryUnitUpdate
 import navigation.CategorisationNavigator
-import pages.categorisation.{HasSupplementaryUnitUpdatePage, SupplementaryUnitPage}
 import pages.SupplementaryUnitUpdatePage
+import pages.categorisation.{HasSupplementaryUnitUpdatePage, SupplementaryUnitPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery, MeasurementQuery}
 import repositories.SessionRepository
 import services.{AuditService, OttService}
 import utils.SessionData.{dataRemoved, dataUpdated, initialValueOfSuppUnit, pageUpdated}
-import views.html.SupplementaryUnitView
+import views.html.categorisation.SupplementaryUnitView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}

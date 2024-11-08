@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.categorisation
 
 import base.SpecBase
 import base.TestConstants.testRecordId
 import connectors.{GoodsRecordConnector, OttConnector}
+import controllers.routes
 import forms.categorisation.LongerCommodityCodeFormProvider
 import models.{Commodity, NormalMode, UserAnswers}
 import navigation.{CategorisationNavigator, FakeCategorisationNavigator}

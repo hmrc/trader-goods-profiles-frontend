@@ -32,7 +32,7 @@ import queries.{CategorisationDetailsQuery, LongerCommodityQuery}
 import repositories.SessionRepository
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import utils.Constants.minimumLengthOfCommodityCode
-import views.html.LongerCommodityCodeView
+import views.html.categorisation.LongerCommodityCodeView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}

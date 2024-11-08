@@ -30,7 +30,7 @@ import repositories.SessionRepository
 import services.DataCleansingService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants
-import views.html.AssessmentView
+import views.html.categorisation.AssessmentView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}

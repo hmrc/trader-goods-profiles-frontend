@@ -21,7 +21,7 @@ import controllers.actions._
 import models.Scenario
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import views.html.CategorisationResultView
+import views.html.categorisation.CategorisationResultView
 
 import javax.inject.Inject
 

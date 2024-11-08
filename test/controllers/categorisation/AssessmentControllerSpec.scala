@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.categorisation
 
 import base.SpecBase
 import base.TestConstants.testRecordId
+import controllers.routes
 import forms.AssessmentFormProvider
 import models.helper.CategorisationJourney
 import models.ott.{CategorisationInfo, CategoryAssessment}
