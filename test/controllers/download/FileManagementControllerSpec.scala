@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.download
 
 import base.SpecBase
 import connectors.DownloadDataConnector
+import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
@@ -26,14 +27,14 @@ import play.api.i18n.Messages
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import viewmodels.FileManagementViewModel
-import views.html.FileManagementView
+import viewmodels.download.FileManagementViewModel
+import views.html.download.FileManagementView
 
 import scala.concurrent.Future
 
 class FileManagementControllerSpec extends SpecBase with MockitoSugar with BeforeAndAfterEach {
 
-  private lazy val fileManagementRoute = routes.FileManagementController.onPageLoad().url
+  private lazy val fileManagementRoute = controllers.download.routes.FileManagementController.onPageLoad().url
 
   private val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
 
@@ -63,12 +64,12 @@ class FileManagementControllerSpec extends SpecBase with MockitoSugar with Befor
         val request = FakeRequest(GET, fileManagementRoute)
         val result  = route(application, request).value
         val view    = application.injector.instanceOf[FileManagementView]
+
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(viewModel)(
           request,
           messages(application)
         ).toString
-
       }
 
       verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())(any())

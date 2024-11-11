@@ -28,7 +28,7 @@
     <p class="govuk-body">@messages("requestData.p1", email)</p>
     <p class="govuk-body">@messages("requestData.p2")</p>
 
-        @formHelper(action = routes.RequestDataController.onSubmit()) {
+        @formHelper(action = controllers.download.routes.RequestDataController.onSubmit()) {
             @govukButton(ButtonViewModel(messages("requestData.button")))
         }
 }

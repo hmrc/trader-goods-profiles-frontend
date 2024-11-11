@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package models.filemanagement
+package models.download
 
 import helpers.FileManagementTableComponentHelper
 import models.{DownloadData, DownloadDataSummary}

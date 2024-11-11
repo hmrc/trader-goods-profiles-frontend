@@ -20,7 +20,7 @@ import base.SpecBase
 import generators.Generators
 import helpers.FileManagementTableComponentHelper
 import models.DownloadDataStatus.{FileInProgress, FileReadyUnseen}
-import models.filemanagement._
+import models.download._
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.{HeadCell, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.table.TableRow

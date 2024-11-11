@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.download
 
 import connectors.DownloadDataConnector
 import controllers.actions._
+import controllers.{BaseController, routes}
 import models.NormalMode
 import navigation.Navigation
-import pages.RequestDataPage
-
-import javax.inject.Inject
+import pages.download.RequestDataPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import views.html.RequestDataView
+import views.html.download.RequestDataView
 
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 class RequestDataController @Inject() (

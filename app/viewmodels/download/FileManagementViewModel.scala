@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package viewmodels
+package viewmodels.download
 
 import connectors.DownloadDataConnector
 import helpers.FileManagementTableComponentHelper
 import models.DownloadDataStatus.{FileInProgress, FileReadySeen, FileReadyUnseen}
-import models.filemanagement._
+import models.download._
 import play.api.i18n.Messages
 import uk.gov.hmrc.http.HeaderCarrier
 
