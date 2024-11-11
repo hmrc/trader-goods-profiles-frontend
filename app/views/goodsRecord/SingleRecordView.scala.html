@@ -36,7 +36,7 @@
         </h3>
     }
 
-@layout(backLinkUrl = routes.GoodsRecordsController.onPageLoad(1).url, backLinkMessageKey = "singleRecord.back", pageTitle = titleNoForm(messages("singleRecord.title"))) {
+@layout(backLinkUrl = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url, backLinkMessageKey = "singleRecord.back", pageTitle = titleNoForm(messages("singleRecord.title"))) {
 
     @if(changesMade) {
         @govukNotificationBanner(NotificationBanner(
@@ -77,8 +77,8 @@
         </strong>
     </div>
 
-    <p class="govuk-body"><a href="@routes.GoodsRecordsController.onPageLoad(1).url" class="govuk-link" >@messages("site.goBackToGoodsProfile")</a></p>
+    <p class="govuk-body"><a href="@controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url" class="govuk-link" >@messages("site.goBackToGoodsProfile")</a></p>
     @if(!recordLocked){
-        <p class="govuk-body"><a href="@routes.RemoveGoodsRecordController.onPageLoad(recordId, GoodsRecordLocation).url" class="govuk-link" >@messages("site.removeThisGoodsRecord")</a></p>
+        <p class="govuk-body"><a href="@controllers.goodsProfile.routes.RemoveGoodsRecordController.onPageLoad(recordId, GoodsRecordLocation).url" class="govuk-link" >@messages("site.removeThisGoodsRecord")</a></p>
     }
 }

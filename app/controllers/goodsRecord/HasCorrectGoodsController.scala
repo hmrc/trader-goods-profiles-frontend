@@ -20,7 +20,7 @@ import controllers.BaseController
 import controllers.actions._
 import forms.goodsRecord.HasCorrectGoodsFormProvider
 import models.Mode
-import navigation.Navigator
+import navigation.Navigation
 import pages._
 import pages.goodsRecord.HasCorrectGoodsCommodityCodeUpdatePage
 import play.api.i18n.MessagesApi
@@ -36,7 +36,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class HasCorrectGoodsController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
-  navigator: Navigator,
+  navigator: Navigation,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,

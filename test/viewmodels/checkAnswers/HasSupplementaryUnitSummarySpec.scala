@@ -18,7 +18,6 @@ package viewmodels.checkAnswers
 
 import base.SpecBase
 import base.TestConstants.testRecordId
-import controllers.routes
 import models.NormalMode
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.Actions
@@ -83,7 +82,7 @@ class HasSupplementaryUnitSummarySpec extends SpecBase {
       )
 
       row.get.actions mustBe defined
-      row.get.actions.value.items.head.href mustEqual routes.HasSupplementaryUnitController
+      row.get.actions.value.items.head.href mustEqual controllers.categorisation.routes.HasSupplementaryUnitController
         .onPageLoadUpdate(NormalMode, testRecordId)
         .url
     }

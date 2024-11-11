@@ -19,7 +19,7 @@ package controllers.goodsRecord
 import controllers.BaseController
 import controllers.actions._
 import models.NormalMode
-import navigation.Navigator
+import navigation.Navigation
 import pages.goodsRecord.CreateRecordStartPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -36,7 +36,7 @@ class CreateRecordStartController @Inject() (
   profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
   view: CreateRecordStartView,
-  navigator: Navigator,
+  navigator: Navigation,
   auditService: AuditService
 ) extends BaseController {
 

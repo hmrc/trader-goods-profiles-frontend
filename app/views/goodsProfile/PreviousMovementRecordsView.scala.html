@@ -1,0 +1,78 @@
+@*
+ * Copyright 2024 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@this(
+layout: templates.Layout,
+govukButton: GovukButton,
+govukTable: GovukTable,
+formHelper: FormWithCSRF
+)
+
+@()(implicit request: Request[_], messages: Messages)
+
+@layout(pageTitle = titleNoForm(messages("previousMovementRecords.title"))) {
+
+<h1 class="govuk-heading-l">@messages("previousMovementRecords.h1")</h1>
+<p class="govuk-body">@messages("previousMovementRecords.p1")</p>
+<p class="govuk-body">@messages("previousMovementRecords.p2")</p>
+<h2 class="govuk-heading-m">@messages("previousMovementRecords.h2")</h2>
+<p class="govuk-body">@messages("previousMovementRecords.p3")</p>
+
+<div class="govuk-grid-column-xl-full">
+ @govukTable(
+ Table(
+ caption = Some(messages("previousMovementRecords.h2")),
+ captionClasses = "govuk-visually-hidden",
+ firstCellIsHeader = true,
+ head = Some(Seq(
+ HeadCell(
+ content = Text(messages("previousMovementRecords.tableHeader.state"))
+ ),
+ HeadCell(
+ content = Text(messages("previousMovementRecords.tableHeader.description"))
+ )
+ )),
+ rows = Seq(
+ Seq(
+ TableRow(
+ content = Text(messages("previousMovementRecords.state.immiReady"))
+ ),
+ TableRow(
+ content = Text(messages("previousMovementRecords.description.immiReady"))
+ )),
+ Seq(
+ TableRow(
+ content = Text(messages("previousMovementRecords.state.notImmiReady"))
+ ),
+ TableRow(
+ content = Text(messages("previousMovementRecords.description.notImmiReady"))
+ )),
+ Seq(
+ TableRow(
+ content = Text(messages("previousMovementRecords.state.notReadyForUse"))
+ ),
+ TableRow(
+ content = Text(messages("previousMovementRecords.description.notReadyForUse"))
+ ))
+)))
+</div>
+
+ @formHelper(action = controllers.goodsProfile.routes.PreviousMovementRecordsController.onSubmit()) {
+  @govukButton(
+   ButtonViewModel(messages("site.continue"))
+  )
+ }
+}

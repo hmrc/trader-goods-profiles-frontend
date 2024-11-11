@@ -21,7 +21,7 @@ import controllers.actions._
 import forms.goodsRecord.HasCountryOfOriginChangeFormProvider
 import models.Mode
 import models.helper.GoodsDetailsUpdate
-import navigation.Navigator
+import navigation.Navigation
 import pages.goodsRecord.HasCountryOfOriginChangePage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -37,7 +37,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class HasCountryOfOriginChangeController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
-  navigator: Navigator,
+  navigator: Navigation,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,

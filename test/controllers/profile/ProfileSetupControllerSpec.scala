@@ -18,10 +18,10 @@ package controllers.profile
 
 import base.SpecBase
 import base.TestConstants.testEori
-import controllers.routes
-import controllers.profile.{routes => profileRoutes}
 import config.FrontendAppConfig
 import connectors.TraderProfileConnector
+import controllers.profile.{routes => profileRoutes}
+import controllers.routes
 import navigation.{FakeProfileNavigator, ProfileNavigator}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{atLeastOnce, never, verify, when}

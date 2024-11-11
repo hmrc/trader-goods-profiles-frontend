@@ -25,8 +25,8 @@ import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import views.html.DownloadRequestSuccessView
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
+import views.html.DownloadRequestSuccessView
 
 import java.time.Instant
 import scala.concurrent.Future
@@ -56,7 +56,9 @@ class DownloadRequestSuccessControllerSpec extends SpecBase {
         val redirectUrl = Some(RedirectUrl(routes.IndexController.onPageLoad().url))
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(redirectUrl).url
+        redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+          .onPageLoad(redirectUrl)
+          .url
 
       }
     }

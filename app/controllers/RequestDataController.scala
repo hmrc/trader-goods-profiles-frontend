@@ -19,7 +19,7 @@ package controllers
 import connectors.DownloadDataConnector
 import controllers.actions._
 import models.NormalMode
-import navigation.Navigator
+import navigation.Navigation
 import pages.RequestDataPage
 
 import javax.inject.Inject
@@ -37,7 +37,7 @@ class RequestDataController @Inject() (
   profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
   view: RequestDataView,
-  navigator: Navigator,
+  navigator: Navigation,
   downloadDataConnector: DownloadDataConnector
 )(implicit ec: ExecutionContext)
     extends BaseController {

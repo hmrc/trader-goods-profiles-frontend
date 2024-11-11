@@ -20,7 +20,8 @@ import cats.data
 import logging.Logging
 import models.ValidationError
 import models.requests.DataRequest
-import pages.{QuestionPage, ReassessmentPage}
+import pages.QuestionPage
+import pages.categorisation.ReassessmentPage
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.libs.json.Reads
@@ -49,7 +50,7 @@ trait BaseController extends FrontendBaseController with I18nSupport with Loggin
 
     logger.warn(s"$errorMessage")
 
-    Redirect(routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(continueCall.url))))
+    Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(continueCall.url))))
   }
 
   def prepareForm[T, T2](page: QuestionPage[T], form: Form[T2])(implicit

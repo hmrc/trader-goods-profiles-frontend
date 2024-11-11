@@ -20,7 +20,7 @@ import base.SpecBase
 import base.TestConstants.{NiphlCode, NirmsCode, testRecordId}
 import models.ott.response._
 import models.{AnsweredQuestions, AssessmentAnswer, ReassessmentAnswer, TraderProfile}
-import pages.{AssessmentPage, ReassessmentPage}
+import pages.categorisation.{AssessmentPage, ReassessmentPage}
 import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery}
 
 import java.time.Instant

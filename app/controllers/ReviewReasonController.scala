@@ -19,7 +19,7 @@ package controllers
 import connectors.GoodsRecordConnector
 import controllers.actions._
 import models.NormalMode
-import navigation.Navigator
+import navigation.Navigation
 import pages.ReviewReasonPage
 
 import javax.inject.Inject
@@ -37,7 +37,7 @@ class ReviewReasonController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: ReviewReasonView,
   goodsRecordConnector: GoodsRecordConnector,
-  navigator: Navigator
+  navigator: Navigation
 )(implicit ec: ExecutionContext)
     extends BaseController {
 

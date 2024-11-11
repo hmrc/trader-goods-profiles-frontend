@@ -23,7 +23,7 @@ import controllers.routes
 import forms.goodsRecord.CommodityCodeFormProvider
 import models.helper.GoodsDetailsUpdate
 import models.{Commodity, NormalMode, UserAnswers}
-import navigation.{FakeNavigator, Navigator}
+import navigation.{FakeNavigation, Navigation}
 import org.apache.pekko.Done
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{any, anyString, eq => eqTo}
@@ -206,7 +206,7 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
-              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository),
               bind[OttConnector].toInstance(mockOttConnector)
             )
@@ -368,7 +368,7 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
         }
       }
 
@@ -384,7 +384,7 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
         }
       }
 
@@ -419,7 +419,7 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
       val application =
         applicationBuilder(userAnswers = Some(userAnswers))
           .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository),
             bind[OttConnector].toInstance(mockOttConnector)
           )
@@ -470,7 +470,7 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
       val application =
         applicationBuilder(userAnswers = Some(userAnswers))
           .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository),
             bind[OttConnector].toInstance(mockOttConnector)
           )

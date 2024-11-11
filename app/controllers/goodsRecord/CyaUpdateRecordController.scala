@@ -25,7 +25,7 @@ import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierA
 import controllers.{BaseController, routes}
 import models.router.requests.PutRecordRequest
 import models.{CheckMode, Country, NormalMode, UpdateGoodsRecord, UserAnswers, ValidationError}
-import navigation.Navigator
+import navigation.Navigation
 import org.apache.pekko.Done
 import pages._
 import pages.goodsRecord.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, CyaUpdateRecordPage, GoodsDescriptionUpdatePage, HasCommodityCodeChangePage, HasCountryOfOriginChangePage, TraderReferenceUpdatePage}
@@ -55,7 +55,7 @@ class CyaUpdateRecordController @Inject() (
   goodsRecordConnector: GoodsRecordConnector,
   ottConnector: OttConnector,
   sessionRepository: SessionRepository,
-  navigator: Navigator,
+  navigator: Navigation,
   config: FrontendAppConfig
 )(implicit ec: ExecutionContext)
     extends BaseController {
@@ -84,7 +84,7 @@ class CyaUpdateRecordController @Inject() (
                     )
                   )
                   Ok(view(list, onSubmitAction, countryOfOriginKey))
-                case _            => Redirect(routes.JourneyRecoveryController.onPageLoad().url)
+                case _            => Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad().url)
               }
 
             case Left(errors) =>

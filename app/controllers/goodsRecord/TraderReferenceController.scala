@@ -22,7 +22,7 @@ import controllers.actions._
 import forms.goodsRecord.TraderReferenceFormProvider
 import models.Mode
 import models.helper.GoodsDetailsUpdate
-import navigation.Navigator
+import navigation.Navigation
 import pages.goodsRecord.{TraderReferencePage, TraderReferenceUpdatePage}
 import play.api.data.{Form, FormError}
 import play.api.i18n.{Messages, MessagesApi}
@@ -39,7 +39,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class TraderReferenceController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
-  navigator: Navigator,
+  navigator: Navigation,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
@@ -103,7 +103,7 @@ class TraderReferenceController @Inject() (
               case None            =>
                 Future.successful(
                   Redirect(
-                    controllers.goodsRecord.routes.GoodsRecordsLoadingController
+                    controllers.goodsProfile.routes.GoodsRecordsLoadingController
                       .onPageLoad(Some(RedirectUrl(onSubmitAction.url)))
                   )
                 )
@@ -139,7 +139,7 @@ class TraderReferenceController @Inject() (
               case None          =>
                 Future.successful(
                   Redirect(
-                    controllers.goodsRecord.routes.GoodsRecordsLoadingController
+                    controllers.goodsProfile.routes.GoodsRecordsLoadingController
                       .onPageLoad(Some(RedirectUrl(onSubmitAction.url)))
                   )
                 )

@@ -19,7 +19,6 @@ package controllers.profile
 import base.SpecBase
 import base.TestConstants.testEori
 import connectors.TraderProfileConnector
-import controllers.routes
 import models.{TraderProfile, UserAnswers}
 import navigation.{FakeProfileNavigator, ProfileNavigator}
 import org.apache.pekko.Done
@@ -109,7 +108,9 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual
-              routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl))).url
+              controllers.problem.routes.JourneyRecoveryController
+                .onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl)))
+                .url
           }
         }
 
@@ -124,7 +125,9 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad()
+              .url
           }
         }
       }
@@ -228,7 +231,9 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual
-                routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl))).url
+                controllers.problem.routes.JourneyRecoveryController
+                  .onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl)))
+                  .url
 
               verify(mockTraderProfileConnector, never()).getTraderProfile(any())(any())
 
@@ -261,7 +266,9 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual
-                routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl))).url
+                controllers.problem.routes.JourneyRecoveryController
+                  .onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl)))
+                  .url
             }
 
           }
@@ -368,7 +375,9 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad()
+              .url
           }
         }
       }
@@ -425,7 +434,9 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val result = route(application, request).value
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual
-              routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl))).url
+              controllers.problem.routes.JourneyRecoveryController
+                .onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl)))
+                .url
           }
         }
 
@@ -440,7 +451,9 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad()
+              .url
           }
         }
       }
@@ -574,7 +587,9 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual
-                routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl))).url
+                controllers.problem.routes.JourneyRecoveryController
+                  .onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl)))
+                  .url
 
               verify(mockTraderProfileConnector, never()).getTraderProfile(any())(any())
 
@@ -678,7 +693,9 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad()
+              .url
           }
         }
       }
@@ -742,7 +759,9 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual
-              routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl))).url
+              controllers.problem.routes.JourneyRecoveryController
+                .onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl)))
+                .url
           }
         }
 
@@ -757,7 +776,9 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad()
+              .url
           }
         }
       }
@@ -854,7 +875,9 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual
-                routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl))).url
+                controllers.problem.routes.JourneyRecoveryController
+                  .onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl)))
+                  .url
 
               verify(mockTraderProfileConnector, never()).getTraderProfile(any())(any())
 
@@ -887,7 +910,9 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual
-                routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl))).url
+                controllers.problem.routes.JourneyRecoveryController
+                  .onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl)))
+                  .url
             }
 
           }
@@ -991,7 +1016,9 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad()
+              .url
           }
         }
       }
@@ -1091,7 +1118,9 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual
-              routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl))).url
+              controllers.problem.routes.JourneyRecoveryController
+                .onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl)))
+                .url
           }
         }
 
@@ -1106,7 +1135,9 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad()
+              .url
           }
         }
       }
@@ -1230,7 +1261,9 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad()
+              .url
           }
         }
 
@@ -1256,7 +1289,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController
+            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
               .onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl)))
               .url
           }
@@ -1359,7 +1392,9 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual
-              routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl))).url
+              controllers.problem.routes.JourneyRecoveryController
+                .onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl)))
+                .url
           }
         }
 
@@ -1374,7 +1409,9 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad()
+              .url
           }
         }
       }
@@ -1498,7 +1535,9 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad()
+              .url
           }
         }
 
@@ -1524,7 +1563,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.JourneyRecoveryController
+            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
               .onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl)))
               .url
           }

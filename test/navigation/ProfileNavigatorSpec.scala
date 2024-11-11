@@ -120,7 +120,7 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
               UseExistingUkimsNumberPage,
               NormalMode,
               emptyUserAnswers
-            ) mustBe routes.JourneyRecoveryController
+            ) mustBe controllers.problem.routes.JourneyRecoveryController
               .onPageLoad()
           }
         }
@@ -154,7 +154,7 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNirmsPage,
               NormalMode,
               emptyUserAnswers
-            ) mustBe routes.JourneyRecoveryController
+            ) mustBe controllers.problem.routes.JourneyRecoveryController
               .onPageLoad()
           }
         }
@@ -201,7 +201,7 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNiphlPage,
               NormalMode,
               emptyUserAnswers
-            ) mustBe routes.JourneyRecoveryController
+            ) mustBe controllers.problem.routes.JourneyRecoveryController
               .onPageLoad()
           }
         }
@@ -293,7 +293,7 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNirmsUpdatePage,
               NormalMode,
               emptyUserAnswers
-            ) mustBe routes.JourneyRecoveryController
+            ) mustBe controllers.problem.routes.JourneyRecoveryController
               .onPageLoad(Some(continueUrl))
           }
 
@@ -309,7 +309,7 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNirmsUpdatePage,
               NormalMode,
               answers
-            ) mustBe routes.JourneyRecoveryController
+            ) mustBe controllers.problem.routes.JourneyRecoveryController
               .onPageLoad(Some(continueUrl))
           }
         }
@@ -422,7 +422,7 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNiphlUpdatePage,
               NormalMode,
               emptyUserAnswers
-            ) mustBe routes.JourneyRecoveryController
+            ) mustBe controllers.problem.routes.JourneyRecoveryController
               .onPageLoad(Some(continueUrl))
           }
 
@@ -438,7 +438,7 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNiphlUpdatePage,
               NormalMode,
               answers
-            ) mustBe routes.JourneyRecoveryController
+            ) mustBe controllers.problem.routes.JourneyRecoveryController
               .onPageLoad(Some(continueUrl))
           }
         }
@@ -508,7 +508,7 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
           UnknownPage,
           CheckMode,
           emptyUserAnswers
-        ) mustBe routes.JourneyRecoveryController.onPageLoad()
+        ) mustBe controllers.problem.routes.JourneyRecoveryController.onPageLoad()
       }
 
       "within the  Create Profile Journey" - {
@@ -570,7 +570,7 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNirmsPage,
               CheckMode,
               emptyUserAnswers
-            ) mustBe routes.JourneyRecoveryController
+            ) mustBe controllers.problem.routes.JourneyRecoveryController
               .onPageLoad()
           }
         }
@@ -634,7 +634,7 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNiphlPage,
               CheckMode,
               emptyUserAnswers
-            ) mustBe routes.JourneyRecoveryController
+            ) mustBe controllers.problem.routes.JourneyRecoveryController
               .onPageLoad()
           }
         }
@@ -767,7 +767,7 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNirmsUpdatePage,
               CheckMode,
               emptyUserAnswers
-            ) mustBe routes.JourneyRecoveryController
+            ) mustBe controllers.problem.routes.JourneyRecoveryController
               .onPageLoad(Some(continueUrl))
           }
 
@@ -783,7 +783,7 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNirmsUpdatePage,
               CheckMode,
               answers
-            ) mustBe routes.JourneyRecoveryController
+            ) mustBe controllers.problem.routes.JourneyRecoveryController
               .onPageLoad(Some(continueUrl))
           }
         }
@@ -853,7 +853,7 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNiphlUpdatePage,
               CheckMode,
               emptyUserAnswers
-            ) mustBe routes.JourneyRecoveryController
+            ) mustBe controllers.problem.routes.JourneyRecoveryController
               .onPageLoad(Some(continueUrl))
           }
 
@@ -869,7 +869,7 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNiphlUpdatePage,
               CheckMode,
               answers
-            ) mustBe routes.JourneyRecoveryController
+            ) mustBe controllers.problem.routes.JourneyRecoveryController
               .onPageLoad(Some(continueUrl))
           }
         }
@@ -901,14 +901,17 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
         "with no ContinueUrl if none supplied" in {
           val result = navigator.journeyRecovery()
           result.header.status mustEqual SEE_OTHER
-          result.header.headers("Location") mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          result.header
+            .headers("Location") mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
         }
 
         "with ContinueUrl if one supplied" in {
           val redirectUrl = Some(RedirectUrl("/redirectUrl"))
           val result      = navigator.journeyRecovery(redirectUrl)
           result.header.status mustEqual SEE_OTHER
-          result.header.headers("Location") mustEqual routes.JourneyRecoveryController.onPageLoad(redirectUrl).url
+          result.header.headers("Location") mustEqual controllers.problem.routes.JourneyRecoveryController
+            .onPageLoad(redirectUrl)
+            .url
         }
       }
     }
