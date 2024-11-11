@@ -71,7 +71,8 @@ class HasCorrectGoodsController @Inject() (
   def onPageLoadLongerCommodityCode(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData) { implicit request =>
       val preparedForm = prepareForm(HasCorrectGoodsLongerCommodityCodePage(recordId), form)
-      val submitAction = controllers.goodsRecord.routes.HasCorrectGoodsController.onSubmitLongerCommodityCode(mode, recordId)
+      val submitAction =
+        controllers.goodsRecord.routes.HasCorrectGoodsController.onSubmitLongerCommodityCode(mode, recordId)
       request.userAnswers.get(LongerCommodityQuery(recordId)) match {
         case Some(commodity) =>
           Ok(
@@ -102,7 +103,8 @@ class HasCorrectGoodsController @Inject() (
 
   def onSubmitLongerCommodityCode(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      val submitAction = controllers.goodsRecord.routes.HasCorrectGoodsController.onSubmitLongerCommodityCode(mode, recordId)
+      val submitAction =
+        controllers.goodsRecord.routes.HasCorrectGoodsController.onSubmitLongerCommodityCode(mode, recordId)
 
       form
         .bindFromRequest()

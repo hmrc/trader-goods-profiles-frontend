@@ -34,7 +34,10 @@ object GoodsDescriptionSummary {
         key = "goodsDescription.checkYourAnswersLabel",
         value = ValueViewModel(HtmlFormat.escape(answer).toString),
         actions = Seq(
-          ActionItemViewModel("site.change", controllers.goodsRecord.routes.GoodsDescriptionController.onPageLoadCreate(CheckMode).url)
+          ActionItemViewModel(
+            "site.change",
+            controllers.goodsRecord.routes.GoodsDescriptionController.onPageLoadCreate(CheckMode).url
+          )
             .withVisuallyHiddenText(messages("goodsDescription.change.hidden"))
         )
       )
@@ -45,7 +48,10 @@ object GoodsDescriptionSummary {
       key = "goodsDescription.checkYourAnswersLabel",
       value = ValueViewModel(HtmlFormat.escape(value).toString),
       actions = Seq(
-        ActionItemViewModel("site.change", controllers.goodsRecord.routes.GoodsDescriptionController.onPageLoadUpdate(mode, recordId).url)
+        ActionItemViewModel(
+          "site.change",
+          controllers.goodsRecord.routes.GoodsDescriptionController.onPageLoadUpdate(mode, recordId).url
+        )
           .withVisuallyHiddenText(messages("goodsDescription.change.hidden"))
       )
     )

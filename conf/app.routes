@@ -21,54 +21,7 @@ GET         /account/sign-out                                                   
 GET         /account/sign-out-no-session                                                            controllers.auth.AuthController.signOutNoSession()
 GET         /signed-out                                                                             controllers.auth.SignedOutController.onPageLoad()
 
-GET         /create-record/commodity-code                                                           controllers.CommodityCodeController.onPageLoadCreate(mode: Mode = NormalMode)
-POST        /create-record/commodity-code                                                           controllers.CommodityCodeController.onSubmitCreate(mode: Mode = NormalMode)
-GET         /create-record/commodity-code/check                                                     controllers.CommodityCodeController.onPageLoadCreate(mode: Mode = CheckMode)
-POST        /create-record/commodity-code/check                                                     controllers.CommodityCodeController.onSubmitCreate(mode: Mode = CheckMode)
-
-GET         /update-record/:recordId/commodity-code                                                 controllers.CommodityCodeController.onPageLoadUpdate(mode: Mode = NormalMode, recordId: String)
-POST        /update-record/:recordId/commodity-code                                                 controllers.CommodityCodeController.onSubmitUpdate(mode: Mode = NormalMode, recordId: String)
-GET         /update-record/:recordId/commodity-code/check                                           controllers.CommodityCodeController.onPageLoadUpdate(mode: Mode = CheckMode, recordId: String)
-POST        /update-record/:recordId/commodity-code/check                                           controllers.CommodityCodeController.onSubmitUpdate(mode: Mode = CheckMode, recordId: String)
-
-GET         /create-record/country-of-origin                                                        controllers.CountryOfOriginController.onPageLoadCreate(mode: Mode = NormalMode)
-POST        /create-record/country-of-origin                                                        controllers.CountryOfOriginController.onSubmitCreate(mode: Mode = NormalMode)
-GET         /create-record/country-of-origin/check                                                  controllers.CountryOfOriginController.onPageLoadCreate(mode: Mode = CheckMode)
-POST        /create-record/country-of-origin/check                                                  controllers.CountryOfOriginController.onSubmitCreate(mode: Mode = CheckMode)
-
-GET         /update-record/:recordId/country-of-origin                                              controllers.CountryOfOriginController.onPageLoadUpdate(mode: Mode = NormalMode, recordId: String)
-POST        /update-record/:recordId/country-of-origin                                              controllers.CountryOfOriginController.onSubmitUpdate(mode: Mode = NormalMode, recordId: String)
-GET         /update-record/:recordId/country-of-origin/check                                        controllers.CountryOfOriginController.onPageLoadUpdate(mode: Mode = CheckMode, recordId: String)
-POST        /update-record/:recordId/country-of-origin/check                                        controllers.CountryOfOriginController.onSubmitUpdate(mode: Mode = CheckMode, recordId: String)
-
-GET         /problem/unauthorised-sign-in                                                           controllers.UnauthorisedController.onPageLoad()
-GET         /problem/unauthorised-service-user                                                      controllers.UnauthorisedServiceUserController.onPageLoad()
-GET         /problem/unauthorised-cds-enrolment                                                     controllers.UnauthorisedCdsEnrolmentController.onPageLoad()
-
 GET         /homepage                                                                               controllers.HomePageController.onPageLoad()
-
-GET         /update-record/:recordId/categorisation/category-assessment/:number                     controllers.AssessmentController.onPageLoad(mode: Mode = NormalMode, recordId: String, number: Int)
-POST        /update-record/:recordId/categorisation/category-assessment/:number                     controllers.AssessmentController.onSubmit(mode: Mode = NormalMode, recordId: String, number: Int)
-GET         /update-record/:recordId/categorisation/category-assessment/:number/check               controllers.AssessmentController.onPageLoad(mode: Mode = CheckMode, recordId: String, number: Int)
-POST        /update-record/:recordId/categorisation/category-assessment/:number/check               controllers.AssessmentController.onSubmit(mode: Mode = CheckMode, recordId: String, number: Int)
-
-GET         /update-record/:recordId/recategorise/category-assessment/:number                       controllers.AssessmentController.onPageLoadReassessment(mode: Mode = NormalMode, recordId: String, number: Int)
-POST        /update-record/:recordId/recategorise/category-assessment/:number                       controllers.AssessmentController.onSubmitReassessment(mode: Mode = NormalMode, recordId: String, number: Int)
-GET         /update-record/:recordId/recategorise/category-assessment/:number/check                 controllers.AssessmentController.onPageLoadReassessment(mode: Mode = CheckMode, recordId: String, number: Int)
-POST        /update-record/:recordId/recategorise/category-assessment/:number/check                 controllers.AssessmentController.onSubmitReassessment(mode: Mode = CheckMode, recordId: String, number: Int)
-
-GET         /update-record/:recordId/categorisation/result/category-1                               controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = Category1Scenario)
-GET         /update-record/:recordId/categorisation/result/category-2                               controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = Category2Scenario)
-GET         /update-record/:recordId/categorisation/result/standard                                 controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = StandardGoodsScenario)
-GET         /update-record/:recordId/categorisation/result/category-1-no-exemptions                 controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = Category1NoExemptionsScenario)
-GET         /update-record/:recordId/categorisation/result/standard-no-assessments                  controllers.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = StandardGoodsNoAssessmentsScenario)
-
-GET         /update-record/:recordId/categorisation/check-your-answers                              controllers.CyaCategorisationController.onPageLoad(recordId:String)
-POST        /update-record/:recordId/categorisation/check-your-answers                              controllers.CyaCategorisationController.onSubmit(recordId:String)
-
-GET         /update-record/:recordId/categorisation/categorisation-preparation                      controllers.CategorisationPreparationController.startCategorisation(recordId:String)
-GET         /update-record/:recordId/categorisation/recategorisation-preparation                    controllers.CategorisationPreparationController.startLongerCategorisation(mode: Mode = NormalMode, recordId:String)
-GET         /update-record/:recordId/categorisation/recategorisation-preparation/check              controllers.CategorisationPreparationController.startLongerCategorisation(mode: Mode = CheckMode, recordId:String)
 
 GET         /update-record/:recordId/create-advice/start                                            controllers.AdviceStartController.onPageLoad(recordId:String)
 POST        /update-record/:recordId/create-advice/start                                            controllers.AdviceStartController.onSubmit(recordId:String)
@@ -108,8 +61,6 @@ GET         /download/tgp-record-files                                          
 
 GET         /download-data/request-file                                                             controllers.RequestDataController.onPageLoad()
 POST        /download-data/request-file                                                             controllers.RequestDataController.onSubmit()
-
-GET         /problem/:recordId/expired-commodity-code                                               controllers.ExpiredCommodityCodeController.onPageLoad(recordId:String)
 
 # this url must be the last url on this page so it becomes the default if no other urls match
 GET         /*path                                                                                  controllers.PageNotFoundController.onPageLoad(path: String)

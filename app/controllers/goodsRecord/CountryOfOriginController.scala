@@ -24,8 +24,8 @@ import models.helper.GoodsDetailsUpdate
 import models.requests.DataRequest
 import models.{Country, Mode, UserAnswers}
 import navigation.Navigation
-import pages.goodsRecord.{CountryOfOriginPage, CountryOfOriginUpdatePage, HasCountryOfOriginChangePage}
 import pages.QuestionPage
+import pages.goodsRecord.{CountryOfOriginPage, CountryOfOriginUpdatePage, HasCountryOfOriginChangePage}
 import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.libs.json.Reads
@@ -101,7 +101,13 @@ class CountryOfOriginController @Inject() (
       .fold(
         formWithErrors =>
           Future.successful(
-            BadRequest(view(formWithErrors, controllers.goodsRecord.routes.CountryOfOriginController.onSubmitCreate(mode), countries))
+            BadRequest(
+              view(
+                formWithErrors,
+                controllers.goodsRecord.routes.CountryOfOriginController.onSubmitCreate(mode),
+                countries
+              )
+            )
           ),
         value =>
           for {
@@ -159,7 +165,11 @@ class CountryOfOriginController @Inject() (
               formWithErrors =>
                 Future.successful(
                   BadRequest(
-                    view(formWithErrors, controllers.goodsRecord.routes.CountryOfOriginController.onSubmitUpdate(mode, recordId), countries)
+                    view(
+                      formWithErrors,
+                      controllers.goodsRecord.routes.CountryOfOriginController.onSubmitUpdate(mode, recordId),
+                      countries
+                    )
                   )
                 ),
               value => {

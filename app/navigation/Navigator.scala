@@ -19,7 +19,6 @@ package navigation
 import models._
 import pages._
 import play.api.mvc.Results.Redirect
-import pages.goodsRecord.{CommodityCodePage, CommodityCodeUpdatePage, CountryOfOriginPage, CountryOfOriginUpdatePage, CreateRecordStartPage, CyaCreateRecordPage, CyaUpdateRecordPage, GoodsDescriptionPage, GoodsDescriptionUpdatePage, HasCommodityCodeChangePage, HasCorrectGoodsCommodityCodeUpdatePage, HasCountryOfOriginChangePage, HasGoodsDescriptionChangePage, TraderReferencePage, TraderReferenceUpdatePage}
 import play.api.mvc.{Call, Result}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 

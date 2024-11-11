@@ -21,14 +21,13 @@ import cats.data.EitherNec
 import com.google.inject.Inject
 import config.FrontendAppConfig
 import connectors.{GoodsRecordConnector, OttConnector}
+import controllers.BaseController
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
-import controllers.{BaseController, routes}
 import models.router.requests.PutRecordRequest
 import models.{CheckMode, Country, NormalMode, UpdateGoodsRecord, UserAnswers, ValidationError}
 import navigation.Navigation
 import org.apache.pekko.Done
-import pages._
-import pages.goodsRecord.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, CyaUpdateRecordPage, GoodsDescriptionUpdatePage, HasCommodityCodeChangePage, HasCountryOfOriginChangePage, TraderReferenceUpdatePage}
+import pages.goodsRecord._
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
 import queries.CountriesQuery
@@ -74,7 +73,8 @@ class CyaUpdateRecordController @Inject() (
               recordResponse.category.isDefined
             ) match {
             case Right(_) =>
-              val onSubmitAction = controllers.goodsRecord.routes.CyaUpdateRecordController.onSubmitCountryOfOrigin(recordId)
+              val onSubmitAction =
+                controllers.goodsRecord.routes.CyaUpdateRecordController.onSubmitCountryOfOrigin(recordId)
               getCountryOfOriginAnswer(request.userAnswers, recordId).map {
                 case Some(answer) =>
                   val list = SummaryListViewModel(
@@ -100,7 +100,9 @@ class CyaUpdateRecordController @Inject() (
         .recoverWith { case e: Exception =>
           logger.error(s"Unable to fetch record $recordId: ${e.getMessage}")
           Future.successful(
-            navigator.journeyRecovery(Some(RedirectUrl(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId).url)))
+            navigator.journeyRecovery(
+              Some(RedirectUrl(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId).url))
+            )
           )
         }
     }
@@ -109,7 +111,8 @@ class CyaUpdateRecordController @Inject() (
     (identify andThen getData andThen requireData) { implicit request =>
       UpdateGoodsRecord.validateGoodsDescription(request.userAnswers, recordId) match {
         case Right(goodsDescription) =>
-          val onSubmitAction = controllers.goodsRecord.routes.CyaUpdateRecordController.onSubmitGoodsDescription(recordId)
+          val onSubmitAction =
+            controllers.goodsRecord.routes.CyaUpdateRecordController.onSubmitGoodsDescription(recordId)
 
           val list = SummaryListViewModel(
             Seq(GoodsDescriptionSummary.rowUpdateCya(goodsDescription, recordId, CheckMode))
@@ -128,7 +131,8 @@ class CyaUpdateRecordController @Inject() (
     (identify andThen getData andThen requireData) { implicit request =>
       UpdateGoodsRecord.validateTraderReference(request.userAnswers, recordId) match {
         case Right(traderReference) =>
-          val onSubmitAction = controllers.goodsRecord.routes.CyaUpdateRecordController.onSubmitTraderReference(recordId)
+          val onSubmitAction =
+            controllers.goodsRecord.routes.CyaUpdateRecordController.onSubmitTraderReference(recordId)
 
           val list = SummaryListViewModel(
             Seq(TraderReferenceSummary.row(traderReference, recordId, CheckMode, recordLocked = false))
@@ -157,7 +161,8 @@ class CyaUpdateRecordController @Inject() (
               isCommCodeExpired
             ) match {
             case Right(commodity) =>
-              val onSubmitAction = controllers.goodsRecord.routes.CyaUpdateRecordController.onSubmitCommodityCode(recordId)
+              val onSubmitAction =
+                controllers.goodsRecord.routes.CyaUpdateRecordController.onSubmitCommodityCode(recordId)
 
               val list = SummaryListViewModel(
                 Seq(
@@ -183,7 +188,9 @@ class CyaUpdateRecordController @Inject() (
         .recoverWith { case e: Exception =>
           logger.error(s"Unable to fetch record $recordId: ${e.getMessage}")
           Future.successful(
-            navigator.journeyRecovery(Some(RedirectUrl(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId).url)))
+            navigator.journeyRecovery(
+              Some(RedirectUrl(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId).url))
+            )
           )
         }
     }

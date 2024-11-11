@@ -32,7 +32,10 @@ object TraderReferenceSummary {
         key = "traderReference.checkYourAnswersLabel",
         value = ValueViewModel(HtmlFormat.escape(answer).toString),
         actions = Seq(
-          ActionItemViewModel("site.change", controllers.goodsRecord.routes.TraderReferenceController.onPageLoadCreate(CheckMode).url)
+          ActionItemViewModel(
+            "site.change",
+            controllers.goodsRecord.routes.TraderReferenceController.onPageLoadCreate(CheckMode).url
+          )
             .withVisuallyHiddenText(messages("traderReference.change.hidden"))
         )
       )
@@ -48,7 +51,10 @@ object TraderReferenceSummary {
         Seq.empty
       } else {
         Seq(
-          ActionItemViewModel("site.change", controllers.goodsRecord.routes.TraderReferenceController.onPageLoadUpdate(mode, recordId).url)
+          ActionItemViewModel(
+            "site.change",
+            controllers.goodsRecord.routes.TraderReferenceController.onPageLoadUpdate(mode, recordId).url
+          )
             .withVisuallyHiddenText(messages("traderReference.change.hidden"))
         )
       }

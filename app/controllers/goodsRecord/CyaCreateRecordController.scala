@@ -69,7 +69,11 @@ class CyaCreateRecordController @Inject() (
       case Left(errors) =>
         dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
         Future.successful(
-          logErrorsAndContinue(errorMessage, controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad(), errors)
+          logErrorsAndContinue(
+            errorMessage,
+            controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad(),
+            errors
+          )
         )
     }
   }
@@ -97,7 +101,11 @@ class CyaCreateRecordController @Inject() (
       case Left(errors) =>
         dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
         Future.successful(
-          logErrorsAndContinue(errorMessage, controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad(), errors)
+          logErrorsAndContinue(
+            errorMessage,
+            controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad(),
+            errors
+          )
         )
     }
   }

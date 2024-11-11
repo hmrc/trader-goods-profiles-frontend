@@ -22,10 +22,9 @@ import controllers.actions._
 import forms.goodsRecord.CommodityCodeFormProvider
 import models.helper.{CreateRecordJourney, GoodsDetailsUpdate}
 import models.requests.DataRequest
-import navigation.Navigation
 import models.{Commodity, Mode}
-import navigation.Navigator
-import pages._
+import navigation.Navigation
+import pages.goodsRecord._
 import play.api.data.{Form, FormError}
 import play.api.i18n.MessagesApi
 import play.api.mvc._
