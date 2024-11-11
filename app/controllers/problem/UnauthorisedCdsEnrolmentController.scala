@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.problem
 
+import controllers.BaseController
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import views.html.UnauthorisedCdsEnrolmentView
+import views.html.problem.UnauthorisedCdsEnrolmentView
 
 import javax.inject.Inject
 

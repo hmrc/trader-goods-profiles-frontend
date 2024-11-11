@@ -19,7 +19,7 @@ package controllers
 import base.SpecBase
 import connectors.DownloadDataConnector
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{atLeastOnce, never, reset, verify, when}
+import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.i18n.Messages
@@ -89,7 +89,9 @@ class FileManagementControllerSpec extends SpecBase with MockitoSugar with Befor
         val request = FakeRequest(GET, fileManagementRoute)
         val result  = route(application, request).value
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController.onPageLoad().url
+        redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+          .onPageLoad()
+          .url
       }
 
       verify(mockDownloadDataConnector, never()).getDownloadDataSummary(any())(any())

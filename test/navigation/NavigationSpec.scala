@@ -32,10 +32,10 @@ import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 
 import java.time.Instant
 
-class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
+class NavigationSpec extends SpecBase with BeforeAndAfterEach {
 
   private val mockCategorisationService = mock[CategorisationService]
-  private val navigator                 = new Navigator(mockCategorisationService)
+  private val navigator                 = new Navigation(mockCategorisationService)
 
   override def beforeEach(): Unit = {
     reset(mockCategorisationService)
@@ -130,7 +130,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             WithdrawAdviceStartPage(testRecordId),
             NormalMode,
             emptyUserAnswers
-          ) mustBe routes.JourneyRecoveryController
+          ) mustBe controllers.problem.routes.JourneyRecoveryController
             .onPageLoad(Some(continueUrl))
         }
       }
@@ -211,7 +211,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasCorrectGoodsPage,
               NormalMode,
               emptyUserAnswers
-            ) mustBe routes.JourneyRecoveryController
+            ) mustBe controllers.problem.routes.JourneyRecoveryController
               .onPageLoad()
           }
         }
@@ -238,7 +238,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasCountryOfOriginChangePage(testRecordId),
               NormalMode,
               emptyUserAnswers
-            ) mustBe routes.JourneyRecoveryController.onPageLoad(Some(continueUrl))
+            ) mustBe controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(continueUrl))
           }
 
           "must go from HasGoodsDescriptionChangePage to JourneyRecoveryController" in {
@@ -246,7 +246,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasGoodsDescriptionChangePage(testRecordId),
               NormalMode,
               emptyUserAnswers
-            ) mustBe routes.JourneyRecoveryController.onPageLoad(Some(continueUrl))
+            ) mustBe controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(continueUrl))
           }
 
           "must go from HasCommodityCodeChangePage to JourneyRecoveryController" in {
@@ -254,7 +254,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasCommodityCodeChangePage(testRecordId),
               NormalMode,
               emptyUserAnswers
-            ) mustBe routes.JourneyRecoveryController.onPageLoad(Some(continueUrl))
+            ) mustBe controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(continueUrl))
           }
         }
 
@@ -429,7 +429,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasCorrectGoodsLongerCommodityCodePage(testRecordId),
               NormalMode,
               emptyUserAnswers
-            ) mustBe routes.JourneyRecoveryController.onPageLoad()
+            ) mustBe controllers.problem.routes.JourneyRecoveryController.onPageLoad()
           }
 
           "when longer commodity query is not set" in {
@@ -443,7 +443,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasCorrectGoodsLongerCommodityCodePage(testRecordId),
               NormalMode,
               userAnswers
-            ) mustBe routes.JourneyRecoveryController.onPageLoad()
+            ) mustBe controllers.problem.routes.JourneyRecoveryController.onPageLoad()
           }
 
           "when answer is not set" in {
@@ -459,7 +459,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasCorrectGoodsLongerCommodityCodePage(testRecordId),
               NormalMode,
               userAnswers
-            ) mustBe routes.JourneyRecoveryController.onPageLoad()
+            ) mustBe controllers.problem.routes.JourneyRecoveryController.onPageLoad()
           }
         }
 
@@ -497,7 +497,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasCorrectGoodsCommodityCodeUpdatePage(testRecordId),
               NormalMode,
               emptyUserAnswers
-            ) mustBe routes.JourneyRecoveryController
+            ) mustBe controllers.problem.routes.JourneyRecoveryController
               .onPageLoad()
           }
         }
@@ -549,7 +549,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             HasCorrectGoodsLongerCommodityCodePage(testRecordId),
             NormalMode,
             emptyUserAnswers
-          ) mustBe routes.JourneyRecoveryController.onPageLoad()
+          ) mustBe controllers.problem.routes.JourneyRecoveryController.onPageLoad()
         }
 
         "when longer commodity query is not set" in {
@@ -563,7 +563,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             HasCorrectGoodsLongerCommodityCodePage(testRecordId),
             NormalMode,
             userAnswers
-          ) mustBe routes.JourneyRecoveryController.onPageLoad()
+          ) mustBe controllers.problem.routes.JourneyRecoveryController.onPageLoad()
         }
 
         "when answer is not set" in {
@@ -579,7 +579,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
             HasCorrectGoodsLongerCommodityCodePage(testRecordId),
             NormalMode,
             userAnswers
-          ) mustBe routes.JourneyRecoveryController.onPageLoad()
+          ) mustBe controllers.problem.routes.JourneyRecoveryController.onPageLoad()
         }
       }
 
@@ -605,7 +605,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
           UnknownPage,
           CheckMode,
           emptyUserAnswers
-        ) mustBe routes.JourneyRecoveryController.onPageLoad()
+        ) mustBe controllers.problem.routes.JourneyRecoveryController.onPageLoad()
       }
 
       "in Require Advice Journey" - {
@@ -714,7 +714,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasCorrectGoodsPage,
               CheckMode,
               emptyUserAnswers
-            ) mustBe routes.JourneyRecoveryController
+            ) mustBe controllers.problem.routes.JourneyRecoveryController
               .onPageLoad()
           }
         }
@@ -808,7 +808,7 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasCorrectGoodsCommodityCodeUpdatePage(testRecordId),
               CheckMode,
               emptyUserAnswers
-            ) mustBe routes.JourneyRecoveryController
+            ) mustBe controllers.problem.routes.JourneyRecoveryController
               .onPageLoad()
           }
         }
@@ -824,14 +824,17 @@ class NavigatorSpec extends SpecBase with BeforeAndAfterEach {
         "with no ContinueUrl if none supplied" in {
           val result = navigator.journeyRecovery()
           result.header.status mustEqual SEE_OTHER
-          result.header.headers("Location") mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          result.header
+            .headers("Location") mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
         }
 
         "with ContinueUrl if one supplied" in {
           val redirectUrl = Some(RedirectUrl("/redirectUrl"))
           val result      = navigator.journeyRecovery(redirectUrl)
           result.header.status mustEqual SEE_OTHER
-          result.header.headers("Location") mustEqual routes.JourneyRecoveryController.onPageLoad(redirectUrl).url
+          result.header.headers("Location") mustEqual controllers.problem.routes.JourneyRecoveryController
+            .onPageLoad(redirectUrl)
+            .url
         }
       }
     }

@@ -19,7 +19,6 @@ package controllers.profile
 import base.SpecBase
 import base.TestConstants.userAnswersId
 import connectors.TraderProfileConnector
-import controllers.routes
 import forms.profile.UseExistingUkimsNumberFormProvider
 import models.UserAnswers
 import navigation.{FakeProfileNavigator, ProfileNavigator}
@@ -104,7 +103,7 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
         verify(mockTraderProfileConnector, times(2)).checkTraderProfile(any())(any())
       }
     }

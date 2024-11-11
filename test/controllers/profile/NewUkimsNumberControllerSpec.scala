@@ -19,10 +19,9 @@ package controllers.profile
 import base.SpecBase
 import base.TestConstants.{testEori, userAnswersId}
 import connectors.TraderProfileConnector
-import controllers.routes
 import forms.profile.UkimsNumberFormProvider
 import models.{NormalMode, TraderProfile, UserAnswers}
-import navigation.{FakeNavigator, Navigator}
+import navigation.{FakeNavigation, Navigation}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -60,7 +59,7 @@ class NewUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
             bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
           )
           .build()
@@ -89,7 +88,7 @@ class NewUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
         val application = applicationBuilder(userAnswers = Some(userAnswers))
           .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
             bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
           )
           .build()
@@ -124,7 +123,7 @@ class NewUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
         val application =
           applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(
-              bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+              bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository),
               bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
             )
@@ -223,7 +222,7 @@ class NewUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
         }
       }
 
@@ -239,7 +238,7 @@ class NewUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
         }
       }
     }

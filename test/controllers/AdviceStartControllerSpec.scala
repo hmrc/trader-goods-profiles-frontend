@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.testRecordId
-import navigation.{FakeNavigator, Navigator}
+import navigation.{FakeNavigation, Navigation}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -52,7 +52,7 @@ class AdviceStartControllerSpec extends SpecBase {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
-          bind[Navigator].toInstance(new FakeNavigator(onwardRoute))
+          bind[Navigation].toInstance(new FakeNavigation(onwardRoute))
         )
         .build()
 

@@ -21,7 +21,7 @@ import connectors.AccreditationConnector
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import models.{AdviceRequest, NormalMode}
 import models.helper.RequestAdviceJourney
-import navigation.Navigator
+import navigation.Navigation
 import pages.CyaRequestAdvicePage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -42,7 +42,7 @@ class CyaRequestAdviceController @Inject() (
   view: CyaRequestAdviceView,
   dataCleansingService: DataCleansingService,
   accreditationConnector: AccreditationConnector,
-  navigator: Navigator
+  navigator: Navigation
 )(implicit ec: ExecutionContext)
     extends BaseController {
 

@@ -19,7 +19,7 @@ package controllers
 import base.SpecBase
 import connectors.{DownloadDataConnector, TraderProfileConnector}
 import models.Email
-import navigation.{FakeNavigator, Navigator}
+import navigation.{FakeNavigation, Navigation}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{atLeastOnce, never, verify, when}
@@ -30,8 +30,8 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
-import views.html.RequestDataView
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
+import views.html.RequestDataView
 
 import java.time.Instant
 import scala.concurrent.Future
@@ -63,7 +63,9 @@ class RequestDataControllerSpec extends SpecBase {
         val redirectUrl = Some(RedirectUrl(routes.IndexController.onPageLoad().url))
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad(redirectUrl).url
+        redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+          .onPageLoad(redirectUrl)
+          .url
       }
     }
 
@@ -114,7 +116,7 @@ class RequestDataControllerSpec extends SpecBase {
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository),
             bind[DownloadDataConnector].toInstance(mockDownloadDataConnector),
             bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)

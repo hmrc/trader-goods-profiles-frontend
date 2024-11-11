@@ -1,6 +1,7 @@
 # microservice specific routes
 
 ->          /                                                                                       app.profile.Routes
+->          /                                                                                       app.problem.Routes
 ->          /                                                                                       app.categorisation.Routes
 ->          /hmrc-frontend                                                                          hmrcfrontend.Routes
 
@@ -12,16 +13,10 @@ GET         /language/:lang                                                     
 
 GET         /refresh-session                                                                        controllers.KeepAliveController.keepAlive()
 
-GET         /problem/technical-issue                                                                controllers.JourneyRecoveryController.onPageLoad(continueUrl: Option[RedirectUrl] ?= None)
-
 GET         /account/sign-out-survey                                                                controllers.auth.AuthController.signOut()
 GET         /account/sign-out                                                                       controllers.auth.AuthController.signOutNoSurvey()
 GET         /account/sign-out-no-session                                                            controllers.auth.AuthController.signOutNoSession()
 GET         /signed-out                                                                             controllers.auth.SignedOutController.onPageLoad()
-
-GET         /problem/unauthorised-sign-in                                                           controllers.UnauthorisedController.onPageLoad()
-GET         /problem/unauthorised-service-user                                                      controllers.UnauthorisedServiceUserController.onPageLoad()
-GET         /problem/unauthorised-cds-enrolment                                                     controllers.UnauthorisedCdsEnrolmentController.onPageLoad()
 
 GET         /create-record/commodity-code                                                           controllers.CommodityCodeController.onPageLoadCreate(mode: Mode = NormalMode)
 POST        /create-record/commodity-code                                                           controllers.CommodityCodeController.onSubmitCreate(mode: Mode = NormalMode)
@@ -168,8 +163,6 @@ GET         /download/tgp-record-files                                          
 GET         /download-data/request-file                                                             controllers.RequestDataController.onPageLoad()
 POST        /download-data/request-file                                                             controllers.RequestDataController.onSubmit()
 
-
-GET         /problem/:recordId/expired-commodity-code                                               controllers.ExpiredCommodityCodeController.onPageLoad(recordId:String)
 
 # this url must be the last url on this page so it becomes the default if no other urls match
 GET         /*path                                                                                  controllers.PageNotFoundController.onPageLoad(path: String)

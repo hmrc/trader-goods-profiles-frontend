@@ -27,7 +27,7 @@ import navigation.{CategorisationNavigator, FakeCategorisationNavigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{never, reset, times, verify, when}
+import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
 import pages.categorisation.{HasSupplementaryUnitPage, SupplementaryUnitPage}
@@ -344,7 +344,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
             )
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          redirectLocation(result).get mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
         }
 
       }
@@ -366,7 +366,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
             )
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          redirectLocation(result).get mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
         }
 
       }
@@ -390,7 +390,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
             )
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          redirectLocation(result).get mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
 
           withClue("must call the audit service start categorisation event") {
             verify(mockAuditService)
@@ -430,7 +430,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
             )
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          redirectLocation(result).get mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
 
           withClue("must call the audit service start categorisation event") {
             verify(mockAuditService)
@@ -478,7 +478,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
             )
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          redirectLocation(result).get mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
 
           withClue("must call the audit service start categorisation event") {
             verify(mockAuditService)
@@ -1067,7 +1067,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
             )
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          redirectLocation(result).get mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
         }
 
       }
@@ -1089,7 +1089,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
             )
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          redirectLocation(result).get mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
         }
 
       }
@@ -1108,7 +1108,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
             )
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          redirectLocation(result).get mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
         }
 
       }
@@ -1132,7 +1132,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
             )
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          redirectLocation(result).get mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
         }
 
       }
@@ -1166,7 +1166,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
             )
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          redirectLocation(result).get mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
         }
 
       }
@@ -1205,7 +1205,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
             )
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          redirectLocation(result).get mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
 
           withClue("must call the audit service finish categorisation event even though the update failed") {
             verify(mockAuditService).auditFinishCategorisation(
@@ -1256,7 +1256,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
             )
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          redirectLocation(result).get mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
         }
 
       }
@@ -1296,7 +1296,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
             )
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).get mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          redirectLocation(result).get mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
         }
 
       }

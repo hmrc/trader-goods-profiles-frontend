@@ -165,7 +165,9 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
               val result = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+              redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+                .onPageLoad()
+                .url
             }
           }
 
@@ -179,7 +181,9 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
               val result = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+              redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+                .onPageLoad()
+                .url
             }
           }
 
@@ -295,7 +299,9 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
 
               status(result) mustEqual SEE_OTHER
 
-              redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+              redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+                .onPageLoad()
+                .url
             }
           }
 
@@ -311,7 +317,9 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
 
               status(result) mustEqual SEE_OTHER
 
-              redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+              redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+                .onPageLoad()
+                .url
             }
           }
 
@@ -779,7 +787,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
         }
       }
 
@@ -800,7 +808,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
 
           status(result) mustEqual SEE_OTHER
 
-          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
         }
       }
 
@@ -828,7 +836,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
 
           status(result) mustEqual SEE_OTHER
 
-          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
 
           verify(mockOttService, never()).getMeasurementUnit(any(), any())(any())
         }
@@ -862,7 +870,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+          redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
 
           withClue("must call the audit service with the correct details") {
             verify(mockAuditService)

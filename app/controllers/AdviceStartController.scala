@@ -18,7 +18,7 @@ package controllers
 
 import controllers.actions._
 import models.NormalMode
-import navigation.Navigator
+import navigation.Navigation
 import pages.AdviceStartPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -35,7 +35,7 @@ class AdviceStartController @Inject() (
   profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
   view: AdviceStartView,
-  navigator: Navigator
+  navigator: Navigation
 ) extends BaseController {
 
   def onPageLoad(recordId: String): Action[AnyContent] =

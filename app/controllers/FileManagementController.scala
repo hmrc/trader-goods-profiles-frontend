@@ -48,7 +48,7 @@ class FileManagementController @Inject() (
           Ok(view(viewModel))
         }
       } else {
-        Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))
+        Future.successful(Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad()))
       }
   }
 }

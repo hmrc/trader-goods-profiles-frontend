@@ -78,7 +78,7 @@ class CategorisationPreparationController @Inject() (
         .removingFromSession(dataUpdated, pageUpdated, dataRemoved))
         .recover { e =>
           logger.error(s"Unable to start categorisation for record $recordId: ${e.getMessage}")
-          Redirect(routes.JourneyRecoveryController.onPageLoad().url)
+          Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad().url)
         }
 
     }
@@ -136,7 +136,7 @@ class CategorisationPreparationController @Inject() (
       ))
         .recover { e =>
           logger.error(s"Unable to start categorisation for record $recordId: ${e.getMessage}")
-          Redirect(routes.JourneyRecoveryController.onPageLoad().url)
+          Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad().url)
         }
     }
 

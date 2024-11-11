@@ -91,7 +91,7 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
             HasSupplementaryUnitUpdatePage(testRecordId),
             NormalMode,
             emptyUserAnswers
-          ) mustBe routes.JourneyRecoveryController
+          ) mustBe controllers.problem.routes.JourneyRecoveryController
             .onPageLoad(Some(continueUrl))
         }
       }
@@ -586,7 +586,7 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
 
         "if categorisation details are not defined" in {
           navigator.nextPage(AssessmentPage(testRecordId, 0), NormalMode, emptyUserAnswers) mustEqual
-            routes.JourneyRecoveryController.onPageLoad()
+            controllers.problem.routes.JourneyRecoveryController.onPageLoad()
         }
 
         "if assessment answer is not defined" in {
@@ -597,7 +597,7 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
               .value
 
           navigator.nextPage(AssessmentPage(testRecordId, 0), NormalMode, userAnswers) mustEqual
-            routes.JourneyRecoveryController.onPageLoad()
+            controllers.problem.routes.JourneyRecoveryController.onPageLoad()
         }
 
         "if assessment question is not defined" in {
@@ -620,7 +620,7 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
               .value
 
           navigator.nextPage(AssessmentPage(testRecordId, 3), NormalMode, userAnswers) mustEqual
-            routes.JourneyRecoveryController.onPageLoad()
+            controllers.problem.routes.JourneyRecoveryController.onPageLoad()
         }
 
       }
@@ -659,7 +659,7 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
           HasSupplementaryUnitPage(testRecordId),
           NormalMode,
           emptyUserAnswers
-        ) mustBe routes.JourneyRecoveryController
+        ) mustBe controllers.problem.routes.JourneyRecoveryController
           .onPageLoad()
       }
 
@@ -745,7 +745,7 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
 
       "to journey recovery when no categorisation info is found" in {
         navigator.nextPage(CyaCategorisationPage(testRecordId), NormalMode, emptyUserAnswers) mustBe
-          routes.JourneyRecoveryController.onPageLoad(
+          controllers.problem.routes.JourneyRecoveryController.onPageLoad(
             Some(
               RedirectUrl(
                 controllers.categorisation.routes.CategorisationPreparationController
@@ -1184,7 +1184,7 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
           RecategorisationPreparationPage(testRecordId),
           NormalMode,
           emptyUserAnswers
-        ) mustBe routes.JourneyRecoveryController.onPageLoad()
+        ) mustBe controllers.problem.routes.JourneyRecoveryController.onPageLoad()
       }
     }
 
@@ -1192,7 +1192,7 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
 
       "if categorisation details are not defined" in {
         navigator.nextPage(ReassessmentPage(testRecordId, 0), NormalMode, emptyUserAnswers) mustEqual
-          routes.JourneyRecoveryController.onPageLoad()
+          controllers.problem.routes.JourneyRecoveryController.onPageLoad()
       }
 
       "if assessment answer is not defined" in {
@@ -1203,7 +1203,7 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
             .value
 
         navigator.nextPage(ReassessmentPage(testRecordId, 0), NormalMode, userAnswers) mustEqual
-          routes.JourneyRecoveryController.onPageLoad()
+          controllers.problem.routes.JourneyRecoveryController.onPageLoad()
       }
 
       "if assessment question is not defined" in {
@@ -1235,7 +1235,7 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
             .value
 
         navigator.nextPage(ReassessmentPage(testRecordId, 3), NormalMode, userAnswers) mustEqual
-          routes.JourneyRecoveryController.onPageLoad()
+          controllers.problem.routes.JourneyRecoveryController.onPageLoad()
       }
 
     }
@@ -1712,7 +1712,7 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
           .value
 
         navigator.nextPage(CategorisationPreparationPage(testRecordId), NormalMode, userAnswers) mustEqual
-          routes.ExpiredCommodityCodeController.onPageLoad(testRecordId)
+          controllers.problem.routes.ExpiredCommodityCodeController.onPageLoad(testRecordId)
 
       }
 
@@ -2223,7 +2223,7 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
           CategorisationPreparationPage(testRecordId),
           NormalMode,
           emptyUserAnswers
-        ) mustBe routes.JourneyRecoveryController.onPageLoad()
+        ) mustBe controllers.problem.routes.JourneyRecoveryController.onPageLoad()
       }
 
     }
