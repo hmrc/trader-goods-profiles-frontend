@@ -17,7 +17,6 @@
 package navigation
 
 import controllers.routes
-import models.GoodsRecordsPagination.firstPage
 import models.Scenario.getResultAsInt
 import models._
 import models.ott.{CategorisationInfo, CategoryAssessment}
@@ -54,7 +53,6 @@ class Navigation @Inject() (categorisationService: CategorisationService) extend
     case p: NamePage                               => _ => routes.EmailController.onPageLoad(NormalMode, p.recordId)
     case p: EmailPage                              => _ => routes.CyaRequestAdviceController.onPageLoad(p.recordId)
     case p: CyaCategorisationPage                  => navigateFromCyaCategorisationPage(p)
-    case RemoveGoodsRecordPage                     => _ => routes.GoodsRecordsController.onPageLoad(firstPage)
     case p: LongerCommodityCodePage                =>
       _ => routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(NormalMode, p.recordId)
     case p: HasCorrectGoodsLongerCommodityCodePage =>
@@ -76,7 +74,6 @@ class Navigation @Inject() (categorisationService: CategorisationService) extend
     case p: CyaRequestAdvicePage                   => _ => routes.AdviceSuccessController.onPageLoad(p.recordId)
     case p: CyaUpdateRecordPage                    => _ => routes.SingleRecordController.onPageLoad(p.recordId)
     case p: CyaSupplementaryUnitPage               => _ => routes.SingleRecordController.onPageLoad(p.recordId)
-    case PreviousMovementRecordsPage               => _ => routes.GoodsRecordsController.onPageLoad(firstPage)
     case RequestDataPage                           => _ => routes.DownloadRequestSuccessController.onPageLoad()
     case _                                         => _ => routes.IndexController.onPageLoad()
   }

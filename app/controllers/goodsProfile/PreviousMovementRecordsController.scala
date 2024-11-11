@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.goodsProfile
 
+import controllers.BaseController
 import controllers.actions._
 import models.NormalMode
-import navigation.Navigation
-import pages.PreviousMovementRecordsPage
+import navigation.GoodsProfileNavigator
+import pages.goodsProfile.PreviousMovementRecordsPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import views.html.PreviousMovementRecordsView
+import views.html.goodsProfile.PreviousMovementRecordsView
 
 import javax.inject.Inject
 
@@ -34,7 +35,7 @@ class PreviousMovementRecordsController @Inject() (
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
   view: PreviousMovementRecordsView,
-  navigator: Navigation
+  navigator: GoodsProfileNavigator
 ) extends BaseController {
 
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth) { implicit request =>

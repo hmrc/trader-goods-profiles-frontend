@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.goodsProfile
 
 import connectors.GoodsRecordConnector
 import controllers.actions._
+import controllers.{BaseController, routes}
 import play.api.Configuration
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl._
 import uk.gov.hmrc.play.bootstrap.binders.{OnlyRelative, RedirectUrl}
-import views.html.GoodsRecordsLoadingView
+import views.html.goodsProfile.GoodsRecordsLoadingView
 
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext

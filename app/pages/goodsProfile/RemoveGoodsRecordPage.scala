@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-package pages
+package pages.goodsProfile
 
-import play.api.libs.json.JsPath
+import pages.Page
 
-case object GoodsRecordsPage extends QuestionPage[String] {
-
-  override def path: JsPath = JsPath \ toString
-
-  override def toString: String = "goodsRecords"
-}
+case object RemoveGoodsRecordPage extends Page

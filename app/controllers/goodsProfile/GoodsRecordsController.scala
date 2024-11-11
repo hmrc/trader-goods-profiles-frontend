@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.goodsProfile
 
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions._
-import forms.GoodsRecordsFormProvider
+import controllers.BaseController
+import forms.goodsProfile.GoodsRecordsFormProvider
 import models.GoodsRecordsPagination._
-import navigation.Navigation
-import pages.GoodsRecordsPage
+import navigation.GoodsProfileNavigator
+import pages.goodsProfile.GoodsRecordsPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
-import views.html.{GoodsRecordsEmptyView, GoodsRecordsView}
+import views.html.goodsProfile.{GoodsRecordsEmptyView, GoodsRecordsView}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -45,7 +46,7 @@ class GoodsRecordsController @Inject() (
   emptyView: GoodsRecordsEmptyView,
   goodsRecordConnector: GoodsRecordConnector,
   ottConnector: OttConnector,
-  navigator: Navigation
+  navigator: GoodsProfileNavigator
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
@@ -86,8 +87,10 @@ class GoodsRecordsController @Inject() (
           case None                                                                           =>
             Future.successful(
               Redirect(
-                routes.GoodsRecordsLoadingController
-                  .onPageLoad(Some(RedirectUrl(routes.GoodsRecordsController.onPageLoad(page).url)))
+                controllers.goodsProfile.routes.GoodsRecordsLoadingController
+                  .onPageLoad(
+                    Some(RedirectUrl(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(page).url))
+                  )
               )
             )
         }
@@ -125,9 +128,9 @@ class GoodsRecordsController @Inject() (
               case None                       =>
                 Future.successful(
                   Redirect(
-                    routes.GoodsRecordsLoadingController
+                    controllers.goodsProfile.routes.GoodsRecordsLoadingController
                       .onPageLoad(
-                        Some(RedirectUrl(routes.GoodsRecordsController.onPageLoad(page).url))
+                        Some(RedirectUrl(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(page).url))
                       )
                   )
                 )
@@ -136,7 +139,7 @@ class GoodsRecordsController @Inject() (
             for {
               updatedAnswers <- Future.fromTry(request.userAnswers.set(GoodsRecordsPage, value))
               _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(routes.GoodsRecordsSearchResultController.onPageLoad(1))
+            } yield Redirect(controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(1))
         )
     }
 }

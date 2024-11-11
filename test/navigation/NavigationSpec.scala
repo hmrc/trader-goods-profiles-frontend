@@ -19,7 +19,6 @@ package navigation
 import base.SpecBase
 import base.TestConstants.{testRecordId, userAnswersId}
 import controllers.routes
-import models.GoodsRecordsPagination.firstPage
 import models._
 import models.ott.{CategorisationInfo, CategoryAssessment}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
@@ -2595,27 +2594,6 @@ class NavigationSpec extends SpecBase with BeforeAndAfterEach {
           NormalMode,
           emptyUserAnswers
         ) mustEqual routes.SingleRecordController.onPageLoad(recordId)
-      }
-
-      "in Viewing Goods Record Journey" - {
-        "must go from RemoveGoodsRecordPage to page 1 of GoodsRecordsController" in {
-          navigator.nextPage(
-            RemoveGoodsRecordPage,
-            NormalMode,
-            emptyUserAnswers
-          ) mustEqual routes.GoodsRecordsController
-            .onPageLoad(firstPage)
-        }
-
-        "must go from PreviousMovementsRecordsPage to page 1 of the GoodsRecordController" in {
-          navigator.nextPage(
-            PreviousMovementRecordsPage,
-            NormalMode,
-            emptyUserAnswers
-          ) mustEqual routes.GoodsRecordsController
-            .onPageLoad(firstPage)
-        }
-
       }
 
       "in Supplementary Unit Update Journey" - {

@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.goodsProfile
 
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
+import controllers.BaseController
 import models.GoodsRecordsPagination.{getFirstRecordIndex, getLastRecordIndex, getSearchPagination}
-import navigation.Navigation
-import pages.GoodsRecordsPage
+import navigation.GoodsProfileNavigator
+import pages.goodsProfile.GoodsRecordsPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import views.html.{GoodsRecordsSearchResultEmptyView, GoodsRecordsSearchResultView}
+import views.html.goodsProfile.{GoodsRecordsSearchResultEmptyView, GoodsRecordsSearchResultView}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -39,7 +40,7 @@ class GoodsRecordsSearchResultController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: GoodsRecordsSearchResultView,
   emptyView: GoodsRecordsSearchResultEmptyView,
-  navigator: Navigation
+  navigator: GoodsProfileNavigator
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
@@ -83,8 +84,14 @@ class GoodsRecordsSearchResultController @Inject() (
               case None                 =>
                 Future.successful(
                   Redirect(
-                    routes.GoodsRecordsLoadingController
-                      .onPageLoad(Some(RedirectUrl(routes.GoodsRecordsSearchResultController.onPageLoad(page).url)))
+                    controllers.goodsProfile.routes.GoodsRecordsLoadingController
+                      .onPageLoad(
+                        Some(
+                          RedirectUrl(
+                            controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(page).url
+                          )
+                        )
+                      )
                   )
                 )
 
