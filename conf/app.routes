@@ -1,6 +1,7 @@
 # microservice specific routes
 
 ->          /                                                                                       app.profile.Routes
+->          /                                                                                       app.newUkims.Routes
 ->          /                                                                                       app.problem.Routes
 ->          /                                                                                       app.categorisation.Routes
 ->          /                                                                                       app.goodsProfile.Routes

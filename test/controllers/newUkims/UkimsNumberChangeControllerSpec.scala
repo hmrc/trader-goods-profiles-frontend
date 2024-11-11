@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package controllers.profile
+package controllers.newUkims
 
 import base.SpecBase
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import views.html.profile.UkimsNumberChangeView
+import views.html.newUkims.UkimsNumberChangeView
 
 class UkimsNumberChangeControllerSpec extends SpecBase {
 
@@ -30,7 +30,7 @@ class UkimsNumberChangeControllerSpec extends SpecBase {
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, controllers.profile.routes.UkimsNumberChangeController.onPageLoad().url)
+        val request = FakeRequest(GET, controllers.newUkims.routes.UkimsNumberChangeController.onPageLoad().url)
 
         val result = route(application, request).value
 
