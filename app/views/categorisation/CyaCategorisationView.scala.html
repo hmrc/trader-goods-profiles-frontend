@@ -1,0 +1,45 @@
+@*
+ * Copyright 2024 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@this(
+layout: templates.Layout,
+govukSummaryList: GovukSummaryList,
+formHelper: FormWithCSRF,
+govukButton: GovukButton
+)
+
+@(recordId: String, commodityCode: String, categorisationList: SummaryList, supplementaryUnitList: SummaryList, longerCommodityCodeList: SummaryList)(implicit request: Request[_], messages: Messages)
+
+@layout(pageTitle = titleNoForm(messages("cyaCategorisation.title", commodityCode))) {
+
+    <h1 class="govuk-heading-l">@messages("cyaCategorisation.heading", commodityCode)</h1>
+
+    @govukSummaryList(categorisationList)
+
+    @if(supplementaryUnitList != SummaryListViewModel(rows = Seq.empty)) {
+        <h2 class="govuk-heading-m">@messages("cyaCategorisation.supplementaryUnitHeader")</h2>
+        @govukSummaryList(supplementaryUnitList)
+    }
+
+    @if(longerCommodityCodeList != SummaryListViewModel(rows = Seq.empty)) {
+        <h2 class="govuk-heading-m">@messages("cyaCategorisation.longerCommodityCode")</h2>
+        @govukSummaryList(longerCommodityCodeList)
+    }
+
+    @formHelper(action = controllers.categorisation.routes.CyaCategorisationController.onSubmit(recordId)) {
+        @govukButton(ButtonViewModel(messages("site.save.continue")))
+    }
+}

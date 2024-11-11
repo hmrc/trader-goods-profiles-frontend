@@ -20,7 +20,7 @@ import connectors.DownloadDataConnector
 import controllers.actions._
 import controllers.{BaseController, routes}
 import models.NormalMode
-import navigation.{DownloadNavigator, Navigation}
+import navigation.DownloadNavigator
 import pages.download.RequestDataPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}

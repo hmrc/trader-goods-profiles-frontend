@@ -18,7 +18,6 @@ package controllers.download
 
 import base.SpecBase
 import connectors.DownloadDataConnector
-import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
