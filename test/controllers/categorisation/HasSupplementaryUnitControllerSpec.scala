@@ -19,7 +19,6 @@ package controllers.categorisation
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import connectors.{GoodsRecordConnector, TraderProfileConnector}
-import controllers.routes
 import forms.categorisation.HasSupplementaryUnitFormProvider
 import models.helper.SupplementaryUnitUpdate
 import models.{NormalMode, UserAnswers}

@@ -19,14 +19,11 @@ package navigation
 import base.SpecBase
 import base.TestConstants.{testRecordId, userAnswersId}
 import controllers.routes
-import models.GoodsRecordsPagination.firstPage
 import models._
 import org.mockito.Mockito.reset
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
 import pages._
-import pages.categorisation.HasSupplementaryUnitUpdatePage
-import pages.goodsProfile.{PreviousMovementRecordsPage, RemoveGoodsRecordPage}
 import play.api.http.Status.SEE_OTHER
 import queries.{CategorisationDetailsQuery, LongerCommodityQuery}
 import services.CategorisationService
