@@ -22,6 +22,7 @@ import forms.goodsRecord.HasCorrectGoodsFormProvider
 import models.Mode
 import navigation.Navigator
 import pages._
+import pages.goodsRecord.HasCorrectGoodsCommodityCodeUpdatePage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries._

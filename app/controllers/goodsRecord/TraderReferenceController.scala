@@ -23,7 +23,7 @@ import forms.goodsRecord.TraderReferenceFormProvider
 import models.Mode
 import models.helper.GoodsDetailsUpdate
 import navigation.Navigator
-import pages.{TraderReferencePage, TraderReferenceUpdatePage}
+import pages.goodsRecord.{TraderReferencePage, TraderReferenceUpdatePage}
 import play.api.data.{Form, FormError}
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}

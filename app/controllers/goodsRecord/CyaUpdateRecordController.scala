@@ -28,6 +28,7 @@ import models.{CheckMode, Country, NormalMode, UpdateGoodsRecord, UserAnswers, V
 import navigation.Navigator
 import org.apache.pekko.Done
 import pages._
+import pages.goodsRecord.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, CyaUpdateRecordPage, GoodsDescriptionUpdatePage, HasCommodityCodeChangePage, HasCountryOfOriginChangePage, TraderReferenceUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
 import queries.CountriesQuery

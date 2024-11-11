@@ -30,7 +30,7 @@ import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{TraderReferencePage, TraderReferenceUpdatePage}
+import pages.goodsRecord.{TraderReferencePage, TraderReferenceUpdatePage}
 import play.api.data.FormError
 import play.api.inject.bind
 import play.api.mvc.{Call, Result}

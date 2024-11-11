@@ -20,7 +20,7 @@ import controllers.BaseController
 import controllers.actions._
 import models.NormalMode
 import navigation.Navigator
-import pages.CreateRecordStartPage
+import pages.goodsRecord.CreateRecordStartPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.AuditService

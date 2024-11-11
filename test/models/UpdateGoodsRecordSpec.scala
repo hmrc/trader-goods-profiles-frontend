@@ -22,6 +22,7 @@ import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{OptionValues, TryValues}
 import pages._
+import pages.goodsRecord.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage, HasCommodityCodeChangePage, HasCorrectGoodsCommodityCodeUpdatePage, HasCountryOfOriginChangePage, TraderReferenceUpdatePage}
 import queries.CommodityUpdateQuery
 
 import java.time.Instant

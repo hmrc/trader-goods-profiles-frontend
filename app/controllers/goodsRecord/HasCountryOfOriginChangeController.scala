@@ -22,7 +22,7 @@ import forms.goodsRecord.HasCountryOfOriginChangeFormProvider
 import models.Mode
 import models.helper.GoodsDetailsUpdate
 import navigation.Navigator
-import pages.HasCountryOfOriginChangePage
+import pages.goodsRecord.HasCountryOfOriginChangePage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository

@@ -18,7 +18,7 @@ package viewmodels.checkAnswers.goodsRecord
 
 import models.router.responses.GetGoodsRecordResponse
 import models.{CheckMode, Country, Mode, UserAnswers}
-import pages.CountryOfOriginPage
+import pages.goodsRecord.CountryOfOriginPage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow

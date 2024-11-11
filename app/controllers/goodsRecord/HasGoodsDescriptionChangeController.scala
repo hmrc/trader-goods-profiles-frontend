@@ -22,7 +22,7 @@ import forms.goodsRecord.HasGoodsDescriptionChangeFormProvider
 import models.Mode
 import models.helper.GoodsDetailsUpdate
 import navigation.Navigator
-import pages.HasGoodsDescriptionChangePage
+import pages.goodsRecord.HasGoodsDescriptionChangePage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository

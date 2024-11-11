@@ -23,7 +23,7 @@ import forms.goodsRecord.HasCommodityCodeChangeFormProvider
 import models.Mode
 import models.helper.GoodsDetailsUpdate
 import navigation.Navigator
-import pages.HasCommodityCodeChangePage
+import pages.goodsRecord.HasCommodityCodeChangePage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository

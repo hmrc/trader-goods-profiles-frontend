@@ -24,7 +24,8 @@ import models.helper.GoodsDetailsUpdate
 import models.requests.DataRequest
 import models.{Country, Mode, UserAnswers}
 import navigation.Navigator
-import pages.{CountryOfOriginPage, CountryOfOriginUpdatePage, HasCountryOfOriginChangePage, QuestionPage}
+import pages.goodsRecord.{CountryOfOriginPage, CountryOfOriginUpdatePage, HasCountryOfOriginChangePage}
+import pages.QuestionPage
 import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.libs.json.Reads

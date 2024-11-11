@@ -30,6 +30,7 @@ import org.mockito.ArgumentMatchers.{any, anyString, eq => eqTo}
 import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages._
+import pages.goodsRecord.{CommodityCodePage, CommodityCodeUpdatePage, CountryOfOriginPage, CountryOfOriginUpdatePage, HasCommodityCodeChangePage}
 import play.api.data.FormError
 import play.api.http.Status.NOT_FOUND
 import play.api.inject.bind

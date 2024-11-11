@@ -18,7 +18,7 @@ package viewmodels.checkAnswers.goodsRecord
 
 import models.router.responses.GetGoodsRecordResponse
 import models.{CheckMode, Mode, UserAnswers}
-import pages.CommodityCodePage
+import pages.goodsRecord.CommodityCodePage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow

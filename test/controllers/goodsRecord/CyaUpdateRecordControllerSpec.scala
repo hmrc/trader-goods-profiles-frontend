@@ -27,6 +27,7 @@ import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{atLeastOnce, never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages._
+import pages.goodsRecord.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage, HasCommodityCodeChangePage, HasCorrectGoodsCommodityCodeUpdatePage, HasCountryOfOriginChangePage, TraderReferenceUpdatePage}
 import play.api.Application
 import play.api.inject.bind
 import play.api.test.FakeRequest

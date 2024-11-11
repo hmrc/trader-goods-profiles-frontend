@@ -17,7 +17,7 @@
 package viewmodels.checkAnswers.goodsRecord
 
 import models.{CheckMode, Mode, UserAnswers}
-import pages.TraderReferencePage
+import pages.goodsRecord.TraderReferencePage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow

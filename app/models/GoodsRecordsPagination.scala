@@ -16,6 +16,7 @@
 
 package models
 
+import controllers.routes
 import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.govukfrontend.views.Aliases.Pagination
 import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.{PaginationItem, PaginationLink}
@@ -79,19 +80,19 @@ object GoodsRecordsPagination {
           PaginationItem(
             number = Some(page.toString),
             current = Some(currentPage == page),
-            href = controllers.goodsRecord.routes.GoodsRecordsController.onPageLoad(page).url,
+            href = routes.GoodsRecordsController.onPageLoad(page).url,
             ellipsis = Some(ellipsis)
           )
         }),
         previous = if (currentPage == firstPage) {
           None
         } else {
-          Some(PaginationLink(controllers.goodsRecord.routes.GoodsRecordsController.onPageLoad(currentPage - 1).url))
+          Some(PaginationLink(routes.GoodsRecordsController.onPageLoad(currentPage - 1).url))
         },
         next = if (currentPage == totalPages) {
           None
         } else {
-          Some(PaginationLink(controllers.goodsRecord.routes.GoodsRecordsController.onPageLoad(currentPage + 1).url))
+          Some(PaginationLink(routes.GoodsRecordsController.onPageLoad(currentPage + 1).url))
         }
       )
     }
@@ -123,19 +124,19 @@ object GoodsRecordsPagination {
           PaginationItem(
             number = Some(page.toString),
             current = Some(currentPage == page),
-            href = controllers.goodsRecord.routes.GoodsRecordsSearchResultController.onPageLoad(page).url,
+            href = routes.GoodsRecordsSearchResultController.onPageLoad(page).url,
             ellipsis = Some(ellipsis)
           )
         }),
         previous = if (currentPage == firstPage) {
           None
         } else {
-          Some(PaginationLink(controllers.goodsRecord.routes.GoodsRecordsSearchResultController.onPageLoad(currentPage - 1).url))
+          Some(PaginationLink(routes.GoodsRecordsSearchResultController.onPageLoad(currentPage - 1).url))
         },
         next = if (currentPage == totalPages) {
           None
         } else {
-          Some(PaginationLink(controllers.goodsRecord.routes.GoodsRecordsSearchResultController.onPageLoad(currentPage + 1).url))
+          Some(PaginationLink(routes.GoodsRecordsSearchResultController.onPageLoad(currentPage + 1).url))
         }
       )
     }

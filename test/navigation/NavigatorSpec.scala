@@ -27,6 +27,7 @@ import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
 import pages._
+import pages.goodsRecord.{CommodityCodePage, CommodityCodeUpdatePage, CountryOfOriginPage, CountryOfOriginUpdatePage, CreateRecordStartPage, CyaCreateRecordPage, CyaUpdateRecordPage, GoodsDescriptionPage, GoodsDescriptionUpdatePage, HasCommodityCodeChangePage, HasCorrectGoodsCommodityCodeUpdatePage, HasCountryOfOriginChangePage, HasGoodsDescriptionChangePage, TraderReferencePage, TraderReferenceUpdatePage}
 import play.api.http.Status.SEE_OTHER
 import queries._
 import services.CategorisationService
