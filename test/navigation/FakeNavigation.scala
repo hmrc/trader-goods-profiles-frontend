@@ -46,3 +46,7 @@ class FakeCategorisationNavigator(desiredRoute: Call) extends CategorisationNavi
 class FakeGoodsProfileNavigator(desiredRoute: Call) extends GoodsProfileNavigator {
   override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = desiredRoute
 }
+
+class FakeDownloadNavigator(desiredRoute: Call) extends DownloadNavigator {
+  override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = desiredRoute
+}

@@ -20,7 +20,7 @@ import connectors.DownloadDataConnector
 import controllers.actions._
 import controllers.{BaseController, routes}
 import models.NormalMode
-import navigation.Navigation
+import navigation.{DownloadNavigator, Navigation}
 import pages.download.RequestDataPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -37,7 +37,7 @@ class RequestDataController @Inject() (
   profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
   view: RequestDataView,
-  navigator: Navigation,
+  navigator: DownloadNavigator,
   downloadDataConnector: DownloadDataConnector
 )(implicit ec: ExecutionContext)
     extends BaseController {
