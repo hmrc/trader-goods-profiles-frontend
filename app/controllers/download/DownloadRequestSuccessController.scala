@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.download
 
 import connectors.DownloadDataConnector
 import controllers.actions._
-
-import javax.inject.Inject
+import controllers.{BaseController, routes}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import views.html.DownloadRequestSuccessView
+import views.html.download.DownloadRequestSuccessView
 
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 class DownloadRequestSuccessController @Inject() (

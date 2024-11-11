@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.download
 
 import base.SpecBase
 import connectors.{DownloadDataConnector, TraderProfileConnector}
+import controllers.routes
 import models.Email
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{atLeastOnce, never, verify, when}
@@ -26,7 +27,7 @@ import play.api.inject
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import views.html.DownloadRequestSuccessView
+import views.html.download.DownloadRequestSuccessView
 
 import java.time.Instant
 import scala.concurrent.Future
@@ -49,7 +50,7 @@ class DownloadRequestSuccessControllerSpec extends SpecBase {
         .build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.DownloadRequestSuccessController.onPageLoad().url)
+        val request = FakeRequest(GET, controllers.download.routes.DownloadRequestSuccessController.onPageLoad().url)
 
         val result = route(application, request).value
 
@@ -81,7 +82,7 @@ class DownloadRequestSuccessControllerSpec extends SpecBase {
         .build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.DownloadRequestSuccessController.onPageLoad().url)
+        val request = FakeRequest(GET, controllers.download.routes.DownloadRequestSuccessController.onPageLoad().url)
 
         val result = route(application, request).value
 

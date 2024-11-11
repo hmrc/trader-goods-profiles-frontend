@@ -22,7 +22,6 @@ import models._
 import models.ott.{CategorisationInfo, CategoryAssessment}
 import pages._
 import pages.categorisation.CategoryGuidancePage
-import pages.download.RequestDataPage
 import play.api.mvc.Call
 import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery, LongerCommodityQuery}
 import services.CategorisationService
@@ -74,7 +73,6 @@ class Navigation @Inject() (categorisationService: CategorisationService) extend
     case p: CyaRequestAdvicePage                   => _ => routes.AdviceSuccessController.onPageLoad(p.recordId)
     case p: CyaUpdateRecordPage                    => _ => routes.SingleRecordController.onPageLoad(p.recordId)
     case p: CyaSupplementaryUnitPage               => _ => routes.SingleRecordController.onPageLoad(p.recordId)
-    case RequestDataPage                           => _ => routes.DownloadRequestSuccessController.onPageLoad()
     case _                                         => _ => routes.IndexController.onPageLoad()
   }
 
