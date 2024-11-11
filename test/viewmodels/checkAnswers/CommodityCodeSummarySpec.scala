@@ -18,7 +18,6 @@ package viewmodels.checkAnswers
 
 import base.SpecBase
 import base.TestConstants.testRecordId
-import controllers.routes
 import models.NormalMode
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.Actions
@@ -45,7 +44,7 @@ class CommodityCodeSummarySpec extends SpecBase {
         CommodityCodeSummary.rowUpdate(recordForTestingSummaryRows, testRecordId, NormalMode, recordLocked = false)
 
       row.actions mustBe defined
-      row.actions.value.items.head.href mustEqual routes.HasCommodityCodeChangeController
+      row.actions.value.items.head.href mustEqual controllers.goodsRecord.routes.HasCommodityCodeChangeController
         .onPageLoad(NormalMode, testRecordId)
         .url
     }
@@ -58,7 +57,7 @@ class CommodityCodeSummarySpec extends SpecBase {
         CommodityCodeSummary.rowUpdate(recordAdviceProvided, testRecordId, NormalMode, recordLocked = false)
 
       row.actions mustBe defined
-      row.actions.value.items.head.href mustEqual routes.HasCommodityCodeChangeController
+      row.actions.value.items.head.href mustEqual controllers.goodsRecord.routes.HasCommodityCodeChangeController
         .onPageLoad(NormalMode, testRecordId)
         .url
     }
@@ -71,7 +70,7 @@ class CommodityCodeSummarySpec extends SpecBase {
         CommodityCodeSummary.rowUpdate(recordNoCatNoAdvice, testRecordId, NormalMode, recordLocked = false)
 
       row.actions mustBe defined
-      row.actions.value.items.head.href mustEqual routes.CommodityCodeController
+      row.actions.value.items.head.href mustEqual controllers.goodsRecord.routes.CommodityCodeController
         .onPageLoadUpdate(NormalMode, testRecordId)
         .url
     }

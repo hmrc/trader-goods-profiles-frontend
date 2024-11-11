@@ -18,7 +18,6 @@ package controllers.goodsRecord
 
 import base.SpecBase
 import base.TestConstants.testEori
-import controllers.routes
 import navigation.{FakeNavigation, Navigation}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
@@ -31,7 +30,7 @@ import play.api.test.Helpers._
 import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
-import views.html.CreateRecordStartView
+import views.html.goodsRecord.CreateRecordStartView
 
 import scala.concurrent.Future
 
@@ -46,7 +45,7 @@ class CreateRecordStartControllerSpec extends SpecBase {
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, routes.CreateRecordStartController.onPageLoad().url)
+          val request = FakeRequest(GET, controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad().url)
 
           val result = route(application, request).value
 
@@ -78,7 +77,7 @@ class CreateRecordStartControllerSpec extends SpecBase {
           .build()
 
         running(application) {
-          val request = FakeRequest(POST, routes.CreateRecordStartController.onSubmit().url)
+          val request = FakeRequest(POST, controllers.goodsRecord.routes.CreateRecordStartController.onSubmit().url)
 
           val result = route(application, request).value
 

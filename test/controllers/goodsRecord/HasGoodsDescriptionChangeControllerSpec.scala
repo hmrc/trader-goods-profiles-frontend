@@ -18,7 +18,6 @@ package controllers.goodsRecord
 
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
-import controllers.routes
 import forms.goodsRecord.HasGoodsDescriptionChangeFormProvider
 import models.helper.GoodsDetailsUpdate
 import models.{NormalMode, UserAnswers}
@@ -35,7 +34,7 @@ import play.api.test.Helpers._
 import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
-import views.html.HasGoodsDescriptionChangeView
+import views.html.goodsRecord.HasGoodsDescriptionChangeView
 
 import scala.concurrent.Future
 
@@ -47,7 +46,7 @@ class HasGoodsDescriptionChangeControllerSpec extends SpecBase with MockitoSugar
   private val form = formProvider()
 
   private lazy val hasGoodsDescriptionChangeRoute =
-    routes.HasGoodsDescriptionChangeController.onPageLoad(NormalMode, testRecordId).url
+    controllers.goodsRecord.routes.HasGoodsDescriptionChangeController.onPageLoad(NormalMode, testRecordId).url
 
   "HasGoodsDescriptionChange Controller" - {
 

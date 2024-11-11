@@ -18,7 +18,6 @@ package viewmodels.checkAnswers
 
 import base.SpecBase
 import base.TestConstants.testRecordId
-import controllers.routes
 import models.NormalMode
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.Actions
@@ -47,7 +46,7 @@ class TraderReferenceSummarySpec extends SpecBase {
         TraderReferenceSummary.row(recordForTestingSummaryRows.traderRef, testRecordId, NormalMode, recordLocked)
 
       row.actions mustBe defined
-      row.actions.value.items.head.href mustEqual routes.TraderReferenceController
+      row.actions.value.items.head.href mustEqual controllers.goodsRecord.routes.TraderReferenceController
         .onPageLoadUpdate(NormalMode, testRecordId)
         .url
     }

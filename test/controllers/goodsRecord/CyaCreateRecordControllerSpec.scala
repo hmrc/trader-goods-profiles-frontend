@@ -19,7 +19,6 @@ package controllers.goodsRecord
 import base.SpecBase
 import base.TestConstants.testEori
 import connectors.{GoodsRecordConnector, OttConnector}
-import controllers.routes
 import models.helper.CreateRecordJourney
 import models.{Country, GoodsRecord, UserAnswers}
 import org.apache.pekko.Done
@@ -36,10 +35,9 @@ import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import viewmodels.checkAnswers._
 import viewmodels.checkAnswers.goodsRecord.{CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, TraderReferenceSummary}
 import viewmodels.govuk.SummaryListFluency
-import views.html.CyaCreateRecordView
+import views.html.goodsRecord.CyaCreateRecordView
 
 import scala.concurrent.Future
 
@@ -73,7 +71,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             .build()
 
         running(application) {
-          val request = FakeRequest(GET, routes.CyaCreateRecordController.onPageLoad().url)
+          val request = FakeRequest(GET, controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad().url)
 
           val result = route(application, request).value
 
@@ -103,7 +101,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             .build()
 
         running(application) {
-          val request = FakeRequest(GET, routes.CyaCreateRecordController.onPageLoad().url)
+          val request = FakeRequest(GET, controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad().url)
 
           val result = route(application, request).value
 
@@ -124,7 +122,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           applicationBuilder(userAnswers = Some(userAnswers)).build()
 
         running(application) {
-          val request = FakeRequest(GET, routes.CyaCreateRecordController.onPageLoad().url)
+          val request = FakeRequest(GET, controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad().url)
 
           val result = route(application, request).value
 
@@ -139,10 +137,10 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
       "must redirect to Journey Recovery if no answers are found" in {
 
         val application = applicationBuilder(Some(emptyUserAnswers)).build()
-        val continueUrl = RedirectUrl(routes.CreateRecordStartController.onPageLoad().url)
+        val continueUrl = RedirectUrl(controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad().url)
 
         running(application) {
-          val request = FakeRequest(GET, routes.CyaCreateRecordController.onPageLoad().url)
+          val request = FakeRequest(GET, controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad().url)
 
           val result = route(application, request).value
 
@@ -159,7 +157,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         val application = applicationBuilder(userAnswers = None).build()
 
         running(application) {
-          val request = FakeRequest(GET, routes.CyaCreateRecordController.onPageLoad().url)
+          val request = FakeRequest(GET, controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad().url)
 
           val result = route(application, request).value
 
@@ -195,7 +193,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               .build()
 
           running(application) {
-            val request = FakeRequest(POST, routes.CyaCreateRecordController.onPageLoad().url)
+            val request = FakeRequest(POST, controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad().url)
 
             val result = route(application, request).value
 
@@ -208,7 +206,9 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             )
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.CreateRecordSuccessController.onPageLoad("test").url
+            redirectLocation(result).value mustEqual controllers.goodsRecord.routes.CreateRecordSuccessController
+              .onPageLoad("test")
+              .url
             verify(mockConnector, atLeastOnce()).submitGoodsRecord(eqTo(expectedPayload))(any())
 
             withClue("must call the audit connector with the supplied details") {
@@ -228,7 +228,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
           val mockConnector    = mock[GoodsRecordConnector]
           val mockAuditService = mock[AuditService]
-          val continueUrl      = RedirectUrl(routes.CreateRecordStartController.onPageLoad().url)
+          val continueUrl      = RedirectUrl(controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad().url)
 
           val sessionRepository = mock[SessionRepository]
           when(sessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
@@ -241,7 +241,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               .build()
 
           running(application) {
-            val request = FakeRequest(POST, routes.CyaCreateRecordController.onPageLoad().url)
+            val request = FakeRequest(POST, controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad().url)
 
             val result = route(application, request).value
 
@@ -284,7 +284,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             .build()
 
         running(application) {
-          val request = FakeRequest(POST, routes.CyaCreateRecordController.onPageLoad().url)
+          val request = FakeRequest(POST, controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad().url)
 
           intercept[RuntimeException] {
             await(route(application, request).value)
@@ -305,7 +305,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         val application = applicationBuilder(userAnswers = None).build()
 
         running(application) {
-          val request = FakeRequest(POST, routes.CyaCreateRecordController.onPageLoad().url)
+          val request = FakeRequest(POST, controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad().url)
 
           val result = route(application, request).value
 

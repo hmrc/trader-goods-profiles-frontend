@@ -17,10 +17,9 @@
 package controllers.goodsRecord
 
 import base.SpecBase
-import controllers.routes
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import views.html.CreateRecordSuccessView
+import views.html.goodsRecord.CreateRecordSuccessView
 
 class CreateRecordSuccessControllerSpec extends SpecBase {
 
@@ -32,7 +31,8 @@ class CreateRecordSuccessControllerSpec extends SpecBase {
         .build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.CreateRecordSuccessController.onPageLoad("test").url)
+        val request =
+          FakeRequest(GET, controllers.goodsRecord.routes.CreateRecordSuccessController.onPageLoad("test").url)
 
         val result = route(application, request).value
 

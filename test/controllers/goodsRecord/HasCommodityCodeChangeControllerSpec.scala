@@ -19,7 +19,6 @@ package controllers.goodsRecord
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import connectors.GoodsRecordConnector
-import controllers.routes
 import forms.goodsRecord.HasCommodityCodeChangeFormProvider
 import models.helper.GoodsDetailsUpdate
 import models.{NormalMode, UserAnswers}
@@ -38,7 +37,7 @@ import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import utils.Constants.adviceProvided
-import views.html.HasCommodityCodeChangeView
+import views.html.goodsRecord.HasCommodityCodeChangeView
 
 import scala.concurrent.Future
 
@@ -50,7 +49,7 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
   private val form = formProvider()
 
   private lazy val hasCommodityCodeChangeRoute =
-    routes.HasCommodityCodeChangeController.onPageLoad(NormalMode, testRecordId).url
+    controllers.goodsRecord.routes.HasCommodityCodeChangeController.onPageLoad(NormalMode, testRecordId).url
 
   private val goodsRecord              = goodsRecordResponse()
   private val goodsRecordCatNoAdvice   = goodsRecord.copy(

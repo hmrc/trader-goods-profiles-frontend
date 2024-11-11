@@ -19,7 +19,6 @@ package controllers.goodsRecord
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import connectors.GoodsRecordConnector
-import controllers.routes
 import forms.goodsRecord.TraderReferenceFormProvider
 import models.GoodsRecordsPagination.firstPage
 import models.helper.GoodsDetailsUpdate
@@ -41,7 +40,7 @@ import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.SessionData.{dataUpdated, pageUpdated}
-import views.html.TraderReferenceView
+import views.html.goodsRecord.TraderReferenceView
 
 import java.time.Instant
 import scala.concurrent.Future
@@ -77,8 +76,9 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
     "for create journey" - {
 
-      lazy val traderReferenceRoute = routes.TraderReferenceController.onPageLoadCreate(NormalMode).url
-      lazy val onSubmitAction       = routes.TraderReferenceController.onSubmitCreate(NormalMode)
+      lazy val traderReferenceRoute =
+        controllers.goodsRecord.routes.TraderReferenceController.onPageLoadCreate(NormalMode).url
+      lazy val onSubmitAction       = controllers.goodsRecord.routes.TraderReferenceController.onSubmitCreate(NormalMode)
 
       "must return OK and the correct view for a GET" in {
 
@@ -297,8 +297,10 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
     "for update journey" - {
 
-      lazy val traderReferenceRoute = routes.TraderReferenceController.onPageLoadUpdate(NormalMode, testRecordId).url
-      lazy val onSubmitAction       = routes.TraderReferenceController.onSubmitUpdate(NormalMode, testRecordId)
+      lazy val traderReferenceRoute =
+        controllers.goodsRecord.routes.TraderReferenceController.onPageLoadUpdate(NormalMode, testRecordId).url
+      lazy val onSubmitAction       =
+        controllers.goodsRecord.routes.TraderReferenceController.onSubmitUpdate(NormalMode, testRecordId)
 
       "must return OK and the correct view for a GET" in {
         val mockAuditService = mock[AuditService]

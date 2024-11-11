@@ -17,7 +17,6 @@
 package forms.goodsProfile
 
 import forms.behaviours.BooleanFieldBehaviours
-import forms.goodsRecord.RemoveGoodsRecordFormProvider
 import play.api.data.FormError
 
 class RemoveGoodsRecordFormProviderSpec extends BooleanFieldBehaviours {

@@ -20,14 +20,12 @@ import base.SpecBase
 import base.TestConstants.{testEori, testRecordId}
 import config.FrontendAppConfig
 import connectors.{GoodsRecordConnector, OttConnector}
-import controllers.routes
 import models.{CheckMode, Commodity, Country, UpdateGoodsRecord}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{atLeastOnce, never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages._
-import pages.goodsRecord.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage, HasCommodityCodeChangePage, HasCorrectGoodsCommodityCodeUpdatePage, HasCountryOfOriginChangePage, TraderReferenceUpdatePage}
+import pages.goodsRecord._
 import play.api.Application
 import play.api.inject.bind
 import play.api.test.FakeRequest
@@ -39,10 +37,9 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants.{commodityCodeKey, countryOfOriginKey, goodsDescriptionKey, traderReferenceKey}
-import viewmodels.checkAnswers._
 import viewmodels.checkAnswers.goodsRecord.UpdateRecordSummary
 import viewmodels.govuk.SummaryListFluency
-import views.html.CyaUpdateRecordView
+import views.html.goodsRecord.CyaUpdateRecordView
 
 import java.time.Instant
 import scala.concurrent.Future
@@ -63,14 +60,15 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
       val summaryValue    = "China"
       val summaryKey      = "countryOfOrigin.checkYourAnswersLabel"
       val summaryHidden   = "countryOfOrigin.change.hidden"
-      val summaryUrl      = routes.CountryOfOriginController.onPageLoadUpdate(CheckMode, testRecordId).url
+      val summaryUrl      =
+        controllers.goodsRecord.routes.CountryOfOriginController.onPageLoadUpdate(CheckMode, testRecordId).url
       val page            = CountryOfOriginUpdatePage(testRecordId)
       val answer          = "CN"
       val expectedPayload =
         UpdateGoodsRecord(testEori, testRecordId, countryOfOrigin = Some(answer))
-      val getUrl          = routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(testRecordId).url
-      val call            = routes.CyaUpdateRecordController.onSubmitCountryOfOrigin(testRecordId)
-      val postUrl         = routes.CyaUpdateRecordController.onSubmitCountryOfOrigin(testRecordId).url
+      val getUrl          = controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(testRecordId).url
+      val call            = controllers.goodsRecord.routes.CyaUpdateRecordController.onSubmitCountryOfOrigin(testRecordId)
+      val postUrl         = controllers.goodsRecord.routes.CyaUpdateRecordController.onSubmitCountryOfOrigin(testRecordId).url
       val warningPage     = HasCountryOfOriginChangePage(testRecordId)
 
       "for a GET" - {
@@ -505,13 +503,14 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
     "for Goods Description Update" - {
       val summaryKey      = "goodsDescription.checkYourAnswersLabel"
       val summaryHidden   = "goodsDescription.change.hidden"
-      val summaryUrl      = routes.GoodsDescriptionController.onPageLoadUpdate(CheckMode, testRecordId).url
+      val summaryUrl      =
+        controllers.goodsRecord.routes.GoodsDescriptionController.onPageLoadUpdate(CheckMode, testRecordId).url
       val page            = GoodsDescriptionUpdatePage(testRecordId)
       val answer          = "Test"
       val expectedPayload = UpdateGoodsRecord(testEori, testRecordId, goodsDescription = Some(answer))
-      val getUrl          = routes.CyaUpdateRecordController.onPageLoadGoodsDescription(testRecordId).url
-      val call            = routes.CyaUpdateRecordController.onSubmitGoodsDescription(testRecordId)
-      val postUrl         = routes.CyaUpdateRecordController.onSubmitGoodsDescription(testRecordId).url
+      val getUrl          = controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadGoodsDescription(testRecordId).url
+      val call            = controllers.goodsRecord.routes.CyaUpdateRecordController.onSubmitGoodsDescription(testRecordId)
+      val postUrl         = controllers.goodsRecord.routes.CyaUpdateRecordController.onSubmitGoodsDescription(testRecordId).url
 
       "for a GET" - {
 
@@ -733,13 +732,14 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
     "for Trader Reference Update" - {
       val summaryKey      = "traderReference.checkYourAnswersLabel"
       val summaryHidden   = "traderReference.change.hidden"
-      val summaryUrl      = routes.TraderReferenceController.onPageLoadUpdate(CheckMode, testRecordId).url
+      val summaryUrl      =
+        controllers.goodsRecord.routes.TraderReferenceController.onPageLoadUpdate(CheckMode, testRecordId).url
       val page            = TraderReferenceUpdatePage(testRecordId)
       val answer          = "Test"
       val expectedPayload = UpdateGoodsRecord(testEori, testRecordId, traderReference = Some(answer))
-      val getUrl          = routes.CyaUpdateRecordController.onPageLoadTraderReference(testRecordId).url
-      val call            = routes.CyaUpdateRecordController.onSubmitTraderReference(testRecordId)
-      val postUrl         = routes.CyaUpdateRecordController.onSubmitTraderReference(testRecordId).url
+      val getUrl          = controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadTraderReference(testRecordId).url
+      val call            = controllers.goodsRecord.routes.CyaUpdateRecordController.onSubmitTraderReference(testRecordId)
+      val postUrl         = controllers.goodsRecord.routes.CyaUpdateRecordController.onSubmitTraderReference(testRecordId).url
 
       "for a GET" - {
 
@@ -1064,13 +1064,14 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
       val summaryKey      = "commodityCode.checkYourAnswersLabel"
       val summaryHidden   = "commodityCode.change.hidden"
       val shorterCommCode = "174290"
-      val summaryUrl      = routes.CommodityCodeController.onPageLoadUpdate(CheckMode, testRecordId).url
+      val summaryUrl      =
+        controllers.goodsRecord.routes.CommodityCodeController.onPageLoadUpdate(CheckMode, testRecordId).url
       val page            = CommodityCodeUpdatePage(testRecordId)
       val expectedPayload =
         UpdateGoodsRecord(testEori, testRecordId, commodityCode = Some(testCommodity))
-      val getUrl          = routes.CyaUpdateRecordController.onPageLoadCommodityCode(testRecordId).url
-      val call            = routes.CyaUpdateRecordController.onSubmitCommodityCode(testRecordId)
-      val postUrl         = routes.CyaUpdateRecordController.onSubmitCommodityCode(testRecordId).url
+      val getUrl          = controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadCommodityCode(testRecordId).url
+      val call            = controllers.goodsRecord.routes.CyaUpdateRecordController.onSubmitCommodityCode(testRecordId)
+      val postUrl         = controllers.goodsRecord.routes.CyaUpdateRecordController.onSubmitCommodityCode(testRecordId).url
       val warningPage     = HasCommodityCodeChangePage(testRecordId)
 
       "for a GET" - {
@@ -1558,7 +1559,10 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           val application = applicationBuilder(userAnswers = None).build()
 
           running(application) {
-            val request = FakeRequest(POST, routes.CyaUpdateRecordController.onSubmitCountryOfOrigin(testRecordId).url)
+            val request = FakeRequest(
+              POST,
+              controllers.goodsRecord.routes.CyaUpdateRecordController.onSubmitCountryOfOrigin(testRecordId).url
+            )
 
             val result = route(application, request).value
 

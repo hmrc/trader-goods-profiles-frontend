@@ -18,7 +18,6 @@ package viewmodels.checkAnswers
 
 import base.SpecBase
 import base.TestConstants.testRecordId
-import controllers.routes
 import models.{Country, NormalMode}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.Actions
@@ -56,7 +55,7 @@ class CountryOfOriginSummarySpec extends SpecBase {
       )
 
       row.actions mustBe defined
-      row.actions.value.items.head.href mustEqual routes.HasCountryOfOriginChangeController
+      row.actions.value.items.head.href mustEqual controllers.goodsRecord.routes.HasCountryOfOriginChangeController
         .onPageLoad(NormalMode, testRecordId)
         .url
     }
@@ -74,7 +73,7 @@ class CountryOfOriginSummarySpec extends SpecBase {
       )
 
       row.actions mustBe defined
-      row.actions.value.items.head.href mustEqual routes.CountryOfOriginController
+      row.actions.value.items.head.href mustEqual controllers.goodsRecord.routes.CountryOfOriginController
         .onPageLoadUpdate(NormalMode, testRecordId)
         .url
     }
@@ -92,7 +91,7 @@ class CountryOfOriginSummarySpec extends SpecBase {
       )
       row.value.content.asHtml.toString() must include(testCountryName)
       row.actions mustBe defined
-      row.actions.value.items.head.href mustEqual routes.CountryOfOriginController
+      row.actions.value.items.head.href mustEqual controllers.goodsRecord.routes.CountryOfOriginController
         .onPageLoadUpdate(NormalMode, testRecordId)
         .url
     }

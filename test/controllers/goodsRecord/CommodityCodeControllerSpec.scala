@@ -19,7 +19,6 @@ package controllers.goodsRecord
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import connectors.OttConnector
-import controllers.routes
 import forms.goodsRecord.CommodityCodeFormProvider
 import models.helper.GoodsDetailsUpdate
 import models.{Commodity, NormalMode, UserAnswers}
@@ -30,7 +29,7 @@ import org.mockito.ArgumentMatchers.{any, anyString, eq => eqTo}
 import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages._
-import pages.goodsRecord.{CommodityCodePage, CommodityCodeUpdatePage, CountryOfOriginPage, CountryOfOriginUpdatePage, HasCommodityCodeChangePage}
+import pages.goodsRecord._
 import play.api.data.FormError
 import play.api.http.Status.NOT_FOUND
 import play.api.inject.bind
@@ -43,7 +42,7 @@ import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import utils.SessionData.{dataUpdated, pageUpdated}
-import views.html.CommodityCodeView
+import views.html.goodsRecord.CommodityCodeView
 
 import java.time.Instant
 import scala.concurrent.Future
@@ -58,9 +57,9 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
   "CommodityCode Controller" - {
 
     "For create journey" - {
-      val commodityCodeRoute = routes.CommodityCodeController.onPageLoadCreate(NormalMode).url
+      val commodityCodeRoute = controllers.goodsRecord.routes.CommodityCodeController.onPageLoadCreate(NormalMode).url
 
-      lazy val onSubmitAction: Call = routes.CommodityCodeController.onSubmitCreate(NormalMode)
+      lazy val onSubmitAction: Call = controllers.goodsRecord.routes.CommodityCodeController.onSubmitCreate(NormalMode)
 
       val page: QuestionPage[String] = CommodityCodePage
 
@@ -68,9 +67,11 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "For update journey" - {
-      val commodityCodeRoute = routes.CommodityCodeController.onPageLoadUpdate(NormalMode, testRecordId).url
+      val commodityCodeRoute =
+        controllers.goodsRecord.routes.CommodityCodeController.onPageLoadUpdate(NormalMode, testRecordId).url
 
-      lazy val onSubmitAction: Call = routes.CommodityCodeController.onSubmitUpdate(NormalMode, testRecordId)
+      lazy val onSubmitAction: Call =
+        controllers.goodsRecord.routes.CommodityCodeController.onSubmitUpdate(NormalMode, testRecordId)
 
       val page: QuestionPage[String] = CommodityCodeUpdatePage(testRecordId)
 
@@ -392,7 +393,8 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
     "must set changesMade to true if commodity code is updated" in {
 
-      val commodityCodeRoute = routes.CommodityCodeController.onPageLoadUpdate(NormalMode, testRecordId).url
+      val commodityCodeRoute =
+        controllers.goodsRecord.routes.CommodityCodeController.onPageLoadUpdate(NormalMode, testRecordId).url
 
       val mockSessionRepository = mock[SessionRepository]
 
@@ -446,7 +448,8 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
     "must set changesMade to false if commodity code is not updated" in {
 
-      val commodityCodeRoute = routes.CommodityCodeController.onPageLoadUpdate(NormalMode, testRecordId).url
+      val commodityCodeRoute =
+        controllers.goodsRecord.routes.CommodityCodeController.onPageLoadUpdate(NormalMode, testRecordId).url
 
       val mockSessionRepository = mock[SessionRepository]
 

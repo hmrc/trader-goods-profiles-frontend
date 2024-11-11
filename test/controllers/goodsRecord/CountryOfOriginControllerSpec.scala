@@ -19,7 +19,6 @@ package controllers.goodsRecord
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import connectors.OttConnector
-import controllers.routes
 import forms.goodsRecord.CountryOfOriginFormProvider
 import models.helper.GoodsDetailsUpdate
 import models.{Country, NormalMode, UserAnswers}
@@ -38,7 +37,7 @@ import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import utils.SessionData.{dataUpdated, pageUpdated}
-import views.html.CountryOfOriginView
+import views.html.goodsRecord.CountryOfOriginView
 
 import scala.concurrent.Future
 
@@ -54,8 +53,9 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
 
     "create journey" - {
 
-      lazy val countryOfOriginRoute = routes.CountryOfOriginController.onPageLoadCreate(NormalMode).url
-      lazy val onSubmitAction       = routes.CountryOfOriginController.onSubmitCreate(NormalMode)
+      lazy val countryOfOriginRoute =
+        controllers.goodsRecord.routes.CountryOfOriginController.onPageLoadCreate(NormalMode).url
+      lazy val onSubmitAction       = controllers.goodsRecord.routes.CountryOfOriginController.onSubmitCreate(NormalMode)
 
       "must return OK and the correct view for a GET" in {
 
@@ -266,8 +266,10 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
 
     "update journey" - {
 
-      lazy val countryOfOriginRoute = routes.CountryOfOriginController.onPageLoadUpdate(NormalMode, testRecordId).url
-      lazy val onSubmitAction       = routes.CountryOfOriginController.onSubmitUpdate(NormalMode, testRecordId)
+      lazy val countryOfOriginRoute =
+        controllers.goodsRecord.routes.CountryOfOriginController.onPageLoadUpdate(NormalMode, testRecordId).url
+      lazy val onSubmitAction       =
+        controllers.goodsRecord.routes.CountryOfOriginController.onSubmitUpdate(NormalMode, testRecordId)
 
       "must return OK and the correct view for a GET" in {
 

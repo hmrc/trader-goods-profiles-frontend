@@ -18,7 +18,6 @@ package controllers.goodsRecord
 
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
-import controllers.routes
 import forms.goodsRecord.GoodsDescriptionFormProvider
 import models.helper.GoodsDetailsUpdate
 import models.{NormalMode, UserAnswers}
@@ -37,7 +36,7 @@ import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import utils.SessionData.{dataUpdated, pageUpdated}
-import views.html.GoodsDescriptionView
+import views.html.goodsRecord.GoodsDescriptionView
 
 import scala.concurrent.Future
 
@@ -52,8 +51,10 @@ class GoodsDescriptionControllerSpec extends SpecBase with MockitoSugar {
 
     ".create journey" - {
 
-      lazy val goodsDescriptionCreateRoute = routes.GoodsDescriptionController.onPageLoadCreate(NormalMode).url
-      lazy val onSubmitAction: Call        = routes.GoodsDescriptionController.onSubmitCreate(NormalMode)
+      lazy val goodsDescriptionCreateRoute =
+        controllers.goodsRecord.routes.GoodsDescriptionController.onPageLoadCreate(NormalMode).url
+      lazy val onSubmitAction: Call        =
+        controllers.goodsRecord.routes.GoodsDescriptionController.onSubmitCreate(NormalMode)
 
       "must return OK and the correct view for a GET" in {
 
@@ -213,8 +214,9 @@ class GoodsDescriptionControllerSpec extends SpecBase with MockitoSugar {
     ".update journey" - {
 
       lazy val goodsDescriptionUpdateRoute =
-        routes.GoodsDescriptionController.onPageLoadUpdate(NormalMode, testRecordId).url
-      lazy val onSubmitAction: Call        = routes.GoodsDescriptionController.onSubmitUpdate(NormalMode, testRecordId)
+        controllers.goodsRecord.routes.GoodsDescriptionController.onPageLoadUpdate(NormalMode, testRecordId).url
+      lazy val onSubmitAction: Call        =
+        controllers.goodsRecord.routes.GoodsDescriptionController.onSubmitUpdate(NormalMode, testRecordId)
 
       "must return OK and the correct view for a GET" in {
         val mockAuditService = mock[AuditService]

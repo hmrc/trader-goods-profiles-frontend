@@ -68,7 +68,7 @@ class GoodsRecordNavigatorSpec extends SpecBase with BeforeAndAfterEach {
             GoodsDescriptionPage,
             NormalMode,
             emptyUserAnswers
-          ) mustBe routes.CountryOfOriginController.onPageLoadCreate(NormalMode)
+          ) mustBe controllers.goodsRecord.routes.CountryOfOriginController.onPageLoadCreate(NormalMode)
         }
 
         "must go from CountryOfOriginPage to CommodityCodePage" in {
@@ -76,7 +76,7 @@ class GoodsRecordNavigatorSpec extends SpecBase with BeforeAndAfterEach {
             CountryOfOriginPage,
             NormalMode,
             emptyUserAnswers
-          ) mustBe routes.CommodityCodeController.onPageLoadCreate(NormalMode)
+          ) mustBe controllers.goodsRecord.routes.CommodityCodeController.onPageLoadCreate(NormalMode)
         }
 
         "must go from CommodityCodePage to HasCorrectGoodsPage" in {
@@ -107,7 +107,7 @@ class GoodsRecordNavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasCorrectGoodsPage,
               NormalMode,
               answers
-            ) mustBe routes.CommodityCodeController
+            ) mustBe controllers.goodsRecord.routes.CommodityCodeController
               .onPageLoadCreate(NormalMode)
           }
 
@@ -172,7 +172,7 @@ class GoodsRecordNavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasCountryOfOriginChangePage(testRecordId),
               NormalMode,
               emptyUserAnswers.set(HasCountryOfOriginChangePage(testRecordId), true).success.value
-            ) mustBe routes.CountryOfOriginController.onPageLoadUpdate(NormalMode, testRecordId)
+            ) mustBe controllers.goodsRecord.routes.CountryOfOriginController.onPageLoadUpdate(NormalMode, testRecordId)
           }
 
           "must go from HasGoodsDescriptionChangePage to GoodsDescriptionUpdatePage" in {
@@ -189,7 +189,7 @@ class GoodsRecordNavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasCommodityCodeChangePage(testRecordId),
               NormalMode,
               emptyUserAnswers.set(HasCommodityCodeChangePage(testRecordId), true).success.value
-            ) mustBe routes.CommodityCodeController.onPageLoadUpdate(NormalMode, testRecordId)
+            ) mustBe controllers.goodsRecord.routes.CommodityCodeController.onPageLoadUpdate(NormalMode, testRecordId)
           }
         }
 
@@ -395,7 +395,7 @@ class GoodsRecordNavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasCorrectGoodsCommodityCodeUpdatePage(testRecordId),
               NormalMode,
               answers
-            ) mustBe routes.CommodityCodeController
+            ) mustBe controllers.goodsRecord.routes.CommodityCodeController
               .onPageLoadUpdate(NormalMode, testRecordId)
           }
 
@@ -471,7 +471,7 @@ class GoodsRecordNavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 HasCorrectGoodsPage,
                 CheckMode,
                 answers
-              ) mustBe routes.CommodityCodeController
+              ) mustBe controllers.goodsRecord.routes.CommodityCodeController
                 .onPageLoadCreate(CheckMode)
             }
 
@@ -500,7 +500,7 @@ class GoodsRecordNavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasCorrectGoodsPage,
               CheckMode,
               answers
-            ) mustBe routes.CommodityCodeController.onPageLoadCreate(CheckMode)
+            ) mustBe controllers.goodsRecord.routes.CommodityCodeController.onPageLoadCreate(CheckMode)
           }
 
           "to JourneyRecoveryPage when answer is not present" in {
@@ -561,7 +561,7 @@ class GoodsRecordNavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 HasCorrectGoodsCommodityCodeUpdatePage(testRecordId),
                 CheckMode,
                 answers
-              ) mustBe routes.CommodityCodeController
+              ) mustBe controllers.goodsRecord.routes.CommodityCodeController
                 .onPageLoadUpdate(
                   CheckMode,
                   testRecordId
@@ -594,7 +594,7 @@ class GoodsRecordNavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasCorrectGoodsCommodityCodeUpdatePage(testRecordId),
               CheckMode,
               answers
-            ) mustBe routes.CommodityCodeController.onPageLoadUpdate(CheckMode, testRecordId)
+            ) mustBe controllers.goodsRecord.routes.CommodityCodeController.onPageLoadUpdate(CheckMode, testRecordId)
           }
 
           "to JourneyRecoveryPage when answer is not present" in {
