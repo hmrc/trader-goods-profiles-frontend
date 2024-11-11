@@ -159,7 +159,9 @@ class Navigation @Inject() (categorisationService: CategorisationService) extend
         controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(mode, recordId)
       } else {
         answers.get(HasCorrectGoodsLongerCommodityCodePage(recordId)) match {
-          case Some(true)  => controllers.categorisation.routes.CategorisationPreparationController.startLongerCategorisation(mode, recordId)
+          case Some(true)  =>
+            controllers.categorisation.routes.CategorisationPreparationController
+              .startLongerCategorisation(mode, recordId)
           case Some(false) => controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(mode, recordId)
           case None        => controllers.problem.routes.JourneyRecoveryController.onPageLoad()
         }
@@ -194,7 +196,8 @@ class Navigation @Inject() (categorisationService: CategorisationService) extend
       case Some(catInfo) if catInfo.categoryAssessmentsThatNeedAnswers.nonEmpty =>
         val firstAnswer = answers.get(ReassessmentPage(recordId, firstAssessmentIndex))
         if (reassessmentAnswerIsEmpty(firstAnswer) || !firstAnswer.get.isAnswerCopiedFromPreviousAssessment) {
-          controllers.categorisation.routes.AssessmentController.onPageLoadReassessment(NormalMode, recordId, firstAssessmentNumber)
+          controllers.categorisation.routes.AssessmentController
+            .onPageLoadReassessment(NormalMode, recordId, firstAssessmentNumber)
         } else {
           navigateFromReassessment(ReassessmentPage(recordId, firstAssessmentIndex))(answers)
         }
@@ -229,7 +232,8 @@ class Navigation @Inject() (categorisationService: CategorisationService) extend
             if nextIndex < assessmentCount && (reassessmentAnswerIsEmpty(nextAnswer) || !nextAnswer.exists(
               _.isAnswerCopiedFromPreviousAssessment
             )) =>
-          controllers.categorisation.routes.AssessmentController.onPageLoadReassessment(NormalMode, recordId, nextNumber)
+          controllers.categorisation.routes.AssessmentController
+            .onPageLoadReassessment(NormalMode, recordId, nextNumber)
         case AssessmentAnswer.Exemption(_) if nextIndex < assessmentCount                                        =>
           navigateFromReassessment(ReassessmentPage(recordId, nextIndex))(answers)
         case AssessmentAnswer.NoExemption if shouldGoToSupplementaryUnit(categorisationInfo, assessmentQuestion) =>
@@ -239,9 +243,6 @@ class Navigation @Inject() (categorisationService: CategorisationService) extend
       }
     }.getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
   }
-
-
-
 
   private def shouldGoToSupplementaryUnit(
     categorisationInfo: CategorisationInfo,
@@ -286,7 +287,8 @@ class Navigation @Inject() (categorisationService: CategorisationService) extend
       case Some(catInfo) if catInfo.categoryAssessmentsThatNeedAnswers.nonEmpty =>
         val firstAnswer = answers.get(ReassessmentPage(recordId, firstAssessmentIndex))
         if (reassessmentAnswerIsEmpty(firstAnswer) || !firstAnswer.get.isAnswerCopiedFromPreviousAssessment) {
-          controllers.categorisation.routes.AssessmentController.onPageLoadReassessment(CheckMode, recordId, firstAssessmentNumber)
+          controllers.categorisation.routes.AssessmentController
+            .onPageLoadReassessment(CheckMode, recordId, firstAssessmentNumber)
         } else {
           navigateFromReassessmentCheck(ReassessmentPage(recordId, firstAssessmentIndex))(answers)
         }
@@ -327,7 +329,6 @@ class Navigation @Inject() (categorisationService: CategorisationService) extend
     }
   } getOrElse controllers.problem.routes.JourneyRecoveryController.onPageLoad()
 
-
   private def shouldGoToSupplementaryUnitCheck(
     userAnswers: UserAnswers,
     categorisationInfo: CategorisationInfo,
@@ -336,9 +337,6 @@ class Navigation @Inject() (categorisationService: CategorisationService) extend
   ) =
     assessmentQuestion.category == Category2AsInt && categorisationInfo.measurementUnit.isDefined &&
       userAnswers.get(HasSupplementaryUnitPage(recordId)).isEmpty
-
-
-
 
   private def reassessmentAnswerIsEmpty(nextAnswer: Option[ReassessmentAnswer]) =
     nextAnswer.isEmpty || nextAnswer.exists(reassessment => reassessment.answer == AssessmentAnswer.NotAnsweredYet)

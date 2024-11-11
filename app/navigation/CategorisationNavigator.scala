@@ -45,35 +45,34 @@ class CategorisationNavigator @Inject() (categorisationService: CategorisationSe
       _ => controllers.categorisation.routes.CyaCategorisationController.onPageLoad(p.recordId)
     case p: CyaCategorisationPage => navigateFromCyaCategorisationPage(p)
 
-
-    case p: HasSupplementaryUnitUpdatePage         => answers => navigateFromHasSupplementaryUnitUpdatePage(answers, p.recordId)
-    case p: SupplementaryUnitUpdatePage            =>
+    case p: HasSupplementaryUnitUpdatePage  => answers => navigateFromHasSupplementaryUnitUpdatePage(answers, p.recordId)
+    case p: SupplementaryUnitUpdatePage     =>
       _ => controllers.categorisation.routes.CyaSupplementaryUnitController.onPageLoad(p.recordId)
-    case p: CyaSupplementaryUnitPage               => _ => routes.SingleRecordController.onPageLoad(p.recordId)
-    case p: RecategorisationPreparationPage        => navigateFromReassessmentPrep(p)
-    case p: ReassessmentPage                       => navigateFromReassessment(p)
-    case p: LongerCommodityCodePage                =>
+    case p: CyaSupplementaryUnitPage        => _ => routes.SingleRecordController.onPageLoad(p.recordId)
+    case p: RecategorisationPreparationPage => navigateFromReassessmentPrep(p)
+    case p: ReassessmentPage                => navigateFromReassessment(p)
+    case p: LongerCommodityCodePage         =>
       _ => routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(NormalMode, p.recordId)
-    case p: CategorisationPreparationPage          => answers => navigateFromCategorisationPreparationPage(answers, p.recordId)
+    case p: CategorisationPreparationPage   => answers => navigateFromCategorisationPreparationPage(answers, p.recordId)
 
     case _ => _ => routes.IndexController.onPageLoad()
   }
 
   val checkRoutes: Page => UserAnswers => Call = {
-    case p: AssessmentPage                         => navigateFromAssessmentCheck(p)
-    case p: HasSupplementaryUnitPage               => navigateFromHasSupplementaryUnitCheck(p.recordId)
-    case p: SupplementaryUnitPage                  =>
+    case p: AssessmentPage                  => navigateFromAssessmentCheck(p)
+    case p: HasSupplementaryUnitPage        => navigateFromHasSupplementaryUnitCheck(p.recordId)
+    case p: SupplementaryUnitPage           =>
       _ => controllers.categorisation.routes.CyaCategorisationController.onPageLoad(p.recordId)
-    case p: HasSupplementaryUnitUpdatePage         =>
+    case p: HasSupplementaryUnitUpdatePage  =>
       navigateFromHasSupplementaryUnitUpdateCheck(p.recordId)
-    case p: SupplementaryUnitUpdatePage            =>
+    case p: SupplementaryUnitUpdatePage     =>
       _ => controllers.categorisation.routes.CyaSupplementaryUnitController.onPageLoad(p.recordId)
-    case p: LongerCommodityCodePage                =>
+    case p: LongerCommodityCodePage         =>
       _ => routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(CheckMode, p.recordId)
-    case p: ReassessmentPage                       => navigateFromReassessmentCheck(p)
-    case p: RecategorisationPreparationPage        => navigateFromReassessmentPrepCheck(p)
+    case p: ReassessmentPage                => navigateFromReassessmentCheck(p)
+    case p: RecategorisationPreparationPage => navigateFromReassessmentPrepCheck(p)
 
-    case _                                         => _ => controllers.problem.routes.JourneyRecoveryController.onPageLoad()
+    case _ => _ => controllers.problem.routes.JourneyRecoveryController.onPageLoad()
   }
 
   private def navigateFromReassessmentCheck(assessmentPage: ReassessmentPage)(answers: UserAnswers): Call = {
@@ -217,12 +216,9 @@ class CategorisationNavigator @Inject() (categorisationService: CategorisationSe
       case None => controllers.problem.routes.JourneyRecoveryController.onPageLoad()
     }
 
-
-
   private def shouldGoToLongerCommodityCodeFromPrepPage(catInfo: CategorisationInfo, scenario: Scenario) =
     catInfo.getMinimalCommodityCode.length == minimumLengthOfCommodityCode && catInfo.descendantCount != 0 &&
       getResultAsInt(scenario) == Category2AsInt
-
 
   private def navigateFromReassessment(assessmentPage: ReassessmentPage)(answers: UserAnswers): Call = {
     val recordId   = assessmentPage.recordId
