@@ -21,7 +21,7 @@ import logging.Logging
 import models._
 import models.ott.CategorisationInfo
 import models.requests.DataRequest
-import pages.{AssessmentPage, ReassessmentPage}
+import pages.categorisation.{AssessmentPage, ReassessmentPage}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import java.time.LocalDate

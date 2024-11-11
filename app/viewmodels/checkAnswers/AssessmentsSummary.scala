@@ -16,10 +16,9 @@
 
 package viewmodels.checkAnswers
 
-import controllers.routes
 import models.ott.CategoryAssessment
 import models.{AssessmentAnswer, CheckMode, UserAnswers}
-import pages.{AssessmentPage, ReassessmentPage}
+import pages.categorisation.{AssessmentPage, ReassessmentPage}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
@@ -61,14 +60,18 @@ object AssessmentsSummary {
       answers.get(ReassessmentPage(recordId, indexOfThisAssessment)).map { answer =>
         createSummaryListRowHelper(
           answer.answer,
-          routes.AssessmentController.onPageLoadReassessment(CheckMode, recordId, indexOfThisAssessment + 1).url
+          controllers.categorisation.routes.AssessmentController
+            .onPageLoadReassessment(CheckMode, recordId, indexOfThisAssessment + 1)
+            .url
         )
       }
     } else {
       answers.get(AssessmentPage(recordId, indexOfThisAssessment)).map { answer =>
         createSummaryListRowHelper(
           answer,
-          routes.AssessmentController.onPageLoad(CheckMode, recordId, indexOfThisAssessment + 1).url
+          controllers.categorisation.routes.AssessmentController
+            .onPageLoad(CheckMode, recordId, indexOfThisAssessment + 1)
+            .url
         )
       }
     }

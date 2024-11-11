@@ -19,7 +19,7 @@ package models
 import cats.data.{EitherNec, NonEmptyChain}
 import cats.implicits.catsSyntaxTuple2Parallel
 import models.ott.CategorisationInfo
-import pages.{HasSupplementaryUnitPage, SupplementaryUnitPage}
+import pages.categorisation.{HasSupplementaryUnitPage, SupplementaryUnitPage}
 import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery}
 import services.CategorisationService
 

@@ -16,7 +16,6 @@
 
 package viewmodels.checkAnswers
 
-import controllers.routes
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.Aliases.HtmlContent
@@ -29,7 +28,7 @@ object CategorySummary {
   def row(value: String, recordId: String, recordLocked: Boolean, isCategorised: Boolean)(implicit
     messages: Messages
   ): SummaryListRow = {
-    val url = routes.CategorisationPreparationController.startCategorisation(recordId).url
+    val url = controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(recordId).url
     if (isCategorised) {
       val action =
         if (recordLocked) {
