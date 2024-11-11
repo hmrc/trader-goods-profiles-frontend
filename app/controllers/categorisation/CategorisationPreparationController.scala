@@ -17,16 +17,16 @@
 package controllers.categorisation
 
 import connectors.GoodsRecordConnector
+import controllers.BaseController
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
-import controllers.{BaseController, routes}
 import models.Scenario.getResultAsInt
 import models.helper.CategorisationUpdate
 import models.ott.CategorisationInfo
 import models.{CategoryRecord, Mode, NormalMode, UserAnswers}
 import navigation.CategorisationNavigator
 import org.apache.pekko.Done
-import pages.categorisation.{CategorisationPreparationPage, HasSupplementaryUnitPage}
 import pages.RecategorisationPreparationPage
+import pages.categorisation.{CategorisationPreparationPage, HasSupplementaryUnitPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery, LongerCommodityQuery}

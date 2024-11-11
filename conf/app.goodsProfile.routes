@@ -1,0 +1,14 @@
+GET         /previous-movement-records                                                              controllers.goodsProfile.PreviousMovementRecordsController.onPageLoad()
+POST        /previous-movement-records                                                              controllers.goodsProfile.PreviousMovementRecordsController.onSubmit()
+
+GET         /goods-profile                                                                          controllers.goodsProfile.GoodsRecordsController.onPageLoad(page: Int)
+POST        /goods-profile                                                                          controllers.goodsProfile.GoodsRecordsController.onSearch(page: Int)
+
+GET         /goods-profile/search-results                                                           controllers.goodsProfile.GoodsRecordsSearchResultController.onPageLoad(page: Int)
+
+GET         /remove-record/:recordId/goods-profile                                                  controllers.goodsProfile.RemoveGoodsRecordController.onPageLoad(recordId: String, location: Location = GoodsProfileLocation)
+GET         /remove-record/:recordId/goods-record                                                   controllers.goodsProfile.RemoveGoodsRecordController.onPageLoad(recordId: String, location: Location = GoodsRecordLocation)
+POST        /remove-record/:recordId/goods-profile                                                  controllers.goodsProfile.RemoveGoodsRecordController.onSubmit(recordId: String, location: Location = GoodsProfileLocation)
+POST        /remove-record/:recordId/goods-record                                                   controllers.goodsProfile.RemoveGoodsRecordController.onSubmit(recordId: String, location: Location = GoodsRecordLocation)
+
+GET         /loading-records                                                                        controllers.goodsProfile.GoodsRecordsLoadingController.onPageLoad(continueUrl: Option[RedirectUrl] ?= None)

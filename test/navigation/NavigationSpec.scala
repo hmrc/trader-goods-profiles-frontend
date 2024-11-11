@@ -25,6 +25,8 @@ import org.mockito.Mockito.reset
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
 import pages._
+import pages.categorisation.HasSupplementaryUnitUpdatePage
+import pages.goodsProfile.{PreviousMovementRecordsPage, RemoveGoodsRecordPage}
 import play.api.http.Status.SEE_OTHER
 import queries.{CategorisationDetailsQuery, LongerCommodityQuery}
 import services.CategorisationService
@@ -521,66 +523,6 @@ class NavigationSpec extends SpecBase with BeforeAndAfterEach {
           NormalMode,
           emptyUserAnswers
         ) mustEqual routes.SingleRecordController.onPageLoad(recordId)
-      }
-
-      "in Viewing Goods Record Journey" - {
-        "must go from RemoveGoodsRecordPage to page 1 of GoodsRecordsController" in {
-          navigator.nextPage(
-            RemoveGoodsRecordPage,
-            NormalMode,
-            emptyUserAnswers
-          ) mustEqual routes.GoodsRecordsController
-            .onPageLoad(firstPage)
-        }
-
-        "must go from PreviousMovementsRecordsPage to page 1 of the GoodsRecordController" in {
-          navigator.nextPage(
-            PreviousMovementRecordsPage,
-            NormalMode,
-            emptyUserAnswers
-          ) mustEqual routes.GoodsRecordsController
-            .onPageLoad(firstPage)
-        }
-
-      }
-      "to journey recovery page" - {
-        "when categorisation details not set" in {
-          navigator.nextPage(
-            HasCorrectGoodsLongerCommodityCodePage(testRecordId),
-            NormalMode,
-            emptyUserAnswers
-          ) mustBe controllers.problem.routes.JourneyRecoveryController.onPageLoad()
-        }
-
-        "when longer commodity query is not set" in {
-
-          val userAnswers = emptyUserAnswers
-            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
-            .success
-            .value
-
-          navigator.nextPage(
-            HasCorrectGoodsLongerCommodityCodePage(testRecordId),
-            NormalMode,
-            userAnswers
-          ) mustBe controllers.problem.routes.JourneyRecoveryController.onPageLoad()
-        }
-
-        "when answer is not set" in {
-
-          val userAnswers = emptyUserAnswers
-            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
-            .success
-            .value
-            .set(LongerCommodityQuery(testRecordId), testCommodity.copy(commodityCode = "998877776"))
-            .success
-            .value
-          navigator.nextPage(
-            HasCorrectGoodsLongerCommodityCodePage(testRecordId),
-            NormalMode,
-            userAnswers
-          ) mustBe controllers.problem.routes.JourneyRecoveryController.onPageLoad()
-        }
       }
 
       "in Data Download Journey" - {
