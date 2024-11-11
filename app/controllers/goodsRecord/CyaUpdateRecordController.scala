@@ -25,7 +25,7 @@ import controllers.BaseController
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import models.router.requests.PutRecordRequest
 import models.{CheckMode, Country, NormalMode, UpdateGoodsRecord, UserAnswers, ValidationError}
-import navigation.Navigation
+import navigation.GoodsRecordNavigator
 import org.apache.pekko.Done
 import pages.goodsRecord._
 import play.api.i18n.MessagesApi
@@ -54,7 +54,7 @@ class CyaUpdateRecordController @Inject() (
   goodsRecordConnector: GoodsRecordConnector,
   ottConnector: OttConnector,
   sessionRepository: SessionRepository,
-  navigator: Navigation,
+  navigator: GoodsRecordNavigator,
   config: FrontendAppConfig
 )(implicit ec: ExecutionContext)
     extends BaseController {

@@ -24,7 +24,7 @@ import models.GoodsRecordsPagination.firstPage
 import models.helper.GoodsDetailsUpdate
 import models.router.responses.GetRecordsResponse
 import models.{GoodsRecordsPagination, NormalMode, UserAnswers}
-import navigation.{FakeNavigation, Navigation}
+import navigation.{FakeGoodsRecordNavigator, GoodsRecordNavigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, verify, when}
@@ -135,7 +135,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
         val application =
           applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(
-              bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
+              bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository),
               bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
             )
@@ -193,7 +193,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
         val application =
           applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(
-              bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
+              bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository),
               bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
             )
@@ -239,7 +239,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
         val application =
           applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(
-              bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
+              bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository),
               bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
             )
@@ -383,7 +383,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
             Some(emptyUserAnswers.set(TraderReferenceUpdatePage(recordId = testRecordId), "oldAnswer").success.value)
           )
             .overrides(
-              bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
+              bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository),
               bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
             )
@@ -428,7 +428,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
             Some(emptyUserAnswers.set(TraderReferenceUpdatePage(recordId = testRecordId), "BAN0010011").success.value)
           )
             .overrides(
-              bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
+              bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository),
               bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
             )
@@ -473,7 +473,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
-              bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
+              bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository),
               bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
             )
@@ -522,7 +522,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
-              bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
+              bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository),
               bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
             )
@@ -591,7 +591,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
             Some(emptyUserAnswers.set(TraderReferenceUpdatePage(recordId = testRecordId), "oldAnswer").success.value)
           )
             .overrides(
-              bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
+              bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository),
               bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
             )
@@ -646,7 +646,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
             Some(emptyUserAnswers.set(TraderReferenceUpdatePage(recordId = testRecordId), "oldAnswer").success.value)
           )
             .overrides(
-              bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
+              bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository),
               bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
             )

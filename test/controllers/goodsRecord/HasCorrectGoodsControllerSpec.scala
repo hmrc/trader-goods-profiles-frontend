@@ -20,7 +20,7 @@ import base.SpecBase
 import base.TestConstants.testRecordId
 import forms.goodsRecord.HasCorrectGoodsFormProvider
 import models.{Commodity, NormalMode}
-import navigation.{FakeNavigation, Navigation}
+import navigation.{FakeGoodsRecordNavigator, GoodsRecordNavigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -134,7 +134,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
         val application =
           applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(
-              bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
+              bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository)
             )
             .build()
@@ -351,7 +351,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
           val application =
             applicationBuilder(userAnswers = Some(userAnswers))
               .overrides(
-                bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
+                bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
                 bind[SessionRepository].toInstance(mockSessionRepository)
               )
               .build()
@@ -400,7 +400,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
 
           val application = applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
-              bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
+              bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository)
             )
             .build()
@@ -515,7 +515,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
         val application =
           applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(
-              bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
+              bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository)
             )
             .build()

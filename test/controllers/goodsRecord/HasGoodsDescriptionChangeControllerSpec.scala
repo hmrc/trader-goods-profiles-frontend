@@ -21,7 +21,7 @@ import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import forms.goodsRecord.HasGoodsDescriptionChangeFormProvider
 import models.helper.GoodsDetailsUpdate
 import models.{NormalMode, UserAnswers}
-import navigation.{FakeNavigation, Navigation}
+import navigation.{FakeGoodsRecordNavigator, GoodsRecordNavigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{atLeastOnce, verify, when}
@@ -114,7 +114,7 @@ class HasGoodsDescriptionChangeControllerSpec extends SpecBase with MockitoSugar
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
-            bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
+            bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository)
           )
           .build()

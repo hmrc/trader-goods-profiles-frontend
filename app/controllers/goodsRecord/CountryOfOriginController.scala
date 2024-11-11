@@ -23,7 +23,7 @@ import forms.goodsRecord.CountryOfOriginFormProvider
 import models.helper.GoodsDetailsUpdate
 import models.requests.DataRequest
 import models.{Country, Mode, UserAnswers}
-import navigation.Navigation
+import navigation.GoodsRecordNavigator
 import pages.QuestionPage
 import pages.goodsRecord.{CountryOfOriginPage, CountryOfOriginUpdatePage, HasCountryOfOriginChangePage}
 import play.api.data.Form
@@ -43,7 +43,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class CountryOfOriginController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
-  navigator: Navigation,
+  navigator: GoodsRecordNavigator,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,

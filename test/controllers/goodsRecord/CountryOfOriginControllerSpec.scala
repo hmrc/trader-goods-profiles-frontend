@@ -22,7 +22,7 @@ import connectors.OttConnector
 import forms.goodsRecord.CountryOfOriginFormProvider
 import models.helper.GoodsDetailsUpdate
 import models.{Country, NormalMode, UserAnswers}
-import navigation.{FakeNavigation, Navigation}
+import navigation.{FakeGoodsRecordNavigator, GoodsRecordNavigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{atLeastOnce, never, verify, when}
@@ -67,7 +67,7 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
         val application =
           applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(
-              bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
+              bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
               bind[OttConnector].toInstance(mockOttConnector)
             )
             .build()
@@ -102,7 +102,7 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
-              bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
+              bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
               bind[OttConnector].toInstance(mockOttConnector)
             )
             .build()
@@ -132,7 +132,7 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
-              bind[Navigation].toInstance(new FakeNavigation(onwardRoute))
+              bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute))
             )
             .build()
 
@@ -164,7 +164,7 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
-              bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
+              bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository)
             )
             .build()
@@ -188,7 +188,7 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
-              bind[Navigation].toInstance(new FakeNavigation(onwardRoute))
+              bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute))
             )
             .build()
 
@@ -286,7 +286,7 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
         val application =
           applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(
-              bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
+              bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
               bind[OttConnector].toInstance(mockOttConnector),
               bind[AuditService].toInstance(mockAuditService)
             )
@@ -336,7 +336,7 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
-              bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
+              bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
               bind[OttConnector].toInstance(mockOttConnector),
               bind[AuditService].toInstance(mockAuditService)
             )
@@ -385,7 +385,7 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
-              bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
+              bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
               bind[OttConnector].toInstance(mockOttConnector)
             )
             .build()
@@ -415,7 +415,7 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
-              bind[Navigation].toInstance(new FakeNavigation(onwardRoute))
+              bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute))
             )
             .build()
 
@@ -447,7 +447,7 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
-              bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
+              bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository)
             )
             .build()
@@ -476,7 +476,7 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
         val application =
           applicationBuilder(userAnswers = Some(updatedUserAnswers))
             .overrides(
-              bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
+              bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository)
             )
             .build()
@@ -509,7 +509,7 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
         val application =
           applicationBuilder(userAnswers = Some(updatedUserAnswers))
             .overrides(
-              bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
+              bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository)
             )
             .build()
@@ -536,7 +536,7 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
-              bind[Navigation].toInstance(new FakeNavigation(onwardRoute))
+              bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute))
             )
             .build()
 

@@ -18,7 +18,7 @@ package controllers.goodsRecord
 
 import base.SpecBase
 import base.TestConstants.testEori
-import navigation.{FakeNavigation, Navigation}
+import navigation.{FakeGoodsRecordNavigator, GoodsRecordNavigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{verify, when}
@@ -71,7 +71,7 @@ class CreateRecordStartControllerSpec extends SpecBase {
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[SessionRepository].toInstance(mockSessionRepository),
-            bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
+            bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
             bind[AuditService].toInstance(mockAuditService)
           )
           .build()

@@ -23,7 +23,7 @@ import forms.goodsRecord.CommodityCodeFormProvider
 import models.helper.{CreateRecordJourney, GoodsDetailsUpdate}
 import models.requests.DataRequest
 import models.{Commodity, Mode}
-import navigation.Navigation
+import navigation.GoodsRecordNavigator
 import pages.goodsRecord._
 import play.api.data.{Form, FormError}
 import play.api.i18n.MessagesApi
@@ -41,7 +41,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class CommodityCodeController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
-  navigator: Navigation,
+  navigator: GoodsRecordNavigator,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,

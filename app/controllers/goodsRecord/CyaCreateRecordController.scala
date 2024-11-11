@@ -22,7 +22,7 @@ import controllers.BaseController
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import models.helper.CreateRecordJourney
 import models.{Country, GoodsRecord, NormalMode, UserAnswers}
-import navigation.Navigation
+import navigation.GoodsRecordNavigator
 import pages.goodsRecord.CyaCreateRecordPage
 import play.api.i18n.MessagesApi
 import play.api.mvc._
@@ -48,7 +48,7 @@ class CyaCreateRecordController @Inject() (
   dataCleansingService: DataCleansingService,
   sessionRepository: SessionRepository,
   auditService: AuditService,
-  navigator: Navigation
+  navigator: GoodsRecordNavigator
 )(implicit @unused ec: ExecutionContext)
     extends BaseController {
 

@@ -22,7 +22,7 @@ import controllers.actions._
 import forms.goodsRecord.TraderReferenceFormProvider
 import models.Mode
 import models.helper.GoodsDetailsUpdate
-import navigation.Navigation
+import navigation.GoodsRecordNavigator
 import pages.goodsRecord.{TraderReferencePage, TraderReferenceUpdatePage}
 import play.api.data.{Form, FormError}
 import play.api.i18n.{Messages, MessagesApi}
@@ -39,7 +39,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class TraderReferenceController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
-  navigator: Navigation,
+  navigator: GoodsRecordNavigator,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,

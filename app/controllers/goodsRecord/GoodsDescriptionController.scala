@@ -21,7 +21,7 @@ import controllers.actions._
 import forms.goodsRecord.GoodsDescriptionFormProvider
 import models.Mode
 import models.helper.GoodsDetailsUpdate
-import navigation.Navigation
+import navigation.GoodsRecordNavigator
 import pages.goodsRecord.{GoodsDescriptionPage, GoodsDescriptionUpdatePage, HasGoodsDescriptionChangePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -37,7 +37,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class GoodsDescriptionController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
-  navigator: Navigation,
+  navigator: GoodsRecordNavigator,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,

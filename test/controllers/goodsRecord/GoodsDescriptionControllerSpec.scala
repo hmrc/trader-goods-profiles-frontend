@@ -21,7 +21,7 @@ import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import forms.goodsRecord.GoodsDescriptionFormProvider
 import models.helper.GoodsDetailsUpdate
 import models.{NormalMode, UserAnswers}
-import navigation.{FakeNavigation, Navigation}
+import navigation.{FakeGoodsRecordNavigator, GoodsRecordNavigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, verify, when}
@@ -107,7 +107,7 @@ class GoodsDescriptionControllerSpec extends SpecBase with MockitoSugar {
         val application =
           applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(
-              bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
+              bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository)
             )
             .build()
@@ -325,7 +325,7 @@ class GoodsDescriptionControllerSpec extends SpecBase with MockitoSugar {
         val application =
           applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(
-              bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
+              bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository)
             )
             .build()
@@ -357,7 +357,7 @@ class GoodsDescriptionControllerSpec extends SpecBase with MockitoSugar {
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
-              bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
+              bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository)
             )
             .build()
@@ -390,7 +390,7 @@ class GoodsDescriptionControllerSpec extends SpecBase with MockitoSugar {
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
-              bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
+              bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository)
             )
             .build()

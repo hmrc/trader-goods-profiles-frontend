@@ -22,7 +22,7 @@ import connectors.OttConnector
 import forms.goodsRecord.CommodityCodeFormProvider
 import models.helper.GoodsDetailsUpdate
 import models.{Commodity, NormalMode, UserAnswers}
-import navigation.{FakeNavigation, Navigation}
+import navigation.{FakeGoodsRecordNavigator, GoodsRecordNavigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{any, anyString, eq => eqTo}
@@ -207,7 +207,7 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
-              bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
+              bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository),
               bind[OttConnector].toInstance(mockOttConnector)
             )
@@ -421,7 +421,7 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
       val application =
         applicationBuilder(userAnswers = Some(userAnswers))
           .overrides(
-            bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
+            bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository),
             bind[OttConnector].toInstance(mockOttConnector)
           )
@@ -473,7 +473,7 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
       val application =
         applicationBuilder(userAnswers = Some(userAnswers))
           .overrides(
-            bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
+            bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository),
             bind[OttConnector].toInstance(mockOttConnector)
           )
