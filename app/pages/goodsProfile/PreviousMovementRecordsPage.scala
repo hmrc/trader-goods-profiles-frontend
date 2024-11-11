@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
-package pages
+package pages.goodsProfile
 
-case object RemoveGoodsRecordPage extends Page
+import pages.Page
+
+case object PreviousMovementRecordsPage extends Page

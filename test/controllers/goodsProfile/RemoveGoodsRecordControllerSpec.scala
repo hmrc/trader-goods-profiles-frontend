@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.goodsProfile
 
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId}
 import connectors.GoodsRecordConnector
-import forms.RemoveGoodsRecordFormProvider
+import forms.goodsProfile.RemoveGoodsRecordFormProvider
 import models.GoodsRecordsPagination.firstPage
 import models.{GoodsProfileLocation, GoodsRecordLocation}
-import navigation.{FakeNavigation, Navigation}
+import navigation.{FakeGoodsProfileNavigator, GoodsProfileNavigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, verify, when}
@@ -33,7 +33,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.AuditService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import views.html.RemoveGoodsRecordView
+import views.html.goodsProfile.RemoveGoodsRecordView
 
 import scala.concurrent.Future
 
@@ -45,7 +45,7 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
   private val form = formProvider()
 
   private lazy val removeGoodsRecordRoute =
-    routes.RemoveGoodsRecordController.onPageLoad(testRecordId, GoodsRecordLocation).url
+    controllers.goodsProfile.routes.RemoveGoodsRecordController.onPageLoad(testRecordId, GoodsRecordLocation).url
 
   private val mockAuditService = mock[AuditService]
 
@@ -87,7 +87,12 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(GET, routes.RemoveGoodsRecordController.onPageLoad(testRecordId, GoodsProfileLocation).url)
+          FakeRequest(
+            GET,
+            controllers.goodsProfile.routes.RemoveGoodsRecordController
+              .onPageLoad(testRecordId, GoodsProfileLocation)
+              .url
+          )
 
         val result = route(application, request).value
 
@@ -111,7 +116,7 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
-            bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
+            bind[GoodsProfileNavigator].toInstance(new FakeGoodsProfileNavigator(onwardRoute)),
             bind[GoodsRecordConnector].toInstance(mockConnector)
           )
           .build()
@@ -142,7 +147,7 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
-            bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
+            bind[GoodsProfileNavigator].toInstance(new FakeGoodsProfileNavigator(onwardRoute)),
             bind[GoodsRecordConnector].toInstance(mockConnector),
             bind[AuditService].toInstance(mockAuditService)
           )
@@ -154,7 +159,7 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
             .withFormUrlEncodedBody(("value", "true"))
 
         val result      = route(application, request).value
-        val continueUrl = RedirectUrl(routes.GoodsRecordsController.onPageLoad(firstPage).url)
+        val continueUrl = RedirectUrl(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url)
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
@@ -171,7 +176,7 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
-            bind[Navigation].toInstance(new FakeNavigation(onwardRoute))
+            bind[GoodsProfileNavigator].toInstance(new FakeGoodsProfileNavigator(onwardRoute))
           )
           .build()
 

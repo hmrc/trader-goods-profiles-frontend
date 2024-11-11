@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.goodsProfile
 
 import base.SpecBase
 import models.GoodsRecordsPagination.firstPage
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import views.html.PreviousMovementRecordsView
+import views.html.goodsProfile.PreviousMovementRecordsView
 
 class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar {
 
@@ -32,7 +32,8 @@ class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar {
         .build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.PreviousMovementRecordsController.onPageLoad().url)
+        val request =
+          FakeRequest(GET, controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url)
 
         val result = route(application, request).value
 
@@ -50,12 +51,14 @@ class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, routes.PreviousMovementRecordsController.onSubmit().url)
+          FakeRequest(POST, controllers.goodsProfile.routes.PreviousMovementRecordsController.onSubmit().url)
 
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.GoodsRecordsController.onPageLoad(firstPage).url
+        redirectLocation(result).value mustEqual controllers.goodsProfile.routes.GoodsRecordsController
+          .onPageLoad(firstPage)
+          .url
       }
     }
   }

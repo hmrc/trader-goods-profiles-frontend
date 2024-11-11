@@ -15,7 +15,6 @@
  */
 
 package models
-import controllers.routes
 import models.GoodsRecordsPagination.firstPage
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -73,7 +72,7 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
           PaginationItem(
             number = Some(currentPage.toString),
             current = Some(true),
-            href = routes.GoodsRecordsController.onPageLoad(currentPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(currentPage).url,
             ellipsis = Some(false)
           )
         )
@@ -90,19 +89,19 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
         val totalPages         = 2
         val nextPage           = 2
         val next               = PaginationLink(
-          routes.GoodsRecordsController.onPageLoad(nextPage).url
+          controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(nextPage).url
         )
         val items              = Seq(
           PaginationItem(
             number = Some(currentPage.toString),
             current = Some(true),
-            href = routes.GoodsRecordsController.onPageLoad(currentPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(currentPage).url,
             ellipsis = Some(false)
           ),
           PaginationItem(
             number = Some(nextPage.toString),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(nextPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(nextPage).url,
             ellipsis = Some(false)
           )
         )
@@ -119,25 +118,25 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
         val totalPages         = 3
         val nextPage           = 2
         val next               = PaginationLink(
-          routes.GoodsRecordsController.onPageLoad(nextPage).url
+          controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(nextPage).url
         )
         val items              = Seq(
           PaginationItem(
             number = Some(currentPage.toString),
             current = Some(true),
-            href = routes.GoodsRecordsController.onPageLoad(currentPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(currentPage).url,
             ellipsis = Some(false)
           ),
           PaginationItem(
             number = Some(nextPage.toString),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(nextPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(nextPage).url,
             ellipsis = Some(false)
           ),
           PaginationItem(
             number = Some("3"),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(3).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(3).url,
             ellipsis = Some(true)
           )
         )
@@ -154,25 +153,25 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
         val totalPages         = 4
         val nextPage           = 2
         val next               = PaginationLink(
-          routes.GoodsRecordsController.onPageLoad(nextPage).url
+          controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(nextPage).url
         )
         val items              = Seq(
           PaginationItem(
             number = Some(currentPage.toString),
             current = Some(true),
-            href = routes.GoodsRecordsController.onPageLoad(currentPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(currentPage).url,
             ellipsis = Some(false)
           ),
           PaginationItem(
             number = Some(nextPage.toString),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(nextPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(nextPage).url,
             ellipsis = Some(false)
           ),
           PaginationItem(
             number = Some("3"),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(3).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(3).url,
             ellipsis = Some(true)
           )
         )
@@ -194,19 +193,19 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
         val totalPages         = 2
         val prevPage           = 1
         val prev               = PaginationLink(
-          routes.GoodsRecordsController.onPageLoad(prevPage).url
+          controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(prevPage).url
         )
         val items              = Seq(
           PaginationItem(
             number = Some(prevPage.toString),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(prevPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(prevPage).url,
             ellipsis = Some(false)
           ),
           PaginationItem(
             number = Some(currentPage.toString),
             current = Some(true),
-            href = routes.GoodsRecordsController.onPageLoad(currentPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(currentPage).url,
             ellipsis = Some(false)
           )
         )
@@ -223,29 +222,29 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
         val totalPages         = 3
         val nextPage           = 3
         val next               = PaginationLink(
-          routes.GoodsRecordsController.onPageLoad(nextPage).url
+          controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(nextPage).url
         )
         val prevPage           = 1
         val prev               = PaginationLink(
-          routes.GoodsRecordsController.onPageLoad(prevPage).url
+          controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(prevPage).url
         )
         val items              = Seq(
           PaginationItem(
             number = Some(prevPage.toString),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(prevPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(prevPage).url,
             ellipsis = Some(false)
           ),
           PaginationItem(
             number = Some(currentPage.toString),
             current = Some(true),
-            href = routes.GoodsRecordsController.onPageLoad(currentPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(currentPage).url,
             ellipsis = Some(false)
           ),
           PaginationItem(
             number = Some(nextPage.toString),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(nextPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(nextPage).url,
             ellipsis = Some(false)
           )
         )
@@ -262,35 +261,35 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
         val totalPages         = 4
         val nextPage           = 3
         val next               = PaginationLink(
-          routes.GoodsRecordsController.onPageLoad(nextPage).url
+          controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(nextPage).url
         )
         val prevPage           = 1
         val prev               = PaginationLink(
-          routes.GoodsRecordsController.onPageLoad(prevPage).url
+          controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(prevPage).url
         )
         val items              = Seq(
           PaginationItem(
             number = Some(prevPage.toString),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(prevPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(prevPage).url,
             ellipsis = Some(false)
           ),
           PaginationItem(
             number = Some(currentPage.toString),
             current = Some(true),
-            href = routes.GoodsRecordsController.onPageLoad(currentPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(currentPage).url,
             ellipsis = Some(false)
           ),
           PaginationItem(
             number = Some(nextPage.toString),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(nextPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(nextPage).url,
             ellipsis = Some(false)
           ),
           PaginationItem(
             number = Some("4"),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(4).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(4).url,
             ellipsis = Some(true)
           )
         )
@@ -307,35 +306,35 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
         val totalPages         = 5
         val nextPage           = 3
         val next               = PaginationLink(
-          routes.GoodsRecordsController.onPageLoad(nextPage).url
+          controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(nextPage).url
         )
         val prevPage           = 1
         val prev               = PaginationLink(
-          routes.GoodsRecordsController.onPageLoad(prevPage).url
+          controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(prevPage).url
         )
         val items              = Seq(
           PaginationItem(
             number = Some(prevPage.toString),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(prevPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(prevPage).url,
             ellipsis = Some(false)
           ),
           PaginationItem(
             number = Some(currentPage.toString),
             current = Some(true),
-            href = routes.GoodsRecordsController.onPageLoad(currentPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(currentPage).url,
             ellipsis = Some(false)
           ),
           PaginationItem(
             number = Some(nextPage.toString),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(nextPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(nextPage).url,
             ellipsis = Some(false)
           ),
           PaginationItem(
             number = Some("4"),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(4).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(4).url,
             ellipsis = Some(true)
           )
         )
@@ -357,25 +356,25 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
         val totalPages         = 3
         val prevPage           = 2
         val prev               = PaginationLink(
-          routes.GoodsRecordsController.onPageLoad(prevPage).url
+          controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(prevPage).url
         )
         val items              = Seq(
           PaginationItem(
             number = Some("1"),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(firstPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url,
             ellipsis = Some(true)
           ),
           PaginationItem(
             number = Some(prevPage.toString),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(prevPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(prevPage).url,
             ellipsis = Some(false)
           ),
           PaginationItem(
             number = Some(currentPage.toString),
             current = Some(true),
-            href = routes.GoodsRecordsController.onPageLoad(currentPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(currentPage).url,
             ellipsis = Some(false)
           )
         )
@@ -392,35 +391,35 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
         val totalPages         = 4
         val nextPage           = 4
         val next               = PaginationLink(
-          routes.GoodsRecordsController.onPageLoad(nextPage).url
+          controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(nextPage).url
         )
         val prevPage           = 2
         val prev               = PaginationLink(
-          routes.GoodsRecordsController.onPageLoad(prevPage).url
+          controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(prevPage).url
         )
         val items              = Seq(
           PaginationItem(
             number = Some("1"),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(firstPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url,
             ellipsis = Some(true)
           ),
           PaginationItem(
             number = Some(prevPage.toString),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(prevPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(prevPage).url,
             ellipsis = Some(false)
           ),
           PaginationItem(
             number = Some(currentPage.toString),
             current = Some(true),
-            href = routes.GoodsRecordsController.onPageLoad(currentPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(currentPage).url,
             ellipsis = Some(false)
           ),
           PaginationItem(
             number = Some(nextPage.toString),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(nextPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(nextPage).url,
             ellipsis = Some(false)
           )
         )
@@ -437,41 +436,41 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
         val totalPages         = 5
         val nextPage           = 4
         val next               = PaginationLink(
-          routes.GoodsRecordsController.onPageLoad(nextPage).url
+          controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(nextPage).url
         )
         val prevPage           = 2
         val prev               = PaginationLink(
-          routes.GoodsRecordsController.onPageLoad(prevPage).url
+          controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(prevPage).url
         )
         val items              = Seq(
           PaginationItem(
             number = Some("1"),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(firstPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url,
             ellipsis = Some(true)
           ),
           PaginationItem(
             number = Some(prevPage.toString),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(prevPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(prevPage).url,
             ellipsis = Some(false)
           ),
           PaginationItem(
             number = Some(currentPage.toString),
             current = Some(true),
-            href = routes.GoodsRecordsController.onPageLoad(currentPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(currentPage).url,
             ellipsis = Some(false)
           ),
           PaginationItem(
             number = Some(nextPage.toString),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(nextPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(nextPage).url,
             ellipsis = Some(false)
           ),
           PaginationItem(
             number = Some("5"),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(5).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(5).url,
             ellipsis = Some(true)
           )
         )
@@ -488,41 +487,41 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
         val totalPages         = 6
         val nextPage           = 4
         val next               = PaginationLink(
-          routes.GoodsRecordsController.onPageLoad(nextPage).url
+          controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(nextPage).url
         )
         val prevPage           = 2
         val prev               = PaginationLink(
-          routes.GoodsRecordsController.onPageLoad(prevPage).url
+          controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(prevPage).url
         )
         val items              = Seq(
           PaginationItem(
             number = Some("1"),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(firstPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url,
             ellipsis = Some(true)
           ),
           PaginationItem(
             number = Some(prevPage.toString),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(prevPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(prevPage).url,
             ellipsis = Some(false)
           ),
           PaginationItem(
             number = Some(currentPage.toString),
             current = Some(true),
-            href = routes.GoodsRecordsController.onPageLoad(currentPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(currentPage).url,
             ellipsis = Some(false)
           ),
           PaginationItem(
             number = Some(nextPage.toString),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(nextPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(nextPage).url,
             ellipsis = Some(false)
           ),
           PaginationItem(
             number = Some("5"),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(5).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(5).url,
             ellipsis = Some(true)
           )
         )
@@ -544,25 +543,25 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
         val totalPages         = 4
         val prevPage           = 3
         val prev               = PaginationLink(
-          routes.GoodsRecordsController.onPageLoad(prevPage).url
+          controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(prevPage).url
         )
         val items              = Seq(
           PaginationItem(
             number = Some("2"),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(2).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(2).url,
             ellipsis = Some(true)
           ),
           PaginationItem(
             number = Some(prevPage.toString),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(prevPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(prevPage).url,
             ellipsis = Some(false)
           ),
           PaginationItem(
             number = Some(currentPage.toString),
             current = Some(true),
-            href = routes.GoodsRecordsController.onPageLoad(currentPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(currentPage).url,
             ellipsis = Some(false)
           )
         )
@@ -579,35 +578,35 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
         val totalPages         = 5
         val nextPage           = 5
         val next               = PaginationLink(
-          routes.GoodsRecordsController.onPageLoad(nextPage).url
+          controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(nextPage).url
         )
         val prevPage           = 3
         val prev               = PaginationLink(
-          routes.GoodsRecordsController.onPageLoad(prevPage).url
+          controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(prevPage).url
         )
         val items              = Seq(
           PaginationItem(
             number = Some("2"),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(2).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(2).url,
             ellipsis = Some(true)
           ),
           PaginationItem(
             number = Some(prevPage.toString),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(prevPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(prevPage).url,
             ellipsis = Some(false)
           ),
           PaginationItem(
             number = Some(currentPage.toString),
             current = Some(true),
-            href = routes.GoodsRecordsController.onPageLoad(currentPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(currentPage).url,
             ellipsis = Some(false)
           ),
           PaginationItem(
             number = Some(nextPage.toString),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(nextPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(nextPage).url,
             ellipsis = Some(false)
           )
         )
@@ -624,41 +623,41 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
         val totalPages         = 6
         val nextPage           = 5
         val next               = PaginationLink(
-          routes.GoodsRecordsController.onPageLoad(nextPage).url
+          controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(nextPage).url
         )
         val prevPage           = 3
         val prev               = PaginationLink(
-          routes.GoodsRecordsController.onPageLoad(prevPage).url
+          controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(prevPage).url
         )
         val items              = Seq(
           PaginationItem(
             number = Some("2"),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(2).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(2).url,
             ellipsis = Some(true)
           ),
           PaginationItem(
             number = Some(prevPage.toString),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(prevPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(prevPage).url,
             ellipsis = Some(false)
           ),
           PaginationItem(
             number = Some(currentPage.toString),
             current = Some(true),
-            href = routes.GoodsRecordsController.onPageLoad(currentPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(currentPage).url,
             ellipsis = Some(false)
           ),
           PaginationItem(
             number = Some(nextPage.toString),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(nextPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(nextPage).url,
             ellipsis = Some(false)
           ),
           PaginationItem(
             number = Some("6"),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(6).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(6).url,
             ellipsis = Some(true)
           )
         )
@@ -675,41 +674,41 @@ class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValue
         val totalPages         = 7
         val nextPage           = 5
         val next               = PaginationLink(
-          routes.GoodsRecordsController.onPageLoad(nextPage).url
+          controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(nextPage).url
         )
         val prevPage           = 3
         val prev               = PaginationLink(
-          routes.GoodsRecordsController.onPageLoad(prevPage).url
+          controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(prevPage).url
         )
         val items              = Seq(
           PaginationItem(
             number = Some("2"),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(2).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(2).url,
             ellipsis = Some(true)
           ),
           PaginationItem(
             number = Some(prevPage.toString),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(prevPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(prevPage).url,
             ellipsis = Some(false)
           ),
           PaginationItem(
             number = Some(currentPage.toString),
             current = Some(true),
-            href = routes.GoodsRecordsController.onPageLoad(currentPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(currentPage).url,
             ellipsis = Some(false)
           ),
           PaginationItem(
             number = Some(nextPage.toString),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(nextPage).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(nextPage).url,
             ellipsis = Some(false)
           ),
           PaginationItem(
             number = Some("6"),
             current = Some(false),
-            href = routes.GoodsRecordsController.onPageLoad(6).url,
+            href = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(6).url,
             ellipsis = Some(true)
           )
         )

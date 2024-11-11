@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.goodsProfile
 
 import base.SpecBase
 import base.TestConstants.{testEori, userAnswersId}
@@ -25,14 +25,14 @@ import models.{Country, GoodsRecordsPagination, UserAnswers}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{atLeastOnce, never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.GoodsRecordsPage
+import pages.goodsProfile.GoodsRecordsPage
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.govukfrontend.views.Aliases.Pagination
 import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.{PaginationItem, PaginationLink}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import views.html.{GoodsRecordsSearchResultEmptyView, GoodsRecordsSearchResultView}
+import views.html.goodsProfile.{GoodsRecordsSearchResultEmptyView, GoodsRecordsSearchResultView}
 
 import java.time.Instant
 import scala.concurrent.Future
@@ -44,7 +44,8 @@ class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar 
   private val numberOfPages          = 3
   private val firstRecord            = 1
   private val lastRecord             = 10
-  private lazy val goodsRecordsRoute = routes.GoodsRecordsSearchResultController.onPageLoad(currentPage).url
+  private lazy val goodsRecordsRoute =
+    controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(currentPage).url
 
   val searchText = "bananas"
 
@@ -99,25 +100,27 @@ class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar 
         PaginationItem(
           number = Some(currentPage.toString),
           current = Some(true),
-          href = routes.GoodsRecordsSearchResultController.onPageLoad(currentPage).url,
+          href = controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(currentPage).url,
           ellipsis = Some(false)
         ),
         PaginationItem(
           number = Some((1 + currentPage).toString),
           current = Some(false),
-          href = routes.GoodsRecordsSearchResultController.onPageLoad(1 + currentPage).url,
+          href = controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(1 + currentPage).url,
           ellipsis = Some(false)
         ),
         PaginationItem(
           number = Some((2 + currentPage).toString),
           current = Some(false),
-          href = routes.GoodsRecordsSearchResultController.onPageLoad(2 + currentPage).url,
+          href = controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(2 + currentPage).url,
           ellipsis = Some(true)
         )
       )
     ),
     previous = None,
-    next = Some(PaginationLink(routes.GoodsRecordsSearchResultController.onPageLoad(1 + currentPage).url))
+    next = Some(
+      PaginationLink(controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(1 + currentPage).url)
+    )
   )
 
   "GoodsRecordsSearch Controller" - {
@@ -203,7 +206,7 @@ class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar 
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.GoodsRecordsLoadingController
+        redirectLocation(result).value mustEqual controllers.goodsProfile.routes.GoodsRecordsLoadingController
           .onPageLoad(Some(RedirectUrl(goodsRecordsRoute)))
           .url
         verify(mockOttConnector, never()).getCountries(any())
@@ -241,7 +244,8 @@ class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar 
         )
         .build()
 
-      val middleGoodsRecordsRoute = routes.GoodsRecordsSearchResultController.onPageLoad(middlePage).url
+      val middleGoodsRecordsRoute =
+        controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(middlePage).url
 
       val pagination = Pagination(
         items = Option(
@@ -249,25 +253,33 @@ class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar 
             PaginationItem(
               number = Some((middlePage - 1).toString),
               current = Some(false),
-              href = routes.GoodsRecordsSearchResultController.onPageLoad(middlePage - 1).url,
+              href = controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(middlePage - 1).url,
               ellipsis = Some(false)
             ),
             PaginationItem(
               number = Some(middlePage.toString),
               current = Some(true),
-              href = routes.GoodsRecordsSearchResultController.onPageLoad(middlePage).url,
+              href = controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(middlePage).url,
               ellipsis = Some(false)
             ),
             PaginationItem(
               number = Some((1 + middlePage).toString),
               current = Some(false),
-              href = routes.GoodsRecordsSearchResultController.onPageLoad(1 + middlePage).url,
+              href = controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(1 + middlePage).url,
               ellipsis = Some(false)
             )
           )
         ),
-        previous = Some(PaginationLink(routes.GoodsRecordsSearchResultController.onPageLoad(middlePage - 1).url)),
-        next = Some(PaginationLink(routes.GoodsRecordsSearchResultController.onPageLoad(1 + middlePage).url))
+        previous = Some(
+          PaginationLink(
+            controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(middlePage - 1).url
+          )
+        ),
+        next = Some(
+          PaginationLink(
+            controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(1 + middlePage).url
+          )
+        )
       )
 
       running(application) {
@@ -348,7 +360,7 @@ class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar 
 
     "must redirect to JourneyRecovery when search text is not defined in onPageLoad" in {
 
-      val badPageRoute = routes.GoodsRecordsSearchResultController.onPageLoad(1).url
+      val badPageRoute = controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(1).url
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
@@ -366,7 +378,7 @@ class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar 
 
       val userAnswers = UserAnswers(userAnswersId).set(GoodsRecordsPage, searchText).success.value
 
-      val badPageRoute = routes.GoodsRecordsSearchResultController.onPageLoad(0).url
+      val badPageRoute = controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(0).url
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
