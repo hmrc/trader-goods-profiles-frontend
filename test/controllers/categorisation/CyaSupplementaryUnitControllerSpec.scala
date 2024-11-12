@@ -19,7 +19,6 @@ package controllers.categorisation
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import connectors.GoodsRecordConnector
-import controllers.routes
 import models.helper.SupplementaryUnitUpdateJourney
 import models.{NormalMode, SupplementaryRequest, UserAnswers}
 import org.apache.pekko.Done

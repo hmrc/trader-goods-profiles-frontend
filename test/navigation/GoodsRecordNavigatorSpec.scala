@@ -19,15 +19,12 @@ package navigation
 import base.SpecBase
 import base.TestConstants.{testRecordId, userAnswersId}
 import controllers.routes
-import models.{CheckMode, Commodity, NormalMode, UserAnswers}
+import models.{CheckMode, NormalMode, UserAnswers}
 import org.scalatest.BeforeAndAfterEach
 import pages.goodsRecord._
-import pages.{HasCorrectGoodsCommodityCodeUpdatePage, HasCorrectGoodsLongerCommodityCodePage, HasCorrectGoodsPage, Page}
+import pages.{HasCorrectGoodsCommodityCodeUpdatePage, HasCorrectGoodsPage, Page}
 import play.api.http.Status.SEE_OTHER
-import queries.{CategorisationDetailsQuery, LongerCommodityQuery}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-
-import java.time.Instant
 
 class GoodsRecordNavigatorSpec extends SpecBase with BeforeAndAfterEach {
   private val navigator = new GoodsRecordNavigator()

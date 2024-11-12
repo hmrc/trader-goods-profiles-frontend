@@ -14,25 +14,8 @@
  * limitations under the License.
  */
 
-package navigation
+package pages.advice
 
-import controllers.routes
-import models.UserAnswers
 import pages.Page
-import pages.download.RequestDataPage
-import play.api.mvc.Call
 
-import javax.inject.{Inject, Singleton}
-
-@Singleton
-class DownloadNavigator @Inject() extends Navigator {
-
-  val normalRoutes: Page => UserAnswers => Call = {
-    case RequestDataPage => _ => controllers.download.routes.DownloadRequestSuccessController.onPageLoad()
-    case _               => _ => routes.IndexController.onPageLoad()
-  }
-
-  val checkRoutes: Page => UserAnswers => Call = _ =>
-    _ => controllers.problem.routes.JourneyRecoveryController.onPageLoad()
-
-}
+case class AdviceStartPage(recordId: String) extends Page

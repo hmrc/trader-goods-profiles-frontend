@@ -17,14 +17,13 @@
 package navigation
 
 import base.SpecBase
-import base.TestConstants.{testRecordId, userAnswersId}
+import base.TestConstants.testRecordId
 import controllers.routes
 import models._
 import org.mockito.Mockito.reset
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
 import pages._
-import pages.goodsRecord.{CommodityCodePage, CommodityCodeUpdatePage}
 import play.api.http.Status.SEE_OTHER
 import queries.{CategorisationDetailsQuery, LongerCommodityQuery}
 import services.CategorisationService
@@ -50,90 +49,6 @@ class NavigationSpec extends SpecBase with BeforeAndAfterEach {
 
         case object UnknownPage extends Page
         navigator.nextPage(UnknownPage, NormalMode, emptyUserAnswers) mustBe routes.IndexController.onPageLoad()
-      }
-
-      "in Require Advice Journey" - {
-
-        "must go from AdviceStartPage to NamePage" in {
-
-          navigator.nextPage(AdviceStartPage(testRecordId), NormalMode, emptyUserAnswers) mustBe routes.NameController
-            .onPageLoad(NormalMode, testRecordId)
-        }
-
-        "must go from NamePage to EmailPage" in {
-
-          navigator.nextPage(NamePage(testRecordId), NormalMode, emptyUserAnswers) mustBe routes.EmailController
-            .onPageLoad(
-              NormalMode,
-              testRecordId
-            )
-        }
-
-        "must go from EmailPage to CyaRequestAdviceController" in {
-
-          navigator.nextPage(
-            EmailPage(testRecordId),
-            NormalMode,
-            emptyUserAnswers
-          ) mustBe routes.CyaRequestAdviceController.onPageLoad(testRecordId)
-        }
-
-        "must go from CyaRequestAdviceController to AdviceSuccess" in {
-
-          navigator.nextPage(
-            CyaRequestAdvicePage(testRecordId),
-            NormalMode,
-            emptyUserAnswers
-          ) mustBe routes.AdviceSuccessController
-            .onPageLoad(testRecordId)
-        }
-
-      }
-
-      "in Withdraw Advice Journey" - {
-
-        "must go from WithdrawAdviceStartPage to ReasonForWithdrawAdvicePage when answer is Yes" in {
-          val answers = UserAnswers(userAnswersId).set(WithdrawAdviceStartPage(testRecordId), true).success.value
-          navigator.nextPage(
-            WithdrawAdviceStartPage(testRecordId),
-            NormalMode,
-            answers
-          ) mustBe routes.ReasonForWithdrawAdviceController
-            .onPageLoad(testRecordId)
-        }
-
-        "must go from WithdrawAdviceStartPage to SingleRecordPage when answer is No" in {
-          val answers = UserAnswers(userAnswersId).set(WithdrawAdviceStartPage(testRecordId), false).success.value
-          navigator.nextPage(
-            WithdrawAdviceStartPage(testRecordId),
-            NormalMode,
-            answers
-          ) mustBe controllers.goodsRecord.routes.SingleRecordController
-            .onPageLoad(testRecordId)
-        }
-
-        "must go from ReasonForWithdrawAdvicePage to WithdrawAdviceSuccessPage" in {
-
-          navigator.nextPage(
-            ReasonForWithdrawAdvicePage(testRecordId),
-            NormalMode,
-            emptyUserAnswers
-          ) mustBe routes.WithdrawAdviceSuccessController
-            .onPageLoad(
-              testRecordId
-            )
-        }
-
-        "must go to JourneyRecoveryController when there is no answer for WithdrawAdviceStartPage" in {
-          val continueUrl =
-            RedirectUrl(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId).url)
-          navigator.nextPage(
-            WithdrawAdviceStartPage(testRecordId),
-            NormalMode,
-            emptyUserAnswers
-          ) mustBe controllers.problem.routes.JourneyRecoveryController
-            .onPageLoad(Some(continueUrl))
-        }
       }
 
       "in Update Record Journey" - {
@@ -280,27 +195,6 @@ class NavigationSpec extends SpecBase with BeforeAndAfterEach {
           CheckMode,
           emptyUserAnswers
         ) mustBe controllers.problem.routes.JourneyRecoveryController.onPageLoad()
-      }
-
-      "in Require Advice Journey" - {
-
-        "must go from NamePage to CyaRequestAdviceController" in {
-
-          navigator.nextPage(
-            NamePage(testRecordId),
-            CheckMode,
-            emptyUserAnswers
-          ) mustBe routes.CyaRequestAdviceController.onPageLoad(testRecordId)
-        }
-
-        "must go from EmailPage to CyaRequestAdviceController" in {
-
-          navigator.nextPage(
-            EmailPage(testRecordId),
-            CheckMode,
-            emptyUserAnswers
-          ) mustBe routes.CyaRequestAdviceController.onPageLoad(testRecordId)
-        }
       }
 
     }

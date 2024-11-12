@@ -58,3 +58,7 @@ class FakeDownloadNavigator(desiredRoute: Call) extends DownloadNavigator {
 class FakeNewUkimsNavigator(desiredRoute: Call) extends NewUkimsNavigator {
   override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = desiredRoute
 }
+
+class FakeAdviceNavigator(desiredRoute: Call) extends AdviceNavigator {
+  override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = desiredRoute
+}

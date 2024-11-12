@@ -26,7 +26,6 @@ import pages.download.RequestDataPage
 import play.api.mvc.Call
 import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery, LongerCommodityQuery}
 import services.CategorisationService
-import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants._
 
 import javax.inject.{Inject, Singleton}
@@ -35,44 +34,23 @@ import javax.inject.{Inject, Singleton}
 class Navigation @Inject() (categorisationService: CategorisationService) extends Navigator {
 
   val normalRoutes: Page => UserAnswers => Call = {
-
-    case p: AdviceStartPage                        => _ => routes.NameController.onPageLoad(NormalMode, p.recordId)
-    case p: NamePage                               => _ => routes.EmailController.onPageLoad(NormalMode, p.recordId)
-    case p: EmailPage                              => _ => routes.CyaRequestAdviceController.onPageLoad(p.recordId)
     case p: LongerCommodityCodePage                =>
       _ => routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(NormalMode, p.recordId)
     case p: HasCorrectGoodsLongerCommodityCodePage =>
       answers => navigateFromHasCorrectGoodsLongerCommodityCode(p.recordId, answers, NormalMode)
     case p: ReviewReasonPage                       => _ => controllers.goodsRecord.routes.SingleRecordController.onPageLoad(p.recordId)
     case p: RecategorisationPreparationPage        => navigateFromReassessmentPrep(p)
-    case p: WithdrawAdviceStartPage                => answers => navigateFromWithdrawAdviceStartPage(answers, p.recordId)
-    case p: ReasonForWithdrawAdvicePage            => _ => routes.WithdrawAdviceSuccessController.onPageLoad(p.recordId)
-    case p: CyaRequestAdvicePage                   => _ => routes.AdviceSuccessController.onPageLoad(p.recordId)
     case RequestDataPage                           => _ => controllers.download.routes.DownloadRequestSuccessController.onPageLoad()
     case _                                         => _ => routes.IndexController.onPageLoad()
   }
 
   val checkRoutes: Page => UserAnswers => Call = {
-    case p: NamePage                               => _ => routes.CyaRequestAdviceController.onPageLoad(p.recordId)
-    case p: EmailPage                              => _ => routes.CyaRequestAdviceController.onPageLoad(p.recordId)
     case p: LongerCommodityCodePage                =>
       _ => routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(CheckMode, p.recordId)
     case p: HasCorrectGoodsLongerCommodityCodePage =>
       answers => navigateFromHasCorrectGoodsLongerCommodityCode(p.recordId, answers, CheckMode)
     case p: RecategorisationPreparationPage        => navigateFromReassessmentPrepCheck(p)
     case _                                         => _ => controllers.problem.routes.JourneyRecoveryController.onPageLoad()
-  }
-
-  private def navigateFromWithdrawAdviceStartPage(answers: UserAnswers, recordId: String): Call = {
-
-    val continueUrl = RedirectUrl(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId).url)
-    answers
-      .get(WithdrawAdviceStartPage(recordId))
-      .map {
-        case false => controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId)
-        case true  => routes.ReasonForWithdrawAdviceController.onPageLoad(recordId)
-      }
-      .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 
   private def navigateFromHasCorrectGoodsLongerCommodityCode(

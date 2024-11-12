@@ -26,7 +26,7 @@ import play.api.mvc.Call
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class GoodsProfileNavigator @Inject() () extends Navigator {
+class GoodsProfileNavigator @Inject() extends Navigator {
 
   val normalRoutes: Page => UserAnswers => Call = {
     case PreviousMovementRecordsPage =>

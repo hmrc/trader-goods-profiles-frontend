@@ -1,0 +1,25 @@
+GET         /update-record/:recordId/create-advice/start                                            controllers.advice.AdviceStartController.onPageLoad(recordId:String)
+POST        /update-record/:recordId/create-advice/start                                            controllers.advice.AdviceStartController.onSubmit(recordId:String)
+
+GET         /update-record/:recordId/create-advice/check-your-answers                               controllers.advice.CyaRequestAdviceController.onPageLoad(recordId:String)
+POST        /update-record/:recordId/create-advice/check-your-answers                               controllers.advice.CyaRequestAdviceController.onSubmit(recordId:String)
+
+GET         /update-record/:recordId/create-advice/success                                          controllers.advice.AdviceSuccessController.onPageLoad(recordId:String)
+
+GET         /update-record/:recordId/create-advice/email                                            controllers.advice.EmailController.onPageLoad(mode: Mode = NormalMode, recordId:String)
+POST        /update-record/:recordId/create-advice/email                                            controllers.advice.EmailController.onSubmit(mode: Mode = NormalMode, recordId:String)
+GET         /update-record/:recordId/create-advice/email/check                                      controllers.advice.EmailController.onPageLoad(mode: Mode = CheckMode, recordId:String)
+POST        /update-record/:recordId/create-advice/email/check                                      controllers.advice.EmailController.onSubmit(mode: Mode = CheckMode, recordId:String)
+
+GET         /update-record/:recordId/create-advice/name                                             controllers.advice.NameController.onPageLoad(mode: Mode = NormalMode, recordId: String)
+POST        /update-record/:recordId/create-advice/name                                             controllers.advice.NameController.onSubmit(mode: Mode = NormalMode, recordId: String)
+GET         /update-record/:recordId/create-advice/name/check                                       controllers.advice.NameController.onPageLoad(mode: Mode = CheckMode, recordId: String)
+POST        /update-record/:recordId/create-advice/name/check                                       controllers.advice.NameController.onSubmit(mode: Mode = CheckMode, recordId: String)
+
+GET         /update-record/:recordId/withdraw-request                                               controllers.advice.WithdrawAdviceStartController.onPageLoad(recordId: String)
+POST        /update-record/:recordId/withdraw-request                                               controllers.advice.WithdrawAdviceStartController.onSubmit(recordId: String)
+
+GET         /update-record/:recordId/withdraw-request/success                                       controllers.advice.WithdrawAdviceSuccessController.onPageLoad(recordId: String)
+
+GET         /update-record/:recordId/withdraw-request/reason                                        controllers.advice.ReasonForWithdrawAdviceController.onPageLoad(recordId: String)
+POST        /update-record/:recordId/withdraw-request/reason                                        controllers.advice.ReasonForWithdrawAdviceController.onSubmit(recordId: String)
