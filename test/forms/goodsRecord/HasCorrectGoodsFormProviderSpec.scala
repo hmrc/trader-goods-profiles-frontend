@@ -16,6 +16,7 @@
 
 package forms.goodsRecord
 
+import forms.HasCorrectGoodsFormProvider
 import forms.behaviours.BooleanFieldBehaviours
 import play.api.data.FormError
 

@@ -17,7 +17,7 @@
 package pages.goodsRecord
 
 import models.UserAnswers
-import pages.QuestionPage
+import pages.{HasCorrectGoodsCommodityCodeUpdatePage, QuestionPage}
 import play.api.libs.json.JsPath
 
 import scala.util.{Success, Try}

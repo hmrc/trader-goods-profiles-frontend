@@ -18,13 +18,11 @@ package navigation
 
 import controllers.routes
 import jakarta.inject.Singleton
-import models.{CheckMode, Commodity, Mode, NormalMode, UserAnswers}
+import models.{CheckMode, NormalMode, UserAnswers}
 import pages.goodsRecord._
-import pages.{HasCorrectGoodsLongerCommodityCodePage, HasCorrectGoodsPage, Page}
+import pages.{HasCorrectGoodsCommodityCodeUpdatePage, HasCorrectGoodsPage, Page}
 import play.api.mvc.Call
-import queries.{CategorisationDetailsQuery, LongerCommodityQuery}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import utils.Constants.minimumLengthOfCommodityCode
 
 import javax.inject.Inject
 
@@ -45,9 +43,9 @@ class GoodsRecordNavigator @Inject() extends Navigator {
     case CountryOfOriginPage                       => _ => controllers.goodsRecord.routes.CommodityCodeController.onPageLoadCreate(NormalMode)
     case p: CountryOfOriginUpdatePage              =>
       _ => controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(p.recordId)
-    case CommodityCodePage                         => _ => controllers.goodsRecord.routes.HasCorrectGoodsController.onPageLoadCreate(NormalMode)
+    case CommodityCodePage                         => _ => routes.HasCorrectGoodsController.onPageLoadCreate(NormalMode)
     case p: CommodityCodeUpdatePage                =>
-      _ => controllers.goodsRecord.routes.HasCorrectGoodsController.onPageLoadUpdate(NormalMode, p.recordId)
+      _ => routes.HasCorrectGoodsController.onPageLoadUpdate(NormalMode, p.recordId)
     case HasCorrectGoodsPage                       => answers => navigateFromHasCorrectGoods(answers)
     case p: HasCorrectGoodsCommodityCodeUpdatePage => answers => navigateFromHasCorrectGoodsUpdate(answers, p.recordId)
     case p: HasGoodsDescriptionChangePage          => answers => navigateFromHasGoodsDescriptionChangePage(answers, p.recordId)
@@ -56,8 +54,6 @@ class GoodsRecordNavigator @Inject() extends Navigator {
     case p: CyaCreateRecordPage                    =>
       _ => controllers.goodsRecord.routes.CreateRecordSuccessController.onPageLoad(p.recordId)
     case p: CyaUpdateRecordPage                    => _ => controllers.goodsRecord.routes.SingleRecordController.onPageLoad(p.recordId)
-    case p: HasCorrectGoodsLongerCommodityCodePage =>
-      answers => navigateFromHasCorrectGoodsLongerCommodityCode(p.recordId, answers, NormalMode)
     case _                                         => _ => routes.IndexController.onPageLoad()
   }
 
@@ -71,14 +67,12 @@ class GoodsRecordNavigator @Inject() extends Navigator {
     case CountryOfOriginPage                       => _ => controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad()
     case p: CountryOfOriginUpdatePage              =>
       _ => controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(p.recordId)
-    case CommodityCodePage                         => _ => controllers.goodsRecord.routes.HasCorrectGoodsController.onPageLoadCreate(CheckMode)
+    case CommodityCodePage                         => _ => routes.HasCorrectGoodsController.onPageLoadCreate(CheckMode)
     case p: CommodityCodeUpdatePage                =>
-      _ => controllers.goodsRecord.routes.HasCorrectGoodsController.onPageLoadUpdate(CheckMode, p.recordId)
+      _ => routes.HasCorrectGoodsController.onPageLoadUpdate(CheckMode, p.recordId)
     case HasCorrectGoodsPage                       => answers => navigateFromHasCorrectGoodsCheck(answers)
     case p: HasCorrectGoodsCommodityCodeUpdatePage =>
       answers => navigateFromHasCorrectGoodsUpdateCheck(answers, p.recordId)
-    case p: HasCorrectGoodsLongerCommodityCodePage =>
-      answers => navigateFromHasCorrectGoodsLongerCommodityCode(p.recordId, answers, CheckMode)
     case _                                         => _ => controllers.problem.routes.JourneyRecoveryController.onPageLoad()
   }
 
@@ -160,33 +154,4 @@ class GoodsRecordNavigator @Inject() extends Navigator {
         case false => controllers.goodsRecord.routes.CommodityCodeController.onPageLoadUpdate(CheckMode, recordId)
       }
       .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
-
-  private def navigateFromHasCorrectGoodsLongerCommodityCode(
-    recordId: String,
-    answers: UserAnswers,
-    mode: Mode
-  ): Call = {
-    for {
-      categorisationInfo <- answers.get(CategorisationDetailsQuery(recordId))
-      commodity          <- answers.get(LongerCommodityQuery(recordId))
-    } yield
-      if (categorisationInfo.commodityCode == getShortenedCommodityCode(commodity)) {
-        controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(mode, recordId)
-      } else {
-        answers.get(HasCorrectGoodsLongerCommodityCodePage(recordId)) match {
-          case Some(true)  =>
-            controllers.categorisation.routes.CategorisationPreparationController
-              .startLongerCategorisation(mode, recordId)
-          case Some(false) => controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(mode, recordId)
-          case None        => controllers.problem.routes.JourneyRecoveryController.onPageLoad()
-        }
-      }
-  }.getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
-
-  private def getShortenedCommodityCode(commodity: Commodity) =
-    commodity.commodityCode.reverse
-      .dropWhile(char => char == '0')
-      .reverse
-      .padTo(minimumLengthOfCommodityCode, '0')
-      .mkString
 }

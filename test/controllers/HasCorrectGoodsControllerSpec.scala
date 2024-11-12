@@ -14,25 +14,24 @@
  * limitations under the License.
  */
 
-package controllers.goodsRecord
+package controllers
 
 import base.SpecBase
 import base.TestConstants.testRecordId
-import forms.goodsRecord.HasCorrectGoodsFormProvider
+import forms.HasCorrectGoodsFormProvider
 import models.{Commodity, NormalMode}
-import navigation.{FakeGoodsRecordNavigator, GoodsRecordNavigator}
+import navigation.{FakeNavigation, Navigation}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages._
-import pages.goodsRecord.HasCorrectGoodsCommodityCodeUpdatePage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import queries.{CommodityQuery, CommodityUpdateQuery, LongerCommodityQuery}
 import repositories.SessionRepository
-import views.html.goodsRecord.HasCorrectGoodsView
+import views.html.HasCorrectGoodsView
 
 import java.time.Instant
 import scala.concurrent.Future
@@ -48,9 +47,9 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
 
     "For create journey" - {
       lazy val hasCorrectGoodsCreateRoute =
-        controllers.goodsRecord.routes.HasCorrectGoodsController.onPageLoadCreate(NormalMode).url
+        routes.HasCorrectGoodsController.onPageLoadCreate(NormalMode).url
       lazy val onSubmitAction: Call       =
-        controllers.goodsRecord.routes.HasCorrectGoodsController.onSubmitCreate(NormalMode)
+        routes.HasCorrectGoodsController.onSubmitCreate(NormalMode)
       val page: QuestionPage[Boolean]     = HasCorrectGoodsPage
 
       "must return OK and the correct view for a GET" in {
@@ -134,7 +133,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
         val application =
           applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(
-              bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
+              bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository)
             )
             .build()
@@ -229,11 +228,11 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
     "for the Longer Commodity Code Journey" - {
 
       lazy val hasCorrectGoodsRoute =
-        controllers.goodsRecord.routes.HasCorrectGoodsController
+        routes.HasCorrectGoodsController
           .onPageLoadLongerCommodityCode(NormalMode, testRecordId)
           .url
       lazy val onSubmitAction: Call =
-        controllers.goodsRecord.routes.HasCorrectGoodsController.onSubmitLongerCommodityCode(NormalMode, testRecordId)
+        routes.HasCorrectGoodsController.onSubmitLongerCommodityCode(NormalMode, testRecordId)
 
       "for a GET" - {
 
@@ -351,7 +350,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
           val application =
             applicationBuilder(userAnswers = Some(userAnswers))
               .overrides(
-                bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
+                bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
                 bind[SessionRepository].toInstance(mockSessionRepository)
               )
               .build()
@@ -400,7 +399,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
 
           val application = applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
-              bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
+              bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository)
             )
             .build()
@@ -430,9 +429,9 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
 
     "For update journey" - {
       lazy val hasCorrectGoodsUpdateRoute =
-        controllers.goodsRecord.routes.HasCorrectGoodsController.onPageLoadUpdate(NormalMode, testRecordId).url
+        routes.HasCorrectGoodsController.onPageLoadUpdate(NormalMode, testRecordId).url
       lazy val onSubmitAction: Call       =
-        controllers.goodsRecord.routes.HasCorrectGoodsController.onSubmitUpdate(NormalMode, testRecordId)
+        routes.HasCorrectGoodsController.onSubmitUpdate(NormalMode, testRecordId)
       val page: QuestionPage[Boolean]     = HasCorrectGoodsCommodityCodeUpdatePage(testRecordId)
 
       "must return OK and the correct view for a GET" in {
@@ -515,7 +514,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
         val application =
           applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(
-              bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
+              bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository)
             )
             .build()

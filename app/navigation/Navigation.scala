@@ -22,6 +22,7 @@ import models._
 import models.ott.{CategorisationInfo, CategoryAssessment}
 import pages._
 import pages.categorisation.{HasSupplementaryUnitPage, ReassessmentPage}
+import pages.download.RequestDataPage
 import play.api.mvc.Call
 import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery, LongerCommodityQuery}
 import services.CategorisationService
@@ -39,8 +40,7 @@ class Navigation @Inject() (categorisationService: CategorisationService) extend
     case p: NamePage                               => _ => routes.EmailController.onPageLoad(NormalMode, p.recordId)
     case p: EmailPage                              => _ => routes.CyaRequestAdviceController.onPageLoad(p.recordId)
     case p: LongerCommodityCodePage                =>
-      _ =>
-        controllers.goodsRecord.routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(NormalMode, p.recordId)
+      _ => routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(NormalMode, p.recordId)
     case p: HasCorrectGoodsLongerCommodityCodePage =>
       answers => navigateFromHasCorrectGoodsLongerCommodityCode(p.recordId, answers, NormalMode)
     case p: ReviewReasonPage                       => _ => controllers.goodsRecord.routes.SingleRecordController.onPageLoad(p.recordId)
@@ -48,7 +48,7 @@ class Navigation @Inject() (categorisationService: CategorisationService) extend
     case p: WithdrawAdviceStartPage                => answers => navigateFromWithdrawAdviceStartPage(answers, p.recordId)
     case p: ReasonForWithdrawAdvicePage            => _ => routes.WithdrawAdviceSuccessController.onPageLoad(p.recordId)
     case p: CyaRequestAdvicePage                   => _ => routes.AdviceSuccessController.onPageLoad(p.recordId)
-    case RequestDataPage                           => _ => routes.DownloadRequestSuccessController.onPageLoad()
+    case RequestDataPage                           => _ => controllers.download.routes.DownloadRequestSuccessController.onPageLoad()
     case _                                         => _ => routes.IndexController.onPageLoad()
   }
 
@@ -56,7 +56,7 @@ class Navigation @Inject() (categorisationService: CategorisationService) extend
     case p: NamePage                               => _ => routes.CyaRequestAdviceController.onPageLoad(p.recordId)
     case p: EmailPage                              => _ => routes.CyaRequestAdviceController.onPageLoad(p.recordId)
     case p: LongerCommodityCodePage                =>
-      _ => controllers.goodsRecord.routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(CheckMode, p.recordId)
+      _ => routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(CheckMode, p.recordId)
     case p: HasCorrectGoodsLongerCommodityCodePage =>
       answers => navigateFromHasCorrectGoodsLongerCommodityCode(p.recordId, answers, CheckMode)
     case p: RecategorisationPreparationPage        => navigateFromReassessmentPrepCheck(p)

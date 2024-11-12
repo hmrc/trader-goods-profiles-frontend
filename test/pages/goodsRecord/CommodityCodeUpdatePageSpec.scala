@@ -21,6 +21,7 @@ import models.UserAnswers
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{OptionValues, TryValues}
+import pages.HasCorrectGoodsCommodityCodeUpdatePage
 
 class CommodityCodeUpdatePageSpec extends AnyFreeSpec with Matchers with TryValues with OptionValues {
   "clean up" - {

@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package pages.goodsRecord
+package pages
 
-import pages.QuestionPage
 import play.api.libs.json.JsPath
 
 case class HasCorrectGoodsCommodityCodeUpdatePage(recordId: String) extends QuestionPage[Boolean] {

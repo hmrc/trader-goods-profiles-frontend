@@ -675,7 +675,7 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
 
     "must go from longer commodity code to has correct longer commodity page" in {
       navigator.nextPage(LongerCommodityCodePage(testRecordId), NormalMode, emptyUserAnswers) mustEqual
-        controllers.goodsRecord.routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(NormalMode, testRecordId)
+        routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(NormalMode, testRecordId)
     }
 
     "must go from check your answers page" - {
