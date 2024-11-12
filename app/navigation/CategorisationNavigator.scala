@@ -48,7 +48,8 @@ class CategorisationNavigator @Inject() (categorisationService: CategorisationSe
     case p: HasSupplementaryUnitUpdatePage  => answers => navigateFromHasSupplementaryUnitUpdatePage(answers, p.recordId)
     case p: SupplementaryUnitUpdatePage     =>
       _ => controllers.categorisation.routes.CyaSupplementaryUnitController.onPageLoad(p.recordId)
-    case p: CyaSupplementaryUnitPage        => _ => routes.SingleRecordController.onPageLoad(p.recordId)
+    case p: CyaSupplementaryUnitPage        =>
+      _ => controllers.goodsRecord.routes.SingleRecordController.onPageLoad(p.recordId)
     case p: RecategorisationPreparationPage => navigateFromReassessmentPrep(p)
     case p: ReassessmentPage                => navigateFromReassessment(p)
     case p: LongerCommodityCodePage         =>
@@ -281,7 +282,7 @@ class CategorisationNavigator @Inject() (categorisationService: CategorisationSe
   }
 
   private def navigateFromHasSupplementaryUnitUpdatePage(answers: UserAnswers, recordId: String): Call = {
-    val continueUrl = RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)
+    val continueUrl = RedirectUrl(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId).url)
     answers
       .get(HasSupplementaryUnitUpdatePage(recordId))
       .map {

@@ -86,7 +86,8 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
         }
 
         "to JourneyRecoveryPage when answer is not present" in {
-          val continueUrl = RedirectUrl(routes.SingleRecordController.onPageLoad(testRecordId).url)
+          val continueUrl =
+            RedirectUrl(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId).url)
           navigator.nextPage(
             HasSupplementaryUnitUpdatePage(testRecordId),
             NormalMode,
@@ -113,7 +114,7 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
           CyaSupplementaryUnitPage(testRecordId),
           NormalMode,
           emptyUserAnswers
-        ) mustBe routes.SingleRecordController
+        ) mustBe controllers.goodsRecord.routes.SingleRecordController
           .onPageLoad(testRecordId)
       }
 

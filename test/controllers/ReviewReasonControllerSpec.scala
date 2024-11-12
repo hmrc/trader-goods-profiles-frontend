@@ -112,7 +112,9 @@ class ReviewReasonControllerSpec extends SpecBase with MockitoSugar {
           val request = FakeRequest(GET, reviewReasonRoute)
           val result  = route(application, request).value
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.SingleRecordController.onPageLoad(testRecordId).url
+          redirectLocation(result).value mustEqual controllers.goodsRecord.routes.SingleRecordController
+            .onPageLoad(testRecordId)
+            .url
 
           verify(mockGoodsRecordConnector).getRecord(any(), any())(any())
         }
@@ -159,7 +161,9 @@ class ReviewReasonControllerSpec extends SpecBase with MockitoSugar {
           val result  = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.SingleRecordController.onPageLoad(testRecordId).url
+          redirectLocation(result).value mustEqual controllers.goodsRecord.routes.SingleRecordController
+            .onPageLoad(testRecordId)
+            .url
         }
       }
 

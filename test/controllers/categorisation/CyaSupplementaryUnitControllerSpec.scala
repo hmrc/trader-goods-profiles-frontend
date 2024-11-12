@@ -19,7 +19,6 @@ package controllers.categorisation
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import connectors.GoodsRecordConnector
-import controllers.routes
 import models.helper.SupplementaryUnitUpdateJourney
 import models.{NormalMode, SupplementaryRequest, UserAnswers}
 import org.apache.pekko.Done
@@ -178,7 +177,9 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
             )
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.SingleRecordController.onPageLoad(testRecordId).url
+            redirectLocation(result).value mustEqual controllers.goodsRecord.routes.SingleRecordController
+              .onPageLoad(testRecordId)
+              .url
             verify(mockGoodsRecordConnector)
               .updateSupplementaryUnitForGoodsRecord(eqTo(testEori), eqTo(testRecordId), eqTo(expectedPayload), any())(
                 any()
@@ -238,7 +239,9 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
             val result: Future[Result] = controller.onSubmit(testRecordId)(request)
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.SingleRecordController.onPageLoad(testRecordId).url
+            redirectLocation(result).value mustEqual controllers.goodsRecord.routes.SingleRecordController
+              .onPageLoad(testRecordId)
+              .url
 
             session(result).get(dataUpdated) must be(Some("true"))
             session(result).get(pageUpdated) must be(Some("supplementary unit"))
@@ -294,7 +297,9 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
             val result: Future[Result] = controller.onSubmit(testRecordId)(request)
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.SingleRecordController.onPageLoad(testRecordId).url
+            redirectLocation(result).value mustEqual controllers.goodsRecord.routes.SingleRecordController
+              .onPageLoad(testRecordId)
+              .url
 
             session(result).get(dataUpdated) must be(Some("true"))
             session(result).get(pageUpdated) must be(Some("supplementary unit"))
@@ -350,7 +355,9 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
             val result: Future[Result] = controller.onSubmit(testRecordId)(request)
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.SingleRecordController.onPageLoad(testRecordId).url
+            redirectLocation(result).value mustEqual controllers.goodsRecord.routes.SingleRecordController
+              .onPageLoad(testRecordId)
+              .url
 
             session(result).get(dataUpdated) must be(Some("false"))
 
@@ -399,7 +406,9 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
           val result: Future[Result] = controller.onSubmit(testRecordId)(request)
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.SingleRecordController.onPageLoad(testRecordId).url
+          redirectLocation(result).value mustEqual controllers.goodsRecord.routes.SingleRecordController
+            .onPageLoad(testRecordId)
+            .url
 
           session(result).get(dataRemoved) must be(Some("true"))
           session(result).get(pageUpdated) must be(Some("supplementary unit"))

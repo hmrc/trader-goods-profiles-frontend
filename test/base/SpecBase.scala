@@ -29,6 +29,7 @@ import org.scalatest.{OptionValues, TryValues}
 import pages._
 import pages.advice.{EmailPage, NamePage}
 import pages.categorisation.{AssessmentPage, HasSupplementaryUnitUpdatePage}
+import pages.goodsRecord.{CommodityCodePage, CountryOfOriginPage, GoodsDescriptionPage, TraderReferencePage}
 import pages.profile._
 import play.api.Application
 import play.api.i18n.{Messages, MessagesApi}

@@ -18,11 +18,11 @@ package viewmodels.checkAnswers
 
 import base.SpecBase
 import base.TestConstants.testRecordId
-import controllers.routes
 import models.NormalMode
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.Actions
 import utils.Constants.adviceProvided
+import viewmodels.checkAnswers.goodsRecord.GoodsDescriptionSummary
 
 class GoodsDescriptionSummarySpec extends SpecBase {
 
@@ -46,7 +46,7 @@ class GoodsDescriptionSummarySpec extends SpecBase {
           GoodsDescriptionSummary.rowUpdate(recordForTestingSummaryRows, testRecordId, NormalMode, recordLocked = false)
 
         row.actions mustBe defined
-        row.actions.value.items.head.href mustEqual routes.GoodsDescriptionController
+        row.actions.value.items.head.href mustEqual controllers.goodsRecord.routes.GoodsDescriptionController
           .onPageLoadUpdate(NormalMode, testRecordId)
           .url
       }
@@ -59,7 +59,7 @@ class GoodsDescriptionSummarySpec extends SpecBase {
           GoodsDescriptionSummary.rowUpdate(recordWithAdviceProvided, testRecordId, NormalMode, recordLocked = false)
 
         row.actions mustBe defined
-        row.actions.value.items.head.href mustEqual routes.HasGoodsDescriptionChangeController
+        row.actions.value.items.head.href mustEqual controllers.goodsRecord.routes.HasGoodsDescriptionChangeController
           .onPageLoad(NormalMode, testRecordId)
           .url
       }
