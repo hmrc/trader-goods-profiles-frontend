@@ -1,0 +1,53 @@
+@*
+ * Copyright 2024 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import uk.gov.hmrc.govukfrontend.views.html.components.GovukWarningText
+
+@this(
+        layout: templates.Layout,
+        govukButton: GovukButton,
+        formHelper: FormWithCSRF,
+        govukWarningText: GovukWarningText
+)
+
+@(recordId: String)(implicit request: Request[_], messages: Messages)
+
+@layout(pageTitle = titleNoForm(messages("adviceStart.title"))) {
+
+    <h1 class="govuk-heading-l">@messages("adviceStart.heading")</h1>
+    <p class="govuk-body">@messages("adviceStart.p1")</p>
+
+    @govukWarningText(WarningText(
+        iconFallbackText = Some(messages("adviceStart.warning")),
+        content = Text(messages("adviceStart.warningText"))
+    ))
+
+    <p class="govuk-body">@messages("adviceStart.p2") <a href="https://www.gov.uk/guidance/apply-for-a-binding-tariff-information-decision" class="govuk-link">@messages("adviceStart.p2.linkText")</a>.</p>
+
+    <h2 class="govuk-heading-m">@messages("adviceStart.subheading1")</h2>
+    <p class="govuk-body">@messages("adviceStart.p3")</p>
+
+    <h2 class="govuk-heading-m">@messages("adviceStart.subheading2")</h2>
+    <p class="govuk-body">@messages("adviceStart.p4")</p>
+    <p class="govuk-body">@messages("adviceStart.p5")</p>
+    <p class="govuk-body">@messages("adviceStart.p6")</p>
+
+    @formHelper(action = controllers.advice.routes.AdviceStartController.onSubmit(recordId)) {
+        @govukButton(
+            ButtonViewModel(messages("site.continue"))
+        )
+    }
+}

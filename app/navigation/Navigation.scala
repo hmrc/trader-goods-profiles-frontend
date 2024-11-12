@@ -45,10 +45,6 @@ class Navigation @Inject() (categorisationService: CategorisationService) extend
     case p: CommodityCodeUpdatePage                => _ => routes.HasCorrectGoodsController.onPageLoadUpdate(NormalMode, p.recordId)
     case HasCorrectGoodsPage                       => answers => navigateFromHasCorrectGoods(answers)
     case p: HasCorrectGoodsCommodityCodeUpdatePage => answers => navigateFromHasCorrectGoodsUpdate(answers, p.recordId)
-
-    case p: AdviceStartPage                        => _ => routes.NameController.onPageLoad(NormalMode, p.recordId)
-    case p: NamePage                               => _ => routes.EmailController.onPageLoad(NormalMode, p.recordId)
-    case p: EmailPage                              => _ => routes.CyaRequestAdviceController.onPageLoad(p.recordId)
     case p: LongerCommodityCodePage                =>
       _ => routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(NormalMode, p.recordId)
     case p: HasCorrectGoodsLongerCommodityCodePage =>
@@ -58,10 +54,7 @@ class Navigation @Inject() (categorisationService: CategorisationService) extend
     case p: HasCommodityCodeChangePage             => answers => navigateFromHasCommodityCodeChangePage(answers, p.recordId)
     case p: ReviewReasonPage                       => _ => routes.SingleRecordController.onPageLoad(p.recordId)
     case p: RecategorisationPreparationPage        => navigateFromReassessmentPrep(p)
-    case p: WithdrawAdviceStartPage                => answers => navigateFromWithdrawAdviceStartPage(answers, p.recordId)
-    case p: ReasonForWithdrawAdvicePage            => _ => routes.WithdrawAdviceSuccessController.onPageLoad(p.recordId)
     case p: CyaCreateRecordPage                    => _ => routes.CreateRecordSuccessController.onPageLoad(p.recordId)
-    case p: CyaRequestAdvicePage                   => _ => routes.AdviceSuccessController.onPageLoad(p.recordId)
     case p: CyaUpdateRecordPage                    => _ => routes.SingleRecordController.onPageLoad(p.recordId)
     case _                                         => _ => routes.IndexController.onPageLoad()
   }
@@ -78,26 +71,12 @@ class Navigation @Inject() (categorisationService: CategorisationService) extend
     case HasCorrectGoodsPage                       => answers => navigateFromHasCorrectGoodsCheck(answers)
     case p: HasCorrectGoodsCommodityCodeUpdatePage =>
       answers => navigateFromHasCorrectGoodsUpdateCheck(answers, p.recordId)
-    case p: NamePage                               => _ => routes.CyaRequestAdviceController.onPageLoad(p.recordId)
-    case p: EmailPage                              => _ => routes.CyaRequestAdviceController.onPageLoad(p.recordId)
     case p: LongerCommodityCodePage                =>
       _ => routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(CheckMode, p.recordId)
     case p: HasCorrectGoodsLongerCommodityCodePage =>
       answers => navigateFromHasCorrectGoodsLongerCommodityCode(p.recordId, answers, CheckMode)
     case p: RecategorisationPreparationPage        => navigateFromReassessmentPrepCheck(p)
     case _                                         => _ => controllers.problem.routes.JourneyRecoveryController.onPageLoad()
-  }
-
-  private def navigateFromWithdrawAdviceStartPage(answers: UserAnswers, recordId: String): Call = {
-
-    val continueUrl = RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)
-    answers
-      .get(WithdrawAdviceStartPage(recordId))
-      .map {
-        case false => routes.SingleRecordController.onPageLoad(recordId)
-        case true  => routes.ReasonForWithdrawAdviceController.onPageLoad(recordId)
-      }
-      .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 
   private def navigateFromHasCommodityCodeChangePage(answers: UserAnswers, recordId: String): Call = {
