@@ -14,31 +14,27 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.download
 
 import connectors.DownloadDataConnector
 import controllers.actions._
-import models.NormalMode
-import navigation.Navigation
-import pages.RequestDataPage
-
-import javax.inject.Inject
+import controllers.{BaseController, routes}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import views.html.RequestDataView
+import views.html.download.DownloadRequestSuccessView
 
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class RequestDataController @Inject() (
+class DownloadRequestSuccessController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   profileAuth: ProfileAuthenticateAction,
+  downloadDataConnector: DownloadDataConnector,
   val controllerComponents: MessagesControllerComponents,
-  view: RequestDataView,
-  navigator: Navigation,
-  downloadDataConnector: DownloadDataConnector
+  view: DownloadRequestSuccessView
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
@@ -53,11 +49,4 @@ class RequestDataController @Inject() (
           )
       }
   }
-
-  def onSubmit: Action[AnyContent] =
-    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      downloadDataConnector.requestDownloadData(request.eori).map { _ =>
-        Redirect(navigator.nextPage(RequestDataPage, NormalMode, request.userAnswers))
-      }
-    }
 }

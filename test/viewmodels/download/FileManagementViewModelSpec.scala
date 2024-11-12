@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package viewmodels
+package viewmodels.download
 
 import base.SpecBase
 import connectors.DownloadDataConnector
 import generators.Generators
 import helpers.FileManagementTableComponentHelper
 import models.DownloadDataStatus.{FileInProgress, FileReadyUnseen}
-import models.filemanagement.{AvailableFilesTable, PendingFilesTable}
+import models.download.{AvailableFilesTable, PendingFilesTable}
 import models.{DownloadData, DownloadDataSummary, FileInfo}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.any

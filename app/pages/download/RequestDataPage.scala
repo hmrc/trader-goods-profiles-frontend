@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
-package pages
+package pages.download
+
+import pages.Page
 
 case object RequestDataPage extends Page

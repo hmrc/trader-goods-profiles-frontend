@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.download
 
 import config.FrontendAppConfig
 import connectors.DownloadDataConnector
+import controllers.BaseController
 import controllers.actions._
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import viewmodels.FileManagementViewModel.FileManagementViewModelProvider
-import views.html.FileManagementView
+import viewmodels.download.FileManagementViewModel.FileManagementViewModelProvider
+import views.html.download.FileManagementView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
