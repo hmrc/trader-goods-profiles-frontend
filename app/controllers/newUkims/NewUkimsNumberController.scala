@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.profile
+package controllers.newUkims
 
 import connectors.TraderProfileConnector
 import controllers.BaseController
@@ -22,13 +22,13 @@ import controllers.actions._
 import forms.profile.UkimsNumberFormProvider
 import models.Mode
 import navigation.Navigation
-import pages.NewUkimsNumberPage
+import pages.newUkims.NewUkimsNumberPage
 import pages.profile.UkimsNumberPage
 import play.api.data.{Form, FormError}
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import views.html.profile.NewUkimsNumberView
+import views.html.newUkims.NewUkimsNumberView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -36,7 +36,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class NewUkimsNumberController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
-  navigator: Navigation,
+  navigator: Navigation, //todo change to newUkimsNavigator when ticket TGP-2700 is completed
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
@@ -56,7 +56,7 @@ class NewUkimsNumberController @Inject() (
         case Some(value) => form.fill(value)
       }
 
-      Ok(view(preparedForm, controllers.profile.routes.NewUkimsNumberController.onSubmit(mode)))
+      Ok(view(preparedForm, controllers.newUkims.routes.NewUkimsNumberController.onSubmit(mode)))
     }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
@@ -67,7 +67,7 @@ class NewUkimsNumberController @Inject() (
           formWithErrors =>
             Future
               .successful(
-                BadRequest(view(formWithErrors, controllers.profile.routes.NewUkimsNumberController.onSubmit(mode)))
+                BadRequest(view(formWithErrors, controllers.newUkims.routes.NewUkimsNumberController.onSubmit(mode)))
               ),
           value =>
             for {
@@ -78,7 +78,7 @@ class NewUkimsNumberController @Inject() (
               if (value == profile.ukimsNumber) {
                 val formWithApiErrors =
                   createFormWithErrors(form, value, "ukimsNumberChangeController.duplicateUkimsNumber")
-                BadRequest(view(formWithApiErrors, controllers.profile.routes.NewUkimsNumberController.onSubmit(mode)))
+                BadRequest(view(formWithApiErrors, controllers.newUkims.routes.NewUkimsNumberController.onSubmit(mode)))
               } else {
                 Redirect(navigator.nextPage(NewUkimsNumberPage, mode, updatedAnswers))
               }

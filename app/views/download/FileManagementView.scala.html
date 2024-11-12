@@ -14,14 +14,14 @@
  * limitations under the License.
  *@
 
-@import models.filemanagement.FileManagementTable
-@import viewmodels.FileManagementViewModel
+@import models.download.FileManagementTable
 @import uk.gov.hmrc.govukfrontend.views.html.components.GovukTable
 @import uk.gov.hmrc.govukfrontend.views.Aliases.Table
+@import viewmodels.download.FileManagementViewModel
 
 @this(
-        layout: templates.Layout,
-        govukTable: GovukTable
+layout: templates.Layout,
+govukTable: GovukTable
 )
 
 @(viewModel: FileManagementViewModel)(implicit request: Request[_], messages: Messages)
@@ -57,7 +57,7 @@
         }
     }
 
-    <p class="govuk-body"><a href="@routes.RequestDataController.onPageLoad().url" class="govuk-link" >@viewModel.tgpRecordsLink</a></p>
+    <p class="govuk-body"><a href="@controllers.download.routes.RequestDataController.onPageLoad().url" class="govuk-link" >@viewModel.tgpRecordsLink</a></p>
     <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad().url" class="govuk-link" >@viewModel.goBackHomeLink</a></p>
 
 }

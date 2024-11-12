@@ -40,14 +40,14 @@
 
     @paragraphBody(message = messages("downloadRequestSuccess.p1", link(
         text = messages("downloadRequestSuccess.p1.linkText"),
-        call = controllers.routes.FileManagementController.onPageLoad(),
+        call = controllers.download.routes.FileManagementController.onPageLoad(),
         id = None
     ), email))
 
     <p class="govuk-body">@messages("downloadRequestSuccess.p2")</p>
     <p class="govuk-body">@messages("downloadRequestSuccess.p3")</p>
 
-    <p class="govuk-body"><a href="@routes.FileManagementController.onPageLoad().url" class="govuk-link" >@messages("site.goBackToTGPRecords")</a></p>
+    <p class="govuk-body"><a href="@controllers.download.routes.FileManagementController.onPageLoad().url" class="govuk-link" >@messages("site.goBackToTGPRecords")</a></p>
     <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad().url" class="govuk-link" >@messages("site.goBackToHomePage")</a></p>
 
     @feedbackSection()

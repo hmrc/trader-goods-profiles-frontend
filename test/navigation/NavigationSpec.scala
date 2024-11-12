@@ -141,17 +141,6 @@ class NavigationSpec extends SpecBase with BeforeAndAfterEach {
         ) mustEqual controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId)
       }
 
-      "in Data Download Journey" - {
-
-        "must go from RequestDataPage to DownloadRequestSuccessController" in {
-
-          navigator.nextPage(
-            RequestDataPage,
-            NormalMode,
-            emptyUserAnswers
-          ) mustBe routes.DownloadRequestSuccessController.onPageLoad()
-        }
-      }
     }
 
     "in Check mode" - {

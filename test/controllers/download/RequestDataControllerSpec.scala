@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.download
 
 import base.SpecBase
 import connectors.{DownloadDataConnector, TraderProfileConnector}
+import controllers.routes
 import models.Email
-import navigation.{FakeNavigation, Navigation}
+import navigation.{DownloadNavigator, FakeDownloadNavigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{atLeastOnce, never, verify, when}
@@ -31,7 +32,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import views.html.RequestDataView
+import views.html.download.RequestDataView
 
 import java.time.Instant
 import scala.concurrent.Future
@@ -56,7 +57,7 @@ class RequestDataControllerSpec extends SpecBase {
         .build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.RequestDataController.onPageLoad().url)
+        val request = FakeRequest(GET, controllers.download.routes.RequestDataController.onPageLoad().url)
 
         val result = route(application, request).value
 
@@ -87,7 +88,7 @@ class RequestDataControllerSpec extends SpecBase {
         .build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.RequestDataController.onPageLoad().url)
+        val request = FakeRequest(GET, controllers.download.routes.RequestDataController.onPageLoad().url)
 
         val result = route(application, request).value
 
@@ -116,7 +117,7 @@ class RequestDataControllerSpec extends SpecBase {
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
-            bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
+            bind[DownloadNavigator].toInstance(new FakeDownloadNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository),
             bind[DownloadDataConnector].toInstance(mockDownloadDataConnector),
             bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
@@ -124,7 +125,7 @@ class RequestDataControllerSpec extends SpecBase {
           .build()
 
       running(application) {
-        val request = FakeRequest(POST, routes.RequestDataController.onSubmit().url)
+        val request = FakeRequest(POST, controllers.download.routes.RequestDataController.onSubmit().url)
 
         val result = route(application, request).value
 

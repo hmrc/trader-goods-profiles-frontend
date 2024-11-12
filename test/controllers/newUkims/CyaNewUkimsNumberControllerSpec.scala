@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.profile
+package controllers.newUkims
 
 import base.SpecBase
 import base.TestConstants.testEori
@@ -39,7 +39,7 @@ import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import viewmodels.checkAnswers.profile.UkimsNumberSummary
 import viewmodels.govuk.SummaryListFluency
-import views.html.profile.CyaNewUkimsNumberView
+import views.html.newUkims.CyaNewUkimsNumberView
 
 import scala.concurrent.Future
 
@@ -73,7 +73,7 @@ class CyaNewUkimsNumberControllerSpec extends SpecBase with SummaryListFluency w
           running(application) {
             val list = createChangeList(application, userAnswers)
 
-            val request = FakeRequest(GET, controllers.profile.routes.CyaNewUkimsNumberController.onPageLoad().url)
+            val request = FakeRequest(GET, controllers.newUkims.routes.CyaNewUkimsNumberController.onPageLoad().url)
 
             val result = route(application, request).value
 
@@ -93,7 +93,7 @@ class CyaNewUkimsNumberControllerSpec extends SpecBase with SummaryListFluency w
 
           running(application) {
 
-            val request = FakeRequest(GET, controllers.profile.routes.CyaNewUkimsNumberController.onPageLoad().url)
+            val request = FakeRequest(GET, controllers.newUkims.routes.CyaNewUkimsNumberController.onPageLoad().url)
 
             val result = route(application, request).value
             status(result) mustEqual SEE_OTHER
@@ -109,7 +109,7 @@ class CyaNewUkimsNumberControllerSpec extends SpecBase with SummaryListFluency w
           val application = applicationBuilder(userAnswers = None).build()
 
           running(application) {
-            val request = FakeRequest(GET, controllers.profile.routes.CyaNewUkimsNumberController.onPageLoad().url)
+            val request = FakeRequest(GET, controllers.newUkims.routes.CyaNewUkimsNumberController.onPageLoad().url)
 
             val result = route(application, request).value
 
@@ -156,7 +156,7 @@ class CyaNewUkimsNumberControllerSpec extends SpecBase with SummaryListFluency w
 
           running(application) {
 
-            val request = FakeRequest(POST, controllers.profile.routes.CyaNewUkimsNumberController.onSubmit().url)
+            val request = FakeRequest(POST, controllers.newUkims.routes.CyaNewUkimsNumberController.onSubmit().url)
 
             val result = route(application, request).value
 
@@ -196,7 +196,7 @@ class CyaNewUkimsNumberControllerSpec extends SpecBase with SummaryListFluency w
 
             running(application) {
 
-              val request = FakeRequest(POST, controllers.profile.routes.CyaNewUkimsNumberController.onSubmit().url)
+              val request = FakeRequest(POST, controllers.newUkims.routes.CyaNewUkimsNumberController.onSubmit().url)
 
               val result = route(application, request).value
 
@@ -238,7 +238,7 @@ class CyaNewUkimsNumberControllerSpec extends SpecBase with SummaryListFluency w
               .build()
 
           running(application) {
-            val request = FakeRequest(POST, controllers.profile.routes.CyaNewUkimsNumberController.onSubmit().url)
+            val request = FakeRequest(POST, controllers.newUkims.routes.CyaNewUkimsNumberController.onSubmit().url)
             intercept[RuntimeException] {
               await(route(application, request).value)
             }
@@ -280,7 +280,7 @@ class CyaNewUkimsNumberControllerSpec extends SpecBase with SummaryListFluency w
               .build()
 
           running(application) {
-            val request = FakeRequest(POST, controllers.profile.routes.CyaNewUkimsNumberController.onSubmit().url)
+            val request = FakeRequest(POST, controllers.newUkims.routes.CyaNewUkimsNumberController.onSubmit().url)
             intercept[RuntimeException] {
               await(route(application, request).value)
             }
@@ -300,7 +300,7 @@ class CyaNewUkimsNumberControllerSpec extends SpecBase with SummaryListFluency w
           val application = applicationBuilder(userAnswers = None).build()
 
           running(application) {
-            val request = FakeRequest(POST, controllers.profile.routes.CyaNewUkimsNumberController.onSubmit().url)
+            val request = FakeRequest(POST, controllers.newUkims.routes.CyaNewUkimsNumberController.onSubmit().url)
 
             val result = route(application, request).value
 

@@ -14,14 +14,8 @@
  * limitations under the License.
  */
 
-package pages
+package pages.download
 
-import play.api.libs.json.JsPath
-import utils.Constants.ukimsNumberKey
+import pages.Page
 
-case object NewUkimsNumberPage extends QuestionPage[String] {
-
-  override def path: JsPath = JsPath \ toString
-
-  override def toString: String = ukimsNumberKey
-}
+case object RequestDataPage extends Page

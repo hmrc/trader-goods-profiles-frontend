@@ -1,10 +1,12 @@
 # microservice specific routes
 
 ->          /                                                                                       app.profile.Routes
+->          /                                                                                       app.newUkims.Routes
 ->          /                                                                                       app.problem.Routes
 ->          /                                                                                       app.categorisation.Routes
 ->          /                                                                                       app.goodsRecord.Routes
 ->          /                                                                                       app.goodsProfile.Routes
+->          /                                                                                       app.download.Routes
 
 ->          /hmrc-frontend                                                                          hmrcfrontend.Routes
 
@@ -54,13 +56,6 @@ GET         /update-record/:recordId/withdraw-request/success                   
 
 GET         /update-record/:recordId/withdraw-request/reason                                        controllers.ReasonForWithdrawAdviceController.onPageLoad(recordId: String)
 POST        /update-record/:recordId/withdraw-request/reason                                        controllers.ReasonForWithdrawAdviceController.onSubmit(recordId: String)
-
-GET         /download-data/request-received                                                         controllers.DownloadRequestSuccessController.onPageLoad()
-
-GET         /download/tgp-record-files                                                              controllers.FileManagementController.onPageLoad()
-
-GET         /download-data/request-file                                                             controllers.RequestDataController.onPageLoad()
-POST        /download-data/request-file                                                             controllers.RequestDataController.onSubmit()
 
 # this url must be the last url on this page so it becomes the default if no other urls match
 GET         /*path                                                                                  controllers.PageNotFoundController.onPageLoad(path: String)
