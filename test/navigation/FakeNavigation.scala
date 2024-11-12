@@ -31,7 +31,7 @@ class FakeNavigator(desiredRoute: Call) extends Navigator {
   override val checkRoutes: Page => UserAnswers => Call  = _ => _ => desiredRoute
 }
 
-class FakeNavigation(desiredRoute: Call) extends Navigation(mock[CategorisationService]) {
+class FakeNavigation(desiredRoute: Call) extends Navigation() {
   override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = desiredRoute
 }
 
@@ -40,5 +40,21 @@ class FakeProfileNavigator(desiredRoute: Call) extends ProfileNavigator {
 }
 
 class FakeCategorisationNavigator(desiredRoute: Call) extends CategorisationNavigator(mock[CategorisationService]) {
+  override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = desiredRoute
+}
+
+class FakeGoodsProfileNavigator(desiredRoute: Call) extends GoodsProfileNavigator {
+  override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = desiredRoute
+}
+
+class FakeDownloadNavigator(desiredRoute: Call) extends DownloadNavigator {
+  override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = desiredRoute
+}
+
+class FakeNewUkimsNavigator(desiredRoute: Call) extends NewUkimsNavigator {
+  override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = desiredRoute
+}
+
+class FakeAdviceNavigator(desiredRoute: Call) extends AdviceNavigator {
   override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = desiredRoute
 }

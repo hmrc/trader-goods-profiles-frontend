@@ -17,19 +17,19 @@
 package services
 
 import base.SpecBase
-import base.TestConstants.{NiphlCode, NirmsCode, testRecordId}
+import base.TestConstants.{NiphlCode, NirmsCode, lastUpdatedDate, testRecordId}
 import connectors.{GoodsRecordConnector, OttConnector, TraderProfileConnector}
 import models.ott.{CategoryAssessment, _}
 import models.ott.response.{CategoryAssessmentRelationship, ExemptionType => ResponseExemptionType, _}
 import models.requests.DataRequest
 import models.router.responses.GetGoodsRecordResponse
-import models.{AssessmentAnswer, Category1NoExemptionsScenario, Category1Scenario, Category2Scenario, ReassessmentAnswer, StandardGoodsNoAssessmentsScenario, StandardGoodsScenario, TraderProfile}
+import models.{AssessmentAnswer, Category1NoExemptionsScenario, Category1Scenario, Category2Scenario, ReassessmentAnswer, StandardGoodsNoAssessmentsScenario, StandardGoodsScenario, TraderProfile, UserAnswers}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import org.scalatestplus.mockito.MockitoSugar.mock
-import pages.{AssessmentPage, ReassessmentPage}
+import pages.categorisation.{AssessmentPage, ReassessmentPage}
 import play.api.mvc.AnyContent
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery}
@@ -106,7 +106,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
     TraderProfile("actorId", "ukims number", None, None, eoriChanged = false)
 
   private val categorisationService =
-    new CategorisationService(mockOttConnector, mockTraderProfileConnector)
+    new CategorisationService(mockOttConnector, mockTraderProfileConnector, mockSessionRepository)
 
   private val mockDataRequest = mock[DataRequest[AnyContent]]
 
@@ -1506,6 +1506,62 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       newUserAnswers.get(ReassessmentPage(testRecordId, 2)) mustBe None
     }
 
+  }
+
+  "reorderRecategorisationAnswers" - {
+
+    "should reorder assessments so that answered ones come first" in {
+
+      when(mockDataRequest.userAnswers).thenReturn(
+        emptyUserAnswers
+          .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
+          .success
+          .value
+          .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq.empty)))
+          .success
+          .value
+          .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.NotAnsweredYet))
+          .success
+          .value
+          .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq.empty)))
+          .success
+          .value
+      )
+
+      val expectedCategoryInfo = CategorisationInfo(
+        "1234567890",
+        "BV",
+        Some(validityEndDate),
+        Seq(category1, category2, category3),
+        Seq(category1, category3, category2),
+        Some("Weight, in kilograms"),
+        1
+      )
+
+      val updatedDate     = Instant.now()
+      val expectedAnswers = emptyUserAnswers
+        .set(LongerCategorisationDetailsQuery(testRecordId), expectedCategoryInfo)
+        .success
+        .value
+        .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq.empty)))
+        .success
+        .value
+        .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq.empty)))
+        .success
+        .value
+        .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(AssessmentAnswer.NotAnsweredYet))
+        .success
+        .value
+        .copy(lastUpdated = updatedDate)
+
+      categorisationService
+        .reorderRecategorisationAnswers(
+          mockDataRequest,
+          testRecordId
+        )
+        .futureValue
+        .copy(lastUpdated = updatedDate) mustEqual expectedAnswers
+    }
   }
 
 }

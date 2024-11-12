@@ -35,7 +35,7 @@
                 f"""
             <h3 class='govuk-notification-banner__heading'>
                 ${messages("homepage.downloadBanner.content")}
-                <a href="${routes.FileManagementController.onPageLoad().url}" class='govuk-link'>${messages("homepage.downloadBanner.linkText")}</a>.
+                <a href="${controllers.download.routes.FileManagementController.onPageLoad().url}" class='govuk-link'>${messages("homepage.downloadBanner.linkText")}</a>.
             </h3>"""),
             role = Some("alert"))
         )
@@ -47,7 +47,7 @@
     <h2 class="govuk-heading-m">@messages("homepage.h2.1")</h2>
 
     <p class="govuk-body">
-        <a href="@routes.PreviousMovementRecordsController.onPageLoad().url" class="govuk-link">@messages("homepage.p2.linkText")</a>
+        <a href="@controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url" class="govuk-link">@messages("homepage.p2.linkText")</a>
     </p>
 
     <p class="govuk-body">
@@ -65,7 +65,7 @@
         @if(downloadLinkMessagesKey == "homepage.downloadLinkText.noGoodsRecords") {
             <p class="govuk-body">@messages(downloadLinkMessagesKey)</p>
         } else {
-            <p class="govuk-body"><a href="@controllers.routes.FileManagementController.onPageLoad()" class="govuk-link">@messages(downloadLinkMessagesKey)</a></p>
+            <p class="govuk-body"><a href="@controllers.download.routes.FileManagementController.onPageLoad()" class="govuk-link">@messages(downloadLinkMessagesKey)</a></p>
         }
     }
 

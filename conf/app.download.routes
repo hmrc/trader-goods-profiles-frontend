@@ -1,0 +1,6 @@
+GET         /download-data/request-file                                                             controllers.download.RequestDataController.onPageLoad()
+POST        /download-data/request-file                                                             controllers.download.RequestDataController.onSubmit()
+
+GET         /download-data/request-received                                                         controllers.download.DownloadRequestSuccessController.onPageLoad()
+
+GET         /download/tgp-record-files                                                              controllers.download.FileManagementController.onPageLoad()

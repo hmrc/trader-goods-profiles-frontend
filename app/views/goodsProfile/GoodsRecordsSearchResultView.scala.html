@@ -1,0 +1,120 @@
+@*
+ * Copyright 2024 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import models.router.responses.GetGoodsRecordResponse
+
+@this(
+    layout: templates.Layout,
+    govukTable: GovukTable,
+    tableRowActionList: components.TableRowActionList,
+    govukPagination: GovukPagination
+  )
+
+@(goodsRecordsItems: Seq[GetGoodsRecordResponse], totalRecords: Int, firstRecord: Int, lastRecord: Int, countries: Seq[Country], pagination: Pagination, page: Int, searchString: String, totalPages: Int)(implicit request: Request[_], messages: Messages)
+
+@preparedTitle = @{
+    pagination.items match {
+        case Some(items) if (items.size > 1) => titleNoForm(messages("goodsRecordSearchResult.title.withPage", totalRecords, page, items.size))
+        case _ => titleNoForm(messages("goodsRecordSearchResult.title", totalRecords, page))
+    }
+}
+
+@layout(pageTitle = preparedTitle, isFullWidth = true) {
+
+<div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">@messages("goodsRecordSearchResult.h1", totalRecords)</h1>
+
+    <p class="govuk-body">@messages("goodsRecordSearchResult.p1", searchString)</p>
+</div>
+
+<div class="govuk-grid-column-full">
+
+    <div style="overflow-x: auto;">
+
+    @govukTable(
+        Table(
+            caption = Some(messages("goodsRecordSearchResult.h1", totalRecords)),
+            captionClasses = "govuk-visually-hidden",
+            head = Some(Seq(
+                HeadCell(
+                    content = Text(messages("goodsRecords.tableHeader.traderReference"))
+                ),
+                HeadCell(
+                    content = Text(messages("goodsRecords.tableHeader.goodsDescription"))
+                ),
+                HeadCell(
+                    content = Text(messages("goodsRecords.tableHeader.countryOfOrigin"))
+                ),
+                HeadCell(
+                    content = Text(messages("goodsRecords.tableHeader.commodityCode"))
+                ),
+                HeadCell(
+                    content = Text(messages("goodsRecords.tableHeader.status"))
+                ),
+                HeadCell(
+                    content = Text(messages("goodsRecords.tableHeader.actions"))
+                )
+            )),
+            rows = goodsRecordsItems.map{
+                goodsRecord =>  Seq(
+                    TableRow(
+                        content = Text(goodsRecord.traderRef),
+                        attributes = Map("style" -> "word-break: break-word")
+                    ),
+                    TableRow(
+                        content = Text(goodsRecord.goodsDescription),
+                        attributes = Map("style" -> "word-break: break-word")
+                    ),
+                    TableRow(
+                        content = Text(
+                            countries.find(_.id == goodsRecord.countryOfOrigin)
+                                .map(_.description)
+                                .getOrElse(goodsRecord.countryOfOrigin)
+                            )
+                    ),
+                    TableRow(
+                        content = Text(goodsRecord.comcode)
+                    ),
+                    TableRow(
+                        content = Text(goodsRecord.declarable)
+                    ),
+                    TableRow(
+                        content = HtmlContent(
+                            tableRowActionList(
+                                text1 = messages("site.change"),
+                                text2 = messages("site.remove"),
+                                visuallyHiddenContent1 = goodsRecord.traderRef,
+                                visuallyHiddenContent2 = goodsRecord.traderRef,
+                                href1 = routes.ReviewReasonController.onPageLoad(goodsRecord.recordId).url,
+                                href2 = controllers.goodsProfile.routes.RemoveGoodsRecordController.onPageLoad(goodsRecord.recordId, GoodsProfileLocation).url
+                            )
+                        )
+                    )
+                )
+            }
+        )
+    )
+
+    </div>
+
+    @if(totalPages > 1) {
+        @govukPagination(pagination)
+    }
+
+    <p class="govuk-body"><a href="@controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url" class="govuk-link" >@messages("site.goBackToGoodsProfile")</a></p>
+
+</div>
+}

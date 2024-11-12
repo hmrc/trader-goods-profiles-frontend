@@ -18,7 +18,8 @@ package models
 
 import cats.data.{EitherNec, NonEmptyChain}
 import cats.implicits.catsSyntaxTuple2Parallel
-import pages.{HasSupplementaryUnitUpdatePage, SupplementaryUnitUpdatePage}
+import pages.SupplementaryUnitUpdatePage
+import pages.categorisation.HasSupplementaryUnitUpdatePage
 import play.api.libs.json.{Json, OFormat}
 import queries.MeasurementQuery
 

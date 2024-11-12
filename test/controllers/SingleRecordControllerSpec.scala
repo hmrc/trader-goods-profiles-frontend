@@ -581,7 +581,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           )
 
           row.actions mustBe defined
-          row.actions.value.items.head.href mustEqual routes.CategorisationPreparationController
+          row.actions.value.items.head.href mustEqual controllers.categorisation.routes.CategorisationPreparationController
             .startCategorisation(testRecordId)
             .url
         }
@@ -627,7 +627,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           )
 
           row.get.actions mustBe defined
-          row.get.actions.value.items.head.href mustEqual routes.SupplementaryUnitController
+          row.get.actions.value.items.head.href mustEqual controllers.categorisation.routes.SupplementaryUnitController
             .onPageLoadUpdate(NormalMode, testRecordId)
             .url
         }
@@ -647,7 +647,9 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           val row = AdviceStatusSummary.row(recordForTestingSummaryRows.adviceStatus, testRecordId, recordLocked)
 
           row.actions mustBe defined
-          row.actions.value.items.head.href mustEqual routes.WithdrawAdviceStartController.onPageLoad(testRecordId).url
+          row.actions.value.items.head.href mustEqual controllers.advice.routes.WithdrawAdviceStartController
+            .onPageLoad(testRecordId)
+            .url
         }
       }
 
@@ -662,7 +664,9 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           val row = AdviceStatusSummary.row(recordForTestingSummaryRows.adviceStatus, testRecordId, recordLocked)
 
           row.actions mustBe defined
-          row.actions.value.items.head.href mustEqual routes.AdviceStartController.onPageLoad(testRecordId).url
+          row.actions.value.items.head.href mustEqual controllers.advice.routes.AdviceStartController
+            .onPageLoad(testRecordId)
+            .url
         }
       }
 

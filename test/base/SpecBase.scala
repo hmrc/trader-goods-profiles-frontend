@@ -27,6 +27,8 @@ import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{OptionValues, TryValues}
 import pages._
+import pages.advice.{EmailPage, NamePage}
+import pages.categorisation.{AssessmentPage, HasSupplementaryUnitUpdatePage}
 import pages.profile._
 import play.api.Application
 import play.api.i18n.{Messages, MessagesApi}
@@ -200,7 +202,7 @@ trait SpecBase
       "measure description"
     )
 
-  lazy val categorisationInfo: CategorisationInfo                         = CategorisationInfo(
+  lazy val categorisationInfo: CategorisationInfo = CategorisationInfo(
     "1234567890",
     "BV",
     Some(validityEndDate),
@@ -209,6 +211,17 @@ trait SpecBase
     Some("Weight, in kilograms"),
     1
   )
+
+  lazy val categorisationInfoWithThreeCat1: CategorisationInfo = CategorisationInfo(
+    "1234567890",
+    "BV",
+    Some(validityEndDate),
+    Seq(category1, category1, category1, category2),
+    Seq(category1, category1, category1, category2),
+    Some("Weight, in kilograms"),
+    1
+  )
+
   val today: Instant                                                      = LocalDate.now().atStartOfDay(ZoneId.of("UTC")).toInstant
   lazy val categorisationInfoWithExpiredCommodityCode: CategorisationInfo = CategorisationInfo(
     "1234567890",
