@@ -165,7 +165,7 @@ class IndexControllerSpec extends SpecBase {
 
             status(result) mustEqual SEE_OTHER
 
-            redirectLocation(result).value mustEqual controllers.profile.routes.UkimsNumberChangeController
+            redirectLocation(result).value mustEqual controllers.newUkims.routes.UkimsNumberChangeController
               .onPageLoad()
               .url
 
@@ -331,7 +331,7 @@ class IndexControllerSpec extends SpecBase {
 
           status(result) mustEqual SEE_OTHER
 
-          redirectLocation(result).value mustEqual controllers.profile.routes.UkimsNumberChangeController
+          redirectLocation(result).value mustEqual controllers.newUkims.routes.UkimsNumberChangeController
             .onPageLoad()
             .url
 
