@@ -16,7 +16,6 @@
 
 package viewmodels.checkAnswers
 
-import controllers.routes
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
@@ -36,13 +35,16 @@ object AdviceStatusSummary {
         Seq(
           ActionItemViewModel(
             "singleRecord.withdrawAdvice",
-            routes.WithdrawAdviceStartController.onPageLoad(recordId).url
+            controllers.advice.routes.WithdrawAdviceStartController.onPageLoad(recordId).url
           )
             .withVisuallyHiddenText(messages("singleRecord.adviceStatus.row"))
         )
       } else {
         Seq(
-          ActionItemViewModel("singleRecord.askForAdvice", routes.AdviceStartController.onPageLoad(recordId).url)
+          ActionItemViewModel(
+            "singleRecord.askForAdvice",
+            controllers.advice.routes.AdviceStartController.onPageLoad(recordId).url
+          )
             .withVisuallyHiddenText(messages("singleRecord.adviceStatus.row"))
         )
       }

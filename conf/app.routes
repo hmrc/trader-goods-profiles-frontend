@@ -6,6 +6,7 @@
 ->          /                                                                                       app.categorisation.Routes
 ->          /                                                                                       app.goodsProfile.Routes
 ->          /                                                                                       app.download.Routes
+->          /                                                                                       app.advice.Routes
 
 ->          /hmrc-frontend                                                                          hmrcfrontend.Routes
 
@@ -87,26 +88,6 @@ POST        /update-record/:recordId/trader-reference                           
 GET         /update-record/:recordId/trader-reference/check                                         controllers.TraderReferenceController.onPageLoadUpdate(mode: Mode = CheckMode, recordId: String)
 POST        /update-record/:recordId/trader-reference/check                                         controllers.TraderReferenceController.onSubmitUpdate(mode: Mode = CheckMode, recordId: String)
 
-
-GET         /update-record/:recordId/create-advice/start                                            controllers.AdviceStartController.onPageLoad(recordId:String)
-POST        /update-record/:recordId/create-advice/start                                            controllers.AdviceStartController.onSubmit(recordId:String)
-
-GET         /update-record/:recordId/create-advice/check-your-answers                               controllers.CyaRequestAdviceController.onPageLoad(recordId:String)
-POST        /update-record/:recordId/create-advice/check-your-answers                               controllers.CyaRequestAdviceController.onSubmit(recordId:String)
-
-GET         /update-record/:recordId/create-advice/success                                          controllers.AdviceSuccessController.onPageLoad(recordId:String)
-
-GET         /update-record/:recordId/create-advice/email                                            controllers.EmailController.onPageLoad(mode: Mode = NormalMode, recordId:String)
-POST        /update-record/:recordId/create-advice/email                                            controllers.EmailController.onSubmit(mode: Mode = NormalMode, recordId:String)
-GET         /update-record/:recordId/create-advice/email/check                                      controllers.EmailController.onPageLoad(mode: Mode = CheckMode, recordId:String)
-POST        /update-record/:recordId/create-advice/email/check                                      controllers.EmailController.onSubmit(mode: Mode = CheckMode, recordId:String)
-
-GET         /update-record/:recordId/create-advice/name                                             controllers.NameController.onPageLoad(mode: Mode = NormalMode, recordId: String)
-POST        /update-record/:recordId/create-advice/name                                             controllers.NameController.onSubmit(mode: Mode = NormalMode, recordId: String)
-GET         /update-record/:recordId/create-advice/name/check                                       controllers.NameController.onPageLoad(mode: Mode = CheckMode, recordId: String)
-POST        /update-record/:recordId/create-advice/name/check                                       controllers.NameController.onSubmit(mode: Mode = CheckMode, recordId: String)
-
-
 GET         /goods-record/:recordId                                                                 controllers.SingleRecordController.onPageLoad(recordId: String)
 
 GET         /goods-record/:recordId/to-review/review-reason                                         controllers.ReviewReasonController.onPageLoad(recordId: String)
@@ -138,14 +119,6 @@ GET         /update-record/:recordId/check-your-answers/commodity-code          
 POST        /update-record/:recordId/check-your-answers/commodity-code                              controllers.CyaUpdateRecordController.onSubmitCommodityCode(recordId: String)
 
 GET         /help-and-support                                                                       controllers.HelpAndSupportController.onPageLoad()
-
-GET         /update-record/:recordId/withdraw-request                                               controllers.WithdrawAdviceStartController.onPageLoad(recordId: String)
-POST        /update-record/:recordId/withdraw-request                                               controllers.WithdrawAdviceStartController.onSubmit(recordId: String)
-
-GET         /update-record/:recordId/withdraw-request/success                                       controllers.WithdrawAdviceSuccessController.onPageLoad(recordId: String)
-
-GET         /update-record/:recordId/withdraw-request/reason                                        controllers.ReasonForWithdrawAdviceController.onPageLoad(recordId: String)
-POST        /update-record/:recordId/withdraw-request/reason                                        controllers.ReasonForWithdrawAdviceController.onSubmit(recordId: String)
 
 # this url must be the last url on this page so it becomes the default if no other urls match
 GET         /*path                                                                                  controllers.PageNotFoundController.onPageLoad(path: String)

@@ -18,7 +18,7 @@ package models
 
 import cats.data.EitherNec
 import cats.implicits.catsSyntaxTuple5Parallel
-import pages.{EmailPage, NamePage}
+import pages.advice.{EmailPage, NamePage}
 import play.api.libs.json.{Json, OFormat}
 
 final case class AdviceRequest(
