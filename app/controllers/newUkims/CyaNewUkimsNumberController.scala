@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.profile
+package controllers.newUkims
 
 import cats.data
 import cats.data.EitherNec
@@ -30,7 +30,7 @@ import repositories.SessionRepository
 import services.AuditService
 import viewmodels.checkAnswers.profile.UkimsNumberSummary
 import viewmodels.govuk.summarylist._
-import views.html.profile.CyaNewUkimsNumberView
+import views.html.newUkims.CyaNewUkimsNumberView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -44,7 +44,7 @@ class CyaNewUkimsNumberController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: CyaNewUkimsNumberView,
   traderProfileConnector: TraderProfileConnector,
-  navigator: ProfileNavigator,
+  navigator: ProfileNavigator, //todo change to newUkimsNavigator when ticket TGP-2700 is completed
   auditService: AuditService,
   sessionRepository: SessionRepository
 )(implicit ec: ExecutionContext)

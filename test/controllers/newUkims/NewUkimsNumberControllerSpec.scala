@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.profile
+package controllers.newUkims
 
 import base.SpecBase
 import base.TestConstants.{testEori, userAnswersId}
@@ -32,7 +32,7 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
-import views.html.profile.NewUkimsNumberView
+import views.html.newUkims.NewUkimsNumberView
 
 import scala.concurrent.Future
 
@@ -53,7 +53,7 @@ class NewUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
     ".create" - {
 
-      val newUkimsNumberRoute = controllers.profile.routes.NewUkimsNumberController.onPageLoad(NormalMode).url
+      val newUkimsNumberRoute = controllers.newUkims.routes.NewUkimsNumberController.onPageLoad(NormalMode).url
 
       "must return OK and the correct view for a GET" in {
 
@@ -74,7 +74,7 @@ class NewUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             form,
-            controllers.profile.routes.NewUkimsNumberController.onSubmit(NormalMode)
+            controllers.newUkims.routes.NewUkimsNumberController.onSubmit(NormalMode)
           )(
             request,
             messages(application)
@@ -103,7 +103,7 @@ class NewUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             form.fill("answer"),
-            controllers.profile.routes.NewUkimsNumberController.onSubmit(NormalMode)
+            controllers.newUkims.routes.NewUkimsNumberController.onSubmit(NormalMode)
           )(
             request,
             messages(application)
@@ -159,7 +159,7 @@ class NewUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual BAD_REQUEST
           contentAsString(result) mustEqual view(
             boundForm,
-            controllers.profile.routes.NewUkimsNumberController.onSubmit(NormalMode)
+            controllers.newUkims.routes.NewUkimsNumberController.onSubmit(NormalMode)
           )(
             request,
             messages(application)
@@ -200,7 +200,7 @@ class NewUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual BAD_REQUEST
           contentAsString(result) mustEqual view(
             boundForm,
-            controllers.profile.routes.NewUkimsNumberController.onSubmit(NormalMode)
+            controllers.newUkims.routes.NewUkimsNumberController.onSubmit(NormalMode)
           )(
             request,
             messages(application)

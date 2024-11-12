@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package controllers.profile
+package controllers.newUkims
 
 import controllers.actions._
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.profile.UkimsNumberChangeView
+import views.html.newUkims.UkimsNumberChangeView
 
 import javax.inject.Inject
 

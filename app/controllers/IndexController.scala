@@ -60,7 +60,7 @@ class IndexController @Inject() (
   private def eoriChanged(request: IdentifierRequest[AnyContent])(implicit hc: HeaderCarrier) =
     traderProfileConnector.getTraderProfile(request.eori).map {
       case TraderProfile(_, _, _, _, eoriChanged) if eoriChanged =>
-        Redirect(controllers.profile.routes.UkimsNumberChangeController.onPageLoad())
+        Redirect(controllers.newUkims.routes.UkimsNumberChangeController.onPageLoad())
       case _                                                     =>
         Redirect(routes.HomePageController.onPageLoad())
     }
