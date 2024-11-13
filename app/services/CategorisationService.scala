@@ -37,13 +37,10 @@ class CategorisationService @Inject() (
     extends Logging {
 
   def existsUnansweredCat1Questions(userAnswers: UserAnswers, recordId: String): Boolean =
-    // Determine if there are any unanswered Category 1 questions.
     userAnswers.get(LongerCategorisationDetailsQuery(recordId)).exists { catInfo =>
       catInfo.categoryAssessmentsThatNeedAnswers.zipWithIndex.exists { case (assessment, index) =>
-        // Retrieve the answer for this assessment index
         val maybeAnswer = userAnswers.get(ReassessmentPage(recordId, index))
 
-        // Check if it is Category 1 and either not answered or marked as NotAnsweredYet
         assessment.isCategory1 && (maybeAnswer.isEmpty || maybeAnswer
           .exists(_.answer == AssessmentAnswer.NotAnsweredYet))
       }
@@ -56,7 +53,6 @@ class CategorisationService @Inject() (
     // Partitions answered and unanswered ReassessmentAnswers into two lists
     // Uses and reorders both those and their category assessments in LongerCatQuery so that answered questions come first on CYA
     // Sets the answers in reverse so .set cleanups happen and CYA won't throw unanswered validation errors.
-    // Removes any answers that no longer match the assesments as a fail-safe in case there's a mismatch of codes.
     for {
       longerCatQuery             <- Future.fromTry(Try(originalUserAnswers.get(LongerCategorisationDetailsQuery(recordId)).get))
       assessmentsThatNeedAnswers  = longerCatQuery.categoryAssessmentsThatNeedAnswers
