@@ -19,8 +19,8 @@ package navigation
 import controllers.routes
 import jakarta.inject.Singleton
 import models.{CheckMode, NormalMode, UserAnswers}
+import pages.Page
 import pages.goodsRecord._
-import pages.{HasCorrectGoodsCommodityCodeUpdatePage, HasCorrectGoodsPage, Page}
 import play.api.mvc.Call
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 
@@ -30,69 +30,46 @@ import javax.inject.Inject
 class GoodsRecordNavigator @Inject() extends Navigator {
 
   override val normalRoutes: Page => UserAnswers => Call = {
-    case CreateRecordStartPage                     =>
+    case CreateRecordStartPage            =>
       _ => controllers.goodsRecord.routes.TraderReferenceController.onPageLoadCreate(NormalMode)
-    case TraderReferencePage                       =>
+    case TraderReferencePage              =>
       _ => controllers.goodsRecord.routes.GoodsDescriptionController.onPageLoadCreate(NormalMode)
-    case p: TraderReferenceUpdatePage              =>
+    case p: TraderReferenceUpdatePage     =>
       _ => controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadTraderReference(p.recordId)
-    case GoodsDescriptionPage                      =>
+    case GoodsDescriptionPage             =>
       _ => controllers.goodsRecord.routes.CountryOfOriginController.onPageLoadCreate(NormalMode)
-    case p: GoodsDescriptionUpdatePage             =>
+    case p: GoodsDescriptionUpdatePage    =>
       _ => controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadGoodsDescription(p.recordId)
-    case CountryOfOriginPage                       => _ => controllers.goodsRecord.routes.CommodityCodeController.onPageLoadCreate(NormalMode)
-    case p: CountryOfOriginUpdatePage              =>
+    case CountryOfOriginPage              => _ => controllers.goodsRecord.routes.CommodityCodeController.onPageLoadCreate(NormalMode)
+    case p: CountryOfOriginUpdatePage     =>
       _ => controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(p.recordId)
-    case CommodityCodePage                         => _ => routes.HasCorrectGoodsController.onPageLoadCreate(NormalMode)
-    case p: CommodityCodeUpdatePage                =>
+    case CommodityCodePage                => _ => routes.HasCorrectGoodsController.onPageLoadCreate(NormalMode)
+    case p: CommodityCodeUpdatePage       =>
       _ => routes.HasCorrectGoodsController.onPageLoadUpdate(NormalMode, p.recordId)
-    case HasCorrectGoodsPage                       => answers => navigateFromHasCorrectGoods(answers)
-    case p: HasCorrectGoodsCommodityCodeUpdatePage => answers => navigateFromHasCorrectGoodsUpdate(answers, p.recordId)
-    case p: HasGoodsDescriptionChangePage          => answers => navigateFromHasGoodsDescriptionChangePage(answers, p.recordId)
-    case p: HasCountryOfOriginChangePage           => answers => navigateFromHasCountryOfOriginChangePage(answers, p.recordId)
-    case p: HasCommodityCodeChangePage             => answers => navigateFromHasCommodityCodeChangePage(answers, p.recordId)
-    case p: CyaCreateRecordPage                    =>
+    case p: HasGoodsDescriptionChangePage => answers => navigateFromHasGoodsDescriptionChangePage(answers, p.recordId)
+    case p: HasCountryOfOriginChangePage  => answers => navigateFromHasCountryOfOriginChangePage(answers, p.recordId)
+    case p: HasCommodityCodeChangePage    => answers => navigateFromHasCommodityCodeChangePage(answers, p.recordId)
+    case p: CyaCreateRecordPage           =>
       _ => controllers.goodsRecord.routes.CreateRecordSuccessController.onPageLoad(p.recordId)
-    case p: CyaUpdateRecordPage                    => _ => controllers.goodsRecord.routes.SingleRecordController.onPageLoad(p.recordId)
-    case _                                         => _ => routes.IndexController.onPageLoad()
+    case p: CyaUpdateRecordPage           => _ => controllers.goodsRecord.routes.SingleRecordController.onPageLoad(p.recordId)
+    case _                                => _ => routes.IndexController.onPageLoad()
   }
 
   override val checkRoutes: Page => UserAnswers => Call = {
-    case TraderReferencePage                       => _ => controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad()
-    case p: TraderReferenceUpdatePage              =>
+    case TraderReferencePage           => _ => controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad()
+    case p: TraderReferenceUpdatePage  =>
       _ => controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadTraderReference(p.recordId)
-    case GoodsDescriptionPage                      => _ => controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad()
-    case p: GoodsDescriptionUpdatePage             =>
+    case GoodsDescriptionPage          => _ => controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad()
+    case p: GoodsDescriptionUpdatePage =>
       _ => controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadGoodsDescription(p.recordId)
-    case CountryOfOriginPage                       => _ => controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad()
-    case p: CountryOfOriginUpdatePage              =>
+    case CountryOfOriginPage           => _ => controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad()
+    case p: CountryOfOriginUpdatePage  =>
       _ => controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(p.recordId)
-    case CommodityCodePage                         => _ => routes.HasCorrectGoodsController.onPageLoadCreate(CheckMode)
-    case p: CommodityCodeUpdatePage                =>
+    case CommodityCodePage             => _ => routes.HasCorrectGoodsController.onPageLoadCreate(CheckMode)
+    case p: CommodityCodeUpdatePage    =>
       _ => routes.HasCorrectGoodsController.onPageLoadUpdate(CheckMode, p.recordId)
-    case HasCorrectGoodsPage                       => answers => navigateFromHasCorrectGoodsCheck(answers)
-    case p: HasCorrectGoodsCommodityCodeUpdatePage =>
-      answers => navigateFromHasCorrectGoodsUpdateCheck(answers, p.recordId)
-    case _                                         => _ => controllers.problem.routes.JourneyRecoveryController.onPageLoad()
+    case _                             => _ => controllers.problem.routes.JourneyRecoveryController.onPageLoad()
   }
-
-  private def navigateFromHasCorrectGoods(answers: UserAnswers): Call =
-    answers
-      .get(HasCorrectGoodsPage)
-      .map {
-        case true  => controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad()
-        case false => controllers.goodsRecord.routes.CommodityCodeController.onPageLoadCreate(NormalMode)
-      }
-      .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
-
-  private def navigateFromHasCorrectGoodsUpdate(answers: UserAnswers, recordId: String): Call =
-    answers
-      .get(HasCorrectGoodsCommodityCodeUpdatePage(recordId))
-      .map {
-        case true  => controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadCommodityCode(recordId)
-        case false => controllers.goodsRecord.routes.CommodityCodeController.onPageLoadUpdate(NormalMode, recordId)
-      }
-      .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
 
   private def navigateFromHasCommodityCodeChangePage(answers: UserAnswers, recordId: String): Call = {
     val continueUrl = RedirectUrl(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId).url)
@@ -127,31 +104,4 @@ class GoodsRecordNavigator @Inject() extends Navigator {
       .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
 
-  private def navigateFromHasCorrectGoodsCheck(answers: UserAnswers): Call =
-    answers
-      .get(HasCorrectGoodsPage)
-      .map {
-        case true  =>
-          if (answers.isDefined(CommodityCodePage)) {
-            controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad()
-          } else {
-            controllers.goodsRecord.routes.CommodityCodeController.onPageLoadCreate(CheckMode)
-          }
-        case false => controllers.goodsRecord.routes.CommodityCodeController.onPageLoadCreate(CheckMode)
-      }
-      .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
-
-  private def navigateFromHasCorrectGoodsUpdateCheck(answers: UserAnswers, recordId: String): Call =
-    answers
-      .get(HasCorrectGoodsCommodityCodeUpdatePage(recordId))
-      .map {
-        case true  =>
-          if (answers.isDefined(CommodityCodeUpdatePage(recordId))) {
-            controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadCommodityCode(recordId)
-          } else {
-            controllers.goodsRecord.routes.CommodityCodeController.onPageLoadUpdate(CheckMode, recordId)
-          }
-        case false => controllers.goodsRecord.routes.CommodityCodeController.onPageLoadUpdate(CheckMode, recordId)
-      }
-      .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
 }

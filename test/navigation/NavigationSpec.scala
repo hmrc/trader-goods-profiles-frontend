@@ -17,13 +17,14 @@
 package navigation
 
 import base.SpecBase
-import base.TestConstants.testRecordId
+import base.TestConstants.{testRecordId, userAnswersId}
 import controllers.routes
 import models._
 import org.mockito.Mockito.reset
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
 import pages._
+import pages.goodsRecord.{CommodityCodePage, CommodityCodeUpdatePage}
 import play.api.http.Status.SEE_OTHER
 import queries.{CategorisationDetailsQuery, LongerCommodityQuery}
 import services.CategorisationService
@@ -49,6 +50,43 @@ class NavigationSpec extends SpecBase with BeforeAndAfterEach {
 
         case object UnknownPage extends Page
         navigator.nextPage(UnknownPage, NormalMode, emptyUserAnswers) mustBe routes.IndexController.onPageLoad()
+      }
+
+      "in Create Record Journey" - {
+
+        "must go from HasCorrectGoodsPage" - {
+
+          "to CyaCreateRecord when answer is Yes" in {
+
+            val answers = UserAnswers(userAnswersId).set(HasCorrectGoodsPage, true).success.value
+            navigator.nextPage(
+              HasCorrectGoodsPage,
+              NormalMode,
+              answers
+            ) mustBe controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad()
+          }
+
+          "to CommodityCodePage when answer is No" in {
+
+            val answers = UserAnswers(userAnswersId).set(HasCorrectGoodsPage, false).success.value
+            navigator.nextPage(
+              HasCorrectGoodsPage,
+              NormalMode,
+              answers
+            ) mustBe controllers.goodsRecord.routes.CommodityCodeController
+              .onPageLoadCreate(NormalMode)
+          }
+
+          "to JourneyRecoveryPage when answer is not present" in {
+
+            navigator.nextPage(
+              HasCorrectGoodsPage,
+              NormalMode,
+              emptyUserAnswers
+            ) mustBe controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad()
+          }
+        }
       }
 
       "in Update Record Journey" - {
@@ -172,6 +210,45 @@ class NavigationSpec extends SpecBase with BeforeAndAfterEach {
           }
         }
 
+        "must go from HasCorrectGoodsCommodityCodeUpdatePage" - {
+
+          "to CyaUpdateRecord when answer is Yes" in {
+
+            val answers = UserAnswers(userAnswersId)
+              .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true)
+              .success
+              .value
+
+            navigator.nextPage(
+              HasCorrectGoodsCommodityCodeUpdatePage(testRecordId),
+              NormalMode,
+              answers
+            ) mustBe controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadCommodityCode(testRecordId)
+          }
+
+          "to CommodityCodePage when answer is No" in {
+
+            val answers =
+              UserAnswers(userAnswersId).set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), false).success.value
+            navigator.nextPage(
+              HasCorrectGoodsCommodityCodeUpdatePage(testRecordId),
+              NormalMode,
+              answers
+            ) mustBe controllers.goodsRecord.routes.CommodityCodeController
+              .onPageLoadUpdate(NormalMode, testRecordId)
+          }
+
+          "to JourneyRecoveryPage when answer is not present" in {
+
+            navigator.nextPage(
+              HasCorrectGoodsCommodityCodeUpdatePage(testRecordId),
+              NormalMode,
+              emptyUserAnswers
+            ) mustBe controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad()
+          }
+        }
+
       }
 
       "must go from ReviewReasonPage to Single Record page" in {
@@ -195,6 +272,125 @@ class NavigationSpec extends SpecBase with BeforeAndAfterEach {
           CheckMode,
           emptyUserAnswers
         ) mustBe controllers.problem.routes.JourneyRecoveryController.onPageLoad()
+      }
+
+      "in Create Record Journey" - {
+
+        "must go from HasCorrectGoodsPage" - {
+
+          "when answer is Yes" - {
+
+            "to CommodityCodePage when CommodityCodePage is empty" in {
+
+              val answers = UserAnswers(userAnswersId).set(HasCorrectGoodsPage, true).success.value
+              navigator.nextPage(
+                HasCorrectGoodsPage,
+                CheckMode,
+                answers
+              ) mustBe controllers.goodsRecord.routes.CommodityCodeController
+                .onPageLoadCreate(CheckMode)
+            }
+
+            "to CyaCreateRecord when CommodityCodePage is answered" in {
+
+              val answers =
+                UserAnswers(userAnswersId)
+                  .set(CommodityCodePage, "1234")
+                  .success
+                  .value
+                  .set(HasCorrectGoodsPage, true)
+                  .success
+                  .value
+              navigator.nextPage(
+                HasCorrectGoodsPage,
+                CheckMode,
+                answers
+              ) mustBe controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad()
+            }
+          }
+
+          "to CommodityCodePage when answer is No" in {
+
+            val answers = UserAnswers(userAnswersId).set(HasCorrectGoodsPage, false).success.value
+            navigator.nextPage(
+              HasCorrectGoodsPage,
+              CheckMode,
+              answers
+            ) mustBe controllers.goodsRecord.routes.CommodityCodeController.onPageLoadCreate(CheckMode)
+          }
+
+          "to JourneyRecoveryPage when answer is not present" in {
+
+            navigator.nextPage(
+              HasCorrectGoodsPage,
+              CheckMode,
+              emptyUserAnswers
+            ) mustBe controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad()
+          }
+        }
+      }
+
+      "in Update Record Journey" - {
+
+        "must go from HasCorrectGoodsCommodityCodeUpdatePage" - {
+
+          "when answer is Yes" - {
+
+            "to CommodityCodePage when CommodityCodePage is empty" in {
+
+              val answers =
+                UserAnswers(userAnswersId).set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true).success.value
+              navigator.nextPage(
+                HasCorrectGoodsCommodityCodeUpdatePage(testRecordId),
+                CheckMode,
+                answers
+              ) mustBe controllers.goodsRecord.routes.CommodityCodeController
+                .onPageLoadUpdate(
+                  CheckMode,
+                  testRecordId
+                )
+            }
+
+            "to CyaUpdateRecord when CommodityCodePage is answered" in {
+
+              val answers =
+                UserAnswers(userAnswersId)
+                  .set(CommodityCodeUpdatePage(testRecordId), "1234")
+                  .success
+                  .value
+                  .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true)
+                  .success
+                  .value
+              navigator.nextPage(
+                HasCorrectGoodsCommodityCodeUpdatePage(testRecordId),
+                CheckMode,
+                answers
+              ) mustBe controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadCommodityCode(testRecordId)
+            }
+          }
+
+          "to CommodityCodePage when answer is No" in {
+
+            val answers =
+              UserAnswers(userAnswersId).set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), false).success.value
+            navigator.nextPage(
+              HasCorrectGoodsCommodityCodeUpdatePage(testRecordId),
+              CheckMode,
+              answers
+            ) mustBe controllers.goodsRecord.routes.CommodityCodeController.onPageLoadUpdate(CheckMode, testRecordId)
+          }
+
+          "to JourneyRecoveryPage when answer is not present" in {
+
+            navigator.nextPage(
+              HasCorrectGoodsCommodityCodeUpdatePage(testRecordId),
+              CheckMode,
+              emptyUserAnswers
+            ) mustBe controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad()
+          }
+        }
       }
 
     }

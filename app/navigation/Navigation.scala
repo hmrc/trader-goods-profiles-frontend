@@ -23,6 +23,7 @@ import models.ott.{CategorisationInfo, CategoryAssessment}
 import pages._
 import pages.categorisation.{HasSupplementaryUnitPage, ReassessmentPage}
 import pages.download.RequestDataPage
+import pages.goodsRecord.{CommodityCodePage, CommodityCodeUpdatePage}
 import play.api.mvc.Call
 import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery, LongerCommodityQuery}
 import services.CategorisationService
@@ -36,6 +37,8 @@ class Navigation @Inject() (categorisationService: CategorisationService) extend
   val normalRoutes: Page => UserAnswers => Call = {
     case p: LongerCommodityCodePage                =>
       _ => routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(NormalMode, p.recordId)
+    case HasCorrectGoodsPage                       => answers => navigateFromHasCorrectGoods(answers)
+    case p: HasCorrectGoodsCommodityCodeUpdatePage => answers => navigateFromHasCorrectGoodsUpdate(answers, p.recordId)
     case p: HasCorrectGoodsLongerCommodityCodePage =>
       answers => navigateFromHasCorrectGoodsLongerCommodityCode(p.recordId, answers, NormalMode)
     case p: ReviewReasonPage                       => _ => controllers.goodsRecord.routes.SingleRecordController.onPageLoad(p.recordId)
@@ -47,11 +50,60 @@ class Navigation @Inject() (categorisationService: CategorisationService) extend
   val checkRoutes: Page => UserAnswers => Call = {
     case p: LongerCommodityCodePage                =>
       _ => routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(CheckMode, p.recordId)
+    case HasCorrectGoodsPage                       => answers => navigateFromHasCorrectGoodsCheck(answers)
+    case p: HasCorrectGoodsCommodityCodeUpdatePage =>
+      answers => navigateFromHasCorrectGoodsUpdateCheck(answers, p.recordId)
     case p: HasCorrectGoodsLongerCommodityCodePage =>
       answers => navigateFromHasCorrectGoodsLongerCommodityCode(p.recordId, answers, CheckMode)
     case p: RecategorisationPreparationPage        => navigateFromReassessmentPrepCheck(p)
     case _                                         => _ => controllers.problem.routes.JourneyRecoveryController.onPageLoad()
   }
+
+  private def navigateFromHasCorrectGoods(answers: UserAnswers): Call =
+    answers
+      .get(HasCorrectGoodsPage)
+      .map {
+        case true  => controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad()
+        case false => controllers.goodsRecord.routes.CommodityCodeController.onPageLoadCreate(NormalMode)
+      }
+      .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
+
+  private def navigateFromHasCorrectGoodsCheck(answers: UserAnswers): Call =
+    answers
+      .get(HasCorrectGoodsPage)
+      .map {
+        case true  =>
+          if (answers.isDefined(CommodityCodePage)) {
+            controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad()
+          } else {
+            controllers.goodsRecord.routes.CommodityCodeController.onPageLoadCreate(CheckMode)
+          }
+        case false => controllers.goodsRecord.routes.CommodityCodeController.onPageLoadCreate(CheckMode)
+      }
+      .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
+
+  private def navigateFromHasCorrectGoodsUpdate(answers: UserAnswers, recordId: String): Call =
+    answers
+      .get(HasCorrectGoodsCommodityCodeUpdatePage(recordId))
+      .map {
+        case true  => controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadCommodityCode(recordId)
+        case false => controllers.goodsRecord.routes.CommodityCodeController.onPageLoadUpdate(NormalMode, recordId)
+      }
+      .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
+
+  private def navigateFromHasCorrectGoodsUpdateCheck(answers: UserAnswers, recordId: String): Call =
+    answers
+      .get(HasCorrectGoodsCommodityCodeUpdatePage(recordId))
+      .map {
+        case true  =>
+          if (answers.isDefined(CommodityCodeUpdatePage(recordId))) {
+            controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadCommodityCode(recordId)
+          } else {
+            controllers.goodsRecord.routes.CommodityCodeController.onPageLoadUpdate(CheckMode, recordId)
+          }
+        case false => controllers.goodsRecord.routes.CommodityCodeController.onPageLoadUpdate(CheckMode, recordId)
+      }
+      .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
 
   private def navigateFromHasCorrectGoodsLongerCommodityCode(
     recordId: String,
