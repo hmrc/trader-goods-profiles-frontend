@@ -24,9 +24,9 @@ import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierA
 import models.helper.CategorisationJourney
 import models.ott.CategorisationInfo
 import models.requests.DataRequest
-import models.{CategorisationAnswers, CategoryRecord, NormalMode, UserAnswers, ValidationError}
+import models.{AssessmentAnswer, CategorisationAnswers, CategoryRecord, NormalMode, UserAnswers, ValidationError}
 import navigation.CategorisationNavigator
-import pages.categorisation.CyaCategorisationPage
+import pages.categorisation.{CyaCategorisationPage, ReassessmentPage}
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery}
@@ -55,14 +55,25 @@ class CyaCategorisationController @Inject() (
 
   private val errorMessage: String = "Unable to update Goods Profile."
 
-  def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) async {
     implicit request =>
       val longerCategorisationInfo = request.userAnswers.get(LongerCategorisationDetailsQuery(recordId))
 
       longerCategorisationInfo match {
+
+        case Some(categorisationInfo)
+            if !categorisationService.existsUnansweredCat1Questions(request.userAnswers, recordId) =>
+          categorisationService.reorderRecategorisationAnswers(request.userAnswers, recordId).flatMap {
+            reorderedUserAnswers =>
+              val catInfo =
+                reorderedUserAnswers.get(LongerCategorisationDetailsQuery(recordId)).getOrElse(categorisationInfo)
+              showCyaPage(request, recordId, catInfo, Some(reorderedUserAnswers))
+          }
+
         case Some(categorisationInfo) =>
           showCyaPage(request, recordId, categorisationInfo)
-        case _                        =>
+
+        case _ =>
           val categorisationInfo = request.userAnswers.get(CategorisationDetailsQuery(recordId))
 
           categorisationInfo
@@ -71,9 +82,11 @@ class CyaCategorisationController @Inject() (
             }
             .getOrElse {
               dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
-              logErrorsAndContinue(
-                "Failed to get categorisation details",
-                controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(recordId)
+              Future.successful(
+                logErrorsAndContinue(
+                  "Failed to get categorisation details",
+                  controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(recordId)
+                )
               )
             }
       }
@@ -83,23 +96,26 @@ class CyaCategorisationController @Inject() (
   private def showCyaPage(
     request: DataRequest[_],
     recordId: String,
-    categoryInfo: CategorisationInfo
+    categoryInfo: CategorisationInfo,
+    reorderedUserAnswers: Option[UserAnswers] = None
   )(implicit messages: Messages) = {
-    val userAnswers = request.userAnswers
+    val userAnswers = reorderedUserAnswers.getOrElse(request.userAnswers)
 
     CategorisationAnswers.build(userAnswers, recordId) match {
       case Right(_) =>
         val (categorisationList, supplementaryUnitList, longerCommodityCodeList) =
           buildSummaryLists(userAnswers, recordId, categoryInfo)
 
-        Ok(
-          view(
-            recordId,
-            categoryInfo.commodityCode,
-            categorisationList,
-            supplementaryUnitList,
-            longerCommodityCodeList
-          )(request, messages)
+        Future.successful(
+          Ok(
+            view(
+              recordId,
+              categoryInfo.commodityCode,
+              categorisationList,
+              supplementaryUnitList,
+              longerCommodityCodeList
+            )(request, messages)
+          )
         )
 
       case Left(errors) =>
@@ -147,10 +163,12 @@ class CyaCategorisationController @Inject() (
     errors: data.NonEmptyChain[ValidationError]
   ) = {
     dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
-    logErrorsAndContinue(
-      errorMessage,
-      controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(recordId),
-      errors
+    Future.successful(
+      logErrorsAndContinue(
+        errorMessage,
+        controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(recordId),
+        errors
+      )
     )
   }
 

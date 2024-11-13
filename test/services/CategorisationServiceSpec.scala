@@ -1508,4 +1508,97 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
   }
 
+  "reorderRecategorisationAnswers" - {
+
+    "should reorder assessments so that answered ones come first" in {
+
+      val userAnswers = emptyUserAnswers
+        .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
+        .success
+        .value
+        .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq.empty)))
+        .success
+        .value
+        .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.NotAnsweredYet))
+        .success
+        .value
+        .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq.empty)))
+        .success
+        .value
+
+      val expectedCategoryInfo = CategorisationInfo(
+        "1234567890",
+        "BV",
+        Some(validityEndDate),
+        Seq(category1, category2, category3),
+        Seq(category1, category3, category2),
+        Some("Weight, in kilograms"),
+        1
+      )
+
+      val updatedDate     = Instant.now()
+      val expectedAnswers = emptyUserAnswers
+        .set(LongerCategorisationDetailsQuery(testRecordId), expectedCategoryInfo)
+        .success
+        .value
+        .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq.empty)))
+        .success
+        .value
+        .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq.empty)))
+        .success
+        .value
+        .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(AssessmentAnswer.NotAnsweredYet))
+        .success
+        .value
+        .copy(lastUpdated = updatedDate)
+
+      categorisationService
+        .reorderRecategorisationAnswers(
+          userAnswers,
+          testRecordId
+        )
+        .futureValue
+        .copy(lastUpdated = updatedDate) mustEqual expectedAnswers
+    }
+
+  }
+
+  "existsUnansweredCat1Questions" - {
+
+    "should return true if there are unanswered Category 1 questions" in {
+      val userAnswers = emptyUserAnswers
+        .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
+        .success
+        .value
+        .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.NotAnsweredYet))
+        .success
+        .value
+        .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq.empty)))
+        .success
+        .value
+
+      val result = categorisationService.existsUnansweredCat1Questions(userAnswers, testRecordId)
+
+      result mustEqual true
+    }
+
+    "should return false if all Category 1 questions are answered" in {
+      val userAnswers = emptyUserAnswers
+        .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
+        .success
+        .value
+        .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq.empty)))
+        .success
+        .value
+        .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq.empty)))
+        .success
+        .value
+
+      val result = categorisationService.existsUnansweredCat1Questions(userAnswers, testRecordId)
+
+      result mustEqual false
+    }
+
+  }
+
 }
