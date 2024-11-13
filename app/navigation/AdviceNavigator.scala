@@ -47,11 +47,11 @@ class AdviceNavigator @Inject() extends Navigator {
 
   private def navigateFromWithdrawAdviceStartPage(answers: UserAnswers, recordId: String): Call = {
 
-    val continueUrl = RedirectUrl(routes.SingleRecordController.onPageLoad(recordId).url)
+    val continueUrl = RedirectUrl(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId).url)
     answers
       .get(WithdrawAdviceStartPage(recordId))
       .map {
-        case false => routes.SingleRecordController.onPageLoad(recordId)
+        case false => controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId)
         case true  => controllers.advice.routes.ReasonForWithdrawAdviceController.onPageLoad(recordId)
       }
       .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))

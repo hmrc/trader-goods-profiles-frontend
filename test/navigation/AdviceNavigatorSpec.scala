@@ -113,7 +113,7 @@ class AdviceNavigatorSpec extends SpecBase with BeforeAndAfterEach {
             WithdrawAdviceStartPage(testRecordId),
             NormalMode,
             answers
-          ) mustBe routes.SingleRecordController
+          ) mustBe controllers.goodsRecord.routes.SingleRecordController
             .onPageLoad(testRecordId)
         }
 
@@ -130,7 +130,8 @@ class AdviceNavigatorSpec extends SpecBase with BeforeAndAfterEach {
         }
 
         "must go to JourneyRecoveryController when there is no answer for WithdrawAdviceStartPage" in {
-          val continueUrl = RedirectUrl(routes.SingleRecordController.onPageLoad(testRecordId).url)
+          val continueUrl =
+            RedirectUrl(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId).url)
           navigator.nextPage(
             WithdrawAdviceStartPage(testRecordId),
             NormalMode,

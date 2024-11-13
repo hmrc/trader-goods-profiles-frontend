@@ -31,7 +31,7 @@ class FakeNavigator(desiredRoute: Call) extends Navigator {
   override val checkRoutes: Page => UserAnswers => Call  = _ => _ => desiredRoute
 }
 
-class FakeNavigation(desiredRoute: Call) extends Navigation() {
+class FakeNavigation(desiredRoute: Call) extends Navigation {
   override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = desiredRoute
 }
 
@@ -44,6 +44,10 @@ class FakeCategorisationNavigator(desiredRoute: Call) extends CategorisationNavi
 }
 
 class FakeGoodsProfileNavigator(desiredRoute: Call) extends GoodsProfileNavigator {
+  override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = desiredRoute
+}
+
+class FakeGoodsRecordNavigator(desiredRoute: Call) extends GoodsRecordNavigator {
   override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = desiredRoute
 }
 

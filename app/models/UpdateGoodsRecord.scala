@@ -18,7 +18,8 @@ package models
 
 import cats.data.{EitherNec, NonEmptyChain}
 import cats.implicits.catsSyntaxTuple2Parallel
-import pages._
+import pages.HasCorrectGoodsCommodityCodeUpdatePage
+import pages.goodsRecord._
 import play.api.libs.json.{Json, OFormat}
 import queries.CommodityUpdateQuery
 

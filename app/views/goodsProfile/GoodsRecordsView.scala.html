@@ -69,7 +69,7 @@
       <li>'@messages("goodsRecords.li2")'</li>
     </ul>
 
-    <p class="govuk-body"><a href="@routes.CreateRecordStartController.onPageLoad().url" class="govuk-link">@messages("goodsRecords.link1")</a></p>
+    <p class="govuk-body"><a href="@controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad().url" class="govuk-link">@messages("goodsRecords.link1")</a></p>
 
         @formHelper(action = controllers.goodsProfile.routes.GoodsRecordsController.onSearch(page)) {
             <div style="display: flex; align-items: flex-end;">
