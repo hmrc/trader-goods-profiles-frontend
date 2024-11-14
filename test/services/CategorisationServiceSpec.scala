@@ -106,7 +106,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
     TraderProfile("actorId", "ukims number", None, None, eoriChanged = false)
 
   private val categorisationService =
-    new CategorisationService(mockOttConnector, mockTraderProfileConnector)
+    new CategorisationService(mockOttConnector, mockTraderProfileConnector, mockSessionRepository)
 
   private val mockDataRequest = mock[DataRequest[AnyContent]]
 
@@ -1512,6 +1512,20 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
     "should reorder assessments so that answered ones come first" in {
 
+      // Please note the category3 is actually a category 2 assessment
+      // The name comes from the fact that if you exempt all of them, it results in standard goods category 3
+      // Similarly category2 is actually a category 1 assessment
+
+      val categorisationInfo = CategorisationInfo(
+        "1234567890",
+        "BV",
+        Some(validityEndDate),
+        Seq(category1, category3, category2),
+        Seq(category1, category3, category2),
+        Some("Weight, in kilograms"),
+        1
+      )
+
       val userAnswers = emptyUserAnswers
         .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
         .success
@@ -1530,8 +1544,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         "1234567890",
         "BV",
         Some(validityEndDate),
-        Seq(category1, category2, category3),
         Seq(category1, category3, category2),
+        Seq(category1, category2, category3),
         Some("Weight, in kilograms"),
         1
       )
