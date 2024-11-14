@@ -28,6 +28,7 @@ import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import utils.SessionData.{newUkimsNumberUpdatePage, pageUpdated}
 import views.html.HomePageView
 
 import java.time.Instant
@@ -460,7 +461,7 @@ class HomePageControllerSpec extends SpecBase {
 
         running(application) {
           val request = FakeRequest(GET, routes.HomePageController.onPageLoad().url)
-            .withSession("pageUpdated" -> "newUkimsNumberUpdatePage")
+            .withSession(pageUpdated -> newUkimsNumberUpdatePage)
 
           val result  = route(application, request).value
 
@@ -470,7 +471,7 @@ class HomePageControllerSpec extends SpecBase {
           contentAsString(result) mustEqual view(
             downloadReady = false,
             downloadLinkMessagesKey = "homepage.downloadLinkText.noGoodsRecords",
-            ukimsNumberChanged = false
+            ukimsNumberChanged = true
           )(request, messages(application)).toString
 
           verify(mockTraderProfileConnector, never()).checkTraderProfile(any())(any())

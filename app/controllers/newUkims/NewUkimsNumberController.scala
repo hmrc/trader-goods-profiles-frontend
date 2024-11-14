@@ -52,7 +52,6 @@ class NewUkimsNumberController @Inject() (
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
     (identify andThen getData andThen requireData) { implicit request =>
-      println("\n\n onPageLoad \n\n")
       val preparedForm = request.userAnswers.get(UkimsNumberPage) match {
         case None        => form
         case Some(value) => form.fill(value)
@@ -63,7 +62,6 @@ class NewUkimsNumberController @Inject() (
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      println("\n\n onSubmit \n\n")
       form
         .bindFromRequest()
         .fold(
@@ -82,8 +80,7 @@ class NewUkimsNumberController @Inject() (
                   createFormWithErrors(form, value, "ukimsNumberChangeController.duplicateUkimsNumber")
                 BadRequest(view(formWithApiErrors, controllers.newUkims.routes.NewUkimsNumberController.onSubmit(mode)))
               } else {
-                println("\n\n here \n\n")
-                sessionRepository.set(updatedAnswers) //TODO: Moved out of for, double check this works as expected
+                sessionRepository.set(updatedAnswers)
                 Redirect(navigator.nextPage(NewUkimsNumberPage, mode, updatedAnswers))
                   .addingToSession(pageUpdated -> newUkimsNumberUpdatePage)
               }
