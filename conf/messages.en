@@ -656,7 +656,7 @@ downloadRequestSuccess.title = We’ve received your request for a file of your 
 downloadRequestSuccess.h1 = We’ve received your request for a file of your TGP data
 downloadRequestSuccess.h2 = What happens next
 downloadRequestSuccess.p1 = You can check the progress of your file on the {0}. We’ll also send an email to {1} to let you know when your TGP records file is ready.
-downloadRequestSuccess.p1.linkText = download TGP data page
+downloadRequestSuccess.p1.linkText = TGP records files page
 downloadRequestSuccess.p2 = You will have a notification when you sign in to your TGP with a link to the file download page. The file is in a .csv format.
 downloadRequestSuccess.p3 = The TGP records file will be available for 30 days from when we let you know it is ready.
 
