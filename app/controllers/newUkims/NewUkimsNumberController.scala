@@ -28,7 +28,6 @@ import play.api.data.{Form, FormError}
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import utils.SessionData.{newUkimsNumberUpdatePage, pageUpdated}
 import views.html.newUkims.NewUkimsNumberView
 
 import javax.inject.Inject
@@ -74,15 +73,14 @@ class NewUkimsNumberController @Inject() (
             for {
               profile        <- traderProfileConnector.getTraderProfile(request.eori)
               updatedAnswers <- Future.fromTry(request.userAnswers.set(NewUkimsNumberPage, value))
+              _              <- sessionRepository.set(updatedAnswers)
             } yield
               if (value == profile.ukimsNumber) {
                 val formWithApiErrors =
                   createFormWithErrors(form, value, "ukimsNumberChangeController.duplicateUkimsNumber")
                 BadRequest(view(formWithApiErrors, controllers.newUkims.routes.NewUkimsNumberController.onSubmit(mode)))
               } else {
-                sessionRepository.set(updatedAnswers)
                 Redirect(navigator.nextPage(NewUkimsNumberPage, mode, updatedAnswers))
-                  .addingToSession(pageUpdated -> newUkimsNumberUpdatePage)
               }
         )
   }

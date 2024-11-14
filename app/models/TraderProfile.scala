@@ -19,6 +19,7 @@ package models
 import cats.data.{EitherNec, NonEmptyChain}
 import cats.implicits._
 import pages._
+import pages.newUkims.NewUkimsNumberPage
 import pages.profile.{HasNiphlPage, HasNiphlUpdatePage, HasNirmsPage, HasNirmsUpdatePage, NiphlNumberPage, NiphlNumberUpdatePage, NirmsNumberPage, NirmsNumberUpdatePage, RemoveNiphlPage, RemoveNirmsPage, UkimsNumberPage, UkimsNumberUpdatePage}
 import play.api.libs.json.{Json, OFormat}
 import queries.TraderProfileQuery

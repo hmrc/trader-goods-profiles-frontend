@@ -28,6 +28,7 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import services.AuditService
+import utils.SessionData.{newUkimsNumberUpdatePage, pageUpdated}
 import viewmodels.checkAnswers.profile.UkimsNumberSummary
 import viewmodels.govuk.summarylist._
 import views.html.newUkims.CyaNewUkimsNumberView
@@ -78,9 +79,9 @@ class CyaNewUkimsNumberController @Inject() (
       updatedAnswersRemovedUkims <-
         Future.fromTry(request.userAnswers.remove(UkimsNumberUpdatePage))
       _                          <- sessionRepository.set(updatedAnswersRemovedUkims)
-    } yield Redirect(navigator.nextPage(CyaNewUkimsNumberPage, NormalMode, request.userAnswers))).recover {
-      case e: TraderProfileBuildFailure =>
-        logErrorsAndContinue(e.getMessage, routes.HomePageController.onPageLoad())
+    } yield Redirect(navigator.nextPage(CyaNewUkimsNumberPage, NormalMode, request.userAnswers))
+      .addingToSession(pageUpdated -> newUkimsNumberUpdatePage)).recover { case e: TraderProfileBuildFailure =>
+      logErrorsAndContinue(e.getMessage, routes.HomePageController.onPageLoad())
     }
   }
 
