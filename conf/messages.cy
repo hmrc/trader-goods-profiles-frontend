@@ -449,11 +449,11 @@ requestData.button = Cael ffeil cofnodion TGP
 downloadRequestSuccess.title = Mae’ch cais i gael ffeil sy’n cynnwys eich data TGP wedi dod i law
 downloadRequestSuccess.h1 = Mae’ch cais i gael ffeil sy’n cynnwys eich data TGP wedi dod i law
 downloadRequestSuccess.h2 = Yr hyn sy’n digwydd nesaf
-downloadRequestSuccess.p1 = Gallwch wirio cynnydd eich ffeil ar y {0}. Byddwn hefyd yn anfon e-bost at {1} i roi gwybod i chi pan fydd eich ffeil cofnodion TGP yn barod.
+downloadRequestSuccess.p1 = Gallwch wirio hynt eich ffeil ar y {0}. Byddwn hefyd yn anfon e-bost at {1} i roi gwybod i chi pan fydd eich ffeil cofnodion TGP yn barod.
 downloadRequestSuccess.p2 = Byddwch yn gweld hysbysiad pan fyddwch yn mewngofnodi i’ch TGP a fydd yn dangos cysylltiad i’r dudalen lawrlwytho. Mae’r ffeil mewn fformat .csv.
 downloadRequestSuccess.p3 = Bydd y ffeil cofnodion TGP ar gael am 30 diwrnod ar ôl i ni roi gwybod i chi ei bod yn barod.
 downloadRequestSuccess.p3.1 = Ar ôl 30 diwrnod, bydd angen i chi wneud cais am ffeil newydd.
-downloadRequestSuccess.p1.linkText = dudalen ddata TGP lawrlwytho
+downloadRequestSuccess.p1.linkText = dudalen ynghylch ffeiliau cofnodion TGP
 
 fileManagement.title = Ffeiliau cofnodion TGP
 fileManagement.heading = Ffeiliau cofnodion TGP
