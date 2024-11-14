@@ -28,6 +28,7 @@ import play.api.data.{Form, FormError}
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
+import utils.SessionData.{newUkimsNumberUpdatePage, pageUpdated}
 import views.html.newUkims.NewUkimsNumberView
 
 import javax.inject.Inject
@@ -51,6 +52,7 @@ class NewUkimsNumberController @Inject() (
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
     (identify andThen getData andThen requireData) { implicit request =>
+      println("\n\n onPageLoad \n\n")
       val preparedForm = request.userAnswers.get(UkimsNumberPage) match {
         case None        => form
         case Some(value) => form.fill(value)
@@ -61,6 +63,7 @@ class NewUkimsNumberController @Inject() (
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
+      println("\n\n onSubmit \n\n")
       form
         .bindFromRequest()
         .fold(
@@ -73,14 +76,16 @@ class NewUkimsNumberController @Inject() (
             for {
               profile        <- traderProfileConnector.getTraderProfile(request.eori)
               updatedAnswers <- Future.fromTry(request.userAnswers.set(NewUkimsNumberPage, value))
-              _              <- sessionRepository.set(updatedAnswers)
             } yield
               if (value == profile.ukimsNumber) {
                 val formWithApiErrors =
                   createFormWithErrors(form, value, "ukimsNumberChangeController.duplicateUkimsNumber")
                 BadRequest(view(formWithApiErrors, controllers.newUkims.routes.NewUkimsNumberController.onSubmit(mode)))
               } else {
+                println("\n\n here \n\n")
+                sessionRepository.set(updatedAnswers) //TODO: Moved out of for, double check this works as expected
                 Redirect(navigator.nextPage(NewUkimsNumberPage, mode, updatedAnswers))
+                  .addingToSession(pageUpdated -> newUkimsNumberUpdatePage)
               }
         )
   }

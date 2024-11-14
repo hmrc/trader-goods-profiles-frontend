@@ -393,5 +393,92 @@ class HomePageControllerSpec extends SpecBase {
         }
       }
     }
+
+    "ukimsNumberChanged should be" - {
+      "false when pageUpdated does not contain a newUKIMS value" in {
+
+        val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+
+        val mockGoodsRecordConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
+        when(mockGoodsRecordConnector.getRecords(any(), any(), any())(any())) thenReturn Future
+          .successful(None)
+
+        val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+        when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
+          Seq.empty
+        )
+
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+            bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+            bind[DownloadDataConnector].toInstance(mockDownloadDataConnector)
+          )
+          .build()
+
+        running(application) {
+          val request = FakeRequest(GET, routes.HomePageController.onPageLoad().url)
+
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[HomePageView]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(
+            downloadReady = false,
+            downloadLinkMessagesKey = "homepage.downloadLinkText.noGoodsRecords",
+            ukimsNumberChanged = false
+          )(request, messages(application)).toString
+
+          verify(mockTraderProfileConnector, never()).checkTraderProfile(any())(any())
+          verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any(), any())(any())
+          verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())(any())
+        }
+      }
+      "true when pageUpdated contains a newUKIMS value" in {
+
+        val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+
+        val mockGoodsRecordConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
+        when(mockGoodsRecordConnector.getRecords(any(), any(), any())(any())) thenReturn Future
+          .successful(None)
+
+        val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+        when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
+          Seq.empty
+        )
+
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+            bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+            bind[DownloadDataConnector].toInstance(mockDownloadDataConnector)
+          )
+          .build()
+
+        running(application) {
+          val request = FakeRequest(GET, routes.HomePageController.onPageLoad().url)
+            .withSession("pageUpdated" -> "newUkimsNumberUpdatePage")
+
+          val result  = route(application, request).value
+
+          val view = application.injector.instanceOf[HomePageView]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(
+            downloadReady = false,
+            downloadLinkMessagesKey = "homepage.downloadLinkText.noGoodsRecords",
+            ukimsNumberChanged = false
+          )(request, messages(application)).toString
+
+          verify(mockTraderProfileConnector, never()).checkTraderProfile(any())(any())
+          verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any(), any())(any())
+          verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())(any())
+        }
+      }
+
+    }
   }
 }

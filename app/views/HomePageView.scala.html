@@ -14,8 +14,8 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.govukfrontend.views.html.components._
 @import config.FrontendAppConfig
+@import uk.gov.hmrc.govukfrontend.views.html.components._
 
 @this(
         appConfig: FrontendAppConfig,
@@ -24,9 +24,20 @@
         govukNotificationBanner: GovukNotificationBanner
 )
 
-@(downloadReady: Boolean = false, downloadLinkMessagesKey: String)(implicit request: Request[_], messages: Messages)
+@(downloadReady: Boolean = false, downloadLinkMessagesKey: String, ukimsNumberChanged: Boolean = false)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = s"${messages("homepage.title")} - ${messages("site.govuk")}", showBackLink = false, headerShouldHaveServiceLink = false) {
+
+    @if(ukimsNumberChanged) {
+        @govukNotificationBanner(
+            NotificationBanner(
+                content = HtmlContent(
+                    s"""<h3 class="govuk-notification-banner__heading">${messages("homepage.newUkims.success")}</h3>"""
+                ),
+                bannerType = Some("success")
+            )
+        )
+    }
 
     @if(downloadReady) {
         @govukNotificationBanner(NotificationBanner(

@@ -54,11 +54,11 @@ class CyaNewUkimsNumberController @Inject() (
 
   def onPageLoad(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
     implicit request =>
-      // TODO validateUkimsNumber validate the UkimsNumberUpdatePage. Needs a new method with NewUkimsNumberPage TGP-2699
+      // TODO validateUkimsNumber validate the UkimsNumberUpdatePage. Needs a new method with NewUkimsNumberPage TGP-2700
       TraderProfile.validateUkimsNumber(request.userAnswers) match {
         case Right(_)     =>
           val list = SummaryListViewModel(
-            // TODO This needs to be changed to NewUkimsNumberPageSummary.row TGP-2699
+            // TODO This needs to be changed to NewUkimsNumberPageSummary.row TGP-2700
             rows = Seq(UkimsNumberSummary.rowUpdate(request.userAnswers)).flatten
           )
           Ok(view(list))
@@ -74,7 +74,7 @@ class CyaNewUkimsNumberController @Inject() (
       newTraderProfile           <- Future.successful(oldTraderProfile.copy(ukimsNumber = ukimsNumber))
       _                           = auditService.auditMaintainProfile(oldTraderProfile, newTraderProfile, request.affinityGroup)
       _                          <- traderProfileConnector.submitTraderProfile(newTraderProfile, request.eori)
-      // TODO UkimsNumberUpdatePage needs to be updated with NewUkimsNumberPage TGP-2699
+      // TODO UkimsNumberUpdatePage needs to be updated with NewUkimsNumberPage TGP-2700
       updatedAnswersRemovedUkims <-
         Future.fromTry(request.userAnswers.remove(UkimsNumberUpdatePage))
       _                          <- sessionRepository.set(updatedAnswersRemovedUkims)

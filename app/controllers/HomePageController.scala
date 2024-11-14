@@ -22,6 +22,7 @@ import models.DownloadDataStatus.FileReadyUnseen
 import models.DownloadDataSummary
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import utils.SessionData.{newUkimsNumberUpdatePage, pageUpdated}
 import views.html.HomePageView
 
 import javax.inject.Inject
@@ -45,8 +46,11 @@ class HomePageController @Inject() (
       goodsRecords        <- goodsRecordConnector.getRecords(request.eori, 1, 1)
       doesGoodsRecordExist = goodsRecords.exists(_.goodsItemRecords.nonEmpty)
     } yield {
-      val downloadLinkMessagesKey = getDownloadLinkMessagesKey(downloadDataSummary, doesGoodsRecordExist)
-      Ok(view(downloadReady(downloadDataSummary), downloadLinkMessagesKey))
+      val downloadLinkMessagesKey     = getDownloadLinkMessagesKey(downloadDataSummary, doesGoodsRecordExist)
+      val showNewUkimsBanner: Boolean = request.session.get(pageUpdated).contains(newUkimsNumberUpdatePage)
+
+      Ok(view(downloadReady(downloadDataSummary), downloadLinkMessagesKey, showNewUkimsBanner))
+        .removingFromSession(pageUpdated)
     }
   }
 
