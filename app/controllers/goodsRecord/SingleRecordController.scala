@@ -23,6 +23,7 @@ import models.helper.{CategorisationJourney, RequestAdviceJourney, Supplementary
 import models.requests.DataRequest
 import models.{Country, NormalMode}
 import pages.goodsRecord.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage, TraderReferenceUpdatePage}
+import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.CountriesQuery
 import repositories.SessionRepository
@@ -37,44 +38,45 @@ import views.html.goodsRecord.SingleRecordView
 import javax.inject.Inject
 import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
-class SingleRecordController @Inject() (
-  val controllerComponents: MessagesControllerComponents,
-  goodsRecordConnector: GoodsRecordConnector,
-  sessionRepository: SessionRepository,
-  dataCleansingService: DataCleansingService,
-  identify: IdentifierAction,
-  profileAuth: ProfileAuthenticateAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
-  ottConnector: OttConnector,
-  view: SingleRecordView
-)(implicit @unused ec: ExecutionContext)
-    extends BaseController {
 
-  def onPageLoad(recordId: String): Action[AnyContent]                                                             =
+class SingleRecordController @Inject()(
+                                        val controllerComponents: MessagesControllerComponents,
+                                        goodsRecordConnector: GoodsRecordConnector,
+                                        sessionRepository: SessionRepository,
+                                        dataCleansingService: DataCleansingService,
+                                        identify: IdentifierAction,
+                                        profileAuth: ProfileAuthenticateAction,
+                                        getData: DataRetrievalAction,
+                                        requireData: DataRequiredAction,
+                                        ottConnector: OttConnector,
+                                        view: SingleRecordView
+                                      )(implicit @unused ec: ExecutionContext)
+  extends BaseController {
+
+  def onPageLoad(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       for {
-        record                             <- goodsRecordConnector.getRecord(request.eori, recordId)
-        recordIsLocked                      = record.adviceStatus match {
-                                                case status
-                                                    if status.equalsIgnoreCase("Requested") ||
-                                                      status.equalsIgnoreCase("In progress") ||
-                                                      status.equalsIgnoreCase("Information Requested") =>
-                                                  true
-                                                case _ => false
-                                              }
-        countries                          <- retrieveAndStoreCountries
-        updatedAnswersWithTraderReference  <-
+        record <- goodsRecordConnector.getRecord(request.eori, recordId)
+        recordIsLocked = record.adviceStatus match {
+          case status
+            if status.equalsIgnoreCase("Requested") ||
+              status.equalsIgnoreCase("In progress") ||
+              status.equalsIgnoreCase("Information Requested") =>
+            true
+          case _ => false
+        }
+        countries <- retrieveAndStoreCountries
+        updatedAnswersWithTraderReference <-
           Future.fromTry(request.userAnswers.set(TraderReferenceUpdatePage(recordId), record.traderRef))
         updatedAnswersWithGoodsDescription <-
           Future.fromTry(
             updatedAnswersWithTraderReference.set(GoodsDescriptionUpdatePage(recordId), record.goodsDescription)
           )
-        updatedAnswersWithCountryOfOrigin  <-
+        updatedAnswersWithCountryOfOrigin <-
           Future.fromTry(
             updatedAnswersWithGoodsDescription.set(CountryOfOriginUpdatePage(recordId), record.countryOfOrigin)
           )
-        updatedAnswersWithAll              <-
+        updatedAnswersWithAll <-
           Future.fromTry(
             updatedAnswersWithCountryOfOrigin.set(CommodityCodeUpdatePage(recordId), record.comcode)
           )
@@ -94,8 +96,8 @@ class SingleRecordController @Inject() (
           )
         )
 
-        val categoryValue         = record.category match {
-          case None        => "singleRecord.categoriseThisGood"
+        val categoryValue = record.category match {
+          case None => "singleRecord.categoriseThisGood"
           case Some(value) =>
             value match {
               case 1 => "singleRecord.cat1"
@@ -103,7 +105,7 @@ class SingleRecordController @Inject() (
               case 3 => "singleRecord.standardGoods"
             }
         }
-        val categorisationList    = SummaryListViewModel(
+        val categorisationList = SummaryListViewModel(
           rows = Seq(
             CategorySummary.row(categoryValue, record.recordId, recordIsLocked, isCategorised)
           )
@@ -115,15 +117,23 @@ class SingleRecordController @Inject() (
               .row(record.category, record.supplementaryUnit, record.measurementUnit, recordId, recordIsLocked)
           ).flatten
         )
-        val adviceList            = SummaryListViewModel(
+        val adviceList = SummaryListViewModel(
           rows = Seq(
             AdviceStatusSummary.row(record.adviceStatus, record.recordId, recordIsLocked)
           )
         )
-        val changesMade           = request.session.get(dataUpdated).contains("true")
-        val pageRemoved           = request.session.get(dataRemoved).contains("true")
-        val changedPage           = request.session.get(pageUpdated).getOrElse("")
-
+        val changesMade = request.session.get(dataUpdated).contains("true")
+        val pageRemoved = request.session.get(dataRemoved).contains("true")
+        val changedPage = request.session.get(pageUpdated).getOrElse("")
+        val para: String = record.adviceStatus match {
+          case "Not Requested" => Messages("singleRecord.adviceParagraph.notRequested")
+          case "Requested" => Messages("singleRecord.adviceParagraph.requested")
+          case "Advice withdrawn" => Messages("singleRecord.adviceParagraph.adviceWithdrawn")
+          case "Advice not provided" => Messages("singleRecord.adviceParagraph.notProvided")
+          case "In progress" => Messages("singleRecord.adviceParagraph.inProgress")
+          case "Information requested" => Messages("singleRecord.adviceParagraph.informationRequested")
+          case "Advice received" => Messages("singleRecord.adviceParagraph.adviceReceived")
+        }
         dataCleansing(request)
 
         Ok(
@@ -136,7 +146,8 @@ class SingleRecordController @Inject() (
             changesMade,
             changedPage,
             pageRemoved,
-            recordIsLocked
+            recordIsLocked,
+            para
           )
         ).removingFromSession(initialValueOfHasSuppUnit, initialValueOfSuppUnit)
       }
@@ -149,15 +160,16 @@ class SingleRecordController @Inject() (
     dataCleansingService.deleteMongoData(request.userAnswers.id, WithdrawAdviceJourney)
     dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
   }
+
   private def retrieveAndStoreCountries(implicit hc: HeaderCarrier, request: DataRequest[_]): Future[Seq[Country]] =
     request.userAnswers.get(CountriesQuery) match {
       case Some(countries) =>
         Future.successful(countries)
-      case None            =>
+      case None =>
         for {
-          countries               <- ottConnector.getCountries
+          countries <- ottConnector.getCountries
           updatedAnswersWithQuery <- Future.fromTry(request.userAnswers.set(CountriesQuery, countries))
-          _                       <- sessionRepository.set(updatedAnswersWithQuery)
+          _ <- sessionRepository.set(updatedAnswersWithQuery)
         } yield countries
     }
 

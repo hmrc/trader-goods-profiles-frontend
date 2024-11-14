@@ -24,7 +24,7 @@
     govukNotificationBanner: GovukNotificationBanner
 )
 
-@(recordId: String, detailsList: SummaryList, categorisationList: SummaryList, supplementaryUnitList: SummaryList, adviceStatusList: SummaryList, changesMade: Boolean, changedPage: String,dataRemoved: Boolean,recordLocked:Boolean)(implicit request: Request[_], messages: Messages)
+@(recordId: String, detailsList: SummaryList, categorisationList: SummaryList, supplementaryUnitList: SummaryList, adviceStatusList: SummaryList, changesMade: Boolean, changedPage: String,dataRemoved: Boolean,recordLocked:Boolean, para:String)(implicit request: Request[_], messages: Messages)
 
     @bannerContentForUpdate(page: String, dataRemoved:Boolean) = {
         <h3 class="govuk-notification-banner__heading">
@@ -67,6 +67,7 @@
     }
     @if(appConfig.requestingAdviceEnabled) {
         <h2 class="govuk-heading-m">@messages("singleRecord.h2.adviceStatus")</h2>
+        <p class="govuk-body">@para</p>
         @govukSummaryList(adviceStatusList)
     }
     <div class="govuk-warning-text">
