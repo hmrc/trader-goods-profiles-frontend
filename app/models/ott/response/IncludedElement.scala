@@ -31,6 +31,7 @@ object IncludedElement {
         case "certificate"         => CertificateResponse.reads.widen
         case "additional_code"     => AdditionalCodeResponse.reads.widen
         case "exemption"           => OtherExemptionResponse.reads.widen
+        case "legal_act"           => LegalActResponse.reads.widen
         case _                     => Ignorable.reads.widen
       }
 }
