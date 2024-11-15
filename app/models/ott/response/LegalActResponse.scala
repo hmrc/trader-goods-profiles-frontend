@@ -20,18 +20,18 @@ import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json.{Reads, __}
 
 case class LegalActResponse(
-  id: String,
-  regulationUrl: String,
-  description: String
+  id: Option[String],
+  regulationUrl: Option[String],
+  description: Option[String]
 ) extends IncludedElement
 
 object LegalActResponse {
 
   implicit lazy val reads: Reads[LegalActResponse] =
     (
-      (__ \ "id").read[String] and
-        (__ \ "attributes" \ "regulation_url").read[String] and
-        (__ \ "attributes" \ "description").read[String]
+      (__ \ "id").readNullable[String] and
+        (__ \ "attributes" \ "regulation_url").readNullable[String] and
+        (__ \ "attributes" \ "description").readNullable[String]
     )(LegalActResponse.apply _)
 
 }

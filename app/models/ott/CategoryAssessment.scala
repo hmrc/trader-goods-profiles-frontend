@@ -52,8 +52,10 @@ object CategoryAssessment {
       theme            <- ottResponse.themes.find(_.id == assessment.themeId)
       exemptions       <- assessment.exemptions.map(x => buildExemption(x.id, x.exemptionType, ottResponse)).sequence
       themeDescription <- ottResponse.themes.find(_.id == assessment.themeId).map(_.theme)
-      regulationUrl    <- ottResponse.legalAct.find(_.id == assessment.regulationId).map(_.regulationUrl)
-    } yield CategoryAssessment(id, theme.category, exemptions, themeDescription, Some(regulationUrl))
+      regulationUrl    <- ottResponse.legalAct
+                            .find(legalAct => legalAct.id.contains(assessment.regulationId))
+                            .map(_.regulationUrl)
+    } yield CategoryAssessment(id, theme.category, exemptions, themeDescription, regulationUrl)
 
   private def buildExemption(id: String, exemptionType: ExemptionType, ottResponse: OttResponse): Option[Exemption] =
     exemptionType match {

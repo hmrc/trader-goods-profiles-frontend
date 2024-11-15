@@ -72,7 +72,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
       AdditionalCodeResponse("exemptionId2", "code2", "description2"),
       ThemeResponse("ignoredTheme", 3, "theme description"),
       CertificateResponse("ignoredExemption", "code3", "description3"),
-      LegalActResponse("regulationId1", "regulationUrl1", "description1")
+      LegalActResponse(Some("regulationId1"), Some("regulationUrl1"), Some("description1"))
     ),
     descendents = Seq.empty[Descendant]
   )
