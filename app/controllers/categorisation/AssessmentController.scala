@@ -66,8 +66,9 @@ class AssessmentController @Inject() (
               categorisationInfo.getAssessmentFromIndex(index).map { assessment =>
                 val codesAndDescriptions = assessment.getCodesZippedWithDescriptions
                 val preparedForm         = prepareForm(AssessmentPage(recordId, index), formProvider())
-                val submitAction         =
+                val submitAction         = {
                   controllers.categorisation.routes.AssessmentController.onSubmit(mode, recordId, number)
+                }
                 Ok(
                   view(
                     preparedForm,
@@ -78,7 +79,7 @@ class AssessmentController @Inject() (
                     categorisationInfo.commodityCode,
                     submitAction,
                     assessment.themeDescription,
-                    categorisationInfo.categoryAssessmentsThatNeedAnswers.size
+                    assessment.regulationUrl
                   )
                 )
               }
@@ -112,7 +113,7 @@ class AssessmentController @Inject() (
                     categorisationInfo.commodityCode,
                     submitAction,
                     assessment.themeDescription,
-                    categorisationInfo.categoryAssessmentsThatNeedAnswers.size
+                    assessment.regulationUrl
                   )
                 )
               }
@@ -149,7 +150,7 @@ class AssessmentController @Inject() (
                             categorisationInfo.commodityCode,
                             submitAction,
                             assessment.themeDescription,
-                            categorisationInfo.categoryAssessmentsThatNeedAnswers.size
+                            assessment.regulationUrl
                           )
                         )
                       ),
@@ -199,7 +200,7 @@ class AssessmentController @Inject() (
                             categorisationInfo.commodityCode,
                             submitAction,
                             assessment.themeDescription,
-                            categorisationInfo.categoryAssessmentsThatNeedAnswers.size
+                            assessment.regulationUrl
                           )
                         )
                       ),
