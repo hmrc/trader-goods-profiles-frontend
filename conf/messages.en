@@ -282,8 +282,8 @@ traderReference.error.traderRefNotUnique = This trader reference is already in y
 traderReference.checkYourAnswersLabel = Trader reference
 traderReference.change.hidden = Trader reference
 
-assessment.title = Category assessment {0} of {1}
-assessment.heading = Category assessment {0} of {1}
+assessment.title = Category assessment {0}
+assessment.heading = Category assessment {0}
 assessment.guidance = You need to confirm which of these exclusions you hold for {0}. The theme for this assessment is:
 assessment.linkText = Search for a commodity code on the Online Tariff Tool (opens in new tab)
 assessment.question = Which of these exclusions do you hold for {0}?
@@ -295,6 +295,8 @@ assessment.exemption.none.checkYourAnswersLabel = None selected
 assessment.checkYourAnswersLabel = Category assessment {0} of {1}
 assessment.change.hidden = Category assessment {0}
 assessment.none = None
+assessment.regulationUrl.text =  If you need more information about the theme and exclusions, you can
+assessment.regulationUrl.linkText = read the EU regulation document (opens in new tab).
 
 ukimsKickOut.title = You need to apply for the UK Internal Market Scheme (UKIMS)
 ukimsKickOut.h1 = You need to apply for the UK Internal Market Scheme (UKIMS)
