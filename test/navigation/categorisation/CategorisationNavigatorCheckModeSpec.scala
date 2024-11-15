@@ -776,7 +776,7 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
             "1234567890",
             "BV",
             Some(validityEndDate),
-            Seq(CategoryAssessment("assessmentId", 1, Seq.empty, "measure description")),
+            Seq(CategoryAssessment("assessmentId", 1, Seq.empty, "measure description", Some("regulationUrl"))),
             Seq.empty,
             None,
             1

@@ -59,7 +59,8 @@ class IncludedElementSpec extends AnyFreeSpec with Matchers {
           exemptions = Seq(
             ExemptionResponse("cert", ExemptionType.Certificate),
             ExemptionResponse("code", ExemptionType.AdditionalCode)
-          )
+          ),
+          regulationId = "regulationId"
         )
       )
     }

@@ -19,8 +19,8 @@ package services
 import base.SpecBase
 import base.TestConstants.{NiphlCode, NirmsCode, testRecordId}
 import connectors.{GoodsRecordConnector, OttConnector, TraderProfileConnector}
-import models.ott.{CategoryAssessment, _}
 import models.ott.response.{CategoryAssessmentRelationship, ExemptionType => ResponseExemptionType, _}
+import models.ott.{CategoryAssessment, _}
 import models.requests.DataRequest
 import models.router.responses.GetGoodsRecordResponse
 import models.{AssessmentAnswer, Category1NoExemptionsScenario, Category1Scenario, Category2Scenario, ReassessmentAnswer, StandardGoodsNoAssessmentsScenario, StandardGoodsScenario, TraderProfile}
@@ -64,7 +64,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         Seq(
           ExemptionResponse("exemptionId1", ResponseExemptionType.Certificate),
           ExemptionResponse("exemptionId2", ResponseExemptionType.AdditionalCode)
-        )
+        ),
+        "regulationId1"
       ),
       ThemeResponse("themeId2", 2, "theme description"),
       CertificateResponse("exemptionId1", "code1", "description1"),
@@ -145,7 +146,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             Certificate("exemptionId1", "code1", "description1"),
             AdditionalCode("exemptionId2", "code2", "description2")
           ),
-          "theme description"
+          "theme description",
+          Some("regulationUrl2")
         )
       )
 
@@ -260,7 +262,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           Seq(
             Certificate("cert1", "cert1code", "cert1desc")
           ),
-          "theme description"
+          "theme description",
+          Some("regulationUrl1")
         )
 
         val assessment2 = CategoryAssessment(
@@ -269,7 +272,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           Seq(
             Certificate("cert2", "cert2code", "cert2desc")
           ),
-          "theme description"
+          "theme description",
+          Some("regulationUrl2")
         )
 
         val assessment3 = CategoryAssessment(
@@ -278,14 +282,16 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           Seq(
             Certificate("cert3", "cert3code", "cert3desc")
           ),
-          "theme description"
+          "theme description",
+          Some("regulationUrl3")
         )
 
         val assessment4 = CategoryAssessment(
           "ass4",
           2,
           Seq.empty,
-          "theme description"
+          "theme description",
+          Some("regulationUrl4")
         )
 
         val categorisationInfo = CategorisationInfo(
@@ -329,7 +335,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           Seq(
             Certificate(NiphlCode, "cert1code", "cert1desc")
           ),
-          "theme description"
+          "theme description",
+          Some("regulationUrl1")
         )
 
         val assessment2 = CategoryAssessment(
@@ -338,14 +345,16 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           Seq(
             Certificate(NiphlCode, "cert2code", "cert2desc")
           ),
-          "theme description"
+          "theme description",
+          Some("regulationUrl2")
         )
 
         val assessment3 = CategoryAssessment(
           "ass3",
           2,
           Seq.empty,
-          "theme description"
+          "theme description",
+          Some("regulationUrl3")
         )
 
         val categorisationInfo = CategorisationInfo(
@@ -381,7 +390,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           Seq(
             Certificate(NiphlCode, "cert1code", "cert1desc")
           ),
-          "theme description"
+          "theme description",
+          Some("regulationUrl1")
         )
 
         val assessment2 = CategoryAssessment(
@@ -390,14 +400,16 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           Seq(
             Certificate("Y992", "cert2code", "cert2desc")
           ),
-          "theme description"
+          "theme description",
+          Some("regulationUrl2")
         )
 
         val assessment3 = CategoryAssessment(
           "ass3",
           2,
           Seq.empty,
-          "theme description"
+          "theme description",
+          Some("regulationUrl3")
         )
 
         val categorisationInfo = CategorisationInfo(
@@ -504,8 +516,14 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           "BV",
           Some(validityEndDate),
           Seq(
-            CategoryAssessment("ass1", 1, Seq.empty, "theme description"),
-            CategoryAssessment("ass2", 1, Seq(Certificate("cert1", "cert1c", "cert1desc")), "theme description")
+            CategoryAssessment("ass1", 1, Seq.empty, "theme description", Some("regulationUrl1")),
+            CategoryAssessment(
+              "ass2",
+              1,
+              Seq(Certificate("cert1", "cert1c", "cert1desc")),
+              "theme description",
+              Some("regulationUrl2")
+            )
           ),
           Seq.empty,
           None,
@@ -532,21 +550,24 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           Seq(
             Certificate(NiphlCode, "cert1code", "cert1desc")
           ),
-          "theme description"
+          "theme description",
+          Some("regulationUrl1")
         )
 
         val assessment2 = CategoryAssessment(
           "ass2",
           1,
           Seq.empty,
-          "theme description"
+          "theme description",
+          Some("regulationUrl2")
         )
 
         val assessment3 = CategoryAssessment(
           "ass3",
           2,
           Seq.empty,
-          "theme description"
+          "theme description",
+          Some("regulationUrl3")
         )
 
         val categorisationInfo = CategorisationInfo(
@@ -668,8 +689,14 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           "BV",
           Some(validityEndDate),
           Seq(
-            CategoryAssessment("ass1", 2, Seq.empty, "theme description"),
-            CategoryAssessment("ass2", 2, Seq(Certificate("cert1", "cert1c", "cert1desc")), "theme description")
+            CategoryAssessment("ass1", 2, Seq.empty, "theme description", Some("regulationUrl1")),
+            CategoryAssessment(
+              "ass2",
+              2,
+              Seq(Certificate("cert1", "cert1c", "cert1desc")),
+              "theme description",
+              Some("regulationUrl2")
+            )
           ),
           Seq.empty,
           None,
@@ -696,7 +723,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           Seq(
             Certificate("cert1", "cert1code", "cert1desc")
           ),
-          "theme description"
+          "theme description",
+          Some("regulationUrl1")
         )
 
         val assessment2 = CategoryAssessment(
@@ -705,7 +733,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           Seq(
             Certificate("cert2", "cert2code", "cert2desc")
           ),
-          "theme description"
+          "theme description",
+          Some("regulationUrl2")
         )
 
         val assessment3 = CategoryAssessment(
@@ -714,14 +743,16 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           Seq(
             Certificate("cert3", "cert3code", "cert3desc")
           ),
-          "theme description"
+          "theme description",
+          Some("regulationUrl3")
         )
 
         val assessment4 = CategoryAssessment(
           "ass4",
           2,
           Seq.empty,
-          "theme description"
+          "theme description",
+          Some("regulationUrl4")
         )
 
         val categorisationInfo = CategorisationInfo(
@@ -766,7 +797,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             Seq(
               Certificate(NiphlCode, "cert1code", "cert1desc")
             ),
-            "theme description"
+            "theme description",
+            Some("regulationUrl1")
           )
 
           val assessment2 = CategoryAssessment(
@@ -775,10 +807,11 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             Seq(
               Certificate(NiphlCode, "cert2code", "cert2desc")
             ),
-            "theme description"
+            "theme description",
+            Some("regulationUrl2")
           )
 
-          val assessment3 = CategoryAssessment("ass3", 2, Seq.empty, "theme description")
+          val assessment3 = CategoryAssessment("ass3", 2, Seq.empty, "theme description", Some("regulationUrl3"))
 
           val categorisationInfo = CategorisationInfo(
             "1234567890",
@@ -814,7 +847,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             Seq(
               Certificate("cert1", "cert1code", "cert1desc")
             ),
-            "theme description"
+            "theme description",
+            Some("regulationUrl1")
           )
 
           val assessment2 = CategoryAssessment(
@@ -823,10 +857,11 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             Seq(
               Certificate(NiphlCode, "cert2code", "cert2desc")
             ),
-            "theme description"
+            "theme description",
+            Some("regulationUrl2")
           )
 
-          val assessment3 = CategoryAssessment("ass3", 2, Seq.empty, "theme description")
+          val assessment3 = CategoryAssessment("ass3", 2, Seq.empty, "theme description", Some("regulationUrl3"))
 
           val categorisationInfo = CategorisationInfo(
             "1234567890",
@@ -865,7 +900,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             Seq(
               Certificate("cert1", "cert1code", "cert1desc")
             ),
-            "theme description"
+            "theme description",
+            Some("regulationUrl1")
           )
 
           val assessment2 = CategoryAssessment(
@@ -874,7 +910,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             Seq(
               Certificate(NiphlCode, "cert2code", "cert2desc")
             ),
-            "theme description"
+            "theme description",
+            Some("regulationUrl2")
           )
 
           val assessment3 = CategoryAssessment(
@@ -883,7 +920,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             Seq(
               Certificate("cert3", "cert3code", "cert3desc")
             ),
-            "theme description"
+            "theme description",
+            Some("regulationUrl3")
           )
 
           val categorisationInfo = CategorisationInfo(
@@ -933,7 +971,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             Seq(
               Certificate("cert2", "cert2code", "cert2desc")
             ),
-            "theme description"
+            "theme description",
+            Some("regulationUrl2")
           )
 
           val assessment3 = CategoryAssessment(
@@ -942,7 +981,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             Seq(
               Certificate("cert3", "cert3code", "cert3desc")
             ),
-            "theme description"
+            "theme description",
+            Some("regulationUrl3")
           )
 
           val categorisationInfo = CategorisationInfo(
@@ -1039,7 +1079,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             Seq(
               Certificate("cert2", "cert2code", "cert2desc")
             ),
-            "theme description"
+            "theme description",
+            Some("regulationUrl2")
           )
 
           val assessment3 = CategoryAssessment(
@@ -1048,7 +1089,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             Seq(
               Certificate("cert3", "cert3code", "cert3desc")
             ),
-            "theme description"
+            "theme description",
+            Some("regulationUrl3")
           )
 
           val categorisationInfo = CategorisationInfo(
@@ -1092,7 +1134,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             Seq(
               Certificate("cert2", "cert2code", "cert2desc")
             ),
-            "theme description"
+            "theme description",
+            Some("regulationUrl2")
           )
 
           val assessment3 = CategoryAssessment(
@@ -1101,7 +1144,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             Seq(
               Certificate("cert3", "cert3code", "cert3desc")
             ),
-            "theme description"
+            "theme description",
+            Some("regulationUrl3")
           )
 
           val categorisationInfo = CategorisationInfo(
@@ -1200,7 +1244,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             Seq(
               Certificate(NirmsCode, "cert1code", "cert1desc")
             ),
-            "theme description"
+            "theme description",
+            Some("regulationUrl1")
           )
 
           val assessment2 = CategoryAssessment(
@@ -1209,7 +1254,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             Seq(
               Certificate("cert2", "cert2code", "cert2desc")
             ),
-            "theme description"
+            "theme description",
+            Some("regulationUrl2")
           )
 
           val assessment3 = CategoryAssessment(
@@ -1218,7 +1264,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             Seq(
               Certificate("cert3", "cert3code", "cert3desc")
             ),
-            "theme description"
+            "theme description",
+            Some("regulationUrl3")
           )
 
           val categorisationInfo = CategorisationInfo(
@@ -1348,7 +1395,13 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
 
     "should not copy across the old answers if all the assessments are different" in {
       val newCat                     =
-        CategoryAssessment("0", 1, Seq(Certificate("Y199", "Y199", "Goods are not from warzone")), "theme description")
+        CategoryAssessment(
+          "0",
+          1,
+          Seq(Certificate("Y199", "Y199", "Goods are not from warzone")),
+          "theme description",
+          Some("regulationUrl")
+        )
       val newCommodityCategorisation = CategorisationInfo(
         "12345",
         "BV",
@@ -1378,7 +1431,13 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         category1,
         category2,
         category3,
-        CategoryAssessment("0", 1, Seq(Certificate("Y199", "Y199", "Goods are not from warzone")), "theme description")
+        CategoryAssessment(
+          "0",
+          1,
+          Seq(Certificate("Y199", "Y199", "Goods are not from warzone")),
+          "theme description",
+          Some("regulationUrl4")
+        )
       )
       val newCommodityCategorisation = CategorisationInfo(
         "1234567890",
@@ -1415,7 +1474,13 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
     "should copy the old answers to the right position if they are in different order in the new categorisation" in {
 
       val category4                  =
-        CategoryAssessment("0", 1, Seq(Certificate("Y199", "Y199", "Goods are not from warzone")), "theme description")
+        CategoryAssessment(
+          "0",
+          1,
+          Seq(Certificate("Y199", "Y199", "Goods are not from warzone")),
+          "theme description",
+          Some("regulationUrl4")
+        )
       val newCommodityCategorisation = CategorisationInfo(
         "1234567890",
         "BV",
@@ -1479,7 +1544,13 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         .value
 
       val category4                  =
-        CategoryAssessment("0", 1, Seq(Certificate("Y199", "Y199", "Goods are not from warzone")), "theme description")
+        CategoryAssessment(
+          "0",
+          1,
+          Seq(Certificate("Y199", "Y199", "Goods are not from warzone")),
+          "theme description",
+          Some("regulationUrl4")
+        )
       val newCommodityCategorisation = CategorisationInfo(
         "1234567890",
         "BV",
