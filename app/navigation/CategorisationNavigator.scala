@@ -134,7 +134,7 @@ class CategorisationNavigator @Inject() (categorisationService: CategorisationSe
     val recordId = reasessmentPrep.recordId
 
     answers.get(LongerCategorisationDetailsQuery(recordId)) match {
-      case Some(catInfo) if catInfo.categoryAssessmentsThatNeedAnswers.nonEmpty =>
+      case Some(_) if categorisationService.existsUnansweredCat1Questions(answers, recordId) =>
         val firstAnswer = answers.get(ReassessmentPage(recordId, firstAssessmentIndex))
         if (reassessmentAnswerIsEmpty(firstAnswer) || !firstAnswer.get.isAnswerCopiedFromPreviousAssessment) {
           controllers.categorisation.routes.AssessmentController
@@ -147,13 +147,18 @@ class CategorisationNavigator @Inject() (categorisationService: CategorisationSe
         val scenario = categorisationService.calculateResult(catInfo, answers, recordId)
         if (shouldGoToSupplementaryUnitFromPrepPage(catInfo, scenario)) {
           controllers.categorisation.routes.HasSupplementaryUnitController.onPageLoad(CheckMode, recordId)
-        } else {
-          controllers.categorisation.routes.CategorisationResultController.onPageLoad(recordId, scenario)
-        }
-      case None          => controllers.problem.routes.JourneyRecoveryController.onPageLoad()
+        } else
+          scenario match {
+            case StandardGoodsNoAssessmentsScenario | Category1NoExemptionsScenario =>
+              controllers.categorisation.routes.CategorisationResultController.onPageLoad(recordId, scenario)
+            case _                                                                  => controllers.categorisation.routes.CyaCategorisationController.onPageLoad(recordId)
+          }
+
+      case None => controllers.problem.routes.JourneyRecoveryController.onPageLoad()
 
     }
   }
+
   private def navigateFromAssessmentCheck(assessmentPage: AssessmentPage)(answers: UserAnswers): Call = {
     val recordId   = assessmentPage.recordId
     val nextIndex  = assessmentPage.index + 1
@@ -259,7 +264,7 @@ class CategorisationNavigator @Inject() (categorisationService: CategorisationSe
     val recordId = reasessmentPrep.recordId
 
     answers.get(LongerCategorisationDetailsQuery(recordId)) match {
-      case Some(catInfo) if catInfo.categoryAssessmentsThatNeedAnswers.nonEmpty =>
+      case Some(_) if categorisationService.existsUnansweredCat1Questions(answers, recordId) =>
         val firstAnswer = answers.get(ReassessmentPage(recordId, firstAssessmentIndex))
         if (reassessmentAnswerIsEmpty(firstAnswer) || !firstAnswer.get.isAnswerCopiedFromPreviousAssessment) {
           controllers.categorisation.routes.AssessmentController
@@ -272,9 +277,12 @@ class CategorisationNavigator @Inject() (categorisationService: CategorisationSe
         val scenario = categorisationService.calculateResult(catInfo, answers, recordId)
         if (shouldGoToSupplementaryUnitFromPrepPage(catInfo, scenario)) {
           controllers.categorisation.routes.HasSupplementaryUnitController.onPageLoad(NormalMode, recordId)
-        } else {
-          controllers.categorisation.routes.CategorisationResultController.onPageLoad(recordId, scenario)
-        }
+        } else
+          scenario match {
+            case StandardGoodsNoAssessmentsScenario | Category1NoExemptionsScenario =>
+              controllers.categorisation.routes.CategorisationResultController.onPageLoad(recordId, scenario)
+            case _                                                                  => controllers.categorisation.routes.CyaCategorisationController.onPageLoad(recordId)
+          }
 
       case None => controllers.problem.routes.JourneyRecoveryController.onPageLoad()
 
