@@ -16,23 +16,22 @@
 
 package models.ott.response
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
+import play.api.libs.functional.syntax.toFunctionalBuilderOps
+import play.api.libs.json.{Reads, __}
 
-final case class CategoryAssessmentResponse(
-  id: String,
-  themeId: String,
-  exemptions: Seq[ExemptionResponse],
-  regulationId: String
+case class LegalActResponse(
+  id: Option[String],
+  regulationUrl: Option[String],
+  description: Option[String]
 ) extends IncludedElement
 
-object CategoryAssessmentResponse {
+object LegalActResponse {
 
-  implicit lazy val reads: Reads[CategoryAssessmentResponse] =
+  implicit lazy val reads: Reads[LegalActResponse] =
     (
-      (__ \ "id").read[String] and
-        (__ \ "relationships" \ "theme" \ "data" \ "id").read[String] and
-        (__ \ "relationships" \ "exemptions" \ "data").read[Seq[ExemptionResponse]] and
-        (__ \ "relationships" \ "regulation" \ "data" \ "id").read[String]
-    )(CategoryAssessmentResponse.apply _)
+      (__ \ "id").readNullable[String] and
+        (__ \ "attributes" \ "regulation_url").readNullable[String] and
+        (__ \ "attributes" \ "description").readNullable[String]
+    )(LegalActResponse.apply _)
+
 }
