@@ -460,10 +460,10 @@ singleRecord.cat2 = Category 2
 singleRecord.standardGoods = Standard goods
 singleRecord.back = Back to goods profile
 singleRecord.adviceParagraph.notRequested = You can ask HMRC for advice to see if the goods description matches the commodity code
-singleRecord.adviceParagraph.requested = You've asked for advice on this goods record
-singleRecord.adviceParagraph.adviceWithdrawn = You've withdrawn your request for advice, You can ask HMRC for advice to see if the goods description matches the commodity code
+singleRecord.adviceParagraph.requested = You’ve asked for advice on this goods record
+singleRecord.adviceParagraph.adviceWithdrawn = You’ve withdrawn your request for advice, You can ask HMRC for advice to see if the goods description matches the commodity code
 singleRecord.adviceParagraph.adviceNotProvided = HMRC have not been able to agree that the goods description matches the commodity code, You can ask for advice if you have updated the record
-singleRecord.adviceParagraph.inProgress =HMRC has started to look at your goods record and will contact you with any updates
+singleRecord.adviceParagraph.inProgress = HMRC has started to look at your goods record and will contact you with any updates
 singleRecord.adviceParagraph.informationRequested = HMRC have asked you for some information
 singleRecord.adviceParagraph.adviceReceived = HMRC have agreed that the commodity code and goods description match
 

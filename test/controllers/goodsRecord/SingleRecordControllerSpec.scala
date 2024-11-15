@@ -19,7 +19,7 @@ package controllers.goodsRecord
 import base.SpecBase
 import base.TestConstants.{testRecordId, userAnswersId}
 import connectors.{GoodsRecordConnector, OttConnector, TraderProfileConnector}
-import models.AdviceStatusMessage.{NotRequested, Requested}
+import models.AdviceStatusMessage.Requested
 import models.helper.SupplementaryUnitUpdateJourney
 import models.{Country, NormalMode, UserAnswers}
 import org.mockito.ArgumentCaptor
