@@ -27,7 +27,7 @@ class AdviceStatusMessageSpec extends AnyFreeSpec with Matchers with TryValues w
       AdviceStatusMessage.NotRequested.messageKey mustBe "singleRecord.adviceParagraph.notRequested"
       AdviceStatusMessage.Requested.messageKey mustBe "singleRecord.adviceParagraph.requested"
       AdviceStatusMessage.AdviceWithdrawn.messageKey mustBe "singleRecord.adviceParagraph.adviceWithdrawn"
-      AdviceStatusMessage.NotProvided.messageKey mustBe "singleRecord.adviceParagraph.notProvided"
+      AdviceStatusMessage.NotProvided.messageKey mustBe "singleRecord.adviceParagraph.adviceNotProvided"
       AdviceStatusMessage.InProgress.messageKey mustBe "singleRecord.adviceParagraph.inProgress"
       AdviceStatusMessage.InformationRequested.messageKey mustBe "singleRecord.adviceParagraph.informationRequested"
       AdviceStatusMessage.AdviceReceived.messageKey mustBe "singleRecord.adviceParagraph.adviceReceived"

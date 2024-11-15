@@ -31,7 +31,7 @@ object AdviceStatusMessage {
     val messageKey: String = "singleRecord.adviceParagraph.adviceWithdrawn"
   }
   case object NotProvided extends AdviceStatusMessage {
-    val messageKey: String = "singleRecord.adviceParagraph.notProvided"
+    val messageKey: String = "singleRecord.adviceParagraph.adviceNotProvided"
   }
   case object InProgress extends AdviceStatusMessage {
     val messageKey: String = "singleRecord.adviceParagraph.inProgress"
