@@ -63,7 +63,8 @@ class CategorisationInfoSpec extends SpecBase {
             CertificateResponse("exemptionId1", "code1", "description1"),
             AdditionalCodeResponse("exemptionId2", "code2", "description2"),
             ThemeResponse("ignoredTheme", 3, "theme description"),
-            CertificateResponse("ignoredExemption", "code3", "description3")
+            CertificateResponse("ignoredExemption", "code3", "description3"),
+            LegalActResponse("regulationId1", "regulationUrl1", "description")
           ),
           descendents = Seq.empty[Descendant]
         )
@@ -127,7 +128,7 @@ class CategorisationInfoSpec extends SpecBase {
                 ExemptionResponse("exemptionId1", ExemptionType.Certificate),
                 ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode)
               ),
-              "regulationId1"
+              "regulationId2"
             ),
             CategoryAssessmentResponse(
               "assessmentId3",
@@ -142,14 +143,16 @@ class CategorisationInfoSpec extends SpecBase {
               "assessmentId4",
               "themeId2",
               Seq(ExemptionResponse("exemptionId1", ExemptionType.Certificate)),
-              "regulationId1"
+              "regulationId2"
             ),
             ThemeResponse("themeId1", 1, "theme description"),
             ThemeResponse("themeId2", 2, "theme description"),
             CertificateResponse("exemptionId1", "code1", "description1"),
             AdditionalCodeResponse("exemptionId2", "code2", "description2"),
             ThemeResponse("ignoredTheme", 3, "theme description"),
-            CertificateResponse("ignoredExemption", "code3", "description3")
+            CertificateResponse("ignoredExemption", "code3", "description3"),
+            LegalActResponse("regulationId1", "regulationUrl1", "description1"),
+            LegalActResponse("regulationId2", "regulationUrl2", "description2")
           ),
           descendents = Seq(Descendant("1", "type1"), Descendant("2", "type2"))
         )
@@ -177,7 +180,7 @@ class CategorisationInfoSpec extends SpecBase {
             2,
             Seq(Certificate("exemptionId1", "code1", "description1")),
             "theme description",
-            Some("regulationUrl1")
+            Some("regulationUrl2")
           ),
           CategoryAssessment(
             "assessmentId2",
@@ -187,7 +190,7 @@ class CategorisationInfoSpec extends SpecBase {
               AdditionalCode("exemptionId2", "code2", "description2")
             ),
             "theme description",
-            Some("regulationUrl1")
+            Some("regulationUrl2")
           )
         )
 
@@ -235,7 +238,8 @@ class CategorisationInfoSpec extends SpecBase {
             CertificateResponse("exemptionId1", "code1", "description1"),
             AdditionalCodeResponse("exemptionId2", "code2", "description2"),
             ThemeResponse("ignoredTheme", 3, "theme description"),
-            CertificateResponse("ignoredExemption", "code3", "description3")
+            CertificateResponse("ignoredExemption", "code3", "description3"),
+            LegalActResponse("regulationId1", "regulationUrl1", "description1")
           ),
           descendents = Seq.empty[Descendant]
         )
@@ -338,7 +342,9 @@ class CategorisationInfoSpec extends SpecBase {
               "themeId1",
               Seq(ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode)),
               "regulationId2"
-            )
+            ),
+            LegalActResponse("regulationId1", "regulationUrl1", "description1"),
+            LegalActResponse("regulationId2", "regulationUrl2", "description2")
           ),
           descendents = Seq.empty[Descendant]
         )
@@ -350,7 +356,7 @@ class CategorisationInfoSpec extends SpecBase {
             1,
             Seq(AdditionalCode("exemptionId2", "code2", "description2")),
             "theme description",
-            Some("regulationUrl1")
+            Some("regulationUrl2")
           ),
           CategoryAssessment(
             "assessmentId2",
@@ -415,7 +421,9 @@ class CategorisationInfoSpec extends SpecBase {
               "themeId2",
               Seq(ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode)),
               "regulationId2"
-            )
+            ),
+            LegalActResponse("regulationId1", "regulationUrl1", "description1"),
+            LegalActResponse("regulationId2", "regulationUrl2", "description1")
           ),
           descendents = Seq.empty[Descendant]
         )
@@ -492,7 +500,9 @@ class CategorisationInfoSpec extends SpecBase {
               "themeId1",
               Seq(ExemptionResponse("exemptionId2", ExemptionType.AdditionalCode)),
               "regulationId2"
-            )
+            ),
+            LegalActResponse("regulationId1", "regulationUrl1", "description1"),
+            LegalActResponse("regulationId2", "regulationUrl2", "description1")
           ),
           descendents = Seq.empty[Descendant]
         )
@@ -507,14 +517,14 @@ class CategorisationInfoSpec extends SpecBase {
             AdditionalCode("exemptionId2", "code2", "description2")
           ),
           "theme description",
-          Some("regulationUrl2")
+          Some("regulationUrl1")
         )
         val expectedAssessmentId3 = CategoryAssessment(
           "assessmentId3",
           1,
           Seq(AdditionalCode("exemptionId2", "code2", "description2")),
           "theme description",
-          Some("regulationUrl1")
+          Some("regulationUrl2")
         )
 
         val expectedAssessments = Seq(
@@ -570,7 +580,8 @@ class CategorisationInfoSpec extends SpecBase {
             CertificateResponse("exemptionId1", "code1", "description1"),
             AdditionalCodeResponse("exemptionId2", "code2", "description2"),
             ThemeResponse("ignoredTheme", 3, "theme description"),
-            CertificateResponse("ignoredExemption", "code3", "description3")
+            CertificateResponse("ignoredExemption", "code3", "description3"),
+            LegalActResponse("regulationId1", "regulationUrl1", "description1")
           ),
           descendents = Seq.empty[Descendant]
         )
@@ -652,7 +663,9 @@ class CategorisationInfoSpec extends SpecBase {
                   "themeId2",
                   Seq.empty,
                   "regulationId1"
-                )
+                ),
+                LegalActResponse("regulationId1", "regulationUrl1", "description1"),
+                LegalActResponse("regulationId2", "regulationUrl2", "description2")
               ),
               descendents = Seq.empty[Descendant]
             )
@@ -738,8 +751,10 @@ class CategorisationInfoSpec extends SpecBase {
                   "assessmentId3",
                   "themeId3",
                   Seq.empty,
-                  "regulationId3"
-                )
+                  "regulationId2"
+                ),
+                LegalActResponse("regulationId1", "regulationUrl1", "description1"),
+                LegalActResponse("regulationId2", "regulationUrl2", "description1")
               ),
               descendents = Seq.empty[Descendant]
             )
@@ -764,7 +779,7 @@ class CategorisationInfoSpec extends SpecBase {
               Some("regulationUrl2")
             )
             val expectedAssessmentId3     =
-              CategoryAssessment("assessmentId3", 2, Seq.empty, "theme description", Some("regulationUrl3"))
+              CategoryAssessment("assessmentId3", 2, Seq.empty, "theme description", Some("regulationUrl2"))
 
             val expectedAssessments = Seq(
               expectedNiphlAssesmentId2,
@@ -839,7 +854,10 @@ class CategorisationInfoSpec extends SpecBase {
                   "themeId3",
                   Seq.empty,
                   "regulationId3"
-                )
+                ),
+                LegalActResponse("regulationId1", "regulationUrl1", "description1"),
+                LegalActResponse("regulationId2", "regulationUrl2", "description2"),
+                LegalActResponse("regulationId3", "regulationUrl3", "description3")
               ),
               descendents = Seq.empty[Descendant]
             )
@@ -951,7 +969,10 @@ class CategorisationInfoSpec extends SpecBase {
                   "regulationId3"
                 ),
                 CertificateResponse("exemptionId3", "code3", "description3"),
-                AdditionalCodeResponse("exemptionId4", "code4", "description4")
+                AdditionalCodeResponse("exemptionId4", "code4", "description4"),
+                LegalActResponse("regulationId1", "regulationUrl1", "description1"),
+                LegalActResponse("regulationId2", "regulationUrl2", "description2"),
+                LegalActResponse("regulationId3", "regulationUrl3", "description3")
               ),
               descendents = Seq.empty[Descendant]
             )
@@ -1060,7 +1081,10 @@ class CategorisationInfoSpec extends SpecBase {
                   "themeId3",
                   Seq.empty,
                   "regulationId3"
-                )
+                ),
+                LegalActResponse("regulationId1", "regulationUrl1", "description1"),
+                LegalActResponse("regulationId2", "regulationUrl2", "description2"),
+                LegalActResponse("regulationId3", "regulationUrl3", "description3")
               ),
               descendents = Seq.empty[Descendant]
             )
@@ -1172,7 +1196,10 @@ class CategorisationInfoSpec extends SpecBase {
                   "regulationId3"
                 ),
                 CertificateResponse("exemptionId3", "code3", "description3"),
-                AdditionalCodeResponse("exemptionId4", "code4", "description4")
+                AdditionalCodeResponse("exemptionId4", "code4", "description4"),
+                LegalActResponse("regulationId1", "regulationUrl1", "description1"),
+                LegalActResponse("regulationId2", "regulationUrl2", "description2"),
+                LegalActResponse("regulationId3", "regulationUrl3", "description3")
               ),
               descendents = Seq.empty[Descendant]
             )
@@ -1277,7 +1304,10 @@ class CategorisationInfoSpec extends SpecBase {
                   "themeId3",
                   Seq.empty,
                   "regulationId3"
-                )
+                ),
+                LegalActResponse("regulationId1", "regulationUrl1", "description1"),
+                LegalActResponse("regulationId2", "regulationUrl2", "description2"),
+                LegalActResponse("regulationId3", "regulationUrl3", "description3")
               ),
               descendents = Seq.empty[Descendant]
             )

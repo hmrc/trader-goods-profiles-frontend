@@ -38,6 +38,12 @@ class CategoryAssessmentResponseSpec extends AnyFreeSpec with Matchers {
               "id"   -> "1",
               "type" -> "theme"
             )
+          ),
+          "regulation" -> Json.obj(
+            "data" -> Json.obj(
+              "id"   -> "regulationId",
+              "type" -> "legal_act"
+            )
           )
         )
       )
@@ -72,6 +78,12 @@ class CategoryAssessmentResponseSpec extends AnyFreeSpec with Matchers {
             "data" -> Json.obj(
               "id"   -> "1",
               "type" -> "theme"
+            )
+          ),
+          "regulation" -> Json.obj(
+            "data" -> Json.obj(
+              "id"   -> "regulationId",
+              "type" -> "legal_act"
             )
           )
         )
