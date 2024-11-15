@@ -25,9 +25,9 @@
         govukCheckboxes: GovukCheckboxes,
 )
 
-@(form: Form[_], mode: Mode, recordId: String, number: Int, codesAndDescriptions: Seq[(String, String)], commodityCode: String, onSubmitAction: Call, themeDescription: String, totalNumber: Int)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, recordId: String, number: Int, codesAndDescriptions: Seq[(String, String)], commodityCode: String, onSubmitAction: Call, themeDescription: String, regulationUrl: Option[String] = None)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("assessment.title", number, totalNumber))) {
+@layout(pageTitle = title(form, messages("assessment.title", number))) {
 
     @formHelper(action = onSubmitAction, Symbol("autoComplete") -> "off") {
 
@@ -35,9 +35,15 @@
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
-        <h1 class="govuk-heading-l">@messages("assessment.heading", number, totalNumber)</h1>
+        <h1 class="govuk-heading-l">@messages("assessment.heading", number)</h1>
         <p class="govuk-body">@messages("assessment.guidance", commodityCode)</p>
         <p class="govuk-body">@themeDescription</p>
+
+        @if(regulationUrl.nonEmpty) {
+            <p class="govuk-body">@messages("assessment.regulationUrl.text")
+                <a target="_blank" href="@regulationUrl" class="govuk-link">@messages("assessment.regulationUrl.linkText")</a>
+            </p>
+        }
 
         <p class="govuk-body">
             <a target="_blank" href="https://www.trade-tariff.service.gov.uk/xi/find_commodity" class="govuk-link">@messages("assessment.linkText")</a>
