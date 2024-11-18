@@ -63,9 +63,6 @@ class FrontendAppConfig @Inject() (configuration: Configuration) {
   val getHistoricProfileEnabled: Boolean =
     configuration.get[Boolean]("features.get-historic-profile")
 
-  val useEisPatchMethod: Boolean =
-    configuration.get[Boolean]("features.use-eis-patch-method")
-
   def languageMap: Map[String, Lang] = Map(
     "en" -> Lang("en"),
     "cy" -> Lang("cy")

@@ -19,7 +19,6 @@ package controllers.goodsRecord
 import cats.data
 import cats.data.EitherNec
 import com.google.inject.Inject
-import config.FrontendAppConfig
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.BaseController
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
@@ -54,8 +53,7 @@ class CyaUpdateRecordController @Inject() (
   goodsRecordConnector: GoodsRecordConnector,
   ottConnector: OttConnector,
   sessionRepository: SessionRepository,
-  navigator: GoodsRecordNavigator,
-  config: FrontendAppConfig
+  navigator: GoodsRecordNavigator
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
@@ -238,16 +236,9 @@ class CyaUpdateRecordController @Inject() (
     newUpdateGoodsRecord: UpdateGoodsRecord
   )(implicit hc: HeaderCarrier): Future[Done] =
     if (newValue != oldValue) {
-      // TODO: remove this flag when EIS has implemented the PATCH method - TGP-2417 and keep the call to patchGoodsRecord as default
-      if (config.useEisPatchMethod) {
         goodsRecordConnector.patchGoodsRecord(
           newUpdateGoodsRecord
         )
-      } else {
-        goodsRecordConnector.updateGoodsRecord(
-          newUpdateGoodsRecord
-        )
-      }
     } else {
       Future.successful(Done)
     }
@@ -259,19 +250,9 @@ class CyaUpdateRecordController @Inject() (
     putRecordRequest: PutRecordRequest
   )(implicit hc: HeaderCarrier): Future[Done] =
     if (newValue != oldValue) {
-
-      // TODO: remove this flag when EIS has implemented the PATCH method - TGP-2417 and keep the call to putGoodsRecord as default
-      if (config.useEisPatchMethod) {
         goodsRecordConnector.putGoodsRecord(
           putRecordRequest,
-          newUpdateGoodsRecord.recordId
-        )
-      } else {
-        goodsRecordConnector.updateGoodsRecord(
-          newUpdateGoodsRecord
-        )
-      }
-
+          newUpdateGoodsRecord.recordId)
     } else {
       Future.successful(Done)
     }
