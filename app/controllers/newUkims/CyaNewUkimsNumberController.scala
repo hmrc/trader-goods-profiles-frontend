@@ -20,7 +20,8 @@ import cats.data
 import cats.data.EitherNec
 import connectors.TraderProfileConnector
 import controllers.actions._
-import controllers.{BaseController, routes}
+import controllers.BaseController
+import controllers.newUkims.{routes => newUkimsRoutes}
 import models.{NormalMode, TraderProfile, ValidationError}
 import navigation.NewUkimsNavigator
 import pages.newUkims.NewUkimsNumberPage
@@ -62,7 +63,11 @@ class CyaNewUkimsNumberController @Inject() (
           )
           Ok(view(list))
         case Left(errors)    =>
-          logErrorsAndContinue(errorMessage, routes.HomePageController.onPageLoad(), errors)
+          logErrorsAndContinue(
+            errorMessage,
+            newUkimsRoutes.UkimsNumberChangeController.onPageLoad(),
+            errors
+          )
       }
   }
 
@@ -78,7 +83,10 @@ class CyaNewUkimsNumberController @Inject() (
       _                          <- sessionRepository.set(updatedAnswersRemovedUkims)
     } yield Redirect(navigator.nextPage(CyaNewUkimsNumberPage, NormalMode, updatedAnswersRemovedUkims))).recover {
       case e: TraderProfileBuildFailure =>
-        logErrorsAndContinue(e.getMessage, routes.HomePageController.onPageLoad())
+        logErrorsAndContinue(
+          e.getMessage,
+          newUkimsRoutes.UkimsNumberChangeController.onPageLoad()
+        )
     }
   }
 

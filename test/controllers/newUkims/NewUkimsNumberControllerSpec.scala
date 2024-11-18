@@ -38,9 +38,7 @@ class NewUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
   val formProvider = new UkimsNumberFormProvider()
 
-  private val oldProfile = TraderProfile(testEori, "oldUkims", None, None, eoriChanged = true)
-
-  private val form = formProvider().fill(oldProfile.ukimsNumber)
+  private val form = formProvider()
 
   val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
 
@@ -53,8 +51,6 @@ class NewUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
     val newUkimsNumberRoute = controllers.newUkims.routes.NewUkimsNumberController.onPageLoad(NormalMode).url
 
     "must return OK and the correct view for a GET" in {
-
-      when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(oldProfile)
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
@@ -82,8 +78,6 @@ class NewUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-
-      when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(oldProfile)
 
       val userAnswers = UserAnswers(userAnswersId).set(NewUkimsNumberPage, "answer").success.value
 

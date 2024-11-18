@@ -49,19 +49,13 @@ class NewUkimsNumberController @Inject() (
   private val form = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
-      request.userAnswers.get(NewUkimsNumberPage) match {
-        case None        =>
-          traderProfileConnector.getTraderProfile(request.eori).map { profile =>
-            Ok(
-              view(form.fill(profile.ukimsNumber), controllers.newUkims.routes.NewUkimsNumberController.onSubmit(mode))
-            )
-          }
-        case Some(value) =>
-          Future.successful(
-            Ok(view(form.fill(value), controllers.newUkims.routes.NewUkimsNumberController.onSubmit(mode)))
-          )
+    (identify andThen getData andThen requireData) { implicit request =>
+      val preparedForm = request.userAnswers.get(NewUkimsNumberPage) match {
+        case None        => form
+        case Some(value) => form.fill(value)
       }
+
+      Ok(view(preparedForm, controllers.newUkims.routes.NewUkimsNumberController.onSubmit(mode)))
     }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {

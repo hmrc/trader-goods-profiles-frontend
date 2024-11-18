@@ -19,21 +19,18 @@ package controllers.newUkims
 import base.SpecBase
 import base.TestConstants.testEori
 import connectors.TraderProfileConnector
-import controllers.routes
-import models.{TraderProfile, UserAnswers}
+import models.TraderProfile
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{atLeastOnce, never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.newUkims.NewUkimsNumberPage
-import play.api.Application
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{running, _}
 import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
-import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import viewmodels.checkAnswers.NewUkimsNumberSummary
 import viewmodels.govuk.SummaryListFluency
@@ -43,7 +40,7 @@ import scala.concurrent.Future
 
 class CyaNewUkimsNumberControllerSpec extends SpecBase with SummaryListFluency with MockitoSugar {
 
-  private lazy val journeyRecoveryContinueUrl = routes.HomePageController.onPageLoad().url
+  private lazy val journeyRecoveryContinueUrl = routes.UkimsNumberChangeController.onPageLoad().url
 
   "CyaNewUkimsNumber Controller" - {
 
@@ -156,7 +153,7 @@ class CyaNewUkimsNumberControllerSpec extends SpecBase with SummaryListFluency w
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual routes.HomePageController.onPageLoad().url
+            redirectLocation(result).value mustEqual controllers.routes.HomePageController.onPageLoad().url
             verify(mockTraderProfileConnector, atLeastOnce())
               .submitTraderProfile(eqTo(updatedTraderProfile), eqTo(testEori))(any())
           }
