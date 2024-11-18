@@ -21,9 +21,8 @@ import controllers.BaseController
 import controllers.actions._
 import forms.profile.UkimsNumberFormProvider
 import models.Mode
-import navigation.Navigation
+import navigation.NewUkimsNavigator
 import pages.newUkims.NewUkimsNumberPage
-import pages.profile.UkimsNumberPage
 import play.api.data.{Form, FormError}
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -36,7 +35,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class NewUkimsNumberController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
-  navigator: Navigation, //todo change to newUkimsNavigator when ticket TGP-2700 is completed
+  navigator: NewUkimsNavigator,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
@@ -50,13 +49,19 @@ class NewUkimsNumberController @Inject() (
   private val form = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
-    (identify andThen getData andThen requireData) { implicit request =>
-      val preparedForm = request.userAnswers.get(UkimsNumberPage) match {
-        case None        => form
-        case Some(value) => form.fill(value)
+    (identify andThen getData andThen requireData).async { implicit request =>
+      request.userAnswers.get(NewUkimsNumberPage) match {
+        case None        =>
+          traderProfileConnector.getTraderProfile(request.eori).map { profile =>
+            Ok(
+              view(form.fill(profile.ukimsNumber), controllers.newUkims.routes.NewUkimsNumberController.onSubmit(mode))
+            )
+          }
+        case Some(value) =>
+          Future.successful(
+            Ok(view(form.fill(value), controllers.newUkims.routes.NewUkimsNumberController.onSubmit(mode)))
+          )
       }
-
-      Ok(view(preparedForm, controllers.newUkims.routes.NewUkimsNumberController.onSubmit(mode)))
     }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {

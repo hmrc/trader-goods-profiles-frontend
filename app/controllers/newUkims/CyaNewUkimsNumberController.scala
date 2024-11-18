@@ -22,13 +22,14 @@ import connectors.TraderProfileConnector
 import controllers.actions._
 import controllers.{BaseController, routes}
 import models.{NormalMode, TraderProfile, ValidationError}
-import navigation.ProfileNavigator
-import pages.profile.{CyaNewUkimsNumberPage, UkimsNumberUpdatePage}
+import navigation.NewUkimsNavigator
+import pages.newUkims.NewUkimsNumberPage
+import pages.profile.CyaNewUkimsNumberPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import services.AuditService
-import viewmodels.checkAnswers.profile.UkimsNumberSummary
+import viewmodels.checkAnswers.NewUkimsNumberSummary
 import viewmodels.govuk.summarylist._
 import views.html.newUkims.CyaNewUkimsNumberView
 
@@ -44,7 +45,7 @@ class CyaNewUkimsNumberController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: CyaNewUkimsNumberView,
   traderProfileConnector: TraderProfileConnector,
-  navigator: ProfileNavigator, //todo change to newUkimsNavigator when ticket TGP-2700 is completed
+  navigator: NewUkimsNavigator,
   auditService: AuditService,
   sessionRepository: SessionRepository
 )(implicit ec: ExecutionContext)
@@ -54,31 +55,28 @@ class CyaNewUkimsNumberController @Inject() (
 
   def onPageLoad(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
     implicit request =>
-      // TODO validateUkimsNumber validate the UkimsNumberUpdatePage. Needs a new method with NewUkimsNumberPage TGP-2699
-      TraderProfile.validateUkimsNumber(request.userAnswers) match {
-        case Right(_)     =>
+      TraderProfile.validateNewUkimsNumber(request.userAnswers) match {
+        case Right(newUkims) =>
           val list = SummaryListViewModel(
-            // TODO This needs to be changed to NewUkimsNumberPageSummary.row TGP-2699
-            rows = Seq(UkimsNumberSummary.rowUpdate(request.userAnswers)).flatten
+            rows = Seq(NewUkimsNumberSummary.row(newUkims))
           )
           Ok(view(list))
-        case Left(errors) =>
+        case Left(errors)    =>
           logErrorsAndContinue(errorMessage, routes.HomePageController.onPageLoad(), errors)
       }
   }
 
   def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
     (for {
-      ukimsNumber                <- handleValidateError(TraderProfile.validateUkimsNumber(request.userAnswers))
+      ukimsNumber                <- handleValidateError(TraderProfile.validateNewUkimsNumber(request.userAnswers))
       oldTraderProfile           <- traderProfileConnector.getTraderProfile(request.eori)
       newTraderProfile           <- Future.successful(oldTraderProfile.copy(ukimsNumber = ukimsNumber))
       _                           = auditService.auditMaintainProfile(oldTraderProfile, newTraderProfile, request.affinityGroup)
       _                          <- traderProfileConnector.submitTraderProfile(newTraderProfile, request.eori)
-      // TODO UkimsNumberUpdatePage needs to be updated with NewUkimsNumberPage TGP-2699
       updatedAnswersRemovedUkims <-
-        Future.fromTry(request.userAnswers.remove(UkimsNumberUpdatePage))
+        Future.fromTry(request.userAnswers.remove(NewUkimsNumberPage))
       _                          <- sessionRepository.set(updatedAnswersRemovedUkims)
-    } yield Redirect(navigator.nextPage(CyaNewUkimsNumberPage, NormalMode, request.userAnswers))).recover {
+    } yield Redirect(navigator.nextPage(CyaNewUkimsNumberPage, NormalMode, updatedAnswersRemovedUkims))).recover {
       case e: TraderProfileBuildFailure =>
         logErrorsAndContinue(e.getMessage, routes.HomePageController.onPageLoad())
     }

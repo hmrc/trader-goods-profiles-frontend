@@ -5,6 +5,7 @@ GET         /new/ukims-number/check                                    controlle
 POST        /new/ukims-number/check                                    controllers.newUkims.NewUkimsNumberController.onSubmit(mode: Mode = CheckMode)
 
 GET         /new/ukims-number-change                                   controllers.newUkims.UkimsNumberChangeController.onPageLoad()
+POST        /new/ukims-number-change                                   controllers.newUkims.UkimsNumberChangeController.onSubmit()
 
 GET         /new/ukims-number-cya                                      controllers.newUkims.CyaNewUkimsNumberController.onPageLoad()
 POST        /new/ukims-number-cya                                      controllers.newUkims.CyaNewUkimsNumberController.onSubmit()

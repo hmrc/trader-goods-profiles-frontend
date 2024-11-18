@@ -696,6 +696,8 @@ cyaMaintainProfile.warningText = You need to make sure these details are correct
 
 cyaNewUkimsNumber.title = Check your answers for your new UKIMS number
 cyaNewUkimsNumber.heading = Check your answers for your new UKIMS number
+cyaNewUkimsNumber.warning = Warning
+cyaNewUkimsNumber.warningText = You need to make sure these details are correct. Any details that are wrong in your Trader Goods Profile and used to create movements, will not be valid.
 
 fileManagement.title = TGP records files
 fileManagement.heading = TGP records files

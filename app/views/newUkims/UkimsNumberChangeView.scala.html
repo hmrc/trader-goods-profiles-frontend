@@ -22,14 +22,14 @@
         formHelper: FormWithCSRF
 )
 
-@()(implicit request: Request[_], messages: Messages, mode:Mode = NormalMode)
+@()(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("ukimsNumberChangeController.title"))) {
 
     <h1 class="govuk-heading-l">@messages("ukimsNumberChangeController.heading")</h1>
     <p class="govuk-body">@messages("ukimsNumberChangeController.paragraph")</p>
 
-   @formHelper(action = controllers.profile.routes.UkimsNumberController.onPageLoadUpdate(mode)){
+   @formHelper(action = controllers.newUkims.routes.UkimsNumberChangeController.onSubmit()){
       @govukButton(ButtonViewModel(messages("ukimsNumberChangeController.button")))
    }
 
