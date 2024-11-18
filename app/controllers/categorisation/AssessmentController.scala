@@ -78,7 +78,7 @@ class AssessmentController @Inject() (
                     categorisationInfo.commodityCode,
                     submitAction,
                     assessment.themeDescription,
-                    categorisationInfo.categoryAssessmentsThatNeedAnswers.size
+                    assessment.regulationUrl
                   )
                 )
               }
@@ -112,7 +112,7 @@ class AssessmentController @Inject() (
                     categorisationInfo.commodityCode,
                     submitAction,
                     assessment.themeDescription,
-                    categorisationInfo.categoryAssessmentsThatNeedAnswers.size
+                    assessment.regulationUrl
                   )
                 )
               }
@@ -149,7 +149,7 @@ class AssessmentController @Inject() (
                             categorisationInfo.commodityCode,
                             submitAction,
                             assessment.themeDescription,
-                            categorisationInfo.categoryAssessmentsThatNeedAnswers.size
+                            assessment.regulationUrl
                           )
                         )
                       ),
@@ -199,7 +199,7 @@ class AssessmentController @Inject() (
                             categorisationInfo.commodityCode,
                             submitAction,
                             assessment.themeDescription,
-                            categorisationInfo.categoryAssessmentsThatNeedAnswers.size
+                            assessment.regulationUrl
                           )
                         )
                       ),

@@ -408,8 +408,8 @@ categoryGuidance.p3.2 = Categori 2 – nwyddau sy’n cael eu rheoli ac sydd ang
 categoryGuidance.p3.3 = Safonol – nwyddau sy’n gallu defnyddio SPIMM
 categoryGuidance.p4 = Bydd angen i chi wybod rhif tystysgrif neu enw unrhyw eithriadau s’n berthnasol ar gyfer eich nwyddau. Rhifau tystysgrif enghreifftiol yw C644, Y929 neu C640. Os byddwch yn cael eithriad newydd, byddwch yn gallu ei newid yn nes ymlaen.
 
-assessment.title = Asesiadau categori {0} o {1}
-assessment.heading = Asesiadau categori {0} o {1}
+assessment.title = Asesiadau categori {0}
+assessment.heading = Asesiadau categori {0}
 assessment.linkText = Defnyddiwch yr Offeryn Tariff Ar-lein (yn agor tab newydd) i chwilio am god nwyddau.
 assessment.question = Pa un o'r eithriadau hyn sydd gennych ar gyfer {0}?
 assessment.hint = Dewiswch bob un sy’n berthnasol.
@@ -420,6 +420,8 @@ assessment.checkYourAnswersLabel = Asesiadau categori {0} o {1}
 assessment.none = Dim
 assessment.guidance = Mae angen i chi gadarnhau p’un o’r eithriadau hyn sydd gennych ar gyfer {0}. Y thema ar gyfer yr asesiad hwn yw:
 assessment.error.required = Dewiswch yr eithriadau sydd gennych, neu dewiswch ‘Dim un o’r uchod’
+assessment.regulationUrl.text =  Os oes angen rhagor o wybodaeth arnoch am y thema a’r eithriadau, gallwch
+assessment.regulationUrl.linkText = ddarllen y ddogfen Reoliadau UE (yn agor tab newydd).
 
 
 expiredCommodityCode.title = Mae problem wedi codi
@@ -510,8 +512,8 @@ goodsRecordSearchResultEmptyView.title = Does dim canlyniadau cyfatebol
 goodsRecordSearchResultEmptyView.h1 = Does dim canlyniadau cyfatebol
 goodsRecordSearchResultEmptyView.p1 = Roeddech yn chwilio am y term {0}.
 
-existingUkimsNumber.title = Rhif Cynllun Marchnad Fewnol y DU (UKIMS)
-existingUkimsNumber.h1 = Rhif Cynllun Marchnad Fewnol y DU (UKIMS)
+existingUkimsNumber.title = Rhif presennol ar gyfer Cynllun Marchnad Fewnol y DU (UKIMS)
+existingUkimsNumber.h1 = Rhif presennol ar gyfer Cynllun Marchnad Fewnol y DU (UKIMS)
 existingUkimsNumber.h2 = Ai dyma’r rhif UKIMS cywir ar eich cyfer o hyd?
 existingUkimsNumber.p1 = Rydych wedi defnyddio’r rhif UKIMS {0} ar ddatganiadau blaenorol.
 existingUkimsNumber.error.required = Dewiswch a’i dyma’r rhif UKIMS cywir
