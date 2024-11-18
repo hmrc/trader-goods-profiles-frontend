@@ -17,60 +17,87 @@
 package utils
 
 import base.SpecBase
-import play.api.i18n.MessagesApi
+
 import java.nio.file.{Files, Paths}
-import scala.jdk.CollectionConverters._
+import scala.io.Source
+import scala.jdk.CollectionConverters.{CollectionHasAsScala, IteratorHasAsScala}
 
 class MessagesSpec extends SpecBase {
 
-  lazy val messages = applicationBuilder().build().injector.instanceOf[MessagesApi].messages
-  lazy val english = messages("en")
-  lazy val welsh = messages("cy")
+  lazy val english = loadMessages("en")
+  lazy val welsh   = loadMessages("cy")
 
-  "messages" - {
+  // Used to search for instances of keys in files to check for usage
+  lazy val appFiles: List[java.nio.file.Path] =
+    Files
+      .walk(Paths.get("app"))
+      .filter(Files.isRegularFile(_))
+      .filter(path => path.toString.endsWith(".scala") || path.toString.endsWith(".scala.html"))
+      .iterator()
+      .asScala
+      .toList
+
+  // Loaded via file because the MessagesAPI sometimes adds some extra keys not present in the messages files
+  private def loadMessages(language: String): Map[String, String] = {
+    val messagesPath = Paths.get(s"conf/messages.$language")
+    if (Files.exists(messagesPath)) {
+      Source
+        .fromFile(messagesPath.toFile, "UTF-8")
+        .getLines()
+        .filterNot(_.trim.startsWith("#"))
+        .filter(_.contains("="))
+        .map { line =>
+          val split = line.split("=", 2)
+          split(0).trim -> split(1).trim
+        }
+        .toMap
+    } else {
+      Map.empty
+    }
+  }
+
+  private def findUnusedKeys(keys: Set[String], files: List[java.nio.file.Path]): Set[String] =
+    keys.filterNot { key =>
+      files.exists { file =>
+        val content = Files.readAllLines(file).asScala.mkString(" ")
+        content.contains(key)
+      }
+    }
+
+  // Currently prints instead of failing because further welsh may be added. Can't use log.warn because the logging level of tests is set to OFF.
+  private def failAndShowKeys(message: String, keys: Set[String], translations: Map[String, String]): Unit =
+    if (keys.nonEmpty) {
+      val sortedKeys  = keys.toSeq.sortBy(_.charAt(0))
+      val warningText = sortedKeys.foldLeft(s"$message (${keys.size}) = ") { (acc, key) =>
+        acc + s"\n$key"
+      }
+      println("\n" + warningText + ("\n" * 2))
+    }
+
+  "english messages" - {
 
     "must be used somewhere in the code" in {
-      val appPath = "/Users/Ewan.Donovan/git/git3/trader-goods-profiles-frontend/app"
-
-      val allFiles = Files.walk(Paths.get(appPath))
-        .filter(Files.isRegularFile(_))
-        .filter(path => path.toString.endsWith(".scala") || path.toString.endsWith(".scala.html"))
-        .iterator()
-        .asScala
-        .toList
-
-      val missingKeys = english.keySet.filterNot { key =>
-        allFiles.exists { file =>
-          val content = Files.readAllLines(file).asScala.mkString(" ")
-          content.contains(key)
-        }
-      }
-
-      if (missingKeys.nonEmpty) {
-        val warningText = missingKeys.foldLeft(
-          s"Warning: There are ${missingKeys.size} unused message keys in the codebase:"
-        ) { case (warningString, key) =>
-          warningString + s"\n$key: ${english(key)}"
-        }
-
-        println("\n" + warningText + ("\n"*2))
-      }
+      val missingKeys = findUnusedKeys(english.keySet, appFiles)
+      failAndShowKeys("Warning: There are unused English message keys in the codebase", missingKeys, english)
     }
-
 
     "must have a welsh translation" in {
-      val missingWelshKeys = english.keySet.filterNot(welsh.keySet)
+      val missingWelshKeys = english.keySet.diff(welsh.keySet)
+      failAndShowKeys("Warning: There are English message keys missing Welsh translations", missingWelshKeys, english)
+    }
+  }
 
-      if (missingWelshKeys.nonEmpty) {
-        val failureText = missingWelshKeys.foldLeft(
-          s"Warning: There are ${missingWelshKeys.size} message keys missing Welsh translations:"
-        ) { case (failureString, key) =>
-          failureString + s"\n$key: ${english(key)}"
-        }
+  "welsh messages" - {
 
-        println("\n" + failureText + ("\n"*2))
-      }
+    "must be used somewhere in the code" in {
+      val missingKeys = findUnusedKeys(welsh.keySet, appFiles)
+      failAndShowKeys("Warning: There are unused Welsh message keys in the codebase", missingKeys, english)
     }
 
+    "must have an english translation" in {
+      val missingEnglishKeys = welsh.keySet.diff(english.keySet)
+      failAndShowKeys("Warning: There are Welsh message keys missing English translations", missingEnglishKeys, welsh)
+    }
   }
+
 }
