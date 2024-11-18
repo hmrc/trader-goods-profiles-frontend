@@ -663,8 +663,8 @@ downloadRequestSuccess.p2 = You will have a notification when you sign in to you
 downloadRequestSuccess.p3 = The TGP records file will be available for 30 days from when we let you know it is ready.
 
 
-existingUkimsNumber.title = UK Internal Market Scheme (UKIMS) number
-existingUkimsNumber.h1 = UK Internal Market Scheme (UKIMS) number
+existingUkimsNumber.title = Existing UK Internal Market Scheme (UKIMS) number
+existingUkimsNumber.h1 = Existing UK Internal Market Scheme (UKIMS) number
 existingUkimsNumber.h2 = Is this still the correct UKIMS number for you?
 existingUkimsNumber.p1 = You’ve used UKIMS number {0} on previous declarations.
 existingUkimsNumber.error.required = Select if this is the correct UKIMS number

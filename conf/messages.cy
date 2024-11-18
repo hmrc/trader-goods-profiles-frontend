@@ -508,8 +508,8 @@ goodsRecordSearchResultEmptyView.title = Does dim canlyniadau cyfatebol
 goodsRecordSearchResultEmptyView.h1 = Does dim canlyniadau cyfatebol
 goodsRecordSearchResultEmptyView.p1 = Roeddech yn chwilio am y term {0}.
 
-existingUkimsNumber.title = Rhif Cynllun Marchnad Fewnol y DU (UKIMS)
-existingUkimsNumber.h1 = Rhif Cynllun Marchnad Fewnol y DU (UKIMS)
+existingUkimsNumber.title = Rhif presennol ar gyfer Cynllun Marchnad Fewnol y DU (UKIMS)
+existingUkimsNumber.h1 = Rhif presennol ar gyfer Cynllun Marchnad Fewnol y DU (UKIMS)
 existingUkimsNumber.h2 = Ai dyma’r rhif UKIMS cywir ar eich cyfer o hyd?
 
 cyaMaintainProfile.title.ukimsNumber = Gwiriwch eich atebion ar gyfer newid eich rhif UKIMS
