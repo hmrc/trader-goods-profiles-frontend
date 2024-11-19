@@ -240,6 +240,8 @@ class AssessmentController @Inject() (
     )
   }
 
+  // This ensures that re-categorisation data is cleansed when the user navigates back
+  // from re-categorisation to categorisation using the back navigation button.
   private def cleanupReCategorisationData(
     userAnswers: UserAnswers,
     recordId: String
