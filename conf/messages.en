@@ -14,6 +14,7 @@ site.govuk = GOV.UK
 site.or = or
 site.search = Search
 site.goToHomePage = Go to homepage
+site.view = View
 
 site.goBackToGoodsRecord = Go back to goods record
 site.goBackToGoodsProfile = Go back to goods profile

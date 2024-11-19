@@ -18,6 +18,7 @@ site.or = neu
 site.search = Chwilio
 site.removeThisGoodsRecord = Tynnwch y cofnod nwyddau hwn
 site.goBackToTGPRecords = Ewch i ffeiliau cofnodion TGP
+site.view = bwrw golwg
 
 
 date.day = Diwrnod
