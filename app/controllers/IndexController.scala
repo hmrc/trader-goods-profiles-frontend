@@ -37,17 +37,23 @@ class IndexController @Inject() (
     extends BaseController {
 
   def onPageLoad: Action[AnyContent] = identify.async { implicit request =>
+    def checkProfileAndContinue =
+      traderProfileConnector.checkTraderProfile(request.eori).flatMap {
+        case true  => eoriChanged(request)
+        case false => Future.successful(Redirect(controllers.profile.routes.ProfileSetupController.onPageLoad()))
+      }
+
     if (config.downloadFileEnabled) {
       downloadDataConnector.getEmail(request.eori).flatMap {
         case Some(_) =>
-          eoriChanged(request)
+          checkProfileAndContinue
         case None    =>
           Future.successful(
             Redirect(url"${config.customsEmailUrl}/manage-email-cds/service/trader-goods-profiles".toString)
           )
       }
     } else {
-      eoriChanged(request)
+      checkProfileAndContinue
     }
   }
 
