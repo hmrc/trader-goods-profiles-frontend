@@ -24,6 +24,7 @@ import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{atLeastOnce, never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar.mock
 import pages.newUkims.NewUkimsNumberPage
 import play.api.inject.bind
 import play.api.test.FakeRequest
@@ -42,7 +43,7 @@ class CyaNewUkimsNumberControllerSpec extends SpecBase with SummaryListFluency w
 
   private lazy val journeyRecoveryContinueUrl = routes.UkimsNumberChangeController.onPageLoad().url
 
-  "CyaNewUkimsNumber Controller" - {
+  "CyaNewUkimsNumberController" - {
 
     "UKIMS Number" - {
 
@@ -57,7 +58,8 @@ class CyaNewUkimsNumberControllerSpec extends SpecBase with SummaryListFluency w
             .success
             .value
 
-          val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+          val application =
+            applicationBuilder(userAnswers = Some(userAnswers)).build()
 
           running(application) {
             val list = SummaryListViewModel(
