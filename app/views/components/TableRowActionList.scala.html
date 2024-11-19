@@ -25,12 +25,14 @@
     </a>
 </p>
 
-@if(adviceStatus == "Not Requested") {
-    <p class="govuk-body">
-        <a href="@href2" class="govuk-link">
-            @text2
-            <span class="govuk-visually-hidden">@visuallyHiddenContent2</span>
-        </a>
-    </p>
+@adviceStatus match {
+    case "Requested" | "In progress" | "Information Requested" => {
+        <p class="govuk-body">
+            <a href="@href2" class="govuk-link">
+                @text2
+                <span class="govuk-visually-hidden">@visuallyHiddenContent2</span>
+            </a>
+        </p>
+    }
+    case _ => {}
 }
-
