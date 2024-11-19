@@ -16,17 +16,21 @@
 
 @this()
 
-@(text1:String, text2:String, visuallyHiddenContent1:String, visuallyHiddenContent2:String, href1:String, href2:String)
+@(text1: String, text2: String, visuallyHiddenContent1: String, visuallyHiddenContent2: String, href1: String, href2: String, adviceStatus: String)
 
-    <p class="govuk-body">
-        <a href="@href1" class="govuk-link">
-            @text1
-            <span class="govuk-visually-hidden">@visuallyHiddenContent1</span>
-        </a>
-    </p>
+<p class="govuk-body">
+    <a href="@href1" class="govuk-link">
+        @text1
+        <span class="govuk-visually-hidden">@visuallyHiddenContent1</span>
+    </a>
+</p>
+
+@if(adviceStatus == "Not Requested") {
     <p class="govuk-body">
         <a href="@href2" class="govuk-link">
             @text2
             <span class="govuk-visually-hidden">@visuallyHiddenContent2</span>
         </a>
     </p>
+}
+
