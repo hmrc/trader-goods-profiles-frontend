@@ -35,10 +35,15 @@ class NewUkimsNavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
     "when in Normal mode" - {
 
-      "must go from a page that doesn't exist in the route map to Index" in {
+      "must go from a page that doesn't exist in the route map to Journey Recovery" in {
+        val continueUrl = RedirectUrl(newUkimsRoutes.UkimsNumberChangeController.onPageLoad().url)
 
         case object UnknownPage extends Page
-        navigator.nextPage(UnknownPage, NormalMode, emptyUserAnswers) mustBe routes.IndexController.onPageLoad()
+        navigator.nextPage(
+          UnknownPage,
+          NormalMode,
+          emptyUserAnswers
+        ) mustBe controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(continueUrl))
       }
 
       "within the new UKIMS number update journey" - {
@@ -73,20 +78,13 @@ class NewUkimsNavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
       "must go from a page that doesn't exist in the edit route map to Journey Recovery" in {
         val continueUrl = RedirectUrl(newUkimsRoutes.UkimsNumberChangeController.onPageLoad().url)
+
         case object UnknownPage extends Page
         navigator.nextPage(
           UnknownPage,
           CheckMode,
           emptyUserAnswers
         ) mustBe controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(continueUrl))
-      }
-
-      "must go from UkimsNumberChangePage to NewUkimsNumberController" in {
-        navigator.nextPage(
-          UkimsNumberChangePage,
-          CheckMode,
-          emptyUserAnswers
-        ) mustBe newUkimsRoutes.NewUkimsNumberController.onPageLoad(CheckMode)
       }
 
       "must go from NewUkimsNumberPage to CyaNewUkimsNumberController" in {

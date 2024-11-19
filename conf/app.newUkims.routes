@@ -1,6 +1,5 @@
 GET         /new/ukims-number                                          controllers.newUkims.NewUkimsNumberController.onPageLoad(mode: Mode = NormalMode)
 POST        /new/ukims-number                                          controllers.newUkims.NewUkimsNumberController.onSubmit(mode: Mode = NormalMode)
-
 GET         /new/ukims-number/check                                    controllers.newUkims.NewUkimsNumberController.onPageLoad(mode: Mode = CheckMode)
 POST        /new/ukims-number/check                                    controllers.newUkims.NewUkimsNumberController.onSubmit(mode: Mode = CheckMode)
 

@@ -36,13 +36,11 @@ class NewUkimsNavigator @Inject() extends Navigator {
     case UkimsNumberChangePage => _ => newUkimsRoutes.NewUkimsNumberController.onPageLoad(NormalMode)
     case NewUkimsNumberPage    => _ => newUkimsRoutes.CyaNewUkimsNumberController.onPageLoad()
     case CyaNewUkimsNumberPage => _ => routes.HomePageController.onPageLoad()
-    case _                     => _ => routes.IndexController.onPageLoad()
+    case _                     => _ => controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(continueUrl))
   }
 
   val checkRoutes: Page => UserAnswers => Call = {
-    case UkimsNumberChangePage => _ => newUkimsRoutes.NewUkimsNumberController.onPageLoad(CheckMode)
-    case NewUkimsNumberPage    => _ => newUkimsRoutes.CyaNewUkimsNumberController.onPageLoad()
-    case CyaNewUkimsNumberPage => _ => newUkimsRoutes.NewUkimsNumberController.onPageLoad(CheckMode)
-    case _                     => _ => controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(continueUrl))
+    case NewUkimsNumberPage => _ => newUkimsRoutes.CyaNewUkimsNumberController.onPageLoad()
+    case _                  => _ => controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(continueUrl))
   }
 }
