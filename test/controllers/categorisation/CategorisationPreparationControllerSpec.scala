@@ -29,6 +29,7 @@ import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
+import pages.{HasCorrectGoodsLongerCommodityCodePage, LongerCommodityCodePage}
 import pages.categorisation.{HasSupplementaryUnitPage, SupplementaryUnitPage}
 import play.api.inject.bind
 import play.api.mvc.Call
@@ -130,6 +131,10 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
             val finalUserAnswers = uaArgCaptor.getValue
 
             finalUserAnswers.get(CategorisationDetailsQuery(testRecordId)).get mustBe categorisationInfo
+
+            finalUserAnswers.get(LongerCategorisationDetailsQuery(testRecordId)) mustBe None
+            finalUserAnswers.get(LongerCommodityCodePage(testRecordId)) mustBe None
+            finalUserAnswers.get(HasCorrectGoodsLongerCommodityCodePage(testRecordId)) mustBe None
           }
 
           withClue("must not get category result from categorisation service as not needed") {
