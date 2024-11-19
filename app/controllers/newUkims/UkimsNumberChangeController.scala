@@ -36,19 +36,24 @@ class UkimsNumberChangeController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: UkimsNumberChangeView,
   navigator: NewUkimsNavigator,
+  profileAuth: ProfileAuthenticateAction,
+  checkEori: EoriCheckAction,
   sessionRepository: SessionRepository
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(): Action[AnyContent] = (identify andThen getOrCreate) { implicit request =>
-    Ok(view())
+  def onPageLoad(): Action[AnyContent] = (identify andThen profileAuth andThen checkEori andThen getOrCreate) {
+    implicit request =>
+      Ok(view())
   }
 
-  def onSubmit(): Action[AnyContent] = (identify andThen getOrCreate).async { implicit request =>
-    for {
-      updatedAnswers <- Future.fromTry(request.userAnswers.remove(NewUkimsNumberPage))
-      _              <- sessionRepository.set(updatedAnswers)
-    } yield Redirect(navigator.nextPage(UkimsNumberChangePage, NormalMode, updatedAnswers))
+  def onSubmit(): Action[AnyContent] = (identify andThen profileAuth andThen checkEori andThen getOrCreate).async {
+    implicit request =>
+      for {
+        updatedAnswers <- Future.fromTry(request.userAnswers.remove(NewUkimsNumberPage))
+
+        _ <- sessionRepository.set(updatedAnswers)
+      } yield Redirect(navigator.nextPage(UkimsNumberChangePage, NormalMode, updatedAnswers))
   }
 }

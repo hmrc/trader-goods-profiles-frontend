@@ -30,6 +30,7 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import services.AuditService
+import utils.SessionData.{dataUpdated, newUkimsNumberPage, pageUpdated}
 import viewmodels.checkAnswers.NewUkimsNumberSummary
 import viewmodels.govuk.summarylist._
 import views.html.newUkims.CyaNewUkimsNumberView
@@ -47,6 +48,7 @@ class CyaNewUkimsNumberController @Inject() (
   view: CyaNewUkimsNumberView,
   traderProfileConnector: TraderProfileConnector,
   navigator: NewUkimsNavigator,
+  checkEori: EoriCheckAction,
   auditService: AuditService,
   sessionRepository: SessionRepository
 )(implicit ec: ExecutionContext)
@@ -54,14 +56,14 @@ class CyaNewUkimsNumberController @Inject() (
 
   private val errorMessage: String = "Unable to update new Ukims number in Trader profile."
 
-  def onPageLoad(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
-    implicit request =>
+  def onPageLoad(): Action[AnyContent] =
+    (identify andThen profileAuth andThen checkEori andThen getData andThen requireData) { implicit request =>
       TraderProfile.validateNewUkimsNumber(request.userAnswers) match {
         case Right(newUkims) =>
           val list = SummaryListViewModel(
             rows = Seq(NewUkimsNumberSummary.row(newUkims))
           )
-          Ok(view(list))
+          Ok(view(list)).removingFromSession(dataUpdated, pageUpdated)
         case Left(errors)    =>
           logErrorsAndContinue(
             errorMessage,
@@ -69,26 +71,28 @@ class CyaNewUkimsNumberController @Inject() (
             errors
           )
       }
-  }
+    }
 
-  def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
-    (for {
-      ukimsNumber                <- handleValidateError(TraderProfile.validateNewUkimsNumber(request.userAnswers))
-      oldTraderProfile           <- traderProfileConnector.getTraderProfile(request.eori)
-      newTraderProfile           <- Future.successful(oldTraderProfile.copy(ukimsNumber = ukimsNumber))
-      _                           = auditService.auditMaintainProfile(oldTraderProfile, newTraderProfile, request.affinityGroup)
-      _                          <- traderProfileConnector.submitTraderProfile(newTraderProfile, request.eori)
-      updatedAnswersRemovedUkims <-
-        Future.fromTry(request.userAnswers.remove(NewUkimsNumberPage))
-      _                          <- sessionRepository.set(updatedAnswersRemovedUkims)
-    } yield Redirect(navigator.nextPage(CyaNewUkimsNumberPage, NormalMode, updatedAnswersRemovedUkims))).recover {
-      case e: TraderProfileBuildFailure =>
+  def onSubmit(): Action[AnyContent] =
+    (identify andThen profileAuth andThen checkEori andThen getData andThen requireData).async { implicit request =>
+      (for {
+        ukimsNumber                <- handleValidateError(TraderProfile.validateNewUkimsNumber(request.userAnswers))
+        oldTraderProfile           <- traderProfileConnector.getTraderProfile(request.eori)
+        newTraderProfile           <- Future.successful(oldTraderProfile.copy(ukimsNumber = ukimsNumber))
+        _                           = auditService.auditMaintainProfile(oldTraderProfile, newTraderProfile, request.affinityGroup)
+        _                          <- traderProfileConnector.submitTraderProfile(newTraderProfile, request.eori)
+        updatedAnswersRemovedUkims <-
+          Future.fromTry(request.userAnswers.remove(NewUkimsNumberPage))
+        _                          <- sessionRepository.set(updatedAnswersRemovedUkims)
+      } yield Redirect(navigator.nextPage(CyaNewUkimsNumberPage, NormalMode, updatedAnswersRemovedUkims))
+        .addingToSession(dataUpdated -> true.toString)
+        .addingToSession(pageUpdated -> newUkimsNumberPage)).recover { case e: TraderProfileBuildFailure =>
         logErrorsAndContinue(
           e.getMessage,
           newUkimsRoutes.UkimsNumberChangeController.onPageLoad()
         )
+      }
     }
-  }
 
   private def handleValidateError[T](result: EitherNec[ValidationError, T]): Future[T] =
     result match {

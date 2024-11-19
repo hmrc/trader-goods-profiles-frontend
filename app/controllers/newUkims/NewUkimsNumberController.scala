@@ -42,6 +42,8 @@ class NewUkimsNumberController @Inject() (
   formProvider: UkimsNumberFormProvider,
   traderProfileConnector: TraderProfileConnector,
   val controllerComponents: MessagesControllerComponents,
+  profileAuth: ProfileAuthenticateAction,
+  checkEori: EoriCheckAction,
   view: NewUkimsNumberView
 )(implicit ec: ExecutionContext)
     extends BaseController {
@@ -49,7 +51,7 @@ class NewUkimsNumberController @Inject() (
   private val form = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
-    (identify andThen getData andThen requireData) { implicit request =>
+    (identify andThen profileAuth andThen checkEori andThen getData andThen requireData) { implicit request =>
       val preparedForm = request.userAnswers.get(NewUkimsNumberPage) match {
         case None        => form
         case Some(value) => form.fill(value)
@@ -58,8 +60,8 @@ class NewUkimsNumberController @Inject() (
       Ok(view(preparedForm, controllers.newUkims.routes.NewUkimsNumberController.onSubmit(mode)))
     }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
+  def onSubmit(mode: Mode): Action[AnyContent] =
+    (identify andThen profileAuth andThen checkEori andThen getData andThen requireData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(
@@ -82,7 +84,7 @@ class NewUkimsNumberController @Inject() (
                 Redirect(navigator.nextPage(NewUkimsNumberPage, mode, updatedAnswers))
               }
         )
-  }
+    }
 
   private def createFormWithErrors[T](form: Form[T], value: T, errorMessageKey: String, field: String = "value")(
     implicit messages: Messages
