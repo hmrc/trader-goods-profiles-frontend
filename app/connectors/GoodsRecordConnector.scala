@@ -122,12 +122,12 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
   )(implicit
     hc: HeaderCarrier
   ): Future[Done] =
-      httpClient
-        .put(goodsRecordUrl(eori, recordId))
-        .setHeader(clientIdHeader)
-        .withBody(Json.toJson(PutRecordRequest.mapFromCategoryAndComcode(categoryRecord, oldRecord)))
-        .execute[HttpResponse]
-        .map(_ => Done)
+    httpClient
+      .put(goodsRecordUrl(eori, recordId))
+      .setHeader(clientIdHeader)
+      .withBody(Json.toJson(PutRecordRequest.mapFromCategoryAndComcode(categoryRecord, oldRecord)))
+      .execute[HttpResponse]
+      .map(_ => Done)
 
   def updateSupplementaryUnitForGoodsRecord(
     eori: String,
@@ -137,13 +137,12 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
   )(implicit
     hc: HeaderCarrier
   ): Future[Done] =
-      httpClient
-        .put(goodsRecordUrl(eori, recordId))
-        .setHeader(clientIdHeader)
-        .withBody(Json.toJson(PutRecordRequest.mapFromSupplementary(supplementaryRequest, oldRecord)))
-        .execute[HttpResponse]
-        .map(_ => Done)
-
+    httpClient
+      .put(goodsRecordUrl(eori, recordId))
+      .setHeader(clientIdHeader)
+      .withBody(Json.toJson(PutRecordRequest.mapFromSupplementary(supplementaryRequest, oldRecord)))
+      .execute[HttpResponse]
+      .map(_ => Done)
 
   def getRecord(eori: String, recordId: String)(implicit
     hc: HeaderCarrier

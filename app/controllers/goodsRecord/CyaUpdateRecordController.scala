@@ -236,9 +236,9 @@ class CyaUpdateRecordController @Inject() (
     newUpdateGoodsRecord: UpdateGoodsRecord
   )(implicit hc: HeaderCarrier): Future[Done] =
     if (newValue != oldValue) {
-        goodsRecordConnector.patchGoodsRecord(
-          newUpdateGoodsRecord
-        )
+      goodsRecordConnector.patchGoodsRecord(
+        newUpdateGoodsRecord
+      )
     } else {
       Future.successful(Done)
     }
@@ -250,9 +250,7 @@ class CyaUpdateRecordController @Inject() (
     putRecordRequest: PutRecordRequest
   )(implicit hc: HeaderCarrier): Future[Done] =
     if (newValue != oldValue) {
-        goodsRecordConnector.putGoodsRecord(
-          putRecordRequest,
-          newUpdateGoodsRecord.recordId)
+      goodsRecordConnector.putGoodsRecord(putRecordRequest, newUpdateGoodsRecord.recordId)
     } else {
       Future.successful(Done)
     }
