@@ -32,7 +32,7 @@
     @formHelper(action = onSubmitAction, Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
-            @govukErrorSummary(ErrorSummaryViewModel(form))
+            @govukErrorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> codesAndDescriptions.head._1)))
         }
 
         <h1 class="govuk-heading-l">@messages("assessment.heading", number)</h1>
