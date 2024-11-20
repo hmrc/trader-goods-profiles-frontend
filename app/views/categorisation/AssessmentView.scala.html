@@ -62,7 +62,7 @@
                 CheckboxesViewModel(
                     form   = form,
                     name   = "value",
-                    legend = Legend(messages("assessment.question")).withCssClass("govuk-visually-hidden"),
+                    legend = Legend(messages("assessment.question", commodityCode)).withCssClass("govuk-visually-hidden"),
                     items  = codesAndDescriptions.map { item =>
                         CheckboxItem(
                             id = Some(item._1),
@@ -70,7 +70,7 @@
                             content = Text(item._1 + " - " + item._2),
                             value = item._1,
                             checked = form("value[]").value.contains(item._1)
-                        ).withAttribute("aria-describedby", "value-hint")
+                        )
                     } ++ Seq(
                         CheckboxItem(divider = Some(messages("site.or"))),
                         CheckboxItem(
@@ -80,9 +80,9 @@
                             value = "none",
                             checked = form("value[]").value.contains("none"),
                             behaviour = Some(ExclusiveCheckbox)
-                        ).withAttribute("aria-describedby", "value-hint")
+                        )
                     )
-                )
+                ).withAttribute("aria-describedby", "value-hint")
             )
         </div>
 
