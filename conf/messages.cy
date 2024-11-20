@@ -736,5 +736,3 @@ longerCommodityCode.error.required = Nodwch 2 neu 4 digid
 longerCommodityCode.error.invalidFormat = Nodwch god nwyddau yn y fformat cywir
 longerCommodityCode.error.invalid = Nodwch god nwyddau go iawn
 longerCommodityCode.change.hidden = LongerCommodityCode
-
-name.error.length = Nodwch enw gan ddefnyddio 70 o gymeriadau neu lai
