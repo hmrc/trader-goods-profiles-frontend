@@ -24,28 +24,85 @@
 
     <h1 class="govuk-heading-l">@messages("helpAndSupport.h1")</h1>
     <p class="govuk-body">@messages("helpAndSupport.p1")</p>
+
     <h2 class="govuk-heading-m">@messages("helpAndSupport.h2.1")</h2>
-    <p class="govuk-body"><a href="https://www.gov.uk/import-goods-into-uk" target="_blank" class="govuk-link">@messages("helpAndSupport.p2.linkText")</a></p>
-    <p class="govuk-body"><a href="https://www.gov.uk/guidance/trading-and-moving-goods-in-and-out-of-northern-ireland" target="_blank" class="govuk-link">@messages("helpAndSupport.p3.linkText")</a></p>
-    <p class="govuk-body"><a href="https://www.gov.uk/guidance/check-if-you-can-declare-goods-you-bring-into-northern-ireland-not-at-risk-of-moving-to-the-eu" target="_blank" class="govuk-link">@messages("helpAndSupport.p4.linkText")</a></p>
+    <p class="govuk-body">
+        <a href="@routes.OutboundController.redirect(
+            "https://www.gov.uk/import-goods-into-uk", messages("helpAndSupport.p2.linkText"))"
+            target="_blank" class="govuk-link"> @messages("helpAndSupport.p2.linkText")</a>
+    </p>
+    <p class="govuk-body">
+        <a href="@routes.OutboundController.redirect(
+            "https://www.gov.uk/guidance/trading-and-moving-goods-in-and-out-of-northern-ireland", messages("helpAndSupport.p3.linkText"))"
+            target="_blank" class="govuk-link">@messages("helpAndSupport.p3.linkText")</a>
+    </p>
+    <p class="govuk-body">
+        <a href="@routes.OutboundController.redirect(
+            "https://www.gov.uk/guidance/check-if-you-can-declare-goods-you-bring-into-northern-ireland-not-at-risk-of-moving-to-the-eu", messages("helpAndSupport.p4.linkText"))"
+            target="_blank" class="govuk-link">@messages("helpAndSupport.p4.linkText")</a>
+    </p>
+
     <h3 class="govuk-heading-s">@messages("helpAndSupport.h3")</h3>
-    <p class="govuk-body"><a href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/customs-international-trade-and-excise-enquiries" target="_blank" class="govuk-link">@messages("helpAndSupport.p5.linkText")</a></p>
+    <p class="govuk-body">
+        <a href="@routes.OutboundController.redirect(
+            "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/customs-international-trade-and-excise-enquiries", messages("helpAndSupport.p5.linkText"))"
+            target="_blank" class="govuk-link">@messages("helpAndSupport.p5.linkText")</a>
+    </p>
+
     <h2 class="govuk-heading-m">@messages("helpAndSupport.h2.2")</h2>
-    <p class="govuk-body"><a href="https://www.gov.uk/guidance/finding-commodity-codes-for-imports-or-exports?step-by-step-nav=849f71d1-f290-4a8e-9458-add936efefc5" target="_blank" class="govuk-link">@messages("helpAndSupport.p6.linkText")</a></p>
-    <p class="govuk-body"><a href="https://www.trade-tariff.service.gov.uk/xi/find_commodity" target="_blank" class="govuk-link">@messages("helpAndSupport.p7.linkText")</a></p>
-    <p class="govuk-body"><a href="https://www.trade-tariff.service.gov.uk/help" target="_blank" class="govuk-link">@messages("helpAndSupport.p8.linkText")</a></p>
-    <p class="govuk-body"><a href="https://www.gov.uk/guidance/apply-for-a-binding-tariff-information-decision" target="_blank" class="govuk-link">@messages("helpAndSupport.p9.linkText")</a></p>
+    <p class="govuk-body">
+        <a href="@routes.OutboundController.redirect(
+            "https://www.gov.uk/guidance/finding-commodity-codes-for-imports-or-exports?step-by-step-nav=849f71d1-f290-4a8e-9458-add936efefc5", messages("helpAndSupport.p6.linkText"))"
+            target="_blank" class="govuk-link">@messages("helpAndSupport.p6.linkText")</a>
+    </p>
+    <p class="govuk-body">
+        <a href="@routes.OutboundController.redirect(
+            "https://www.trade-tariff.service.gov.uk/xi/find_commodity", messages("helpAndSupport.p7.linkText"))"
+            target="_blank" class="govuk-link">@messages("helpAndSupport.p7.linkText")</a>
+    </p>
+    <p class="govuk-body">
+        <a href="@routes.OutboundController.redirect(
+            "https://www.trade-tariff.service.gov.uk/help", messages("helpAndSupport.p8.linkText"))"
+            target="_blank" class="govuk-link">@messages("helpAndSupport.p8.linkText")</a>
+    </p>
+    <p class="govuk-body">
+        <a href="@routes.OutboundController.redirect(
+            "https://www.gov.uk/guidance/apply-for-a-binding-tariff-information-decision", messages("helpAndSupport.p9.linkText"))"
+            target="_blank" class="govuk-link">@messages("helpAndSupport.p9.linkText")</a>
+    </p>
+
     <h3 class="govuk-heading-s">@messages("helpAndSupport.h3")</h3>
-    <p class="govuk-body"><a href="https://www.tax.service.gov.uk/ask-hmrc/chat/trade-tariff" target="_blank" class="govuk-link">@messages("helpAndSupport.p10.linkText")</a></p>
+    <p class="govuk-body">
+        <a href="@routes.OutboundController.redirect(
+            "https://www.tax.service.gov.uk/ask-hmrc/chat/trade-tariff", messages("helpAndSupport.p10.linkText"))"
+            target="_blank" class="govuk-link">@messages("helpAndSupport.p10.linkText")</a>
+    </p>
+
     <h2 class="govuk-heading-m">@messages("helpAndSupport.h2.3")</h2>
-    <p class="govuk-body"><a href="https://www.gov.uk/government/publications/retail-movement-scheme-how-the-scheme-will-work/retail-movement-scheme-how-the-scheme-will-work" target="_blank" class="govuk-link">@messages("helpAndSupport.p11.linkText")</a></p>
-    <p class="govuk-body"><a href="https://www.gov.uk/guidance/northern-ireland-retail-movement-scheme-how-to-register-and-seal-consignments" target="_blank" class="govuk-link">@messages("helpAndSupport.p12.linkText")</a></p>
-    <p class="govuk-body"><a href="https://www.gov.uk/guidance/moving-plants-from-great-britain-to-northern-ireland" target="_blank" class="govuk-link">@messages("helpAndSupport.p13.linkText")</a></p>
+    <p class="govuk-body">
+        <a href="@routes.OutboundController.redirect(
+            "https://www.gov.uk/government/publications/retail-movement-scheme-how-the-scheme-will-work/retail-movement-scheme-how-the-scheme-will-work", messages("helpAndSupport.p11.linkText"))"
+            target="_blank" class="govuk-link">@messages("helpAndSupport.p11.linkText")</a>
+    </p>
+    <p class="govuk-body">
+        <a href="@routes.OutboundController.redirect(
+            "https://www.gov.uk/guidance/northern-ireland-retail-movement-scheme-how-to-register-and-seal-consignments", messages("helpAndSupport.p12.linkText"))"
+            target="_blank" class="govuk-link">@messages("helpAndSupport.p12.linkText")</a>
+    </p>
+    <p class="govuk-body">
+        <a href="@routes.OutboundController.redirect(
+            "https://www.gov.uk/guidance/moving-plants-from-great-britain-to-northern-ireland", messages("helpAndSupport.p13.linkText"))"
+            target="_blank" class="govuk-link">@messages("helpAndSupport.p13.linkText")</a>
+    </p>
+
     <h2 class="govuk-heading-m">@messages("helpAndSupport.h2.4")</h2>
     <p class="govuk-body"><a href="#" target="_blank" class="govuk-link">@messages("helpAndSupport.p14.linkText")</a></p> @*TODO add correct link when defined by design*@
+
     <h2 class="govuk-heading-m">@messages("helpAndSupport.h2.5")</h2>
     <p class="govuk-body">
         @messages("helpAndSupport.p15")
-        <a target="_self" href="https://www.gov.uk/guidance/trader-support-service" target="_blank" class="govuk-link" >@messages("helpAndSupport.p15.linkText")</a>.
+        <a target="_self"
+           href="@routes.OutboundController.redirect("https://www.gov.uk/guidance/trader-support-service", messages("helpAndSupport.p15.linkText"))"
+           target="_blank" class="govuk-link" >@messages("helpAndSupport.p15.linkText")</a>.
     </p>
 }
