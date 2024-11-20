@@ -17,23 +17,43 @@
 package controllers.newUkims
 
 import controllers.actions._
+import models.NormalMode
+import navigation.NewUkimsNavigator
+import pages.newUkims.{NewUkimsNumberPage, UkimsNumberChangePage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.newUkims.UkimsNumberChangeView
 
 import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class UkimsNumberChangeController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
   getOrCreate: DataRetrievalOrCreateAction,
   val controllerComponents: MessagesControllerComponents,
-  view: UkimsNumberChangeView
-) extends FrontendBaseController
+  view: UkimsNumberChangeView,
+  navigator: NewUkimsNavigator,
+  profileAuth: ProfileAuthenticateAction,
+  checkEori: EoriCheckAction,
+  sessionRepository: SessionRepository
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(): Action[AnyContent] = (identify andThen getOrCreate) { implicit request =>
-    Ok(view())
+  def onPageLoad(): Action[AnyContent] = (identify andThen profileAuth andThen checkEori andThen getOrCreate) {
+    implicit request =>
+      Ok(view())
+  }
+
+  def onSubmit(): Action[AnyContent] = (identify andThen profileAuth andThen checkEori andThen getOrCreate).async {
+    implicit request =>
+      for {
+        updatedAnswers <- Future.fromTry(request.userAnswers.remove(NewUkimsNumberPage))
+
+        _ <- sessionRepository.set(updatedAnswers)
+      } yield Redirect(navigator.nextPage(UkimsNumberChangePage, NormalMode, updatedAnswers))
   }
 }

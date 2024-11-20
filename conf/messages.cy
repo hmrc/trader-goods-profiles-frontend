@@ -215,6 +215,7 @@ name.heading = Beth yw eich enw?
 name.hint = Mae angen i ni wybod eich enw er mwyn i ni allu cysylltu â chi.
 name.checkYourAnswersLabel = Enw
 name.error.required = Nodwch eich enw
+name.error.length = Nodwch enw â 70 o gymeriadau neu lai
 name.change.hidden = Enw
 
 email.title = Beth yw’ch cyfeiriad e-bost?
@@ -223,6 +224,8 @@ email.hint = Byddwn ond yn defnyddio’ch e-bost i gysylltu â chi ynglŷn â’
 email.checkYourAnswersLabel = E-bost
 email.error.required = Nodwch eich cyfeiriad e-bost
 email.change.hidden = E-bost
+email.error.invalidFormat = Nodwch gyfeiriad e-bost dilys
+email.error.length = Mae’n rhaid i’r e-bost fod yn 254 o gymeriadau neu lai
 
 cyaRequestAdvice.title = Gwiriwch eich atebion cyn anfon eich cais am gyngor
 cyaRequestAdvice.heading = Gwiriwch eich atebion cyn anfon eich cais am gyngor
@@ -313,6 +316,7 @@ goodsDescription.error.length = Mae’n rhaid i ddisgrifiad y nwyddau fod yn 512
 countryOfOrigin.error.required = Nodwch y wlad wreiddiol
 commodityCode.error.invalidFormat = Nodwch god nwyddau yn y fformat cywir
 commodityCode.error.invalid = Nodwch god nwyddau go iawn
+traderReference.error.length = Mae’n rhaid i’r cyfeirnod masnachwr fod yn 512 o gymeriadau neu lai
 
 hasCorrectGoods.title = Canlyniadau ar gyfer {0}
 hasCorrectGoods.heading = Canlyniadau ar gyfer {0}
@@ -456,7 +460,7 @@ downloadRequestSuccess.p1 = Gallwch wirio hynt eich ffeil ar y {0}. Byddwn hefyd
 downloadRequestSuccess.p2 = Byddwch yn gweld hysbysiad pan fyddwch yn mewngofnodi i’ch TGP a fydd yn dangos cysylltiad i’r dudalen lawrlwytho. Mae’r ffeil mewn fformat .csv.
 downloadRequestSuccess.p3 = Bydd y ffeil cofnodion TGP ar gael am 30 diwrnod ar ôl i ni roi gwybod i chi ei bod yn barod.
 downloadRequestSuccess.p3.1 = Ar ôl 30 diwrnod, bydd angen i chi wneud cais am ffeil newydd.
-downloadRequestSuccess.p1.linkText = dudalen ynghylch ffeiliau cofnodion TGP
+downloadRequestSuccess.p1.linkText = tudalen lawrlwytho data TGP
 
 fileManagement.title = Ffeiliau cofnodion TGP
 fileManagement.heading = Ffeiliau cofnodion TGP
@@ -512,6 +516,8 @@ goodsRecordSearchResultEmptyView.p1 = Roeddech yn chwilio am y term {0}.
 existingUkimsNumber.title = Rhif presennol ar gyfer Cynllun Marchnad Fewnol y DU (UKIMS)
 existingUkimsNumber.h1 = Rhif presennol ar gyfer Cynllun Marchnad Fewnol y DU (UKIMS)
 existingUkimsNumber.h2 = Ai dyma’r rhif UKIMS cywir ar eich cyfer o hyd?
+existingUkimsNumber.p1 = Rydych wedi defnyddio’r rhif UKIMS {0} ar ddatganiadau blaenorol.
+existingUkimsNumber.error.required = Dewiswch a’i dyma’r rhif UKIMS cywir
 
 cyaMaintainProfile.title.ukimsNumber = Gwiriwch eich atebion ar gyfer newid eich rhif UKIMS
 cyaMaintainProfile.heading.ukimsNumber = Gwiriwch eich atebion ar gyfer newid eich rhif UKIMS
@@ -623,6 +629,12 @@ helpAndSupport.p15.linkText = Cofrestrwch ar gyfer y Gwasanaeth Cymorth i Fasnac
 successBanner.title = Llwyddiant
 successBanner.heading = Rydych wedi newid y {0}
 successBannerRemove.heading = Rydych wedi newid y {0}
+
+successProfileBanner.title = Llwyddiant
+successProfileBanner.changeNumber.heading = Rydych wedi newid eich rhif {0}
+successProfileBanner.removeRegistration.heading = Rydych wedi dileu eich cofrestriad ar gyfer {0}
+successProfileBanner.addNumber.heading = Rydych wedi ychwanegu eich rhif {0}
+
 
 goodsRecordsLoading.title = Rydym yn llwytho’ch cofnodion
 goodsRecordsLoading.heading = Rydym yn llwytho’ch cofnodion

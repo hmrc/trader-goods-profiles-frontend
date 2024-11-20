@@ -19,7 +19,8 @@ package models
 import cats.data.{EitherNec, NonEmptyChain}
 import cats.implicits._
 import pages._
-import pages.profile.{HasNiphlPage, HasNiphlUpdatePage, HasNirmsPage, HasNirmsUpdatePage, NiphlNumberPage, NiphlNumberUpdatePage, NirmsNumberPage, NirmsNumberUpdatePage, RemoveNiphlPage, RemoveNirmsPage, UkimsNumberPage, UkimsNumberUpdatePage}
+import pages.newUkims.NewUkimsNumberPage
+import pages.profile._
 import play.api.libs.json.{Json, OFormat}
 import queries.TraderProfileQuery
 
@@ -83,6 +84,11 @@ object TraderProfile {
   ): EitherNec[ValidationError, String] =
     answers.getPageValue(UkimsNumberUpdatePage)
 
+  def validateNewUkimsNumber(
+    answers: UserAnswers
+  ): EitherNec[ValidationError, String] =
+    answers.getPageValue(NewUkimsNumberPage)
+
   def validateHasNirms(
     answers: UserAnswers
   ): EitherNec[ValidationError, Option[String]] = getOptionallyRemovedPage(
@@ -90,7 +96,7 @@ object TraderProfile {
     HasNirmsUpdatePage,
     RemoveNirmsPage,
     NirmsNumberUpdatePage,
-    false
+    isRegistered = false
   )
 
   def validateHasNiphl(
@@ -100,7 +106,7 @@ object TraderProfile {
     HasNiphlUpdatePage,
     RemoveNiphlPage,
     NiphlNumberUpdatePage,
-    false
+    isRegistered = false
   )
 
   def validateNirmsNumber(
@@ -110,7 +116,7 @@ object TraderProfile {
     HasNirmsUpdatePage,
     RemoveNirmsPage,
     NirmsNumberUpdatePage,
-    true
+    isRegistered = true
   )
 
   def validateNiphlNumber(
@@ -120,7 +126,7 @@ object TraderProfile {
     HasNiphlUpdatePage,
     RemoveNiphlPage,
     NiphlNumberUpdatePage,
-    true
+    isRegistered = true
   )
 
 }
