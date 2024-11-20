@@ -143,12 +143,13 @@
                         TableRow(
                             content = HtmlContent(
                                 tableRowActionList(
-                                    text1 = messages("site.change"),
+                                    text1 = messages("site.view"),
                                     text2 = messages("site.remove"),
                                     visuallyHiddenContent1 = goodsRecord.traderRef,
                                     visuallyHiddenContent2 = goodsRecord.traderRef,
                                     href1 = routes.ReviewReasonController.onPageLoad(goodsRecord.recordId).url,
-                                    href2 = controllers.goodsProfile.routes.RemoveGoodsRecordController.onPageLoad(goodsRecord.recordId, GoodsProfileLocation).url
+                                    href2 = controllers.goodsProfile.routes.RemoveGoodsRecordController.onPageLoad(goodsRecord.recordId, GoodsProfileLocation).url,
+                                    adviceStatus = goodsRecord.adviceStatus
                                 )
                             )
                         )
