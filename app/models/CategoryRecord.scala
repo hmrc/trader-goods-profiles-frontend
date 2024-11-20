@@ -45,7 +45,8 @@ object CategoryRecord {
     userAnswers: UserAnswers,
     eori: String,
     recordId: String,
-    categorisationService: CategorisationService
+    categorisationService: CategorisationService,
+    hasLongComCode: Boolean
   ): EitherNec[ValidationError, CategoryRecord] =
     (
       getInitialCategoryInfo(userAnswers, recordId),
@@ -57,17 +58,18 @@ object CategoryRecord {
     ).parMapN { (initialCategorisationInfo, supplementaryUnit) =>
       val longerCategoryInfo      = userAnswers.get(LongerCategorisationDetailsQuery(recordId))
       val finalCategorisationInfo = longerCategoryInfo.getOrElse(initialCategorisationInfo)
-      val longerCategoryAnswers   = longerCategoryInfo.map(_.getAnswersForQuestions(userAnswers, recordId))
+      val longerCategoryAnswers   =
+        longerCategoryInfo.map(_.getAnswersForQuestions(userAnswers, recordId, hasLongComCode))
 
       CategoryRecord(
         eori,
         recordId,
         finalCategorisationInfo.commodityCode,
-        categorisationService.calculateResult(finalCategorisationInfo, userAnswers, recordId),
+        categorisationService.calculateResult(finalCategorisationInfo, userAnswers, recordId, hasLongComCode),
         finalCategorisationInfo.measurementUnit,
         supplementaryUnit,
         initialCategorisationInfo,
-        initialCategorisationInfo.getAnswersForQuestions(userAnswers, recordId).count(_.isAnswered),
+        initialCategorisationInfo.getAnswersForQuestions(userAnswers, recordId, hasLongComCode).count(_.isAnswered),
         userAnswers.get(HasSupplementaryUnitPage(recordId)).isDefined,
         longerCategoryInfo,
         longerCategoryAnswers.map(_.count(_.isAnswered)),

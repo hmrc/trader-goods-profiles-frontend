@@ -17,7 +17,7 @@
 package pages.categorisation
 
 import base.SpecBase
-import base.TestConstants.testRecordId
+import base.TestConstants.{hasLongComCode, testRecordId}
 import models.AssessmentAnswer
 import models.ott._
 import queries.CategorisationDetailsQuery
@@ -67,22 +67,25 @@ class AssessmentPageSpec extends SpecBase {
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 1, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 2, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
 
         val result =
-          answers.set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
+          answers
+            .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .success
+            .value
 
-        result.isDefined(AssessmentPage(testRecordId, 0)) mustBe true
-        result.isDefined(AssessmentPage(testRecordId, 1)) mustBe true
-        result.isDefined(AssessmentPage(testRecordId, 2)) mustBe true
+        result.isDefined(AssessmentPage(testRecordId, 0, hasLongComCode)) mustBe true
+        result.isDefined(AssessmentPage(testRecordId, 1, hasLongComCode)) mustBe true
+        result.isDefined(AssessmentPage(testRecordId, 2, hasLongComCode)) mustBe true
       }
     }
 
@@ -94,25 +97,26 @@ class AssessmentPageSpec extends SpecBase {
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 1, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 2, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 3), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 3, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
 
-        val result = answers.set(AssessmentPage(testRecordId, 1), AssessmentAnswer.NoExemption).success.value
+        val result =
+          answers.set(AssessmentPage(testRecordId, 1, hasLongComCode), AssessmentAnswer.NoExemption).success.value
 
-        result.isDefined(AssessmentPage(testRecordId, 0)) mustBe true
-        result.isDefined(AssessmentPage(testRecordId, 1)) mustBe true
-        result.isDefined(AssessmentPage(testRecordId, 2)) mustBe false
-        result.isDefined(AssessmentPage(testRecordId, 3)) mustBe false
+        result.isDefined(AssessmentPage(testRecordId, 0, hasLongComCode)) mustBe true
+        result.isDefined(AssessmentPage(testRecordId, 1, hasLongComCode)) mustBe true
+        result.isDefined(AssessmentPage(testRecordId, 2, hasLongComCode)) mustBe false
+        result.isDefined(AssessmentPage(testRecordId, 3, hasLongComCode)) mustBe false
       }
     }
   }

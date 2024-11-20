@@ -46,7 +46,11 @@ final case class CategorisationInfo(
       Some(categoryAssessmentsThatNeedAnswers(index))
     }
 
-  def getAnswersForQuestions(userAnswers: UserAnswers, recordId: String): Seq[AnsweredQuestions] =
+  def getAnswersForQuestions(
+    userAnswers: UserAnswers,
+    recordId: String,
+    hasLongComCode: Boolean
+  ): Seq[AnsweredQuestions] =
     if (longerCode) {
       getAnswersForReassessmentQuestions(userAnswers, recordId)
     } else {
@@ -54,7 +58,7 @@ final case class CategorisationInfo(
         AnsweredQuestions(
           assessment._2,
           assessment._1,
-          userAnswers.get(AssessmentPage(recordId, assessment._2))
+          userAnswers.get(AssessmentPage(recordId, assessment._2, hasLongComCode))
         )
       )
     }

@@ -18,4 +18,4 @@ package pages.categorisation
 
 import pages.Page
 
-case class CyaCategorisationPage(recordId: String) extends Page
+case class CyaCategorisationPage(recordId: String, hasLongComCode: Boolean) extends Page

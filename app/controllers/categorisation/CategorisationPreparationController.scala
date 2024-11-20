@@ -73,8 +73,21 @@ class CategorisationPreparationController @Inject() (
         updatedUserAnswers <-
           Future.fromTry(request.userAnswers.set(CategorisationDetailsQuery(recordId), categorisationInfo))
         _                  <- sessionRepository.set(updatedUserAnswers)
-        _                  <- updateCategory(updatedUserAnswers, request.eori, request.affinityGroup, recordId, categorisationInfo)
-      } yield Redirect(navigator.nextPage(CategorisationPreparationPage(recordId), NormalMode, updatedUserAnswers))
+        _                  <- updateCategory(
+                                updatedUserAnswers,
+                                request.eori,
+                                request.affinityGroup,
+                                recordId,
+                                categorisationInfo,
+                                goodsRecord.comcode.length != 10
+                              )
+      } yield Redirect(
+        navigator.nextPage(
+          CategorisationPreparationPage(recordId, goodsRecord.comcode.length != 10),
+          NormalMode,
+          updatedUserAnswers
+        )
+      )
         .removingFromSession(dataUpdated, pageUpdated, dataRemoved))
         .recover { e =>
           logger.error(s"Unable to start categorisation for record $recordId: ${e.getMessage}")
@@ -120,7 +133,8 @@ class CategorisationPreparationController @Inject() (
                                           newLongerCategorisationInfo,
                                           updatedUACatInfo,
                                           recordId,
-                                          shorterCategorisationInfo
+                                          shorterCategorisationInfo,
+                                          goodsRecord.comcode.length != 10
                                         )
 
         _                    <- updateCategory(
@@ -128,12 +142,17 @@ class CategorisationPreparationController @Inject() (
                                   request.eori,
                                   request.affinityGroup,
                                   recordId,
-                                  newLongerCategorisationInfo
+                                  newLongerCategorisationInfo,
+                                  goodsRecord.comcode.length != 10
                                 )
         reorderedUserAnswers <-
           categorisationService.reorderRecategorisationAnswers(updatedUAReassessmentAnswers, recordId)
       } yield Redirect(
-        navigator.nextPage(RecategorisationPreparationPage(recordId), mode, reorderedUserAnswers)
+        navigator.nextPage(
+          RecategorisationPreparationPage(recordId, goodsRecord.comcode.length != 10),
+          mode,
+          reorderedUserAnswers
+        )
       ))
         .recover { e =>
           logger.error(s"Unable to start categorisation for record $recordId: ${e.getMessage}")
@@ -168,15 +187,16 @@ class CategorisationPreparationController @Inject() (
     eori: String,
     affinityGroup: AffinityGroup,
     recordId: String,
-    categorisationInfo: CategorisationInfo
+    categorisationInfo: CategorisationInfo,
+    hasLongComCode: Boolean
   )(implicit
     hc: HeaderCarrier
   ): Future[Done] =
     if (
       categorisationInfo.categoryAssessmentsThatNeedAnswers.isEmpty && !categorisationInfo.isCommCodeExpired
-      && !isSupplementaryUnitQuestionToBeAnswered(categorisationInfo, updatedUserAnswers, recordId)
+      && !isSupplementaryUnitQuestionToBeAnswered(categorisationInfo, updatedUserAnswers, recordId, hasLongComCode)
     ) {
-      CategoryRecord.build(updatedUserAnswers, eori, recordId, categorisationService) match {
+      CategoryRecord.build(updatedUserAnswers, eori, recordId, categorisationService, hasLongComCode) match {
         case Right(record) =>
           auditService.auditFinishCategorisation(
             eori,
@@ -203,9 +223,10 @@ class CategorisationPreparationController @Inject() (
   private def isSupplementaryUnitQuestionToBeAnswered(
     catInfo: CategorisationInfo,
     updatedUserAnswers: UserAnswers,
-    recordId: String
+    recordId: String,
+    hasLongComCode: Boolean
   ) = {
-    val scenario = categorisationService.calculateResult(catInfo, updatedUserAnswers, recordId)
+    val scenario = categorisationService.calculateResult(catInfo, updatedUserAnswers, recordId, hasLongComCode)
     catInfo.measurementUnit.isDefined && getResultAsInt(scenario) == Category2AsInt
   }
 
@@ -214,7 +235,8 @@ class CategorisationPreparationController @Inject() (
     newLongerCategorisationInfo: CategorisationInfo,
     updatedUACatInfo: UserAnswers,
     recordId: String,
-    shorterCategorisationInfo: CategorisationInfo
+    shorterCategorisationInfo: CategorisationInfo,
+    hasLongComCode: Boolean
   ): Future[UserAnswers] = {
 
     val isNewOneTheSameAsOldOne = oldLongerCategorisationInfoOpt.exists(_.equals(newLongerCategorisationInfo))
@@ -227,7 +249,8 @@ class CategorisationPreparationController @Inject() (
           updatedUACatInfo,
           recordId,
           shorterCategorisationInfo,
-          newLongerCategorisationInfo
+          newLongerCategorisationInfo,
+          hasLongComCode
         )
       )
     }

@@ -31,9 +31,13 @@ final case class CategorisationAnswers(
 
 object CategorisationAnswers {
 
-  def build(userAnswers: UserAnswers, recordId: String): EitherNec[ValidationError, CategorisationAnswers] =
+  def build(
+    userAnswers: UserAnswers,
+    recordId: String,
+    hasLongComCode: Boolean
+  ): EitherNec[ValidationError, CategorisationAnswers] =
     (
-      buildAssessmentDetails(userAnswers, recordId),
+      buildAssessmentDetails(userAnswers, recordId, hasLongComCode),
       getSupplementaryUnit(userAnswers, recordId)
     ).parMapN(CategorisationAnswers.apply)
 
@@ -46,13 +50,15 @@ object CategorisationAnswers {
 
   private def buildAssessmentDetails(
     userAnswers: UserAnswers,
-    recordId: String
+    recordId: String,
+    hasLongComCode: Boolean
   ): EitherNec[ValidationError, Seq[Option[AssessmentAnswer]]] =
     for {
       categorisationInfo       <- getCategorisationInfoForThisRecord(userAnswers, recordId)
-      answeredQuestionsOptions <- getAssessmentsFromUserAnswers(categorisationInfo, userAnswers, recordId)
-      answeredQuestionsOnly    <- getAnsweredQuestionsOnly(answeredQuestionsOptions, recordId)
-      _                        <- ensureNoExemptionIsOnlyFinalAnswer(answeredQuestionsOnly, recordId)
+      answeredQuestionsOptions <-
+        getAssessmentsFromUserAnswers(categorisationInfo, userAnswers, recordId, hasLongComCode)
+      answeredQuestionsOnly    <- getAnsweredQuestionsOnly(answeredQuestionsOptions, recordId, hasLongComCode)
+      _                        <- ensureNoExemptionIsOnlyFinalAnswer(answeredQuestionsOnly, recordId, hasLongComCode)
       _                        <- ensureHaveAnsweredTheRightAmount(
                                     answeredQuestionsOnly,
                                     answeredQuestionsOptions.size,
@@ -79,14 +85,18 @@ object CategorisationAnswers {
     }
   }
 
-  private def getAnsweredQuestionsOnly(answeredQuestionsOptions: Seq[AnsweredQuestions], recordId: String) = {
+  private def getAnsweredQuestionsOnly(
+    answeredQuestionsOptions: Seq[AnsweredQuestions],
+    recordId: String,
+    hasLongComCode: Boolean
+  ) = {
     val answeredQuestionsOnly = answeredQuestionsOptions.filter(_.answer.isDefined)
 
     if (answeredQuestionsOnly.isEmpty && answeredQuestionsOptions.nonEmpty) {
       val errorPage = if (answeredQuestionsOptions.exists(x => x.reassessmentQuestion)) {
         ReassessmentPage(recordId, firstAssessmentIndex)
       } else {
-        AssessmentPage(recordId, firstAssessmentIndex)
+        AssessmentPage(recordId, firstAssessmentIndex, hasLongComCode)
       }
       Left(NonEmptyChain.one(MissingAssessmentAnswers(errorPage)))
     } else {
@@ -98,15 +108,16 @@ object CategorisationAnswers {
   private def getAssessmentsFromUserAnswers(
     categorisationInfo: CategorisationInfo,
     userAnswers: UserAnswers,
-    recordId: String
+    recordId: String,
+    hasLongComCode: Boolean
   ): EitherNec[ValidationError, Seq[AnsweredQuestions]] = {
-    val answers = categorisationInfo.getAnswersForQuestions(userAnswers, recordId)
+    val answers = categorisationInfo.getAnswersForQuestions(userAnswers, recordId, hasLongComCode)
 
     if (answers.isEmpty && categorisationInfo.categoryAssessmentsThatNeedAnswers.nonEmpty) {
       val errorPage = if (categorisationInfo.longerCode) {
         ReassessmentPage(recordId, firstAssessmentIndex)
       } else {
-        AssessmentPage(recordId, firstAssessmentIndex)
+        AssessmentPage(recordId, firstAssessmentIndex, hasLongComCode)
       }
 
       Left(NonEmptyChain(PageMissing(errorPage)))
@@ -117,7 +128,8 @@ object CategorisationAnswers {
 
   private def ensureNoExemptionIsOnlyFinalAnswer(
     answeredQuestionsOnly: Seq[AnsweredQuestions],
-    recordId: String
+    recordId: String,
+    hasLongComCode: Boolean
   ): EitherNec[ValidationError, Done]             =
     if (answeredQuestionsOnly.isEmpty) {
       Right(Done)
@@ -135,7 +147,7 @@ object CategorisationAnswers {
           val errorPage = if (ass.reassessmentQuestion) {
             ReassessmentPage(recordId, ass.index)
           } else {
-            AssessmentPage(recordId, ass.index)
+            AssessmentPage(recordId, ass.index, hasLongComCode)
           }
           UnexpectedNoExemption(errorPage)
         }

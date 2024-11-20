@@ -16,4 +16,4 @@
 
 package pages
 
-case class RecategorisationPreparationPage(recordId: String) extends Page
+case class RecategorisationPreparationPage(recordId: String, hasLongComCode: Boolean) extends Page

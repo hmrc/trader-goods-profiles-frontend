@@ -24,7 +24,6 @@ import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{atLeastOnce, never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatestplus.mockito.MockitoSugar.mock
 import pages.newUkims.NewUkimsNumberPage
 import play.api.inject.bind
 import play.api.test.FakeRequest

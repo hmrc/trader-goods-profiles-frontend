@@ -55,42 +55,44 @@ class CyaCategorisationController @Inject() (
 
   private val errorMessage: String = "Unable to update Goods Profile."
 
-  def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      val longerCategorisationInfo = request.userAnswers.get(LongerCategorisationDetailsQuery(recordId))
+      goodsRecordConnector.getRecord(request.eori, recordId).map { record =>
+        val longerCategorisationInfo = request.userAnswers.get(LongerCategorisationDetailsQuery(recordId))
 
-      longerCategorisationInfo match {
-        case Some(categorisationInfo) =>
-          showCyaPage(request, recordId, categorisationInfo)
-        case _                        =>
-          val categorisationInfo = request.userAnswers.get(CategorisationDetailsQuery(recordId))
+        longerCategorisationInfo match {
+          case Some(categorisationInfo) =>
+            showCyaPage(request, recordId, categorisationInfo, record.comcode.length != 10)
+          case _                        =>
+            val categorisationInfo = request.userAnswers.get(CategorisationDetailsQuery(recordId))
 
-          categorisationInfo
-            .map { info =>
-              showCyaPage(request, recordId, info)
-            }
-            .getOrElse {
-              dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
-              logErrorsAndContinue(
-                "Failed to get categorisation details",
-                controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(recordId)
-              )
-            }
+            categorisationInfo
+              .map { info =>
+                showCyaPage(request, recordId, info, record.comcode.length != 10)
+              }
+              .getOrElse {
+                dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
+                logErrorsAndContinue(
+                  "Failed to get categorisation details",
+                  controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(recordId)
+                )
+              }
+        }
       }
-
   }
 
   private def showCyaPage(
     request: DataRequest[_],
     recordId: String,
-    categoryInfo: CategorisationInfo
+    categoryInfo: CategorisationInfo,
+    hasLongComCode: Boolean
   )(implicit messages: Messages) = {
     val userAnswers = request.userAnswers
 
-    CategorisationAnswers.build(userAnswers, recordId) match {
+    CategorisationAnswers.build(userAnswers, recordId, hasLongComCode) match {
       case Right(_) =>
         val (categorisationList, supplementaryUnitList, longerCommodityCodeList) =
-          buildSummaryLists(userAnswers, recordId, categoryInfo)
+          buildSummaryLists(userAnswers, recordId, categoryInfo, hasLongComCode)
 
         Ok(
           view(
@@ -110,7 +112,8 @@ class CyaCategorisationController @Inject() (
   private def buildSummaryLists(
     userAnswers: UserAnswers,
     recordId: String,
-    categoryInfo: CategorisationInfo
+    categoryInfo: CategorisationInfo,
+    hasLongComCode: Boolean
   )(implicit messages: Messages): (SummaryList, SummaryList, SummaryList) = {
 
     val categorisationRows = categoryInfo.categoryAssessmentsThatNeedAnswers.flatMap { assessment =>
@@ -119,7 +122,8 @@ class CyaCategorisationController @Inject() (
         userAnswers,
         assessment,
         categoryInfo.categoryAssessmentsThatNeedAnswers.indexOf(assessment),
-        categoryInfo.longerCode
+        categoryInfo.longerCode,
+        hasLongComCode
       )
     }
 
@@ -156,43 +160,50 @@ class CyaCategorisationController @Inject() (
 
   def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      CategoryRecord.build(request.userAnswers, request.eori, recordId, categorisationService) match {
-        case Right(categoryRecord) =>
-          auditService.auditFinishCategorisation(
+      goodsRecordConnector.getRecord(request.eori, recordId).flatMap { oldRecord =>
+        CategoryRecord
+          .build(
+            request.userAnswers,
             request.eori,
-            request.affinityGroup,
             recordId,
-            categoryRecord
-          )
+            categorisationService,
+            oldRecord.comcode.length != 10
+          ) match {
+          case Right(categoryRecord) =>
+            auditService.auditFinishCategorisation(
+              request.eori,
+              request.affinityGroup,
+              recordId,
+              categoryRecord
+            )
 
-          val result = for {
-            oldRecord <- goodsRecordConnector.getRecord(request.eori, recordId)
-            _         <-
-              goodsRecordConnector
-                .updateCategoryAndComcodeForGoodsRecord(request.eori, recordId, categoryRecord, oldRecord)
-          } yield {
+            val result = for {
+              _ <-
+                goodsRecordConnector
+                  .updateCategoryAndComcodeForGoodsRecord(request.eori, recordId, categoryRecord, oldRecord)
+            } yield {
+              dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
+              Redirect(
+                navigator.nextPage(
+                  CyaCategorisationPage(recordId, oldRecord.comcode.length != 10),
+                  NormalMode,
+                  request.userAnswers
+                )
+              )
+            }
+
+            result
+
+          case Left(errors) =>
             dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
-            Redirect(
-              navigator.nextPage(
-                CyaCategorisationPage(recordId),
-                NormalMode,
-                request.userAnswers
+            Future.successful(
+              logErrorsAndContinue(
+                errorMessage,
+                controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(recordId),
+                errors
               )
             )
-          }
-
-          result
-
-        case Left(errors) =>
-          dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
-          Future.successful(
-            logErrorsAndContinue(
-              errorMessage,
-              controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(recordId),
-              errors
-            )
-          )
+        }
       }
   }
-
 }
