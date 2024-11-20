@@ -49,10 +49,6 @@
             <a target="_blank" href="https://www.trade-tariff.service.gov.uk/xi/find_commodity" class="govuk-link">@messages("assessment.linkText")</a>
         </p>
 
-        <h2 class='govuk-heading-m'>
-            @messages("assessment.question", commodityCode)
-        </h2>
-
         <div id="value-hint" class="govuk-hint">
             @messages("assessment.hint", commodityCode)
         </div>
@@ -62,7 +58,7 @@
                 CheckboxesViewModel(
                     form   = form,
                     name   = "value",
-                    legend = Legend(messages("assessment.question")).withCssClass("govuk-visually-hidden"),
+                    legend = Legend(messages("assessment.question", commodityCode)).asSecondaryHeading(Medium),
                     items  = codesAndDescriptions.map { item =>
                         CheckboxItem(
                             id = Some(item._1),
