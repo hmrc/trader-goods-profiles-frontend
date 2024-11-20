@@ -26,7 +26,8 @@
 </p>
 
 @adviceStatus match {
-    case "Requested" | "In progress" | "Information Requested" => {
+    case "Requested" | "In progress" | "Information Requested" => {}
+    case _ => {
         <p class="govuk-body">
             <a href="@href2" class="govuk-link">
                 @text2
@@ -34,5 +35,4 @@
             </a>
         </p>
     }
-    case _ => {}
 }
