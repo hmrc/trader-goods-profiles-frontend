@@ -19,18 +19,28 @@ package navigation
 import models._
 import pages._
 import play.api.mvc.Call
+import controllers.routes
+import controllers.newUkims.{routes => newUkimsRoutes}
+import pages.newUkims.{NewUkimsNumberPage, UkimsNumberChangePage}
+import pages.profile.CyaNewUkimsNumberPage
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 
 import javax.inject.{Inject, Singleton}
 
 @Singleton
 class NewUkimsNavigator @Inject() extends Navigator {
 
-  val normalRoutes: Page => UserAnswers => Call =
-    //todo ticket TGP-2700 is nav ticket for this mini journey
-    ???
+  private val continueUrl = RedirectUrl(newUkimsRoutes.UkimsNumberChangeController.onPageLoad().url)
 
-  val checkRoutes: Page => UserAnswers => Call =
-    //todo ticket TGP-2700 is nav ticket for this mini journey
-    ???
+  val normalRoutes: Page => UserAnswers => Call = {
+    case UkimsNumberChangePage => _ => newUkimsRoutes.NewUkimsNumberController.onPageLoad(NormalMode)
+    case NewUkimsNumberPage    => _ => newUkimsRoutes.CyaNewUkimsNumberController.onPageLoad()
+    case CyaNewUkimsNumberPage => _ => routes.HomePageController.onPageLoad()
+    case _                     => _ => controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(continueUrl))
+  }
 
+  val checkRoutes: Page => UserAnswers => Call = {
+    case NewUkimsNumberPage => _ => newUkimsRoutes.CyaNewUkimsNumberController.onPageLoad()
+    case _                  => _ => controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(continueUrl))
+  }
 }

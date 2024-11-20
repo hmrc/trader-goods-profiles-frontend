@@ -19,25 +19,21 @@ package controllers.newUkims
 import base.SpecBase
 import base.TestConstants.testEori
 import connectors.TraderProfileConnector
-import controllers.routes
-import models.{TraderProfile, UserAnswers}
-import navigation.{FakeProfileNavigator, ProfileNavigator}
+import models.TraderProfile
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{atLeastOnce, never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.profile.UkimsNumberUpdatePage
-import play.api.Application
+import org.scalatestplus.mockito.MockitoSugar.mock
+import pages.newUkims.NewUkimsNumberPage
 import play.api.inject.bind
-import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{running, _}
 import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
-import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import viewmodels.checkAnswers.profile.UkimsNumberSummary
+import viewmodels.checkAnswers.NewUkimsNumberSummary
 import viewmodels.govuk.SummaryListFluency
 import views.html.newUkims.CyaNewUkimsNumberView
 
@@ -45,33 +41,32 @@ import scala.concurrent.Future
 
 class CyaNewUkimsNumberControllerSpec extends SpecBase with SummaryListFluency with MockitoSugar {
 
-  private lazy val journeyRecoveryContinueUrl = routes.HomePageController.onPageLoad().url
+  private lazy val journeyRecoveryContinueUrl = routes.UkimsNumberChangeController.onPageLoad().url
 
-  private def onwardRoute = Call("GET", "/foo")
-
-  "CyaNewUkimsNumber Controller" - {
+  "CyaNewUkimsNumberController" - {
 
     "UKIMS Number" - {
-
-      def createChangeList(app: Application, userAnswers: UserAnswers): SummaryList = SummaryListViewModel(
-        rows = Seq(
-          UkimsNumberSummary.rowUpdate(userAnswers)(messages(app))
-        ).flatten
-      )
 
       "for a GET" - {
 
         "must return OK and the correct view" in {
 
+          val answer = "newUkims"
+
           val userAnswers = emptyUserAnswers
-            .set(UkimsNumberUpdatePage, "newUkims")
+            .set(NewUkimsNumberPage, answer)
             .success
             .value
 
-          val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+          val application =
+            applicationBuilder(userAnswers = Some(userAnswers)).build()
 
           running(application) {
-            val list = createChangeList(application, userAnswers)
+            val list = SummaryListViewModel(
+              rows = Seq(
+                NewUkimsNumberSummary.row(answer)(messages(application))
+              )
+            )
 
             val request = FakeRequest(GET, controllers.newUkims.routes.CyaNewUkimsNumberController.onPageLoad().url)
 
@@ -123,13 +118,13 @@ class CyaNewUkimsNumberControllerSpec extends SpecBase with SummaryListFluency w
 
       "for a POST" - {
 
-        "must submit the advice request and redirect to HomeController" in {
+        "must submit the request and redirect to HomeController" in {
           val newUkims             = "newUkims"
           val traderProfile        = TraderProfile(testEori, "1", Some("2"), Some("3"), eoriChanged = true)
           val updatedTraderProfile = traderProfile.copy(ukimsNumber = newUkims)
 
           val userAnswers = emptyUserAnswers
-            .set(UkimsNumberUpdatePage, newUkims)
+            .set(NewUkimsNumberPage, newUkims)
             .success
             .value
 
@@ -149,7 +144,6 @@ class CyaNewUkimsNumberControllerSpec extends SpecBase with SummaryListFluency w
             .overrides(
               bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
               bind[AuditService].toInstance(mockAuditService),
-              bind[ProfileNavigator].toInstance(new FakeProfileNavigator(onwardRoute)),
               bind[SessionRepository].toInstance(sessionRepository)
             )
             .build()
@@ -161,7 +155,7 @@ class CyaNewUkimsNumberControllerSpec extends SpecBase with SummaryListFluency w
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual onwardRoute.url
+            redirectLocation(result).value mustEqual controllers.routes.HomePageController.onPageLoad().url
             verify(mockTraderProfileConnector, atLeastOnce())
               .submitTraderProfile(eqTo(updatedTraderProfile), eqTo(testEori))(any())
           }
@@ -219,7 +213,7 @@ class CyaNewUkimsNumberControllerSpec extends SpecBase with SummaryListFluency w
         "must let the play error handler deal with connector failure when getTraderProfile request fails" in {
 
           val userAnswers = emptyUserAnswers
-            .set(UkimsNumberUpdatePage, "newUkims")
+            .set(NewUkimsNumberPage, "newUkims")
             .success
             .value
 
@@ -258,7 +252,7 @@ class CyaNewUkimsNumberControllerSpec extends SpecBase with SummaryListFluency w
           val updatedTraderProfile = traderProfile.copy(ukimsNumber = newUkims)
 
           val userAnswers = emptyUserAnswers
-            .set(UkimsNumberUpdatePage, newUkims)
+            .set(NewUkimsNumberPage, newUkims)
             .success
             .value
 

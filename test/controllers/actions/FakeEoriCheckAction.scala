@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-package pages.newUkims
+package controllers.actions
 
-import pages.QuestionPage
-import play.api.libs.json.JsPath
-import utils.Constants.newUkimsNumberKey
+import models.requests.IdentifierRequest
+import play.api.mvc.Result
 
-case object NewUkimsNumberPage extends QuestionPage[String] {
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
-  override def path: JsPath = JsPath \ toString
+class FakeEoriCheckAction @Inject() extends EoriCheckAction {
 
-  override def toString: String = newUkimsNumberKey
+  override protected def executionContext: ExecutionContext =
+    scala.concurrent.ExecutionContext.Implicits.global
+
+  override protected def filter[A](request: IdentifierRequest[A]): Future[Option[Result]] = Future.successful(None)
 }

@@ -21,14 +21,12 @@ import base.TestConstants.{testEori, userAnswersId}
 import connectors.TraderProfileConnector
 import forms.profile.UkimsNumberFormProvider
 import models.{NormalMode, TraderProfile, UserAnswers}
-import navigation.{FakeNavigation, Navigation}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.profile.UkimsNumberPage
+import pages.newUkims.NewUkimsNumberPage
 import play.api.data.FormError
 import play.api.inject.bind
-import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
@@ -38,9 +36,8 @@ import scala.concurrent.Future
 
 class NewUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
-  private def onwardRoute = Call("GET", "/foo")
-
   val formProvider = new UkimsNumberFormProvider()
+
   private val form = formProvider()
 
   val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
@@ -51,195 +48,196 @@ class NewUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
   "NewUkimsNumberController" - {
 
-    ".create" - {
+    val newUkimsNumberRoute = controllers.newUkims.routes.NewUkimsNumberController.onPageLoad(NormalMode).url
 
-      val newUkimsNumberRoute = controllers.newUkims.routes.NewUkimsNumberController.onPageLoad(NormalMode).url
+    "must return OK and the correct view for a GET" in {
 
-      "must return OK and the correct view for a GET" in {
-
-        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(
-            bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
-          )
-          .build()
-
-        running(application) {
-          val request = FakeRequest(GET, newUkimsNumberRoute)
-
-          val result = route(application, request).value
-
-          val view = application.injector.instanceOf[NewUkimsNumberView]
-
-          status(result) mustEqual OK
-          contentAsString(result) mustEqual view(
-            form,
-            controllers.newUkims.routes.NewUkimsNumberController.onSubmit(NormalMode)
-          )(
-            request,
-            messages(application)
-          ).toString
-        }
-      }
-
-      "must populate the view correctly on a GET when the question has previously been answered" in {
-
-        val userAnswers = UserAnswers(userAnswersId).set(UkimsNumberPage, "answer").success.value
-
-        val application = applicationBuilder(userAnswers = Some(userAnswers))
-          .overrides(
-            bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
-          )
-          .build()
-
-        running(application) {
-          val request = FakeRequest(GET, newUkimsNumberRoute)
-
-          val view = application.injector.instanceOf[NewUkimsNumberView]
-
-          val result = route(application, request).value
-
-          status(result) mustEqual OK
-          contentAsString(result) mustEqual view(
-            form.fill("answer"),
-            controllers.newUkims.routes.NewUkimsNumberController.onSubmit(NormalMode)
-          )(
-            request,
-            messages(application)
-          ).toString
-        }
-      }
-
-      "must redirect to the next page when valid data is submitted" in {
-
-        val traderProfile =
-          TraderProfile(testEori, "XIUKIM47699357400020231115081801", Some("2"), Some("3"), eoriChanged = false)
-        when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-        when(mockTraderProfileConnector.getTraderProfile(eqTo(testEori))(any())) thenReturn Future.successful(
-          traderProfile
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
         )
+        .build()
 
-        val application =
-          applicationBuilder(userAnswers = Some(emptyUserAnswers))
-            .overrides(
-              bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
-              bind[SessionRepository].toInstance(mockSessionRepository),
-              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
-            )
-            .build()
+      running(application) {
 
-        running(application) {
-          val request =
-            FakeRequest(POST, newUkimsNumberRoute)
-              .withFormUrlEncodedBody(("value", "XIUKIM47699357400020231115081800"))
+        val request = FakeRequest(GET, newUkimsNumberRoute)
 
-          val result = route(application, request).value
+        val result = route(application, request).value
 
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual onwardRoute.url
-        }
+        val view = application.injector.instanceOf[NewUkimsNumberView]
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(
+          form,
+          controllers.newUkims.routes.NewUkimsNumberController.onSubmit(NormalMode)
+        )(
+          request,
+          messages(application)
+        ).toString
       }
+    }
 
-      "must return a Bad Request and errors when invalid data is submitted" in {
+    "must populate the view correctly on a GET when the question has previously been answered" in {
 
-        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val userAnswers = UserAnswers(userAnswersId).set(NewUkimsNumberPage, "answer").success.value
 
-        running(application) {
-          val request =
-            FakeRequest(POST, newUkimsNumberRoute)
-              .withFormUrlEncodedBody(("value", ""))
-
-          val boundForm = form.bind(Map("value" -> ""))
-
-          val view = application.injector.instanceOf[NewUkimsNumberView]
-
-          val result = route(application, request).value
-
-          status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(
-            boundForm,
-            controllers.newUkims.routes.NewUkimsNumberController.onSubmit(NormalMode)
-          )(
-            request,
-            messages(application)
-          ).toString
-        }
-      }
-
-      "must return a Bad Request and errors when the same UKIMS number is submitted" in {
-
-        val traderProfile =
-          TraderProfile(testEori, "XIUKIM47699357400020231115081800", Some("2"), Some("3"), eoriChanged = false)
-
-        when(mockTraderProfileConnector.getTraderProfile(eqTo(testEori))(any())) thenReturn Future.successful(
-          traderProfile
+      val application = applicationBuilder(userAnswers = Some(userAnswers))
+        .overrides(
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
         )
+        .build()
 
-        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+      running(application) {
+        val request = FakeRequest(GET, newUkimsNumberRoute)
+
+        val view = application.injector.instanceOf[NewUkimsNumberView]
+
+        val result = route(application, request).value
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(
+          form.fill("answer"),
+          controllers.newUkims.routes.NewUkimsNumberController.onSubmit(NormalMode)
+        )(
+          request,
+          messages(application)
+        ).toString
+      }
+    }
+
+    "must redirect to the next page when valid data is submitted" in {
+
+      val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+
+      val mockSessionRepository: SessionRepository = mock[SessionRepository]
+
+      when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
+
+      val traderProfile =
+        TraderProfile(testEori, "XIUKIM47699357400020231115081801", Some("2"), Some("3"), eoriChanged = false)
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+      when(mockTraderProfileConnector.getTraderProfile(eqTo(testEori))(any())) thenReturn Future.successful(
+        traderProfile
+      )
+
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
+            bind[SessionRepository].toInstance(mockSessionRepository),
             bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
           )
           .build()
 
-        running(application) {
-          val request =
-            FakeRequest(POST, newUkimsNumberRoute)
-              .withFormUrlEncodedBody(("value", "XIUKIM47699357400020231115081800"))
+      running(application) {
+        val request =
+          FakeRequest(POST, newUkimsNumberRoute)
+            .withFormUrlEncodedBody(("value", "XIUKIM47699357400020231115081800"))
 
-          val boundForm = form
-            .fill("XIUKIM47699357400020231115081800")
-            .copy(errors =
-              Seq(elems = FormError("value", "You’ve entered the previous UKIMS number. Enter the new UKIMS number."))
-            )
+        val result = route(application, request).value
 
-          val view = application.injector.instanceOf[NewUkimsNumberView]
-
-          val result = route(application, request).value
-
-          status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(
-            boundForm,
-            controllers.newUkims.routes.NewUkimsNumberController.onSubmit(NormalMode)
-          )(
-            request,
-            messages(application)
-          ).toString
-        }
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.CyaNewUkimsNumberController.onPageLoad().url
       }
+    }
 
-      "must redirect to Journey Recovery for a GET if no existing data is found" in {
+    "must return a Bad Request and errors when invalid data is submitted" in {
 
-        val application = applicationBuilder(userAnswers = None)
-          .overrides(
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, newUkimsNumberRoute)
+            .withFormUrlEncodedBody(("value", ""))
+
+        val boundForm = form.bind(Map("value" -> ""))
+
+        val view = application.injector.instanceOf[NewUkimsNumberView]
+
+        val result = route(application, request).value
+
+        status(result) mustEqual BAD_REQUEST
+        contentAsString(result) mustEqual view(
+          boundForm,
+          controllers.newUkims.routes.NewUkimsNumberController.onSubmit(NormalMode)
+        )(
+          request,
+          messages(application)
+        ).toString
+      }
+    }
+
+    "must return a Bad Request and errors when the same UKIMS number is submitted" in {
+
+      val traderProfile =
+        TraderProfile(testEori, "XIUKIM47699357400020231115081800", Some("2"), Some("3"), eoriChanged = false)
+
+      when(mockTraderProfileConnector.getTraderProfile(eqTo(testEori))(any())) thenReturn Future.successful(
+        traderProfile
+      )
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+        )
+        .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, newUkimsNumberRoute)
+            .withFormUrlEncodedBody(("value", "XIUKIM47699357400020231115081800"))
+
+        val boundForm = form
+          .fill("XIUKIM47699357400020231115081800")
+          .copy(errors =
+            Seq(elems = FormError("value", "You’ve entered the previous UKIMS number. Enter the new UKIMS number."))
           )
-          .build()
 
-        running(application) {
-          val request = FakeRequest(GET, newUkimsNumberRoute)
+        val view = application.injector.instanceOf[NewUkimsNumberView]
 
-          val result = route(application, request).value
+        val result = route(application, request).value
 
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
-        }
+        status(result) mustEqual BAD_REQUEST
+        contentAsString(result) mustEqual view(
+          boundForm,
+          controllers.newUkims.routes.NewUkimsNumberController.onSubmit(NormalMode)
+        )(
+          request,
+          messages(application)
+        ).toString
       }
+    }
 
-      "must redirect to Journey Recovery for a POST if no existing data is found" in {
+    "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
-        val application = applicationBuilder(userAnswers = None).build()
+      val application = applicationBuilder(userAnswers = None)
+        .overrides(
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+        )
+        .build()
 
-        running(application) {
-          val request =
-            FakeRequest(POST, newUkimsNumberRoute)
-              .withFormUrlEncodedBody(("value", "answer"))
+      running(application) {
+        val request = FakeRequest(GET, newUkimsNumberRoute)
 
-          val result = route(application, request).value
+        val result = route(application, request).value
 
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
-        }
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must redirect to Journey Recovery for a POST if no existing data is found" in {
+
+      val application = applicationBuilder(userAnswers = None).build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, newUkimsNumberRoute)
+            .withFormUrlEncodedBody(("value", "answer"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
       }
     }
   }
