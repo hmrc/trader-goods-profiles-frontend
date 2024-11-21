@@ -17,9 +17,11 @@
 package controllers
 
 import controllers.actions._
+import models.helpandsupport.HelpAndSupportLink.allLinks
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.AuditService
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 
 import javax.inject.Inject
 
@@ -31,9 +33,19 @@ class OutboundController @Inject() (
   val controllerComponents: MessagesControllerComponents
 ) extends BaseController {
 
-  def redirect(link: String, linkText: String): Action[AnyContent] = (identify andThen profileAuth) {
-    implicit request =>
-      auditService.auditOutboundClick(request.affinityGroup, request.eori, link, linkText)
-      Redirect(link)
+  def redirect(link: String): Action[AnyContent] = (identify andThen profileAuth) { implicit request =>
+    val linkInfo = allLinks.find(_.link == link)
+
+    linkInfo match {
+      case Some(linkInfo) =>
+        val message = messagesApi.preferred(request)(linkInfo.linkTextKey)
+        auditService.auditOutboundClick(request.affinityGroup, request.eori, link, message)
+        Redirect(linkInfo.link)
+      case None           =>
+        Redirect(
+          controllers.problem.routes.JourneyRecoveryController
+            .onPageLoad(continueUrl = Some(RedirectUrl(routes.HelpAndSupportController.onPageLoad().url)))
+        )
+    }
   }
 }

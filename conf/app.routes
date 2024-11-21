@@ -46,7 +46,7 @@ POST        /goods-record/:recordId/to-review/review-reason                     
 
 GET         /help-and-support                                                                       controllers.HelpAndSupportController.onPageLoad()
 
-GET         /outboundRedirect                                                                       controllers.OutboundController.redirect(link: String, linkText: String)
+GET         /outboundRedirect                                                                       controllers.OutboundController.redirect(link: String)
 
 # this url must be the last url on this page so it becomes the default if no other urls match
 GET         /*path                                                                                  controllers.PageNotFoundController.onPageLoad(path: String)
