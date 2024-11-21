@@ -54,7 +54,9 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
             .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-
+            .set(HasLongComCodeQuery(testRecordId), true)
+            .success
+            .value
         navigator.nextPage(AssessmentPage(testRecordId, 0), CheckMode, userAnswers) mustEqual
           controllers.categorisation.routes.AssessmentController.onPageLoad(CheckMode, testRecordId, 2)
 

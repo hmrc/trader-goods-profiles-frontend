@@ -168,6 +168,7 @@ class CategorisationNavigator @Inject() (categorisationService: CategorisationSe
 
     {
       for {
+        hasLongComCode     <- answers.get(HasLongComCodeQuery(recordId))
         categorisationInfo <- answers.get(CategorisationDetailsQuery(recordId))
         assessmentCount     = categorisationInfo.categoryAssessmentsThatNeedAnswers.size
         assessmentQuestion <- categorisationInfo.getAssessmentFromIndex(assessmentPage.index)
@@ -180,16 +181,14 @@ class CategorisationNavigator @Inject() (categorisationService: CategorisationSe
             if shouldGoToLongerCommodityCodeWhenCategory1(
               categorisationInfo,
               assessmentQuestion,
-              answers,
-              recordId
+              hasLongComCode
             ) =>
           controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(CheckMode, recordId)
         case AssessmentAnswer.NoExemption
             if shouldGoToLongerCommodityCodeWhenCategory2(
               categorisationInfo,
               assessmentQuestion,
-              answers,
-              recordId
+              hasLongComCode
             ) =>
           controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(CheckMode, recordId)
         case AssessmentAnswer.NoExemption
@@ -217,21 +216,23 @@ class CategorisationNavigator @Inject() (categorisationService: CategorisationSe
     answers: UserAnswers,
     recordId: String
   ): Call =
-    answers.get(CategorisationDetailsQuery(recordId)) match {
-      case Some(catInfo) if catInfo.isCommCodeExpired                           =>
-        controllers.problem.routes.ExpiredCommodityCodeController.onPageLoad(recordId)
-      case Some(catInfo) if catInfo.categoryAssessmentsThatNeedAnswers.nonEmpty =>
-        controllers.categorisation.routes.CategoryGuidanceController.onPageLoad(recordId)
-
-      case Some(catInfo) =>
-        val scenario = categorisationService.calculateResult(catInfo, answers, recordId)
-
-        if (shouldGoToLongerCommodityCodeFromPrepPage(catInfo, scenario, answers, recordId)) {
-          controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(NormalMode, recordId)
-        } else if (shouldGoToSupplementaryUnitFromPrepPage(catInfo, scenario)) {
-          controllers.categorisation.routes.HasSupplementaryUnitController.onPageLoad(NormalMode, recordId)
-        } else {
-          controllers.categorisation.routes.CategorisationResultController.onPageLoad(recordId, scenario)
+    answers.get(HasLongComCodeQuery(recordId)) match {
+      case Some(hasLongComCode) =>
+        answers.get(CategorisationDetailsQuery(recordId)) match {
+          case Some(catInfo) if catInfo.isCommCodeExpired                           =>
+            controllers.problem.routes.ExpiredCommodityCodeController.onPageLoad(recordId)
+          case Some(catInfo) if catInfo.categoryAssessmentsThatNeedAnswers.nonEmpty =>
+            controllers.categorisation.routes.CategoryGuidanceController.onPageLoad(recordId)
+          case Some(catInfo)                                                        =>
+            val scenario = categorisationService.calculateResult(catInfo, answers, recordId)
+            if (shouldGoToLongerCommodityCodeFromPrepPage(catInfo, scenario, hasLongComCode)) {
+              controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(NormalMode, recordId)
+            } else if (shouldGoToSupplementaryUnitFromPrepPage(catInfo, scenario)) {
+              controllers.categorisation.routes.HasSupplementaryUnitController.onPageLoad(NormalMode, recordId)
+            } else {
+              controllers.categorisation.routes.CategorisationResultController.onPageLoad(recordId, scenario)
+            }
+          case None                                                                 => controllers.problem.routes.JourneyRecoveryController.onPageLoad()
         }
 
       case None => controllers.problem.routes.JourneyRecoveryController.onPageLoad()
@@ -240,20 +241,12 @@ class CategorisationNavigator @Inject() (categorisationService: CategorisationSe
   private def shouldGoToLongerCommodityCodeFromPrepPage(
     catInfo: CategorisationInfo,
     scenario: Scenario,
-    answers: UserAnswers,
-    recordId: String
+    hasLongComCode: Boolean
   ): Boolean =
-    answers.get(HasLongComCodeQuery(recordId)) match {
-      case Some(hasLongComCode) =>
-        !hasLongComCode &&
-          catInfo.getMinimalCommodityCode.length == minimumLengthOfCommodityCode &&
-          catInfo.descendantCount != 0 &&
-          getResultAsInt(scenario) == Category2AsInt
-      case None                 =>
-        throw new RuntimeException(
-          s"Unsure as to whether the com code is long (${catInfo.commodityCode}) so cannot decided where to go from prep page"
-        )
-    }
+    !hasLongComCode &&
+      catInfo.getMinimalCommodityCode.length == minimumLengthOfCommodityCode &&
+      catInfo.descendantCount != 0 &&
+      getResultAsInt(scenario) == Category2AsInt
 
   private def navigateFromReassessment(assessmentPage: ReassessmentPage)(answers: UserAnswers): Call = {
     val recordId   = assessmentPage.recordId
@@ -377,50 +370,33 @@ class CategorisationNavigator @Inject() (categorisationService: CategorisationSe
   private def shouldGoToLongerCommodityCodeWhenCategory2(
     categorisationInfo: CategorisationInfo,
     assessmentQuestion: CategoryAssessment,
-    answers: UserAnswers,
-    recordId: String
+    hasLongComCode: Boolean
   ): Boolean =
-    answers.get(HasLongComCodeQuery(recordId)) match {
-      case Some(hasLongComCode) =>
-        !hasLongComCode &&
-          categorisationInfo.getMinimalCommodityCode.length == 6 &&
-          categorisationInfo.descendantCount != 0 &&
-          assessmentQuestion.category == Category2AsInt
-      case None                 =>
-        throw new RuntimeException(
-          s"Unsure as to whether the com code is long (${categorisationInfo.commodityCode}) so cannot decided where to if Category is 2"
-        )
-    }
+    !hasLongComCode &&
+      categorisationInfo.getMinimalCommodityCode.length == 6 &&
+      categorisationInfo.descendantCount != 0 &&
+      assessmentQuestion.category == Category2AsInt
 
   private def shouldGoToLongerCommodityCodeWhenCategory1(
     categorisationInfo: CategorisationInfo,
     assessmentQuestion: CategoryAssessment,
-    answers: UserAnswers,
-    recordId: String
+    hasLongComCode: Boolean
   ): Boolean =
-    answers.get(HasLongComCodeQuery(recordId)) match {
-      case Some(hasLongComCode) =>
-        !hasLongComCode &&
-          categorisationInfo.getMinimalCommodityCode.length == minimumLengthOfCommodityCode &&
-          categorisationInfo.descendantCount != 0 &&
-          assessmentQuestion.category == Category1AsInt &&
-          !categorisationInfo.categoryAssessmentsThatNeedAnswers.exists(_.isCategory2) &&
-          categorisationInfo.categoryAssessments.exists(_.isCategory2)
-      case None                 =>
-        throw new RuntimeException(
-          s"Unsure as to whether the com code is long (${categorisationInfo.commodityCode}) so cannot decided where to if Category is 1"
-        )
-    }
+    !hasLongComCode &&
+      categorisationInfo.getMinimalCommodityCode.length == minimumLengthOfCommodityCode &&
+      categorisationInfo.descendantCount != 0 &&
+      assessmentQuestion.category == Category1AsInt &&
+      !categorisationInfo.categoryAssessmentsThatNeedAnswers.exists(_.isCategory2) &&
+      categorisationInfo.categoryAssessments.exists(_.isCategory2)
 
   private def navigateFromAssessment(assessmentPage: AssessmentPage)(answers: UserAnswers): Call = {
     val recordId   = assessmentPage.recordId
     val nextIndex  = assessmentPage.index + 1
     val nextNumber = nextIndex + 1
-    println("navigateFromAssessment")
-    println(answers)
 
     {
       for {
+        hasLongComCode     <- answers.get(HasLongComCodeQuery(recordId))
         categorisationInfo <- answers.get(CategorisationDetailsQuery(recordId))
         assessmentCount     = categorisationInfo.categoryAssessmentsThatNeedAnswers.size
         assessmentQuestion <- categorisationInfo.getAssessmentFromIndex(assessmentPage.index)
@@ -432,16 +408,14 @@ class CategorisationNavigator @Inject() (categorisationService: CategorisationSe
             if shouldGoToLongerCommodityCodeWhenCategory1(
               categorisationInfo,
               assessmentQuestion,
-              answers,
-              recordId
+              hasLongComCode
             ) =>
           controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(NormalMode, recordId)
         case AssessmentAnswer.NoExemption
             if shouldGoToLongerCommodityCodeWhenCategory2(
               categorisationInfo,
               assessmentQuestion,
-              answers,
-              recordId
+              hasLongComCode
             ) =>
           controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(NormalMode, recordId)
         case AssessmentAnswer.NoExemption if shouldGoToSupplementaryUnit(categorisationInfo, assessmentQuestion) =>

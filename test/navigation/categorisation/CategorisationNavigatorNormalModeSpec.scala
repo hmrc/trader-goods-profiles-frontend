@@ -1649,6 +1649,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
+            .set(HasLongComCodeQuery(testRecordId), true)
+            .success
+            .value
 
           navigator.nextPage(
             CategorisationPreparationPage(testRecordId),
@@ -1674,6 +1677,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
 
           val userAnswers = emptyUserAnswers
             .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNiphlAssessments)
+            .success
+            .value
+            .set(HasLongComCodeQuery(testRecordId), true)
             .success
             .value
 
@@ -1702,6 +1708,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
             .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNirmsAssessments)
             .success
             .value
+            .set(HasLongComCodeQuery(testRecordId), true)
+            .success
+            .value
 
           navigator.nextPage(
             CategorisationPreparationPage(testRecordId),
@@ -1726,6 +1735,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
 
           val userAnswers = emptyUserAnswers
             .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNirmsAssessments)
+            .success
+            .value
+            .set(HasLongComCodeQuery(testRecordId), true)
             .success
             .value
 
@@ -1753,6 +1765,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
             .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNirmsAssessments)
             .success
             .value
+            .set(HasLongComCodeQuery(testRecordId), true)
+            .success
+            .value
 
           navigator.nextPage(
             CategorisationPreparationPage(testRecordId),
@@ -1778,6 +1793,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
             .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNirmsAssessments)
             .success
             .value
+            .set(HasLongComCodeQuery(testRecordId), true)
+            .success
+            .value
 
           navigator.nextPage(
             CategorisationPreparationPage(testRecordId),
@@ -1791,6 +1809,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
       "to expired commodity code controller page when commodity code is expired on the same day" in {
         val userAnswers = emptyUserAnswers
           .set(CategorisationDetailsQuery(testRecordId), categorisationInfoWithExpiredCommodityCode)
+          .success
+          .value
+          .set(HasLongComCodeQuery(testRecordId), true)
           .success
           .value
 
