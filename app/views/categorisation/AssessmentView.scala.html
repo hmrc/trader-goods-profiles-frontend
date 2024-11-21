@@ -49,11 +49,6 @@
             <a target="_blank" href="https://www.trade-tariff.service.gov.uk/xi/find_commodity" class="govuk-link">@messages("assessment.linkText")</a>
         </p>
 
-        <div id="value-hint" class="govuk-hint">
-            @messages("assessment.hint", commodityCode)
-        </div>
-
-        <div id="value">
             @govukCheckboxes(
                 CheckboxesViewModel(
                     form   = form,
@@ -78,9 +73,8 @@
                             behaviour = Some(ExclusiveCheckbox)
                         )
                     )
-                ).withAttribute("aria-describedby", "value-hint")
+                ).withAttribute("aria-describedby", "value-hint").withHint(Hint(content = Text(messages("assessment.hint", commodityCode))))
             )
-        </div>
 
         @govukButton(
             ButtonViewModel(messages("site.continue"))

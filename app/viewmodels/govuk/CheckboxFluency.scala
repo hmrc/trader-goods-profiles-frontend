@@ -68,6 +68,9 @@ trait CheckboxFluency {
 
     def withAttribute(attribute: (String, String)): Checkboxes =
       checkboxes.copy(attributes = checkboxes.attributes + attribute)
+
+    def withHint(hint: Hint): Checkboxes =
+      checkboxes.copy(hint = Some(hint))
   }
 
   object CheckboxItemViewModel {
