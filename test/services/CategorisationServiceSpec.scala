@@ -17,7 +17,7 @@
 package services
 
 import base.SpecBase
-import base.TestConstants.{NiphlCode, NirmsCode, hasLongComCode, testRecordId}
+import base.TestConstants.{NiphlCode, NirmsCode, testRecordId}
 import connectors.{GoodsRecordConnector, OttConnector, TraderProfileConnector}
 import models.ott.response.{CategoryAssessmentRelationship, ExemptionType => ResponseExemptionType, _}
 import models.ott.{CategoryAssessment, _}
@@ -244,15 +244,14 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
           .success
           .value
-          .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.NoExemption)
+          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.NoExemption)
           .success
           .value
 
         categorisationService.calculateResult(
           categorisationInfo,
           userAnswers,
-          testRecordId,
-          hasLongComCode
+          testRecordId
         ) mustEqual Category1Scenario
 
       }
@@ -315,18 +314,17 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
           .success
           .value
-          .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.Exemption(Seq("Y903")))
+          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("Y903")))
           .success
           .value
-          .set(AssessmentPage(testRecordId, 1, hasLongComCode), AssessmentAnswer.NoExemption)
+          .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.NoExemption)
           .success
           .value
 
         categorisationService.calculateResult(
           categorisationInfo,
           userAnswers,
-          testRecordId,
-          hasLongComCode
+          testRecordId
         ) mustEqual Category1Scenario
 
       }
@@ -382,8 +380,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         categorisationService.calculateResult(
           categorisationInfo,
           userAnswers,
-          testRecordId,
-          hasLongComCode
+          testRecordId
         ) mustEqual Category1Scenario
       }
 
@@ -435,15 +432,14 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
           .success
           .value
-          .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.NoExemption)
+          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.NoExemption)
           .success
           .value
 
         categorisationService.calculateResult(
           categorisationInfo,
           userAnswers,
-          testRecordId,
-          hasLongComCode
+          testRecordId
         ) mustEqual Category1Scenario
       }
 
@@ -469,15 +465,14 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.NoExemption)
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.NoExemption)
             .success
             .value
 
           categorisationService.calculateResult(
             categorisationInfo,
             userAnswers,
-            testRecordId,
-            hasLongComCode
+            testRecordId
           ) mustEqual Category1Scenario
         }
 
@@ -500,15 +495,14 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.NoExemption)
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.NoExemption)
             .success
             .value
 
           categorisationService.calculateResult(
             categorisationInfo,
             userAnswers,
-            testRecordId,
-            hasLongComCode
+            testRecordId
           ) mustEqual Category1Scenario
         }
       }
@@ -545,8 +539,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         categorisationService.calculateResult(
           categorisationInfo,
           userAnswers,
-          testRecordId,
-          hasLongComCode
+          testRecordId
         ) mustEqual Category1NoExemptionsScenario
 
       }
@@ -601,8 +594,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         categorisationService.calculateResult(
           categorisationInfo,
           userAnswers,
-          testRecordId,
-          hasLongComCode
+          testRecordId
         ) mustEqual Category1NoExemptionsScenario
 
       }
@@ -633,8 +625,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           categorisationService.calculateResult(
             categorisationInfo,
             userAnswers,
-            testRecordId,
-            hasLongComCode
+            testRecordId
           ) mustEqual Category1NoExemptionsScenario
         }
 
@@ -661,8 +652,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           categorisationService.calculateResult(
             categorisationInfo,
             userAnswers,
-            testRecordId,
-            hasLongComCode
+            testRecordId
           ) mustEqual Category1NoExemptionsScenario
         }
       }
@@ -676,21 +666,20 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
           .success
           .value
-          .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.Exemption(Seq("Y903")))
+          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("Y903")))
           .success
           .value
-          .set(AssessmentPage(testRecordId, 1, hasLongComCode), AssessmentAnswer.Exemption(Seq("Y903")))
+          .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("Y903")))
           .success
           .value
-          .set(AssessmentPage(testRecordId, 2, hasLongComCode), AssessmentAnswer.NoExemption)
+          .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
           .success
           .value
 
         categorisationService.calculateResult(
           categorisationInfo,
           userAnswers,
-          testRecordId,
-          hasLongComCode
+          testRecordId
         ) mustEqual Category2Scenario
 
       }
@@ -723,8 +712,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         categorisationService.calculateResult(
           categorisationInfo,
           userAnswers,
-          testRecordId,
-          hasLongComCode
+          testRecordId
         ) mustEqual Category2Scenario
 
       }
@@ -787,18 +775,17 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
           .success
           .value
-          .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.Exemption(Seq("Y903")))
+          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("Y903")))
           .success
           .value
-          .set(AssessmentPage(testRecordId, 1, hasLongComCode), AssessmentAnswer.Exemption(Seq("Y903")))
+          .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("Y903")))
           .success
           .value
 
         categorisationService.calculateResult(
           categorisationInfo,
           userAnswers,
-          testRecordId,
-          hasLongComCode
+          testRecordId
         ) mustEqual Category2Scenario
 
       }
@@ -850,8 +837,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           categorisationService.calculateResult(
             categorisationInfo,
             userAnswers,
-            testRecordId,
-            hasLongComCode
+            testRecordId
           ) mustEqual Category2Scenario
         }
 
@@ -897,15 +883,14 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.Exemption(Seq("Y903")))
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("Y903")))
             .success
             .value
 
           categorisationService.calculateResult(
             categorisationInfo,
             userAnswers,
-            testRecordId,
-            hasLongComCode
+            testRecordId
           ) mustEqual Category2Scenario
         }
 
@@ -959,21 +944,20 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.Exemption(Seq("Y903")))
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("Y903")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1, hasLongComCode), AssessmentAnswer.Exemption(Seq("Y903")))
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("Y903")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 2, hasLongComCode), AssessmentAnswer.NoExemption)
+            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
             .success
             .value
 
           categorisationService.calculateResult(
             categorisationInfo,
             userAnswers,
-            testRecordId,
-            hasLongComCode
+            testRecordId
           ) mustEqual Category1Scenario
         }
       }
@@ -1020,18 +1004,17 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.Exemption(Seq("Y903")))
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("Y903")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1, hasLongComCode), AssessmentAnswer.Exemption(Seq("Y903")))
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("Y903")))
             .success
             .value
 
           categorisationService.calculateResult(
             categorisationInfo,
             userAnswers,
-            testRecordId,
-            hasLongComCode
+            testRecordId
           ) mustEqual Category2Scenario
         }
 
@@ -1058,8 +1041,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           categorisationService.calculateResult(
             categorisationInfo,
             userAnswers,
-            testRecordId,
-            hasLongComCode
+            testRecordId
           ) mustEqual Category2Scenario
         }
 
@@ -1086,8 +1068,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           categorisationService.calculateResult(
             categorisationInfo,
             userAnswers,
-            testRecordId,
-            hasLongComCode
+            testRecordId
           ) mustEqual Category2Scenario
         }
 
@@ -1132,18 +1113,17 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.Exemption(Seq("Y903")))
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("Y903")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1, hasLongComCode), AssessmentAnswer.NoExemption)
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.NoExemption)
             .success
             .value
 
           categorisationService.calculateResult(
             categorisationInfo,
             userAnswers,
-            testRecordId,
-            hasLongComCode
+            testRecordId
           ) mustEqual Category2Scenario
         }
 
@@ -1187,18 +1167,17 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.Exemption(Seq("Y903")))
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("Y903")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1, hasLongComCode), AssessmentAnswer.NoExemption)
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.NoExemption)
             .success
             .value
 
           categorisationService.calculateResult(
             categorisationInfo,
             userAnswers,
-            testRecordId,
-            hasLongComCode
+            testRecordId
           ) mustEqual Category2Scenario
         }
 
@@ -1224,8 +1203,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           categorisationService.calculateResult(
             categorisationInfo,
             userAnswers,
-            testRecordId,
-            hasLongComCode
+            testRecordId
           ) mustEqual Category2Scenario
         }
       }
@@ -1240,21 +1218,20 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
           .success
           .value
-          .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.Exemption(Seq("Y903")))
+          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("Y903")))
           .success
           .value
-          .set(AssessmentPage(testRecordId, 1, hasLongComCode), AssessmentAnswer.Exemption(Seq("Y903")))
+          .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("Y903")))
           .success
           .value
-          .set(AssessmentPage(testRecordId, 2, hasLongComCode), AssessmentAnswer.Exemption(Seq("Y903")))
+          .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("Y903")))
           .success
           .value
 
         categorisationService.calculateResult(
           categorisationInfo,
           userAnswers,
-          testRecordId,
-          hasLongComCode
+          testRecordId
         ) mustEqual StandardGoodsScenario
 
       }
@@ -1311,18 +1288,17 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.Exemption(Seq("Y903")))
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("Y903")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1, hasLongComCode), AssessmentAnswer.Exemption(Seq("Y903")))
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("Y903")))
             .success
             .value
 
           categorisationService.calculateResult(
             categorisationInfo,
             userAnswers,
-            testRecordId,
-            hasLongComCode
+            testRecordId
           ) mustEqual StandardGoodsScenario
         }
 
@@ -1349,8 +1325,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           categorisationService.calculateResult(
             categorisationInfo,
             userAnswers,
-            testRecordId,
-            hasLongComCode
+            testRecordId
           ) mustEqual StandardGoodsScenario
         }
       }
@@ -1377,8 +1352,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         categorisationService.calculateResult(
           categoryInfoNoAssessments,
           userAnswers,
-          testRecordId,
-          hasLongComCode
+          testRecordId
         ) mustBe StandardGoodsNoAssessmentsScenario
       }
     }
@@ -1413,8 +1387,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           userAnswersForCategorisation,
           testRecordId,
           categorisationInfo,
-          categorisationInfo,
-          hasLongComCode
+          categorisationInfo
         )
         .success
         .value
@@ -1444,8 +1417,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           userAnswersForCategorisation,
           testRecordId,
           categorisationInfo,
-          newCommodityCategorisation,
-          hasLongComCode
+          newCommodityCategorisation
         )
         .success
         .value
@@ -1482,8 +1454,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           userAnswersForCategorisation,
           testRecordId,
           categorisationInfo,
-          newCommodityCategorisation,
-          hasLongComCode
+          newCommodityCategorisation
         )
         .success
         .value
@@ -1528,13 +1499,13 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         .set(LongerCategorisationDetailsQuery(testRecordId), newCommodityCategorisation)
         .success
         .value
-        .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.Exemption(Seq("Y903")))
+        .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("Y903")))
         .success
         .value
-        .set(AssessmentPage(testRecordId, 1, hasLongComCode), AssessmentAnswer.Exemption(Seq("Y903")))
+        .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("Y903")))
         .success
         .value
-        .set(AssessmentPage(testRecordId, 2, hasLongComCode), AssessmentAnswer.Exemption(Seq("Y903")))
+        .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("Y903")))
         .success
         .value
 
@@ -1543,8 +1514,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           oldUserAnswers,
           testRecordId,
           categorisationInfo,
-          newCommodityCategorisation,
-          hasLongComCode
+          newCommodityCategorisation
         )
         .success
         .value
@@ -1564,13 +1534,13 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
         .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
         .success
         .value
-        .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.Exemption(Seq("Y903")))
+        .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("Y903")))
         .success
         .value
-        .set(AssessmentPage(testRecordId, 1, hasLongComCode), AssessmentAnswer.Exemption(Seq("Y903")))
+        .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("Y903")))
         .success
         .value
-        .set(AssessmentPage(testRecordId, 2, hasLongComCode), AssessmentAnswer.Exemption(Seq("Y903")))
+        .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("Y903")))
         .success
         .value
 
@@ -1597,8 +1567,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
           oldUserAnswers,
           testRecordId,
           categorisationInfo,
-          newCommodityCategorisation,
-          hasLongComCode
+          newCommodityCategorisation
         )
         .success
         .value

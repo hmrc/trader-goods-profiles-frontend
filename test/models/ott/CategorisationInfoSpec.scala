@@ -17,7 +17,7 @@
 package models.ott
 
 import base.SpecBase
-import base.TestConstants.{NiphlCode, NirmsCode, hasLongComCode, testRecordId}
+import base.TestConstants.{NiphlCode, NirmsCode, testRecordId}
 import models.ott.response._
 import models.{AnsweredQuestions, AssessmentAnswer, ReassessmentAnswer, TraderProfile}
 import pages.categorisation.{AssessmentPage, ReassessmentPage}
@@ -1506,14 +1506,14 @@ class CategorisationInfoSpec extends SpecBase {
           .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
           .success
           .value
-          .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.Exemption(Seq("Y903")))
+          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("Y903")))
           .success
           .value
-          .set(AssessmentPage(testRecordId, 1, hasLongComCode), AssessmentAnswer.NoExemption)
+          .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.NoExemption)
           .success
           .value
 
-        categorisationInfo.getAnswersForQuestions(userAnswers, testRecordId, hasLongComCode) mustBe
+        categorisationInfo.getAnswersForQuestions(userAnswers, testRecordId) mustBe
           Seq(
             AnsweredQuestions(0, category1, Some(AssessmentAnswer.Exemption(Seq("Y903")))),
             AnsweredQuestions(1, category2, Some(AssessmentAnswer.NoExemption)),
@@ -1534,10 +1534,10 @@ class CategorisationInfoSpec extends SpecBase {
           .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
           .success
           .value
-          .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.Exemption(Seq("Y903")))
+          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("Y903")))
           .success
           .value
-          .set(AssessmentPage(testRecordId, 1, hasLongComCode), AssessmentAnswer.NoExemption)
+          .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.NoExemption)
           .success
           .value
           .set(LongerCategorisationDetailsQuery(testRecordId), longerCommodity)
@@ -1553,7 +1553,7 @@ class CategorisationInfoSpec extends SpecBase {
           .success
           .value
 
-        longerCommodity.getAnswersForQuestions(userAnswers, testRecordId, hasLongComCode) mustBe
+        longerCommodity.getAnswersForQuestions(userAnswers, testRecordId) mustBe
           Seq(
             AnsweredQuestions(0, category1, Some(AssessmentAnswer.Exemption(Seq("Y903"))), reassessmentQuestion = true),
             AnsweredQuestions(1, category1, Some(AssessmentAnswer.Exemption(Seq("Y903"))), reassessmentQuestion = true),

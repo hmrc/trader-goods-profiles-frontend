@@ -55,44 +55,41 @@ class CyaCategorisationController @Inject() (
 
   private val errorMessage: String = "Unable to update Goods Profile."
 
-  def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      goodsRecordConnector.getRecord(request.eori, recordId).map { record =>
-        val longerCategorisationInfo = request.userAnswers.get(LongerCategorisationDetailsQuery(recordId))
+      val longerCategorisationInfo = request.userAnswers.get(LongerCategorisationDetailsQuery(recordId))
 
-        longerCategorisationInfo match {
-          case Some(categorisationInfo) =>
-            showCyaPage(request, recordId, categorisationInfo, record.comcode.length == 10)
-          case _                        =>
-            val categorisationInfo = request.userAnswers.get(CategorisationDetailsQuery(recordId))
+      longerCategorisationInfo match {
+        case Some(categorisationInfo) =>
+          showCyaPage(request, recordId, categorisationInfo)
+        case _                        =>
+          val categorisationInfo = request.userAnswers.get(CategorisationDetailsQuery(recordId))
 
-            categorisationInfo
-              .map { info =>
-                showCyaPage(request, recordId, info, record.comcode.length == 10)
-              }
-              .getOrElse {
-                dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
-                logErrorsAndContinue(
-                  "Failed to get categorisation details",
-                  controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(recordId)
-                )
-              }
-        }
+          categorisationInfo
+            .map { info =>
+              showCyaPage(request, recordId, info)
+            }
+            .getOrElse {
+              dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
+              logErrorsAndContinue(
+                "Failed to get categorisation details",
+                controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(recordId)
+              )
+            }
       }
   }
 
   private def showCyaPage(
     request: DataRequest[_],
     recordId: String,
-    categoryInfo: CategorisationInfo,
-    hasLongComCode: Boolean
+    categoryInfo: CategorisationInfo
   )(implicit messages: Messages) = {
     val userAnswers = request.userAnswers
 
-    CategorisationAnswers.build(userAnswers, recordId, hasLongComCode) match {
+    CategorisationAnswers.build(userAnswers, recordId) match {
       case Right(_) =>
         val (categorisationList, supplementaryUnitList, longerCommodityCodeList) =
-          buildSummaryLists(userAnswers, recordId, categoryInfo, hasLongComCode)
+          buildSummaryLists(userAnswers, recordId, categoryInfo)
 
         Ok(
           view(
@@ -112,8 +109,7 @@ class CyaCategorisationController @Inject() (
   private def buildSummaryLists(
     userAnswers: UserAnswers,
     recordId: String,
-    categoryInfo: CategorisationInfo,
-    hasLongComCode: Boolean
+    categoryInfo: CategorisationInfo
   )(implicit messages: Messages): (SummaryList, SummaryList, SummaryList) = {
 
     val categorisationRows = categoryInfo.categoryAssessmentsThatNeedAnswers.flatMap { assessment =>
@@ -122,8 +118,7 @@ class CyaCategorisationController @Inject() (
         userAnswers,
         assessment,
         categoryInfo.categoryAssessmentsThatNeedAnswers.indexOf(assessment),
-        categoryInfo.longerCode,
-        hasLongComCode
+        categoryInfo.longerCode
       )
     }
 
@@ -166,8 +161,7 @@ class CyaCategorisationController @Inject() (
             request.userAnswers,
             request.eori,
             recordId,
-            categorisationService,
-            oldRecord.comcode.length == 10
+            categorisationService
           ) match {
           case Right(categoryRecord) =>
             auditService.auditFinishCategorisation(
@@ -185,7 +179,7 @@ class CyaCategorisationController @Inject() (
               dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
               Redirect(
                 navigator.nextPage(
-                  CyaCategorisationPage(recordId, oldRecord.comcode.length == 10),
+                  CyaCategorisationPage(recordId),
                   NormalMode,
                   request.userAnswers
                 )

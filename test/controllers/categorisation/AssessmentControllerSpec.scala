@@ -17,7 +17,7 @@
 package controllers.categorisation
 
 import base.SpecBase
-import base.TestConstants.{hasLongComCode, testRecordId}
+import base.TestConstants.testRecordId
 import connectors.GoodsRecordConnector
 import forms.AssessmentFormProvider
 import models.helper.CategorisationJourney
@@ -119,7 +119,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
                 .success
                 .value
-                .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.NoExemption)
+                .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.NoExemption)
                 .success
                 .value
 
@@ -289,7 +289,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
             val result = route(application, request).value
 
             val expectedAnswers =
-              answers.set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.NoExemption).success.value
+              answers.set(AssessmentPage(testRecordId, 0), AssessmentAnswer.NoExemption).success.value
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual onwardRoute.url

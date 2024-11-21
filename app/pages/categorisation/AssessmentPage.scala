@@ -25,8 +25,7 @@ import scala.util.{Failure, Success, Try}
 
 case class AssessmentPage(
   recordId: String,
-  index: Int,
-  hasLongComCode: Boolean
+  index: Int
 ) extends QuestionPage[AssessmentAnswer] {
   override def path: JsPath = JsPath \ "assessments" \ recordId \ index
 
@@ -42,7 +41,7 @@ case class AssessmentPage(
         //Go backwards to avoid recursion issues
         rangeToRemove       = ((index + 1) to count).reverse
       } yield rangeToRemove.foldLeft[Try[UserAnswers]](Success(updatedUserAnswers)) { (acc, currentIndexToRemove) =>
-        acc.flatMap(_.remove(AssessmentPage(recordId, currentIndexToRemove, hasLongComCode)))
+        acc.flatMap(_.remove(AssessmentPage(recordId, currentIndexToRemove)))
       }).getOrElse(
         Failure(new InconsistentUserAnswersException(s"Could not find category assessment with index $index"))
       )

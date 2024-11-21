@@ -17,7 +17,7 @@
 package controllers.categorisation
 
 import base.SpecBase
-import base.TestConstants.{hasLongComCode, testEori, testRecordId}
+import base.TestConstants.{testEori, testRecordId}
 import connectors.GoodsRecordConnector
 import models.helper.CategorisationJourney
 import models.ott.CategorisationInfo
@@ -88,13 +88,13 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             val expectedAssessmentList = SummaryListViewModel(
               rows = Seq(
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category1, 0, isReassessmentAnswer = false, hasLongComCode)
+                  .row(testRecordId, userAnswers, category1, 0, isReassessmentAnswer = false)
                   .get,
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category2, 1, isReassessmentAnswer = false, hasLongComCode)
+                  .row(testRecordId, userAnswers, category2, 1, isReassessmentAnswer = false)
                   .get,
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category3, 2, isReassessmentAnswer = false, hasLongComCode)
+                  .row(testRecordId, userAnswers, category3, 2, isReassessmentAnswer = false)
                   .get
               )
             )
@@ -123,10 +123,10 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1, hasLongComCode), AssessmentAnswer.NoExemption)
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.NoExemption)
             .success
             .value
 
@@ -144,10 +144,10 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             val expectedAssessmentList = SummaryListViewModel(
               rows = Seq(
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category1, 0, isReassessmentAnswer = false, hasLongComCode)
+                  .row(testRecordId, userAnswers, category1, 0, isReassessmentAnswer = false)
                   .get,
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category2, 1, isReassessmentAnswer = false, hasLongComCode)
+                  .row(testRecordId, userAnswers, category2, 1, isReassessmentAnswer = false)
                   .get
               )
             )
@@ -194,13 +194,13 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             val expectedAssessmentList = SummaryListViewModel(
               rows = Seq(
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category1, 0, isReassessmentAnswer = false, hasLongComCode)
+                  .row(testRecordId, userAnswers, category1, 0, isReassessmentAnswer = false)
                   .get,
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category2, 1, isReassessmentAnswer = false, hasLongComCode)
+                  .row(testRecordId, userAnswers, category2, 1, isReassessmentAnswer = false)
                   .get,
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category3, 2, isReassessmentAnswer = false, hasLongComCode)
+                  .row(testRecordId, userAnswers, category3, 2, isReassessmentAnswer = false)
                   .get
               )
             )
@@ -261,13 +261,13 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             val expectedAssessmentList = SummaryListViewModel(
               rows = Seq(
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category1, 0, isReassessmentAnswer = false, hasLongComCode)
+                  .row(testRecordId, userAnswers, category1, 0, isReassessmentAnswer = false)
                   .get,
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category2, 1, isReassessmentAnswer = false, hasLongComCode)
+                  .row(testRecordId, userAnswers, category2, 1, isReassessmentAnswer = false)
                   .get,
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category3, 2, isReassessmentAnswer = false, hasLongComCode)
+                  .row(testRecordId, userAnswers, category3, 2, isReassessmentAnswer = false)
                   .get
               )
             )
@@ -302,13 +302,13 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo.copy(commodityCode = "987654"))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 2, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
             .set(LongerCategorisationDetailsQuery(testRecordId), longerCat)
@@ -338,10 +338,10 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             val expectedAssessmentList = SummaryListViewModel(
               rows = Seq(
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category1, 0, isReassessmentAnswer = true, hasLongComCode)
+                  .row(testRecordId, userAnswers, category1, 0, isReassessmentAnswer = true)
                   .get,
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category2, 1, isReassessmentAnswer = true, hasLongComCode)
+                  .row(testRecordId, userAnswers, category2, 1, isReassessmentAnswer = true)
                   .get
               )
             )
@@ -388,10 +388,10 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
 
@@ -409,10 +409,10 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             val expectedAssessmentList = SummaryListViewModel(
               rows = Seq(
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category1, 0, isReassessmentAnswer = false, hasLongComCode)
+                  .row(testRecordId, userAnswers, category1, 0, isReassessmentAnswer = false)
                   .get,
                 AssessmentsSummary
-                  .row(testRecordId, userAnswers, category3, 1, isReassessmentAnswer = false, hasLongComCode)
+                  .row(testRecordId, userAnswers, category3, 1, isReassessmentAnswer = false)
                   .get
               )
             )
@@ -508,13 +508,13 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
         "if categorisation query is not defined" in {
 
           val userAnswersForCategorisationEmptyQuery: UserAnswers = emptyUserAnswers
-            .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 2, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
             .set(HasSupplementaryUnitPage(testRecordId), true)
@@ -553,10 +553,10 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.NoExemption)
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.NoExemption)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
 
@@ -622,7 +622,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             when(mockSessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
 
             val mockCategorisationService = mock[CategorisationService]
-            when(mockCategorisationService.calculateResult(any(), any(), any(), any()))
+            when(mockCategorisationService.calculateResult(any(), any(), any()))
               .thenReturn(Category1Scenario)
 
             val application =
@@ -685,7 +685,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               .thenReturn(Future.failed(new RuntimeException(":(")))
 
             val mockCategorisationService = mock[CategorisationService]
-            when(mockCategorisationService.calculateResult(any(), any(), any(), any()))
+            when(mockCategorisationService.calculateResult(any(), any(), any()))
               .thenReturn(Category1Scenario)
 
             val application =
@@ -782,7 +782,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
           .thenReturn(Future.successful(Done))
 
         val mockCategorisationService = mock[CategorisationService]
-        when(mockCategorisationService.calculateResult(any(), any(), any(), any()))
+        when(mockCategorisationService.calculateResult(any(), any(), any()))
           .thenReturn(Category1Scenario)
 
         val application =

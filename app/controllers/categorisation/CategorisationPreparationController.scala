@@ -29,7 +29,7 @@ import pages.RecategorisationPreparationPage
 import pages.categorisation.{CategorisationPreparationPage, HasSupplementaryUnitPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery, LongerCommodityQuery}
+import queries.{CategorisationDetailsQuery, HasLongComCodeQuery, LongerCategorisationDetailsQuery, LongerCommodityQuery}
 import repositories.SessionRepository
 import services.{AuditService, CategorisationService}
 import uk.gov.hmrc.auth.core.AffinityGroup
@@ -59,33 +59,34 @@ class CategorisationPreparationController @Inject() (
   def startCategorisation(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       (for {
-        goodsRecord        <- goodsRecordsConnector.getRecord(request.eori, recordId)
-        categorisationInfo <-
+        goodsRecord                           <- goodsRecordsConnector.getRecord(request.eori, recordId)
+        categorisationInfo                    <-
           categorisationService
             .getCategorisationInfo(request, goodsRecord.comcode, goodsRecord.countryOfOrigin, recordId)
-        _                   = auditService.auditStartUpdateGoodsRecord(
-                                request.eori,
-                                request.affinityGroup,
-                                CategorisationUpdate,
-                                recordId,
-                                Some(categorisationInfo)
-                              )
-        updatedUserAnswers <-
+        _                                      = auditService.auditStartUpdateGoodsRecord(
+                                                   request.eori,
+                                                   request.affinityGroup,
+                                                   CategorisationUpdate,
+                                                   recordId,
+                                                   Some(categorisationInfo)
+                                                 )
+        updatedUserAnswers                    <-
           Future.fromTry(request.userAnswers.set(CategorisationDetailsQuery(recordId), categorisationInfo))
-        _                  <- sessionRepository.set(updatedUserAnswers)
-        _                  <- updateCategory(
-                                updatedUserAnswers,
-                                request.eori,
-                                request.affinityGroup,
-                                recordId,
-                                categorisationInfo,
-                                goodsRecord.comcode.length == 10
-                              )
+        updatedHasLongComCodeQueryUserAnswers <-
+          Future.fromTry(updatedUserAnswers.set(HasLongComCodeQuery(recordId), goodsRecord.comcode.length == 10))
+        _                                     <- sessionRepository.set(updatedHasLongComCodeQueryUserAnswers)
+        _                                     <- updateCategory(
+                                                   updatedHasLongComCodeQueryUserAnswers,
+                                                   request.eori,
+                                                   request.affinityGroup,
+                                                   recordId,
+                                                   categorisationInfo
+                                                 )
       } yield Redirect(
         navigator.nextPage(
-          CategorisationPreparationPage(recordId, goodsRecord.comcode.length == 10),
+          CategorisationPreparationPage(recordId),
           NormalMode,
-          updatedUserAnswers
+          updatedHasLongComCodeQueryUserAnswers
         )
       )
         .removingFromSession(dataUpdated, pageUpdated, dataRemoved))
@@ -133,8 +134,7 @@ class CategorisationPreparationController @Inject() (
                                           newLongerCategorisationInfo,
                                           updatedUACatInfo,
                                           recordId,
-                                          shorterCategorisationInfo,
-                                          goodsRecord.comcode.length == 10
+                                          shorterCategorisationInfo
                                         )
 
         _                    <- updateCategory(
@@ -142,14 +142,13 @@ class CategorisationPreparationController @Inject() (
                                   request.eori,
                                   request.affinityGroup,
                                   recordId,
-                                  newLongerCategorisationInfo,
-                                  goodsRecord.comcode.length == 10
+                                  newLongerCategorisationInfo
                                 )
         reorderedUserAnswers <-
           categorisationService.reorderRecategorisationAnswers(updatedUAReassessmentAnswers, recordId)
       } yield Redirect(
         navigator.nextPage(
-          RecategorisationPreparationPage(recordId, goodsRecord.comcode.length == 10),
+          RecategorisationPreparationPage(recordId),
           mode,
           reorderedUserAnswers
         )
@@ -187,16 +186,15 @@ class CategorisationPreparationController @Inject() (
     eori: String,
     affinityGroup: AffinityGroup,
     recordId: String,
-    categorisationInfo: CategorisationInfo,
-    hasLongComCode: Boolean
+    categorisationInfo: CategorisationInfo
   )(implicit
     hc: HeaderCarrier
   ): Future[Done] =
     if (
       categorisationInfo.categoryAssessmentsThatNeedAnswers.isEmpty && !categorisationInfo.isCommCodeExpired
-      && !isSupplementaryUnitQuestionToBeAnswered(categorisationInfo, updatedUserAnswers, recordId, hasLongComCode)
+      && !isSupplementaryUnitQuestionToBeAnswered(categorisationInfo, updatedUserAnswers, recordId)
     ) {
-      CategoryRecord.build(updatedUserAnswers, eori, recordId, categorisationService, hasLongComCode) match {
+      CategoryRecord.build(updatedUserAnswers, eori, recordId, categorisationService) match {
         case Right(record) =>
           auditService.auditFinishCategorisation(
             eori,
@@ -223,10 +221,9 @@ class CategorisationPreparationController @Inject() (
   private def isSupplementaryUnitQuestionToBeAnswered(
     catInfo: CategorisationInfo,
     updatedUserAnswers: UserAnswers,
-    recordId: String,
-    hasLongComCode: Boolean
+    recordId: String
   ) = {
-    val scenario = categorisationService.calculateResult(catInfo, updatedUserAnswers, recordId, hasLongComCode)
+    val scenario = categorisationService.calculateResult(catInfo, updatedUserAnswers, recordId)
     catInfo.measurementUnit.isDefined && getResultAsInt(scenario) == Category2AsInt
   }
 
@@ -235,8 +232,7 @@ class CategorisationPreparationController @Inject() (
     newLongerCategorisationInfo: CategorisationInfo,
     updatedUACatInfo: UserAnswers,
     recordId: String,
-    shorterCategorisationInfo: CategorisationInfo,
-    hasLongComCode: Boolean
+    shorterCategorisationInfo: CategorisationInfo
   ): Future[UserAnswers] = {
 
     val isNewOneTheSameAsOldOne = oldLongerCategorisationInfoOpt.exists(_.equals(newLongerCategorisationInfo))
@@ -249,8 +245,7 @@ class CategorisationPreparationController @Inject() (
           updatedUACatInfo,
           recordId,
           shorterCategorisationInfo,
-          newLongerCategorisationInfo,
-          hasLongComCode
+          newLongerCategorisationInfo
         )
       )
     }

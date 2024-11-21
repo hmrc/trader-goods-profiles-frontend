@@ -117,12 +117,11 @@ class CategorisationService @Inject() (
   def calculateResult(
     categorisationInfo: CategorisationInfo,
     userAnswers: UserAnswers,
-    recordId: String,
-    hasLongComCode: Boolean
+    recordId: String
   ): Scenario = {
     val category1Assessments = categorisationInfo.categoryAssessments.filter(ass => ass.isCategory1)
 
-    val listOfAnswers = categorisationInfo.getAnswersForQuestions(userAnswers, recordId, hasLongComCode)
+    val listOfAnswers = categorisationInfo.getAnswersForQuestions(userAnswers, recordId)
 
     val areThereCategory1QuestionsWithNoExemption =
       listOfAnswers.exists(x => x.answer.contains(AssessmentAnswer.NoExemption) && x.question.isCategory1)
@@ -138,7 +137,7 @@ class CategorisationService @Inject() (
         Category2Scenario
       }
     } else {
-      calculateResultWithNirms(categorisationInfo, userAnswers, recordId, listOfAnswers, hasLongComCode)
+      calculateResultWithNirms(categorisationInfo, userAnswers, recordId, listOfAnswers)
     }
   }
 
@@ -146,8 +145,7 @@ class CategorisationService @Inject() (
     categorisationInfo: CategorisationInfo,
     userAnswers: UserAnswers,
     recordId: String,
-    listOfAnswers: Seq[AnsweredQuestions],
-    hasLongComCode: Boolean
+    listOfAnswers: Seq[AnsweredQuestions]
   ): Scenario = {
 
     val areThereCategory1AnsweredNo   =
@@ -171,15 +169,14 @@ class CategorisationService @Inject() (
         StandardGoodsScenario
       }
     } else {
-      calculateResultWithoutNiphlAndNirms(categorisationInfo, userAnswers, recordId, hasLongComCode)
+      calculateResultWithoutNiphlAndNirms(categorisationInfo, userAnswers, recordId)
     }
   }
 
   private def calculateResultWithoutNiphlAndNirms(
     categorisationInfo: CategorisationInfo,
     userAnswers: UserAnswers,
-    recordId: String,
-    hasLongComCode: Boolean
+    recordId: String
   ): Scenario =
     if (categorisationInfo.categoryAssessments.isEmpty) {
       StandardGoodsNoAssessmentsScenario
@@ -190,18 +187,17 @@ class CategorisationService @Inject() (
         Category2Scenario
       }
     } else {
-      calculateBasedOnAnswers(categorisationInfo, userAnswers, recordId, hasLongComCode)
+      calculateBasedOnAnswers(categorisationInfo, userAnswers, recordId)
     }
 
   private def calculateBasedOnAnswers(
     categorisationInfo: CategorisationInfo,
     userAnswers: UserAnswers,
-    recordId: String,
-    hasLongComCode: Boolean
+    recordId: String
   ): Scenario = {
 
     val getFirstNo = categorisationInfo
-      .getAnswersForQuestions(userAnswers, recordId, hasLongComCode)
+      .getAnswersForQuestions(userAnswers, recordId)
       .find(x => x.answer.contains(AssessmentAnswer.NoExemption))
 
     val areThereCategory2QuestionsWithNoExemption =
@@ -219,8 +215,7 @@ class CategorisationService @Inject() (
     userAnswers: UserAnswers,
     recordId: String,
     oldCommodityCategorisation: CategorisationInfo,
-    newCommodityCategorisation: CategorisationInfo,
-    hasLongComCode: Boolean
+    newCommodityCategorisation: CategorisationInfo
   ): Try[UserAnswers] = {
     val oldAssessments = oldCommodityCategorisation.categoryAssessmentsThatNeedAnswers
     val newAssessments = newCommodityCategorisation.categoryAssessmentsThatNeedAnswers
@@ -231,7 +226,7 @@ class CategorisationService @Inject() (
           newAssessments.filter(newAssessment => newAssessment.exemptions == assessment._1.exemptions)
         newAssessmentsTheAnswerAppliesTo.foldLeft(currentMap) { (current, matchingAssessment) =>
           current + (newAssessments.indexOf(matchingAssessment) -> userAnswers.get(
-            AssessmentPage(recordId, assessment._2, hasLongComCode)
+            AssessmentPage(recordId, assessment._2)
           ))
         }
     }

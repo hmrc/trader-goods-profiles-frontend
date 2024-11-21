@@ -139,7 +139,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
           withClue("must not get category result from categorisation service as not needed") {
             verify(mockCategorisationService, never())
-              .calculateResult(any(), any(), any(), any())
+              .calculateResult(any(), any(), any())
           }
 
           withClue("must not have updated goods record") {
@@ -210,7 +210,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
           withClue("must not get category result from categorisation service as not needed") {
             verify(mockCategorisationService, never())
-              .calculateResult(any(), any(), any(), any())
+              .calculateResult(any(), any(), any())
           }
 
           withClue("must not have updated goods record") {
@@ -250,7 +250,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           Future.successful(categoryInfoNoAssessments)
         )
 
-        when(mockCategorisationService.calculateResult(any(), any(), any(), any()))
+        when(mockCategorisationService.calculateResult(any(), any(), any()))
           .thenReturn(StandardGoodsNoAssessmentsScenario)
 
         when(mockGoodsRecordConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any(), any())(any()))
@@ -278,7 +278,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
           withClue("must get category result from categorisation service") {
             verify(mockCategorisationService, times(2))
-              .calculateResult(eqTo(categoryInfoNoAssessments), any(), eqTo(testRecordId), any())
+              .calculateResult(eqTo(categoryInfoNoAssessments), any(), eqTo(testRecordId))
           }
 
           val categoryRecordArgCaptor: ArgumentCaptor[CategoryRecord] =
@@ -417,7 +417,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           Future.successful(categoryInfoNoAssessments)
         )
 
-        when(mockCategorisationService.calculateResult(any(), any(), any(), any()))
+        when(mockCategorisationService.calculateResult(any(), any(), any()))
           .thenReturn(StandardGoodsNoAssessmentsScenario)
 
         when(mockGoodsRecordConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any(), any())(any()))
@@ -526,7 +526,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           .success
           .value
 
-        when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any(), any()))
+        when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any()))
           .thenReturn(Success(userAnswers))
         when(mockCategorisationService.reorderRecategorisationAnswers(any(), any()))
           .thenReturn(Future.successful(userAnswers))
@@ -555,8 +555,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
               any(),
               eqTo(testRecordId),
               eqTo(shorterCommodity),
-              eqTo(categorisationInfo),
-              any()
+              eqTo(categorisationInfo)
             )
           }
 
@@ -564,7 +563,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
             val uaArgCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
             //Capture from here because this routine is mocked and returns stubbed data
             verify(mockCategorisationService)
-              .updatingAnswersForRecategorisation(uaArgCaptor.capture(), any(), any(), any(), any())
+              .updatingAnswersForRecategorisation(uaArgCaptor.capture(), any(), any(), any())
 
             val finalUserAnswers = uaArgCaptor.getValue
 
@@ -573,7 +572,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
           withClue("must not get category result from categorisation service as not needed") {
             verify(mockCategorisationService, never())
-              .calculateResult(any(), any(), any(), any())
+              .calculateResult(any(), any(), any())
           }
 
           withClue("must not have updated goods record") {
@@ -607,13 +606,13 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           .success
           .value
 
-        when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any(), any()))
+        when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any()))
           .thenReturn(Success(userAnswers))
 
         when(mockCategorisationService.reorderRecategorisationAnswers(any(), any()))
           .thenReturn(Future.successful(userAnswers))
 
-        when(mockCategorisationService.calculateResult(any(), any(), any(), any()))
+        when(mockCategorisationService.calculateResult(any(), any(), any()))
           .thenReturn(StandardGoodsNoAssessmentsScenario)
 
         when(mockGoodsRecordConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any(), any())(any()))
@@ -643,14 +642,13 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
               any(),
               eqTo(testRecordId),
               eqTo(shorterCommodity),
-              eqTo(longerCode),
-              any()
+              eqTo(longerCode)
             )
           }
 
           withClue("must get category result from categorisation service") {
             verify(mockCategorisationService, times(2))
-              .calculateResult(any(), any(), any(), any())
+              .calculateResult(any(), any(), any())
           }
 
           val categoryRecordArgCaptor: ArgumentCaptor[CategoryRecord] =
@@ -671,7 +669,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
             val uaArgCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
             //Capture from here because this routine is mocked and returns stubbed data
             verify(mockCategorisationService)
-              .updatingAnswersForRecategorisation(uaArgCaptor.capture(), any(), any(), any(), any())
+              .updatingAnswersForRecategorisation(uaArgCaptor.capture(), any(), any(), any())
 
             val finalUserAnswers = uaArgCaptor.getValue
 
@@ -712,13 +710,13 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           .success
           .value
 
-        when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any(), any()))
+        when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any()))
           .thenReturn(Success(userAnswers))
 
         when(mockCategorisationService.reorderRecategorisationAnswers(any(), any()))
           .thenReturn(Future.successful(userAnswers))
 
-        when(mockCategorisationService.calculateResult(any(), any(), any(), any()))
+        when(mockCategorisationService.calculateResult(any(), any(), any()))
           .thenReturn(Category2Scenario)
 
         when(mockGoodsRecordConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any(), any())(any()))
@@ -745,7 +743,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
           withClue("must get category result from categorisation service") {
             verify(mockCategorisationService)
-              .calculateResult(any(), any(), any(), any())
+              .calculateResult(any(), any(), any())
           }
 
           withClue("must not call the audit service finish categorisation event") {
@@ -780,7 +778,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           .success
           .value
 
-        when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any(), any()))
+        when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any()))
           .thenReturn(Success(userAnswers))
 
         when(mockCategorisationService.reorderRecategorisationAnswers(any(), any()))
@@ -803,7 +801,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           withClue("must keep supplementary unit in answers") {
             val uaArgCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
             verify(mockCategorisationService)
-              .updatingAnswersForRecategorisation(uaArgCaptor.capture(), any(), any(), any(), any())
+              .updatingAnswersForRecategorisation(uaArgCaptor.capture(), any(), any(), any())
 
             val finalUserAnswers = uaArgCaptor.getValue
 
@@ -846,7 +844,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           .success
           .value
 
-        when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any(), any()))
+        when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any()))
           .thenReturn(Success(userAnswers))
 
         when(mockCategorisationService.reorderRecategorisationAnswers(any(), any()))
@@ -869,7 +867,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           withClue("must keep supplementary unit in answers") {
             val uaArgCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
             verify(mockCategorisationService)
-              .updatingAnswersForRecategorisation(uaArgCaptor.capture(), any(), any(), any(), any())
+              .updatingAnswersForRecategorisation(uaArgCaptor.capture(), any(), any(), any())
 
             val finalUserAnswers = uaArgCaptor.getValue
 
@@ -907,7 +905,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           .success
           .value
 
-        when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any(), any()))
+        when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any()))
           .thenReturn(Success(userAnswers))
 
         when(mockCategorisationService.reorderRecategorisationAnswers(any(), any()))
@@ -931,7 +929,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
             val uaArgCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
             //Capture from here because this routine is mocked and returns stubbed data
             verify(mockCategorisationService)
-              .updatingAnswersForRecategorisation(uaArgCaptor.capture(), any(), any(), any(), any())
+              .updatingAnswersForRecategorisation(uaArgCaptor.capture(), any(), any(), any())
 
             val finalUserAnswers = uaArgCaptor.getValue
 
@@ -973,7 +971,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           .success
           .value
 
-        when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any(), any()))
+        when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any()))
           .thenReturn(Success(userAnswers))
 
         when(mockCategorisationService.reorderRecategorisationAnswers(any(), any()))
@@ -997,7 +995,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
             val uaArgCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
             //Capture from here because this routine is mocked and returns stubbed data
             verify(mockCategorisationService)
-              .updatingAnswersForRecategorisation(uaArgCaptor.capture(), any(), any(), any(), any())
+              .updatingAnswersForRecategorisation(uaArgCaptor.capture(), any(), any(), any())
 
             val finalUserAnswers = uaArgCaptor.getValue
 
@@ -1062,7 +1060,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
             withClue("must not update answers from categorisation service as not needed") {
               verify(mockCategorisationService, never())
-                .updatingAnswersForRecategorisation(any(), any(), any(), any(), any())
+                .updatingAnswersForRecategorisation(any(), any(), any(), any())
             }
 
             withClue("must not have updated goods record") {
@@ -1172,7 +1170,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           Future.successful(categoryInfoNoAssessments)
         )
 
-        when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any(), any()))
+        when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any()))
           .thenReturn(
             Failure(new Exception(":("))
           )
@@ -1215,11 +1213,11 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           .success
           .value
 
-        when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any(), any()))
+        when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any()))
           .thenReturn(
             Success(userAnswers)
           )
-        when(mockCategorisationService.calculateResult(any(), any(), any(), any()))
+        when(mockCategorisationService.calculateResult(any(), any(), any()))
           .thenReturn(StandardGoodsNoAssessmentsScenario)
 
         when(mockGoodsRecordConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any(), any())(any()))
@@ -1272,7 +1270,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           .success
           .value
 
-        when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any(), any()))
+        when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any()))
           .thenReturn(
             Success(userAnswers)
           )
@@ -1312,7 +1310,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           .success
           .value
 
-        when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any(), any()))
+        when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any()))
           .thenReturn(
             Success(userAnswers)
           )

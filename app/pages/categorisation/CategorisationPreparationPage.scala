@@ -18,4 +18,4 @@ package pages.categorisation
 
 import pages.Page
 
-case class CategorisationPreparationPage(recordId: String, hasLongComCode: Boolean) extends Page
+case class CategorisationPreparationPage(recordId: String) extends Page

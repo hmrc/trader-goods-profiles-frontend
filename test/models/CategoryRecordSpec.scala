@@ -17,7 +17,7 @@
 package models
 
 import base.SpecBase
-import base.TestConstants.{hasLongComCode, testEori, testRecordId, userAnswersId}
+import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import models.ott.{CategorisationInfo, CategoryAssessment, Certificate}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{verify, when}
@@ -32,7 +32,7 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
   private val mockCategorisationService = mock[CategorisationService]
 
   override def beforeEach(): Unit = {
-    when(mockCategorisationService.calculateResult(any(), any(), any(), any())).thenReturn(Category1Scenario)
+    when(mockCategorisationService.calculateResult(any(), any(), any())).thenReturn(Category1Scenario)
     super.beforeEach()
   }
 
@@ -85,19 +85,19 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 2, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 3, hasLongComCode), AssessmentAnswer.NoExemption)
+            .set(AssessmentPage(testRecordId, 3), AssessmentAnswer.NoExemption)
             .success
             .value
-        val result  = CategoryRecord.build(answers, testEori, testRecordId, mockCategorisationService, hasLongComCode)
+        val result  = CategoryRecord.build(answers, testEori, testRecordId, mockCategorisationService)
 
         result mustEqual Right(
           CategoryRecord(
@@ -115,7 +115,7 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
 
         withClue("must have used the categorisation service to find the category") {
           verify(mockCategorisationService)
-            .calculateResult(eqTo(categorisationInfo), eqTo(answers), eqTo(testRecordId), any())
+            .calculateResult(eqTo(categorisationInfo), eqTo(answers), eqTo(testRecordId))
         }
       }
 
@@ -126,19 +126,19 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfoMeasureUnit)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 2, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 3, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 3), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-        val result  = CategoryRecord.build(answers, testEori, testRecordId, mockCategorisationService, hasLongComCode)
+        val result  = CategoryRecord.build(answers, testEori, testRecordId, mockCategorisationService)
 
         result mustEqual Right(
           CategoryRecord(
@@ -163,22 +163,22 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfoMeasureUnit)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 2, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 3, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 3), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
             .set(HasSupplementaryUnitPage(testRecordId), false)
             .success
             .value
-        val result  = CategoryRecord.build(answers, testEori, testRecordId, mockCategorisationService, hasLongComCode)
+        val result  = CategoryRecord.build(answers, testEori, testRecordId, mockCategorisationService)
 
         result mustEqual Right(
           CategoryRecord(
@@ -203,16 +203,16 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfoMeasureUnit)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 2, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 3, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 3), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
             .set(HasSupplementaryUnitPage(testRecordId), true)
@@ -222,7 +222,7 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
             .success
             .value
 
-        val result = CategoryRecord.build(answers, testEori, testRecordId, mockCategorisationService, hasLongComCode)
+        val result = CategoryRecord.build(answers, testEori, testRecordId, mockCategorisationService)
 
         result mustEqual Right(
           CategoryRecord(
@@ -247,11 +247,11 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.NoExemption)
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.NoExemption)
             .success
             .value
 
-        val result = CategoryRecord.build(answers, testEori, testRecordId, mockCategorisationService, hasLongComCode)
+        val result = CategoryRecord.build(answers, testEori, testRecordId, mockCategorisationService)
 
         result mustEqual Right(
           CategoryRecord(
@@ -269,7 +269,7 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
 
         withClue("must have used the categorisation service to find the category") {
           verify(mockCategorisationService)
-            .calculateResult(eqTo(categorisationInfo), eqTo(answers), eqTo(testRecordId), any())
+            .calculateResult(eqTo(categorisationInfo), eqTo(answers), eqTo(testRecordId))
         }
       }
 
@@ -283,16 +283,16 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
             .set(CategorisationDetailsQuery(testRecordId), shorterCat)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 2, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 3, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 3), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
             .set(LongerCategorisationDetailsQuery(testRecordId), longerCat)
@@ -311,7 +311,7 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
             .success
             .value
 
-        val result = CategoryRecord.build(answers, testEori, testRecordId, mockCategorisationService, hasLongComCode)
+        val result = CategoryRecord.build(answers, testEori, testRecordId, mockCategorisationService)
 
         result mustEqual Right(
           CategoryRecord(
@@ -331,7 +331,7 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
         )
 
         withClue("must have used the categorisation service to find the category") {
-          verify(mockCategorisationService).calculateResult(eqTo(longerCat), eqTo(answers), eqTo(testRecordId), any())
+          verify(mockCategorisationService).calculateResult(eqTo(longerCat), eqTo(answers), eqTo(testRecordId))
         }
       }
 
@@ -343,7 +343,7 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
 
         val answers = emptyUserAnswers
 
-        val result = CategoryRecord.build(answers, testEori, testRecordId, mockCategorisationService, hasLongComCode)
+        val result = CategoryRecord.build(answers, testEori, testRecordId, mockCategorisationService)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
@@ -363,7 +363,7 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
             .success
             .value
 
-        val result = CategoryRecord.build(answers, testEori, testRecordId, mockCategorisationService, hasLongComCode)
+        val result = CategoryRecord.build(answers, testEori, testRecordId, mockCategorisationService)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain only PageMissing(SupplementaryUnitPage(testRecordId))
@@ -384,7 +384,7 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
             .success
             .value
 
-        val result = CategoryRecord.build(answers, testEori, testRecordId, mockCategorisationService, hasLongComCode)
+        val result = CategoryRecord.build(answers, testEori, testRecordId, mockCategorisationService)
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain only UnexpectedPage(SupplementaryUnitPage(testRecordId))

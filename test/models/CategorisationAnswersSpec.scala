@@ -17,7 +17,7 @@
 package models
 
 import base.SpecBase
-import base.TestConstants.{hasLongComCode, testRecordId}
+import base.TestConstants.testRecordId
 import models.ott.CategorisationInfo
 import org.scalatest.Inside.inside
 import pages.categorisation.{AssessmentPage, HasSupplementaryUnitPage, ReassessmentPage, SupplementaryUnitPage}
@@ -36,14 +36,14 @@ class CategorisationAnswersSpec extends SpecBase {
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1, hasLongComCode), AssessmentAnswer.NoExemption)
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.NoExemption)
             .success
             .value
 
-          val result = CategorisationAnswers.build(answers, testRecordId, hasLongComCode)
+          val result = CategorisationAnswers.build(answers, testRecordId)
 
           result mustBe Right(
             CategorisationAnswers(
@@ -58,7 +58,7 @@ class CategorisationAnswersSpec extends SpecBase {
           val answers =
             userAnswersForCategorisation
 
-          val result = CategorisationAnswers.build(answers, testRecordId, hasLongComCode)
+          val result = CategorisationAnswers.build(answers, testRecordId)
 
           result mustEqual
             Right(
@@ -79,7 +79,7 @@ class CategorisationAnswersSpec extends SpecBase {
           val answers =
             userAnswersForCategorisation
 
-          val result = CategorisationAnswers.build(answers, testRecordId, hasLongComCode)
+          val result = CategorisationAnswers.build(answers, testRecordId)
 
           result mustEqual
             Right(
@@ -103,7 +103,7 @@ class CategorisationAnswersSpec extends SpecBase {
               .success
               .value
 
-          val result = CategorisationAnswers.build(answers, testRecordId, hasLongComCode)
+          val result = CategorisationAnswers.build(answers, testRecordId)
 
           result mustEqual
             Right(
@@ -130,7 +130,7 @@ class CategorisationAnswersSpec extends SpecBase {
               .success
               .value
 
-          val result = CategorisationAnswers.build(answers, testRecordId, hasLongComCode)
+          val result = CategorisationAnswers.build(answers, testRecordId)
 
           result mustEqual
             Right(
@@ -161,14 +161,14 @@ class CategorisationAnswersSpec extends SpecBase {
             .set(CategorisationDetailsQuery(testRecordId), categoryQuery)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
 
-          val result = CategorisationAnswers.build(answers, testRecordId, hasLongComCode)
+          val result = CategorisationAnswers.build(answers, testRecordId)
 
           result mustEqual Right(
             CategorisationAnswers(
@@ -201,7 +201,7 @@ class CategorisationAnswersSpec extends SpecBase {
               .success
               .value
 
-          val result = CategorisationAnswers.build(answers, testRecordId, hasLongComCode)
+          val result = CategorisationAnswers.build(answers, testRecordId)
 
           result mustEqual
             Right(
@@ -236,7 +236,7 @@ class CategorisationAnswersSpec extends SpecBase {
               .success
               .value
 
-          val result = CategorisationAnswers.build(answers, testRecordId, hasLongComCode)
+          val result = CategorisationAnswers.build(answers, testRecordId)
 
           result mustEqual
             Right(
@@ -259,7 +259,7 @@ class CategorisationAnswersSpec extends SpecBase {
               .success
               .value
 
-          val result = CategorisationAnswers.build(answers, testRecordId, hasLongComCode)
+          val result = CategorisationAnswers.build(answers, testRecordId)
 
           inside(result) { case Left(errors) =>
             errors.toChain.toList must contain only PageMissing(SupplementaryUnitPage(testRecordId))
@@ -274,7 +274,7 @@ class CategorisationAnswersSpec extends SpecBase {
               .success
               .value
 
-          val result = CategorisationAnswers.build(answers, testRecordId, hasLongComCode)
+          val result = CategorisationAnswers.build(answers, testRecordId)
 
           inside(result) { case Left(errors) =>
             errors.toChain.toList must contain only UnexpectedPage(SupplementaryUnitPage(testRecordId))
@@ -288,11 +288,11 @@ class CategorisationAnswersSpec extends SpecBase {
             .success
             .value
 
-          val result = CategorisationAnswers.build(answers, testRecordId, hasLongComCode)
+          val result = CategorisationAnswers.build(answers, testRecordId)
 
           inside(result) { case Left(errors) =>
             errors.toChain.toList must contain only MissingAssessmentAnswers(
-              AssessmentPage(testRecordId, 0, hasLongComCode)
+              AssessmentPage(testRecordId, 0)
             )
           }
         }
@@ -303,21 +303,21 @@ class CategorisationAnswersSpec extends SpecBase {
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1, hasLongComCode), AssessmentAnswer.NoExemption)
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.NoExemption)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 2, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
 
-          val result = CategorisationAnswers.build(answers, testRecordId, hasLongComCode)
+          val result = CategorisationAnswers.build(answers, testRecordId)
 
           inside(result) { case Left(errors) =>
             errors.toChain.toList must contain only UnexpectedNoExemption(
-              AssessmentPage(testRecordId, 1, hasLongComCode)
+              AssessmentPage(testRecordId, 1)
             )
           }
         }
@@ -328,14 +328,14 @@ class CategorisationAnswersSpec extends SpecBase {
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
 
-          val result = CategorisationAnswers.build(answers, testRecordId, hasLongComCode)
+          val result = CategorisationAnswers.build(answers, testRecordId)
 
           inside(result) { case Left(errors) =>
             errors.toChain.toList must contain only MissingAssessmentAnswers(CategorisationDetailsQuery(testRecordId))
@@ -348,14 +348,14 @@ class CategorisationAnswersSpec extends SpecBase {
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
 
-          val result = CategorisationAnswers.build(answers, "differentId", hasLongComCode)
+          val result = CategorisationAnswers.build(answers, "differentId")
 
           inside(result) { case Left(errors) =>
             errors.toChain.toList must contain only NoCategorisationDetailsForRecordId(
@@ -374,13 +374,13 @@ class CategorisationAnswersSpec extends SpecBase {
         .set(CategorisationDetailsQuery(testRecordId), categorisationInfo.copy(commodityCode = "123456"))
         .success
         .value
-        .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+        .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
         .success
         .value
-        .set(AssessmentPage(testRecordId, 1, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+        .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
         .success
         .value
-        .set(AssessmentPage(testRecordId, 2, hasLongComCode), AssessmentAnswer.NoExemption)
+        .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
         .success
         .value
         .set(
@@ -398,7 +398,7 @@ class CategorisationAnswersSpec extends SpecBase {
             .success
             .value
 
-          val result = CategorisationAnswers.build(answers, testRecordId, hasLongComCode)
+          val result = CategorisationAnswers.build(answers, testRecordId)
 
           result mustBe Right(
             CategorisationAnswers(Seq(Some(AssessmentAnswer.NoExemption), None, None), None)
@@ -418,7 +418,7 @@ class CategorisationAnswersSpec extends SpecBase {
             .success
             .value
 
-          val result = CategorisationAnswers.build(answers, testRecordId, hasLongComCode)
+          val result = CategorisationAnswers.build(answers, testRecordId)
 
           result mustEqual
             Right(
@@ -448,7 +448,7 @@ class CategorisationAnswersSpec extends SpecBase {
               .success
               .value
 
-          val result = CategorisationAnswers.build(answers, testRecordId, hasLongComCode)
+          val result = CategorisationAnswers.build(answers, testRecordId)
 
           result mustEqual
             Right(
@@ -481,7 +481,7 @@ class CategorisationAnswersSpec extends SpecBase {
               .success
               .value
 
-          val result = CategorisationAnswers.build(answers, testRecordId, hasLongComCode)
+          val result = CategorisationAnswers.build(answers, testRecordId)
 
           result mustEqual
             Right(
@@ -517,7 +517,7 @@ class CategorisationAnswersSpec extends SpecBase {
               .success
               .value
 
-          val result = CategorisationAnswers.build(answers, testRecordId, hasLongComCode)
+          val result = CategorisationAnswers.build(answers, testRecordId)
 
           result mustEqual
             Right(
@@ -552,7 +552,7 @@ class CategorisationAnswersSpec extends SpecBase {
               .success
               .value
 
-          val result = CategorisationAnswers.build(answers, testRecordId, hasLongComCode)
+          val result = CategorisationAnswers.build(answers, testRecordId)
 
           inside(result) { case Left(errors) =>
             errors.toChain.toList must contain only PageMissing(SupplementaryUnitPage(testRecordId))
@@ -576,7 +576,7 @@ class CategorisationAnswersSpec extends SpecBase {
               .success
               .value
 
-          val result = CategorisationAnswers.build(answers, testRecordId, hasLongComCode)
+          val result = CategorisationAnswers.build(answers, testRecordId)
 
           inside(result) { case Left(errors) =>
             errors.toChain.toList must contain only UnexpectedPage(SupplementaryUnitPage(testRecordId))
@@ -589,13 +589,13 @@ class CategorisationAnswersSpec extends SpecBase {
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo.copy(commodityCode = "123456"))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 2, hasLongComCode), AssessmentAnswer.NoExemption)
+            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
             .success
             .value
             .set(
@@ -605,7 +605,7 @@ class CategorisationAnswersSpec extends SpecBase {
             .success
             .value
 
-          val result = CategorisationAnswers.build(answers, testRecordId, hasLongComCode)
+          val result = CategorisationAnswers.build(answers, testRecordId)
 
           inside(result) { case Left(errors) =>
             errors.toChain.toList must contain only MissingAssessmentAnswers(ReassessmentPage(testRecordId, 0))
@@ -618,13 +618,13 @@ class CategorisationAnswersSpec extends SpecBase {
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo.copy(commodityCode = "123456"))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 2, hasLongComCode), AssessmentAnswer.NoExemption)
+            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
             .success
             .value
             .set(
@@ -643,7 +643,7 @@ class CategorisationAnswersSpec extends SpecBase {
             .success
             .value
 
-          val result = CategorisationAnswers.build(answers, testRecordId, hasLongComCode)
+          val result = CategorisationAnswers.build(answers, testRecordId)
 
           inside(result) { case Left(errors) =>
             errors.toChain.toList must contain only UnexpectedNoExemption(ReassessmentPage(testRecordId, 1))
@@ -656,13 +656,13 @@ class CategorisationAnswersSpec extends SpecBase {
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo.copy(commodityCode = "123456"))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 2, hasLongComCode), AssessmentAnswer.NoExemption)
+            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
             .success
             .value
             .set(
@@ -678,7 +678,7 @@ class CategorisationAnswersSpec extends SpecBase {
             .success
             .value
 
-          val result = CategorisationAnswers.build(answers, testRecordId, hasLongComCode)
+          val result = CategorisationAnswers.build(answers, testRecordId)
 
           inside(result) { case Left(errors) =>
             errors.toChain.toList must contain only MissingAssessmentAnswers(
@@ -693,13 +693,13 @@ class CategorisationAnswersSpec extends SpecBase {
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo.copy(commodityCode = "123456"))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 2, hasLongComCode), AssessmentAnswer.NoExemption)
+            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
             .success
             .value
             .set(
@@ -718,7 +718,7 @@ class CategorisationAnswersSpec extends SpecBase {
             .success
             .value
 
-          val result = CategorisationAnswers.build(answers, testRecordId, hasLongComCode)
+          val result = CategorisationAnswers.build(answers, testRecordId)
 
           inside(result) { case Left(errors) =>
             errors.toChain.toList must contain only MissingAssessmentAnswers(
@@ -733,13 +733,13 @@ class CategorisationAnswersSpec extends SpecBase {
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo.copy(commodityCode = "123456"))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 0, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 1, hasLongComCode), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
-            .set(AssessmentPage(testRecordId, 2, hasLongComCode), AssessmentAnswer.NoExemption)
+            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
             .success
             .value
             .set(
@@ -758,7 +758,7 @@ class CategorisationAnswersSpec extends SpecBase {
             .success
             .value
 
-          val result = CategorisationAnswers.build(answers, "differentId", hasLongComCode)
+          val result = CategorisationAnswers.build(answers, "differentId")
 
           inside(result) { case Left(errors) =>
             errors.toChain.toList must contain only NoCategorisationDetailsForRecordId(

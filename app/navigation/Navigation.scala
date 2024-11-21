@@ -154,7 +154,7 @@ class Navigation @Inject() (categorisationService: CategorisationService) extend
 
       case Some(catInfo) =>
         val scenario =
-          categorisationService.calculateResult(catInfo, answers, recordId, reasessmentPrep.hasLongComCode)
+          categorisationService.calculateResult(catInfo, answers, recordId)
         if (shouldGoToSupplementaryUnitFromPrepPage(catInfo, scenario)) {
           controllers.categorisation.routes.HasSupplementaryUnitController.onPageLoad(NormalMode, recordId)
         } else {
@@ -218,7 +218,7 @@ class Navigation @Inject() (categorisationService: CategorisationService) extend
 
       case Some(catInfo) =>
         val scenario =
-          categorisationService.calculateResult(catInfo, answers, recordId, reasessmentPrep.hasLongComCode)
+          categorisationService.calculateResult(catInfo, answers, recordId)
         if (shouldGoToSupplementaryUnitFromPrepPage(catInfo, scenario)) {
           controllers.categorisation.routes.HasSupplementaryUnitController.onPageLoad(CheckMode, recordId)
         } else {

@@ -31,8 +31,7 @@ object AssessmentsSummary {
     answers: UserAnswers,
     assessment: CategoryAssessment,
     indexOfThisAssessment: Int,
-    isReassessmentAnswer: Boolean,
-    hasLongComCode: Boolean
+    isReassessmentAnswer: Boolean
   )(implicit messages: Messages): Option[SummaryListRow] = {
 
     def createSummaryListRowHelper(answer: AssessmentAnswer, changeLink: String): SummaryListRow = {
@@ -67,7 +66,7 @@ object AssessmentsSummary {
         )
       }
     } else {
-      answers.get(AssessmentPage(recordId, indexOfThisAssessment, hasLongComCode)).map { answer =>
+      answers.get(AssessmentPage(recordId, indexOfThisAssessment)).map { answer =>
         createSummaryListRowHelper(
           answer,
           controllers.categorisation.routes.AssessmentController

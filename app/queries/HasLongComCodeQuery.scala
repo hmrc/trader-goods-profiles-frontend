@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
-package pages
+package queries
 
-case class RecategorisationPreparationPage(recordId: String) extends Page
+import play.api.libs.json.JsPath
+
+case class HasLongComCodeQuery(recordId: String) extends Gettable[Boolean] with Settable[Boolean] {
+
+  override def path: JsPath = JsPath \ "hasLongComCode" \ recordId
+}

@@ -60,37 +60,35 @@ class AssessmentController @Inject() (
     }
 
   def onPageLoad(mode: Mode, recordId: String, number: Int): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
-      goodsRecordConnector.getRecord(request.eori, recordId).map { record =>
-        getIndex(number, request.userAnswers.id, recordId) match {
-          case Right(index) =>
-            request.userAnswers
-              .get(CategorisationDetailsQuery(recordId))
-              .flatMap { categorisationInfo =>
-                categorisationInfo.getAssessmentFromIndex(index).map { assessment =>
-                  val codesAndDescriptions = assessment.getCodesZippedWithDescriptions
-                  val preparedForm         =
-                    prepareForm(AssessmentPage(recordId, index, record.comcode.length == 10), formProvider())
-                  val submitAction         =
-                    controllers.categorisation.routes.AssessmentController.onSubmit(mode, recordId, number)
-                  Ok(
-                    view(
-                      preparedForm,
-                      mode,
-                      recordId,
-                      number,
-                      codesAndDescriptions,
-                      categorisationInfo.commodityCode,
-                      submitAction,
-                      assessment.themeDescription,
-                      assessment.regulationUrl
-                    )
+    (identify andThen getData andThen requireData) { implicit request =>
+      getIndex(number, request.userAnswers.id, recordId) match {
+        case Right(index) =>
+          request.userAnswers
+            .get(CategorisationDetailsQuery(recordId))
+            .flatMap { categorisationInfo =>
+              categorisationInfo.getAssessmentFromIndex(index).map { assessment =>
+                val codesAndDescriptions = assessment.getCodesZippedWithDescriptions
+                val preparedForm         =
+                  prepareForm(AssessmentPage(recordId, index), formProvider())
+                val submitAction         =
+                  controllers.categorisation.routes.AssessmentController.onSubmit(mode, recordId, number)
+                Ok(
+                  view(
+                    preparedForm,
+                    mode,
+                    recordId,
+                    number,
+                    codesAndDescriptions,
+                    categorisationInfo.commodityCode,
+                    submitAction,
+                    assessment.themeDescription,
+                    assessment.regulationUrl
                   )
-                }
+                )
               }
-              .getOrElse(handleDataCleansingAndRecovery(request.userAnswers.id, recordId))
-          case Left(result) => result
-        }
+            }
+            .getOrElse(handleDataCleansingAndRecovery(request.userAnswers.id, recordId))
+        case Left(result) => result
       }
     }
 
@@ -161,7 +159,6 @@ class AssessmentController @Inject() (
                       ),
                     value =>
                       for {
-                        goodsRecord        <- goodsRecordConnector.getRecord(request.eori, recordId)
                         cleanedUserAnswers <-
                           Future.fromTry(
                             cleanupReCategorisationData(request.userAnswers, recordId)
@@ -169,12 +166,12 @@ class AssessmentController @Inject() (
                         updatedAnswers     <-
                           Future.fromTry(
                             cleanedUserAnswers
-                              .set(AssessmentPage(recordId, index, goodsRecord.comcode.length == 10), value)
+                              .set(AssessmentPage(recordId, index), value)
                           )
                         _                  <- sessionRepository.set(updatedAnswers)
                       } yield Redirect(
                         navigator.nextPage(
-                          AssessmentPage(recordId, index, goodsRecord.comcode.length == 10),
+                          AssessmentPage(recordId, index),
                           mode,
                           updatedAnswers
                         )
