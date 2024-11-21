@@ -37,7 +37,6 @@ object AdviceStatusSummary {
             "singleRecord.withdrawAdvice",
             controllers.advice.routes.WithdrawAdviceStartController.onPageLoad(recordId).url
           )
-            .withVisuallyHiddenText(messages("singleRecord.adviceStatus.row"))
         )
       } else {
         Seq(
@@ -45,7 +44,6 @@ object AdviceStatusSummary {
             "singleRecord.askForAdvice",
             controllers.advice.routes.AdviceStartController.onPageLoad(recordId).url
           )
-            .withVisuallyHiddenText(messages("singleRecord.adviceStatus.row"))
         )
       }
     )
