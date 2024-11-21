@@ -148,7 +148,7 @@ hasNiphl.p2 = Dysgwch ragor am
 hasNiphl.p2.linkText = symud planhigion o Brydain Fawr i Ogledd Iwerddon.
 hasNiphl.h2 = A ydych wedi cofrestru ar gyfer NIPHL?
 hasNiphl.checkYourAnswersLabel = A ydych wedi cofrestru ar gyfer NIPHL?
-hasNiphl.error.required = Dewiswch ‘Iawn’ os ydych wedi cofrestru ar gyfer cynllun Label iechyd planhigion Gogledd Iwerddon
+hasNiphl.error.required = Dewiswch ‘Iawn’ os ydych wedi cofrestru ar gyfer Label Iechyd Planhigion Gogledd Iwerddon
 hasNiphl.change.hidden = Wedi cofrestru ar gyfer y NIPHL
 
 niphlNumber.title = Rhif cofrestru NIPHL
@@ -322,7 +322,7 @@ hasCorrectGoods.title = Canlyniadau ar gyfer {0}
 hasCorrectGoods.heading = Canlyniadau ar gyfer {0}
 hasCorrectGoods.p1 = Dynodiad:
 hasCorrectGoods.h2 = Ai dyma’r nwyddau cywir?
-hasCorrectGoods.error.required = Dewiswch ai dyma’r nwyddau cywir
+hasCorrectGoods.error.required = Dewiswch ‘Iawn’ os y rhain yw’r nwyddau cywir
 hasCorrectGoods.p2.linkText = Chwiliwch am god nwyddau ar yr Offeryn Tariff Ar-lein (yn agor tab newydd)
 
 
@@ -517,7 +517,7 @@ existingUkimsNumber.title = Rhif presennol ar gyfer Cynllun Marchnad Fewnol y DU
 existingUkimsNumber.h1 = Rhif presennol ar gyfer Cynllun Marchnad Fewnol y DU (UKIMS)
 existingUkimsNumber.h2 = Ai dyma’r rhif UKIMS cywir ar eich cyfer o hyd?
 existingUkimsNumber.p1 = Rydych wedi defnyddio’r rhif UKIMS {0} ar ddatganiadau blaenorol.
-existingUkimsNumber.error.required = Dewiswch a’i dyma’r rhif UKIMS cywir
+existingUkimsNumber.error.required = Dewiswch ‘Iawn’ os mai dyma’r rhif UKIMS cywir
 
 cyaMaintainProfile.title.ukimsNumber = Gwiriwch eich atebion ar gyfer newid eich rhif UKIMS
 cyaMaintainProfile.heading.ukimsNumber = Gwiriwch eich atebion ar gyfer newid eich rhif UKIMS
