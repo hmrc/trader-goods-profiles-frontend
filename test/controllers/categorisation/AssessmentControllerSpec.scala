@@ -64,15 +64,10 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
           "and has not previously been answered" in {
 
-            val mockConnector = mock[GoodsRecordConnector]
-            when(mockConnector.getRecord(any(), any())(any()))
-              .thenReturn(Future.successful(goodsRecordWithLongCommCode))
-
             val answers =
               emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
 
             val application = applicationBuilder(userAnswers = Some(answers))
-              .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
               .build()
 
             running(application) {
@@ -110,10 +105,6 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
           "and has previously been answered" in {
 
-            val mockConnector = mock[GoodsRecordConnector]
-            when(mockConnector.getRecord(any(), any())(any()))
-              .thenReturn(Future.successful(goodsRecordWithLongCommCode))
-
             val answers =
               emptyUserAnswers
                 .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
@@ -124,7 +115,6 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 .value
 
             val application = applicationBuilder(userAnswers = Some(answers))
-              .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
               .build()
 
             running(application) {
@@ -165,16 +155,11 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
           "when categorisation information does not exist" in {
 
-            val mockConnector = mock[GoodsRecordConnector]
-            when(mockConnector.getRecord(any(), any())(any()))
-              .thenReturn(Future.successful(goodsRecordWithLongCommCode))
-
             val mockSessionRepository = mock[SessionRepository]
             when(mockSessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
 
             val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
               .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
-              .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
               .build()
 
             running(application) {
@@ -204,10 +189,6 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
           "when this assessment index cannot be found" in {
 
-            val mockConnector = mock[GoodsRecordConnector]
-            when(mockConnector.getRecord(any(), any())(any()))
-              .thenReturn(Future.successful(goodsRecordWithLongCommCode))
-
             val mockSessionRepository = mock[SessionRepository]
             when(mockSessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
 
@@ -226,7 +207,6 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
             val application = applicationBuilder(userAnswers = Some(answers))
               .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
-              .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
               .build()
 
             running(application) {
@@ -260,10 +240,6 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
         "must save the answer and redirect to the next page when a valid value is submitted" in {
 
-          val mockConnector = mock[GoodsRecordConnector]
-          when(mockConnector.getRecord(any(), any())(any()))
-            .thenReturn(Future.successful(goodsRecordWithLongCommCode))
-
           val mockRepository = mock[SessionRepository]
           when(mockRepository.set(any())).thenReturn(Future.successful(true))
 
@@ -274,7 +250,6 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
             applicationBuilder(userAnswers = Some(answers))
               .overrides(
                 bind[SessionRepository].toInstance(mockRepository),
-                bind[GoodsRecordConnector].toInstance(mockConnector),
                 bind[CategorisationNavigator].toInstance(new FakeCategorisationNavigator(onwardRoute))
               )
               .build()

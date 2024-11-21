@@ -68,14 +68,9 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
         "when all category assessments answered" in {
 
-          val mockConnector = mock[GoodsRecordConnector]
-          when(mockConnector.getRecord(any(), any())(any()))
-            .thenReturn(Future.successful(goodsRecordWithLongCommCode))
-
           val userAnswers = userAnswersForCategorisation
 
           val application                      = applicationBuilder(userAnswers = Some(userAnswers))
-            .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
             .build()
           implicit val localMessages: Messages = messages(application)
 
@@ -115,10 +110,6 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
         "when no exemption is used, meaning some assessment pages are not answered" in {
 
-          val mockConnector = mock[GoodsRecordConnector]
-          when(mockConnector.getRecord(any(), any())(any()))
-            .thenReturn(Future.successful(goodsRecordWithLongCommCode))
-
           val userAnswers = emptyUserAnswers
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
@@ -131,7 +122,6 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             .value
 
           val application                      = applicationBuilder(userAnswers = Some(userAnswers))
-            .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
             .build()
           implicit val localMessages: Messages = messages(application)
 
@@ -168,10 +158,6 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
         "when supplementary unit is supplied" in {
 
-          val mockConnector = mock[GoodsRecordConnector]
-          when(mockConnector.getRecord(any(), any())(any()))
-            .thenReturn(Future.successful(goodsRecordWithLongCommCode))
-
           val userAnswers = userAnswersForCategorisation
             .set(HasSupplementaryUnitPage(testRecordId), true)
             .success
@@ -181,7 +167,6 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             .value
 
           val application                      = applicationBuilder(userAnswers = Some(userAnswers))
-            .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
             .build()
           implicit val localMessages: Messages = messages(application)
 
@@ -237,17 +222,12 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
         "when supplementary unit is not supplied" in {
 
-          val mockConnector = mock[GoodsRecordConnector]
-          when(mockConnector.getRecord(any(), any())(any()))
-            .thenReturn(Future.successful(goodsRecordWithLongCommCode))
-
           val userAnswers = userAnswersForCategorisation
             .set(HasSupplementaryUnitPage(testRecordId), false)
             .success
             .value
 
           val application                      = applicationBuilder(userAnswers = Some(userAnswers))
-            .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
             .build()
           implicit val localMessages: Messages = messages(application)
 
@@ -293,10 +273,6 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
         "when longer commodity code, show reassessment answers and longer commodity code" in {
 
-          val mockConnector = mock[GoodsRecordConnector]
-          when(mockConnector.getRecord(any(), any())(any()))
-            .thenReturn(Future.successful(goodsRecordWithLongCommCode))
-
           val longerCat   = categorisationInfo.copy("9876543210", longerCode = true)
           val userAnswers = emptyUserAnswers
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo.copy(commodityCode = "987654"))
@@ -325,7 +301,6 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             .value
 
           val application                      = applicationBuilder(userAnswers = Some(userAnswers))
-            .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
             .build()
           implicit val localMessages: Messages = messages(application)
 
@@ -370,10 +345,6 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
         "use the category assessments that need to be answered list, not the category assessment list" in {
 
-          val mockConnector = mock[GoodsRecordConnector]
-          when(mockConnector.getRecord(any(), any())(any()))
-            .thenReturn(Future.successful(goodsRecordWithLongCommCode))
-
           val categorisationInfo = CategorisationInfo(
             "1234567890",
             "BV",
@@ -396,7 +367,6 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             .value
 
           val application                      = applicationBuilder(userAnswers = Some(userAnswers))
-            .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
             .build()
           implicit val localMessages: Messages = messages(application)
 
@@ -437,17 +407,12 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
         "when no category assessments answered" in {
 
-          val mockConnector = mock[GoodsRecordConnector]
-          when(mockConnector.getRecord(any(), any())(any()))
-            .thenReturn(Future.successful(goodsRecordWithLongCommCode))
-
           val userAnswers = emptyUserAnswers
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
 
           val application = applicationBuilder(userAnswers = Some(userAnswers))
-            .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
             .build()
 
           running(application) {
@@ -467,12 +432,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
         "when no answers are found" in {
 
-          val mockConnector = mock[GoodsRecordConnector]
-          when(mockConnector.getRecord(any(), any())(any()))
-            .thenReturn(Future.successful(goodsRecordWithLongCommCode))
-
           val application = applicationBuilder(Some(emptyUserAnswers))
-            .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
             .build()
 
           running(application) {
@@ -524,12 +484,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             .success
             .value
 
-          val mockConnector = mock[GoodsRecordConnector]
-          when(mockConnector.getRecord(any(), any())(any()))
-            .thenReturn(Future.successful(goodsRecordWithLongCommCode))
-
           val application = applicationBuilder(userAnswers = Some(userAnswersForCategorisationEmptyQuery))
-            .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
             .build()
 
           running(application) {
@@ -560,12 +515,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             .success
             .value
 
-          val mockConnector = mock[GoodsRecordConnector]
-          when(mockConnector.getRecord(any(), any())(any()))
-            .thenReturn(Future.successful(goodsRecordWithLongCommCode))
-
           val application = applicationBuilder(userAnswers = Some(userAnswers))
-            .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
             .build()
 
           running(application) {
