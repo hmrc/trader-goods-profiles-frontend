@@ -28,7 +28,7 @@ import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import utils.SessionData.{newUkimsNumberUpdatePage, pageUpdated}
+import utils.SessionData.{newUkimsNumberPage, pageUpdated}
 import views.html.HomePageView
 
 import java.time.Instant
@@ -461,7 +461,7 @@ class HomePageControllerSpec extends SpecBase {
 
         running(application) {
           val request = FakeRequest(GET, routes.HomePageController.onPageLoad().url)
-            .withSession(pageUpdated -> newUkimsNumberUpdatePage)
+            .withSession(pageUpdated -> newUkimsNumberPage)
 
           val result  = route(application, request).value
 

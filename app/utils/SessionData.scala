@@ -35,7 +35,6 @@ case object SessionData {
   val nirmsNumberPage: String                = nirmsNumberKey
   val niphlNumberPage: String                = niphlNumberKey
   val ukimsNumberUpdatePage: String          = "UKIMS"
-  val newUkimsNumberUpdatePage: String       = "newUKIMS"
   val hasNirmsUpdatePage: String             = "NIRMS"
   val hasNiphlUpdatePage: String             = "NIPHL"
   val nirmsNumberUpdatePage: String          = "NIRMS"
