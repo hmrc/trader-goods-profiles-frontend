@@ -1223,6 +1223,76 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
 
   }
 
+  "auditOutboundClick" - {
+
+    "return Done when built up an audit event and submitted it" in {
+
+      when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
+
+      val fakeAuditEvent = DataEvent("source", "type")
+      when(mockAuditFactory.createOutboundClickEvent(any(), any(), any(), any())(any()))
+        .thenReturn(fakeAuditEvent)
+
+      val result = await(auditService.auditOutboundClick(AffinityGroup.Individual, testEori, "link", "linkText"))
+
+      result mustBe Done
+
+      withClue("Should have supplied the sensible details to the factory to create the event") {
+        verify(mockAuditFactory)
+          .createOutboundClickEvent(
+            eqTo(AffinityGroup.Individual),
+            eqTo(testEori),
+            eqTo("link"),
+            eqTo("linkText")
+          )(any())
+      }
+
+      withClue("Should have submitted the created event to the audit connector") {
+        verify(mockAuditConnector).sendEvent(eqTo(fakeAuditEvent))(any(), any())
+      }
+
+    }
+
+    "return Done when audit return type is failure" in {
+
+      val auditFailure = AuditResult.Failure("Failed audit event creation")
+      when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(auditFailure))
+
+      val fakeAuditEvent = DataEvent("source", "type")
+      when(mockAuditFactory.createOutboundClickEvent(any(), any(), any(), any())(any()))
+        .thenReturn(fakeAuditEvent)
+
+      val result = await(auditService.auditOutboundClick(AffinityGroup.Individual, testEori, "link", "linkText"))
+
+      result mustBe Done
+
+      withClue("Should have supplied sensible details to the factory to create the event") {
+        verify(mockAuditFactory)
+          .createOutboundClickEvent(
+            eqTo(AffinityGroup.Individual),
+            eqTo(testEori),
+            eqTo("link"),
+            eqTo("linkText")
+          )(any())
+      }
+
+      withClue("Should have submitted the created event to the audit connector") {
+        verify(mockAuditConnector).sendEvent(eqTo(fakeAuditEvent))(any(), any())
+      }
+
+    }
+
+    "must let the play error handler deal with an future failure" in {
+      when(mockAuditConnector.sendEvent(any())(any(), any()))
+        .thenReturn(Future.failed(new RuntimeException("audit error")))
+
+      intercept[RuntimeException] {
+        await(auditService.auditOutboundClick(AffinityGroup.Individual, testEori, "link", "linkText"))
+      }
+
+    }
+  }
+
   private def generateUserAnswersForFinishCreateGoodsTest =
     emptyUserAnswers
       .set(CommodityQuery, testCommodity)
