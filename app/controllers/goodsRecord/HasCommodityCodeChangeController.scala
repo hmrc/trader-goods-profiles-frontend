@@ -20,6 +20,7 @@ import connectors.GoodsRecordConnector
 import controllers.BaseController
 import controllers.actions._
 import forms.goodsRecord.HasCommodityCodeChangeFormProvider
+import models.AdviceStatus.AdviceReceived
 import models.Mode
 import models.helper.GoodsDetailsUpdate
 import navigation.GoodsRecordNavigator
@@ -28,7 +29,6 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import services.AuditService
-import utils.Constants.adviceProvided
 import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
 import views.html.goodsRecord.HasCommodityCodeChangeView
 
@@ -67,7 +67,7 @@ class HasCommodityCodeChangeController @Inject() (
           val preparedForm = prepareForm(HasCommodityCodeChangePage(recordId), form)
 
           val needCategorisingWarning = goodsRecord.category.isDefined
-          val needAdviceWarning       = goodsRecord.adviceStatus == adviceProvided
+          val needAdviceWarning       = goodsRecord.adviceStatus == AdviceReceived
 
           Ok(view(preparedForm, mode, recordId, needAdviceWarning, needCategorisingWarning))
             .removingFromSession(dataRemoved, dataUpdated, pageUpdated)
@@ -84,7 +84,7 @@ class HasCommodityCodeChangeController @Inject() (
       record
         .flatMap { goodsRecord =>
           val needCategorisingWarning = goodsRecord.category.isDefined
-          val needAdviceWarning       = goodsRecord.adviceStatus == adviceProvided
+          val needAdviceWarning       = goodsRecord.adviceStatus == AdviceReceived
 
           form
             .bindFromRequest()

@@ -16,6 +16,8 @@
 
 package viewmodels.checkAnswers
 
+import models.AdviceStatus
+import models.AdviceStatus.AdviceReceived
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
@@ -25,11 +27,13 @@ import viewmodels.implicits._
 object AdviceStatusSummary {
 
   //TBD - this will be updated to route to the update trader reference page
-  def row(value: String, recordId: String, recordLocked: Boolean)(implicit messages: Messages): SummaryListRow =
+  def row(adviceStatus: AdviceStatus, recordId: String, recordLocked: Boolean)(implicit
+    messages: Messages
+  ): SummaryListRow =
     SummaryListRowViewModel(
       key = "singleRecord.adviceStatus.row",
-      value = ValueViewModel(HtmlFormat.escape(value).toString),
-      actions = if ("Advice Provided".equalsIgnoreCase(value)) {
+      value = ValueViewModel(HtmlFormat.escape(messages(adviceStatus.messageKey)).toString),
+      actions = if (adviceStatus == AdviceReceived) {
         Seq.empty
       } else if (recordLocked) {
         Seq(

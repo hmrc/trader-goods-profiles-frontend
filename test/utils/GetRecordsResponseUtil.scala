@@ -17,6 +17,7 @@
 package utils
 
 import base.TestConstants.testEori
+import models.AdviceStatus.NotRequested
 import models.GoodsRecordsPagination
 import models.GoodsRecordsPagination.firstPage
 import models.router.responses.{Assessment, Condition, GetGoodsRecordResponse, GetRecordsResponse}
@@ -156,7 +157,7 @@ trait GetRecordsResponseUtil {
     "actorId",
     "BAN001001",
     "11063010",
-    "Not ready",
+    NotRequested,
     "Organic bananas",
     "EC",
     Some(1),

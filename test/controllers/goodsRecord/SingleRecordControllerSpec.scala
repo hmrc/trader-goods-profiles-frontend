@@ -673,7 +673,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
         }
       }
 
-      "must return a SummaryListRow without change link action when advice status is Advice Provided " in {
+      "must return a SummaryListRow without change link action when advice status is Advice Received " in {
 
         val recordLocked = false
 

@@ -18,7 +18,8 @@ package services
 
 import base.SpecBase
 import connectors.{GoodsRecordConnector, OttConnector}
-import models.ott.response.{CategoryAssessmentRelationship, Descendant, GoodsNomenclatureResponse, IncludedElement, OttResponse}
+import generators.Generators
+import models.ott.response._
 import models.requests.DataRequest
 import models.router.responses.GetGoodsRecordResponse
 import org.mockito.ArgumentMatchers.any
@@ -35,7 +36,7 @@ import java.time.Instant
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class OttServiceSpec extends SpecBase with BeforeAndAfterEach {
+class OttServiceSpec extends SpecBase with BeforeAndAfterEach with Generators {
 
   implicit private lazy val hc: HeaderCarrier = HeaderCarrier()
 
@@ -50,7 +51,7 @@ class OttServiceSpec extends SpecBase with BeforeAndAfterEach {
     "actorId",
     "traderRef",
     "comcode",
-    "adviceStatus",
+    arbitraryAdviceStatus.sample.value,
     goodsDescriptionKey,
     countryOfOriginKey,
     Some(1),
