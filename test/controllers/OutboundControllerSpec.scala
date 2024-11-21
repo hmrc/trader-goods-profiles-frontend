@@ -34,7 +34,7 @@ class OutboundControllerSpec extends SpecBase {
 
   "Outbound Controller" - {
 
-    "must redirect to the link when link is valid" in {
+    "must redirect to the link when the link is valid" in {
 
       val mockAuditService = mock[AuditService]
       when(mockAuditService.auditOutboundClick(any(), any(), any(), any())(any())).thenReturn(Future.successful(Done))
@@ -54,7 +54,7 @@ class OutboundControllerSpec extends SpecBase {
       }
     }
 
-    "must redirect to the journey recovery page when link is invalid" in {
+    "must redirect to the journey recovery page if the link is invalid" in {
 
       val mockAuditService = mock[AuditService]
       when(mockAuditService.auditOutboundClick(any(), any(), any(), any())(any())).thenReturn(Future.successful(Done))
