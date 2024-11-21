@@ -95,7 +95,7 @@ hasNiphl.p2 = Find out more about
 hasNiphl.p2.linkText = moving plants from Great Britain to Northern Ireland
 hasNiphl.h2 = Are you NIPHL registered?
 hasNiphl.checkYourAnswersLabel = Are you NIPHL registered?
-hasNiphl.error.required = Select if you are NIPHL registered
+hasNiphl.error.required = Select yes if you are Northern Ireland Plant Health Label registered
 hasNiphl.change.hidden = NIPHL registered
 
 hasNirms.title = Northern Ireland Retail Movement Scheme (NIRMS)
@@ -269,7 +269,7 @@ hasCorrectGoods.heading = Results for {0}
 hasCorrectGoods.p1 = Classification:
 hasCorrectGoods.p2.linkText = Search for a commodity code on the Online Tariff Tool (opens in new tab)
 hasCorrectGoods.h2 = Are these the correct goods?
-hasCorrectGoods.error.required = Select if these are the correct goods
+hasCorrectGoods.error.required = Select yes if these are the correct goods
 
 traderReference.title = Trader reference
 traderReference.h1 = Trader reference
@@ -668,7 +668,7 @@ existingUkimsNumber.title = Existing UK Internal Market Scheme (UKIMS) number
 existingUkimsNumber.h1 = Existing UK Internal Market Scheme (UKIMS) number
 existingUkimsNumber.h2 = Is this still the correct UKIMS number for you?
 existingUkimsNumber.p1 = You’ve used UKIMS number {0} on previous declarations.
-existingUkimsNumber.error.required = Select if this is the correct UKIMS number
+existingUkimsNumber.error.required = Select yes  if this is the correct UKIMS number
 
 expiredCommodityCode.title = There is a problem
 expiredCommodityCode.heading = There is a problem
