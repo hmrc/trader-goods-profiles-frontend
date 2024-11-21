@@ -20,8 +20,9 @@ import controllers.BaseController
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import forms.AssessmentFormProvider
 import models.helper.CategorisationJourney
-import models.{Mode, ReassessmentAnswer}
+import models.{Mode, ReassessmentAnswer, UserAnswers}
 import navigation.CategorisationNavigator
+import pages.{HasCorrectGoodsLongerCommodityCodePage, LongerCommodityCodePage}
 import pages.categorisation.{AssessmentPage, ReassessmentPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
@@ -78,7 +79,7 @@ class AssessmentController @Inject() (
                     categorisationInfo.commodityCode,
                     submitAction,
                     assessment.themeDescription,
-                    categorisationInfo.categoryAssessmentsThatNeedAnswers.size
+                    assessment.regulationUrl
                   )
                 )
               }
@@ -112,7 +113,7 @@ class AssessmentController @Inject() (
                     categorisationInfo.commodityCode,
                     submitAction,
                     assessment.themeDescription,
-                    categorisationInfo.categoryAssessmentsThatNeedAnswers.size
+                    assessment.regulationUrl
                   )
                 )
               }
@@ -149,15 +150,19 @@ class AssessmentController @Inject() (
                             categorisationInfo.commodityCode,
                             submitAction,
                             assessment.themeDescription,
-                            categorisationInfo.categoryAssessmentsThatNeedAnswers.size
+                            assessment.regulationUrl
                           )
                         )
                       ),
                     value =>
                       for {
-                        updatedAnswers <-
-                          Future.fromTry(request.userAnswers.set(AssessmentPage(recordId, index), value))
-                        _              <- sessionRepository.set(updatedAnswers)
+                        cleanedUserAnswers <-
+                          Future.fromTry(
+                            cleanupReCategorisationData(request.userAnswers, recordId)
+                          )
+                        updatedAnswers     <-
+                          Future.fromTry(cleanedUserAnswers.set(AssessmentPage(recordId, index), value))
+                        _                  <- sessionRepository.set(updatedAnswers)
                       } yield Redirect(
                         navigator.nextPage(AssessmentPage(recordId, index), mode, updatedAnswers)
                       )
@@ -199,7 +204,7 @@ class AssessmentController @Inject() (
                             categorisationInfo.commodityCode,
                             submitAction,
                             assessment.themeDescription,
-                            categorisationInfo.categoryAssessmentsThatNeedAnswers.size
+                            assessment.regulationUrl
                           )
                         )
                       ),
@@ -233,5 +238,20 @@ class AssessmentController @Inject() (
         )
       )
     )
+  }
+
+  // This ensures that re-categorisation data is cleansed when the user navigates back
+  // from re-categorisation to categorisation using the back navigation button.
+  private def cleanupReCategorisationData(
+    userAnswers: UserAnswers,
+    recordId: String
+  ) = {
+    val result = for {
+      withoutLongerCategorisation <- userAnswers.remove(LongerCategorisationDetailsQuery(recordId))
+      withoutCommodityCode        <- withoutLongerCategorisation.remove(LongerCommodityCodePage(recordId))
+      withoutCorrectGoods         <- withoutCommodityCode.remove(HasCorrectGoodsLongerCommodityCodePage(recordId))
+    } yield withoutCorrectGoods
+
+    result
   }
 }

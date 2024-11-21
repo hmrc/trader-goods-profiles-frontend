@@ -36,6 +36,9 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
 
   private val mockCategorisationService = mock[CategorisationService]
 
+  when(mockCategorisationService.existsUnansweredCat1Questions(any(), any())).thenCallRealMethod()
+  when(mockCategorisationService.reorderRecategorisationAnswers(any(), any())).thenCallRealMethod()
+
   private val navigator = new CategorisationNavigator(mockCategorisationService)
 
   "CategorisationNavigator" - {
@@ -608,7 +611,7 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
 
         "third reassessment is unanswered" in {
           val userAnswers = emptyUserAnswers
-            .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfoWithThreeCat1)
             .success
             .value
             .set(
@@ -638,7 +641,7 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
 
         "third reassessment is set to NotAnsweredYet" in {
           val userAnswers = emptyUserAnswers
-            .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfoWithThreeCat1)
             .success
             .value
             .set(
@@ -675,7 +678,7 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
 
         "because one is answered no" in {
           val userAnswers = emptyUserAnswers
-            .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfoWithThreeCat1)
             .success
             .value
             .set(
@@ -700,6 +703,7 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
         }
 
         "because all have already been answered" in {
+
           val userAnswers = emptyUserAnswers
             .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
@@ -731,6 +735,8 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
             )
             .success
             .value
+
+          when(mockCategorisationService.calculateResult(any(), any(), any())).thenReturn(StandardGoodsScenario)
 
           navigator.nextPage(RecategorisationPreparationPage(testRecordId), CheckMode, userAnswers) mustBe
             controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
@@ -776,7 +782,7 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
             "1234567890",
             "BV",
             Some(validityEndDate),
-            Seq(CategoryAssessment("assessmentId", 1, Seq.empty, "measure description")),
+            Seq(CategoryAssessment("assessmentId", 1, Seq.empty, "measure description", Some("regulationUrl"))),
             Seq.empty,
             None,
             1

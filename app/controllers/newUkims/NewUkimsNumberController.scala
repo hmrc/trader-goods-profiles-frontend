@@ -21,9 +21,8 @@ import controllers.BaseController
 import controllers.actions._
 import forms.profile.UkimsNumberFormProvider
 import models.Mode
-import navigation.Navigation
+import navigation.NewUkimsNavigator
 import pages.newUkims.NewUkimsNumberPage
-import pages.profile.UkimsNumberPage
 import play.api.data.{Form, FormError}
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -36,13 +35,15 @@ import scala.concurrent.{ExecutionContext, Future}
 class NewUkimsNumberController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
-  navigator: Navigation, //todo change to newUkimsNavigator when ticket TGP-2700 is completed
+  navigator: NewUkimsNavigator,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   formProvider: UkimsNumberFormProvider,
   traderProfileConnector: TraderProfileConnector,
   val controllerComponents: MessagesControllerComponents,
+  profileAuth: ProfileAuthenticateAction,
+  checkEori: EoriCheckAction,
   view: NewUkimsNumberView
 )(implicit ec: ExecutionContext)
     extends BaseController {
@@ -50,8 +51,8 @@ class NewUkimsNumberController @Inject() (
   private val form = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
-    (identify andThen getData andThen requireData) { implicit request =>
-      val preparedForm = request.userAnswers.get(UkimsNumberPage) match {
+    (identify andThen profileAuth andThen checkEori andThen getData andThen requireData) { implicit request =>
+      val preparedForm = request.userAnswers.get(NewUkimsNumberPage) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
@@ -59,8 +60,8 @@ class NewUkimsNumberController @Inject() (
       Ok(view(preparedForm, controllers.newUkims.routes.NewUkimsNumberController.onSubmit(mode)))
     }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
+  def onSubmit(mode: Mode): Action[AnyContent] =
+    (identify andThen profileAuth andThen checkEori andThen getData andThen requireData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(
@@ -83,7 +84,7 @@ class NewUkimsNumberController @Inject() (
                 Redirect(navigator.nextPage(NewUkimsNumberPage, mode, updatedAnswers))
               }
         )
-  }
+    }
 
   private def createFormWithErrors[T](form: Form[T], value: T, errorMessageKey: String, field: String = "value")(
     implicit messages: Messages

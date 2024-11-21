@@ -22,6 +22,8 @@ import models._
 import models.ott.CategorisationInfo
 import models.requests.DataRequest
 import pages.categorisation.{AssessmentPage, ReassessmentPage}
+import queries.LongerCategorisationDetailsQuery
+import repositories.SessionRepository
 import uk.gov.hmrc.http.HeaderCarrier
 
 import java.time.LocalDate
@@ -31,9 +33,57 @@ import scala.util.{Success, Try}
 
 class CategorisationService @Inject() (
   ottConnector: OttConnector,
-  profileConnector: TraderProfileConnector
+  profileConnector: TraderProfileConnector,
+  sessionRepository: SessionRepository
 )(implicit ec: ExecutionContext)
     extends Logging {
+
+  def existsUnansweredCat1Questions(userAnswers: UserAnswers, recordId: String): Boolean =
+    userAnswers.get(LongerCategorisationDetailsQuery(recordId)).exists { catInfo =>
+      catInfo.categoryAssessmentsThatNeedAnswers.zipWithIndex.exists { case (assessment, index) =>
+        val maybeAnswer = userAnswers.get(ReassessmentPage(recordId, index))
+
+        assessment.isCategory1 && (maybeAnswer.isEmpty || maybeAnswer
+          .exists(_.answer == AssessmentAnswer.NotAnsweredYet))
+      }
+    }
+
+  def reorderRecategorisationAnswers(originalUserAnswers: UserAnswers, recordId: String): Future[UserAnswers] =
+    // Required when recategorising, the user said none to a cat 2 question, and there are no cat 1 assessments to answer.
+    // The order OTT provides them in may be different to the order the user answered them and CYA expects.
+    // ---
+    // Partitions answered and unanswered ReassessmentAnswers into two lists
+    // Uses and reorders both those and their category assessments in LongerCatQuery so that answered questions come first on CYA
+    // Sets the answers in reverse so .set cleanups happen and CYA won't throw unanswered validation errors.
+    for {
+      longerCatQuery                 <- Future.fromTry(Try(originalUserAnswers.get(LongerCategorisationDetailsQuery(recordId)).get))
+      assessmentsThatNeedAnswers      = longerCatQuery.categoryAssessmentsThatNeedAnswers
+      (cat1, cat2)                    = assessmentsThatNeedAnswers.zipWithIndex.partition(_._1.isCategory1)
+      cat2AnswersAndIndexes           =
+        cat2.flatMap(assessment =>
+          originalUserAnswers.get(ReassessmentPage(recordId, assessment._2)).map(_ -> assessment._2)
+        )
+      (answeredCat2, notAnsweredCat2) = cat2AnswersAndIndexes.partition(_._1.answer != AssessmentAnswer.NotAnsweredYet)
+      cat1AnswersAndIndexes           =
+        cat1.flatMap(assessment =>
+          originalUserAnswers.get(ReassessmentPage(recordId, assessment._2)).map(_ -> assessment._2)
+        )
+      (answeredCat1, notAnsweredCat1) = cat1AnswersAndIndexes.partition(_._1.answer != AssessmentAnswer.NotAnsweredYet)
+      reorderedAnswers                = answeredCat1 ++ notAnsweredCat1 ++ answeredCat2 ++ notAnsweredCat2
+      partialReorderedAssessments     = reorderedAnswers.map(_._2).map(assessmentsThatNeedAnswers)
+      reorderedAssessments            =
+        partialReorderedAssessments ++ assessmentsThatNeedAnswers.filterNot(partialReorderedAssessments.contains)
+      newLongerCatQuery               = longerCatQuery.copy(categoryAssessmentsThatNeedAnswers = reorderedAssessments)
+      updatedUserAnswers             <-
+        Future.fromTry(originalUserAnswers.set(LongerCategorisationDetailsQuery(recordId), newLongerCatQuery))
+      updatedUserAnswers             <- Future.fromTry(Try {
+                                          reorderedAnswers.zipWithIndex.reverse.foldLeft(updatedUserAnswers) {
+                                            case (answers, (answerWithIndex, newIndex)) =>
+                                              answers.set(ReassessmentPage(recordId, newIndex), answerWithIndex._1).get
+                                          }
+                                        })
+      _                              <- sessionRepository.set(updatedUserAnswers)
+    } yield updatedUserAnswers
 
   def getCategorisationInfo(
     request: DataRequest[_],

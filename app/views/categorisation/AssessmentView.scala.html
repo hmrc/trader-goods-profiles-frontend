@@ -25,27 +25,29 @@
         govukCheckboxes: GovukCheckboxes,
 )
 
-@(form: Form[_], mode: Mode, recordId: String, number: Int, codesAndDescriptions: Seq[(String, String)], commodityCode: String, onSubmitAction: Call, themeDescription: String, totalNumber: Int)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, recordId: String, number: Int, codesAndDescriptions: Seq[(String, String)], commodityCode: String, onSubmitAction: Call, themeDescription: String, regulationUrl: Option[String] = None)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("assessment.title", number, totalNumber))) {
+@layout(pageTitle = title(form, messages("assessment.title", number))) {
 
     @formHelper(action = onSubmitAction, Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
-            @govukErrorSummary(ErrorSummaryViewModel(form))
+            @govukErrorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> codesAndDescriptions.head._1)))
         }
 
-        <h1 class="govuk-heading-l">@messages("assessment.heading", number, totalNumber)</h1>
+        <h1 class="govuk-heading-l">@messages("assessment.heading", number)</h1>
         <p class="govuk-body">@messages("assessment.guidance", commodityCode)</p>
         <p class="govuk-body">@themeDescription</p>
+
+        @if(regulationUrl.nonEmpty) {
+            <p class="govuk-body">@messages("assessment.regulationUrl.text")
+                <a target="_blank" href="@regulationUrl" class="govuk-link">@messages("assessment.regulationUrl.linkText")</a>
+            </p>
+        }
 
         <p class="govuk-body">
             <a target="_blank" href="https://www.trade-tariff.service.gov.uk/xi/find_commodity" class="govuk-link">@messages("assessment.linkText")</a>
         </p>
-
-        <h2 class='govuk-heading-m'>
-            @messages("assessment.question", commodityCode)
-        </h2>
 
         <div id="value-hint" class="govuk-hint">
             @messages("assessment.hint", commodityCode)
@@ -56,7 +58,7 @@
                 CheckboxesViewModel(
                     form   = form,
                     name   = "value",
-                    legend = Legend(messages("assessment.question")).withCssClass("govuk-visually-hidden"),
+                    legend = Legend(messages("assessment.question", commodityCode)).asSecondaryHeading(Medium),
                     items  = codesAndDescriptions.map { item =>
                         CheckboxItem(
                             id = Some(item._1),
@@ -64,7 +66,7 @@
                             content = Text(item._1 + " - " + item._2),
                             value = item._1,
                             checked = form("value[]").value.contains(item._1)
-                        ).withAttribute("aria-describedby", "value-hint")
+                        )
                     } ++ Seq(
                         CheckboxItem(divider = Some(messages("site.or"))),
                         CheckboxItem(
@@ -74,9 +76,9 @@
                             value = "none",
                             checked = form("value[]").value.contains("none"),
                             behaviour = Some(ExclusiveCheckbox)
-                        ).withAttribute("aria-describedby", "value-hint")
+                        )
                     )
-                )
+                ).withAttribute("aria-describedby", "value-hint")
             )
         </div>
 

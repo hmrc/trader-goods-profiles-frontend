@@ -29,6 +29,7 @@ class Module extends AbstractModule {
     bind(classOf[DataRetrievalAction]).to(classOf[DataRetrievalActionImpl]).asEagerSingleton()
     bind(classOf[DataRequiredAction]).to(classOf[DataRequiredActionImpl]).asEagerSingleton()
     bind(classOf[ProfileCheckAction]).to(classOf[ProfileCheckActionImpl]).asEagerSingleton()
+    bind(classOf[EoriCheckAction]).to(classOf[EoriCheckActionImpl]).asEagerSingleton()
     bind(classOf[ProfileAuthenticateAction]).to(classOf[ProfileAuthenticateActionImpl]).asEagerSingleton()
 
     // For session based storage instead of cred based, change to SessionIdentifierAction

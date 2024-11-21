@@ -16,7 +16,7 @@
 
 package utils
 
-import utils.Constants.{commodityCodeKey, countryOfOriginKey, goodsDescriptionKey, hasNiphlKey, hasNirmsKey, niphlNumberKey, nirmsNumberKey, traderReferenceKey, ukimsNumberKey}
+import utils.Constants.{commodityCodeKey, countryOfOriginKey, goodsDescriptionKey, hasNiphlKey, hasNirmsKey, newUkimsNumberKey, niphlNumberKey, nirmsNumberKey, traderReferenceKey, ukimsNumberKey}
 
 case object SessionData {
   val dataUpdated: String                    = "changesMade"
@@ -29,6 +29,7 @@ case object SessionData {
   val commodityCode: String                  = "commodity code"
   val supplementaryUnit: String              = "supplementary unit"
   val ukimsNumberPage: String                = ukimsNumberKey
+  val newUkimsNumberPage: String             = newUkimsNumberKey
   val hasNirmsPage: String                   = hasNirmsKey
   val hasNiphlPage: String                   = hasNiphlKey
   val nirmsNumberPage: String                = nirmsNumberKey

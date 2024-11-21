@@ -123,16 +123,17 @@ class CategorisationPreparationController @Inject() (
                                           shorterCategorisationInfo
                                         )
 
-        _ <- updateCategory(
-               updatedUAReassessmentAnswers,
-               request.eori,
-               request.affinityGroup,
-               recordId,
-               newLongerCategorisationInfo
-             )
-        _ <- sessionRepository.set(updatedUAReassessmentAnswers)
+        _                    <- updateCategory(
+                                  updatedUAReassessmentAnswers,
+                                  request.eori,
+                                  request.affinityGroup,
+                                  recordId,
+                                  newLongerCategorisationInfo
+                                )
+        reorderedUserAnswers <-
+          categorisationService.reorderRecategorisationAnswers(updatedUAReassessmentAnswers, recordId)
       } yield Redirect(
-        navigator.nextPage(RecategorisationPreparationPage(recordId), mode, updatedUAReassessmentAnswers)
+        navigator.nextPage(RecategorisationPreparationPage(recordId), mode, reorderedUserAnswers)
       ))
         .recover { e =>
           logger.error(s"Unable to start categorisation for record $recordId: ${e.getMessage}")

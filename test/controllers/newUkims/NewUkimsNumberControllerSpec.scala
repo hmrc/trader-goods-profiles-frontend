@@ -21,14 +21,12 @@ import base.TestConstants.{testEori, userAnswersId}
 import connectors.TraderProfileConnector
 import forms.profile.UkimsNumberFormProvider
 import models.{NormalMode, TraderProfile, UserAnswers}
-import navigation.{FakeNavigation, Navigation}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.profile.UkimsNumberPage
+import pages.newUkims.NewUkimsNumberPage
 import play.api.data.FormError
 import play.api.inject.bind
-import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
@@ -38,9 +36,8 @@ import scala.concurrent.Future
 
 class NewUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
-  private def onwardRoute = Call("GET", "/foo")
-
   val formProvider = new UkimsNumberFormProvider()
+
   private val form = formProvider()
 
   val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
@@ -57,12 +54,12 @@ class NewUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
-          bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
           bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
         )
         .build()
 
       running(application) {
+
         val request = FakeRequest(GET, newUkimsNumberRoute)
 
         val result = route(application, request).value
@@ -82,11 +79,10 @@ class NewUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(UkimsNumberPage, "answer").success.value
+      val userAnswers = UserAnswers(userAnswersId).set(NewUkimsNumberPage, "answer").success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers))
         .overrides(
-          bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
           bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
         )
         .build()
@@ -111,6 +107,12 @@ class NewUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to the next page when valid data is submitted" in {
 
+      val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+
+      val mockSessionRepository: SessionRepository = mock[SessionRepository]
+
+      when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
+
       val traderProfile =
         TraderProfile(testEori, "XIUKIM47699357400020231115081801", Some("2"), Some("3"), eoriChanged = false)
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
@@ -121,7 +123,6 @@ class NewUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
-            bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository),
             bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
           )
@@ -135,7 +136,7 @@ class NewUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual onwardRoute.url
+        redirectLocation(result).value mustEqual routes.CyaNewUkimsNumberController.onPageLoad().url
       }
     }
 

@@ -38,6 +38,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
 
   private val categorisationService = mock[CategorisationService]
 
+  when(categorisationService.existsUnansweredCat1Questions(any(), any())).thenCallRealMethod()
+  when(categorisationService.reorderRecategorisationAnswers(any(), any())).thenCallRealMethod()
+
   private val navigator = new CategorisationNavigator(categorisationService)
 
   private val recordId    = "dummyRecordId"
@@ -811,7 +814,7 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
 
         "third reassessment is unanswered" in {
           val userAnswers = emptyUserAnswers
-            .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfoWithThreeCat1)
             .success
             .value
             .set(
@@ -841,7 +844,7 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
 
         "third reassessment is set to NotAnsweredYet" in {
           val userAnswers = emptyUserAnswers
-            .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfoWithThreeCat1)
             .success
             .value
             .set(
@@ -979,7 +982,7 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
             "1234567890",
             "BV",
             Some(validityEndDate),
-            Seq(CategoryAssessment("assessmentId", 1, Seq.empty, "measure description")),
+            Seq(CategoryAssessment("assessmentId", 1, Seq.empty, "measure description", Some("regulationUrl"))),
             Seq.empty,
             None,
             1
@@ -1754,7 +1757,7 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
             "1234567890",
             "BV",
             Some(validityEndDate),
-            Seq(CategoryAssessment("assessmentId", 1, Seq.empty, "measure description")),
+            Seq(CategoryAssessment("assessmentId", 1, Seq.empty, "measure description", Some("regulationUrl"))),
             Seq.empty,
             None,
             1

@@ -29,6 +29,7 @@ import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
+import pages.{HasCorrectGoodsLongerCommodityCodePage, LongerCommodityCodePage}
 import pages.categorisation.{HasSupplementaryUnitPage, SupplementaryUnitPage}
 import play.api.inject.bind
 import play.api.mvc.Call
@@ -130,6 +131,10 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
             val finalUserAnswers = uaArgCaptor.getValue
 
             finalUserAnswers.get(CategorisationDetailsQuery(testRecordId)).get mustBe categorisationInfo
+
+            finalUserAnswers.get(LongerCategorisationDetailsQuery(testRecordId)) mustBe None
+            finalUserAnswers.get(LongerCommodityCodePage(testRecordId)) mustBe None
+            finalUserAnswers.get(HasCorrectGoodsLongerCommodityCodePage(testRecordId)) mustBe None
           }
 
           withClue("must not get category result from categorisation service as not needed") {
@@ -523,6 +528,8 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
         when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any()))
           .thenReturn(Success(userAnswers))
+        when(mockCategorisationService.reorderRecategorisationAnswers(any(), any()))
+          .thenReturn(Future.successful(userAnswers))
 
         val app = application(userAnswers)
         running(app) {
@@ -601,6 +608,9 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
         when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any()))
           .thenReturn(Success(userAnswers))
+
+        when(mockCategorisationService.reorderRecategorisationAnswers(any(), any()))
+          .thenReturn(Future.successful(userAnswers))
 
         when(mockCategorisationService.calculateResult(any(), any(), any()))
           .thenReturn(StandardGoodsNoAssessmentsScenario)
@@ -703,6 +713,9 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
         when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any()))
           .thenReturn(Success(userAnswers))
 
+        when(mockCategorisationService.reorderRecategorisationAnswers(any(), any()))
+          .thenReturn(Future.successful(userAnswers))
+
         when(mockCategorisationService.calculateResult(any(), any(), any()))
           .thenReturn(Category2Scenario)
 
@@ -768,6 +781,9 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
         when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any()))
           .thenReturn(Success(userAnswers))
 
+        when(mockCategorisationService.reorderRecategorisationAnswers(any(), any()))
+          .thenReturn(Future.successful(userAnswers))
+
         val app = application(userAnswers)
         running(app) {
 
@@ -831,6 +847,9 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
         when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any()))
           .thenReturn(Success(userAnswers))
 
+        when(mockCategorisationService.reorderRecategorisationAnswers(any(), any()))
+          .thenReturn(Future.successful(userAnswers))
+
         val app = application(userAnswers)
         running(app) {
 
@@ -888,6 +907,9 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
         when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any()))
           .thenReturn(Success(userAnswers))
+
+        when(mockCategorisationService.reorderRecategorisationAnswers(any(), any()))
+          .thenReturn(Future.successful(userAnswers))
 
         val app = application(userAnswers)
         running(app) {
@@ -952,6 +974,9 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
         when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any()))
           .thenReturn(Success(userAnswers))
 
+        when(mockCategorisationService.reorderRecategorisationAnswers(any(), any()))
+          .thenReturn(Future.successful(userAnswers))
+
         val app = application(userAnswers)
         running(app) {
 
@@ -1010,6 +1035,9 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
             )
             .success
             .value
+
+          when(mockCategorisationService.reorderRecategorisationAnswers(any(), any()))
+            .thenReturn(Future.successful(userAnswers))
 
           val app = application(userAnswers)
           running(app) {

@@ -8,7 +8,6 @@
  - [ ] I have run the microservices with the latest SM2 config
  - [ ] I have checked all the Acceptance Criteria pass
  - [ ] I have run the pipeline journey tests
- - [ ] I have run the local journey tests
  - [ ] I have spoken to the QAs about any changes that may need to be made to the journey tests OR no changes to the journey tests are necessary
  - [ ] I have moved the ticket to Review in Jira
  - [ ] I have left a message in tgp-prs on slack to alert other Devs that this ticket is ready for review
@@ -38,7 +37,6 @@
  - [ ] I have checked all the Acceptance Criteria pass
  - [ ] I have checked that the QAs have merged in any changes to the journey tests
  - [ ] I have run the pipeline journey tests
- - [ ] I have run the local journey tests
 
 # Reminders for developers after merging
  1. Wait for pipeline to pass
