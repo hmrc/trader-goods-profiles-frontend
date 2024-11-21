@@ -70,7 +70,7 @@ class AssessmentController @Inject() (
                 categorisationInfo.getAssessmentFromIndex(index).map { assessment =>
                   val codesAndDescriptions = assessment.getCodesZippedWithDescriptions
                   val preparedForm         =
-                    prepareForm(AssessmentPage(recordId, index, record.comcode.length != 10), formProvider())
+                    prepareForm(AssessmentPage(recordId, index, record.comcode.length == 10), formProvider())
                   val submitAction         =
                     controllers.categorisation.routes.AssessmentController.onSubmit(mode, recordId, number)
                   Ok(
@@ -169,12 +169,12 @@ class AssessmentController @Inject() (
                         updatedAnswers     <-
                           Future.fromTry(
                             cleanedUserAnswers
-                              .set(AssessmentPage(recordId, index, goodsRecord.comcode.length != 10), value)
+                              .set(AssessmentPage(recordId, index, goodsRecord.comcode.length == 10), value)
                           )
                         _                  <- sessionRepository.set(updatedAnswers)
                       } yield Redirect(
                         navigator.nextPage(
-                          AssessmentPage(recordId, index, goodsRecord.comcode.length != 10),
+                          AssessmentPage(recordId, index, goodsRecord.comcode.length == 10),
                           mode,
                           updatedAnswers
                         )

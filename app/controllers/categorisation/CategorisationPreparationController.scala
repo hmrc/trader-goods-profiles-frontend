@@ -79,11 +79,11 @@ class CategorisationPreparationController @Inject() (
                                 request.affinityGroup,
                                 recordId,
                                 categorisationInfo,
-                                goodsRecord.comcode.length != 10
+                                goodsRecord.comcode.length == 10
                               )
       } yield Redirect(
         navigator.nextPage(
-          CategorisationPreparationPage(recordId, goodsRecord.comcode.length != 10),
+          CategorisationPreparationPage(recordId, goodsRecord.comcode.length == 10),
           NormalMode,
           updatedUserAnswers
         )
@@ -134,7 +134,7 @@ class CategorisationPreparationController @Inject() (
                                           updatedUACatInfo,
                                           recordId,
                                           shorterCategorisationInfo,
-                                          goodsRecord.comcode.length != 10
+                                          goodsRecord.comcode.length == 10
                                         )
 
         _                    <- updateCategory(
@@ -143,13 +143,13 @@ class CategorisationPreparationController @Inject() (
                                   request.affinityGroup,
                                   recordId,
                                   newLongerCategorisationInfo,
-                                  goodsRecord.comcode.length != 10
+                                  goodsRecord.comcode.length == 10
                                 )
         reorderedUserAnswers <-
           categorisationService.reorderRecategorisationAnswers(updatedUAReassessmentAnswers, recordId)
       } yield Redirect(
         navigator.nextPage(
-          RecategorisationPreparationPage(recordId, goodsRecord.comcode.length != 10),
+          RecategorisationPreparationPage(recordId, goodsRecord.comcode.length == 10),
           mode,
           reorderedUserAnswers
         )

@@ -62,13 +62,13 @@ class CyaCategorisationController @Inject() (
 
         longerCategorisationInfo match {
           case Some(categorisationInfo) =>
-            showCyaPage(request, recordId, categorisationInfo, record.comcode.length != 10)
+            showCyaPage(request, recordId, categorisationInfo, record.comcode.length == 10)
           case _                        =>
             val categorisationInfo = request.userAnswers.get(CategorisationDetailsQuery(recordId))
 
             categorisationInfo
               .map { info =>
-                showCyaPage(request, recordId, info, record.comcode.length != 10)
+                showCyaPage(request, recordId, info, record.comcode.length == 10)
               }
               .getOrElse {
                 dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
@@ -167,7 +167,7 @@ class CyaCategorisationController @Inject() (
             request.eori,
             recordId,
             categorisationService,
-            oldRecord.comcode.length != 10
+            oldRecord.comcode.length == 10
           ) match {
           case Right(categoryRecord) =>
             auditService.auditFinishCategorisation(
@@ -185,7 +185,7 @@ class CyaCategorisationController @Inject() (
               dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
               Redirect(
                 navigator.nextPage(
-                  CyaCategorisationPage(recordId, oldRecord.comcode.length != 10),
+                  CyaCategorisationPage(recordId, oldRecord.comcode.length == 10),
                   NormalMode,
                   request.userAnswers
                 )

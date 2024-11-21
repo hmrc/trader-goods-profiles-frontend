@@ -241,7 +241,7 @@ class CategorisationNavigator @Inject() (categorisationService: CategorisationSe
     scenario: Scenario,
     hasLongComCode: Boolean
   ) =
-    hasLongComCode && catInfo.getMinimalCommodityCode.length == minimumLengthOfCommodityCode && catInfo.descendantCount != 0 &&
+    !hasLongComCode && catInfo.getMinimalCommodityCode.length == minimumLengthOfCommodityCode && catInfo.descendantCount != 0 &&
       getResultAsInt(scenario) == Category2AsInt
 
   private def navigateFromReassessment(assessmentPage: ReassessmentPage)(answers: UserAnswers): Call = {
@@ -368,14 +368,14 @@ class CategorisationNavigator @Inject() (categorisationService: CategorisationSe
     assessmentQuestion: CategoryAssessment,
     hasLongComCode: Boolean
   ) =
-    hasLongComCode && categorisationInfo.getMinimalCommodityCode.length == 6 && categorisationInfo.descendantCount != 0 && assessmentQuestion.category == Category2AsInt
+    !hasLongComCode && categorisationInfo.getMinimalCommodityCode.length == 6 && categorisationInfo.descendantCount != 0 && assessmentQuestion.category == Category2AsInt
 
   private def shouldGoToLongerCommodityCodeWhenCategory1(
     categorisationInfo: CategorisationInfo,
     assessmentQuestion: CategoryAssessment,
     hasLongComCode: Boolean
   ) =
-    hasLongComCode && categorisationInfo.getMinimalCommodityCode.length == minimumLengthOfCommodityCode && categorisationInfo.descendantCount != 0 && assessmentQuestion.category == Category1AsInt && !categorisationInfo.categoryAssessmentsThatNeedAnswers
+    !hasLongComCode && categorisationInfo.getMinimalCommodityCode.length == minimumLengthOfCommodityCode && categorisationInfo.descendantCount != 0 && assessmentQuestion.category == Category1AsInt && !categorisationInfo.categoryAssessmentsThatNeedAnswers
       .exists(_.isCategory2) && categorisationInfo.categoryAssessments.exists(_.isCategory2)
 
   private def navigateFromAssessment(assessmentPage: AssessmentPage)(answers: UserAnswers): Call = {
