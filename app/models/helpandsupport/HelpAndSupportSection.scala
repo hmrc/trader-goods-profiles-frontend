@@ -17,12 +17,12 @@
 package models.helpandsupport
 
 case class HelpAndSupportSection(
-                                  headingKey: String,
-                                  subHeadingKey: Option[String],
-                                  paragraphTextKey: Option[String],
-                                  linksUnderHeading: Seq[HelpAndSupportLink],
-                                  linksUnderSubHeading: Seq[HelpAndSupportLink]
-                                )
+  headingKey: String,
+  subHeadingKey: Option[String],
+  paragraphTextKey: Option[String],
+  linksUnderHeading: Seq[HelpAndSupportLink],
+  linksUnderSubHeading: Seq[HelpAndSupportLink]
+)
 
 object HelpAndSupportSection {
 
@@ -40,7 +40,6 @@ object HelpAndSupportSection {
         HelpAndSupportLink.HMRCContact
       )
     ),
-
     HelpAndSupportSection(
       headingKey = "helpAndSupport.h2.2",
       subHeadingKey = Some("helpAndSupport.h3"),
@@ -55,7 +54,6 @@ object HelpAndSupportSection {
         HelpAndSupportLink.AskHMRCChat
       )
     ),
-
     HelpAndSupportSection(
       headingKey = "helpAndSupport.h2.3",
       subHeadingKey = None,
@@ -67,7 +65,6 @@ object HelpAndSupportSection {
       ),
       linksUnderSubHeading = Seq.empty
     ),
-
     HelpAndSupportSection(
       headingKey = "helpAndSupport.h2.4",
       subHeadingKey = None,
@@ -77,7 +74,6 @@ object HelpAndSupportSection {
       ),
       linksUnderSubHeading = Seq.empty
     ),
-
     HelpAndSupportSection(
       headingKey = "helpAndSupport.h2.5",
       subHeadingKey = None,
@@ -87,4 +83,5 @@ object HelpAndSupportSection {
       ),
       linksUnderSubHeading = Seq.empty
     )
-  )}
+  )
+}
