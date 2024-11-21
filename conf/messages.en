@@ -717,3 +717,11 @@ fileManagement.pendingFiles.table.header2 = File
 fileManagement.pendingFiles.fileText = File not ready
 fileManagement.files.requestRecord.linkText = Get a new TGP records file
 fileManagement.noFiles.requestRecord.linkText = Get a TGP records file
+
+adviceStatus.notRequested = Not requested
+adviceStatus.requested = Requested
+adviceStatus.inProgress = In progress
+adviceStatus.informationRequested = Information requested
+adviceStatus.adviceReceived = Advice received
+adviceStatus.adviceNotProvided = Advice not provided
+adviceStatus.adviceRequestWithdrawn = Advice request withdrawn

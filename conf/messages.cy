@@ -529,9 +529,15 @@ cyaMaintainProfile.title.hasNiphl = Gwiriwch eich atebion ar gyfer newid eich co
 cyaMaintainProfile.heading.hasNiphl = Gwiriwch eich atebion ar gyfer newid eich cofrestriad NIPHL
 cyaMaintainProfile.title.niphlNumber = Gwiriwch eich atebion ar gyfer newid eich rhif NIPHL
 cyaMaintainProfile.heading.niphlNumber = Gwiriwch eich atebion ar gyfer newid eich rhif NIPHL
-cyaMaintainProfile.warningText = Mae angen i chi wneud yn siŵr bod y manylion hyn yn gywir. Ni fydd unrhyw symudiadau y byddwch yn defnyddio manylion or TGP iw creu yn ddilys os byddant yn anghywir.
+
 cyaNewUkimsNumber.title = Gwiriwch eich atebion ar gyfer eich rhif UKIMS newydd
 cyaNewUkimsNumber.heading = Gwiriwch eich atebion ar gyfer eich rhif UKIMS newydd
+cyaMaintainProfile.h2 = Cynlluniau
+cyaMaintainProfile.li1 = Cynllun Marchnad Fewnol y DU (UKIMS)
+cyaMaintainProfile.li2 = Cynllun Symud Nwyddau Manwerthu Gogledd Iwerddon (NIRMS)
+cyaMaintainProfile.li3 = Label Iechyd Planhigion Gogledd Iwerddon (NIPHL)
+cyaMaintainProfile.warning = Rhybudd
+cyaMaintainProfile.warningText = Mae angen i chi wneud yn siŵr bod y manylion hyn yn gywir. Ni fydd unrhyw symudiadau y byddwch yn defnyddio manylion or TGP iw creu yn ddilys os byddant yn anghywir.
 
 
 hasGoodsDescriptionChange.title = Newid gwybodaeth y cofnod
@@ -633,7 +639,7 @@ successBannerRemove.heading = Rydych wedi newid y {0}
 successProfileBanner.title = Llwyddiant
 successProfileBanner.changeNumber.heading = Rydych wedi newid eich rhif {0}
 successProfileBanner.removeRegistration.heading = Rydych wedi dileu eich cofrestriad ar gyfer {0}
-successProfileBanner.addNumber.heading = Rydych wedi ychwanegu eich rhif {0}
+successProfileBanner.addNumber.heading = Rydych wedi newid eich rhif {0}
 
 
 goodsRecordsLoading.title = Rydym yn llwytho’ch cofnodion
@@ -736,3 +742,11 @@ longerCommodityCode.error.required = Nodwch 2 neu 4 digid
 longerCommodityCode.error.invalidFormat = Nodwch god nwyddau yn y fformat cywir
 longerCommodityCode.error.invalid = Nodwch god nwyddau go iawn
 longerCommodityCode.change.hidden = LongerCommodityCode
+
+adviceStatus.notRequested = Heb wneud cais am gyngor
+adviceStatus.requested = Cais am gyngor wedi’i dynnu yn ôl
+adviceStatus.inProgress = Cyngor heb ei ddarparu
+adviceStatus.informationRequested = Ar y gweill
+adviceStatus.adviceReceived = Cais am wybodaeth wedi’i wneud
+adviceStatus.adviceNotProvided = Cais am gyngor wedi’i wneud
+adviceStatus.adviceRequestWithdrawn = Cyngor wedi dod i law

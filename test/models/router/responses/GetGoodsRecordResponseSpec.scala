@@ -17,9 +17,11 @@
 package models.router.responses
 
 import base.SpecBase
+import generators.Generators
+
 import java.time.Instant
 
-class GetGoodsRecordResponseSpec extends SpecBase {
+class GetGoodsRecordResponseSpec extends SpecBase with Generators {
 
   ".statusForView" - {
 
@@ -41,7 +43,7 @@ class GetGoodsRecordResponseSpec extends SpecBase {
       actorId = "test",
       traderRef = "test",
       comcode = "test",
-      adviceStatus = "test",
+      adviceStatus = arbitraryAdviceStatus.sample.value,
       goodsDescription = "test",
       countryOfOrigin = "test",
       category = Some(3),

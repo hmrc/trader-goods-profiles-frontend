@@ -37,12 +37,12 @@ import repositories.SessionRepository
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Constants.{countryOfOriginKey, goodsDescriptionKey}
-
+import generators.Generators
 import java.time.Instant
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
+class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Generators {
 
   implicit private lazy val hc: HeaderCarrier = HeaderCarrier()
 
@@ -83,7 +83,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach {
     "actorId",
     "traderRef",
     "comcode",
-    "adviceStatus",
+    arbitraryAdviceStatus.sample.value,
     goodsDescriptionKey,
     countryOfOriginKey,
     Some(1),

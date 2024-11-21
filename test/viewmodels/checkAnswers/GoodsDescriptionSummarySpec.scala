@@ -18,10 +18,10 @@ package viewmodels.checkAnswers
 
 import base.SpecBase
 import base.TestConstants.testRecordId
+import models.AdviceStatus.AdviceReceived
 import models.NormalMode
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.Actions
-import utils.Constants.adviceProvided
 import viewmodels.checkAnswers.goodsRecord.GoodsDescriptionSummary
 
 class GoodsDescriptionSummarySpec extends SpecBase {
@@ -53,7 +53,7 @@ class GoodsDescriptionSummarySpec extends SpecBase {
 
       "and advice has been provided" in {
 
-        val recordWithAdviceProvided = recordForTestingSummaryRows.copy(adviceStatus = adviceProvided)
+        val recordWithAdviceProvided = recordForTestingSummaryRows.copy(adviceStatus = AdviceReceived)
 
         val row =
           GoodsDescriptionSummary.rowUpdate(recordWithAdviceProvided, testRecordId, NormalMode, recordLocked = false)
