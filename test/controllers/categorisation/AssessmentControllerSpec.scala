@@ -18,7 +18,6 @@ package controllers.categorisation
 
 import base.SpecBase
 import base.TestConstants.testRecordId
-import connectors.GoodsRecordConnector
 import forms.AssessmentFormProvider
 import models.helper.CategorisationJourney
 import models.ott.{CategorisationInfo, CategoryAssessment}
