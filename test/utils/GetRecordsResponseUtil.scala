@@ -18,6 +18,7 @@ package utils
 
 import base.TestConstants.testEori
 import models.AdviceStatus.NotRequested
+import models.DeclarableStatus.ImmiReady
 import models.GoodsRecordsPagination
 import models.GoodsRecordsPagination.firstPage
 import models.router.responses.{Assessment, Condition, GetGoodsRecordResponse, GetRecordsResponse}
@@ -170,7 +171,7 @@ trait GetRecordsResponseUtil {
     active = true,
     toReview = true,
     None,
-    "Not requested",
+    ImmiReady,
     None,
     None,
     None,

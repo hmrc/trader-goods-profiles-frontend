@@ -16,7 +16,7 @@
 
 package models.router.responses
 
-import models.AdviceStatus
+import models.{AdviceStatus, DeclarableStatus}
 import play.api.libs.json.{JsSuccess, JsValue, Json, Reads, Writes}
 import utils.Constants.{countryOfOriginKey, goodsDescriptionKey, niphlNumberKey, nirmsNumberKey, ukimsNumberKey}
 
@@ -41,7 +41,7 @@ case class GetGoodsRecordResponse(
   active: Boolean,
   toReview: Boolean,
   reviewReason: Option[String] = None,
-  declarable: String,
+  declarable: DeclarableStatus,
   ukimsNumber: Option[String] = None,
   nirmsNumber: Option[String] = None,
   niphlNumber: Option[String] = None,
@@ -49,16 +49,16 @@ case class GetGoodsRecordResponse(
   updatedDateTime: Instant
 ) {
 
-  def statusForView: String =
-    declarable
-      .split(" ")
-      .zipWithIndex
-      .map {
-        case (word, 0)                   => word
-        case (word, _) if word == "IMMI" => word
-        case (word, _)                   => word.toLowerCase
-      }
-      .mkString(" ")
+//  def statusForView: String =
+//    declarable
+//      .split(" ")
+//      .zipWithIndex
+//      .map {
+//        case (word, 0)                   => word
+//        case (word, _) if word == "IMMI" => word
+//        case (word, _)                   => word.toLowerCase
+//      }
+//      .mkString(" ")
 
 }
 
@@ -86,7 +86,7 @@ object GetGoodsRecordResponse {
         (json \ "active").as[Boolean],
         (json \ "toReview").as[Boolean],
         (json \ "reviewReason").asOpt[String],
-        (json \ "declarable").as[String],
+        (json \ "declarable").as[DeclarableStatus],
         (json \ ukimsNumberKey).asOpt[String],
         (json \ nirmsNumberKey).asOpt[String],
         (json \ niphlNumberKey).asOpt[String],
