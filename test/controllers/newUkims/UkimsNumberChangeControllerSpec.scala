@@ -17,6 +17,7 @@
 package controllers.newUkims
 
 import base.SpecBase
+import models.NormalMode
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.newUkims.UkimsNumberChangeView
@@ -38,6 +39,22 @@ class UkimsNumberChangeControllerSpec extends SpecBase {
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view()(request, messages(application)).toString
+      }
+    }
+
+    "must redirect to NewUkimsNumberController for a POST" in {
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(POST, controllers.newUkims.routes.UkimsNumberChangeController.onSubmit().url)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.newUkims.routes.NewUkimsNumberController
+          .onPageLoad(NormalMode)
+          .url
       }
     }
   }

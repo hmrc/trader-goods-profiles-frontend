@@ -1,10 +1,10 @@
 GET         /new/ukims-number                                          controllers.newUkims.NewUkimsNumberController.onPageLoad(mode: Mode = NormalMode)
 POST        /new/ukims-number                                          controllers.newUkims.NewUkimsNumberController.onSubmit(mode: Mode = NormalMode)
-
 GET         /new/ukims-number/check                                    controllers.newUkims.NewUkimsNumberController.onPageLoad(mode: Mode = CheckMode)
 POST        /new/ukims-number/check                                    controllers.newUkims.NewUkimsNumberController.onSubmit(mode: Mode = CheckMode)
 
 GET         /new/ukims-number-change                                   controllers.newUkims.UkimsNumberChangeController.onPageLoad()
+POST        /new/ukims-number-change                                   controllers.newUkims.UkimsNumberChangeController.onSubmit()
 
 GET         /new/ukims-number-cya                                      controllers.newUkims.CyaNewUkimsNumberController.onPageLoad()
 POST        /new/ukims-number-cya                                      controllers.newUkims.CyaNewUkimsNumberController.onSubmit()

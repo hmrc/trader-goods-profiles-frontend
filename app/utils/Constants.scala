@@ -20,8 +20,6 @@ case object Constants {
   val firstAssessmentNumber: Int = 1
   val firstAssessmentIndex: Int  = 0
 
-  val adviceProvided: String = "Advice Provided"
-
   val Category1AsInt: Int     = 1
   val Category2AsInt: Int     = 2
   val StandardGoodsAsInt: Int = 3
@@ -31,11 +29,12 @@ case object Constants {
 
   val minimumLengthOfCommodityCode: Int = 6
 
-  val ukimsNumberKey = "ukimsNumber"
-  val hasNirmsKey    = "hasNirms"
-  val nirmsNumberKey = "nirmsNumber"
-  val hasNiphlKey    = "hasNiphl"
-  val niphlNumberKey = "niphlNumber"
+  val ukimsNumberKey    = "ukimsNumber"
+  val newUkimsNumberKey = "newUkimsNumber"
+  val hasNirmsKey       = "hasNirms"
+  val nirmsNumberKey    = "nirmsNumber"
+  val hasNiphlKey       = "hasNiphl"
+  val niphlNumberKey    = "niphlNumber"
 
   val traderReferenceKey  = "traderReference"
   val goodsDescriptionKey = "goodsDescription"

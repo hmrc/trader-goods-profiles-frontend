@@ -18,6 +18,7 @@ site.or = neu
 site.search = Chwilio
 site.removeThisGoodsRecord = Tynnwch y cofnod nwyddau hwn
 site.goBackToTGPRecords = Ewch i ffeiliau cofnodion TGP
+site.view = bwrw golwg
 
 
 date.day = Diwrnod
@@ -147,7 +148,7 @@ hasNiphl.p2 = Dysgwch ragor am
 hasNiphl.p2.linkText = symud planhigion o Brydain Fawr i Ogledd Iwerddon.
 hasNiphl.h2 = A ydych wedi cofrestru ar gyfer NIPHL?
 hasNiphl.checkYourAnswersLabel = A ydych wedi cofrestru ar gyfer NIPHL?
-hasNiphl.error.required = Dewiswch ‘Iawn’ os ydych wedi cofrestru ar gyfer cynllun Label iechyd planhigion Gogledd Iwerddon
+hasNiphl.error.required = Dewiswch ‘Iawn’ os ydych wedi cofrestru ar gyfer Label Iechyd Planhigion Gogledd Iwerddon
 hasNiphl.change.hidden = Wedi cofrestru ar gyfer y NIPHL
 
 niphlNumber.title = Rhif cofrestru NIPHL
@@ -214,6 +215,7 @@ name.heading = Beth yw eich enw?
 name.hint = Mae angen i ni wybod eich enw er mwyn i ni allu cysylltu â chi.
 name.checkYourAnswersLabel = Enw
 name.error.required = Nodwch eich enw
+name.error.length = Nodwch enw â 70 o gymeriadau neu lai
 name.change.hidden = Enw
 
 email.title = Beth yw’ch cyfeiriad e-bost?
@@ -222,6 +224,8 @@ email.hint = Byddwn ond yn defnyddio’ch e-bost i gysylltu â chi ynglŷn â’
 email.checkYourAnswersLabel = E-bost
 email.error.required = Nodwch eich cyfeiriad e-bost
 email.change.hidden = E-bost
+email.error.invalidFormat = Nodwch gyfeiriad e-bost dilys
+email.error.length = Mae’n rhaid i’r e-bost fod yn 254 o gymeriadau neu lai
 
 cyaRequestAdvice.title = Gwiriwch eich atebion cyn anfon eich cais am gyngor
 cyaRequestAdvice.heading = Gwiriwch eich atebion cyn anfon eich cais am gyngor
@@ -312,12 +316,13 @@ goodsDescription.error.length = Mae’n rhaid i ddisgrifiad y nwyddau fod yn 512
 countryOfOrigin.error.required = Nodwch y wlad wreiddiol
 commodityCode.error.invalidFormat = Nodwch god nwyddau yn y fformat cywir
 commodityCode.error.invalid = Nodwch god nwyddau go iawn
+traderReference.error.length = Mae’n rhaid i’r cyfeirnod masnachwr fod yn 512 o gymeriadau neu lai
 
 hasCorrectGoods.title = Canlyniadau ar gyfer {0}
 hasCorrectGoods.heading = Canlyniadau ar gyfer {0}
 hasCorrectGoods.p1 = Dynodiad:
 hasCorrectGoods.h2 = Ai dyma’r nwyddau cywir?
-hasCorrectGoods.error.required = Dewiswch ai dyma’r nwyddau cywir
+hasCorrectGoods.error.required = Dewiswch ‘Iawn’ os y rhain yw’r nwyddau cywir
 hasCorrectGoods.p2.linkText = Chwiliwch am god nwyddau ar yr Offeryn Tariff Ar-lein (yn agor tab newydd)
 
 singleRecord.title = Cofnod nwyddau
@@ -410,8 +415,8 @@ categoryGuidance.p3.2 = Categori 2 – nwyddau sy’n cael eu rheoli ac sydd ang
 categoryGuidance.p3.3 = Safonol – nwyddau sy’n gallu defnyddio SPIMM
 categoryGuidance.p4 = Bydd angen i chi wybod rhif tystysgrif neu enw unrhyw eithriadau s’n berthnasol ar gyfer eich nwyddau. Rhifau tystysgrif enghreifftiol yw C644, Y929 neu C640. Os byddwch yn cael eithriad newydd, byddwch yn gallu ei newid yn nes ymlaen.
 
-assessment.title = Asesiadau categori {0} o {1}
-assessment.heading = Asesiadau categori {0} o {1}
+assessment.title = Asesiadau categori {0}
+assessment.heading = Asesiadau categori {0}
 assessment.linkText = Defnyddiwch yr Offeryn Tariff Ar-lein (yn agor tab newydd) i chwilio am god nwyddau.
 assessment.question = Pa un o'r eithriadau hyn sydd gennych ar gyfer {0}?
 assessment.hint = Dewiswch bob un sy’n berthnasol.
@@ -422,6 +427,8 @@ assessment.checkYourAnswersLabel = Asesiadau categori {0} o {1}
 assessment.none = Dim
 assessment.guidance = Mae angen i chi gadarnhau p’un o’r eithriadau hyn sydd gennych ar gyfer {0}. Y thema ar gyfer yr asesiad hwn yw:
 assessment.error.required = Dewiswch yr eithriadau sydd gennych, neu dewiswch ‘Dim un o’r uchod’
+assessment.regulationUrl.text =  Os oes angen rhagor o wybodaeth arnoch am y thema a’r eithriadau, gallwch
+assessment.regulationUrl.linkText = ddarllen y ddogfen Reoliadau UE (yn agor tab newydd).
 
 
 expiredCommodityCode.title = Mae problem wedi codi
@@ -459,7 +466,7 @@ downloadRequestSuccess.p1 = Gallwch wirio hynt eich ffeil ar y {0}. Byddwn hefyd
 downloadRequestSuccess.p2 = Byddwch yn gweld hysbysiad pan fyddwch yn mewngofnodi i’ch TGP a fydd yn dangos cysylltiad i’r dudalen lawrlwytho. Mae’r ffeil mewn fformat .csv.
 downloadRequestSuccess.p3 = Bydd y ffeil cofnodion TGP ar gael am 30 diwrnod ar ôl i ni roi gwybod i chi ei bod yn barod.
 downloadRequestSuccess.p3.1 = Ar ôl 30 diwrnod, bydd angen i chi wneud cais am ffeil newydd.
-downloadRequestSuccess.p1.linkText = dudalen ynghylch ffeiliau cofnodion TGP
+downloadRequestSuccess.p1.linkText = tudalen lawrlwytho data TGP
 
 fileManagement.title = Ffeiliau cofnodion TGP
 fileManagement.heading = Ffeiliau cofnodion TGP
@@ -512,9 +519,11 @@ goodsRecordSearchResultEmptyView.title = Does dim canlyniadau cyfatebol
 goodsRecordSearchResultEmptyView.h1 = Does dim canlyniadau cyfatebol
 goodsRecordSearchResultEmptyView.p1 = Roeddech yn chwilio am y term {0}.
 
-existingUkimsNumber.title = Rhif Cynllun Marchnad Fewnol y DU (UKIMS)
-existingUkimsNumber.h1 = Rhif Cynllun Marchnad Fewnol y DU (UKIMS)
+existingUkimsNumber.title = Rhif presennol ar gyfer Cynllun Marchnad Fewnol y DU (UKIMS)
+existingUkimsNumber.h1 = Rhif presennol ar gyfer Cynllun Marchnad Fewnol y DU (UKIMS)
 existingUkimsNumber.h2 = Ai dyma’r rhif UKIMS cywir ar eich cyfer o hyd?
+existingUkimsNumber.p1 = Rydych wedi defnyddio’r rhif UKIMS {0} ar ddatganiadau blaenorol.
+existingUkimsNumber.error.required = Dewiswch ‘Iawn’ os mai dyma’r rhif UKIMS cywir
 
 cyaMaintainProfile.title.ukimsNumber = Gwiriwch eich atebion ar gyfer newid eich rhif UKIMS
 cyaMaintainProfile.heading.ukimsNumber = Gwiriwch eich atebion ar gyfer newid eich rhif UKIMS
@@ -526,9 +535,15 @@ cyaMaintainProfile.title.hasNiphl = Gwiriwch eich atebion ar gyfer newid eich co
 cyaMaintainProfile.heading.hasNiphl = Gwiriwch eich atebion ar gyfer newid eich cofrestriad NIPHL
 cyaMaintainProfile.title.niphlNumber = Gwiriwch eich atebion ar gyfer newid eich rhif NIPHL
 cyaMaintainProfile.heading.niphlNumber = Gwiriwch eich atebion ar gyfer newid eich rhif NIPHL
-cyaMaintainProfile.warningText = Mae angen i chi wneud yn siŵr bod y manylion hyn yn gywir. Ni fydd unrhyw symudiadau y byddwch yn defnyddio manylion or TGP iw creu yn ddilys os byddant yn anghywir.
+
 cyaNewUkimsNumber.title = Gwiriwch eich atebion ar gyfer eich rhif UKIMS newydd
 cyaNewUkimsNumber.heading = Gwiriwch eich atebion ar gyfer eich rhif UKIMS newydd
+cyaMaintainProfile.h2 = Cynlluniau
+cyaMaintainProfile.li1 = Cynllun Marchnad Fewnol y DU (UKIMS)
+cyaMaintainProfile.li2 = Cynllun Symud Nwyddau Manwerthu Gogledd Iwerddon (NIRMS)
+cyaMaintainProfile.li3 = Label Iechyd Planhigion Gogledd Iwerddon (NIPHL)
+cyaMaintainProfile.warning = Rhybudd
+cyaMaintainProfile.warningText = Mae angen i chi wneud yn siŵr bod y manylion hyn yn gywir. Ni fydd unrhyw symudiadau y byddwch yn defnyddio manylion or TGP iw creu yn ddilys os byddant yn anghywir.
 
 
 hasGoodsDescriptionChange.title = Newid gwybodaeth y cofnod
@@ -626,6 +641,12 @@ helpAndSupport.p15.linkText = Cofrestrwch ar gyfer y Gwasanaeth Cymorth i Fasnac
 successBanner.title = Llwyddiant
 successBanner.heading = Rydych wedi newid y {0}
 successBannerRemove.heading = Rydych wedi newid y {0}
+
+successProfileBanner.title = Llwyddiant
+successProfileBanner.changeNumber.heading = Rydych wedi newid eich rhif {0}
+successProfileBanner.removeRegistration.heading = Rydych wedi dileu eich cofrestriad ar gyfer {0}
+successProfileBanner.addNumber.heading = Rydych wedi newid eich rhif {0}
+
 
 goodsRecordsLoading.title = Rydym yn llwytho’ch cofnodion
 goodsRecordsLoading.heading = Rydym yn llwytho’ch cofnodion
@@ -728,4 +749,10 @@ longerCommodityCode.error.invalidFormat = Nodwch god nwyddau yn y fformat cywir
 longerCommodityCode.error.invalid = Nodwch god nwyddau go iawn
 longerCommodityCode.change.hidden = LongerCommodityCode
 
-name.error.length = Nodwch enw gan ddefnyddio 70 o gymeriadau neu lai
+adviceStatus.notRequested = Heb wneud cais am gyngor
+adviceStatus.requested = Cais am gyngor wedi’i dynnu yn ôl
+adviceStatus.inProgress = Cyngor heb ei ddarparu
+adviceStatus.informationRequested = Ar y gweill
+adviceStatus.adviceReceived = Cais am wybodaeth wedi’i wneud
+adviceStatus.adviceNotProvided = Cais am gyngor wedi’i wneud
+adviceStatus.adviceRequestWithdrawn = Cyngor wedi dod i law

@@ -47,6 +47,12 @@ class IncludedElementSpec extends AnyFreeSpec with Matchers {
               "id"   -> "1",
               "type" -> "theme"
             )
+          ),
+          "regulation" -> Json.obj(
+            "data" -> Json.obj(
+              "id"   -> "regulationId",
+              "type" -> "legal_act"
+            )
           )
         )
       )
@@ -59,7 +65,8 @@ class IncludedElementSpec extends AnyFreeSpec with Matchers {
           exemptions = Seq(
             ExemptionResponse("cert", ExemptionType.Certificate),
             ExemptionResponse("code", ExemptionType.AdditionalCode)
-          )
+          ),
+          regulationId = "regulationId"
         )
       )
     }

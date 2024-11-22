@@ -18,6 +18,7 @@ package base
 
 import base.TestConstants._
 import controllers.actions._
+import models.AdviceStatus.{AdviceReceived, NotRequested, Requested}
 import models.ott._
 import models.ott.response.{GoodsNomenclatureResponse, OttResponse}
 import models.router.responses.GetGoodsRecordResponse
@@ -89,7 +90,7 @@ trait SpecBase
   val lockedRecord: GetGoodsRecordResponse = goodsRecordResponse(
     Instant.parse("2022-11-18T23:20:19Z"),
     Instant.parse("2022-11-18T23:20:19Z")
-  ).copy(adviceStatus = requested)
+  ).copy(adviceStatus = Requested)
 
   def testAuditOttResponse: OttResponse = OttResponse(
     GoodsNomenclatureResponse("test", "1234567890", None, Instant.EPOCH, None, List("test")),
@@ -166,7 +167,10 @@ trait SpecBase
       "1azbfb-1-dfsdaf-2",
       1,
       Seq(Certificate("Y994", "Y994", "Goods are not from warzone")),
-      "measure description"
+      "measure description",
+      Some(
+        "http://eur-lex.europa.eu/search.html?whOJ=NO_OJ%3D88,YEAR_OJ%3D2012,PAGE_FIRST%3D0001&DB_COLL_OJ=oj-l&type=advanced&lang=en"
+      )
     )
 
   lazy val category2: CategoryAssessment =
@@ -174,7 +178,10 @@ trait SpecBase
       "2nghjghg4-fsdff4-hfgdhfg",
       1,
       Seq(AdditionalCode("NC123", "NC123", "Not required")),
-      "measure description"
+      "measure description",
+      Some(
+        "http://eur-lex.europa.eu/search.html?whOJ=NO_OJ%3D224,YEAR_OJ%3D2017,PAGE_FIRST%3D0001&DB_COLL_OJ=oj-l&type=advanced&lang=en"
+      )
     )
 
   lazy val category3: CategoryAssessment = CategoryAssessment(
@@ -184,7 +191,10 @@ trait SpecBase
       Certificate("Y737", "Y737", "Goods not containing ivory"),
       Certificate("X812", "X812", "Goods not containing seal products")
     ),
-    "measure description"
+    "measure description",
+    Some(
+      "http://eur-lex.europa.eu/search.html?whOJ=NO_OJ%3D229,YEAR_OJ%3D2014,PAGE_FIRST%3D0013&DB_COLL_OJ=oj-l&type=advanced&lang=en"
+    )
   )
 
   lazy val category1Niphl: CategoryAssessment =
@@ -192,7 +202,10 @@ trait SpecBase
       "1azbfb-1-dfsdaf-3",
       1,
       Seq(OtherExemption(NiphlCode, "Y994", "Goods are not from warzone")),
-      "measure description"
+      "measure description",
+      Some(
+        "http://eur-lex.europa.eu/search.html?whOJ=NO_OJ%3D183,YEAR_OJ%3D2014,PAGE_FIRST%3D0009&DB_COLL_OJ=oj-l&type=advanced&lang=en"
+      )
     )
 
   lazy val category2Nirms: CategoryAssessment =
@@ -200,7 +213,10 @@ trait SpecBase
       "1azbfb-1-dfsdaf-3",
       2,
       Seq(OtherExemption(NirmsCode, "Y990", "Nirms description")),
-      "measure description"
+      "measure description",
+      Some(
+        "http://eur-lex.europa.eu/search.html?whOJ=NO_OJ%3D42I,YEAR_OJ%3D2022,PAGE_FIRST%3D0077&DB_COLL_OJ=oj-l&type=advanced&lang=en"
+      )
     )
 
   lazy val categorisationInfo: CategorisationInfo = CategorisationInfo(
@@ -270,10 +286,26 @@ trait SpecBase
     .value
 
   lazy val category1NoExemptions: CategoryAssessment =
-    CategoryAssessment("1azbfb-1-dfsdaf-2", 1, Seq(), "measure description")
+    CategoryAssessment(
+      "1azbfb-1-dfsdaf-2",
+      1,
+      Seq(),
+      "measure description",
+      Some(
+        "http://eur-lex.europa.eu/search.html?whOJ=NO_OJ%3D190,YEAR_OJ%3D2006,PAGE_FIRST%3D0001&DB_COLL_OJ=oj-l&type=advanced&lang=en"
+      )
+    )
 
   lazy val category2NoExemptions: CategoryAssessment =
-    CategoryAssessment("1azbfb-1-dfsdaf-2", 2, Seq(), "measure description")
+    CategoryAssessment(
+      "1azbfb-1-dfsdaf-2",
+      2,
+      Seq(),
+      "measure description",
+      Some(
+        "http://eur-lex.europa.eu/search.html?whOJ=NO_OJ%3D190,YEAR_OJ%3D2006,PAGE_FIRST%3D0001&DB_COLL_OJ=oj-l&type=advanced&lang=en"
+      )
+    )
 
   def goodsRecordResponse(
     createdDateTime: Instant = Instant.now,
@@ -285,7 +317,7 @@ trait SpecBase
       "10410100",
       "BAN0010011",
       "12345678",
-      "Not requested",
+      NotRequested,
       "Organic bananas",
       "GB",
       Some(1),
@@ -314,7 +346,7 @@ trait SpecBase
   val recordForTestingSummaryRowsWithAdviceProvided: GetGoodsRecordResponse = goodsRecordResponse(
     Instant.parse("2022-11-18T23:20:19Z"),
     Instant.parse("2022-11-18T23:20:19Z")
-  ).copy(recordId = testRecordId).copy(adviceStatus = "Advice Provided")
+  ).copy(recordId = testRecordId).copy(adviceStatus = AdviceReceived)
 
   def toReviewGoodsRecordResponse(
     createdDateTime: Instant,
@@ -327,7 +359,7 @@ trait SpecBase
       "10410100",
       "BAN0010011",
       "1234567",
-      "Not requested",
+      NotRequested,
       "Organic bananas",
       "UK",
       Some(1),
@@ -358,7 +390,7 @@ trait SpecBase
       "10410100",
       "BAN0010011",
       "1234567",
-      "Not requested",
+      NotRequested,
       "Organic bananas",
       "UK",
       Some(1),
@@ -389,7 +421,7 @@ trait SpecBase
       "10410100",
       "BAN0010011",
       "1234567",
-      "Not requested",
+      NotRequested,
       "Organic bananas",
       "UK",
       Some(1),
@@ -419,6 +451,7 @@ trait SpecBase
         bind[IdentifierAction].to[FakeIdentifierAction],
         bind[DataRetrievalOrCreateAction].to[FakeDataRetrievalOrCreateAction],
         bind[ProfileCheckAction].to[ProfileCheckActionImpl],
+        bind[EoriCheckAction].to[FakeEoriCheckAction],
         bind[ProfileAuthenticateAction].to[FakeProfileAuthenticateAction],
         bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userAnswers))
       )

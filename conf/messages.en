@@ -14,6 +14,7 @@ site.govuk = GOV.UK
 site.or = or
 site.search = Search
 site.goToHomePage = Go to homepage
+site.view = View
 
 site.goBackToGoodsRecord = Go back to goods record
 site.goBackToGoodsProfile = Go back to goods profile
@@ -94,7 +95,7 @@ hasNiphl.p2 = Find out more about
 hasNiphl.p2.linkText = moving plants from Great Britain to Northern Ireland
 hasNiphl.h2 = Are you NIPHL registered?
 hasNiphl.checkYourAnswersLabel = Are you NIPHL registered?
-hasNiphl.error.required = Select if you are NIPHL registered
+hasNiphl.error.required = Select yes if you are Northern Ireland Plant Health Label registered
 hasNiphl.change.hidden = NIPHL registered
 
 hasNirms.title = Northern Ireland Retail Movement Scheme (NIRMS)
@@ -104,7 +105,7 @@ hasNirms.p1 = Businesses who sell, or facilitate the movement of food for final 
 hasNirms.p2 = Find out more about
 hasNirms.p2.linkText = which products can be moved under NIRMS
 hasNirms.checkYourAnswersLabel = Are you NIRMS registered?
-hasNirms.error.required = Select yes, if you are Northern Ireland Retail Movement Scheme registered
+hasNirms.error.required = Select yes if you are Northern Ireland Retail Movement Scheme registered
 hasNirms.change.hidden = NIRMS registered
 
 niphlNumber.title = NIPHL registration number
@@ -268,7 +269,7 @@ hasCorrectGoods.heading = Results for {0}
 hasCorrectGoods.p1 = Classification:
 hasCorrectGoods.p2.linkText = Search for a commodity code on the Online Tariff Tool (opens in new tab)
 hasCorrectGoods.h2 = Are these the correct goods?
-hasCorrectGoods.error.required = Select if these are the correct goods
+hasCorrectGoods.error.required = Select yes if these are the correct goods
 
 traderReference.title = Trader reference
 traderReference.h1 = Trader reference
@@ -282,8 +283,8 @@ traderReference.error.traderRefNotUnique = This trader reference is already in y
 traderReference.checkYourAnswersLabel = Trader reference
 traderReference.change.hidden = Trader reference
 
-assessment.title = Category assessment {0} of {1}
-assessment.heading = Category assessment {0} of {1}
+assessment.title = Category assessment {0}
+assessment.heading = Category assessment {0}
 assessment.guidance = You need to confirm which of these exclusions you hold for {0}. The theme for this assessment is:
 assessment.linkText = Search for a commodity code on the Online Tariff Tool (opens in new tab)
 assessment.question = Which of these exclusions do you hold for {0}?
@@ -295,6 +296,8 @@ assessment.exemption.none.checkYourAnswersLabel = None selected
 assessment.checkYourAnswersLabel = Category assessment {0} of {1}
 assessment.change.hidden = Category assessment {0}
 assessment.none = None
+assessment.regulationUrl.text =  If you need more information about the theme and exclusions, you can
+assessment.regulationUrl.linkText = read the EU regulation document (opens in new tab).
 
 ukimsKickOut.title = You need to apply for the UK Internal Market Scheme (UKIMS)
 ukimsKickOut.h1 = You need to apply for the UK Internal Market Scheme (UKIMS)
@@ -668,11 +671,11 @@ downloadRequestSuccess.p2 = You will have a notification when you sign in to you
 downloadRequestSuccess.p3 = The TGP records file will be available for 30 days from when we let you know it is ready.
 
 
-existingUkimsNumber.title = UK Internal Market Scheme (UKIMS) number
-existingUkimsNumber.h1 = UK Internal Market Scheme (UKIMS) number
+existingUkimsNumber.title = Existing UK Internal Market Scheme (UKIMS) number
+existingUkimsNumber.h1 = Existing UK Internal Market Scheme (UKIMS) number
 existingUkimsNumber.h2 = Is this still the correct UKIMS number for you?
 existingUkimsNumber.p1 = You’ve used UKIMS number {0} on previous declarations.
-existingUkimsNumber.error.required = Select if this is the correct UKIMS number
+existingUkimsNumber.error.required = Select yes  if this is the correct UKIMS number
 
 expiredCommodityCode.title = There is a problem
 expiredCommodityCode.heading = There is a problem
@@ -701,6 +704,8 @@ cyaMaintainProfile.warningText = You need to make sure these details are correct
 
 cyaNewUkimsNumber.title = Check your answers for your new UKIMS number
 cyaNewUkimsNumber.heading = Check your answers for your new UKIMS number
+cyaNewUkimsNumber.warning = Warning
+cyaNewUkimsNumber.warningText = You need to make sure these details are correct. Any details that are wrong in your Trader Goods Profile and used to create movements, will not be valid.
 
 fileManagement.title = TGP records files
 fileManagement.heading = TGP records files
@@ -719,3 +724,11 @@ fileManagement.pendingFiles.table.header2 = File
 fileManagement.pendingFiles.fileText = File not ready
 fileManagement.files.requestRecord.linkText = Get a new TGP records file
 fileManagement.noFiles.requestRecord.linkText = Get a TGP records file
+
+adviceStatus.notRequested = Not requested
+adviceStatus.requested = Requested
+adviceStatus.inProgress = In progress
+adviceStatus.informationRequested = Information requested
+adviceStatus.adviceReceived = Advice received
+adviceStatus.adviceNotProvided = Advice not provided
+adviceStatus.adviceRequestWithdrawn = Advice request withdrawn

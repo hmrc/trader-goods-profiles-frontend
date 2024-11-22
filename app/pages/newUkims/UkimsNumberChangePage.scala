@@ -16,13 +16,6 @@
 
 package pages.newUkims
 
-import pages.QuestionPage
-import play.api.libs.json.JsPath
-import utils.Constants.newUkimsNumberKey
+import pages.Page
 
-case object NewUkimsNumberPage extends QuestionPage[String] {
-
-  override def path: JsPath = JsPath \ toString
-
-  override def toString: String = newUkimsNumberKey
-}
+case object UkimsNumberChangePage extends Page

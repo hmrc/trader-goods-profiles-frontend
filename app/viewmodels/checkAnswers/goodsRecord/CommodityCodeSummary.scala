@@ -16,13 +16,13 @@
 
 package viewmodels.checkAnswers.goodsRecord
 
+import models.AdviceStatus.AdviceReceived
 import models.router.responses.GetGoodsRecordResponse
 import models.{CheckMode, Mode, UserAnswers}
 import pages.goodsRecord.CommodityCodePage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
-import utils.Constants.adviceProvided
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 
@@ -58,7 +58,7 @@ object CommodityCodeSummary {
   def rowUpdate(record: GetGoodsRecordResponse, recordId: String, mode: Mode, recordLocked: Boolean)(implicit
     messages: Messages
   ): SummaryListRow = {
-    val changeLink = if (record.category.isDefined || record.adviceStatus == adviceProvided) {
+    val changeLink = if (record.category.isDefined || record.adviceStatus == AdviceReceived) {
       controllers.goodsRecord.routes.HasCommodityCodeChangeController.onPageLoad(mode, recordId).url
     } else {
       controllers.goodsRecord.routes.CommodityCodeController.onPageLoadUpdate(mode, recordId).url
