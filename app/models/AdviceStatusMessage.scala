@@ -46,13 +46,13 @@ object AdviceStatusMessage {
   }
 
   def fromString(status: AdviceStatus): Option[AdviceStatusMessage] = status match {
-    case NotRequested        => Some(NotRequestedParagraph)
-    case Requested            => Some(RequestedParagraph)
-    case AdviceRequestWithdrawn      => Some(AdviceWithdrawnParagraph)
-    case AdviceNotProvided  => Some(NotProvidedParagraph)
-    case InProgress          => Some(InProgressParagraph)
-    case InformationRequested => Some(InformationRequestedParagraph)
-    case AdviceReceived      => Some(AdviceReceivedParagraph)
-    case _                       => None
+    case NotRequested           => Some(NotRequestedParagraph)
+    case Requested              => Some(RequestedParagraph)
+    case AdviceRequestWithdrawn => Some(AdviceWithdrawnParagraph)
+    case AdviceNotProvided      => Some(NotProvidedParagraph)
+    case InProgress             => Some(InProgressParagraph)
+    case InformationRequested   => Some(InformationRequestedParagraph)
+    case AdviceReceived         => Some(AdviceReceivedParagraph)
+    case _                      => None
   }
 }
