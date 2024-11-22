@@ -16,41 +16,43 @@
 
 package models
 
+import models.AdviceStatus._
+
 sealed trait AdviceStatusMessage {
   def messageKey: String
 }
 
 object AdviceStatusMessage {
-  case object NotRequested extends AdviceStatusMessage {
+  case object NotRequestedParagraph extends AdviceStatusMessage {
     val messageKey: String = "singleRecord.adviceParagraph.notRequested"
   }
-  case object Requested extends AdviceStatusMessage {
+  case object RequestedParagraph extends AdviceStatusMessage {
     val messageKey: String = "singleRecord.adviceParagraph.requested"
   }
-  case object AdviceWithdrawn extends AdviceStatusMessage {
+  case object AdviceWithdrawnParagraph extends AdviceStatusMessage {
     val messageKey: String = "singleRecord.adviceParagraph.adviceWithdrawn"
   }
-  case object NotProvided extends AdviceStatusMessage {
+  case object NotProvidedParagraph extends AdviceStatusMessage {
     val messageKey: String = "singleRecord.adviceParagraph.adviceNotProvided"
   }
-  case object InProgress extends AdviceStatusMessage {
+  case object InProgressParagraph extends AdviceStatusMessage {
     val messageKey: String = "singleRecord.adviceParagraph.inProgress"
   }
-  case object InformationRequested extends AdviceStatusMessage {
+  case object InformationRequestedParagraph extends AdviceStatusMessage {
     val messageKey: String = "singleRecord.adviceParagraph.informationRequested"
   }
-  case object AdviceReceived extends AdviceStatusMessage {
+  case object AdviceReceivedParagraph extends AdviceStatusMessage {
     val messageKey: String = "singleRecord.adviceParagraph.adviceReceived"
   }
 
-  def fromString(status: String): Option[AdviceStatusMessage] = status match {
-    case "Not Requested"         => Some(NotRequested)
-    case "Requested"             => Some(Requested)
-    case "Advice withdrawn"      => Some(AdviceWithdrawn)
-    case "Advice not provided"   => Some(NotProvided)
-    case "In progress"           => Some(InProgress)
-    case "Information requested" => Some(InformationRequested)
-    case "Advice received"       => Some(AdviceReceived)
+  def fromString(status: AdviceStatus): Option[AdviceStatusMessage] = status match {
+    case NotRequested        => Some(NotRequestedParagraph)
+    case Requested            => Some(RequestedParagraph)
+    case AdviceRequestWithdrawn      => Some(AdviceWithdrawnParagraph)
+    case AdviceNotProvided  => Some(NotProvidedParagraph)
+    case InProgress          => Some(InProgressParagraph)
+    case InformationRequested => Some(InformationRequestedParagraph)
+    case AdviceReceived      => Some(AdviceReceivedParagraph)
     case _                       => None
   }
 }

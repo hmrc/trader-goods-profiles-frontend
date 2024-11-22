@@ -24,7 +24,6 @@ import models.helper.{CategorisationJourney, RequestAdviceJourney, Supplementary
 import models.requests.DataRequest
 import models.{AdviceStatusMessage, Country, NormalMode}
 import pages.goodsRecord.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage, TraderReferenceUpdatePage}
-import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.CountriesQuery
 import repositories.SessionRepository

@@ -16,6 +16,7 @@
 
 package models
 
+import models.AdviceStatus._
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{OptionValues, TryValues}
@@ -24,29 +25,22 @@ class AdviceStatusMessageSpec extends AnyFreeSpec with Matchers with TryValues w
 
   "AdviceStatusMessage" - {
     "return correct message keys for each status" in {
-      AdviceStatusMessage.NotRequested.messageKey mustBe "singleRecord.adviceParagraph.notRequested"
-      AdviceStatusMessage.Requested.messageKey mustBe "singleRecord.adviceParagraph.requested"
-      AdviceStatusMessage.AdviceWithdrawn.messageKey mustBe "singleRecord.adviceParagraph.adviceWithdrawn"
-      AdviceStatusMessage.NotProvided.messageKey mustBe "singleRecord.adviceParagraph.adviceNotProvided"
-      AdviceStatusMessage.InProgress.messageKey mustBe "singleRecord.adviceParagraph.inProgress"
-      AdviceStatusMessage.InformationRequested.messageKey mustBe "singleRecord.adviceParagraph.informationRequested"
-      AdviceStatusMessage.AdviceReceived.messageKey mustBe "singleRecord.adviceParagraph.adviceReceived"
+      AdviceStatusMessage.NotRequestedParagraph.messageKey mustBe "singleRecord.adviceParagraph.notRequested"
+      AdviceStatusMessage.RequestedParagraph.messageKey mustBe "singleRecord.adviceParagraph.requested"
+      AdviceStatusMessage.AdviceWithdrawnParagraph.messageKey mustBe "singleRecord.adviceParagraph.adviceWithdrawn"
+      AdviceStatusMessage.NotProvidedParagraph.messageKey mustBe "singleRecord.adviceParagraph.adviceNotProvided"
+      AdviceStatusMessage.InProgressParagraph.messageKey mustBe "singleRecord.adviceParagraph.inProgress"
+      AdviceStatusMessage.InformationRequestedParagraph.messageKey mustBe "singleRecord.adviceParagraph.informationRequested"
+      AdviceStatusMessage.AdviceReceivedParagraph.messageKey mustBe "singleRecord.adviceParagraph.adviceReceived"
     }
   }
 
   "map fromString to the correct case object for valid input strings" in {
-    AdviceStatusMessage.fromString("Not Requested") mustBe Some(AdviceStatusMessage.NotRequested)
-    AdviceStatusMessage.fromString("Requested") mustBe Some(AdviceStatusMessage.Requested)
-    AdviceStatusMessage.fromString("Advice withdrawn") mustBe Some(AdviceStatusMessage.AdviceWithdrawn)
-    AdviceStatusMessage.fromString("Advice not provided") mustBe Some(AdviceStatusMessage.NotProvided)
-    AdviceStatusMessage.fromString("In progress") mustBe Some(AdviceStatusMessage.InProgress)
-    AdviceStatusMessage.fromString("Information requested") mustBe Some(AdviceStatusMessage.InformationRequested)
-    AdviceStatusMessage.fromString("Advice received") mustBe Some(AdviceStatusMessage.AdviceReceived)
-  }
-
-  "return None for invalid input strings" in {
-    AdviceStatusMessage.fromString("Unknown status") mustBe None
-    AdviceStatusMessage.fromString("") mustBe None
-    AdviceStatusMessage.fromString("Completed") mustBe None
+    AdviceStatusMessage.fromString(NotRequested) mustBe Some(AdviceStatusMessage.NotRequestedParagraph)
+    AdviceStatusMessage.fromString(Requested) mustBe Some(AdviceStatusMessage.RequestedParagraph)
+    AdviceStatusMessage.fromString(AdviceRequestWithdrawn) mustBe Some(AdviceStatusMessage.AdviceWithdrawnParagraph)
+    AdviceStatusMessage.fromString(InProgress) mustBe Some(AdviceStatusMessage.InProgressParagraph)
+    AdviceStatusMessage.fromString(InformationRequested) mustBe Some(AdviceStatusMessage.InformationRequestedParagraph)
+    AdviceStatusMessage.fromString(AdviceReceived) mustBe Some(AdviceStatusMessage.AdviceReceivedParagraph)
   }
 }

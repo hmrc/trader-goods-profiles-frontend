@@ -19,7 +19,7 @@ package controllers.goodsRecord
 import base.SpecBase
 import base.TestConstants.{testRecordId, userAnswersId}
 import connectors.{GoodsRecordConnector, OttConnector, TraderProfileConnector}
-import models.AdviceStatusMessage.Requested
+import models.AdviceStatusMessage.{NotRequestedParagraph, RequestedParagraph}
 import models.helper.SupplementaryUnitUpdateJourney
 import models.{Country, NormalMode, UserAnswers}
 import org.mockito.ArgumentCaptor
@@ -175,7 +175,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           changedPage,
           pageRemoved,
           recordIsLocked,
-          None
+          Some(NotRequestedParagraph)
         )(
           request,
           messages(application)
@@ -291,7 +291,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           changedPage,
           pageRemoved,
           recordIsLocked,
-          Some(Requested)
+          Some(RequestedParagraph)
         )(
           request,
           messages(application)
@@ -423,7 +423,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           changedPage,
           pageRemoved,
           recordIsLocked,
-          None
+          Some(NotRequestedParagraph)
         )(
           request,
           messages(application)
