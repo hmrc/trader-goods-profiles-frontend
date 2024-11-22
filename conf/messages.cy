@@ -751,9 +751,9 @@ longerCommodityCode.error.invalid = Nodwch god nwyddau go iawn
 longerCommodityCode.change.hidden = LongerCommodityCode
 
 adviceStatus.notRequested = Heb wneud cais am gyngor
-adviceStatus.requested = Cais am gyngor wedi’i dynnu yn ôl
-adviceStatus.inProgress = Cyngor heb ei ddarparu
-adviceStatus.informationRequested = Ar y gweill
-adviceStatus.adviceReceived = Cais am wybodaeth wedi’i wneud
-adviceStatus.adviceNotProvided = Cais am gyngor wedi’i wneud
-adviceStatus.adviceRequestWithdrawn = Cyngor wedi dod i law
+adviceStatus.requested = Cais am gyngor wedi’i wneud
+adviceStatus.inProgress = Ar y gweill
+adviceStatus.informationRequested = Cais am wybodaeth wedi’i wneud
+adviceStatus.adviceReceived = Cyngor wedi dod i law
+adviceStatus.adviceNotProvided = Cyngor heb ei ddarparu
+adviceStatus.adviceRequestWithdrawn = Cais am gyngor wedi’i dynnu yn ôl
