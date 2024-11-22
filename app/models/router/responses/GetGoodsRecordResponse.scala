@@ -47,20 +47,7 @@ case class GetGoodsRecordResponse(
   niphlNumber: Option[String] = None,
   createdDateTime: Instant,
   updatedDateTime: Instant
-) {
-
-//  def statusForView: String =
-//    declarable
-//      .split(" ")
-//      .zipWithIndex
-//      .map {
-//        case (word, 0)                   => word
-//        case (word, _) if word == "IMMI" => word
-//        case (word, _)                   => word.toLowerCase
-//      }
-//      .mkString(" ")
-
-}
+)
 
 object GetGoodsRecordResponse {
 
