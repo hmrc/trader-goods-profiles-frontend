@@ -57,6 +57,7 @@ homepage.downloadBanner.linkText = Ewch i’r dudalen ffeiliau cofnodion TGP i l
 homepage.h2.3 = Lawrlwytho data TGP
 homepage.downloadLinkText.noGoodsRecords = Nid oes gennych unrhyw gofnodion nwyddau TGP i’w lawrlwytho.
 homepage.downloadLinkText.noFilesRequested = Cael eich ffeil cofnodion TGP
+# TODO - Awaiting welsh translation for new ukims success banner - TGP-2826
 
 unauthorised.title = Mae problem wedi codi
 unauthorised.heading = Mae problem wedi codi
