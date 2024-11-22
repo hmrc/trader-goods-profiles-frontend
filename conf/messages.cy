@@ -326,7 +326,6 @@ hasCorrectGoods.h2 = Ai dyma’r nwyddau cywir?
 hasCorrectGoods.error.required = Dewiswch ‘Iawn’ os y rhain yw’r nwyddau cywir
 hasCorrectGoods.p2.linkText = Chwiliwch am god nwyddau ar yr Offeryn Tariff Ar-lein (yn agor tab newydd)
 
-
 singleRecord.title = Cofnod nwyddau
 singleRecord.h1 = Cofnod nwyddau
 singleRecord.p1 = Gwiriwch a yw manylion y cofnod hwn yn gywir.
@@ -334,7 +333,6 @@ singleRecord.p2 = Os oes angen i chi gategoreiddio’r daioni hwn, byddwn yn dwe
 singleRecord.h2.goodsDetails = Manylion nwyddau
 singleRecord.warning = Rhybudd
 singleRecord.warningText = Rydych yn atebol dros yr wybodaeth am unrhyw symudiadau a grëir gennych chi, neu ar eich rhan gan ddefnyddio eich cofnodion Proffil Nwyddau Masnachwr.
-
 
 
 singleRecord.h2.categorisation = Categoreiddio
@@ -350,6 +348,14 @@ singleRecord.cat1 = Categori 1
 singleRecord.cat2 = Categori 2
 singleRecord.standardGoods = Nwyddau safonol
 singleRecord.back = Yn ôl proffil nwyddau
+singleRecord.adviceParagraph.notRequested = Gallwch ofyn i CThEF am gyngor i weld a yw’r disgrifiad o’r nwyddau’n cyd-fynd â’r cod nwyddau.
+singleRecord.adviceParagraph.requested = Rydych wedi gofyn am gyngor ar y cofnod nwyddau hwn.
+singleRecord.adviceParagraph.adviceWithdrawn = Rydych wedi tynnu eich cais am gyngor yn ôl. Gallwch ofyn i CThEF am gyngor i weld a yw’r disgrifiad o’r nwyddau’n cyd-fynd â’r cod nwyddau.
+singleRecord.adviceParagraph.adviceNotProvided = Nid yw CThEF wedi gallu cytuno bod y disgrifiad o’r nwyddau’n cyd-fynd â’r cod nwyddau. Gallwch ofyn am gyngor eto os ydych wedi diweddaru’r cofnod.
+singleRecord.adviceParagraph.inProgress = Mae CThEF wedi dechrau edrych dros eich cofnod nwyddau a bydd yn cysylltu â chi gydag unrhyw ddiweddariadau.
+singleRecord.adviceParagraph.informationRequested = Mae CThEF wedi gofyn i chi am beth gwybodaeth am y cofnod nwyddau hwn.
+singleRecord.adviceParagraph.adviceReceived = Mae CThEF wedi cytuno bod y cod nwyddau a’r disgrifiad o’r nwyddau’n cyd-fynd â’i gilydd.
+
 
 
 countryOfOrigin.title = Gwlad tarddiad
