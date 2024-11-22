@@ -16,7 +16,6 @@
 
 package controllers.categorisation
 
-import connectors.GoodsRecordConnector
 import controllers.BaseController
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import forms.AssessmentFormProvider
@@ -46,7 +45,6 @@ class AssessmentController @Inject() (
   requireData: DataRequiredAction,
   formProvider: AssessmentFormProvider,
   dataCleansingService: DataCleansingService,
-  goodsRecordConnector: GoodsRecordConnector,
   val controllerComponents: MessagesControllerComponents,
   view: AssessmentView
 )(implicit ec: ExecutionContext)
