@@ -38,7 +38,7 @@ import utils.GetRecordsResponseUtil
 import java.time.Instant
 
 class GoodsRecordConnectorSpec
-  extends AnyFreeSpec
+    extends AnyFreeSpec
     with Matchers
     with WireMockSupport
     with ScalaFutures
@@ -58,15 +58,14 @@ class GoodsRecordConnectorSpec
   implicit private lazy val hc: HeaderCarrier = HeaderCarrier()
 
   private val xClientIdName: String = "X-Client-ID"
-  private val xClientId: String = "tgp-frontend"
-  private val testRecordId = "8ebb6b04-6ab0-4fe2-ad62-e6389a8a204f"
+  private val xClientId: String     = "tgp-frontend"
+  private val testRecordId          = "8ebb6b04-6ab0-4fe2-ad62-e6389a8a204f"
 
-  private val goodsRecordUrl = s"/trader-goods-profiles-data-store/traders/$testEori/records/$testRecordId"
+  private val goodsRecordUrl    = s"/trader-goods-profiles-data-store/traders/$testEori/records/$testRecordId"
   private val recordsSummaryUrl = s"/trader-goods-profiles-data-store/traders/$testEori/records-summary"
 
   private lazy val getRecordResponse = Json
-    .parse(
-      s"""
+    .parse(s"""
          |  {
          |    "eori": "$testEori",
          |    "actorId": "$testEori",
@@ -97,7 +96,7 @@ class GoodsRecordConnectorSpec
          |    "active": true,
          |    "toReview": false,
          |    "reviewReason": null,
-         |    "declarable": "IMMI declarable",
+         |    "declarable": "IMMI Ready",
          |    "ukimsNumber": "XIUKIM47699357400020231115081800",
          |    "nirmsNumber": "RMS-GB-123456",
          |    "niphlNumber": "6 S12345",
@@ -108,8 +107,7 @@ class GoodsRecordConnectorSpec
          |""".stripMargin)
 
   private lazy val getRecordsResponse = Json
-    .parse(
-      s"""
+    .parse(s"""
          |{
          |"goodsItemRecords": [
          |  {
@@ -142,7 +140,7 @@ class GoodsRecordConnectorSpec
          |    "active": true,
          |    "toReview": false,
          |    "reviewReason": null,
-         |    "declarable": "IMMI declarable",
+         |    "declarable": "IMMI Ready",
          |    "ukimsNumber": "XIUKIM47699357400020231115081800",
          |    "nirmsNumber": "RMS-GB-123456",
          |    "niphlNumber": "6 S12345",
@@ -180,7 +178,7 @@ class GoodsRecordConnectorSpec
          |    "active": true,
          |    "toReview": false,
          |    "reviewReason": null,
-         |    "declarable": "IMMI declarable",
+         |    "declarable": "IMMI Ready",
          |    "ukimsNumber": "XIUKIM47699357400020231115081800",
          |    "nirmsNumber": "RMS-GB-123456",
          |    "niphlNumber": "6 S12345",
@@ -218,7 +216,7 @@ class GoodsRecordConnectorSpec
          |    "active": true,
          |    "toReview": false,
          |    "reviewReason": null,
-         |    "declarable": "IMMI declarable",
+         |    "declarable": "IMMI Ready",
          |    "ukimsNumber": "XIUKIM47699357400020231115081800",
          |    "nirmsNumber": "RMS-GB-123456",
          |    "niphlNumber": "6 S12345",
@@ -371,7 +369,9 @@ class GoodsRecordConnectorSpec
             .willReturn(ok())
         )
 
-        connector.updateCategoryAndComcodeForGoodsRecord(testEori, testRecordId, categoryRecord, goodsRecord).futureValue
+        connector
+          .updateCategoryAndComcodeForGoodsRecord(testEori, testRecordId, categoryRecord, goodsRecord)
+          .futureValue
       }
 
       "with a category and supplementary unit" in {
@@ -393,7 +393,9 @@ class GoodsRecordConnectorSpec
             .willReturn(ok())
         )
 
-        connector.updateCategoryAndComcodeForGoodsRecord(testEori, testRecordId, categoryRecordWithSupp, goodsRecord).futureValue
+        connector
+          .updateCategoryAndComcodeForGoodsRecord(testEori, testRecordId, categoryRecordWithSupp, goodsRecord)
+          .futureValue
       }
 
       "with a category and longer commodity code" in {
@@ -429,7 +431,10 @@ class GoodsRecordConnectorSpec
           .willReturn(serverError())
       )
 
-      connector.updateCategoryAndComcodeForGoodsRecord(testEori, testRecordId, categoryRecord, goodsRecord).failed.futureValue
+      connector
+        .updateCategoryAndComcodeForGoodsRecord(testEori, testRecordId, categoryRecord, goodsRecord)
+        .failed
+        .futureValue
     }
   }
 
@@ -461,7 +466,9 @@ class GoodsRecordConnectorSpec
           .willReturn(ok())
       )
 
-      connector.updateSupplementaryUnitForGoodsRecord(testEori, testRecordId, supplementaryRequest, goodsRecord).futureValue
+      connector
+        .updateSupplementaryUnitForGoodsRecord(testEori, testRecordId, supplementaryRequest, goodsRecord)
+        .futureValue
     }
 
     "must return a failed future when the server returns an error" in {
@@ -473,7 +480,10 @@ class GoodsRecordConnectorSpec
           .willReturn(serverError())
       )
 
-      connector.updateSupplementaryUnitForGoodsRecord(testEori, testRecordId, supplementaryRequest, goodsRecord).failed.futureValue
+      connector
+        .updateSupplementaryUnitForGoodsRecord(testEori, testRecordId, supplementaryRequest, goodsRecord)
+        .failed
+        .futureValue
     }
   }
 
@@ -722,8 +732,8 @@ class GoodsRecordConnectorSpec
 
   ".searchRecords" - {
 
-    val searchString = "banana"
-    val exactMatch = false
+    val searchString               = "banana"
+    val exactMatch                 = false
     val pagedGoodsRecordsSearchUrl =
       s"/trader-goods-profiles-data-store/traders/$testEori/records/filter?searchTerm=$searchString&exactMatch=$exactMatch&page=1&size=3"
 
