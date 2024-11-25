@@ -427,6 +427,7 @@ assessment.exemption.none = Dim un o’r uchod
 assessment.exemption.none.checkYourAnswersLabel = Dim wedi’i ddewis
 assessment.checkYourAnswersLabel = Asesiadau categori {0} o {1}
 assessment.none = Dim
+assessment.change.hidden = Eithriadau ar gyfer asesiadau categori {0}
 assessment.guidance = Mae angen i chi gadarnhau p’un o’r eithriadau hyn sydd gennych ar gyfer {0}. Y thema ar gyfer yr asesiad hwn yw:
 assessment.error.required = Dewiswch yr eithriadau sydd gennych, neu dewiswch ‘Dim un o’r uchod’
 assessment.regulationUrl.text =  Os oes angen rhagor o wybodaeth arnoch am y thema a’r eithriadau, gallwch
