@@ -163,8 +163,8 @@ class CyaCategorisationController @Inject() (
           categorisationService
         ) match {
         case Right(categoryRecord) =>
+          auditService.auditFinishCategorisation(request.eori, request.affinityGroup, recordId, categoryRecord)
           for {
-            _         <- auditService.auditFinishCategorisation(request.eori, request.affinityGroup, recordId, categoryRecord)
             oldRecord <- goodsRecordConnector.getRecord(request.eori, recordId)
             _         <-
               goodsRecordConnector
