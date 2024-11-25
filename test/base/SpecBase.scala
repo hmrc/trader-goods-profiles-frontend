@@ -291,7 +291,7 @@ trait SpecBase
     active = true,
     toReview = false,
     None,
-    "Not ready",
+    NotReadyForUse,
     None,
     None,
     None,
