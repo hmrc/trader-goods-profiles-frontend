@@ -625,7 +625,7 @@ helpAndSupport.h3 = Cysylltu
 helpAndSupport.p1 = Dyma gysylltiadau i arweiniad, help a thudalennau cyswllt sy’n eich helpu gyda symud nwyddau.
 helpAndSupport.p2.linkText = Canllaw cam wrth gam ar gyfer mewnforio nwyddau i’r DU
 helpAndSupport.p3.linkText = Masnachu a symud nwyddau i mewn ac allan o Ogledd Iwerddon
-
+helpAndSupport.p4.linkText = Datgan bod nwyddau rydych chi’n dod â nhw i Ogledd Iwerddon yn rhai nad ydynt mewn perygl
 helpAndSupport.p5.linkText = Mewnforion ac allforion: ymholiadau cyffredinol
 helpAndSupport.p6.linkText = Dod o hyd i godau nwyddau ar gyfer mewnforion i mewn i’r DU neu allforion allan o’r DU
 helpAndSupport.p7.linkText = Chwilio am Dariff Ar-lein Gogledd Iwerddon
