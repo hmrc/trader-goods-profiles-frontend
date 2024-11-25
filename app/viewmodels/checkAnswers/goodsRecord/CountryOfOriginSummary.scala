@@ -75,7 +75,7 @@ object CountryOfOriginSummary {
     }
     SummaryListRowViewModel(
       key = "countryOfOrigin.checkYourAnswersLabel",
-      value = ValueViewModel(HtmlContent(s"<div lang='en'>${HtmlFormat.escape(countryName)}</div>")),
+      value = ValueViewModel(HtmlContent(s"<div lang='en'>${HtmlFormat.escape(countryName).toString}</div>")),
       actions = if (recordLocked) {
         Seq.empty
       } else {
