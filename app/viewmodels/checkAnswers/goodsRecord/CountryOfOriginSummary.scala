@@ -21,6 +21,7 @@ import models.{CheckMode, Country, Mode, UserAnswers}
 import pages.goodsRecord.CountryOfOriginPage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
@@ -74,7 +75,7 @@ object CountryOfOriginSummary {
     }
     SummaryListRowViewModel(
       key = "countryOfOrigin.checkYourAnswersLabel",
-      value = ValueViewModel(HtmlFormat.escape(countryName).toString),
+      value = ValueViewModel(HtmlContent(s"<div lang='en'>${HtmlFormat.escape(countryName)}</div>")),
       actions = if (recordLocked) {
         Seq.empty
       } else {
