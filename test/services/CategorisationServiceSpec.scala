@@ -38,6 +38,8 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Constants.{countryOfOriginKey, goodsDescriptionKey}
 import generators.Generators
+import models.DeclarableStatus.NotReadyForUse
+
 import java.time.Instant
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -96,7 +98,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
     active = true,
     toReview = true,
     None,
-    "declarable",
+    NotReadyForUse,
     None,
     None,
     None,

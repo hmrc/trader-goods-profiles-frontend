@@ -19,6 +19,7 @@ package services
 import base.SpecBase
 import connectors.{GoodsRecordConnector, OttConnector}
 import generators.Generators
+import models.DeclarableStatus.ImmiReady
 import models.ott.response._
 import models.requests.DataRequest
 import models.router.responses.GetGoodsRecordResponse
@@ -64,7 +65,7 @@ class OttServiceSpec extends SpecBase with BeforeAndAfterEach with Generators {
     active = true,
     toReview = true,
     None,
-    "declarable",
+    ImmiReady,
     None,
     None,
     None,

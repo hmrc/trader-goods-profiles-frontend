@@ -281,6 +281,7 @@ goodsDescription.p2 = Ni allwch ddefnyddio termau cyffredinol i ddisgrifio’r n
 goodsDescription.inputHeading = Beth yw’r disgrifiad o’r nwyddau?
 goodsDescription.hint = Gall hyn fod hyd at 512 o gymeriadau.
 goodsDescription.checkYourAnswersLabel = Disgrifiad o’r nwyddau
+goodsDescription.change.hidden = Disgrifiad o’r nwyddau
 
 commodityCode.title = Cod nwyddau
 commodityCode.h1 = Cod nwyddau
@@ -426,6 +427,7 @@ assessment.exemption.none = Dim un o’r uchod
 assessment.exemption.none.checkYourAnswersLabel = Dim wedi’i ddewis
 assessment.checkYourAnswersLabel = Asesiadau categori {0} o {1}
 assessment.none = Dim
+assessment.change.hidden = Eithriadau ar gyfer asesiadau categori {0}
 assessment.guidance = Mae angen i chi gadarnhau p’un o’r eithriadau hyn sydd gennych ar gyfer {0}. Y thema ar gyfer yr asesiad hwn yw:
 assessment.error.required = Dewiswch yr eithriadau sydd gennych, neu dewiswch ‘Dim un o’r uchod’
 assessment.regulationUrl.text =  Os oes angen rhagor o wybodaeth arnoch am y thema a’r eithriadau, gallwch
@@ -756,3 +758,7 @@ adviceStatus.informationRequested = Cais am wybodaeth wedi’i wneud
 adviceStatus.adviceReceived = Cyngor wedi dod i law
 adviceStatus.adviceNotProvided = Cyngor heb ei ddarparu
 adviceStatus.adviceRequestWithdrawn = Cais am gyngor wedi’i dynnu yn ôl
+
+declarableStatus.immiReady = Barod ar gyfer IMMI
+declarableStatus.notReadyForImmi = Ddim yn barod ar gyfer IMMI
+declarableStatus.notReadyForUse = Ddim yn barod i’w ddefnyddio
