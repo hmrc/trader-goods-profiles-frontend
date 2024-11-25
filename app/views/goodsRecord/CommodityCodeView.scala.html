@@ -16,6 +16,7 @@
 
 @import viewmodels.LabelSize._
 @import viewmodels.InputWidth._
+@import models.outboundLink.OutboundLink
 
 @this(
     layout: templates.Layout,
@@ -36,7 +37,8 @@
     <h1 class="govuk-heading-l">@messages("commodityCode.h1")</h1>
     <p class="govuk-body">
         @messages("commodityCode.p1")
-        <a class="govuk-link" target="_blank"  href="https://www.trade-tariff.service.gov.uk/xi/find_commodity">@messages("commodityCode.p1.linkText")</a>.
+        <a class="govuk-link" target="_blank"
+           href="@routes.OutboundController.redirect(OutboundLink.FindCommodity.link)">@messages(OutboundLink.FindCommodity.linkTextKey)</a>.
     </p>
 
     @formHelper(action = action) {
