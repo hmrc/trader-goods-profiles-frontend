@@ -20,6 +20,7 @@ import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import connectors.GoodsRecordConnector
 import forms.goodsRecord.HasCommodityCodeChangeFormProvider
+import models.AdviceStatus.{AdviceReceived, NotRequested}
 import models.helper.GoodsDetailsUpdate
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeGoodsRecordNavigator, GoodsRecordNavigator}
@@ -36,7 +37,6 @@ import play.api.test.Helpers._
 import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
-import utils.Constants.adviceProvided
 import views.html.goodsRecord.HasCommodityCodeChangeView
 
 import scala.concurrent.Future
@@ -54,15 +54,15 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
   private val goodsRecord              = goodsRecordResponse()
   private val goodsRecordCatNoAdvice   = goodsRecord.copy(
     category = Some(2),
-    adviceStatus = "Not requested"
+    adviceStatus = NotRequested
   )
   private val goodsRecordNoCatAdvice   = goodsRecord.copy(
     category = None,
-    adviceStatus = adviceProvided
+    adviceStatus = AdviceReceived
   )
   private val goodsRecordCatAdvice     = goodsRecord.copy(
     category = Some(2),
-    adviceStatus = adviceProvided
+    adviceStatus = AdviceReceived
   )
   private val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 

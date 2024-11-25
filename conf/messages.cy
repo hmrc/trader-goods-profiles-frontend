@@ -57,6 +57,7 @@ homepage.downloadBanner.linkText = Ewch i’r dudalen ffeiliau cofnodion TGP i l
 homepage.h2.3 = Lawrlwytho data TGP
 homepage.downloadLinkText.noGoodsRecords = Nid oes gennych unrhyw gofnodion nwyddau TGP i’w lawrlwytho.
 homepage.downloadLinkText.noFilesRequested = Cael eich ffeil cofnodion TGP
+# TODO - Awaiting welsh translation for new ukims success banner - TGP-2826
 
 unauthorised.title = Mae problem wedi codi
 unauthorised.heading = Mae problem wedi codi
@@ -148,7 +149,7 @@ hasNiphl.p2 = Dysgwch ragor am
 hasNiphl.p2.linkText = symud planhigion o Brydain Fawr i Ogledd Iwerddon.
 hasNiphl.h2 = A ydych wedi cofrestru ar gyfer NIPHL?
 hasNiphl.checkYourAnswersLabel = A ydych wedi cofrestru ar gyfer NIPHL?
-hasNiphl.error.required = Dewiswch ‘Iawn’ os ydych wedi cofrestru ar gyfer cynllun Label iechyd planhigion Gogledd Iwerddon
+hasNiphl.error.required = Dewiswch ‘Iawn’ os ydych wedi cofrestru ar gyfer Label Iechyd Planhigion Gogledd Iwerddon
 hasNiphl.change.hidden = Wedi cofrestru ar gyfer y NIPHL
 
 niphlNumber.title = Rhif cofrestru NIPHL
@@ -322,9 +323,8 @@ hasCorrectGoods.title = Canlyniadau ar gyfer {0}
 hasCorrectGoods.heading = Canlyniadau ar gyfer {0}
 hasCorrectGoods.p1 = Dynodiad:
 hasCorrectGoods.h2 = Ai dyma’r nwyddau cywir?
-hasCorrectGoods.error.required = Dewiswch ai dyma’r nwyddau cywir
+hasCorrectGoods.error.required = Dewiswch ‘Iawn’ os y rhain yw’r nwyddau cywir
 hasCorrectGoods.p2.linkText = Chwiliwch am god nwyddau ar yr Offeryn Tariff Ar-lein (yn agor tab newydd)
-
 
 singleRecord.title = Cofnod nwyddau
 singleRecord.h1 = Cofnod nwyddau
@@ -333,7 +333,6 @@ singleRecord.p2 = Os oes angen i chi gategoreiddio’r daioni hwn, byddwn yn dwe
 singleRecord.h2.goodsDetails = Manylion nwyddau
 singleRecord.warning = Rhybudd
 singleRecord.warningText = Rydych yn atebol dros yr wybodaeth am unrhyw symudiadau a grëir gennych chi, neu ar eich rhan gan ddefnyddio eich cofnodion Proffil Nwyddau Masnachwr.
-
 
 
 singleRecord.h2.categorisation = Categoreiddio
@@ -349,6 +348,14 @@ singleRecord.cat1 = Categori 1
 singleRecord.cat2 = Categori 2
 singleRecord.standardGoods = Nwyddau safonol
 singleRecord.back = Yn ôl proffil nwyddau
+singleRecord.adviceParagraph.notRequested = Gallwch ofyn i CThEF am gyngor i weld a yw’r disgrifiad o’r nwyddau’n cyd-fynd â’r cod nwyddau.
+singleRecord.adviceParagraph.requested = Rydych wedi gofyn am gyngor ar y cofnod nwyddau hwn.
+singleRecord.adviceParagraph.adviceWithdrawn = Rydych wedi tynnu eich cais am gyngor yn ôl. Gallwch ofyn i CThEF am gyngor i weld a yw’r disgrifiad o’r nwyddau’n cyd-fynd â’r cod nwyddau.
+singleRecord.adviceParagraph.adviceNotProvided = Nid yw CThEF wedi gallu cytuno bod y disgrifiad o’r nwyddau’n cyd-fynd â’r cod nwyddau. Gallwch ofyn am gyngor eto os ydych wedi diweddaru’r cofnod.
+singleRecord.adviceParagraph.inProgress = Mae CThEF wedi dechrau edrych dros eich cofnod nwyddau a bydd yn cysylltu â chi gydag unrhyw ddiweddariadau.
+singleRecord.adviceParagraph.informationRequested = Mae CThEF wedi gofyn i chi am beth gwybodaeth am y cofnod nwyddau hwn.
+singleRecord.adviceParagraph.adviceReceived = Mae CThEF wedi cytuno bod y cod nwyddau a’r disgrifiad o’r nwyddau’n cyd-fynd â’i gilydd.
+
 
 
 countryOfOrigin.title = Gwlad tarddiad
@@ -412,7 +419,7 @@ categoryGuidance.p4 = Bydd angen i chi wybod rhif tystysgrif neu enw unrhyw eith
 assessment.title = Asesiadau categori {0}
 assessment.heading = Asesiadau categori {0}
 assessment.linkText = Defnyddiwch yr Offeryn Tariff Ar-lein (yn agor tab newydd) i chwilio am god nwyddau.
-assessment.question = Pa un o'r eithriadau hyn sydd gennych ar gyfer {0}?
+assessment.question = Pa un o’r eithriadau hyn sydd gennych ar gyfer {0}?
 assessment.hint = Dewiswch bob un sy’n berthnasol.
 assessment.exemption = {0} – {1}
 assessment.exemption.none = Dim un o’r uchod
@@ -423,7 +430,6 @@ assessment.guidance = Mae angen i chi gadarnhau p’un o’r eithriadau hyn sydd
 assessment.error.required = Dewiswch yr eithriadau sydd gennych, neu dewiswch ‘Dim un o’r uchod’
 assessment.regulationUrl.text =  Os oes angen rhagor o wybodaeth arnoch am y thema a’r eithriadau, gallwch
 assessment.regulationUrl.linkText = ddarllen y ddogfen Reoliadau UE (yn agor tab newydd).
-
 
 expiredCommodityCode.title = Mae problem wedi codi
 expiredCommodityCode.heading = Mae problem wedi codi
@@ -517,7 +523,7 @@ existingUkimsNumber.title = Rhif presennol ar gyfer Cynllun Marchnad Fewnol y DU
 existingUkimsNumber.h1 = Rhif presennol ar gyfer Cynllun Marchnad Fewnol y DU (UKIMS)
 existingUkimsNumber.h2 = Ai dyma’r rhif UKIMS cywir ar eich cyfer o hyd?
 existingUkimsNumber.p1 = Rydych wedi defnyddio’r rhif UKIMS {0} ar ddatganiadau blaenorol.
-existingUkimsNumber.error.required = Dewiswch a’i dyma’r rhif UKIMS cywir
+existingUkimsNumber.error.required = Dewiswch ‘Iawn’ os mai dyma’r rhif UKIMS cywir
 
 cyaMaintainProfile.title.ukimsNumber = Gwiriwch eich atebion ar gyfer newid eich rhif UKIMS
 cyaMaintainProfile.heading.ukimsNumber = Gwiriwch eich atebion ar gyfer newid eich rhif UKIMS
@@ -529,9 +535,15 @@ cyaMaintainProfile.title.hasNiphl = Gwiriwch eich atebion ar gyfer newid eich co
 cyaMaintainProfile.heading.hasNiphl = Gwiriwch eich atebion ar gyfer newid eich cofrestriad NIPHL
 cyaMaintainProfile.title.niphlNumber = Gwiriwch eich atebion ar gyfer newid eich rhif NIPHL
 cyaMaintainProfile.heading.niphlNumber = Gwiriwch eich atebion ar gyfer newid eich rhif NIPHL
-cyaMaintainProfile.warningText = Mae angen i chi wneud yn siŵr bod y manylion hyn yn gywir. Ni fydd unrhyw symudiadau y byddwch yn defnyddio manylion or TGP iw creu yn ddilys os byddant yn anghywir.
+
 cyaNewUkimsNumber.title = Gwiriwch eich atebion ar gyfer eich rhif UKIMS newydd
 cyaNewUkimsNumber.heading = Gwiriwch eich atebion ar gyfer eich rhif UKIMS newydd
+cyaMaintainProfile.h2 = Cynlluniau
+cyaMaintainProfile.li1 = Cynllun Marchnad Fewnol y DU (UKIMS)
+cyaMaintainProfile.li2 = Cynllun Symud Nwyddau Manwerthu Gogledd Iwerddon (NIRMS)
+cyaMaintainProfile.li3 = Label Iechyd Planhigion Gogledd Iwerddon (NIPHL)
+cyaMaintainProfile.warning = Rhybudd
+cyaMaintainProfile.warningText = Mae angen i chi wneud yn siŵr bod y manylion hyn yn gywir. Ni fydd unrhyw symudiadau y byddwch yn defnyddio manylion or TGP iw creu yn ddilys os byddant yn anghywir.
 
 
 hasGoodsDescriptionChange.title = Newid gwybodaeth y cofnod
@@ -633,7 +645,7 @@ successBannerRemove.heading = Rydych wedi newid y {0}
 successProfileBanner.title = Llwyddiant
 successProfileBanner.changeNumber.heading = Rydych wedi newid eich rhif {0}
 successProfileBanner.removeRegistration.heading = Rydych wedi dileu eich cofrestriad ar gyfer {0}
-successProfileBanner.addNumber.heading = Rydych wedi ychwanegu eich rhif {0}
+successProfileBanner.addNumber.heading = Rydych wedi newid eich rhif {0}
 
 
 goodsRecordsLoading.title = Rydym yn llwytho’ch cofnodion
@@ -737,4 +749,10 @@ longerCommodityCode.error.invalidFormat = Nodwch god nwyddau yn y fformat cywir
 longerCommodityCode.error.invalid = Nodwch god nwyddau go iawn
 longerCommodityCode.change.hidden = LongerCommodityCode
 
-name.error.length = Nodwch enw gan ddefnyddio 70 o gymeriadau neu lai
+adviceStatus.notRequested = Heb wneud cais am gyngor
+adviceStatus.requested = Cais am gyngor wedi’i wneud
+adviceStatus.inProgress = Ar y gweill
+adviceStatus.informationRequested = Cais am wybodaeth wedi’i wneud
+adviceStatus.adviceReceived = Cyngor wedi dod i law
+adviceStatus.adviceNotProvided = Cyngor heb ei ddarparu
+adviceStatus.adviceRequestWithdrawn = Cais am gyngor wedi’i dynnu yn ôl

@@ -19,9 +19,10 @@ package controllers.goodsRecord
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.BaseController
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
+import models.AdviceStatus._
 import models.helper.{CategorisationJourney, RequestAdviceJourney, SupplementaryUnitUpdateJourney, WithdrawAdviceJourney}
 import models.requests.DataRequest
-import models.{Country, NormalMode}
+import models.{AdviceStatusMessage, Country, NormalMode}
 import pages.goodsRecord.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage, TraderReferenceUpdatePage}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.CountriesQuery
@@ -37,6 +38,7 @@ import views.html.goodsRecord.SingleRecordView
 import javax.inject.Inject
 import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
+
 class SingleRecordController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   goodsRecordConnector: GoodsRecordConnector,
@@ -51,15 +53,15 @@ class SingleRecordController @Inject() (
 )(implicit @unused ec: ExecutionContext)
     extends BaseController {
 
-  def onPageLoad(recordId: String): Action[AnyContent]                                                             =
+  def onPageLoad(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       for {
         record                             <- goodsRecordConnector.getRecord(request.eori, recordId)
         recordIsLocked                      = record.adviceStatus match {
                                                 case status
-                                                    if status.equalsIgnoreCase("Requested") ||
-                                                      status.equalsIgnoreCase("In progress") ||
-                                                      status.equalsIgnoreCase("Information Requested") =>
+                                                    if status == Requested ||
+                                                      status == InProgress ||
+                                                      status == InformationRequested =>
                                                   true
                                                 case _ => false
                                               }
@@ -94,7 +96,7 @@ class SingleRecordController @Inject() (
           )
         )
 
-        val categoryValue         = record.category match {
+        val categoryValue                     = record.category match {
           case None        => "singleRecord.categoriseThisGood"
           case Some(value) =>
             value match {
@@ -103,26 +105,27 @@ class SingleRecordController @Inject() (
               case 3 => "singleRecord.standardGoods"
             }
         }
-        val categorisationList    = SummaryListViewModel(
+        val categorisationList                = SummaryListViewModel(
           rows = Seq(
             CategorySummary.row(categoryValue, record.recordId, recordIsLocked, isCategorised)
           )
         )
-        val supplementaryUnitList = SummaryListViewModel(
+        val supplementaryUnitList             = SummaryListViewModel(
           rows = Seq(
             HasSupplementaryUnitSummary.row(record, recordId, recordIsLocked),
             SupplementaryUnitSummary
               .row(record.category, record.supplementaryUnit, record.measurementUnit, recordId, recordIsLocked)
           ).flatten
         )
-        val adviceList            = SummaryListViewModel(
+        val adviceList                        = SummaryListViewModel(
           rows = Seq(
             AdviceStatusSummary.row(record.adviceStatus, record.recordId, recordIsLocked)
           )
         )
-        val changesMade           = request.session.get(dataUpdated).contains("true")
-        val pageRemoved           = request.session.get(dataRemoved).contains("true")
-        val changedPage           = request.session.get(pageUpdated).getOrElse("")
+        val changesMade                       = request.session.get(dataUpdated).contains("true")
+        val pageRemoved                       = request.session.get(dataRemoved).contains("true")
+        val changedPage                       = request.session.get(pageUpdated).getOrElse("")
+        val para: Option[AdviceStatusMessage] = AdviceStatusMessage.fromString(record.adviceStatus)
 
         dataCleansing(request)
 
@@ -136,7 +139,8 @@ class SingleRecordController @Inject() (
             changesMade,
             changedPage,
             pageRemoved,
-            recordIsLocked
+            recordIsLocked,
+            para
           )
         ).removingFromSession(initialValueOfHasSuppUnit, initialValueOfSuppUnit)
       }
@@ -149,6 +153,7 @@ class SingleRecordController @Inject() (
     dataCleansingService.deleteMongoData(request.userAnswers.id, WithdrawAdviceJourney)
     dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
   }
+
   private def retrieveAndStoreCountries(implicit hc: HeaderCarrier, request: DataRequest[_]): Future[Seq[Country]] =
     request.userAnswers.get(CountriesQuery) match {
       case Some(countries) =>

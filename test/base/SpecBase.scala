@@ -18,6 +18,7 @@ package base
 
 import base.TestConstants._
 import controllers.actions._
+import models.AdviceStatus.{AdviceReceived, NotRequested, Requested}
 import models.ott._
 import models.ott.response.{GoodsNomenclatureResponse, OttResponse}
 import models.router.responses.GetGoodsRecordResponse
@@ -90,7 +91,7 @@ trait SpecBase
   val lockedRecord: GetGoodsRecordResponse = goodsRecordResponse(
     Instant.parse("2022-11-18T23:20:19Z"),
     Instant.parse("2022-11-18T23:20:19Z")
-  ).copy(adviceStatus = requested)
+  ).copy(adviceStatus = Requested)
 
   def testAuditOttResponse: OttResponse = OttResponse(
     GoodsNomenclatureResponse("test", "1234567890", None, Instant.EPOCH, None, List("test")),
@@ -361,7 +362,7 @@ trait SpecBase
       "10410100",
       "BAN0010011",
       "12345678",
-      "Not requested",
+      NotRequested,
       "Organic bananas",
       "GB",
       Some(1),
@@ -390,7 +391,7 @@ trait SpecBase
   val recordForTestingSummaryRowsWithAdviceProvided: GetGoodsRecordResponse = goodsRecordResponse(
     Instant.parse("2022-11-18T23:20:19Z"),
     Instant.parse("2022-11-18T23:20:19Z")
-  ).copy(recordId = testRecordId).copy(adviceStatus = "Advice Provided")
+  ).copy(recordId = testRecordId).copy(adviceStatus = AdviceReceived)
 
   def toReviewGoodsRecordResponse(
     createdDateTime: Instant,
@@ -403,7 +404,7 @@ trait SpecBase
       "10410100",
       "BAN0010011",
       "1234567",
-      "Not requested",
+      NotRequested,
       "Organic bananas",
       "UK",
       Some(1),
@@ -434,7 +435,7 @@ trait SpecBase
       "10410100",
       "BAN0010011",
       "1234567",
-      "Not requested",
+      NotRequested,
       "Organic bananas",
       "UK",
       Some(1),
@@ -465,7 +466,7 @@ trait SpecBase
       "10410100",
       "BAN0010011",
       "1234567",
-      "Not requested",
+      NotRequested,
       "Organic bananas",
       "UK",
       Some(1),

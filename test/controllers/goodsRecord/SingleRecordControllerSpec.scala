@@ -19,6 +19,7 @@ package controllers.goodsRecord
 import base.SpecBase
 import base.TestConstants.{testRecordId, userAnswersId}
 import connectors.{GoodsRecordConnector, OttConnector, TraderProfileConnector}
+import models.AdviceStatusMessage.{NotRequestedParagraph, RequestedParagraph}
 import models.helper.SupplementaryUnitUpdateJourney
 import models.{Country, NormalMode, UserAnswers}
 import org.mockito.ArgumentCaptor
@@ -173,7 +174,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           changesMade,
           changedPage,
           pageRemoved,
-          recordIsLocked
+          recordIsLocked,
+          Some(NotRequestedParagraph)
         )(
           request,
           messages(application)
@@ -288,7 +290,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           changesMade,
           changedPage,
           pageRemoved,
-          recordIsLocked
+          recordIsLocked,
+          Some(RequestedParagraph)
         )(
           request,
           messages(application)
@@ -419,7 +422,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           changesMade,
           changedPage,
           pageRemoved,
-          recordIsLocked
+          recordIsLocked,
+          Some(NotRequestedParagraph)
         )(
           request,
           messages(application)
@@ -673,7 +677,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
         }
       }
 
-      "must return a SummaryListRow without change link action when advice status is Advice Provided " in {
+      "must return a SummaryListRow without change link action when advice status is Advice Received " in {
 
         val recordLocked = false
 

@@ -16,6 +16,7 @@
 
 package models.router.responses
 
+import models.AdviceStatus
 import play.api.libs.json.{JsSuccess, JsValue, Json, Reads, Writes}
 import utils.Constants.{countryOfOriginKey, goodsDescriptionKey, niphlNumberKey, nirmsNumberKey, ukimsNumberKey}
 
@@ -27,7 +28,7 @@ case class GetGoodsRecordResponse(
   actorId: String,
   traderRef: String,
   comcode: String,
-  adviceStatus: String,
+  adviceStatus: AdviceStatus,
   goodsDescription: String,
   countryOfOrigin: String,
   category: Option[Int],
@@ -72,7 +73,7 @@ object GetGoodsRecordResponse {
         (json \ "traderRef").as[String],
         (json \ "comcode").as[String],
         (json \ "adviceStatus")
-          .as[String],
+          .as[AdviceStatus],
         (json \ goodsDescriptionKey).as[String],
         (json \ countryOfOriginKey).as[String],
         (json \ "category").asOpt[Int],

@@ -419,4 +419,25 @@ case class AuditEventFactory() {
         Map(valueDescription -> value)
       }
       .getOrElse(Map.empty)
+
+  def createOutboundClickEvent(
+    affinityGroup: AffinityGroup,
+    eori: String,
+    link: String,
+    linkText: String
+  )(implicit hc: HeaderCarrier): DataEvent = {
+    val auditDetails = Map(
+      "eori"             -> eori,
+      "affinityGroup"    -> affinityGroup.toString,
+      "outboundLink"     -> link,
+      "outboundLinkText" -> linkText
+    )
+
+    DataEvent(
+      auditSource = auditSource,
+      auditType = "OutboundClicks",
+      tags = hc.toAuditTags(),
+      detail = auditDetails
+    )
+  }
 }

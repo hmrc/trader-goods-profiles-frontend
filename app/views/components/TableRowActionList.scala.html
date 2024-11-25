@@ -14,9 +14,11 @@
  * limitations under the License.
  *@
 
+@import models.AdviceStatus._
+
 @this()
 
-@(text1: String, text2: String, visuallyHiddenContent1: String, visuallyHiddenContent2: String, href1: String, href2: String, adviceStatus: String)
+@(text1: String, text2: String, visuallyHiddenContent1: String, visuallyHiddenContent2: String, href1: String, href2: String, adviceStatus: AdviceStatus)
 
 <p class="govuk-body">
     <a href="@href1" class="govuk-link">
@@ -26,7 +28,8 @@
 </p>
 
 @adviceStatus match {
-    case "Requested" | "In progress" | "Information Requested" => {
+    case Requested | InProgress | InformationRequested => {}
+    case _ => {
         <p class="govuk-body">
             <a href="@href2" class="govuk-link">
                 @text2
@@ -34,5 +37,4 @@
             </a>
         </p>
     }
-    case _ => {}
 }

@@ -16,6 +16,8 @@
 
 package generators
 
+import models.AdviceStatus
+
 import java.time.{Instant, LocalDate, ZoneOffset}
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen._
@@ -144,5 +146,7 @@ trait Generators {
   def arbitrarySeqTableRows: Gen[Seq[Seq[TableRow]]] = for {
     rows <- Gen.listOf(arbitraryTableRows)
   } yield rows
+
+  def arbitraryAdviceStatus: Gen[AdviceStatus] = Gen.oneOf(AdviceStatus.values)
 
 }

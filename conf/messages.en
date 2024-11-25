@@ -95,7 +95,7 @@ hasNiphl.p2 = Find out more about
 hasNiphl.p2.linkText = moving plants from Great Britain to Northern Ireland
 hasNiphl.h2 = Are you NIPHL registered?
 hasNiphl.checkYourAnswersLabel = Are you NIPHL registered?
-hasNiphl.error.required = Select if you are NIPHL registered
+hasNiphl.error.required = Select yes if you are Northern Ireland Plant Health Label registered
 hasNiphl.change.hidden = NIPHL registered
 
 hasNirms.title = Northern Ireland Retail Movement Scheme (NIRMS)
@@ -105,7 +105,7 @@ hasNirms.p1 = Businesses who sell, or facilitate the movement of food for final 
 hasNirms.p2 = Find out more about
 hasNirms.p2.linkText = which products can be moved under NIRMS
 hasNirms.checkYourAnswersLabel = Are you NIRMS registered?
-hasNirms.error.required = Select yes, if you are Northern Ireland Retail Movement Scheme registered
+hasNirms.error.required = Select yes if you are Northern Ireland Retail Movement Scheme registered
 hasNirms.change.hidden = NIRMS registered
 
 niphlNumber.title = NIPHL registration number
@@ -224,6 +224,8 @@ homepage.downloadBanner.linkText = Go to the TGP records file page to download t
 homepage.downloadLinkText.noGoodsRecords = You do not have TGP goods records to download.
 homepage.downloadLinkText.noFilesRequested = Get your TGP records file
 homepage.downloadLinkText.filesRequested = Get or download your TGP records file
+homepage.newUkims.success = You have changed your UKIMS number
+
 
 createRecordStart.title = Creating a goods record
 createRecordStart.h1 = Creating a goods record
@@ -269,7 +271,7 @@ hasCorrectGoods.heading = Results for {0}
 hasCorrectGoods.p1 = Classification:
 hasCorrectGoods.p2.linkText = Search for a commodity code on the Online Tariff Tool (opens in new tab)
 hasCorrectGoods.h2 = Are these the correct goods?
-hasCorrectGoods.error.required = Select if these are the correct goods
+hasCorrectGoods.error.required = Select yes if these are the correct goods
 
 traderReference.title = Trader reference
 traderReference.h1 = Trader reference
@@ -462,6 +464,13 @@ singleRecord.cat1 = Category 1
 singleRecord.cat2 = Category 2
 singleRecord.standardGoods = Standard goods
 singleRecord.back = Back to goods profile
+singleRecord.adviceParagraph.notRequested = You can ask HMRC for advice to see if the goods description matches the commodity code
+singleRecord.adviceParagraph.requested = You’ve asked for advice on this goods record
+singleRecord.adviceParagraph.adviceWithdrawn = You’ve withdrawn your request for advice, You can ask HMRC for advice to see if the goods description matches the commodity code
+singleRecord.adviceParagraph.adviceNotProvided = HMRC have not been able to agree that the goods description matches the commodity code, You can ask for advice if you have updated the record
+singleRecord.adviceParagraph.inProgress = HMRC has started to look at your goods record and will contact you with any updates
+singleRecord.adviceParagraph.informationRequested = HMRC have asked you for some information
+singleRecord.adviceParagraph.adviceReceived = HMRC have agreed that the commodity code and goods description match
 
 hasCountryOfOriginChange.title = Change record information
 hasCountryOfOriginChange.h1 = Change record information
@@ -668,7 +677,7 @@ existingUkimsNumber.title = Existing UK Internal Market Scheme (UKIMS) number
 existingUkimsNumber.h1 = Existing UK Internal Market Scheme (UKIMS) number
 existingUkimsNumber.h2 = Is this still the correct UKIMS number for you?
 existingUkimsNumber.p1 = You’ve used UKIMS number {0} on previous declarations.
-existingUkimsNumber.error.required = Select if this is the correct UKIMS number
+existingUkimsNumber.error.required = Select yes  if this is the correct UKIMS number
 
 expiredCommodityCode.title = There is a problem
 expiredCommodityCode.heading = There is a problem
@@ -717,3 +726,11 @@ fileManagement.pendingFiles.table.header2 = File
 fileManagement.pendingFiles.fileText = File not ready
 fileManagement.files.requestRecord.linkText = Get a new TGP records file
 fileManagement.noFiles.requestRecord.linkText = Get a TGP records file
+
+adviceStatus.notRequested = Not requested
+adviceStatus.requested = Requested
+adviceStatus.inProgress = In progress
+adviceStatus.informationRequested = Information requested
+adviceStatus.adviceReceived = Advice received
+adviceStatus.adviceNotProvided = Advice not provided
+adviceStatus.adviceRequestWithdrawn = Advice request withdrawn
