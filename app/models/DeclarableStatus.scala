@@ -43,7 +43,7 @@ object DeclarableStatus {
   }
 
   implicit val writes: Writes[DeclarableStatus] = Writes[DeclarableStatus] {
-    case ImmiReady       => JsString("IMMI ready")
+    case ImmiReady       => JsString("IMMI Ready")
     case NotReadyForImmi => JsString("Not Ready For IMMI")
     case NotReadyForUse  => JsString("Not Ready For Use")
   }
