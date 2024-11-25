@@ -17,7 +17,7 @@
 package models
 
 import base.SpecBase
-import models.DeclarableStatus.{ImmiReady, NotReadyForImmi, NotReadyForUse}
+import models.DeclarableStatus._
 import play.api.libs.json._
 
 class DeclarableStatusSpec extends SpecBase {
