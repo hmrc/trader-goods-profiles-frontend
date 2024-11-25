@@ -419,7 +419,7 @@ categoryGuidance.p4 = Bydd angen i chi wybod rhif tystysgrif neu enw unrhyw eith
 assessment.title = Asesiadau categori {0}
 assessment.heading = Asesiadau categori {0}
 assessment.linkText = Defnyddiwch yr Offeryn Tariff Ar-lein (yn agor tab newydd) i chwilio am god nwyddau.
-assessment.question = Pa un o'r eithriadau hyn sydd gennych ar gyfer {0}?
+assessment.question = Pa un o’r eithriadau hyn sydd gennych ar gyfer {0}?
 assessment.hint = Dewiswch bob un sy’n berthnasol.
 assessment.exemption = {0} – {1}
 assessment.exemption.none = Dim un o’r uchod
@@ -430,7 +430,6 @@ assessment.guidance = Mae angen i chi gadarnhau p’un o’r eithriadau hyn sydd
 assessment.error.required = Dewiswch yr eithriadau sydd gennych, neu dewiswch ‘Dim un o’r uchod’
 assessment.regulationUrl.text =  Os oes angen rhagor o wybodaeth arnoch am y thema a’r eithriadau, gallwch
 assessment.regulationUrl.linkText = ddarllen y ddogfen Reoliadau UE (yn agor tab newydd).
-
 
 expiredCommodityCode.title = Mae problem wedi codi
 expiredCommodityCode.heading = Mae problem wedi codi
