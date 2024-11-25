@@ -37,7 +37,7 @@
 
         <h1 class="govuk-heading-l">@messages("assessment.heading", number)</h1>
         <p class="govuk-body">@messages("assessment.guidance", commodityCode)</p>
-        <p class="govuk-body">@themeDescription</p>
+        <p class="govuk-body" lang="en">@themeDescription</p>
 
         @if(regulationUrl.nonEmpty) {
             <p class="govuk-body">@messages("assessment.regulationUrl.text")
@@ -58,7 +58,7 @@
                         CheckboxItem(
                             id = Some(item._1),
                             name = Some("value[]"),
-                            content = Text(item._1 + " - " + item._2),
+                            content = HtmlContent(Html(s"<div lang='en'>${item._1} - ${item._2}</div>")),
                             value = item._1,
                             checked = form("value[]").value.contains(item._1)
                         )
@@ -73,7 +73,9 @@
                             behaviour = Some(ExclusiveCheckbox)
                         )
                     )
-                ).withAttribute("aria-describedby", "value-hint").withHint(Hint(content = Text(messages("assessment.hint", commodityCode))))
+                )
+                .withAttribute("aria-describedby", "value-hint")
+                .withHint(Hint(content = Text(messages("assessment.hint", commodityCode))))
             )
 
         @govukButton(

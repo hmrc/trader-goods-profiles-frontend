@@ -33,7 +33,7 @@ object Country {
         SelectItemViewModel(
           value = data.id,
           text = data.description
-        )
+        ).withAttribute(("lang", "en"))
       }
 
   val reads: Reads[Country] = {
