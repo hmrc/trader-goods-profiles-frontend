@@ -281,6 +281,7 @@ goodsDescription.p2 = Ni allwch ddefnyddio termau cyffredinol i ddisgrifio’r n
 goodsDescription.inputHeading = Beth yw’r disgrifiad o’r nwyddau?
 goodsDescription.hint = Gall hyn fod hyd at 512 o gymeriadau.
 goodsDescription.checkYourAnswersLabel = Disgrifiad o’r nwyddau
+goodsDescription.change.hidden = Disgrifiad o’r nwyddau
 
 commodityCode.title = Cod nwyddau
 commodityCode.h1 = Cod nwyddau
