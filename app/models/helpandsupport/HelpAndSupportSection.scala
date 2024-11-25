@@ -19,11 +19,11 @@ package models.helpandsupport
 import models.outboundLink.OutboundLink
 
 case class HelpAndSupportSection(
-                                  headingKey: String,
-                                  subHeadingKey: Option[String],
-                                  paragraphTextKey: Option[String],
-                                  linksUnderHeading: Seq[OutboundLink],
-                                  linksUnderSubHeading: Seq[OutboundLink]
+  headingKey: String,
+  subHeadingKey: Option[String],
+  paragraphTextKey: Option[String],
+  linksUnderHeading: Seq[OutboundLink],
+  linksUnderSubHeading: Seq[OutboundLink]
 )
 
 object HelpAndSupportSection {
