@@ -16,12 +16,14 @@
 
 package models.helpandsupport
 
+import models.outboundLink.OutboundLink
+
 case class HelpAndSupportSection(
-  headingKey: String,
-  subHeadingKey: Option[String],
-  paragraphTextKey: Option[String],
-  linksUnderHeading: Seq[HelpAndSupportLink],
-  linksUnderSubHeading: Seq[HelpAndSupportLink]
+                                  headingKey: String,
+                                  subHeadingKey: Option[String],
+                                  paragraphTextKey: Option[String],
+                                  linksUnderHeading: Seq[OutboundLink],
+                                  linksUnderSubHeading: Seq[OutboundLink]
 )
 
 object HelpAndSupportSection {
@@ -32,12 +34,12 @@ object HelpAndSupportSection {
       subHeadingKey = Some("helpAndSupport.h3"),
       paragraphTextKey = None,
       linksUnderHeading = Seq(
-        HelpAndSupportLink.ImportGoodsIntoUK,
-        HelpAndSupportLink.TradingNI,
-        HelpAndSupportLink.GoodsNotAtRisk
+        OutboundLink.ImportGoodsIntoUK,
+        OutboundLink.TradingNI,
+        OutboundLink.GoodsNotAtRisk
       ),
       linksUnderSubHeading = Seq(
-        HelpAndSupportLink.HMRCContact
+        OutboundLink.HMRCContact
       )
     ),
     HelpAndSupportSection(
@@ -45,13 +47,13 @@ object HelpAndSupportSection {
       subHeadingKey = Some("helpAndSupport.h3"),
       paragraphTextKey = None,
       linksUnderHeading = Seq(
-        HelpAndSupportLink.FindingCommodityCodes,
-        HelpAndSupportLink.TradeTariffXI,
-        HelpAndSupportLink.TradeTariffHelp,
-        HelpAndSupportLink.BindingTariff
+        OutboundLink.FindingCommodityCodes,
+        OutboundLink.TradeTariffXI,
+        OutboundLink.TradeTariffHelp,
+        OutboundLink.BindingTariff
       ),
       linksUnderSubHeading = Seq(
-        HelpAndSupportLink.AskHMRCChat
+        OutboundLink.AskHMRCChat
       )
     ),
     HelpAndSupportSection(
@@ -59,9 +61,9 @@ object HelpAndSupportSection {
       subHeadingKey = None,
       paragraphTextKey = None,
       linksUnderHeading = Seq(
-        HelpAndSupportLink.RetailMovementScheme,
-        HelpAndSupportLink.RegisterAndSeal,
-        HelpAndSupportLink.MovingPlantsGBtoNI
+        OutboundLink.RetailMovementScheme,
+        OutboundLink.RegisterAndSeal,
+        OutboundLink.MovingPlantsGBtoNI
       ),
       linksUnderSubHeading = Seq.empty
     ),
@@ -70,7 +72,7 @@ object HelpAndSupportSection {
       subHeadingKey = None,
       paragraphTextKey = None,
       linksUnderHeading = Seq(
-        HelpAndSupportLink.AdditionalSupportContacts
+        OutboundLink.AdditionalSupportContacts
       ),
       linksUnderSubHeading = Seq.empty
     ),
@@ -79,7 +81,7 @@ object HelpAndSupportSection {
       subHeadingKey = None,
       paragraphTextKey = Some("helpAndSupport.p15"),
       linksUnderHeading = Seq(
-        HelpAndSupportLink.TraderSupportService
+        OutboundLink.TraderSupportService
       ),
       linksUnderSubHeading = Seq.empty
     )

@@ -17,7 +17,7 @@
 package controllers
 
 import controllers.actions._
-import models.helpandsupport.HelpAndSupportLink.allLinks
+import models.outboundLink.OutboundLink.allLinks
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.AuditService

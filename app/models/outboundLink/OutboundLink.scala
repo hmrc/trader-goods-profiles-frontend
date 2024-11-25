@@ -14,91 +14,99 @@
  * limitations under the License.
  */
 
-package models.helpandsupport
+package models.outboundLink
 
-sealed trait HelpAndSupportLink {
+sealed trait OutboundLink {
   val link: String
   val linkTextKey: String
 }
 
-object HelpAndSupportLink {
+object OutboundLink {
 
-  case object ImportGoodsIntoUK extends HelpAndSupportLink {
+  // Help & Support Page
+  case object ImportGoodsIntoUK extends OutboundLink {
     val link: String        = "https://www.gov.uk/import-goods-into-uk"
     val linkTextKey: String = "helpAndSupport.p2.linkText"
   }
 
-  case object TradingNI extends HelpAndSupportLink {
+  case object TradingNI extends OutboundLink {
     val link: String        = "https://www.gov.uk/guidance/trading-and-moving-goods-in-and-out-of-northern-ireland"
     val linkTextKey: String = "helpAndSupport.p3.linkText"
   }
 
-  case object GoodsNotAtRisk extends HelpAndSupportLink {
+  case object GoodsNotAtRisk extends OutboundLink {
     val link: String        =
       "https://www.gov.uk/guidance/check-if-you-can-declare-goods-you-bring-into-northern-ireland-not-at-risk-of-moving-to-the-eu"
     val linkTextKey: String = "helpAndSupport.p4.linkText"
   }
 
-  case object HMRCContact extends HelpAndSupportLink {
+  case object HMRCContact extends OutboundLink {
     val link: String        =
       "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/customs-international-trade-and-excise-enquiries"
     val linkTextKey: String = "helpAndSupport.p5.linkText"
   }
 
-  case object FindingCommodityCodes extends HelpAndSupportLink {
+  case object FindingCommodityCodes extends OutboundLink {
     val link: String        =
       "https://www.gov.uk/guidance/finding-commodity-codes-for-imports-or-exports?step-by-step-nav=849f71d1-f290-4a8e-9458-add936efefc5"
     val linkTextKey: String = "helpAndSupport.p6.linkText"
   }
 
-  case object TradeTariffXI extends HelpAndSupportLink {
+  case object TradeTariffXI extends OutboundLink {
     val link: String        = "https://www.trade-tariff.service.gov.uk/xi/find_commodity"
     val linkTextKey: String = "helpAndSupport.p7.linkText"
   }
 
-  case object TradeTariffHelp extends HelpAndSupportLink {
+  case object TradeTariffHelp extends OutboundLink {
     val link: String        = "https://www.trade-tariff.service.gov.uk/help"
     val linkTextKey: String = "helpAndSupport.p8.linkText"
   }
 
-  case object BindingTariff extends HelpAndSupportLink {
+  case object BindingTariff extends OutboundLink {
     val link: String        = "https://www.gov.uk/guidance/apply-for-a-binding-tariff-information-decision"
     val linkTextKey: String = "helpAndSupport.p9.linkText"
   }
 
-  case object AskHMRCChat extends HelpAndSupportLink {
+  case object AskHMRCChat extends OutboundLink {
     val link: String        = "https://www.tax.service.gov.uk/ask-hmrc/chat/trade-tariff"
     val linkTextKey: String = "helpAndSupport.p10.linkText"
   }
 
-  case object RetailMovementScheme extends HelpAndSupportLink {
+  case object RetailMovementScheme extends OutboundLink {
     val link: String        =
       "https://www.gov.uk/government/publications/retail-movement-scheme-how-the-scheme-will-work/retail-movement-scheme-how-the-scheme-will-work"
     val linkTextKey: String = "helpAndSupport.p11.linkText"
   }
 
-  case object RegisterAndSeal extends HelpAndSupportLink {
+  case object RegisterAndSeal extends OutboundLink {
     val link: String        =
       "https://www.gov.uk/guidance/northern-ireland-retail-movement-scheme-how-to-register-and-seal-consignments"
     val linkTextKey: String = "helpAndSupport.p12.linkText"
   }
 
-  case object MovingPlantsGBtoNI extends HelpAndSupportLink {
+  case object MovingPlantsGBtoNI extends OutboundLink {
     val link: String        = "https://www.gov.uk/guidance/moving-plants-from-great-britain-to-northern-ireland"
     val linkTextKey: String = "helpAndSupport.p13.linkText"
   }
 
-  case object AdditionalSupportContacts extends HelpAndSupportLink {
+  case object AdditionalSupportContacts extends OutboundLink {
     val link: String        = "#" // TODO add correct link when defined by design
     val linkTextKey: String = "helpAndSupport.p14.linkText"
   }
 
-  case object TraderSupportService extends HelpAndSupportLink {
+  case object TraderSupportService extends OutboundLink {
     val link: String        = "https://www.gov.uk/guidance/trader-support-service"
     val linkTextKey: String = "helpAndSupport.p15.linkText"
   }
 
-  val allLinks: Seq[HelpAndSupportLink] = Seq(
+  // Country of Origin Page
+  case object CountryOfOrigin extends OutboundLink {
+    val link: String        = "https://www.gov.uk/guidance/check-your-goods-meet-the-rules-of-origin"
+    val linkTextKey: String = "countryOfOrigin.p2.linkText"
+  }
+  // Commodity Code Page
+
+  val allLinks: Seq[OutboundLink] = Seq(
     ImportGoodsIntoUK,
     TradingNI,
     GoodsNotAtRisk,
@@ -112,7 +120,8 @@ object HelpAndSupportLink {
     RegisterAndSeal,
     MovingPlantsGBtoNI,
     AdditionalSupportContacts,
-    TraderSupportService
+    TraderSupportService,
+    CountryOfOrigin
   )
 
 }

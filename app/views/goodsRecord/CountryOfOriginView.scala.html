@@ -18,6 +18,7 @@
 @import models.Country._
 
 @import viewmodels.LabelSize._
+@import models.outboundLink.OutboundLink
 
 @this(
     layout: templates.Layout,
@@ -39,7 +40,9 @@
     <p class="govuk-body">@messages("countryOfOrigin.p1")</p>
     <p class="govuk-body">
         @messages("countryOfOrigin.p2")
-        <a class="govuk-link" target="_blank" href="https://www.gov.uk/guidance/check-your-goods-meet-the-rules-of-origin">@messages("countryOfOrigin.p2.linkText")</a>.
+<!--        <a class="govuk-link" target="_blank" href="https://www.gov.uk/guidance/check-your-goods-meet-the-rules-of-origin">@messages("countryOfOrigin.p2.linkText")</a>.-->
+        <a class="govuk-link" target="_blank"
+           href="@routes.OutboundController.redirect(OutboundLink.CountryOfOrigin.link)">@messages(OutboundLink.CountryOfOrigin.linkTextKey)</a>
     </p>
 
 

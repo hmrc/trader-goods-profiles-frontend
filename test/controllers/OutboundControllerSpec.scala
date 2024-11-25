@@ -17,7 +17,7 @@
 package controllers
 
 import base.SpecBase
-import models.helpandsupport.HelpAndSupportLink
+import models.outboundLink.OutboundLink
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{times, verify, when}
@@ -45,12 +45,12 @@ class OutboundControllerSpec extends SpecBase {
 
       running(application) {
         val request =
-          FakeRequest(GET, routes.OutboundController.redirect(HelpAndSupportLink.ImportGoodsIntoUK.link).url)
+          FakeRequest(GET, routes.OutboundController.redirect(OutboundLink.ImportGoodsIntoUK.link).url)
 
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustBe HelpAndSupportLink.ImportGoodsIntoUK.link
+        redirectLocation(result).value mustBe OutboundLink.ImportGoodsIntoUK.link
       }
     }
 
