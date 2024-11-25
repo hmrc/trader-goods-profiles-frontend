@@ -240,10 +240,13 @@ class CategorisationNavigator @Inject() (categorisationService: CategorisationSe
     scenario: Scenario,
     hasLongComCode: Boolean
   ): Boolean =
+    couldGoToLongerCommodityCode(catInfo, hasLongComCode) &&
+      getResultAsInt(scenario) == Category2AsInt
+
+  private def couldGoToLongerCommodityCode(catInfo: CategorisationInfo, hasLongComCode: Boolean): Boolean =
     !hasLongComCode &&
       catInfo.getMinimalCommodityCode.length == minimumLengthOfCommodityCode &&
-      catInfo.descendantCount != 0 &&
-      getResultAsInt(scenario) == Category2AsInt
+      catInfo.descendantCount != 0
 
   private def navigateFromReassessment(assessmentPage: ReassessmentPage)(answers: UserAnswers): Call = {
     val recordId   = assessmentPage.recordId
@@ -369,9 +372,7 @@ class CategorisationNavigator @Inject() (categorisationService: CategorisationSe
     assessmentQuestion: CategoryAssessment,
     hasLongComCode: Boolean
   ): Boolean =
-    !hasLongComCode &&
-      categorisationInfo.getMinimalCommodityCode.length == 6 &&
-      categorisationInfo.descendantCount != 0 &&
+    couldGoToLongerCommodityCode(categorisationInfo, hasLongComCode) &&
       assessmentQuestion.category == Category2AsInt
 
   private def shouldGoToLongerCommodityCodeWhenCategory1(
@@ -379,9 +380,7 @@ class CategorisationNavigator @Inject() (categorisationService: CategorisationSe
     assessmentQuestion: CategoryAssessment,
     hasLongComCode: Boolean
   ): Boolean =
-    !hasLongComCode &&
-      categorisationInfo.getMinimalCommodityCode.length == minimumLengthOfCommodityCode &&
-      categorisationInfo.descendantCount != 0 &&
+    couldGoToLongerCommodityCode(categorisationInfo, hasLongComCode) &&
       assessmentQuestion.category == Category1AsInt &&
       !categorisationInfo.categoryAssessmentsThatNeedAnswers.exists(_.isCategory2) &&
       categorisationInfo.categoryAssessments.exists(_.isCategory2)

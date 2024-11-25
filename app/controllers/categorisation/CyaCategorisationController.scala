@@ -155,49 +155,37 @@ class CyaCategorisationController @Inject() (
 
   def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      goodsRecordConnector.getRecord(request.eori, recordId).flatMap { oldRecord =>
-        CategoryRecord
-          .build(
-            request.userAnswers,
-            request.eori,
-            recordId,
-            categorisationService
-          ) match {
-          case Right(categoryRecord) =>
-            auditService.auditFinishCategorisation(
-              request.eori,
-              request.affinityGroup,
-              recordId,
-              categoryRecord
+      CategoryRecord
+        .build(
+          request.userAnswers,
+          request.eori,
+          recordId,
+          categorisationService
+        ) match {
+        case Right(categoryRecord) =>
+          for {
+            _         <- auditService.auditFinishCategorisation(request.eori, request.affinityGroup, recordId, categoryRecord)
+            oldRecord <- goodsRecordConnector.getRecord(request.eori, recordId)
+            _         <-
+              goodsRecordConnector
+                .updateCategoryAndComcodeForGoodsRecord(request.eori, recordId, categoryRecord, oldRecord)
+            _         <- dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
+          } yield Redirect(
+            navigator.nextPage(
+              CyaCategorisationPage(recordId),
+              NormalMode,
+              request.userAnswers
             )
-
-            val result = for {
-              _ <-
-                goodsRecordConnector
-                  .updateCategoryAndComcodeForGoodsRecord(request.eori, recordId, categoryRecord, oldRecord)
-            } yield {
-              dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
-              Redirect(
-                navigator.nextPage(
-                  CyaCategorisationPage(recordId),
-                  NormalMode,
-                  request.userAnswers
-                )
-              )
-            }
-
-            result
-
-          case Left(errors) =>
-            dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
-            Future.successful(
-              logErrorsAndContinue(
-                errorMessage,
-                controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(recordId),
-                errors
-              )
+          )
+        case Left(errors)          =>
+          dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
+          Future.successful(
+            logErrorsAndContinue(
+              errorMessage,
+              controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(recordId),
+              errors
             )
-        }
+          )
       }
   }
 }
