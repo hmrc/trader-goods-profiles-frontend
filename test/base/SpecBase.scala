@@ -19,6 +19,7 @@ package base
 import base.TestConstants._
 import controllers.actions._
 import models.AdviceStatus.{AdviceReceived, NotRequested, Requested}
+import models.DeclarableStatus.NotReadyForUse
 import models.ott._
 import models.ott.response.{GoodsNomenclatureResponse, OttResponse}
 import models.router.responses.GetGoodsRecordResponse
@@ -330,7 +331,7 @@ trait SpecBase
       active = true,
       toReview = false,
       None,
-      "Not ready",
+      NotReadyForUse,
       None,
       None,
       None,
@@ -372,7 +373,7 @@ trait SpecBase
       active = true,
       toReview = true,
       reviewReason = Some(reviewReason),
-      "Not ready",
+      NotReadyForUse,
       None,
       None,
       None,
@@ -403,7 +404,7 @@ trait SpecBase
       active = true,
       toReview = true,
       None,
-      "Not ready",
+      NotReadyForUse,
       None,
       None,
       None,
@@ -434,7 +435,7 @@ trait SpecBase
       active = true,
       toReview = true,
       None,
-      "Not ready",
+      NotReadyForUse,
       None,
       None,
       None,
