@@ -36,7 +36,6 @@ import play.api.Application
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import queries.{CategorisationDetailsQuery, CommodityQuery, MeasurementQuery}
 
@@ -272,49 +271,32 @@ trait SpecBase
     1
   )
 
-  private lazy val getRecordResponseWithLongComCode            = Json
-    .parse(s"""
-         |  {
-         |    "eori": "$testEori",
-         |    "actorId": "$testEori",
-         |    "recordId": "$testRecordId",
-         |    "traderRef": "BAN001001",
-         |    "comcode": "1041010011",
-         |    "adviceStatus": "Not requested",
-         |    "goodsDescription": "Organic bananas",
-         |    "countryOfOrigin": "EC",
-         |    "category": 3,
-         |    "assessments": [
-         |      {
-         |        "assessmentId": "abc123",
-         |        "primaryCategory": "1",
-         |        "condition": {
-         |          "type": "abc123",
-         |          "conditionId": "Y923",
-         |          "conditionDescription": "Products not considered as waste according to Regulation (EC) No 1013/2006 as retained in UK law",
-         |          "conditionTraderText": "Excluded product"
-         |        }
-         |      }
-         |    ],
-         |    "supplementaryUnit": 500,
-         |    "measurementUnit": "square meters(m^2)",
-         |    "comcodeEffectiveFromDate": "2024-11-18T23:20:19Z",
-         |    "comcodeEffectiveToDate": "2024-11-18T23:20:19Z",
-         |    "version": 1,
-         |    "active": true,
-         |    "toReview": false,
-         |    "reviewReason": null,
-         |    "declarable": "IMMI declarable",
-         |    "ukimsNumber": "XIUKIM47699357400020231115081800",
-         |    "nirmsNumber": "RMS-GB-123456",
-         |    "niphlNumber": "6 S12345",
-         |    "locked": false,
-         |    "createdDateTime": "2024-11-18T23:20:19Z",
-         |    "updatedDateTime": "2024-11-18T23:20:19Z"
-         |  }
-         |""".stripMargin)
-  lazy val goodsRecordWithLongCommCode: GetGoodsRecordResponse =
-    getRecordResponseWithLongComCode.as[GetGoodsRecordResponse]
+  lazy val goodsRecordWithLongCommCode: GetGoodsRecordResponse = GetGoodsRecordResponse(
+    "1",
+    "10410100",
+    "10410100",
+    "BAN0010011",
+    "1234567888",
+    NotRequested,
+    "Organic bananas",
+    "GB",
+    Some(1),
+    None,
+    None,
+    None,
+    Instant.now(),
+    None,
+    1,
+    active = true,
+    toReview = false,
+    None,
+    "Not ready",
+    None,
+    None,
+    None,
+    Instant.now(),
+    Instant.now()
+  )
 
   lazy val userAnswersForCategorisation: UserAnswers = emptyUserAnswers
     .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
