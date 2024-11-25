@@ -216,27 +216,24 @@ class CategorisationNavigator @Inject() (categorisationService: CategorisationSe
     answers: UserAnswers,
     recordId: String
   ): Call =
-    answers.get(HasLongComCodeQuery(recordId)) match {
-      case Some(hasLongComCode) =>
-        answers.get(CategorisationDetailsQuery(recordId)) match {
-          case Some(catInfo) if catInfo.isCommCodeExpired                           =>
-            controllers.problem.routes.ExpiredCommodityCodeController.onPageLoad(recordId)
-          case Some(catInfo) if catInfo.categoryAssessmentsThatNeedAnswers.nonEmpty =>
-            controllers.categorisation.routes.CategoryGuidanceController.onPageLoad(recordId)
-          case Some(catInfo)                                                        =>
-            val scenario = categorisationService.calculateResult(catInfo, answers, recordId)
-            if (shouldGoToLongerCommodityCodeFromPrepPage(catInfo, scenario, hasLongComCode)) {
-              controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(NormalMode, recordId)
-            } else if (shouldGoToSupplementaryUnitFromPrepPage(catInfo, scenario)) {
-              controllers.categorisation.routes.HasSupplementaryUnitController.onPageLoad(NormalMode, recordId)
-            } else {
-              controllers.categorisation.routes.CategorisationResultController.onPageLoad(recordId, scenario)
-            }
-          case None                                                                 => controllers.problem.routes.JourneyRecoveryController.onPageLoad()
+    (for {
+      hasLongComCode <- answers.get(HasLongComCodeQuery(recordId))
+      catInfo        <- answers.get(CategorisationDetailsQuery(recordId))
+    } yield
+      if (catInfo.isCommCodeExpired) {
+        controllers.problem.routes.ExpiredCommodityCodeController.onPageLoad(recordId)
+      } else if (catInfo.categoryAssessmentsThatNeedAnswers.nonEmpty) {
+        controllers.categorisation.routes.CategoryGuidanceController.onPageLoad(recordId)
+      } else {
+        val scenario = categorisationService.calculateResult(catInfo, answers, recordId)
+        if (shouldGoToLongerCommodityCodeFromPrepPage(catInfo, scenario, hasLongComCode)) {
+          controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(NormalMode, recordId)
+        } else if (shouldGoToSupplementaryUnitFromPrepPage(catInfo, scenario)) {
+          controllers.categorisation.routes.HasSupplementaryUnitController.onPageLoad(NormalMode, recordId)
+        } else {
+          controllers.categorisation.routes.CategorisationResultController.onPageLoad(recordId, scenario)
         }
-
-      case None => controllers.problem.routes.JourneyRecoveryController.onPageLoad()
-    }
+      }).getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
 
   private def shouldGoToLongerCommodityCodeFromPrepPage(
     catInfo: CategorisationInfo,
