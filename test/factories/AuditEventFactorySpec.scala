@@ -1038,5 +1038,21 @@ class AuditEventFactorySpec extends SpecBase {
         )
       }
     }
+
+    "create event when user clicks on external link" in {
+      val result =
+        AuditEventFactory().createOutboundClickEvent(AffinityGroup.Individual, testEori, "link", "linkText")
+
+      result.auditSource mustBe "trader-goods-profiles-frontend"
+      result.auditType mustBe "OutboundClicks"
+      result.tags.isEmpty mustBe false
+
+      val auditDetails = result.detail
+      auditDetails.size mustBe 4
+      auditDetails("affinityGroup") mustBe "Individual"
+      auditDetails("eori") mustBe testEori
+      auditDetails("outboundLink") mustBe "link"
+      auditDetails("outboundLinkText") mustBe "linkText"
+    }
   }
 }
