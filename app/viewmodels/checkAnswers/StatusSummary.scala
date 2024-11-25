@@ -16,6 +16,7 @@
 
 package viewmodels.checkAnswers
 
+import models.DeclarableStatus
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
@@ -24,10 +25,10 @@ import viewmodels.implicits._
 
 object StatusSummary {
 
-  def row(value: String)(implicit messages: Messages): SummaryListRow =
+  def row(declarableStatus: DeclarableStatus)(implicit messages: Messages): SummaryListRow =
     SummaryListRowViewModel(
       key = "singleRecord.status.row",
-      value = ValueViewModel(HtmlFormat.escape(value).toString),
+      value = ValueViewModel(HtmlFormat.escape(declarableStatus.messageKey).toString),
       actions = Seq.empty
     )
 }
