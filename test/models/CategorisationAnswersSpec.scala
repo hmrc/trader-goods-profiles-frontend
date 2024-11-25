@@ -291,7 +291,9 @@ class CategorisationAnswersSpec extends SpecBase {
           val result = CategorisationAnswers.build(answers, testRecordId)
 
           inside(result) { case Left(errors) =>
-            errors.toChain.toList must contain only MissingAssessmentAnswers(AssessmentPage(testRecordId, 0))
+            errors.toChain.toList must contain only MissingAssessmentAnswers(
+              AssessmentPage(testRecordId, 0)
+            )
           }
         }
 
@@ -314,7 +316,9 @@ class CategorisationAnswersSpec extends SpecBase {
           val result = CategorisationAnswers.build(answers, testRecordId)
 
           inside(result) { case Left(errors) =>
-            errors.toChain.toList must contain only UnexpectedNoExemption(AssessmentPage(testRecordId, 1))
+            errors.toChain.toList must contain only UnexpectedNoExemption(
+              AssessmentPage(testRecordId, 1)
+            )
           }
         }
 

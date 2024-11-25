@@ -66,7 +66,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
             val answers =
               emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
 
-            val application = applicationBuilder(userAnswers = Some(answers)).build()
+            val application = applicationBuilder(userAnswers = Some(answers))
+              .build()
 
             running(application) {
               val request = FakeRequest(GET, assessmentRoute)
@@ -112,7 +113,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 .success
                 .value
 
-            val application = applicationBuilder(userAnswers = Some(answers)).build()
+            val application = applicationBuilder(userAnswers = Some(answers))
+              .build()
 
             running(application) {
               val request = FakeRequest(GET, assessmentRoute)

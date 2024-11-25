@@ -77,7 +77,6 @@ class CyaCategorisationController @Inject() (
               )
             }
       }
-
   }
 
   private def showCyaPage(
@@ -156,34 +155,29 @@ class CyaCategorisationController @Inject() (
 
   def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      CategoryRecord.build(request.userAnswers, request.eori, recordId, categorisationService) match {
+      CategoryRecord
+        .build(
+          request.userAnswers,
+          request.eori,
+          recordId,
+          categorisationService
+        ) match {
         case Right(categoryRecord) =>
-          auditService.auditFinishCategorisation(
-            request.eori,
-            request.affinityGroup,
-            recordId,
-            categoryRecord
-          )
-
-          val result = for {
+          auditService.auditFinishCategorisation(request.eori, request.affinityGroup, recordId, categoryRecord)
+          for {
             oldRecord <- goodsRecordConnector.getRecord(request.eori, recordId)
             _         <-
               goodsRecordConnector
                 .updateCategoryAndComcodeForGoodsRecord(request.eori, recordId, categoryRecord, oldRecord)
-          } yield {
-            dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
-            Redirect(
-              navigator.nextPage(
-                CyaCategorisationPage(recordId),
-                NormalMode,
-                request.userAnswers
-              )
+            _         <- dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
+          } yield Redirect(
+            navigator.nextPage(
+              CyaCategorisationPage(recordId),
+              NormalMode,
+              request.userAnswers
             )
-          }
-
-          result
-
-        case Left(errors) =>
+          )
+        case Left(errors)          =>
           dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
           Future.successful(
             logErrorsAndContinue(
@@ -194,5 +188,4 @@ class CyaCategorisationController @Inject() (
           )
       }
   }
-
 }

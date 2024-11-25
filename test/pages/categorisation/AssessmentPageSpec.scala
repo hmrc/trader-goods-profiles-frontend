@@ -78,7 +78,10 @@ class AssessmentPageSpec extends SpecBase {
             .value
 
         val result =
-          answers.set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
+          answers
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .success
+            .value
 
         result.isDefined(AssessmentPage(testRecordId, 0)) mustBe true
         result.isDefined(AssessmentPage(testRecordId, 1)) mustBe true
@@ -107,7 +110,8 @@ class AssessmentPageSpec extends SpecBase {
             .success
             .value
 
-        val result = answers.set(AssessmentPage(testRecordId, 1), AssessmentAnswer.NoExemption).success.value
+        val result =
+          answers.set(AssessmentPage(testRecordId, 1), AssessmentAnswer.NoExemption).success.value
 
         result.isDefined(AssessmentPage(testRecordId, 0)) mustBe true
         result.isDefined(AssessmentPage(testRecordId, 1)) mustBe true

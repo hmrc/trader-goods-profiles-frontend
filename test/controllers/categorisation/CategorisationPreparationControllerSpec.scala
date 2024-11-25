@@ -1170,9 +1170,10 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           Future.successful(categoryInfoNoAssessments)
         )
 
-        when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any())).thenReturn(
-          Failure(new Exception(":("))
-        )
+        when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any()))
+          .thenReturn(
+            Failure(new Exception(":("))
+          )
 
         val userAnswers = emptyUserAnswers
           .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
@@ -1212,9 +1213,10 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           .success
           .value
 
-        when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any())).thenReturn(
-          Success(userAnswers)
-        )
+        when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any()))
+          .thenReturn(
+            Success(userAnswers)
+          )
         when(mockCategorisationService.calculateResult(any(), any(), any()))
           .thenReturn(StandardGoodsNoAssessmentsScenario)
 
@@ -1268,9 +1270,10 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           .success
           .value
 
-        when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any())).thenReturn(
-          Success(userAnswers)
-        )
+        when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any()))
+          .thenReturn(
+            Success(userAnswers)
+          )
 
         val app = application(userAnswers)
         running(app) {
@@ -1307,9 +1310,10 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           .success
           .value
 
-        when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any())).thenReturn(
-          Success(userAnswers)
-        )
+        when(mockCategorisationService.updatingAnswersForRecategorisation(any(), any(), any(), any()))
+          .thenReturn(
+            Success(userAnswers)
+          )
 
         val app = application(userAnswers)
 

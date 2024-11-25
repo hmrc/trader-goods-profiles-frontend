@@ -72,7 +72,8 @@ class JourneySpec extends AnyFreeSpec with Matchers {
         reassessmentPage,
         categorisationDetailsQuery,
         longerCommodityQuery,
-        longerCategorisationDetailsQuery
+        longerCategorisationDetailsQuery,
+        hasLongComCodeQuery
       )
     }
 

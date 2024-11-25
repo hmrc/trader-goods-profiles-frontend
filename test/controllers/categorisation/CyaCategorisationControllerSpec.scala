@@ -70,7 +70,8 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
           val userAnswers = userAnswersForCategorisation
 
-          val application                      = applicationBuilder(userAnswers = Some(userAnswers)).build()
+          val application                      = applicationBuilder(userAnswers = Some(userAnswers))
+            .build()
           implicit val localMessages: Messages = messages(application)
 
           running(application) {
@@ -120,7 +121,8 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             .success
             .value
 
-          val application                      = applicationBuilder(userAnswers = Some(userAnswers)).build()
+          val application                      = applicationBuilder(userAnswers = Some(userAnswers))
+            .build()
           implicit val localMessages: Messages = messages(application)
 
           running(application) {
@@ -164,7 +166,8 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             .success
             .value
 
-          val application                      = applicationBuilder(userAnswers = Some(userAnswers)).build()
+          val application                      = applicationBuilder(userAnswers = Some(userAnswers))
+            .build()
           implicit val localMessages: Messages = messages(application)
 
           running(application) {
@@ -224,7 +227,8 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             .success
             .value
 
-          val application                      = applicationBuilder(userAnswers = Some(userAnswers)).build()
+          val application                      = applicationBuilder(userAnswers = Some(userAnswers))
+            .build()
           implicit val localMessages: Messages = messages(application)
 
           running(application) {
@@ -296,7 +300,8 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             .success
             .value
 
-          val application                      = applicationBuilder(userAnswers = Some(userAnswers)).build()
+          val application                      = applicationBuilder(userAnswers = Some(userAnswers))
+            .build()
           implicit val localMessages: Messages = messages(application)
 
           running(application) {
@@ -361,7 +366,8 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             .success
             .value
 
-          val application                      = applicationBuilder(userAnswers = Some(userAnswers)).build()
+          val application                      = applicationBuilder(userAnswers = Some(userAnswers))
+            .build()
           implicit val localMessages: Messages = messages(application)
 
           running(application) {
@@ -406,7 +412,8 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             .success
             .value
 
-          val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+          val application = applicationBuilder(userAnswers = Some(userAnswers))
+            .build()
 
           running(application) {
             val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
@@ -424,7 +431,9 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
         }
 
         "when no answers are found" in {
-          val application = applicationBuilder(Some(emptyUserAnswers)).build()
+
+          val application = applicationBuilder(Some(emptyUserAnswers))
+            .build()
 
           running(application) {
             val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
@@ -475,7 +484,8 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             .success
             .value
 
-          val application = applicationBuilder(userAnswers = Some(userAnswersForCategorisationEmptyQuery)).build()
+          val application = applicationBuilder(userAnswers = Some(userAnswersForCategorisationEmptyQuery))
+            .build()
 
           running(application) {
             val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
@@ -505,7 +515,8 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             .success
             .value
 
-          val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+          val application = applicationBuilder(userAnswers = Some(userAnswers))
+            .build()
 
           running(application) {
             val request = FakeRequest(GET, routes.CyaCategorisationController.onPageLoad(testRecordId).url)
@@ -561,7 +572,8 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
             when(mockSessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
 
             val mockCategorisationService = mock[CategorisationService]
-            when(mockCategorisationService.calculateResult(any(), any(), any())).thenReturn(Category1Scenario)
+            when(mockCategorisationService.calculateResult(any(), any(), any()))
+              .thenReturn(Category1Scenario)
 
             val application =
               applicationBuilder(userAnswers = Some(userAnswers))
@@ -623,7 +635,8 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
               .thenReturn(Future.failed(new RuntimeException(":(")))
 
             val mockCategorisationService = mock[CategorisationService]
-            when(mockCategorisationService.calculateResult(any(), any(), any())).thenReturn(Category1Scenario)
+            when(mockCategorisationService.calculateResult(any(), any(), any()))
+              .thenReturn(Category1Scenario)
 
             val application =
               applicationBuilder(userAnswers = Some(userAnswers))
@@ -671,6 +684,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
           val sessionRepository = mock[SessionRepository]
           when(sessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
+          when(mockConnector.getRecord(any(), any())(any())).thenReturn(Future.successful(goodsRecordWithLongCommCode))
 
           val application =
             applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -705,10 +719,11 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
           .success
           .value
 
-        val mockConnector = mock[GoodsRecordConnector]
+        val mockConnector     = mock[GoodsRecordConnector]
         when(mockConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any(), any())(any()))
           .thenReturn(Future.failed(new RuntimeException("Connector failed")))
-
+        when(mockConnector.getRecord(any(), any())(any()))
+          .thenReturn(Future.successful(goodsRecordWithLongCommCode))
         val sessionRepository = mock[SessionRepository]
         when(sessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
 
@@ -717,7 +732,8 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
           .thenReturn(Future.successful(Done))
 
         val mockCategorisationService = mock[CategorisationService]
-        when(mockCategorisationService.calculateResult(any(), any(), any())).thenReturn(Category1Scenario)
+        when(mockCategorisationService.calculateResult(any(), any(), any()))
+          .thenReturn(Category1Scenario)
 
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))

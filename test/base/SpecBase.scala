@@ -272,6 +272,33 @@ trait SpecBase
     1
   )
 
+  lazy val goodsRecordWithLongCommCode: GetGoodsRecordResponse = GetGoodsRecordResponse(
+    "1",
+    "10410100",
+    "10410100",
+    "BAN0010011",
+    "1234567888",
+    NotRequested,
+    "Organic bananas",
+    "GB",
+    Some(1),
+    None,
+    None,
+    None,
+    Instant.now(),
+    None,
+    1,
+    active = true,
+    toReview = false,
+    None,
+    NotReadyForUse,
+    None,
+    None,
+    None,
+    Instant.now(),
+    Instant.now()
+  )
+
   lazy val userAnswersForCategorisation: UserAnswers = emptyUserAnswers
     .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
     .success

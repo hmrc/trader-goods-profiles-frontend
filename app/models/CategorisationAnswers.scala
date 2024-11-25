@@ -31,7 +31,10 @@ final case class CategorisationAnswers(
 
 object CategorisationAnswers {
 
-  def build(userAnswers: UserAnswers, recordId: String): EitherNec[ValidationError, CategorisationAnswers] =
+  def build(
+    userAnswers: UserAnswers,
+    recordId: String
+  ): EitherNec[ValidationError, CategorisationAnswers] =
     (
       buildAssessmentDetails(userAnswers, recordId),
       getSupplementaryUnit(userAnswers, recordId)
@@ -50,7 +53,8 @@ object CategorisationAnswers {
   ): EitherNec[ValidationError, Seq[Option[AssessmentAnswer]]] =
     for {
       categorisationInfo       <- getCategorisationInfoForThisRecord(userAnswers, recordId)
-      answeredQuestionsOptions <- getAssessmentsFromUserAnswers(categorisationInfo, userAnswers, recordId)
+      answeredQuestionsOptions <-
+        getAssessmentsFromUserAnswers(categorisationInfo, userAnswers, recordId)
       answeredQuestionsOnly    <- getAnsweredQuestionsOnly(answeredQuestionsOptions, recordId)
       _                        <- ensureNoExemptionIsOnlyFinalAnswer(answeredQuestionsOnly, recordId)
       _                        <- ensureHaveAnsweredTheRightAmount(
@@ -79,7 +83,10 @@ object CategorisationAnswers {
     }
   }
 
-  private def getAnsweredQuestionsOnly(answeredQuestionsOptions: Seq[AnsweredQuestions], recordId: String) = {
+  private def getAnsweredQuestionsOnly(
+    answeredQuestionsOptions: Seq[AnsweredQuestions],
+    recordId: String
+  ) = {
     val answeredQuestionsOnly = answeredQuestionsOptions.filter(_.answer.isDefined)
 
     if (answeredQuestionsOnly.isEmpty && answeredQuestionsOptions.nonEmpty) {

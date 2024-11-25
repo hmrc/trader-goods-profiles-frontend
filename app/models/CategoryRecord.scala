@@ -57,7 +57,8 @@ object CategoryRecord {
     ).parMapN { (initialCategorisationInfo, supplementaryUnit) =>
       val longerCategoryInfo      = userAnswers.get(LongerCategorisationDetailsQuery(recordId))
       val finalCategorisationInfo = longerCategoryInfo.getOrElse(initialCategorisationInfo)
-      val longerCategoryAnswers   = longerCategoryInfo.map(_.getAnswersForQuestions(userAnswers, recordId))
+      val longerCategoryAnswers   =
+        longerCategoryInfo.map(_.getAnswersForQuestions(userAnswers, recordId))
 
       CategoryRecord(
         eori,

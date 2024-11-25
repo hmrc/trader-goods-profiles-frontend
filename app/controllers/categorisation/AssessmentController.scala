@@ -66,7 +66,8 @@ class AssessmentController @Inject() (
             .flatMap { categorisationInfo =>
               categorisationInfo.getAssessmentFromIndex(index).map { assessment =>
                 val codesAndDescriptions = assessment.getCodesZippedWithDescriptions
-                val preparedForm         = prepareForm(AssessmentPage(recordId, index), formProvider())
+                val preparedForm         =
+                  prepareForm(AssessmentPage(recordId, index), formProvider())
                 val submitAction         =
                   controllers.categorisation.routes.AssessmentController.onSubmit(mode, recordId, number)
                 Ok(
@@ -161,10 +162,17 @@ class AssessmentController @Inject() (
                             cleanupReCategorisationData(request.userAnswers, recordId)
                           )
                         updatedAnswers     <-
-                          Future.fromTry(cleanedUserAnswers.set(AssessmentPage(recordId, index), value))
+                          Future.fromTry(
+                            cleanedUserAnswers
+                              .set(AssessmentPage(recordId, index), value)
+                          )
                         _                  <- sessionRepository.set(updatedAnswers)
                       } yield Redirect(
-                        navigator.nextPage(AssessmentPage(recordId, index), mode, updatedAnswers)
+                        navigator.nextPage(
+                          AssessmentPage(recordId, index),
+                          mode,
+                          updatedAnswers
+                        )
                       )
                   )
               }

@@ -114,7 +114,8 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
         )
 
         withClue("must have used the categorisation service to find the category") {
-          verify(mockCategorisationService).calculateResult(eqTo(categorisationInfo), eqTo(answers), eqTo(testRecordId))
+          verify(mockCategorisationService)
+            .calculateResult(eqTo(categorisationInfo), eqTo(answers), eqTo(testRecordId))
         }
       }
 
@@ -267,7 +268,8 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
         )
 
         withClue("must have used the categorisation service to find the category") {
-          verify(mockCategorisationService).calculateResult(eqTo(categorisationInfo), eqTo(answers), eqTo(testRecordId))
+          verify(mockCategorisationService)
+            .calculateResult(eqTo(categorisationInfo), eqTo(answers), eqTo(testRecordId))
         }
       }
 

@@ -28,7 +28,7 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
 import pages._
 import pages.categorisation._
-import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery}
+import queries.{CategorisationDetailsQuery, HasLongComCodeQuery, LongerCategorisationDetailsQuery}
 import services.CategorisationService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants
@@ -44,7 +44,7 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
   private val navigator = new CategorisationNavigator(categorisationService)
 
   private val recordId    = "dummyRecordId"
-  private val userAnswers = UserAnswers(recordId)
+  private val userAnswers = UserAnswers(recordId).set(HasLongComCodeQuery(recordId), true).success.value
 
   "CategorisationNavigator" - {
 
@@ -55,6 +55,7 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
       ) mustBe controllers.categorisation.routes.AssessmentController
         .onPageLoad(NormalMode, recordId, Constants.firstAssessmentNumber)
     }
+
     "in Supplementary Unit Update Journey" - {
 
       "must go from HasSupplementaryUnitUpdatePage" - {
@@ -134,6 +135,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
             .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
             .success
             .value
+            .set(HasLongComCodeQuery(testRecordId), true)
+            .success
+            .value
 
         navigator.nextPage(AssessmentPage(testRecordId, 0), NormalMode, userAnswers) mustEqual
           controllers.categorisation.routes.AssessmentController.onPageLoad(NormalMode, testRecordId, 2)
@@ -141,6 +145,7 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
       }
 
       "to the check your answers page" - {
+
         "if answer is yes" - {
 
           "and there are no more assessments" in {
@@ -156,6 +161,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
                 .success
                 .value
                 .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+                .success
+                .value
+                .set(HasLongComCodeQuery(testRecordId), true)
                 .success
                 .value
 
@@ -183,6 +191,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
                   .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
                   .success
                   .value
+                  .set(HasLongComCodeQuery(testRecordId), true)
+                  .success
+                  .value
 
               navigator.nextPage(AssessmentPage(testRecordId, 1), NormalMode, userAnswers) mustEqual
                 controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
@@ -205,6 +216,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
                   .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
                   .success
                   .value
+                  .set(HasLongComCodeQuery(testRecordId), true)
+                  .success
+                  .value
 
               navigator.nextPage(AssessmentPage(testRecordId, 1), NormalMode, userAnswers) mustEqual
                 controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
@@ -225,6 +239,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
                   .success
                   .value
                   .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+                  .success
+                  .value
+                  .set(HasLongComCodeQuery(testRecordId), false)
                   .success
                   .value
 
@@ -250,6 +267,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
                   .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
                   .success
                   .value
+                  .set(HasLongComCodeQuery(testRecordId), false)
+                  .success
+                  .value
 
               navigator.nextPage(AssessmentPage(testRecordId, 1), NormalMode, userAnswers) mustEqual
                 controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
@@ -266,6 +286,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
               .success
               .value
               .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.NoExemption)
+              .success
+              .value
+              .set(HasLongComCodeQuery(testRecordId), true)
               .success
               .value
 
@@ -289,6 +312,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
               .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
               .success
               .value
+              .set(HasLongComCodeQuery(testRecordId), true)
+              .success
+              .value
 
           navigator.nextPage(AssessmentPage(testRecordId, 2), NormalMode, userAnswers) mustEqual
             controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
@@ -310,6 +336,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
               .success
               .value
               .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
+              .success
+              .value
+              .set(HasLongComCodeQuery(testRecordId), false)
               .success
               .value
 
@@ -340,6 +369,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
               .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
               .success
               .value
+              .set(HasLongComCodeQuery(testRecordId), false)
+              .success
+              .value
 
           navigator.nextPage(AssessmentPage(testRecordId, 2), NormalMode, userAnswers) mustEqual
             controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
@@ -367,6 +399,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
               .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
               .success
               .value
+              .set(HasLongComCodeQuery(testRecordId), true)
+              .success
+              .value
 
           navigator.nextPage(AssessmentPage(testRecordId, 0), NormalMode, userAnswers) mustEqual
             controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
@@ -374,6 +409,7 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
       }
 
       "to the has supplementary unit page when category 2 question has been answered no and there's a measurement unit" - {
+
         "and commodity code is 10 digits" in {
           val userAnswers =
             emptyUserAnswers
@@ -387,6 +423,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
               .success
               .value
               .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
+              .success
+              .value
+              .set(HasLongComCodeQuery(testRecordId), true)
               .success
               .value
 
@@ -412,6 +451,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
               .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
               .success
               .value
+              .set(HasLongComCodeQuery(testRecordId), false)
+              .success
+              .value
 
           navigator.nextPage(AssessmentPage(testRecordId, 2), NormalMode, userAnswers) mustEqual
             controllers.categorisation.routes.HasSupplementaryUnitController.onPageLoad(NormalMode, testRecordId)
@@ -433,6 +475,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
               .success
               .value
               .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
+              .success
+              .value
+              .set(HasLongComCodeQuery(testRecordId), true)
               .success
               .value
 
@@ -464,27 +509,7 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
                 .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
                 .success
                 .value
-
-            navigator.nextPage(AssessmentPage(testRecordId, 2), NormalMode, userAnswers) mustEqual
-              controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId)
-
-          }
-
-          "and six digit commodity code with four padded zeroes and descendant count is not zero" in {
-            val catInfo6Digits = categorisationInfo.copy(commodityCode = "1234560000")
-
-            val userAnswers =
-              emptyUserAnswers
-                .set(CategorisationDetailsQuery(testRecordId), catInfo6Digits)
-                .success
-                .value
-                .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
-                .success
-                .value
-                .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
-                .success
-                .value
-                .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
+                .set(HasLongComCodeQuery(testRecordId), false)
                 .success
                 .value
 
@@ -508,6 +533,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
                 .success
                 .value
                 .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
+                .success
+                .value
+                .set(HasLongComCodeQuery(testRecordId), false)
                 .success
                 .value
 
@@ -538,6 +566,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
                   .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
                   .success
                   .value
+                  .set(HasLongComCodeQuery(testRecordId), false)
+                  .success
+                  .value
 
               navigator.nextPage(AssessmentPage(testRecordId, 1), NormalMode, userAnswers) mustEqual
                 controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId)
@@ -557,6 +588,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
                   .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
                   .success
                   .value
+                  .set(HasLongComCodeQuery(testRecordId), false)
+                  .success
+                  .value
 
               navigator.nextPage(AssessmentPage(testRecordId, 1), NormalMode, userAnswers) mustEqual
                 controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId)
@@ -574,6 +608,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
                   .success
                   .value
                   .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+                  .success
+                  .value
+                  .set(HasLongComCodeQuery(testRecordId), false)
                   .success
                   .value
 
@@ -770,7 +807,11 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
             .success
             .value
 
-          navigator.nextPage(RecategorisationPreparationPage(testRecordId), NormalMode, userAnswers) mustEqual
+          navigator.nextPage(
+            RecategorisationPreparationPage(testRecordId),
+            NormalMode,
+            userAnswers
+          ) mustEqual
             controllers.categorisation.routes.AssessmentController
               .onPageLoadReassessment(NormalMode, testRecordId, firstAssessmentNumber)
 
@@ -785,7 +826,11 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
             .success
             .value
 
-          navigator.nextPage(RecategorisationPreparationPage(testRecordId), NormalMode, userAnswers) mustEqual
+          navigator.nextPage(
+            RecategorisationPreparationPage(testRecordId),
+            NormalMode,
+            userAnswers
+          ) mustEqual
             controllers.categorisation.routes.AssessmentController
               .onPageLoadReassessment(NormalMode, testRecordId, firstAssessmentNumber)
 
@@ -803,7 +848,11 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
             .success
             .value
 
-          navigator.nextPage(RecategorisationPreparationPage(testRecordId), NormalMode, userAnswers) mustEqual
+          navigator.nextPage(
+            RecategorisationPreparationPage(testRecordId),
+            NormalMode,
+            userAnswers
+          ) mustEqual
             controllers.categorisation.routes.AssessmentController
               .onPageLoadReassessment(NormalMode, testRecordId, firstAssessmentNumber)
 
@@ -836,7 +885,11 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
             .success
             .value
 
-          navigator.nextPage(RecategorisationPreparationPage(testRecordId), NormalMode, userAnswers) mustEqual
+          navigator.nextPage(
+            RecategorisationPreparationPage(testRecordId),
+            NormalMode,
+            userAnswers
+          ) mustEqual
             controllers.categorisation.routes.AssessmentController
               .onPageLoadReassessment(NormalMode, testRecordId, 3)
 
@@ -869,7 +922,11 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
             .success
             .value
 
-          navigator.nextPage(RecategorisationPreparationPage(testRecordId), NormalMode, userAnswers) mustEqual
+          navigator.nextPage(
+            RecategorisationPreparationPage(testRecordId),
+            NormalMode,
+            userAnswers
+          ) mustEqual
             controllers.categorisation.routes.AssessmentController
               .onPageLoadReassessment(NormalMode, testRecordId, 3)
 
@@ -900,7 +957,11 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
             .success
             .value
 
-          navigator.nextPage(RecategorisationPreparationPage(testRecordId), NormalMode, userAnswers) mustBe
+          navigator.nextPage(
+            RecategorisationPreparationPage(testRecordId),
+            NormalMode,
+            userAnswers
+          ) mustBe
             controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
 
         }
@@ -938,7 +999,11 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
             .success
             .value
 
-          navigator.nextPage(RecategorisationPreparationPage(testRecordId), NormalMode, userAnswers) mustBe
+          navigator.nextPage(
+            RecategorisationPreparationPage(testRecordId),
+            NormalMode,
+            userAnswers
+          ) mustBe
             controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
 
         }
@@ -1111,6 +1176,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
             .set(LongerCategorisationDetailsQuery(testRecordId), categoryInfoWithNiphlAssessments)
             .success
             .value
+            .set(HasLongComCodeQuery(testRecordId), true)
+            .success
+            .value
 
           when(categorisationService.calculateResult(any(), any(), any()))
             .thenReturn(Category2Scenario)
@@ -1245,6 +1313,7 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
     }
 
     "to the check your answers page" - {
+
       "if answer is yes" - {
 
         "and there are no more assessments" in {
@@ -1269,6 +1338,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
                 ReassessmentPage(testRecordId, 2),
                 ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE")))
               )
+              .success
+              .value
+              .set(HasLongComCodeQuery(testRecordId), true)
               .success
               .value
 
@@ -1351,6 +1423,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
             .success
             .value
             .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.NoExemption))
+            .success
+            .value
+            .set(HasLongComCodeQuery(testRecordId), true)
             .success
             .value
 
@@ -1574,8 +1649,15 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
             .success
             .value
+            .set(HasLongComCodeQuery(testRecordId), true)
+            .success
+            .value
 
-          navigator.nextPage(CategorisationPreparationPage(testRecordId), NormalMode, userAnswers) mustEqual
+          navigator.nextPage(
+            CategorisationPreparationPage(testRecordId),
+            NormalMode,
+            userAnswers
+          ) mustEqual
             controllers.categorisation.routes.CategoryGuidanceController.onPageLoad(testRecordId)
 
         }
@@ -1595,6 +1677,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
 
           val userAnswers = emptyUserAnswers
             .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNiphlAssessments)
+            .success
+            .value
+            .set(HasLongComCodeQuery(testRecordId), true)
             .success
             .value
 
@@ -1623,6 +1708,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
             .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNirmsAssessments)
             .success
             .value
+            .set(HasLongComCodeQuery(testRecordId), true)
+            .success
+            .value
 
           navigator.nextPage(
             CategorisationPreparationPage(testRecordId),
@@ -1647,6 +1735,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
 
           val userAnswers = emptyUserAnswers
             .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNirmsAssessments)
+            .success
+            .value
+            .set(HasLongComCodeQuery(testRecordId), true)
             .success
             .value
 
@@ -1674,6 +1765,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
             .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNirmsAssessments)
             .success
             .value
+            .set(HasLongComCodeQuery(testRecordId), true)
+            .success
+            .value
 
           navigator.nextPage(
             CategorisationPreparationPage(testRecordId),
@@ -1699,6 +1793,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
             .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNirmsAssessments)
             .success
             .value
+            .set(HasLongComCodeQuery(testRecordId), true)
+            .success
+            .value
 
           navigator.nextPage(
             CategorisationPreparationPage(testRecordId),
@@ -1714,8 +1811,15 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
           .set(CategorisationDetailsQuery(testRecordId), categorisationInfoWithExpiredCommodityCode)
           .success
           .value
+          .set(HasLongComCodeQuery(testRecordId), true)
+          .success
+          .value
 
-        navigator.nextPage(CategorisationPreparationPage(testRecordId), NormalMode, userAnswers) mustEqual
+        navigator.nextPage(
+          CategorisationPreparationPage(testRecordId),
+          NormalMode,
+          userAnswers
+        ) mustEqual
           controllers.problem.routes.ExpiredCommodityCodeController.onPageLoad(testRecordId)
 
       }
@@ -1736,6 +1840,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
 
           val userAnswers = emptyUserAnswers
             .set(CategorisationDetailsQuery(testRecordId), categoryInfoNoAssessments)
+            .success
+            .value
+            .set(HasLongComCodeQuery(testRecordId), true)
             .success
             .value
 
@@ -1767,6 +1874,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
             .set(CategorisationDetailsQuery(testRecordId), categoryInfoNoAssessments)
             .success
             .value
+            .set(HasLongComCodeQuery(testRecordId), true)
+            .success
+            .value
 
           when(categorisationService.calculateResult(any(), any(), any()))
             .thenReturn(Category1NoExemptionsScenario)
@@ -1794,6 +1904,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
 
           val userAnswers = emptyUserAnswers
             .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNiphlAssessments)
+            .success
+            .value
+            .set(HasLongComCodeQuery(testRecordId), true)
             .success
             .value
 
@@ -1826,6 +1939,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
             .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNiphlAssessments)
             .success
             .value
+            .set(HasLongComCodeQuery(testRecordId), true)
+            .success
+            .value
 
           when(categorisationService.calculateResult(any(), any(), any()))
             .thenReturn(Category2Scenario)
@@ -1853,6 +1969,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
 
           val userAnswers = emptyUserAnswers
             .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNiphlAssessments)
+            .success
+            .value
+            .set(HasLongComCodeQuery(testRecordId), true)
             .success
             .value
 
@@ -1885,6 +2004,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
             .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNirmsAssessments)
             .success
             .value
+            .set(HasLongComCodeQuery(testRecordId), true)
+            .success
+            .value
 
           when(categorisationService.calculateResult(any(), any(), any()))
             .thenReturn(StandardGoodsScenario)
@@ -1911,6 +2033,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
 
           val userAnswers = emptyUserAnswers
             .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNirmsAssessments)
+            .success
+            .value
+            .set(HasLongComCodeQuery(testRecordId), true)
             .success
             .value
 
@@ -1941,6 +2066,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
             .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNirmsAssessments)
             .success
             .value
+            .set(HasLongComCodeQuery(testRecordId), true)
+            .success
+            .value
 
           when(categorisationService.calculateResult(any(), any(), any()))
             .thenReturn(Category2Scenario)
@@ -1960,7 +2088,7 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
 
         "when Niphl assessment and has Niphl and is six-digit code with descendants" in {
           val categoryInfoWithNiphlAssessments = CategorisationInfo(
-            "1234560000",
+            "123456",
             "BV",
             None,
             Seq(category1Niphl, category2NoExemptions),
@@ -1972,6 +2100,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
 
           val userAnswers = emptyUserAnswers
             .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNiphlAssessments)
+            .success
+            .value
+            .set(HasLongComCodeQuery(testRecordId), false)
             .success
             .value
 
@@ -1989,7 +2120,7 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
 
         "when only Nirms assessment and does not have Nirms and is six-digit code with descendants" in {
           val categoryInfoWithNirmsAssessments = CategorisationInfo(
-            "1234560000",
+            "123456",
             "BV",
             None,
             Seq(category2Nirms),
@@ -2001,6 +2132,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
 
           val userAnswers = emptyUserAnswers
             .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNirmsAssessments)
+            .success
+            .value
+            .set(HasLongComCodeQuery(testRecordId), false)
             .success
             .value
 
@@ -2031,6 +2165,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
             .set(CategorisationDetailsQuery(testRecordId), categoryInfoNoAssessments)
             .success
             .value
+            .set(HasLongComCodeQuery(testRecordId), false)
+            .success
+            .value
 
           when(categorisationService.calculateResult(any(), any(), any()))
             .thenReturn(Category2Scenario)
@@ -2043,7 +2180,6 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
             .onPageLoad(NormalMode, testRecordId)
 
         }
-
       }
 
       "to has supplementary unit page" - {
@@ -2062,6 +2198,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
 
           val userAnswers = emptyUserAnswers
             .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNiphlAssessments)
+            .success
+            .value
+            .set(HasLongComCodeQuery(testRecordId), true)
             .success
             .value
 
@@ -2093,6 +2232,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
             .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNirmsAssessments)
             .success
             .value
+            .set(HasLongComCodeQuery(testRecordId), true)
+            .success
+            .value
 
           when(categorisationService.calculateResult(any(), any(), any()))
             .thenReturn(Category2Scenario)
@@ -2119,6 +2261,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
 
           val userAnswers = emptyUserAnswers
             .set(CategorisationDetailsQuery(testRecordId), categoryInfoNoAssessments)
+            .success
+            .value
+            .set(HasLongComCodeQuery(testRecordId), false)
             .success
             .value
 
@@ -2150,6 +2295,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
             .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNiphlAssessments)
             .success
             .value
+            .set(HasLongComCodeQuery(testRecordId), true)
+            .success
+            .value
 
           when(categorisationService.calculateResult(any(), any(), any()))
             .thenReturn(Category2Scenario)
@@ -2177,6 +2325,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
 
           val userAnswers = emptyUserAnswers
             .set(CategorisationDetailsQuery(testRecordId), categoryInfoWithNirmsAssessments)
+            .success
+            .value
+            .set(HasLongComCodeQuery(testRecordId), true)
             .success
             .value
 
@@ -2207,6 +2358,9 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
             .set(CategorisationDetailsQuery(testRecordId), categoryInfoNoAssessments)
             .success
             .value
+            .set(HasLongComCodeQuery(testRecordId), true)
+            .success
+            .value
 
           when(categorisationService.calculateResult(any(), any(), any()))
             .thenReturn(Category2Scenario)
@@ -2219,7 +2373,6 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
             .onPageLoad(NormalMode, testRecordId)
 
         }
-
       }
 
       "to journey recovery page when there's no categorisation info" in {
@@ -2229,8 +2382,6 @@ class CategorisationNavigatorNormalModeSpec extends SpecBase with BeforeAndAfter
           emptyUserAnswers
         ) mustBe controllers.problem.routes.JourneyRecoveryController.onPageLoad()
       }
-
     }
-
   }
 }
