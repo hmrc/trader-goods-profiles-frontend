@@ -128,11 +128,14 @@
                             attributes = Map("style" -> "word-break: break-word")
                         ),
                         TableRow(
-                            content = Text(
-                                countries.find(_.id == goodsRecord.countryOfOrigin)
-                                    .map(_.description)
-                                    .getOrElse(goodsRecord.countryOfOrigin)
-                                )
+                            content = HtmlContent(
+                                s"""<div lang="en">${
+                                    countries
+                                        .find(_.id == goodsRecord.countryOfOrigin)
+                                        .map(_.description)
+                                        .getOrElse(goodsRecord.countryOfOrigin)
+                                }</div>"""
+                            )
                         ),
                         TableRow(
                             content = Text(goodsRecord.comcode)
