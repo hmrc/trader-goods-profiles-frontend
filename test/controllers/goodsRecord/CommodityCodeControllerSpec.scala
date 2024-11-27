@@ -44,7 +44,7 @@ import uk.gov.hmrc.http.UpstreamErrorResponse
 import utils.SessionData.{dataUpdated, pageUpdated}
 import views.html.goodsRecord.CommodityCodeView
 
-import java.time.Instant
+import java.time.{Instant, LocalDate, ZoneId}
 import scala.concurrent.Future
 
 class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
@@ -190,7 +190,11 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
             Commodity(
               "6543210000",
               List("Class level1 desc", "Class level2 desc", "Class level3 desc"),
-              Instant.now,
+              LocalDate
+                .now(ZoneId.of("UTC"))
+                .minusDays(1)
+                .atStartOfDay(ZoneId.of("UTC"))
+                .toInstant,
               None
             )
           )
@@ -403,7 +407,16 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
       when(mockOttConnector.getCommodityCode(anyString(), any(), any(), any(), any(), any())(any())) thenReturn Future
         .successful(
-          Commodity("654321", List("Class level1 desc", "Class level2 desc", "Class level3 desc"), Instant.now, None)
+          Commodity(
+            "654321",
+            List("Class level1 desc", "Class level2 desc", "Class level3 desc"),
+            LocalDate
+              .now(ZoneId.of("UTC"))
+              .minusDays(1)
+              .atStartOfDay(ZoneId.of("UTC"))
+              .toInstant,
+            None
+          )
         )
 
       val userAnswers =
@@ -458,7 +471,16 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
       when(mockOttConnector.getCommodityCode(anyString(), any(), any(), any(), any(), any())(any())) thenReturn Future
         .successful(
-          Commodity("654321", List("Class level1 desc", "Class level2 desc", "Class level3 desc"), Instant.now, None)
+          Commodity(
+            "654321",
+            List("Class level1 desc", "Class level2 desc", "Class level3 desc"),
+            LocalDate
+              .now(ZoneId.of("UTC"))
+              .minusDays(1)
+              .atStartOfDay(ZoneId.of("UTC"))
+              .toInstant,
+            None
+          )
         )
 
       val userAnswers =
