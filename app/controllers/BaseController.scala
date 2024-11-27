@@ -22,7 +22,7 @@ import models.ValidationError
 import models.requests.DataRequest
 import pages.QuestionPage
 import pages.categorisation.ReassessmentPage
-import play.api.data.Form
+import play.api.data.{Form, FormError}
 import play.api.i18n.{I18nSupport, Messages}
 import play.api.libs.json.Reads
 import play.api.mvc.{AnyContent, Call, Result}
@@ -67,4 +67,11 @@ trait BaseController extends FrontendBaseController with I18nSupport with Loggin
     }
 
   def getMessage(key: String)(implicit messages: Messages): String = messages(key)
+
+  def createFormWithErrors[T](form: Form[T], value: T, errorMessageKey: String, field: String = "value")(
+    implicit messages: Messages
+  ): Form[T] =
+    form
+      .fill(value)
+      .copy(errors = Seq(FormError(field, messages(errorMessageKey))))
 }
