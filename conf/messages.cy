@@ -301,8 +301,8 @@ cyaCreateRecord.warningText = Rydych yn atebol dros yr wybodaeth am unrhyw symud
 
 createRecordSuccess.title = Rydych wedi creu cofnod nwyddau
 createRecordSuccess.h1 = Rydych wedi creu cofnod nwyddau
-createRecordSuccess.h2 = Yr hyn sy’n digwydd nesaf
-createRecordSuccess.p2 = Mae’n dal i fod angen i chi gategoreiddio’r nwyddau cyn eu defnyddio ar symudiadau.
+createRecordSuccess.h2 = Camau nesaf
+createRecordSuccess.p2 = Mae angen i chi gategoreiddio’r nwyddau cyn bod modd i chi eu defnyddio ar symudiadau.
 createRecordSuccess.p3 = Nid oes rhaid i chi gategoreiddio’r cofnod hwn nawr. Gallwch adolygu’r cofnod o’ch rhestro nwyddau a dechrau categoreiddio yn ddiweddarach.
 createRecordSuccess.p4.linkText = Categoreiddio nwyddau nawr
 createRecordSuccess.p5.linkText = Ewch i’r hafan
