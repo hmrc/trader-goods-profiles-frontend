@@ -57,13 +57,14 @@ trait BaseController extends FrontendBaseController with I18nSupport with Loggin
     request: DataRequest[AnyContent],
     reads: Reads[T2]
   ): Form[T2] =
-    if (page.isInstanceOf[ReassessmentPage]) {
-      request.userAnswers.get(page.asInstanceOf[ReassessmentPage]) match {
-        case Some(value) => form.fill(value.answer.asInstanceOf[T2])
-        case None        => form
-      }
-    } else {
-      request.userAnswers.get(page.asInstanceOf[QuestionPage[T2]]).map(form.fill).getOrElse(form)
+    page match {
+      case reassessmentPage: ReassessmentPage =>
+        request.userAnswers.get(reassessmentPage) match {
+          case Some(value) => form.fill(value.answer.asInstanceOf[T2])
+          case None => form
+        }
+      case _ =>
+        request.userAnswers.get(page.asInstanceOf[QuestionPage[T2]]).map(form.fill).getOrElse(form)
     }
 
   def getMessage(key: String)(implicit messages: Messages): String = messages(key)
