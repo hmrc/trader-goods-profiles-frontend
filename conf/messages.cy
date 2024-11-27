@@ -57,6 +57,7 @@ homepage.downloadBanner.linkText = Ewch i’r dudalen ffeiliau cofnodion TGP i l
 homepage.h2.3 = Lawrlwytho data TGP
 homepage.downloadLinkText.noGoodsRecords = Nid oes gennych unrhyw gofnodion nwyddau TGP i’w lawrlwytho.
 homepage.downloadLinkText.noFilesRequested = Cael eich ffeil cofnodion TGP
+homepage.downloadLinkText.filesRequested = Cael neu lawrlwytho’ch ffeil cofnodion TGP
 homepage.newUkims.success = Rydych wedi newid y Cynllun Marchnad Fewnol y DU (UKIMS)
 
 unauthorised.title = Mae problem wedi codi
@@ -478,6 +479,7 @@ fileManagement.availableFiles.table.header1 = Dyddiad ac amser y gofynnwyd amdan
 fileManagement.availableFiles.table.header2 = Dyddiad dod i ben
 fileManagement.availableFiles.table.header3 = Ffeil
 fileManagement.availableFiles.downloadText = Lawrlwytho’r ffeil
+fileManagement.availableFiles.downloadText.hidden = cais wedi’i wneud ar {0}
 fileManagement.pendingFiles.table.header1 = Dyddiad ac amser y gofynnwyd amdanynt
 fileManagement.pendingFiles.table.header2 = Ffeil
 fileManagement.pendingFiles.table.caption = Ffeiliau sy’n aros
@@ -485,6 +487,7 @@ fileManagement.pendingFiles.table.body = Mae’r rhain yn geisiadau rydych wedi�
 fileManagement.pendingFiles.fileText = Nid yw’r ffeil yn barod
 fileManagement.files.requestRecord.linkText = Cael ffeil cofnodion TGP newydd
 fileManagement.noFiles.requestRecord.linkText = Cael ffeil cofnodion TGP
+fileManagement.noFiles.paragraph1 = Nid oes gennych unrhyw ffeiliau cofnodion TGP i’w lawrlwytho. Bydd y ffeiliau hyn ar gael am 30 diwrnod yn unig.
 
 
 goodsRecords.title = Proffil Nwyddau
