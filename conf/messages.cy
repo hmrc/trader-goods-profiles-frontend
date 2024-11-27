@@ -761,4 +761,5 @@ adviceStatus.adviceRequestWithdrawn = Cais am gyngor wedi’i dynnu yn ôl
 
 declarableStatus.immiReady = Barod ar gyfer IMMI
 declarableStatus.notReadyForImmi = Ddim yn barod ar gyfer IMMI
-declarableStatus.notReadyForUse = Ddim yn barod i’w ddefnyddio
+declarableStatus.notReadyForUse = Camau i’w cymryd
+
