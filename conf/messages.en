@@ -737,4 +737,4 @@ adviceStatus.adviceRequestWithdrawn = Advice request withdrawn
 
 declarableStatus.immiReady = IMMI ready
 declarableStatus.notReadyForImmi = Not ready for IMMI
-declarableStatus.notReadyForUse = Not ready for use
+declarableStatus.notReadyForUse = Action needed
