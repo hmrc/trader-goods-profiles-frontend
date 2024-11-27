@@ -320,8 +320,8 @@ commodityCode.error.invalidFormat = Nodwch god nwyddau yn y fformat cywir
 commodityCode.error.invalid = Nodwch god nwyddau go iawn
 traderReference.error.length = Mae’n rhaid i’r cyfeirnod masnachwr fod yn 512 o gymeriadau neu lai
 
-hasCorrectGoods.title = Canlyniadau ar gyfer {0}
-hasCorrectGoods.heading = Canlyniadau ar gyfer {0}
+hasCorrectGoods.title = Canlyniadau ar gyfer y cod nwyddau {0}
+hasCorrectGoods.heading = Canlyniadau ar gyfer y cod nwyddau {0}
 hasCorrectGoods.p1 = Dynodiad:
 hasCorrectGoods.h2 = Ai dyma’r nwyddau cywir?
 hasCorrectGoods.error.required = Dewiswch ‘Iawn’ os y rhain yw’r nwyddau cywir
