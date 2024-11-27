@@ -696,5 +696,17 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
       }
     }
 
+    "getReviewReasonMessageKey" - {
+
+      "should return correct message key for inadequate reason" in {
+
+        val expectedKey = "singleRecord.inadequateReviewReason"
+
+
+
+      }
+
+    }
+
   }
 }

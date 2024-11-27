@@ -129,6 +129,10 @@ class SingleRecordController @Inject() (
 
         dataCleansing(request)
 
+        val viewToReturn = record.reviewReason match {
+          case "inadequate" =>
+        }
+
         Ok(
           view(
             recordId,
