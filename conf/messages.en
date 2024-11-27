@@ -266,8 +266,8 @@ goodsDescription.error.required = Enter the goods description
 goodsDescription.error.length = The goods description must be 512 characters or less
 goodsDescription.change.hidden = Goods description
 
-hasCorrectGoods.title = Results for {0}
-hasCorrectGoods.heading = Results for {0}
+hasCorrectGoods.title = Results for the commodity code {0}
+hasCorrectGoods.heading = Results for the commodity code {0}
 hasCorrectGoods.p1 = Classification:
 hasCorrectGoods.p2.linkText = Search for a commodity code on the Online Tariff Tool (opens in new tab)
 hasCorrectGoods.h2 = Are these the correct goods?
