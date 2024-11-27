@@ -61,16 +61,16 @@ trait BaseController extends FrontendBaseController with I18nSupport with Loggin
       case reassessmentPage: ReassessmentPage =>
         request.userAnswers.get(reassessmentPage) match {
           case Some(value) => form.fill(value.answer.asInstanceOf[T2])
-          case None => form
+          case None        => form
         }
-      case _ =>
+      case _                                  =>
         request.userAnswers.get(page.asInstanceOf[QuestionPage[T2]]).map(form.fill).getOrElse(form)
     }
 
   def getMessage(key: String)(implicit messages: Messages): String = messages(key)
 
-  def createFormWithErrors[T](form: Form[T], value: T, errorMessageKey: String, field: String = "value")(
-    implicit messages: Messages
+  def createFormWithErrors[T](form: Form[T], value: T, errorMessageKey: String, field: String = "value")(implicit
+    messages: Messages
   ): Form[T] =
     form
       .fill(value)
