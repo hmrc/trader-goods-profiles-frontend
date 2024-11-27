@@ -366,6 +366,37 @@ trait SpecBase
       updatedDateTime
     )
 
+  def goodsRecordResponseWithReviewReasonInadequate(
+    createdDateTime: Instant = Instant.now,
+    updatedDateTime: Instant = Instant.now
+  ): GetGoodsRecordResponse =
+    GetGoodsRecordResponse(
+      testRecordId,
+      "10410100",
+      "10410100",
+      "BAN0010011",
+      "12345678",
+      NotRequested,
+      "Organic bananas",
+      "GB",
+      Some(1),
+      None,
+      None,
+      None,
+      Instant.now(),
+      None,
+      1,
+      active = true,
+      toReview = true,
+      Some("inadequate"),
+      NotReadyForUse,
+      None,
+      None,
+      None,
+      createdDateTime,
+      updatedDateTime
+    )
+
   val recordForTestingSummaryRows: GetGoodsRecordResponse = goodsRecordResponse(
     Instant.parse("2022-11-18T23:20:19Z"),
     Instant.parse("2022-11-18T23:20:19Z")

@@ -471,7 +471,8 @@ singleRecord.adviceParagraph.adviceNotProvided = HMRC have not been able to agre
 singleRecord.adviceParagraph.inProgress = HMRC has started to look at your goods record and will contact you with any updates
 singleRecord.adviceParagraph.informationRequested = HMRC have asked you for some information
 singleRecord.adviceParagraph.adviceReceived = HMRC have agreed that the commodity code and goods description match
-singleRecord.inadequateReviewReason = The goods description does not have enough detail to describe the goods. You need to change the goods description before you can use it on an Internal Market Movement Information (IMMI).
+singleRecord.inadequateReviewReason = The goods description does not have enough detail to describe the goods. You need to {0} before you can use it on an Internal Market Movement Information (IMMI).
+singleRecord.inadequateReviewReason.linkText = change the goods description
 
 hasCountryOfOriginChange.title = Change record information
 hasCountryOfOriginChange.h1 = Change record information

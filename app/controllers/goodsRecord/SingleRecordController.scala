@@ -129,10 +129,6 @@ class SingleRecordController @Inject() (
 
         dataCleansing(request)
 
-        val viewToReturn = record.reviewReason match {
-          case "inadequate" =>
-        }
-
         Ok(
           view(
             recordId,
@@ -144,10 +140,22 @@ class SingleRecordController @Inject() (
             changedPage,
             pageRemoved,
             recordIsLocked,
-            para
+            para,
+            Some("singleRecord.inadequateReviewReason")
+//            getReviewReasonMessageKey(record.toReview, record.reviewReason)
           )
         ).removingFromSession(initialValueOfHasSuppUnit, initialValueOfSuppUnit)
       }
+    }
+
+  private def getReviewReasonMessageKey(toReview: Boolean, reviewReason: Option[String]): Option[String] =
+    if (toReview) {
+      reviewReason match {
+        case Some("inadequate") => Some("singleRecord.inadequateReviewReason")
+        case _                  => None
+      }
+    } else {
+      None
     }
 
   private def dataCleansing(request: DataRequest[AnyContent]) = {
