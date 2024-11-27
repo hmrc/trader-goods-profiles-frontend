@@ -246,8 +246,8 @@ createRecordStart.p8 = You’ll need to complete categorisation before you can u
 
 createRecordSuccess.title = You’ve created a goods record
 createRecordSuccess.h1 = You’ve created a goods record
-createRecordSuccess.h2 = What happens next
-createRecordSuccess.p2 = You still need to categorise the goods before you can use it on movements.
+createRecordSuccess.h2 = Next steps
+createRecordSuccess.p2 = You need to categorise the goods before you can use it on movements.
 createRecordSuccess.p3 = You do not have to categorise this record now. You can review the record from your list of goods records and start categorisation later.
 createRecordSuccess.p4.linkText = Categorise goods now
 createRecordSuccess.h2.1 = Tell us what you think
@@ -737,4 +737,4 @@ adviceStatus.adviceRequestWithdrawn = Advice request withdrawn
 
 declarableStatus.immiReady = IMMI ready
 declarableStatus.notReadyForImmi = Not ready for IMMI
-declarableStatus.notReadyForUse = Not ready for use
+declarableStatus.notReadyForUse = Action needed
