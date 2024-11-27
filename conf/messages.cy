@@ -319,6 +319,7 @@ countryOfOrigin.error.required = Nodwch y wlad wreiddiol
 commodityCode.error.invalidFormat = Nodwch god nwyddau yn y fformat cywir
 commodityCode.error.invalid = Nodwch god nwyddau go iawn
 traderReference.error.length = Mae’n rhaid i’r cyfeirnod masnachwr fod yn 512 o gymeriadau neu lai
+commodityCode.error.expired = Mae'r cod nwyddau hwn wedi dod i ben. Nodwch god nwyddau dilys
 
 hasCorrectGoods.title = Canlyniadau ar gyfer y cod nwyddau {0}
 hasCorrectGoods.heading = Canlyniadau ar gyfer y cod nwyddau {0}
