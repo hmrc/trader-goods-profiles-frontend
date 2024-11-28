@@ -552,7 +552,7 @@ hasGoodsDescriptionChange.title = Newid gwybodaeth y cofnod
 hasGoodsDescriptionChange.h1 = Newid gwybodaeth y cofnod
 hasGoodsDescriptionChange.p1 = Bydd newid disgrifiad y nwyddau ar y cofnod nwyddau hwn yn dileu’r statws cyngor. Os ydych am wirio bod y cod nwyddau yn gywir ac yn cyd-fynd â’r disgrifiad nwyddau, bydd angen i chi ofyn am gyngor eto.
 hasGoodsDescriptionChange.h2 = A ydych am newid disgrifiad y nwyddau?
-hasGoodsDescriptionChange.error.required = Dewiswch os ydych am newid disgrifiad y nwyddau
+hasGoodsDescriptionChange.error.required = Dewiswch ‘Iawn’ os ydych am newid disgrifiad o’r nwyddau
 
 ukimsNumberChangeController.title = Newid Rhif Cynllun Marchnad Fewnol y DU (UKIMS)
 ukimsNumberChangeController.heading = Newid Rhif Cynllun Marchnad Fewnol y DU (UKIMS)
@@ -564,15 +564,14 @@ hasCountryOfOriginChange.title = Newid gwybodaeth y cofnod
 hasCountryOfOriginChange.h1 = Newid gwybodaeth y cofnod
 hasCountryOfOriginChange.p1 = Bydd angen i chi ail-gategoreiddio’r cofnod nwyddau os byddwch yn newid y wlad wreiddiol.
 hasCountryOfOriginChange.h2 = A ydych am newid y wlad wreiddiol?
-hasCountryOfOriginChange.error.required = Dewiswch os ydych am newid y wlad wreiddiol
-
+hasCountryOfOriginChange.error.required = Dewiswch ‘Iawn’ os ydych am newid y wlad tarddiad
 
 hasCommodityCodeChange.title = Newid gwybodaeth y cofnod
 hasCommodityCodeChange.h1 = Newid gwybodaeth y cofnod
 hasCommodityCodeChange.h2 = A ydych am newid y cod nwyddau?
 hasCommodityCodeChange.advice = Bydd newid y cod nwyddau ar y cofnod nwyddau hwn yn dileu’r statws cyngor. Os ydych am wirio bod y cod nwyddau yn gywir ac yn cyd-fynd â’r disgrifiad, bydd angen i chi ofyn am gyngor eto.
 hasCommodityCodeChange.category = Bydd angen i chi ail-gategoreiddio’r cofnod nwyddau os byddwch yn newid y cod nwyddau.
-hasCommodityCodeChange.error.required = Dewiswch os ydych am newid y cod nwyddau
+hasCommodityCodeChange.error.required = Dewiswch ‘Iawn’ os ydych am newid y cod nwyddau
 
 removeGoodsRecord.title = Tynnu’r cofnod nwyddau
 removeGoodsRecord.heading = Tynnu’r cofnod nwyddau
