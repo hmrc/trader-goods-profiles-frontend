@@ -361,7 +361,7 @@ singleRecord.adviceParagraph.adviceReceived = Mae CThEF wedi cytuno bod y cod nw
 
 countryOfOrigin.title = Gwlad tarddiad
 countryOfOrigin.h1 = Gwlad tarddiad
-countryOfOrigin.p1 = Mae ‘gwlad tarddiad’ yn cyfeirio at y wlad lle cafodd y nwyddau eu gweithgynhyrchu (naill ai’n gyfan gwbl, neu gan fwyaf), eu tyfu neu eu haddasu. Mae’n cael ei defnyddio at ddibenion labelu, ac mae’n effeithio ar gyfraddau’r tollau.
+countryOfOrigin.p1 = Mae ‘gwlad tarddiad’ yn cyfeirio at y wlad lle cafodd y nwyddau eu gweithgynhyrchu (naill ai’n gyfan gwbl, neu gan fwyaf), eu tyfu neu eu haddasu. Mae’n cael ei ddefnyddio at ddibenion labelu, ac mae’n effeithio ar gyfraddau’r tollau.
 countryOfOrigin.p2 =  Pan fydd y nwyddau’n cael eu datgan wrth y ffin, os yw’r wlad tarddiad yn wahanol i’r wlad ymadael, efallai y bydd y rheoliadau, y dreth a’r tollau yn wahanol i’r arweiniad sydd ar y gwasanaeth hwn.
 countryOfOrigin.p2.linkText = Gwirio a yw’r nwyddau’n bodloni’r rheolau o ran tarddiad (yn agor tab newydd)
 countryOfOrigin.heading = Beth yw gwlad tarddiad y nwyddau?
