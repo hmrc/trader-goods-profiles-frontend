@@ -197,7 +197,7 @@ commodityCode.change.hidden = Commodity code
 
 countryOfOrigin.title = Country of origin
 countryOfOrigin.h1 = Country of origin
-countryOfOrigin.p1 = Country of origin refers to the country where the goods were mostly or wholly manufactured, grown or modified. It's used for labelling purposes and affects duty rates.
+countryOfOrigin.p1 = Country of origin refers to the country where the goods were mostly or wholly manufactured, grown or modified. It’s used for labelling purposes and affects duty rates.
 countryOfOrigin.p2.linkText = Check if the goods meet the rules of origin (opens in new tab)
 countryOfOrigin.heading = What is the country of origin of the goods?
 countryOfOrigin.error.required = Enter the country of origin
