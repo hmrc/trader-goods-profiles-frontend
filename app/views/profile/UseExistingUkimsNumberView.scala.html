@@ -14,9 +14,9 @@
  * limitations under the License.
  *@
 
-@import viewmodels.LabelSize._
 @import viewmodels.InputWidth._
 @import models.Mode
+@import viewmodels.LegendSize._
 
 
 @this(
@@ -44,7 +44,7 @@
         @govukRadios(
             RadiosViewModel.yesNo(
             field = form("value"),
-            legend = Legend(content = "existingUkimsNumber.h1", classes = "govuk-visually-hidden")
+            legend = Legend(content = "existingUkimsNumber.h2").asSecondaryHeading(Medium)
             )
         )
 
