@@ -14,13 +14,17 @@
  * limitations under the License.
  *@
 
+@import models.ReviewReason.Inadequate
+@import models.ReviewReason.Unclear
+@import models.ReviewReason.Commodity
+
 @this(
-        layout: templates.Layout,
-        govukButton: GovukButton,
-        formHelper: FormWithCSRF
+layout: templates.Layout,
+govukButton: GovukButton,
+formHelper: FormWithCSRF
 )
 
-@(recordId: String, reviewReason: String)(implicit request: Request[_], messages: Messages)
+@(recordId: String, reviewReason: ReviewReason)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages(s"reviewReason.${reviewReason}.title"))) {
 
@@ -28,14 +32,14 @@
 
     <p class="govuk-body">@messages(s"reviewReason.${reviewReason}.p1")</p>
 
-    @if(reviewReason == "commodity") {
+    @if(reviewReason == Commodity) {
         <ol class="govuk-list govuk-list--number">
             <li>@messages(s"reviewReason.commodity.li1")</li>
             <li>@messages(s"reviewReason.commodity.li2")</li>
         </ol>
     }
 
-    @if(reviewReason == "unclear" || reviewReason == "inadequate") {
+    @if(reviewReason == Unclear || reviewReason == Inadequate) {
         <p class="govuk-body">@messages(s"reviewReason.${reviewReason}.p2")</p>
     }
 

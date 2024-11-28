@@ -16,7 +16,7 @@
 
 package models.router.responses
 
-import models.{AdviceStatus, DeclarableStatus}
+import models.{AdviceStatus, DeclarableStatus, ReviewReason}
 import play.api.libs.json.{JsSuccess, JsValue, Json, Reads, Writes}
 import utils.Constants.{countryOfOriginKey, goodsDescriptionKey, niphlNumberKey, nirmsNumberKey, ukimsNumberKey}
 
@@ -40,7 +40,7 @@ case class GetGoodsRecordResponse(
   version: Int,
   active: Boolean,
   toReview: Boolean,
-  reviewReason: Option[String] = None,
+  reviewReason: Option[ReviewReason],
   declarable: DeclarableStatus,
   ukimsNumber: Option[String] = None,
   nirmsNumber: Option[String] = None,
@@ -72,7 +72,7 @@ object GetGoodsRecordResponse {
         (json \ "version").as[Int],
         (json \ "active").as[Boolean],
         (json \ "toReview").as[Boolean],
-        (json \ "reviewReason").asOpt[String],
+        (json \ "reviewReason").asOpt[ReviewReason],
         (json \ "declarable").as[DeclarableStatus],
         (json \ ukimsNumberKey).asOpt[String],
         (json \ nirmsNumberKey).asOpt[String],

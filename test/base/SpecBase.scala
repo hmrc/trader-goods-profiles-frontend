@@ -23,7 +23,7 @@ import models.DeclarableStatus.NotReadyForUse
 import models.ott._
 import models.ott.response.{GoodsNomenclatureResponse, OttResponse}
 import models.router.responses.GetGoodsRecordResponse
-import models.{AssessmentAnswer, Commodity, UserAnswers}
+import models.{AssessmentAnswer, Commodity, ReviewReason, UserAnswers}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -366,9 +366,10 @@ trait SpecBase
       updatedDateTime
     )
 
-  def goodsRecordResponseWithReviewReasonInadequate(
+  def goodsRecordResponseWithReviewReason(
     createdDateTime: Instant = Instant.now,
-    updatedDateTime: Instant = Instant.now
+    updatedDateTime: Instant = Instant.now,
+    reviewReason: ReviewReason
   ): GetGoodsRecordResponse =
     GetGoodsRecordResponse(
       testRecordId,
@@ -388,7 +389,7 @@ trait SpecBase
       1,
       active = true,
       toReview = true,
-      Some("inadequate"),
+      Some(reviewReason),
       NotReadyForUse,
       None,
       None,
@@ -410,7 +411,7 @@ trait SpecBase
   def toReviewGoodsRecordResponse(
     createdDateTime: Instant,
     updatedDateTime: Instant,
-    reviewReason: String
+    reviewReason: ReviewReason
   ): GetGoodsRecordResponse =
     GetGoodsRecordResponse(
       "1",

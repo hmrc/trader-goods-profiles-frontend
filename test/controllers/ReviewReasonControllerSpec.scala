@@ -19,6 +19,8 @@ package controllers
 import base.SpecBase
 import base.TestConstants.testRecordId
 import connectors.{GoodsRecordConnector, TraderProfileConnector}
+import models.ReviewReason
+import models.ReviewReason._
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{verify, when}
 import org.scalatestplus.mockito.MockitoSugar
@@ -43,12 +45,14 @@ class ReviewReasonControllerSpec extends SpecBase with MockitoSugar {
 
       "must OK and display correct view for each review reason" in {
 
-        val reviewReasons = Seq("mismatch", "inadequate", "unclear", "commodity", "measure")
-
-        reviewReasons.map { reviewReason =>
+        ReviewReason.values.map { reviewReason =>
           val mockGoodsRecordConnector = mock[GoodsRecordConnector]
           when(mockGoodsRecordConnector.getRecord(any(), any())(any()))
-            .thenReturn(Future.successful(toReviewGoodsRecordResponse(Instant.now, Instant.now, reviewReason)))
+            .thenReturn(
+              Future.successful(
+                toReviewGoodsRecordResponse(Instant.now, Instant.now, reviewReason)
+              )
+            )
 
           val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(
@@ -74,7 +78,11 @@ class ReviewReasonControllerSpec extends SpecBase with MockitoSugar {
 
         val mockGoodsRecordConnector = mock[GoodsRecordConnector]
         when(mockGoodsRecordConnector.getRecord(any(), any())(any()))
-          .thenReturn(Future.successful(toReviewGoodsRecordResponse(Instant.now, Instant.now, "Inadequate")))
+          .thenReturn(
+            Future.successful(
+              toReviewGoodsRecordResponse(Instant.now, Instant.now, Inadequate)
+            )
+          )
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
@@ -88,7 +96,7 @@ class ReviewReasonControllerSpec extends SpecBase with MockitoSugar {
           val result  = route(application, request).value
           val view    = application.injector.instanceOf[ReviewReasonView]
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(testRecordId, "inadequate")(request, messages(application)).toString
+          contentAsString(result) mustEqual view(testRecordId, Inadequate)(request, messages(application)).toString
 
           verify(mockGoodsRecordConnector).getRecord(any(), any())(any())
         }

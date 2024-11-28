@@ -17,26 +17,26 @@
 @import config.FrontendAppConfig
 
 @this(
-    appConfig: FrontendAppConfig,
-    layout: templates.Layout,
-    govukSummaryList: GovukSummaryList,
-    formHelper: FormWithCSRF,
-    link: components.link,
+        appConfig: FrontendAppConfig,
+        layout: templates.Layout,
+        govukSummaryList: GovukSummaryList,
+        formHelper: FormWithCSRF,
+        link: components.link,
         paragraphBody: components.paragraphBody,
-    govukNotificationBanner: GovukNotificationBanner
+        govukNotificationBanner: GovukNotificationBanner
 )
 
-@(recordId: String, detailsList: SummaryList, categorisationList: SummaryList, supplementaryUnitList: SummaryList, adviceStatusList: SummaryList, changesMade: Boolean, changedPage: String,dataRemoved: Boolean,recordLocked:Boolean, adviceStatusMessage:Option[AdviceStatusMessage], reviewReasonKey: Option[String] = None)(implicit request: Request[_], messages: Messages)
+@(recordId: String, detailsList: SummaryList, categorisationList: SummaryList, supplementaryUnitList: SummaryList, adviceStatusList: SummaryList, changesMade: Boolean, changedPage: String, dataRemoved: Boolean, recordLocked: Boolean, adviceStatusMessage: Option[AdviceStatusMessage], toReview: Boolean = false, reviewReason: Option[ReviewReason] = None)(implicit request: Request[_], messages: Messages)
 
-    @bannerContentForUpdate(page: String, dataRemoved:Boolean) = {
-        <h3 class="govuk-notification-banner__heading">
-        @if(dataRemoved) {
-            @messages("successBannerRemove.heading", page)
-        } else {
-            @messages("successBanner.heading", page)
-        }
-        </h3>
+@bannerContentForUpdate(page: String, dataRemoved: Boolean) = {
+    <h3 class="govuk-notification-banner__heading">
+    @if(dataRemoved) {
+        @messages("successBannerRemove.heading", page)
+    } else {
+        @messages("successBanner.heading", page)
     }
+    </h3>
+}
 
 @layout(backLinkUrl = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url, backLinkMessageKey = "singleRecord.back", pageTitle = titleNoForm(messages("singleRecord.title"))) {
 
@@ -45,25 +45,39 @@
             title = Text(messages("successBanner.title")),
             content = HtmlContent(bannerContentForUpdate(changedPage, dataRemoved)),
             bannerType = Some("success"),
-            role=Some("alert"))
+            role = Some("alert"))
         )
     }
 
 
     <h1 class="govuk-heading-l">@messages("singleRecord.h1")</h1>
 
-    @if(recordLocked){
+    @if(recordLocked) {
         <p class="govuk-inset-text">@messages("singleRecord.recordLocked")</p>
     } else {
         <p class="govuk-body">@messages("singleRecord.p1")</p>
         <p class="govuk-body">@messages("singleRecord.p2")</p>
     }
 
-     @reviewReasonKey.map { key => @paragraphBody(message = messages(key, link(
-        text = messages(key + ".linkText"),
-        call = controllers.goodsRecord.routes.HasGoodsDescriptionChangeController.onPageLoad(NormalMode, recordId),
-        id = None
-    )))
+    @if(toReview) {
+        @reviewReason.map { reviewReason =>
+            @(reviewReason.linkKey, reviewReason.url(recordId)) match {
+                case (Some(linkKey), Some(url)) => {
+                    @paragraphBody(messages(
+                        reviewReason.messageKey,
+                        link(
+                            text = messages(linkKey),
+                            call = url,
+                            id = None
+                        )
+                    )
+                    )
+                }
+                case _ => {
+                    @paragraphBody(message = messages(reviewReason.messageKey))
+                }
+            }
+        }
     }
 
     <h2 class="govuk-heading-m">@messages("singleRecord.h2.goodsDetails")</h2>
@@ -76,8 +90,8 @@
     }
     @if(appConfig.requestingAdviceEnabled) {
         <h2 class="govuk-heading-m">@messages("singleRecord.h2.adviceStatus")</h2>
-        @adviceStatusMessage.map{adviceStatusMessage =>
-        <p class="govuk-body">@messages(adviceStatusMessage.messageKey)</p>
+        @adviceStatusMessage.map { adviceStatusMessage =>
+            <p class="govuk-body">@messages(adviceStatusMessage.messageKey)</p>
         }
         @govukSummaryList(adviceStatusList)
     }
@@ -90,7 +104,7 @@
     </div>
 
     <p class="govuk-body"><a href="@controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url" class="govuk-link" >@messages("site.goBackToGoodsProfile")</a></p>
-    @if(!recordLocked){
+    @if(!recordLocked) {
         <p class="govuk-body"><a href="@controllers.goodsProfile.routes.RemoveGoodsRecordController.onPageLoad(recordId, GoodsRecordLocation).url" class="govuk-link" >@messages("site.removeThisGoodsRecord")</a></p>
     }
 }
