@@ -22,7 +22,7 @@
     govukSummaryList: GovukSummaryList,
     formHelper: FormWithCSRF,
     link: components.link,
-        paragraphBody: components.paragraphBody,
+    paragraphBody: components.paragraphBody,
     govukNotificationBanner: GovukNotificationBanner
 )
 
@@ -51,7 +51,15 @@
 
 
     <h1 class="govuk-heading-l">@messages("singleRecord.h1")</h1>
+    <h2 class="govuk-heading-m">@messages("singleRecord.h2")</h2>
+    <p class="govuk-body">@messages("singleRecord.status")
 
+        <td class="govuk-table__cell">
+            <strong class="govuk-tag govuk-tag--red">
+                Action needed
+            </strong>
+        </td>
+    </p>
     @if(recordLocked){
         <p class="govuk-inset-text">@messages("singleRecord.recordLocked")</p>
     } else {

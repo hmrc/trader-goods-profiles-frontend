@@ -446,6 +446,8 @@ removeGoodsRecord.noRecord = No, return to goods record
 
 singleRecord.title = Goods record
 singleRecord.h1 = Goods record
+singleRecord.h2 = What to do next
+singleRecord.status = The status of this record is:
 singleRecord.p1 = Check if the details of this record are correct.
 singleRecord.p2 = If you need to categorise this good, we’ll tell you more about how to do this in the next steps.
 singleRecord.h2.goodsDetails = Goods details
