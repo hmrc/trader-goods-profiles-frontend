@@ -14,6 +14,8 @@
  * limitations under the License.
  *@
 
+@import viewmodels.LegendSize._
+
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
@@ -41,7 +43,7 @@
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = Legend(content = "hasGoodsDescriptionChange.heading", classes = "govuk-visually-hidden")
+                legend = Legend(content = "hasGoodsDescriptionChange.heading").asSecondaryHeading(Medium)
             )
         )
 
