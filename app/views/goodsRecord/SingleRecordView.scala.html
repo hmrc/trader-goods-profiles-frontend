@@ -26,7 +26,7 @@
     govukNotificationBanner: GovukNotificationBanner
 )
 
-@(recordId: String, detailsList: SummaryList, categorisationList: SummaryList, supplementaryUnitList: SummaryList, adviceStatusList: SummaryList, changesMade: Boolean, changedPage: String,dataRemoved: Boolean,recordLocked:Boolean, adviceStatusMessage:Option[AdviceStatusMessage], reviewReasonKey: Option[String] = None)(implicit request: Request[_], messages: Messages)
+@(recordId: String, detailsList: SummaryList, categorisationList: SummaryList, supplementaryUnitList: SummaryList, adviceStatusList: SummaryList, changesMade: Boolean, changedPage: String,dataRemoved: Boolean,recordLocked:Boolean, adviceStatusMessage:Option[AdviceStatusMessage], declarableStatus: DeclarableStatus, reviewReasonKey: Option[String] = None)(implicit request: Request[_], messages: Messages)
 
     @bannerContentForUpdate(page: String, dataRemoved:Boolean) = {
         <h3 class="govuk-notification-banner__heading">
@@ -52,11 +52,12 @@
 
     <h1 class="govuk-heading-l">@messages("singleRecord.h1")</h1>
     <h2 class="govuk-heading-m">@messages("singleRecord.h2")</h2>
+
     <p class="govuk-body">@messages("singleRecord.status")
 
         <td class="govuk-table__cell">
             <strong class="govuk-tag govuk-tag--red">
-                Action needed
+                @messages(declarableStatus.messageKey)
             </strong>
         </td>
     </p>

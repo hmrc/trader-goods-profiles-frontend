@@ -141,8 +141,8 @@ class SingleRecordController @Inject() (
             pageRemoved,
             recordIsLocked,
             para,
-            Some("singleRecord.inadequateReviewReason")
-//            getReviewReasonMessageKey(record.toReview, record.reviewReason)
+            record.declarable,
+            getReviewReasonMessageKey(record.toReview, record.reviewReason)
           )
         ).removingFromSession(initialValueOfHasSuppUnit, initialValueOfSuppUnit)
       }

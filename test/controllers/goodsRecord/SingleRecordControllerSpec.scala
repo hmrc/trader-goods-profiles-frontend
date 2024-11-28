@@ -20,6 +20,7 @@ import base.SpecBase
 import base.TestConstants.{testRecordId, userAnswersId}
 import connectors.{GoodsRecordConnector, OttConnector, TraderProfileConnector}
 import models.AdviceStatusMessage.{NotRequestedParagraph, RequestedParagraph}
+import models.DeclarableStatus.NotReadyForUse
 import models.helper.SupplementaryUnitUpdateJourney
 import models.{Country, NormalMode, UserAnswers}
 import org.mockito.ArgumentCaptor
@@ -175,7 +176,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           changedPage,
           pageRemoved,
           recordIsLocked,
-          Some(NotRequestedParagraph)
+          Some(NotRequestedParagraph),
+          NotReadyForUse
         )(
           request,
           messages(application)
@@ -291,7 +293,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           changedPage,
           pageRemoved,
           recordIsLocked,
-          Some(RequestedParagraph)
+          Some(RequestedParagraph),
+          NotReadyForUse
         )(
           request,
           messages(application)
@@ -423,7 +426,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           changedPage,
           pageRemoved,
           recordIsLocked,
-          Some(NotRequestedParagraph)
+          Some(NotRequestedParagraph),
+          NotReadyForUse
         )(
           request,
           messages(application)
@@ -798,6 +802,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           pageRemoved,
           recordIsLocked,
           Some(NotRequestedParagraph),
+          NotReadyForUse,
           Some("singleRecord.inadequateReviewReason")
         )(
           request,
