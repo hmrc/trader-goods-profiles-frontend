@@ -362,6 +362,67 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         }
       }
 
+      "must return a Bad Request and errors when expired commodity code is submitted" in {
+
+        val mockSessionRepository = mock[SessionRepository]
+
+        val mockOttConnector = mock[OttConnector]
+
+        when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+        when(mockOttConnector.getCommodityCode(anyString(), any(), any(), any(), any(), any())(any())) thenReturn Future
+          .successful(
+            Commodity(
+              "654321",
+              List("Class level1 desc", "Class level2 desc", "Class level3 desc"),
+              Instant.now,
+              None
+            )
+          )
+
+        val userAnswers =
+          UserAnswers(userAnswersId)
+            .set(CountryOfOriginPage, "CX")
+            .success
+            .value
+            .set(CountryOfOriginUpdatePage(testRecordId), "CX")
+            .success
+            .value
+
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(
+              bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
+              bind[SessionRepository].toInstance(mockSessionRepository),
+              bind[OttConnector].toInstance(mockOttConnector)
+            )
+            .build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, commodityCodeRoute)
+              .withFormUrlEncodedBody(("value", "654321"))
+
+          val boundForm = form
+            .fill("654321")
+            .copy(errors =
+              Seq(elems = FormError("value", "This commodity code has expired. Enter a valid commodity code"))
+            )
+
+          val view = application.injector.instanceOf[CommodityCodeView]
+
+          val result = route(application, request).value
+
+          status(result) mustEqual BAD_REQUEST
+          contentAsString(result) mustEqual view(boundForm, onSubmitAction)(request, messages(application)).toString
+
+          verify(mockOttConnector)
+            .getCommodityCode(eqTo("654321"), eqTo(testEori), any(), any(), any(), any())(
+              any()
+            )
+
+        }
+      }
+
       "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
         val application = applicationBuilder(userAnswers = None)
