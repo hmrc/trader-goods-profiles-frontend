@@ -14,18 +14,16 @@
  * limitations under the License.
  *@
 
-@import models.Mode
 @import models.Country._
-
-@import viewmodels.LabelSize._
 @import models.outboundLink.OutboundLink
+@import viewmodels.LabelSize._
 
 @this(
-    layout: templates.Layout,
-    formHelper: FormWithCSRF,
-    govukErrorSummary: GovukErrorSummary,
-    govukSelect: GovukSelect,
-    govukButton: GovukButton
+        layout: templates.Layout,
+        formHelper: FormWithCSRF,
+        govukErrorSummary: GovukErrorSummary,
+        govukSelect: GovukSelect,
+        govukButton: GovukButton
 )
 
 @(form: Form[_], action: Call, countries: Seq[Country])(implicit request: Request[_], messages: Messages)
@@ -39,7 +37,6 @@
     <h1 class="govuk-heading-l">@messages("countryOfOrigin.h1")</h1>
     <p class="govuk-body">@messages("countryOfOrigin.p1")</p>
     <p class="govuk-body">
-        @messages("countryOfOrigin.p2")
             <a class="govuk-link" target="_blank"
            href="@routes.OutboundController.redirect(OutboundLink.CountryOfOrigin.link)">@messages(OutboundLink.CountryOfOrigin.linkTextKey)</a>.
     </p>
