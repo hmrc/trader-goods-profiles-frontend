@@ -15,6 +15,8 @@
  *@
 
 @import viewmodels.LegendSize._
+@import viewmodels.InputWidth._
+@import models.Mode
 
 
 @this(
@@ -36,7 +38,7 @@
     <h1 class="govuk-heading-l">@messages("existingUkimsNumber.h1")</h1>
 
     <p class="govuk-body">@messages("existingUkimsNumber.p1",ukimsNumber)</p>
-    @formHelper(action = action, Symbol("autoComplete") -> "off")
+    @formHelper(action = action, Symbol("autoComplete") -> "off") {
 
         @govukRadios(
             RadiosViewModel.yesNo(
