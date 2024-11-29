@@ -658,32 +658,6 @@ goodsRecordsLoading.p3.1 = Gallwch
 goodsRecordsLoading.p3.2 = adnewyddu’r dudalen hon
 goodsRecordsLoading.p3.3 = i wirio cynnydd llwytho’ch cofnodion.
 
-
-reviewReason.commodity.title = Mae problem gyda’r cofnod hwn
-reviewReason.commodity.heading = Mae problem gyda’r cofnod hwn
-reviewReason.commodity.p1 = Mae’r cod nwyddau wedi dod i ben. Os ydych am weld a allwch ddefnyddio’r cofnod o fewn IMMI, bydd angen i chi wneud y canlynol:
-reviewReason.commodity.li1 = newid y cod nwyddau
-reviewReason.commodity.li2 = categoreiddio’r nwyddau
-
-reviewReason.measure.title = Mae problem gyda’r cofnod hwn
-reviewReason.measure.heading = Mae problem gyda’r cofnod hwn
-reviewReason.measure.p1 = Mae’r cod nwyddau neu’r cyfyngiadau wedi newid. Bydd angen i chi gategoreiddio’r record.
-
-reviewReason.unclear.title = Mae angen adolygu’r cofnod hwn
-reviewReason.unclear.heading = Mae angen adolygu’r cofnod hwn
-reviewReason.unclear.p1 = Mae CThEF wedi adolygu’r cofnod. Mae’r disgrifiad o’r nwyddau yn aneglur. Os ydych am ddefnyddio’r cofnod hwn ar IMMI, bydd angen i chi newid disgrifiad y nwyddau.
-reviewReason.unclear.p2 = Dylai disgrifiad o’r nwyddau gynnwys disgrifiad o’r nwyddau mewn iaith glir. Nid oes rhaid i hyn gyd-fynd â’r disgrifiad tariff masnach.
-
-reviewReason.inadequate.title = Mae angen adolygu’r cofnod hwn
-reviewReason.inadequate.heading = Mae angen adolygu’r cofnod hwn
-reviewReason.inadequate.p1 = Mae CThEF wedi adolygu’r cofnod hwn. Nid oes gan y disgrifiad nwyddau ddigon o fanylion. Os ydych am ddefnyddio’r cofnod hwn ar IMMI, bydd angen i chi newid disgrifiad y nwyddau.
-reviewReason.inadequate.p2 = Dylai disgrifiad o’r nwyddau gynnwys disgrifiad o’r nwyddau mewn iaith glir. Nid oes rhaid i hyn gyd-fynd â’r disgrifiad tariff masnach.
-
-reviewReason.mismatch.title = Mae angen adolygu’r cofnod hwn
-reviewReason.mismatch.heading = Mae angen adolygu’r cofnod hwn
-reviewReason.mismatch.p1 = Mae CThEF wedi adolygu’r cofnod hwn. Nid yw’r cod nwyddau a’r disgrifiad nwyddau yn cyd-fynd. Os ydych am ddefnyddio’r cofnod hwn ar IMMI, bydd angen i chi ddiwygio’r cod nwyddau a’r disgrifiad nwyddau.
-
-
 withdrawAdviceStart.title = Tynnu’ch cais yn ôl
 withdrawAdviceStart.h1 = Tynnu’ch cais yn ôl
 withdrawAdviceStart.h2 = A ydych yn siŵr eich bod am dynnu’ch cais am gyngor yn ôl?

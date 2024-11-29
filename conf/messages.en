@@ -590,30 +590,6 @@ goodsRecordsLoading.p3.1 = You can
 goodsRecordsLoading.p3.2 = refresh this page
 goodsRecordsLoading.p3.3 = to check the progress of loading your records.
 
-reviewReason.commodity.title = There is a problem with this record
-reviewReason.commodity.heading = There is a problem with this record
-reviewReason.commodity.p1 = The commodity code has expired. If you want to see if you can use the record within an IMMI, you’ll need to:
-reviewReason.commodity.li1 = change the commodity code
-reviewReason.commodity.li2 = categorise the goods
-
-reviewReason.measure.title = There is a problem with this record
-reviewReason.measure.heading = There is a problem with this record
-reviewReason.measure.p1 = The commodity code or restrictions have changed. You’ll need to categorise the record.
-
-reviewReason.unclear.title = This record needs to be reviewed
-reviewReason.unclear.heading = This record needs to be reviewed
-reviewReason.unclear.p1 = HMRC have reviewed the record. The goods description is unclear. If you want to use this record on an IMMI, you’ll need to amend the goods description.
-reviewReason.unclear.p2 = A goods description should contain a plain language description of the goods. This does not have to match the trade tariff description.
-
-reviewReason.inadequate.title = This record needs to be reviewed
-reviewReason.inadequate.heading = This record needs to be reviewed
-reviewReason.inadequate.p1 = HMRC have reviewed this record. The goods description does not have enough detail. If you want to use this record on an IMMI, you’ll need to amend the goods description.
-reviewReason.inadequate.p2 = A goods description should contain a plain language description of the goods. This does not have to match the trade tariff description.
-
-reviewReason.mismatch.title = This record needs to be reviewed
-reviewReason.mismatch.heading = This record needs to be reviewed
-reviewReason.mismatch.p1 = HMRC have reviewed this record. The commodity code and goods description do not match. If you want to use this record on an IMMI, you’ll need to amend the commodity code and the goods description.
-
 profileSuccess.title = You’ve created your Trader Goods Profile
 profileSuccess.h1 = You’ve created your Trader Goods Profile
 profileSuccess.h2 = What happens next
