@@ -160,6 +160,12 @@ object OutboundLink {
     val linkTextKey: String = "profileSetup.p9.linkText"
   }
 
+  // Advice Start Page
+  case object ApplyBinding extends OutboundLink {
+    val link: String        = "https://www.gov.uk/guidance/apply-for-a-binding-tariff-information-decision"
+    val linkTextKey: String = "adviceStart.p2.linkText"
+  }
+
   val allLinks: Seq[OutboundLink] = Seq(
     ImportGoodsIntoUK,
     TradingNI,
@@ -184,7 +190,8 @@ object OutboundLink {
     MovingPlants,
     ApplyForAuth,
     RetailMovementProfile,
-    MovingPlantProfile
+    MovingPlantProfile,
+    ApplyBinding
   )
 
 }
