@@ -63,9 +63,6 @@
     </p>
     @if(recordLocked){
         <p class="govuk-inset-text">@messages("singleRecord.recordLocked")</p>
-    } else {
-        <p class="govuk-body">@messages("singleRecord.p1")</p>
-        <p class="govuk-body">@messages("singleRecord.p2")</p>
     }
 
      @reviewReasonKey.map { key => @paragraphBody(message = messages(key, link(

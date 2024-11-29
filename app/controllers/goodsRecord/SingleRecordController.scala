@@ -91,8 +91,8 @@ class SingleRecordController @Inject() (
             TraderReferenceSummary.row(record.traderRef, recordId, NormalMode, recordIsLocked),
             GoodsDescriptionSummary.rowUpdate(record, recordId, NormalMode, recordIsLocked),
             CountryOfOriginSummary.rowUpdate(record, recordId, NormalMode, recordIsLocked, countries),
-            CommodityCodeSummary.rowUpdate(record, recordId, NormalMode, recordIsLocked),
-            StatusSummary.row(record.declarable)
+            CommodityCodeSummary.rowUpdate(record, recordId, NormalMode, recordIsLocked)
+//            StatusSummary.row(record.declarable)
           )
         )
 
