@@ -194,6 +194,7 @@ commodityCode.error.invalidFormat = Enter a commodity code in the correct format
 commodityCode.error.invalid = Enter a real commodity code
 commodityCode.checkYourAnswersLabel = Commodity code
 commodityCode.change.hidden = Commodity code
+commodityCode.error.expired = This commodity code has expired. Enter a valid commodity code
 
 countryOfOrigin.title = Country of origin
 countryOfOrigin.h1 = Country of origin
