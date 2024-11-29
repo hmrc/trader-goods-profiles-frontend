@@ -123,6 +123,12 @@ object OutboundLink {
     val linkTextKey: String = "hasCorrectGoods.p2.linkText"
   }
 
+  // Assessment Page
+  case object FindCommodityAssessments extends OutboundLink {
+    val link: String        = "https://www.trade-tariff.service.gov.uk/xi/find_commodity"
+    val linkTextKey: String = "assessment.linkText"
+  }
+
   val allLinks: Seq[OutboundLink] = Seq(
     ImportGoodsIntoUK,
     TradingNI,
@@ -141,7 +147,8 @@ object OutboundLink {
     CountryOfOrigin,
     FindCommodity,
     FindLongCommodity,
-    FindCommodityHasCorrectGoods
+    FindCommodityHasCorrectGoods,
+    FindCommodityAssessments
   )
 
 }
