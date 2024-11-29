@@ -15,6 +15,7 @@
  *@
 
 @import viewmodels.LegendSize._
+@import models.outboundLink.OutboundLink
 
 @this(
     layout: templates.Layout,
@@ -35,7 +36,8 @@
     <h1 class="govuk-heading-l">@messages("hasNiphl.heading")</h1>
     <p class="govuk-body">@messages("hasNiphl.p1")</p>
     <p class="govuk-body">@messages("hasNiphl.p2")
-        <a class="govuk-link" href="https://www.gov.uk/guidance/moving-plants-from-great-britain-to-northern-ireland">@messages("hasNiphl.p2.linkText")</a>.
+        <a class="govuk-link" href="@routes.OutboundController.redirect(OutboundLink.MovingPlants.link)">
+            @messages(OutboundLink.MovingPlants.linkTextKey)</a>.
     </p>
 
     @formHelper(action = action, Symbol("autoComplete") -> "off") {

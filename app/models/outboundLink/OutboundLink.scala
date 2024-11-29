@@ -136,6 +136,12 @@ object OutboundLink {
     val linkTextKey: String = "hasNirms.p2.linkText"
   }
 
+  // Has Niphl Page
+  case object MovingPlants extends OutboundLink {
+    val link: String        = "https://www.gov.uk/guidance/moving-plants-from-great-britain-to-northern-ireland"
+    val linkTextKey: String = "hasNiphl.p2.linkText"
+  }
+
   val allLinks: Seq[OutboundLink] = Seq(
     ImportGoodsIntoUK,
     TradingNI,
@@ -156,7 +162,8 @@ object OutboundLink {
     FindLongCommodity,
     FindCommodityHasCorrectGoods,
     FindCommodityAssessments,
-    RetailMovement
+    RetailMovement,
+    MovingPlants
   )
 
 }
