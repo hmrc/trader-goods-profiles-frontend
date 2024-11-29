@@ -30,10 +30,10 @@ object CountryOfOriginSummary {
 
   def row(answers: UserAnswers, countries: Seq[Country])(implicit messages: Messages): Option[SummaryListRow] =
     answers.get(CountryOfOriginPage).map { answer =>
-      val description = countries.find(country => country.id == answer).map(_.description).getOrElse(answer)
+      val country = countries.find(country => country.id == answer).map(_.description).getOrElse(answer)
       SummaryListRowViewModel(
         key = "countryOfOrigin.checkYourAnswersLabel",
-        value = ValueViewModel(HtmlFormat.escape(description).toString),
+        value = ValueViewModel(HtmlContent(s"<div lang='en'>${HtmlFormat.escape(country).toString}</div>")),
         actions = Seq(
           ActionItemViewModel(
             "site.change",
@@ -48,7 +48,7 @@ object CountryOfOriginSummary {
     val changeLink = controllers.goodsRecord.routes.CountryOfOriginController.onPageLoadUpdate(mode, recordId).url
     SummaryListRowViewModel(
       key = "countryOfOrigin.checkYourAnswersLabel",
-      value = ValueViewModel(HtmlFormat.escape(value).toString),
+      value = ValueViewModel(HtmlContent(s"<div lang='en'>${HtmlFormat.escape(value).toString}</div>")),
       actions = Seq(
         ActionItemViewModel("site.change", changeLink)
           .withVisuallyHiddenText(messages("countryOfOrigin.change.hidden"))
