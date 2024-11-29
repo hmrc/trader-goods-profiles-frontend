@@ -129,6 +129,13 @@ object OutboundLink {
     val linkTextKey: String = "assessment.linkText"
   }
 
+  // Has Nirms Page
+  case object RetailMovement extends OutboundLink {
+    val link: String        =
+      "https://www.gov.uk/government/publications/retail-movement-scheme-how-the-scheme-will-work/retail-movement-scheme-how-the-scheme-will-work#product-eligibility"
+    val linkTextKey: String = "hasNirms.p2.linkText"
+  }
+
   val allLinks: Seq[OutboundLink] = Seq(
     ImportGoodsIntoUK,
     TradingNI,
@@ -148,7 +155,8 @@ object OutboundLink {
     FindCommodity,
     FindLongCommodity,
     FindCommodityHasCorrectGoods,
-    FindCommodityAssessments
+    FindCommodityAssessments,
+    RetailMovement
   )
 
 }
