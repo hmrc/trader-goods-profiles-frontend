@@ -142,6 +142,24 @@ object OutboundLink {
     val linkTextKey: String = "hasNiphl.p2.linkText"
   }
 
+  // Profile Setup Page
+  case object ApplyForAuth extends OutboundLink {
+    val link: String        =
+      "https://www.gov.uk/guidance/apply-for-authorisation-for-the-uk-internal-market-scheme-if-you-bring-goods-into-northern-ireland"
+    val linkTextKey: String = "profileSetup.p3.linkText"
+  }
+
+  case object RetailMovementProfile extends OutboundLink {
+    val link: String        =
+      "https://www.gov.uk/guidance/northern-ireland-retail-movement-scheme-how-to-register-and-seal-consignments"
+    val linkTextKey: String = "profileSetup.p6.linkText"
+  }
+
+  case object MovingPlantProfile extends OutboundLink {
+    val link: String        = "https://www.gov.uk/guidance/moving-plants-from-great-britain-to-northern-ireland"
+    val linkTextKey: String = "profileSetup.p9.linkText"
+  }
+
   val allLinks: Seq[OutboundLink] = Seq(
     ImportGoodsIntoUK,
     TradingNI,
@@ -163,7 +181,10 @@ object OutboundLink {
     FindCommodityHasCorrectGoods,
     FindCommodityAssessments,
     RetailMovement,
-    MovingPlants
+    MovingPlants,
+    ApplyForAuth,
+    RetailMovementProfile,
+    MovingPlantProfile
   )
 
 }
