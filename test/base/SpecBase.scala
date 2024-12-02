@@ -368,7 +368,8 @@ trait SpecBase
 
   def goodsRecordResponseWithReviewReason(
     createdDateTime: Instant = Instant.now,
-    updatedDateTime: Instant = Instant.now
+    updatedDateTime: Instant = Instant.now,
+    reviewReason: ReviewReason
   ): GetGoodsRecordResponse =
     GetGoodsRecordResponse(
       testRecordId,
