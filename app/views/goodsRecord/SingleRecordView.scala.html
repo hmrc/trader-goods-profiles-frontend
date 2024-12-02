@@ -21,10 +21,12 @@
     layout: templates.Layout,
     govukSummaryList: GovukSummaryList,
     formHelper: FormWithCSRF,
+    link: components.link,
+    paragraphBody: components.paragraphBody,
     govukNotificationBanner: GovukNotificationBanner
 )
 
-@(recordId: String, detailsList: SummaryList, categorisationList: SummaryList, supplementaryUnitList: SummaryList, adviceStatusList: SummaryList, changesMade: Boolean, changedPage: String,dataRemoved: Boolean,recordLocked:Boolean, adviceStatusMessage:Option[AdviceStatusMessage])(implicit request: Request[_], messages: Messages)
+@(recordId: String, detailsList: SummaryList, categorisationList: SummaryList, supplementaryUnitList: SummaryList, adviceStatusList: SummaryList, changesMade: Boolean, changedPage: String,dataRemoved: Boolean,recordLocked:Boolean, adviceStatusMessage:Option[AdviceStatusMessage], declarableStatus: DeclarableStatus,  toReview: Boolean = false, reviewReason: Option[ReviewReason] = None)(implicit request: Request[_], messages: Messages)
 
     @bannerContentForUpdate(page: String, dataRemoved:Boolean) = {
         <h3 class="govuk-notification-banner__heading">
@@ -49,12 +51,39 @@
 
 
     <h1 class="govuk-heading-l">@messages("singleRecord.h1")</h1>
+    <h2 class="govuk-heading-m">@messages("singleRecord.h2")</h2>
 
+    <p class="govuk-body">@messages("singleRecord.status")
+
+        <td class="govuk-table__cell">
+            <strong class="govuk-tag govuk-tag--red">
+                @messages(declarableStatus.messageKey)
+            </strong>
+        </td>
+    </p>
     @if(recordLocked){
         <p class="govuk-inset-text">@messages("singleRecord.recordLocked")</p>
-    } else {
-        <p class="govuk-body">@messages("singleRecord.p1")</p>
-        <p class="govuk-body">@messages("singleRecord.p2")</p>
+    }
+
+            @if(toReview) {
+                @reviewReason.map { reviewReason =>
+                    @(reviewReason.linkKey, reviewReason.url(recordId)) match {
+                        case (Some(linkKey), Some(url)) => {
+                            @paragraphBody(messages(
+                                reviewReason.messageKey,
+                                link(
+                                    text = messages(linkKey),
+                                    call = url,
+                                    id = None
+                                )
+                            )
+                            )
+                        }
+                        case _ => {
+                            @paragraphBody(message = messages(reviewReason.messageKey))
+                        }
+                    }
+                }
     }
 
     <h2 class="govuk-heading-m">@messages("singleRecord.h2.goodsDetails")</h2>

@@ -41,9 +41,6 @@ POST        /update-record/:recordId/categorisation/longer-commodity-code-result
 GET         /update-record/:recordId/categorisation/longer-commodity-code-result/check              controllers.HasCorrectGoodsController.onPageLoadLongerCommodityCode(mode: Mode = CheckMode,recordId: String)
 POST        /update-record/:recordId/categorisation/longer-commodity-code-result/check              controllers.HasCorrectGoodsController.onSubmitLongerCommodityCode(mode: Mode = CheckMode,recordId: String)
 
-GET         /goods-record/:recordId/to-review/review-reason                                         controllers.ReviewReasonController.onPageLoad(recordId: String)
-POST        /goods-record/:recordId/to-review/review-reason                                         controllers.ReviewReasonController.onSubmit(recordId: String)
-
 GET         /help-and-support                                                                       controllers.HelpAndSupportController.onPageLoad()
 
 GET         /outboundRedirect                                                                       controllers.OutboundController.redirect(link: String)
