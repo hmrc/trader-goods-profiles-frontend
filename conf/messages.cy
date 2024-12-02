@@ -331,18 +331,18 @@ hasCorrectGoods.p2.linkText = Chwiliwch am god nwyddau ar yr Offeryn Tariff Ar-l
 
 singleRecord.title = Cofnod nwyddau
 singleRecord.h1 = Cofnod nwyddau
-singleRecord.p1 = Gwiriwch a yw manylion y cofnod hwn yn gywir.
-singleRecord.p2 = Os oes angen i chi gategoreiddio’r daioni hwn, byddwn yn dweud mwy wrthych am sut i wneud hyn yn y camau nesaf.
 singleRecord.h2.goodsDetails = Manylion nwyddau
 singleRecord.warning = Rhybudd
 singleRecord.warningText = Rydych yn atebol dros yr wybodaeth am unrhyw symudiadau a grëir gennych chi, neu ar eich rhan gan ddefnyddio eich cofnodion Proffil Nwyddau Masnachwr.
 
+singleRecord.inadequateReviewReason.linkText = newid disgrifiad y nwyddau
 
 singleRecord.h2.categorisation = Categoreiddio
 singleRecord.category.row = Categori
 singleRecord.h2.supplementaryUnit = Unedau atodol
 singleRecord.h2.adviceStatus = Statws cyngor
 singleRecord.adviceStatus.row = Cyngor
+singleRecord.status = Statws y cofnod hwn yw:
 singleRecord.status.row = Statws
 singleRecord.askForAdvice = Gofyn am gyngor
 singleRecord.withdrawAdvice = Tynnu’r cais yn ôl
@@ -359,7 +359,8 @@ singleRecord.adviceParagraph.inProgress = Mae CThEF wedi dechrau edrych dros eic
 singleRecord.adviceParagraph.informationRequested = Mae CThEF wedi gofyn i chi am beth gwybodaeth am y cofnod nwyddau hwn.
 singleRecord.adviceParagraph.adviceReceived = Mae CThEF wedi cytuno bod y cod nwyddau a’r disgrifiad o’r nwyddau’n cyd-fynd â’i gilydd.
 
-
+singleRecord.inadequateReviewReason = Nid oes digon o fanylion yn y disgrifiad o'r nwyddau i ddisgrifio'r nwyddau. Mae angen i chi {0} cyn y gallwch ei ddefnyddio ar Wybodaeth Symudiad y Farchnad Fewnol (IMMI).
+singleRecord.h2 = Yr hyn i’w wneud nesaf
 
 countryOfOrigin.title = Gwlad tarddiad
 countryOfOrigin.h1 = Gwlad tarddiad
@@ -660,32 +661,6 @@ goodsRecordsLoading.p2 = Ar hyn o bryd, rydym wedi llwytho {0} allan o {1} o gof
 goodsRecordsLoading.p3.1 = Gallwch
 goodsRecordsLoading.p3.2 = adnewyddu’r dudalen hon
 goodsRecordsLoading.p3.3 = i wirio cynnydd llwytho’ch cofnodion.
-
-
-reviewReason.commodity.title = Mae problem gyda’r cofnod hwn
-reviewReason.commodity.heading = Mae problem gyda’r cofnod hwn
-reviewReason.commodity.p1 = Mae’r cod nwyddau wedi dod i ben. Os ydych am weld a allwch ddefnyddio’r cofnod o fewn IMMI, bydd angen i chi wneud y canlynol:
-reviewReason.commodity.li1 = newid y cod nwyddau
-reviewReason.commodity.li2 = categoreiddio’r nwyddau
-
-reviewReason.measure.title = Mae problem gyda’r cofnod hwn
-reviewReason.measure.heading = Mae problem gyda’r cofnod hwn
-reviewReason.measure.p1 = Mae’r cod nwyddau neu’r cyfyngiadau wedi newid. Bydd angen i chi gategoreiddio’r record.
-
-reviewReason.unclear.title = Mae angen adolygu’r cofnod hwn
-reviewReason.unclear.heading = Mae angen adolygu’r cofnod hwn
-reviewReason.unclear.p1 = Mae CThEF wedi adolygu’r cofnod. Mae’r disgrifiad o’r nwyddau yn aneglur. Os ydych am ddefnyddio’r cofnod hwn ar IMMI, bydd angen i chi newid disgrifiad y nwyddau.
-reviewReason.unclear.p2 = Dylai disgrifiad o’r nwyddau gynnwys disgrifiad o’r nwyddau mewn iaith glir. Nid oes rhaid i hyn gyd-fynd â’r disgrifiad tariff masnach.
-
-reviewReason.inadequate.title = Mae angen adolygu’r cofnod hwn
-reviewReason.inadequate.heading = Mae angen adolygu’r cofnod hwn
-reviewReason.inadequate.p1 = Mae CThEF wedi adolygu’r cofnod hwn. Nid oes gan y disgrifiad nwyddau ddigon o fanylion. Os ydych am ddefnyddio’r cofnod hwn ar IMMI, bydd angen i chi newid disgrifiad y nwyddau.
-reviewReason.inadequate.p2 = Dylai disgrifiad o’r nwyddau gynnwys disgrifiad o’r nwyddau mewn iaith glir. Nid oes rhaid i hyn gyd-fynd â’r disgrifiad tariff masnach.
-
-reviewReason.mismatch.title = Mae angen adolygu’r cofnod hwn
-reviewReason.mismatch.heading = Mae angen adolygu’r cofnod hwn
-reviewReason.mismatch.p1 = Mae CThEF wedi adolygu’r cofnod hwn. Nid yw’r cod nwyddau a’r disgrifiad nwyddau yn cyd-fynd. Os ydych am ddefnyddio’r cofnod hwn ar IMMI, bydd angen i chi ddiwygio’r cod nwyddau a’r disgrifiad nwyddau.
-
 
 withdrawAdviceStart.title = Tynnu’ch cais yn ôl
 withdrawAdviceStart.h1 = Tynnu’ch cais yn ôl

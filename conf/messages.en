@@ -446,8 +446,8 @@ removeGoodsRecord.noRecord = No, return to goods record
 
 singleRecord.title = Goods record
 singleRecord.h1 = Goods record
-singleRecord.p1 = Check if the details of this record are correct.
-singleRecord.p2 = If you need to categorise this good, we’ll tell you more about how to do this in the next steps.
+singleRecord.h2 = What to do next
+singleRecord.status = The status of this record is:
 singleRecord.h2.goodsDetails = Goods details
 singleRecord.warning = Warning
 singleRecord.warningText = You are liable for the information on any movements created by you, or on your behalf using your TGP records.
@@ -471,6 +471,20 @@ singleRecord.adviceParagraph.adviceNotProvided = HMRC have not been able to agre
 singleRecord.adviceParagraph.inProgress = HMRC has started to look at your goods record and will contact you with any updates
 singleRecord.adviceParagraph.informationRequested = HMRC have asked you for some information
 singleRecord.adviceParagraph.adviceReceived = HMRC have agreed that the commodity code and goods description match
+
+singleRecord.inadequateReviewReason = The goods description does not have enough detail to describe the goods. You need to {0} before you can use it on an Internal Market Movement Information (IMMI).
+singleRecord.inadequateReviewReason.linkText = change the goods description
+
+singleRecord.measureReviewReason = The categorisation exclusions have changed and you need to {0} to see if you can use it on an Internal Market Movement Information (IMMI).
+singleRecord.measureReviewReason.linkText = categorise this goods record
+
+singleRecord.unclearReviewReason = The goods description is not clear. You'll need to {0} before you can use it on an Internal Market Movement Information (IMMI).
+singleRecord.unclearReviewReason.linkText = change the goods description
+
+singleRecord.mismatchReviewReason = The goods description does not match the commodity code. You need to change the goods description or commodity code before you can use it on an Internal Market Movement Information (IMMI).
+
+singleRecord.commodityReviewReason = You need to {0} and then categorise this record to see if you can use it on an Internal Market Movement Information (IMMI).
+singleRecord.commodityReviewReason.linkText = change the commodity code
 
 hasCountryOfOriginChange.title = Change record information
 hasCountryOfOriginChange.h1 = Change record information
@@ -585,30 +599,6 @@ goodsRecordsLoading.p2 = We’ve currently loaded {0} out of {1} records.
 goodsRecordsLoading.p3.1 = You can
 goodsRecordsLoading.p3.2 = refresh this page
 goodsRecordsLoading.p3.3 = to check the progress of loading your records.
-
-reviewReason.commodity.title = There is a problem with this record
-reviewReason.commodity.heading = There is a problem with this record
-reviewReason.commodity.p1 = The commodity code has expired. If you want to see if you can use the record within an IMMI, you’ll need to:
-reviewReason.commodity.li1 = change the commodity code
-reviewReason.commodity.li2 = categorise the goods
-
-reviewReason.measure.title = There is a problem with this record
-reviewReason.measure.heading = There is a problem with this record
-reviewReason.measure.p1 = The commodity code or restrictions have changed. You’ll need to categorise the record.
-
-reviewReason.unclear.title = This record needs to be reviewed
-reviewReason.unclear.heading = This record needs to be reviewed
-reviewReason.unclear.p1 = HMRC have reviewed the record. The goods description is unclear. If you want to use this record on an IMMI, you’ll need to amend the goods description.
-reviewReason.unclear.p2 = A goods description should contain a plain language description of the goods. This does not have to match the trade tariff description.
-
-reviewReason.inadequate.title = This record needs to be reviewed
-reviewReason.inadequate.heading = This record needs to be reviewed
-reviewReason.inadequate.p1 = HMRC have reviewed this record. The goods description does not have enough detail. If you want to use this record on an IMMI, you’ll need to amend the goods description.
-reviewReason.inadequate.p2 = A goods description should contain a plain language description of the goods. This does not have to match the trade tariff description.
-
-reviewReason.mismatch.title = This record needs to be reviewed
-reviewReason.mismatch.heading = This record needs to be reviewed
-reviewReason.mismatch.p1 = HMRC have reviewed this record. The commodity code and goods description do not match. If you want to use this record on an IMMI, you’ll need to amend the commodity code and the goods description.
 
 profileSuccess.title = You’ve created your Trader Goods Profile
 profileSuccess.h1 = You’ve created your Trader Goods Profile

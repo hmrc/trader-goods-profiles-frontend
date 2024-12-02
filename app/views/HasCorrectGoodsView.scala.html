@@ -16,6 +16,7 @@
 
 @import models.Commodity
 @import viewmodels.LegendSize._
+@import models.outboundLink.OutboundLink
 
 @this(
     layout: templates.Layout,
@@ -46,7 +47,8 @@
 
 
     <p class="govuk-body">
-        <a href="https://www.trade-tariff.service.gov.uk/xi/find_commodity" target="_blank" class="govuk-link" >@messages("hasCorrectGoods.p2.linkText")</a>
+        <a href="@routes.OutboundController.redirect(OutboundLink.FindCommodityHasCorrectGoods.link)"
+           target="_blank" class="govuk-link">@messages(OutboundLink.FindCommodityHasCorrectGoods.linkTextKey)</a>
     </p>
 
     @formHelper(action = action, Symbol("autoComplete") -> "off") {
