@@ -20,6 +20,7 @@ import base.SpecBase
 import base.TestConstants.{testRecordId, userAnswersId}
 import connectors.{GoodsRecordConnector, OttConnector, TraderProfileConnector}
 import models.AdviceStatusMessage.{NotRequestedParagraph, RequestedParagraph}
+import models.DeclarableStatus.NotReadyForUse
 import models.helper.SupplementaryUnitUpdateJourney
 import models.{Country, NormalMode, ReviewReason, UserAnswers}
 import org.mockito.ArgumentCaptor
@@ -120,8 +121,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           GoodsDescriptionSummary.rowUpdate(recordForTestingSummaryRows, testRecordId, NormalMode, recordIsLocked),
           CountryOfOriginSummary
             .rowUpdate(recordForTestingSummaryRows, testRecordId, NormalMode, recordIsLocked, countries),
-          CommodityCodeSummary.rowUpdate(recordForTestingSummaryRows, testRecordId, NormalMode, recordIsLocked),
-          StatusSummary.row(recordForTestingSummaryRows.declarable)
+          CommodityCodeSummary.rowUpdate(recordForTestingSummaryRows, testRecordId, NormalMode, recordIsLocked)
         )
       )
 
@@ -176,7 +176,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           changedPage,
           pageRemoved,
           recordIsLocked,
-          Some(NotRequestedParagraph)
+          Some(NotRequestedParagraph),
+          NotReadyForUse
         )(
           request,
           messages(application)
@@ -235,8 +236,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           GoodsDescriptionSummary.rowUpdate(lockedRecord, lockedRecord.recordId, NormalMode, recordIsLocked),
           CountryOfOriginSummary
             .rowUpdate(lockedRecord, lockedRecord.recordId, NormalMode, recordIsLocked, countries),
-          CommodityCodeSummary.rowUpdate(lockedRecord, lockedRecord.recordId, NormalMode, recordIsLocked),
-          StatusSummary.row(lockedRecord.declarable)
+          CommodityCodeSummary.rowUpdate(lockedRecord, lockedRecord.recordId, NormalMode, recordIsLocked)
         )
       )
 
@@ -292,7 +292,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           changedPage,
           pageRemoved,
           recordIsLocked,
-          Some(RequestedParagraph)
+          Some(RequestedParagraph),
+          NotReadyForUse
         )(
           request,
           messages(application)
@@ -363,8 +364,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
               testRecordId,
               NormalMode,
               recordIsLocked
-            ),
-          StatusSummary.row(notCategorisedRecord.declarable)
+            )
         )
       )
 
@@ -424,7 +424,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           changedPage,
           pageRemoved,
           recordIsLocked,
-          Some(NotRequestedParagraph)
+          Some(NotRequestedParagraph),
+          NotReadyForUse
         )(
           request,
           messages(application)
@@ -746,8 +747,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
               GoodsDescriptionSummary.rowUpdate(record, record.recordId, NormalMode, recordIsLocked),
               CountryOfOriginSummary
                 .rowUpdate(record, record.recordId, NormalMode, recordIsLocked, countries),
-              CommodityCodeSummary.rowUpdate(record, record.recordId, NormalMode, recordIsLocked),
-              StatusSummary.row(record.declarable)
+              CommodityCodeSummary.rowUpdate(record, record.recordId, NormalMode, recordIsLocked)
             )
           )
 
@@ -803,6 +803,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
               pageRemoved,
               recordIsLocked,
               Some(NotRequestedParagraph),
+              NotReadyForUse,
               toReview,
               Some(reviewReason)
             )(
