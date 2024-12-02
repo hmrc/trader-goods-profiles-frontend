@@ -76,7 +76,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
         def createChangeList(app: Application): SummaryList = SummaryListViewModel(
           rows = Seq(
-            UpdateRecordSummary.row(summaryValue, summaryKey, summaryHidden, summaryUrl)(messages(app))
+            UpdateRecordSummary.countryRow(summaryValue, summaryKey, summaryHidden, summaryUrl)(messages(app))
           )
         )
 

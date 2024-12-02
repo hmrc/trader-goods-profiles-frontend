@@ -29,11 +29,10 @@ class OutboundController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
   auditService: AuditService,
-  profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents
 ) extends BaseController {
 
-  def redirect(link: String): Action[AnyContent] = (identify andThen profileAuth) { implicit request =>
+  def redirect(link: String): Action[AnyContent] = identify { implicit request =>
     val linkInfo = allLinks.find(_.link == link)
 
     linkInfo match {

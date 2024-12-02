@@ -57,6 +57,7 @@ homepage.downloadBanner.linkText = Ewch i’r dudalen ffeiliau cofnodion TGP i l
 homepage.h2.3 = Lawrlwytho data TGP
 homepage.downloadLinkText.noGoodsRecords = Nid oes gennych unrhyw gofnodion nwyddau TGP i’w lawrlwytho.
 homepage.downloadLinkText.noFilesRequested = Cael eich ffeil cofnodion TGP
+homepage.downloadLinkText.filesRequested = Cael neu lawrlwytho’ch ffeil cofnodion TGP
 homepage.newUkims.success = Rydych wedi newid y Cynllun Marchnad Fewnol y DU (UKIMS)
 
 unauthorised.title = Mae problem wedi codi
@@ -319,6 +320,7 @@ countryOfOrigin.error.required = Nodwch y wlad wreiddiol
 commodityCode.error.invalidFormat = Nodwch god nwyddau yn y fformat cywir
 commodityCode.error.invalid = Nodwch god nwyddau go iawn
 traderReference.error.length = Mae’n rhaid i’r cyfeirnod masnachwr fod yn 512 o gymeriadau neu lai
+commodityCode.error.expired = Mae’r cod nwyddau hwn wedi dod i ben. Nodwch god nwyddau dilys
 
 hasCorrectGoods.title = Canlyniadau ar gyfer y cod nwyddau {0}
 hasCorrectGoods.heading = Canlyniadau ar gyfer y cod nwyddau {0}
@@ -329,8 +331,6 @@ hasCorrectGoods.p2.linkText = Chwiliwch am god nwyddau ar yr Offeryn Tariff Ar-l
 
 singleRecord.title = Cofnod nwyddau
 singleRecord.h1 = Cofnod nwyddau
-singleRecord.p1 = Gwiriwch a yw manylion y cofnod hwn yn gywir.
-singleRecord.p2 = Os oes angen i chi gategoreiddio’r daioni hwn, byddwn yn dweud mwy wrthych am sut i wneud hyn yn y camau nesaf.
 singleRecord.h2.goodsDetails = Manylion nwyddau
 singleRecord.warning = Rhybudd
 singleRecord.warningText = Rydych yn atebol dros yr wybodaeth am unrhyw symudiadau a grëir gennych chi, neu ar eich rhan gan ddefnyddio eich cofnodion Proffil Nwyddau Masnachwr.
@@ -360,11 +360,11 @@ singleRecord.adviceParagraph.informationRequested = Mae CThEF wedi gofyn i chi a
 singleRecord.adviceParagraph.adviceReceived = Mae CThEF wedi cytuno bod y cod nwyddau a’r disgrifiad o’r nwyddau’n cyd-fynd â’i gilydd.
 
 singleRecord.inadequateReviewReason = Nid oes digon o fanylion yn y disgrifiad o'r nwyddau i ddisgrifio'r nwyddau. Mae angen i chi {0} cyn y gallwch ei ddefnyddio ar Wybodaeth Symudiad y Farchnad Fewnol (IMMI).
-singleRecord.h2 = Beth i'w wneud nesaf
+singleRecord.h2 = Yr hyn i’w wneud nesaf
 
 countryOfOrigin.title = Gwlad tarddiad
 countryOfOrigin.h1 = Gwlad tarddiad
-countryOfOrigin.p1 = Mae ‘gwlad tarddiad’ yn cyfeirio at y wlad lle cafodd y nwyddau eu gweithgynhyrchu (naill ai’n gyfan gwbl, neu gan fwyaf), eu tyfu neu eu haddasu. Mae’n cael ei defnyddio at ddibenion labelu, ac mae’n effeithio ar gyfraddau’r tollau.
+countryOfOrigin.p1 = Mae ‘gwlad tarddiad’ yn cyfeirio at y wlad lle cafodd y nwyddau eu gweithgynhyrchu (naill ai’n gyfan gwbl, neu gan fwyaf), eu tyfu neu eu haddasu. Mae’n cael ei ddefnyddio at ddibenion labelu, ac mae’n effeithio ar gyfraddau’r tollau.
 countryOfOrigin.p2 =  Pan fydd y nwyddau’n cael eu datgan wrth y ffin, os yw’r wlad tarddiad yn wahanol i’r wlad ymadael, efallai y bydd y rheoliadau, y dreth a’r tollau yn wahanol i’r arweiniad sydd ar y gwasanaeth hwn.
 countryOfOrigin.p2.linkText = Gwirio a yw’r nwyddau’n bodloni’r rheolau o ran tarddiad (yn agor tab newydd)
 countryOfOrigin.heading = Beth yw gwlad tarddiad y nwyddau?
@@ -481,6 +481,7 @@ fileManagement.availableFiles.table.header1 = Dyddiad ac amser y gofynnwyd amdan
 fileManagement.availableFiles.table.header2 = Dyddiad dod i ben
 fileManagement.availableFiles.table.header3 = Ffeil
 fileManagement.availableFiles.downloadText = Lawrlwytho’r ffeil
+fileManagement.availableFiles.downloadText.hidden = cais wedi’i wneud ar {0}
 fileManagement.pendingFiles.table.header1 = Dyddiad ac amser y gofynnwyd amdanynt
 fileManagement.pendingFiles.table.header2 = Ffeil
 fileManagement.pendingFiles.table.caption = Ffeiliau sy’n aros
@@ -488,6 +489,7 @@ fileManagement.pendingFiles.table.body = Mae’r rhain yn geisiadau rydych wedi�
 fileManagement.pendingFiles.fileText = Nid yw’r ffeil yn barod
 fileManagement.files.requestRecord.linkText = Cael ffeil cofnodion TGP newydd
 fileManagement.noFiles.requestRecord.linkText = Cael ffeil cofnodion TGP
+fileManagement.noFiles.paragraph1 = Nid oes gennych unrhyw ffeiliau cofnodion TGP i’w lawrlwytho. Bydd y ffeiliau hyn ar gael am 30 diwrnod yn unig.
 
 
 goodsRecords.title = Proffil Nwyddau
@@ -555,7 +557,7 @@ hasGoodsDescriptionChange.title = Newid gwybodaeth y cofnod
 hasGoodsDescriptionChange.h1 = Newid gwybodaeth y cofnod
 hasGoodsDescriptionChange.p1 = Bydd newid disgrifiad y nwyddau ar y cofnod nwyddau hwn yn dileu’r statws cyngor. Os ydych am wirio bod y cod nwyddau yn gywir ac yn cyd-fynd â’r disgrifiad nwyddau, bydd angen i chi ofyn am gyngor eto.
 hasGoodsDescriptionChange.h2 = A ydych am newid disgrifiad y nwyddau?
-hasGoodsDescriptionChange.error.required = Dewiswch os ydych am newid disgrifiad y nwyddau
+hasGoodsDescriptionChange.error.required = Dewiswch ‘Iawn’ os ydych am newid disgrifiad o’r nwyddau
 
 ukimsNumberChangeController.title = Newid Rhif Cynllun Marchnad Fewnol y DU (UKIMS)
 ukimsNumberChangeController.heading = Newid Rhif Cynllun Marchnad Fewnol y DU (UKIMS)
@@ -567,15 +569,14 @@ hasCountryOfOriginChange.title = Newid gwybodaeth y cofnod
 hasCountryOfOriginChange.h1 = Newid gwybodaeth y cofnod
 hasCountryOfOriginChange.p1 = Bydd angen i chi ail-gategoreiddio’r cofnod nwyddau os byddwch yn newid y wlad wreiddiol.
 hasCountryOfOriginChange.h2 = A ydych am newid y wlad wreiddiol?
-hasCountryOfOriginChange.error.required = Dewiswch os ydych am newid y wlad wreiddiol
-
+hasCountryOfOriginChange.error.required = Dewiswch ‘Iawn’ os ydych am newid y wlad tarddiad
 
 hasCommodityCodeChange.title = Newid gwybodaeth y cofnod
 hasCommodityCodeChange.h1 = Newid gwybodaeth y cofnod
 hasCommodityCodeChange.h2 = A ydych am newid y cod nwyddau?
 hasCommodityCodeChange.advice = Bydd newid y cod nwyddau ar y cofnod nwyddau hwn yn dileu’r statws cyngor. Os ydych am wirio bod y cod nwyddau yn gywir ac yn cyd-fynd â’r disgrifiad, bydd angen i chi ofyn am gyngor eto.
 hasCommodityCodeChange.category = Bydd angen i chi ail-gategoreiddio’r cofnod nwyddau os byddwch yn newid y cod nwyddau.
-hasCommodityCodeChange.error.required = Dewiswch os ydych am newid y cod nwyddau
+hasCommodityCodeChange.error.required = Dewiswch ‘Iawn’ os ydych am newid y cod nwyddau
 
 removeGoodsRecord.title = Tynnu’r cofnod nwyddau
 removeGoodsRecord.heading = Tynnu’r cofnod nwyddau

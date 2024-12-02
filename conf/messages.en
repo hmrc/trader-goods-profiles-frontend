@@ -194,11 +194,11 @@ commodityCode.error.invalidFormat = Enter a commodity code in the correct format
 commodityCode.error.invalid = Enter a real commodity code
 commodityCode.checkYourAnswersLabel = Commodity code
 commodityCode.change.hidden = Commodity code
+commodityCode.error.expired = This commodity code has expired. Enter a valid commodity code
 
 countryOfOrigin.title = Country of origin
 countryOfOrigin.h1 = Country of origin
-countryOfOrigin.p1 = Country of origin refers to the country where the goods were mostly or wholly manufactured, grown or modified. It is used for labelling purposes and affects duty rates.
-countryOfOrigin.p2 = If the country of origin is different to the country of departure when the goods are declared at the border, the regulations, tax and duties may differ from the guidance on this service.
+countryOfOrigin.p1 = Country of origin refers to the country where the goods were mostly or wholly manufactured, grown or modified. It’s used for labelling purposes and affects duty rates.
 countryOfOrigin.p2.linkText = Check if the goods meet the rules of origin (opens in new tab)
 countryOfOrigin.heading = What is the country of origin of the goods?
 countryOfOrigin.error.required = Enter the country of origin
@@ -448,8 +448,6 @@ singleRecord.title = Goods record
 singleRecord.h1 = Goods record
 singleRecord.h2 = What to do next
 singleRecord.status = The status of this record is:
-singleRecord.p1 = Check if the details of this record are correct.
-singleRecord.p2 = If you need to categorise this good, we’ll tell you more about how to do this in the next steps.
 singleRecord.h2.goodsDetails = Goods details
 singleRecord.warning = Warning
 singleRecord.warningText = You are liable for the information on any movements created by you, or on your behalf using your TGP records.
@@ -492,20 +490,20 @@ hasCountryOfOriginChange.title = Change record information
 hasCountryOfOriginChange.h1 = Change record information
 hasCountryOfOriginChange.p1 = You’ll need to recategorise this goods record if you change the country of origin
 hasCountryOfOriginChange.h2 = Do you want to change the country of origin?
-hasCountryOfOriginChange.error.required = Select if you want to change the country of origin
+hasCountryOfOriginChange.error.required = Select yes if you want to change the country of origin
 
 hasCommodityCodeChange.title = Change record information
 hasCommodityCodeChange.h1 = Change record information
 hasCommodityCodeChange.h2 = Do you want to change the commodity code?
 hasCommodityCodeChange.advice = Changing the commodity code on this goods record will remove the advice status. If you want to check the commodity code is correct and matches the description, you’ll need to ask for advice again.
 hasCommodityCodeChange.category = You’ll need to recategorise this goods record if you change the commodity code.
-hasCommodityCodeChange.error.required = Select if you want to change the commodity code
+hasCommodityCodeChange.error.required = Select yes if you want to change the commodity code
 
 hasGoodsDescriptionChange.title = Change record information
 hasGoodsDescriptionChange.h1 = Change record information
 hasGoodsDescriptionChange.p1 = Changing the goods description on this goods record will remove the advice status. If you want to check the commodity code is correct and matches the goods description, you’ll need to ask for advice again.
 hasGoodsDescriptionChange.h2 = Do you want to change the goods description?
-hasGoodsDescriptionChange.error.required = Select if you want to change the goods description
+hasGoodsDescriptionChange.error.required = Select yes if you want to change the goods description
 
 ukimsNumberChangeController.title = UK Internal Market Scheme (UKIMS) number change
 ukimsNumberChangeController.heading = UK Internal Market Scheme (UKIMS) number change
