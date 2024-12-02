@@ -49,8 +49,7 @@ class SingleRecordController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   ottConnector: OttConnector,
-  view: SingleRecordView,
-
+  view: SingleRecordView
 )(implicit @unused ec: ExecutionContext)
     extends BaseController {
 
