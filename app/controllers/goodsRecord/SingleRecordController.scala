@@ -106,7 +106,7 @@ class SingleRecordController @Inject() (
         }
         val categorisationList                = SummaryListViewModel(
           rows = Seq(
-            CategorySummary.row(categoryValue, record.recordId, recordIsLocked, isCategorised)
+            CategorySummary.row(categoryValue, record.recordId, recordIsLocked, isCategorised, record.reviewReason)
           )
         )
         val supplementaryUnitList             = SummaryListViewModel(
