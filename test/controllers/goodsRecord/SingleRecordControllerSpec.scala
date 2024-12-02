@@ -798,8 +798,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           pageRemoved,
           recordIsLocked,
           Some(NotRequestedParagraph),
-          NotReadyForUse,
-          Some("singleRecord.inadequateReviewReason")
+          NotReadyForUse
         )(
           request,
           messages(application)

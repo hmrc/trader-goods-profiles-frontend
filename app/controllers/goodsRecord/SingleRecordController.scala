@@ -49,7 +49,8 @@ class SingleRecordController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   ottConnector: OttConnector,
-  view: SingleRecordView
+  view: SingleRecordView,
+
 )(implicit @unused ec: ExecutionContext)
     extends BaseController {
 
@@ -141,20 +142,11 @@ class SingleRecordController @Inject() (
             recordIsLocked,
             para,
             record.declarable,
-            getReviewReasonMessageKey(record.toReview, record.reviewReason)
+            record.toReview,
+            record.reviewReason
           )
         ).removingFromSession(initialValueOfHasSuppUnit, initialValueOfSuppUnit)
       }
-    }
-
-  private def getReviewReasonMessageKey(toReview: Boolean, reviewReason: Option[String]): Option[String] =
-    if (toReview) {
-      reviewReason match {
-        case Some("inadequate") => Some("singleRecord.inadequateReviewReason")
-        case _                  => None
-      }
-    } else {
-      None
     }
 
   private def dataCleansing(request: DataRequest[AnyContent]) = {

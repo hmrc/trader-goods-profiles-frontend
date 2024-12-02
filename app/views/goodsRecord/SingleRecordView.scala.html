@@ -26,7 +26,7 @@
     govukNotificationBanner: GovukNotificationBanner
 )
 
-@(recordId: String, detailsList: SummaryList, categorisationList: SummaryList, supplementaryUnitList: SummaryList, adviceStatusList: SummaryList, changesMade: Boolean, changedPage: String,dataRemoved: Boolean,recordLocked:Boolean, adviceStatusMessage:Option[AdviceStatusMessage], declarableStatus: DeclarableStatus, reviewReasonKey: Option[String] = None)(implicit request: Request[_], messages: Messages)
+@(recordId: String, detailsList: SummaryList, categorisationList: SummaryList, supplementaryUnitList: SummaryList, adviceStatusList: SummaryList, changesMade: Boolean, changedPage: String,dataRemoved: Boolean,recordLocked:Boolean, adviceStatusMessage:Option[AdviceStatusMessage], declarableStatus: DeclarableStatus,  toReview: Boolean = false, reviewReason: Option[ReviewReason] = None)(implicit request: Request[_], messages: Messages)
 
     @bannerContentForUpdate(page: String, dataRemoved:Boolean) = {
         <h3 class="govuk-notification-banner__heading">
@@ -65,11 +65,25 @@
         <p class="govuk-inset-text">@messages("singleRecord.recordLocked")</p>
     }
 
-     @reviewReasonKey.map { key => @paragraphBody(message = messages(key, link(
-        text = messages(key + ".linkText"),
-        call = controllers.goodsRecord.routes.HasGoodsDescriptionChangeController.onPageLoad(NormalMode, recordId),
-        id = None
-    )))
+            @if(toReview) {
+                @reviewReason.map { reviewReason =>
+                    @(reviewReason.linkKey, reviewReason.url(recordId)) match {
+                        case (Some(linkKey), Some(url)) => {
+                            @paragraphBody(messages(
+                                reviewReason.messageKey,
+                                link(
+                                    text = messages(linkKey),
+                                    call = url,
+                                    id = None
+                                )
+                            )
+                            )
+                        }
+                        case _ => {
+                            @paragraphBody(message = messages(reviewReason.messageKey))
+                        }
+                    }
+                }
     }
 
     <h2 class="govuk-heading-m">@messages("singleRecord.h2.goodsDetails")</h2>
