@@ -28,12 +28,12 @@ class DeclarableStatusSpec extends SpecBase {
         Json.fromJson[DeclarableStatus](JsString("IMMI Ready")) mustBe JsSuccess(ImmiReady)
       }
 
-      "when Not Ready For IMMI" in {
-        Json.fromJson[DeclarableStatus](JsString("Not Ready For IMMI")) mustBe JsSuccess(NotReadyForImmi)
+      "when Not ready for IMMI" in {
+        Json.fromJson[DeclarableStatus](JsString("Not ready for IMMI")) mustBe JsSuccess(NotReadyForImmi)
       }
 
-      "when Not Ready For Use" in {
-        Json.fromJson[DeclarableStatus](JsString("Not Ready For Use")) mustBe JsSuccess(NotReadyForUse)
+      "when Not ready For Use" in {
+        Json.fromJson[DeclarableStatus](JsString("Not ready For Use")) mustBe JsSuccess(NotReadyForUse)
       }
     }
 
@@ -42,12 +42,12 @@ class DeclarableStatusSpec extends SpecBase {
         Json.toJson(ImmiReady: DeclarableStatus) mustBe JsString("IMMI Ready")
       }
 
-      "when Not Ready For IMMI" in {
-        Json.toJson(NotReadyForImmi: DeclarableStatus) mustBe JsString("Not Ready For IMMI")
+      "when Not ready for IMMI" in {
+        Json.toJson(NotReadyForImmi: DeclarableStatus) mustBe JsString("Not ready for IMMI")
       }
 
-      "when Not Ready For Use" in {
-        Json.toJson(NotReadyForUse: DeclarableStatus) mustBe JsString("Not Ready For Use")
+      "when Not ready For Use" in {
+        Json.toJson(NotReadyForUse: DeclarableStatus) mustBe JsString("Not ready For Use")
       }
     }
   }

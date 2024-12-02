@@ -44,15 +44,28 @@ object DeclarableStatus {
 
   implicit val writes: Writes[DeclarableStatus] = Writes[DeclarableStatus] {
     case ImmiReady       => JsString("IMMI Ready")
-    case NotReadyForImmi => JsString("Not Ready For IMMI")
-    case NotReadyForUse  => JsString("Not Ready For Use")
+    case NotReadyForImmi => JsString("Not ready for IMMI")
+    case NotReadyForUse  => JsString("Not ready For Use")
   }
+//
+//  implicit val reads: Reads[DeclarableStatus] = Reads[DeclarableStatus] {
+//    case JsString("IMMI Ready")         => JsSuccess(ImmiReady)
+//    case JsString("Not ready for IMMI") => JsSuccess(NotReadyForImmi)
+//    case JsString("Not ready For Use")  => JsSuccess(NotReadyForUse)
+//    case other                          => JsError(s"[DeclarableStatus] Reads unknown DeclarableStatus: $other")
+//  }
 
-  implicit val reads: Reads[DeclarableStatus] = Reads[DeclarableStatus] {
-    case JsString("IMMI Ready")         => JsSuccess(ImmiReady)
-    case JsString("Not Ready For IMMI") => JsSuccess(NotReadyForImmi)
-    case JsString("Not Ready For Use")  => JsSuccess(NotReadyForUse)
-    case other                          => JsError(s"[DeclarableStatus] Reads unknown DeclarableStatus: $other")
-  }
+  implicit val reads: Reads[DeclarableStatus] =
+    Reads[DeclarableStatus] { // TODO: TGP-3017: Correct the case and remove the JsString check once we have confirmation of the exact values we are expecting
+      case JsString(value) =>
+        value.toLowerCase match {
+          case "immi ready"         => JsSuccess(ImmiReady)
+          case "not ready for immi" => JsSuccess(NotReadyForImmi)
+          case "not ready for use"  => JsSuccess(NotReadyForUse)
+          case _                    => JsError(s"[DeclarableStatus] Reads unknown DeclarableStatus: $value")
+        }
+      case other           =>
+        JsError(s"[DeclarableStatus] Reads not a JsString: $other")
+    }
 
 }
