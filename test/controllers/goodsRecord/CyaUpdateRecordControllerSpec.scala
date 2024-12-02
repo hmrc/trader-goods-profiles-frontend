@@ -20,6 +20,7 @@ import base.SpecBase
 import base.TestConstants.{testEori, testRecordId}
 import config.FrontendAppConfig
 import connectors.{GoodsRecordConnector, OttConnector}
+import models.router.requests.PutRecordRequest
 import models.{CheckMode, Commodity, Country, UpdateGoodsRecord}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
@@ -1340,6 +1341,20 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               .success
               .value
 
+            val newRecord = PutRecordRequest(
+              actorId = record.eori,
+              traderRef = record.traderRef,
+              comcode = testCommodity.commodityCode,
+              goodsDescription = record.goodsDescription,
+              countryOfOrigin = record.countryOfOrigin,
+              category = None,
+              assessments = record.assessments,
+              supplementaryUnit = record.supplementaryUnit,
+              measurementUnit = record.measurementUnit,
+              comcodeEffectiveFromDate = record.comcodeEffectiveFromDate,
+              comcodeEffectiveToDate = record.comcodeEffectiveToDate
+            )
+
             val mockGoodsRecordConnector = mock[GoodsRecordConnector]
             val mockAuditService         = mock[AuditService]
             val mockSessionRepository    = mock[SessionRepository]
@@ -1373,7 +1388,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               redirectLocation(result).value mustEqual controllers.goodsRecord.routes.SingleRecordController
                 .onPageLoad(testRecordId)
                 .url
-              verify(mockGoodsRecordConnector).putGoodsRecord(any(), any())(any())
+              verify(mockGoodsRecordConnector).putGoodsRecord(eqTo(newRecord), eqTo(testRecordId))(any())
               verify(mockSessionRepository).set(any())
 
               withClue("must call the audit connector with the supplied details") {
