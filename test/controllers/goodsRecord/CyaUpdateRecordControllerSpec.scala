@@ -18,7 +18,6 @@ package controllers.goodsRecord
 
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId}
-import config.FrontendAppConfig
 import connectors.{GoodsRecordConnector, OttConnector}
 import models.router.requests.PutRecordRequest
 import models.{CheckMode, Commodity, Country, UpdateGoodsRecord}
@@ -280,11 +279,8 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             val mockGoodsRecordConnector = mock[GoodsRecordConnector]
             val mockAuditService         = mock[AuditService]
             val mockSessionRepository    = mock[SessionRepository]
-            val mockAppConfig            = mock[FrontendAppConfig]
 
-            when(mockAppConfig.useEisPatchMethod).thenReturn(false)
-
-            when(mockGoodsRecordConnector.updateGoodsRecord(any())(any())).thenReturn(Future.successful(Done))
+            when(mockGoodsRecordConnector.putGoodsRecord(any(), any())(any())).thenReturn(Future.successful(Done))
             when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
               .thenReturn(Future.successful(Done))
             when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
@@ -297,8 +293,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
                 .overrides(
                   bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
                   bind[SessionRepository].toInstance(mockSessionRepository),
-                  bind[AuditService].toInstance(mockAuditService),
-                  bind[FrontendAppConfig].toInstance(mockAppConfig)
+                  bind[AuditService].toInstance(mockAuditService)
                 )
                 .build()
 
@@ -310,7 +305,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               redirectLocation(result).value mustEqual controllers.goodsRecord.routes.SingleRecordController
                 .onPageLoad(testRecordId)
                 .url
-              verify(mockGoodsRecordConnector).updateGoodsRecord(eqTo(expectedPayload))(any())
+              verify(mockGoodsRecordConnector).putGoodsRecord(any(), any())(any())
               verify(mockSessionRepository).set(any())
 
               withClue("must call the audit connector with the supplied details") {
@@ -339,9 +334,6 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             val mockGoodsRecordConnector = mock[GoodsRecordConnector]
             val mockAuditService         = mock[AuditService]
             val mockSessionRepository    = mock[SessionRepository]
-            val mockAppConfig            = mock[FrontendAppConfig]
-
-            when(mockAppConfig.useEisPatchMethod).thenReturn(true)
 
             when(mockGoodsRecordConnector.putGoodsRecord(any(), any())(any())).thenReturn(Future.successful(Done))
             when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
@@ -356,8 +348,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
                 .overrides(
                   bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
                   bind[SessionRepository].toInstance(mockSessionRepository),
-                  bind[AuditService].toInstance(mockAuditService),
-                  bind[FrontendAppConfig].toInstance(mockAppConfig)
+                  bind[AuditService].toInstance(mockAuditService)
                 )
                 .build()
 
@@ -447,7 +438,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
           val mockGoodsRecordConnector = mock[GoodsRecordConnector]
           val mockAuditService         = mock[AuditService]
-          when(mockGoodsRecordConnector.updateGoodsRecord(any())(any()))
+          when(mockGoodsRecordConnector.patchGoodsRecord(any())(any()))
             .thenReturn(Future.failed(new RuntimeException("Connector failed")))
           when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
             .thenReturn(Future.successful(Done))
@@ -479,7 +470,6 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
                   any()
                 )
               verify(mockGoodsRecordConnector).getRecord(any(), any())(any())
-              verify(mockGoodsRecordConnector).updateGoodsRecord(any())(any())
             }
           }
         }
@@ -603,13 +593,10 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
             val mockConnector    = mock[GoodsRecordConnector]
             val mockAuditService = mock[AuditService]
-            val mockAppConfig    = mock[FrontendAppConfig]
-
-            when(mockAppConfig.useEisPatchMethod).thenReturn(false)
 
             when(mockConnector.getRecord(any(), any())(any())).thenReturn(Future.successful(record))
 
-            when(mockConnector.updateGoodsRecord(any())(any())).thenReturn(Future.successful(Done))
+            when(mockConnector.patchGoodsRecord(any())(any())).thenReturn(Future.successful(Done))
             when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
               .thenReturn(Future.successful(Done))
 
@@ -630,7 +617,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               redirectLocation(result).value mustEqual controllers.goodsRecord.routes.SingleRecordController
                 .onPageLoad(testRecordId)
                 .url
-              verify(mockConnector).updateGoodsRecord(eqTo(expectedPayload))(any())
+              verify(mockConnector).patchGoodsRecord(eqTo(expectedPayload))(any())
 
               withClue("must call the audit connector with the supplied details") {
                 verify(mockAuditService)
@@ -642,7 +629,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
                     any()
                   )
                 verify(mockConnector).getRecord(any(), any())(any())
-                verify(mockConnector).updateGoodsRecord(any())(any())
+                verify(mockConnector).patchGoodsRecord(any())(any())
               }
             }
           }
@@ -680,7 +667,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           val mockConnector    = mock[GoodsRecordConnector]
           val mockAuditService = mock[AuditService]
 
-          when(mockConnector.updateGoodsRecord(any())(any()))
+          when(mockConnector.patchGoodsRecord(any())(any()))
             .thenReturn(Future.failed(new RuntimeException("Connector failed")))
           when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
             .thenReturn(Future.successful(Done))
@@ -708,7 +695,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
                 )(
                   any()
                 )
-              verify(mockConnector, never()).updateGoodsRecord(any())(any())
+              verify(mockConnector, never()).patchGoodsRecord(any())(any())
             }
           }
         }
@@ -832,12 +819,9 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
             val mockConnector    = mock[GoodsRecordConnector]
             val mockAuditService = mock[AuditService]
-            val mockAppConfig    = mock[FrontendAppConfig]
-
-            when(mockAppConfig.useEisPatchMethod).thenReturn(false)
 
             when(mockConnector.getRecord(any(), any())(any())).thenReturn(Future.successful(record))
-            when(mockConnector.updateGoodsRecord(any())(any())).thenReturn(Future.successful(Done))
+            when(mockConnector.patchGoodsRecord(any())(any())).thenReturn(Future.successful(Done))
             when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
               .thenReturn(Future.successful(Done))
 
@@ -858,7 +842,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               redirectLocation(result).value mustEqual controllers.goodsRecord.routes.SingleRecordController
                 .onPageLoad(testRecordId)
                 .url
-              verify(mockConnector, atLeastOnce()).updateGoodsRecord(eqTo(expectedPayload))(any())
+              verify(mockConnector, atLeastOnce()).patchGoodsRecord(eqTo(expectedPayload))(any())
               verify(mockConnector, atLeastOnce()).getRecord(eqTo(testEori), eqTo(testRecordId))(any())
 
               withClue("must call the audit connector with the supplied details") {
@@ -884,9 +868,6 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             val mockGoodsRecordConnector = mock[GoodsRecordConnector]
             val mockAuditService         = mock[AuditService]
             val mockSessionRepository    = mock[SessionRepository]
-            val mockAppConfig            = mock[FrontendAppConfig]
-
-            when(mockAppConfig.useEisPatchMethod).thenReturn(true)
 
             when(mockGoodsRecordConnector.patchGoodsRecord(any())(any())).thenReturn(Future.successful(Done))
             when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
@@ -901,8 +882,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
                 .overrides(
                   bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
                   bind[SessionRepository].toInstance(mockSessionRepository),
-                  bind[AuditService].toInstance(mockAuditService),
-                  bind[FrontendAppConfig].toInstance(mockAppConfig)
+                  bind[AuditService].toInstance(mockAuditService)
                 )
                 .build()
 
@@ -963,7 +943,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               redirectLocation(result).value mustEqual controllers.goodsRecord.routes.SingleRecordController
                 .onPageLoad(testRecordId)
                 .url
-              verify(mockConnector, never()).updateGoodsRecord(any())(any())
+              verify(mockConnector, never()).patchGoodsRecord(any())(any())
               verify(mockConnector, atLeastOnce()).getRecord(eqTo(testEori), eqTo(testRecordId))(any())
 
               withClue("must call the audit connector with the supplied details") {
@@ -1012,7 +992,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           val mockConnector    = mock[GoodsRecordConnector]
           val mockAuditService = mock[AuditService]
 
-          when(mockConnector.updateGoodsRecord(any())(any()))
+          when(mockConnector.patchGoodsRecord(any())(any()))
             .thenReturn(Future.failed(new RuntimeException("Connector failed")))
           when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
             .thenReturn(Future.successful(Done))
@@ -1279,13 +1259,10 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
             val mockGoodsRecordConnector = mock[GoodsRecordConnector]
             val mockAuditService         = mock[AuditService]
-            val mockAppConfig            = mock[FrontendAppConfig]
-
-            when(mockAppConfig.useEisPatchMethod).thenReturn(false)
 
             when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
               .thenReturn(Future.successful(Done))
-            when(mockGoodsRecordConnector.updateGoodsRecord(any())(any())).thenReturn(Future.successful(Done))
+            when(mockGoodsRecordConnector.putGoodsRecord(any(), any())(any())).thenReturn(Future.successful(Done))
 
             when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
               .successful(record)
@@ -1307,7 +1284,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               redirectLocation(result).value mustEqual controllers.goodsRecord.routes.SingleRecordController
                 .onPageLoad(testRecordId)
                 .url
-              verify(mockGoodsRecordConnector).updateGoodsRecord(eqTo(expectedPayload))(any())
+              verify(mockGoodsRecordConnector).putGoodsRecord(any(), any())(any())
 
               withClue("must call the audit connector with the supplied details") {
                 verify(mockAuditService)
@@ -1358,9 +1335,6 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             val mockGoodsRecordConnector = mock[GoodsRecordConnector]
             val mockAuditService         = mock[AuditService]
             val mockSessionRepository    = mock[SessionRepository]
-            val mockAppConfig            = mock[FrontendAppConfig]
-
-            when(mockAppConfig.useEisPatchMethod).thenReturn(true)
 
             when(mockGoodsRecordConnector.putGoodsRecord(any(), any())(any())).thenReturn(Future.successful(Done))
             when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
@@ -1375,8 +1349,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
                 .overrides(
                   bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
                   bind[SessionRepository].toInstance(mockSessionRepository),
-                  bind[AuditService].toInstance(mockAuditService),
-                  bind[FrontendAppConfig].toInstance(mockAppConfig)
+                  bind[AuditService].toInstance(mockAuditService)
                 )
                 .build()
 
@@ -1450,7 +1423,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               redirectLocation(result).value mustEqual controllers.goodsRecord.routes.SingleRecordController
                 .onPageLoad(testRecordId)
                 .url
-              verify(mockConnector, never()).updateGoodsRecord(any())(any())
+              verify(mockConnector, never()).patchGoodsRecord(any())(any())
               verify(mockConnector).getRecord(eqTo(testEori), eqTo(testRecordId))(any())
 
               withClue("must call the audit connector with the supplied details") {
@@ -1538,7 +1511,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           val mockAuditService         = mock[AuditService]
           when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
             .thenReturn(Future.successful(Done))
-          when(mockGoodsRecordConnector.updateGoodsRecord(any())(any()))
+          when(mockGoodsRecordConnector.patchGoodsRecord(any())(any()))
             .thenReturn(Future.failed(new RuntimeException("Connector failed")))
           when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
             .successful(record)
@@ -1565,7 +1538,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
                   any()
                 )
               verify(mockGoodsRecordConnector, atLeastOnce()).getRecord(any(), any())(any())
-              verify(mockGoodsRecordConnector, atLeastOnce()).updateGoodsRecord(any())(any())
+              verify(mockGoodsRecordConnector, atLeastOnce()).putGoodsRecord(any(), any())(any())
             }
           }
         }
