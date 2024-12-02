@@ -360,7 +360,7 @@ singleRecord.adviceParagraph.informationRequested = Mae CThEF wedi gofyn i chi a
 singleRecord.adviceParagraph.adviceReceived = Mae CThEF wedi cytuno bod y cod nwyddau a’r disgrifiad o’r nwyddau’n cyd-fynd â’i gilydd.
 
 singleRecord.inadequateReviewReason = Nid oes digon o fanylion yn y disgrifiad o'r nwyddau i ddisgrifio'r nwyddau. Mae angen i chi {0} cyn y gallwch ei ddefnyddio ar Wybodaeth Symudiad y Farchnad Fewnol (IMMI).
-singleRecord.h2 = Beth i'w wneud nesaf
+singleRecord.h2 = Yr hyn i’w wneud nesaf
 
 countryOfOrigin.title = Gwlad tarddiad
 countryOfOrigin.h1 = Gwlad tarddiad
