@@ -44,13 +44,13 @@ object DeclarableStatus {
 
   implicit val writes: Writes[DeclarableStatus] = Writes[DeclarableStatus] {
     case ImmiReady       => JsString("IMMI Ready")
-    case NotReadyForImmi => JsString("Not Ready For IMMI")
+    case NotReadyForImmi => JsString("Not ready for IMMI")
     case NotReadyForUse  => JsString("Not Ready For Use")
   }
 
   implicit val reads: Reads[DeclarableStatus] = Reads[DeclarableStatus] {
     case JsString("IMMI Ready")         => JsSuccess(ImmiReady)
-    case JsString("Not Ready For IMMI") => JsSuccess(NotReadyForImmi)
+    case JsString("Not ready for IMMI") => JsSuccess(NotReadyForImmi)
     case JsString("Not Ready For Use")  => JsSuccess(NotReadyForUse)
     case other                          => JsError(s"[DeclarableStatus] Reads unknown DeclarableStatus: $other")
   }
