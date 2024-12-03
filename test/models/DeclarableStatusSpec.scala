@@ -33,7 +33,7 @@ class DeclarableStatusSpec extends SpecBase {
       }
 
       "when Not ready For Use" in {
-        Json.fromJson[DeclarableStatus](JsString("Not ready For Use")) mustBe JsSuccess(NotReadyForUse)
+        Json.fromJson[DeclarableStatus](JsString("Not Ready For Use")) mustBe JsSuccess(NotReadyForUse)
       }
     }
 
@@ -47,7 +47,7 @@ class DeclarableStatusSpec extends SpecBase {
       }
 
       "when Not ready For Use" in {
-        Json.toJson(NotReadyForUse: DeclarableStatus) mustBe JsString("Not ready For Use")
+        Json.toJson(NotReadyForUse: DeclarableStatus) mustBe JsString("Not Ready For Use")
       }
     }
   }
