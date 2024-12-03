@@ -336,6 +336,8 @@ singleRecord.warning = Rhybudd
 singleRecord.warningText = Rydych yn atebol dros yr wybodaeth am unrhyw symudiadau a grëir gennych chi, neu ar eich rhan gan ddefnyddio eich cofnodion Proffil Nwyddau Masnachwr.
 
 singleRecord.inadequateReviewReason.linkText = newid disgrifiad y nwyddau
+singleRecord.unclearReviewReason = Nid yw disgrifiad y nwyddau’n glir. Bydd angen i chi {0} cyn bod modd i chi ei ddefnyddio ar Wybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI).
+singleRecord.unclearReviewReason.linkText = newid disgrifiad y nwyddau
 
 singleRecord.h2.categorisation = Categoreiddio
 singleRecord.category.row = Categori
@@ -740,4 +742,3 @@ adviceStatus.adviceRequestWithdrawn = Cais am gyngor wedi’i dynnu yn ôl
 declarableStatus.immiReady = Barod ar gyfer IMMI
 declarableStatus.notReadyForImmi = Ddim yn barod ar gyfer IMMI
 declarableStatus.notReadyForUse = Camau i’w cymryd
-
