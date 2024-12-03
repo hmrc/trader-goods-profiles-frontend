@@ -32,18 +32,18 @@ object DeclarableStatus {
   )
 
   case object ImmiReady extends DeclarableStatus {
-    val messageKey = "declarableStatus.immiReady"
+    val messageKey   = "declarableStatus.immiReady"
     val paragraphKey = "declarableStatus.immiReady.paragraph"
   }
 
   case object NotReadyForImmi extends DeclarableStatus {
-    val messageKey = "declarableStatus.notReadyForImmi"
+    val messageKey   = "declarableStatus.notReadyForImmi"
     val paragraphKey = "declarableStatus.notReadyForImmi.paragraph"
   }
 
   case object NotReadyForUse extends DeclarableStatus {
-    val messageKey = "declarableStatus.notReadyForUse"
-    val paragraphKey = "declarableStatus.notReadyForUse.paragraph"
+    val messageKey   = "declarableStatus.notReadyForUse"
+    val paragraphKey = "declarableStatus.notReadyForUse.paragraph.start"
   }
 
   implicit val writes: Writes[DeclarableStatus] = Writes[DeclarableStatus] {
