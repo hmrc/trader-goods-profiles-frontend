@@ -741,6 +741,7 @@ declarableStatus.immiReady = Barod ar gyfer IMMI
 declarableStatus.notReadyForImmi = Ddim yn barod ar gyfer IMMI
 declarableStatus.notReadyForUse = Camau i’w cymryd
 
-declarableStatus.immiReady.paragraph = You can use this record to complete the Internal market Movement Information (IMMI).
-declarableStatus.notReadyForImmi.paragraph = You cannot use this record to complete the Internal market Movement Information (IMMI). You may be able to update the information or categorise the record to see if it is ready for IMMI.
-declarableStatus.notReadyForUse.paragraph = You need to categorise this goods record to see if you can use it on an Internal Market Movement Information (IMMI).
+
+declarableStatus.immiReady.paragraph =
+declarableStatus.notReadyForImmi.paragraph =
+declarableStatus.notReadyForUse.paragraph =
