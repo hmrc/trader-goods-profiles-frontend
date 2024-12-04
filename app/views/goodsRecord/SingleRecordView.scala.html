@@ -49,18 +49,22 @@
         )
     }
 
-
     <h1 class="govuk-heading-l">@messages("singleRecord.h1")</h1>
     <h2 class="govuk-heading-m">@messages("singleRecord.h2")</h2>
 
-    <p class="govuk-body">@messages("singleRecord.status")
-
-        <td class="govuk-table__cell">
-            <strong class="govuk-tag govuk-tag--red">
-                @messages(declarableStatus.messageKey)
-            </strong>
-        </td>
+    <p class="govuk-body">
+        @messages("singleRecord.status")
+        <strong class="govuk-tag @declarableStatus.paragraphTagColour">
+            @messages(declarableStatus.messageKey)
+        </strong>
     </p>
+
+    @if( declarableStatus == DeclarableStatus.NotReadyForUse) {
+        <p class="govuk-body">@messages(declarableStatus.paragraphKey) <a href="@controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(recordId).url" class='govuk-link'>@messages("declarableStatus.notReadyForUse.paragraph.linkText")</a> @messages("declarableStatus.notReadyForUse.paragraph.end") </p>
+    } else {
+        <p class="govuk-body">@messages(declarableStatus.paragraphKey)</p>
+    }
+
     @if(recordLocked){
         <p class="govuk-inset-text">@messages("singleRecord.recordLocked")</p>
     }
