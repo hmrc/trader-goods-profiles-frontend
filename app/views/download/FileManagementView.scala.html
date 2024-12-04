@@ -34,29 +34,31 @@ govukTable: GovukTable
 
     @if(viewModel.isFiles) {
 
-        @viewModel.availableFilesTable.map { table: FileManagementTable =>
-            @govukTable(Table(
-                caption = Some(table.caption),
-                captionClasses = "govuk-visually-hidden",
-                head = Some(table.headRows),
-                rows = table.rows
-            )
-          )
-        }
+        <div style="overflow-x: auto;">
+            @viewModel.availableFilesTable.map { table: FileManagementTable =>
+                @govukTable(Table(
+                    caption = Some(table.caption),
+                    head = Some(table.headRows),
+                    rows = table.rows
+                )
+              )
+            }
+        </div>
 
-        @viewModel.pendingFilesTable.map { table: FileManagementTable =>
-                <h2 class="govuk-heading-m">@table.caption</h2>
-                @table.body.map{ body =>
-                    <p class="govuk-body">@body</p>
-                }
-            @govukTable(Table(
-                caption = Some(table.caption),
-                captionClasses = "govuk-visually-hidden",
-                head = Some(table.headRows),
-                rows = table.rows
-            )
-          )
-        }
+        <div style="overflow-x: auto;">
+            @viewModel.pendingFilesTable.map { table: FileManagementTable =>
+                    <h2 class="govuk-heading-m">@table.caption</h2>
+                    @table.body.map{ body =>
+                        <p class="govuk-body">@body</p>
+                    }
+                @govukTable(Table(
+                    caption = None,
+                    head = Some(table.headRows),
+                    rows = table.rows
+                )
+              )
+            }
+        </div>
     }
 
     <p class="govuk-body"><a href="@controllers.download.routes.RequestDataController.onPageLoad().url" class="govuk-link" >@viewModel.tgpRecordsLink</a></p>
