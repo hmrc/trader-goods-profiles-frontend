@@ -33,20 +33,20 @@ object DeclarableStatus {
   )
 
   case object ImmiReady extends DeclarableStatus {
-    val messageKey   = "declarableStatus.immiReady"
-    val paragraphKey = "declarableStatus.immiReady.paragraph"
+    val messageKey         = "declarableStatus.immiReady"
+    val paragraphKey       = "declarableStatus.immiReady.paragraph"
     val paragraphTagColour = "govuk-tag--green"
   }
 
   case object NotReadyForImmi extends DeclarableStatus {
-    val messageKey   = "declarableStatus.notReadyForImmi"
-    val paragraphKey = "declarableStatus.notReadyForImmi.paragraph"
+    val messageKey         = "declarableStatus.notReadyForImmi"
+    val paragraphKey       = "declarableStatus.notReadyForImmi.paragraph"
     val paragraphTagColour = "govuk-tag--orange"
   }
 
   case object NotReadyForUse extends DeclarableStatus {
-    val messageKey   = "declarableStatus.notReadyForUse"
-    val paragraphKey = "declarableStatus.notReadyForUse.paragraph.start"
+    val messageKey         = "declarableStatus.notReadyForUse"
+    val paragraphKey       = "declarableStatus.notReadyForUse.paragraph.start"
     val paragraphTagColour = "govuk-tag--red"
   }
 
