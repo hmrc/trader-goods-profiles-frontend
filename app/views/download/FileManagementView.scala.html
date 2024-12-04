@@ -37,6 +37,7 @@ govukTable: GovukTable
         @viewModel.availableFilesTable.map { table: FileManagementTable =>
             @govukTable(Table(
                 caption = Some(table.caption),
+                captionClasses = "govuk-visually-hidden",
                 head = Some(table.headRows),
                 rows = table.rows
             )
@@ -49,7 +50,8 @@ govukTable: GovukTable
                     <p class="govuk-body">@body</p>
                 }
             @govukTable(Table(
-                caption = None,
+                caption = Some(table.caption),
+                captionClasses = "govuk-visually-hidden",
                 head = Some(table.headRows),
                 rows = table.rows
             )
