@@ -335,7 +335,9 @@ singleRecord.h2.goodsDetails = Manylion nwyddau
 singleRecord.warning = Rhybudd
 singleRecord.warningText = Rydych yn atebol dros yr wybodaeth am unrhyw symudiadau a grëir gennych chi, neu ar eich rhan gan ddefnyddio eich cofnodion Proffil Nwyddau Masnachwr.
 
-singleRecord.inadequateReviewReason.linkText = newid disgrifiad y nwyddau
+
+singleRecord.unclearReviewReason = Nid yw disgrifiad y nwyddau’n glir. Bydd angen i chi {0} cyn bod modd i chi ei ddefnyddio ar Wybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI).
+singleRecord.unclearReviewReason.linkText = newid disgrifiad y nwyddau
 
 singleRecord.h2.categorisation = Categoreiddio
 singleRecord.category.row = Categori
@@ -359,7 +361,8 @@ singleRecord.adviceParagraph.inProgress = Mae CThEF wedi dechrau edrych dros eic
 singleRecord.adviceParagraph.informationRequested = Mae CThEF wedi gofyn i chi am beth gwybodaeth am y cofnod nwyddau hwn.
 singleRecord.adviceParagraph.adviceReceived = Mae CThEF wedi cytuno bod y cod nwyddau a’r disgrifiad o’r nwyddau’n cyd-fynd â’i gilydd.
 
-singleRecord.inadequateReviewReason = Nid oes digon o fanylion yn y disgrifiad o'r nwyddau i ddisgrifio'r nwyddau. Mae angen i chi {0} cyn y gallwch ei ddefnyddio ar Wybodaeth Symudiad y Farchnad Fewnol (IMMI).
+singleRecord.inadequateReviewReason = Nid yw disgrifiad y nwyddau’n disgrifio’r nwyddau’n ddigon manwl. Mae angen i chi {0} cyn bod modd i chi ei ddefnyddio ar Wybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI).
+singleRecord.inadequateReviewReason.linkText = newid disgrifiad y nwyddau
 singleRecord.h2 = Yr hyn i’w wneud nesaf
 
 countryOfOrigin.title = Gwlad tarddiad
@@ -741,3 +744,9 @@ declarableStatus.immiReady = Barod ar gyfer IMMI
 declarableStatus.notReadyForImmi = Ddim yn barod ar gyfer IMMI
 declarableStatus.notReadyForUse = Camau i’w cymryd
 
+# TODO: Add Welsh translation here when they are available in TGP-2934 , TGP-2935 & TGP-2936
+declarableStatus.immiReady.paragraph =
+declarableStatus.notReadyForImmi.paragraph =
+declarableStatus.notReadyForUse.paragraph.start =
+declarableStatus.notReadyForUse.paragraph.linkText =
+declarableStatus.notReadyForUse.paragraph.end =
