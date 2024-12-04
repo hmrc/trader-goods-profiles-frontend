@@ -365,7 +365,7 @@ singleRecord.inadequateReviewReason = Nid yw disgrifiad y nwyddau’n disgrifio�
 singleRecord.inadequateReviewReason.linkText = newid disgrifiad y nwyddau
 singleRecord.h2 = Yr hyn i’w wneud nesaf
 
-singleRecord.mismatchReviewReason = The goods description does not match the commodity code. You need to change the goods description or commodity code before you can use it on an Internal Market Movement Information (IMMI).
+singleRecord.mismatchReviewReason = Nid yw disgrifiad y nwyddau’n cyd-fynd â’r cod nwyddau. Mae angen i chi newid disgrifiad y nwyddau neu’r cod nwyddau cyn bod modd i chi ei ddefnyddio ar Wybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI).
 
 countryOfOrigin.title = Gwlad tarddiad
 countryOfOrigin.h1 = Gwlad tarddiad
