@@ -204,6 +204,8 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
       }
 
       "must redirect to Journey Recovery for a POST if no existing data is found" in {
+        val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
 
         val application = applicationBuilder(userAnswers = None)
           .overrides(
@@ -229,6 +231,8 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
       val hasNirmsRoute = controllers.profile.routes.HasNirmsController.onPageLoadUpdate(NormalMode).url
 
       "must return OK and the correct view for a GET with saved answers" in {
+        val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
 
         val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"), false)
 
@@ -267,6 +271,8 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
       }
 
       "must populate the view correctly on a GET when the question has previously been answered" in {
+        val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
 
         val userAnswers = UserAnswers(userAnswersId).set(HasNirmsUpdatePage, true).success.value
 
@@ -295,6 +301,8 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
       }
 
       "must redirect to the next page when valid data is submitted" in {
+        val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
 
         when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
@@ -325,6 +333,8 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
       }
 
       "must redirect to ProfilePage when no changes made" in {
+        val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
 
         when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
@@ -355,8 +365,13 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
       }
 
       "must return a Bad Request and errors when invalid data is submitted" in {
+        val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          )
           .build()
 
         running(application) {
@@ -382,8 +397,13 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
       }
 
       "must redirect to Journey Recovery for a GET if no existing data is found" in {
+        val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
 
         val application = applicationBuilder(userAnswers = None)
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          )
           .build()
 
         running(application) {
@@ -397,8 +417,13 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
       }
 
       "must redirect to Journey Recovery for a POST if no existing data is found" in {
+        val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
 
         val application = applicationBuilder(userAnswers = None)
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          )
           .build()
 
         running(application) {

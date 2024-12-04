@@ -122,6 +122,7 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(
               bind[ProfileNavigator].toInstance(new FakeProfileNavigator(onwardRoute)),
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
               bind[SessionRepository].toInstance(mockSessionRepository)
             )
             .build()
@@ -141,7 +142,11 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       "must return a Bad Request and errors when invalid data is submitted" in {
 
-        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          )
+          .build()
 
         running(application) {
           val request =
@@ -206,7 +211,11 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
-        val application = applicationBuilder(userAnswers = None).build()
+        val application = applicationBuilder(userAnswers = None)
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          )
+          .build()
 
         running(application) {
           val request =
@@ -283,6 +292,7 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
         val application = applicationBuilder(userAnswers = Some(userAnswers))
           .overrides(
             bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
             bind[AuditService].toInstance(mockAuditService)
           )
           .build()
@@ -324,7 +334,8 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
               bind[ProfileNavigator].toInstance(new FakeProfileNavigator(onwardRoute)),
-              bind[SessionRepository].toInstance(mockSessionRepository)
+              bind[SessionRepository].toInstance(mockSessionRepository),
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
             )
             .build()
 
@@ -344,7 +355,11 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       "must return a Bad Request and errors when invalid data is submitted" in {
 
-        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          )
+          .build()
 
         running(application) {
           val request =
@@ -371,6 +386,9 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
       "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
         val application = applicationBuilder(userAnswers = None)
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          )
           .build()
 
         running(application) {
@@ -385,7 +403,11 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
-        val application = applicationBuilder(userAnswers = None).build()
+        val application = applicationBuilder(userAnswers = None)
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          )
+          .build()
 
         running(application) {
           val request =

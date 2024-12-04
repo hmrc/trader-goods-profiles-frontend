@@ -64,8 +64,8 @@ class UkimsNumberController @Inject() (
       )
     }
 
-  def onSubmitCreate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
+  def onSubmitCreate(mode: Mode): Action[AnyContent] =
+    (identify andThen checkProfile andThen getData andThen requireData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(
@@ -79,10 +79,10 @@ class UkimsNumberController @Inject() (
               _              <- sessionRepository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(UkimsNumberPage, mode, updatedAnswers))
         )
-  }
+    }
 
   def onPageLoadUpdate(mode: Mode): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
+    (identify andThen checkProfile andThen getData andThen requireData).async { implicit request =>
       request.userAnswers.get(UkimsNumberUpdatePage) match {
         case None        =>
           for {
@@ -103,8 +103,8 @@ class UkimsNumberController @Inject() (
       }
     }
 
-  def onSubmitUpdate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
+  def onSubmitUpdate(mode: Mode): Action[AnyContent] =
+    (identify andThen checkProfile andThen getData andThen requireData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(
@@ -121,5 +121,5 @@ class UkimsNumberController @Inject() (
               _              <- sessionRepository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(UkimsNumberUpdatePage, mode, updatedAnswers))
         )
-  }
+    }
 }

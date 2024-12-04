@@ -57,32 +57,33 @@ class UseExistingUkimsNumberController @Inject() (
         .getOrElse(navigator.journeyRecovery())
     }
 
-  def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
-    form
-      .bindFromRequest()
-      .fold(
-        formWithErrors =>
-          Future.successful {
-            request.userAnswers
-              .get(UkimsNumberPage)
-              .map(ukimsNumber =>
-                BadRequest(
-                  view(
-                    formWithErrors,
-                    controllers.profile.routes.UseExistingUkimsNumberController.onSubmit(),
-                    ukimsNumber
+  def onSubmit(): Action[AnyContent] = (identify andThen checkProfile andThen getData andThen requireData).async {
+    implicit request =>
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors =>
+            Future.successful {
+              request.userAnswers
+                .get(UkimsNumberPage)
+                .map(ukimsNumber =>
+                  BadRequest(
+                    view(
+                      formWithErrors,
+                      controllers.profile.routes.UseExistingUkimsNumberController.onSubmit(),
+                      ukimsNumber
+                    )
                   )
                 )
-              )
-              .getOrElse(navigator.journeyRecovery())
-          },
-        useExistingUkimsNumber =>
-          for {
-            updatedAnswers <-
-              Future.fromTry(request.userAnswers.set(UseExistingUkimsNumberPage, useExistingUkimsNumber))
-            _              <- sessionRepository.set(updatedAnswers)
-          } yield Redirect(navigator.nextPage(UseExistingUkimsNumberPage, NormalMode, updatedAnswers))
-      )
+                .getOrElse(navigator.journeyRecovery())
+            },
+          useExistingUkimsNumber =>
+            for {
+              updatedAnswers <-
+                Future.fromTry(request.userAnswers.set(UseExistingUkimsNumberPage, useExistingUkimsNumber))
+              _              <- sessionRepository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(UseExistingUkimsNumberPage, NormalMode, updatedAnswers))
+        )
   }
 
 }

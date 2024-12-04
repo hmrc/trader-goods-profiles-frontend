@@ -55,8 +55,8 @@ class HasNiphlController @Inject() (
       Ok(view(preparedForm, controllers.profile.routes.HasNiphlController.onSubmitCreate(mode)))
     }
 
-  def onSubmitCreate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
+  def onSubmitCreate(mode: Mode): Action[AnyContent] =
+    (identify andThen checkProfile andThen getData andThen requireData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(
@@ -70,10 +70,10 @@ class HasNiphlController @Inject() (
               _              <- sessionRepository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(HasNiphlPage, mode, updatedAnswers))
         )
-  }
+    }
 
   def onPageLoadUpdate(mode: Mode): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
+    (identify andThen checkProfile andThen getData andThen requireData).async { implicit request =>
       request.userAnswers.get(HasNiphlUpdatePage) match {
         case None        =>
           for {
@@ -94,8 +94,8 @@ class HasNiphlController @Inject() (
       }
     }
 
-  def onSubmitUpdate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
+  def onSubmitUpdate(mode: Mode): Action[AnyContent] =
+    (identify andThen checkProfile andThen getData andThen requireData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(
@@ -113,5 +113,5 @@ class HasNiphlController @Inject() (
               } yield Redirect(navigator.nextPage(HasNiphlUpdatePage, mode, updatedAnswersWithTraderProfile))
             }
         )
-  }
+    }
 }

@@ -54,8 +54,8 @@ class NiphlNumberController @Inject() (
       Ok(view(preparedForm, controllers.profile.routes.NiphlNumberController.onSubmitCreate(mode)))
     }
 
-  def onSubmitCreate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
+  def onSubmitCreate(mode: Mode): Action[AnyContent] =
+    (identify andThen checkProfile andThen getData andThen requireData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(
@@ -69,10 +69,10 @@ class NiphlNumberController @Inject() (
               _              <- sessionRepository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(NiphlNumberPage, mode, updatedAnswers))
         )
-  }
+    }
 
   def onPageLoadUpdate(mode: Mode): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
+    (identify andThen checkProfile andThen getData andThen requireData).async { implicit request =>
       traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
         request.userAnswers.get(HasNiphlUpdatePage) match {
           case Some(_) =>
@@ -113,8 +113,8 @@ class NiphlNumberController @Inject() (
       }
     }
 
-  def onSubmitUpdate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
+  def onSubmitUpdate(mode: Mode): Action[AnyContent] =
+    (identify andThen checkProfile andThen getData andThen requireData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(
@@ -129,6 +129,6 @@ class NiphlNumberController @Inject() (
             } yield Redirect(navigator.nextPage(NiphlNumberUpdatePage, mode, updatedAnswers))
         )
 
-  }
+    }
 
 }

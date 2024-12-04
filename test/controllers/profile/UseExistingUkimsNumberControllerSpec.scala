@@ -117,6 +117,7 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(userAnswers = Some(userAnswersWithUkimsNumber))
         .overrides(
           bind[ProfileNavigator].toInstance(new FakeProfileNavigator(onwardRoute)),
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
           bind[SessionRepository].toInstance(mockSessionRepository)
         )
         .build()
@@ -134,7 +135,11 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(userAnswersWithUkimsNumber)).build()
+      val application = applicationBuilder(userAnswers = Some(userAnswersWithUkimsNumber))
+        .overrides(
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+        )
+        .build()
 
       running(application) {
         val request =
@@ -165,6 +170,7 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(userAnswers = Some(userAnswersWithUkimsNumber))
         .overrides(
           bind[ProfileNavigator].toInstance(new FakeProfileNavigator(onwardRoute)),
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
           bind[SessionRepository].toInstance(mockSessionRepository)
         )
         .build()

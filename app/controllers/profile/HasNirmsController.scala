@@ -56,7 +56,7 @@ class HasNirmsController @Inject() (
     }
 
   def onSubmitCreate(mode: Mode): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
+    (identify andThen checkProfile andThen getData andThen requireData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(
@@ -73,7 +73,7 @@ class HasNirmsController @Inject() (
     }
 
   def onPageLoadUpdate(mode: Mode): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
+    (identify andThen checkProfile andThen getData andThen requireData).async { implicit request =>
       request.userAnswers.get(HasNirmsUpdatePage) match {
         case None        =>
           for {
@@ -94,8 +94,8 @@ class HasNirmsController @Inject() (
       }
     }
 
-  def onSubmitUpdate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
+  def onSubmitUpdate(mode: Mode): Action[AnyContent] =
+    (identify andThen checkProfile andThen getData andThen requireData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(
@@ -114,5 +114,5 @@ class HasNirmsController @Inject() (
 
             }
         )
-  }
+    }
 }
