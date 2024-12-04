@@ -743,3 +743,10 @@ adviceStatus.adviceRequestWithdrawn = Cais am gyngor wedi’i dynnu yn ôl
 declarableStatus.immiReady = Barod ar gyfer IMMI
 declarableStatus.notReadyForImmi = Ddim yn barod ar gyfer IMMI
 declarableStatus.notReadyForUse = Camau i’w cymryd
+
+# TODO: Add Welsh translation here when they are available in TGP-2934 , TGP-2935 & TGP-2936
+declarableStatus.immiReady.paragraph =
+declarableStatus.notReadyForImmi.paragraph =
+declarableStatus.notReadyForUse.paragraph.start =
+declarableStatus.notReadyForUse.paragraph.linkText =
+declarableStatus.notReadyForUse.paragraph.end =

@@ -728,3 +728,9 @@ adviceStatus.adviceRequestWithdrawn = Advice request withdrawn
 declarableStatus.immiReady = IMMI ready
 declarableStatus.notReadyForImmi = Not ready for IMMI
 declarableStatus.notReadyForUse = Action needed
+
+declarableStatus.immiReady.paragraph = You can use this record to complete the Internal market Movement Information (IMMI).
+declarableStatus.notReadyForImmi.paragraph = You cannot use this record to complete the Internal market Movement Information (IMMI). You may be able to update the information or categorise the record to see if it is ready for IMMI.
+declarableStatus.notReadyForUse.paragraph.start = You need to
+declarableStatus.notReadyForUse.paragraph.linkText = categorise this goods record
+declarableStatus.notReadyForUse.paragraph.end = to see if you can use it on an Internal Market Movement Information (IMMI).
