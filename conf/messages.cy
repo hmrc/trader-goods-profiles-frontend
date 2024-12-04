@@ -365,6 +365,8 @@ singleRecord.inadequateReviewReason = Nid yw disgrifiad y nwyddau’n disgrifio�
 singleRecord.inadequateReviewReason.linkText = newid disgrifiad y nwyddau
 singleRecord.h2 = Yr hyn i’w wneud nesaf
 
+singleRecord.mismatchReviewReason = The goods description does not match the commodity code. You need to change the goods description or commodity code before you can use it on an Internal Market Movement Information (IMMI).
+
 countryOfOrigin.title = Gwlad tarddiad
 countryOfOrigin.h1 = Gwlad tarddiad
 countryOfOrigin.p1 = Mae ‘gwlad tarddiad’ yn cyfeirio at y wlad lle cafodd y nwyddau eu gweithgynhyrchu (naill ai’n gyfan gwbl, neu gan fwyaf), eu tyfu neu eu haddasu. Mae’n cael ei ddefnyddio at ddibenion labelu, ac mae’n effeithio ar gyfraddau’r tollau.
