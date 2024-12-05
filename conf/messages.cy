@@ -746,8 +746,8 @@ declarableStatus.immiReady = Barod ar gyfer IMMI
 declarableStatus.notReadyForImmi = Ddim yn barod ar gyfer IMMI
 declarableStatus.notReadyForUse = Camau i’w cymryd
 
-# TODO: Add Welsh translation here when they are available in TGP-2934 , TGP-2935 & TGP-2936
-declarableStatus.immiReady.paragraph =
-declarableStatus.notReadyForImmi.paragraph =
-declarableStatus.notReadyForUse.paragraph =
-declarableStatus.notReadyForUse.paragraph.linkText =
+
+declarableStatus.immiReady.paragraph = Gallwch ddefnyddio’r cofnod hwn i lenwi’r Wybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI).
+declarableStatus.notReadyForImmi.paragraph = Ni allwch ddefnyddio’r cofnod hwn i lenwi’r Wybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI). Efallai y byddwch yn gallu diweddaru’r wybodaeth neu gategoreiddio’r cofnod er mwyn gweld a yw’n barod ar gyfer IMMI.
+declarableStatus.notReadyForUse.paragraph = Mae angen i chi {0} i weld a allwch ei ddefnyddio ar Wybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI).
+declarableStatus.notReadyForUse.paragraph.linkText = gategoreiddio’r cofnod nwyddau hwn

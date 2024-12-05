@@ -178,8 +178,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           recordIsLocked,
           Some(NotRequestedParagraph),
           NotReadyForUse,
-          recordForTestingSummaryRows.category.isDefined,
-          true
+          toReview = false,
+          recordForTestingSummaryRows.category.isDefined
         )(
           request,
           messages(application)
@@ -296,8 +296,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           recordIsLocked,
           Some(RequestedParagraph),
           NotReadyForUse,
-          recordForTestingSummaryRows.category.isDefined,
-          recordForTestingSummaryRows.toReview
+          toReview = false,
+          recordForTestingSummaryRows.category.isDefined
         )(
           request,
           messages(application)
@@ -430,8 +430,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           recordIsLocked,
           Some(NotRequestedParagraph),
           NotReadyForUse,
-          recordForTestingSummaryRows.category.isDefined,
-          true
+          toReview = false,
+          notCategorisedRecord.category.isDefined
         )(
           request,
           messages(application)
