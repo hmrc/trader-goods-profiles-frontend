@@ -117,6 +117,55 @@ object OutboundLink {
     val linkTextKey: String = "longerCommodityCode.linkText"
   }
 
+  // Has Correct Goods Page
+  case object FindCommodityHasCorrectGoods extends OutboundLink {
+    val link: String        = "https://www.trade-tariff.service.gov.uk/xi/find_commodity"
+    val linkTextKey: String = "hasCorrectGoods.p2.linkText"
+  }
+
+  // Assessment Page
+  case object FindCommodityAssessments extends OutboundLink {
+    val link: String        = "https://www.trade-tariff.service.gov.uk/xi/find_commodity"
+    val linkTextKey: String = "assessment.linkText"
+  }
+
+  // Has Nirms Page
+  case object RetailMovement extends OutboundLink {
+    val link: String        =
+      "https://www.gov.uk/government/publications/retail-movement-scheme-how-the-scheme-will-work/retail-movement-scheme-how-the-scheme-will-work#product-eligibility"
+    val linkTextKey: String = "hasNirms.p2.linkText"
+  }
+
+  // Has Niphl Page
+  case object MovingPlants extends OutboundLink {
+    val link: String        = "https://www.gov.uk/guidance/moving-plants-from-great-britain-to-northern-ireland"
+    val linkTextKey: String = "hasNiphl.p2.linkText"
+  }
+
+  // Profile Setup Page
+  case object ApplyForAuth extends OutboundLink {
+    val link: String        =
+      "https://www.gov.uk/guidance/apply-for-authorisation-for-the-uk-internal-market-scheme-if-you-bring-goods-into-northern-ireland"
+    val linkTextKey: String = "profileSetup.p3.linkText"
+  }
+
+  case object RetailMovementProfile extends OutboundLink {
+    val link: String        =
+      "https://www.gov.uk/guidance/northern-ireland-retail-movement-scheme-how-to-register-and-seal-consignments"
+    val linkTextKey: String = "profileSetup.p6.linkText"
+  }
+
+  case object MovingPlantProfile extends OutboundLink {
+    val link: String        = "https://www.gov.uk/guidance/moving-plants-from-great-britain-to-northern-ireland"
+    val linkTextKey: String = "profileSetup.p9.linkText"
+  }
+
+  // Advice Start Page
+  case object ApplyBinding extends OutboundLink {
+    val link: String        = "https://www.gov.uk/guidance/apply-for-a-binding-tariff-information-decision"
+    val linkTextKey: String = "adviceStart.p2.linkText"
+  }
+
   val allLinks: Seq[OutboundLink] = Seq(
     ImportGoodsIntoUK,
     TradingNI,
@@ -134,7 +183,15 @@ object OutboundLink {
     TraderSupportService,
     CountryOfOrigin,
     FindCommodity,
-    FindLongCommodity
+    FindLongCommodity,
+    FindCommodityHasCorrectGoods,
+    FindCommodityAssessments,
+    RetailMovement,
+    MovingPlants,
+    ApplyForAuth,
+    RetailMovementProfile,
+    MovingPlantProfile,
+    ApplyBinding
   )
 
 }

@@ -15,6 +15,7 @@
  *@
 
 @import viewmodels.LegendSize._
+@import models.outboundLink.OutboundLink
 
 @this(
     layout: templates.Layout,
@@ -39,8 +40,8 @@
     <p class="govuk-body">
         @messages("hasNirms.p2")
         <a target="_self"
-           href="https://www.gov.uk/government/publications/retail-movement-scheme-how-the-scheme-will-work/retail-movement-scheme-how-the-scheme-will-work#product-eligibility"
-           class="govuk-link"> @messages("hasNirms.p2.linkText").
+           href="@routes.OutboundController.redirect(OutboundLink.RetailMovement.link)"
+           class="govuk-link">@messages(OutboundLink.RetailMovement.linkTextKey).
         </a>
     </p>
 

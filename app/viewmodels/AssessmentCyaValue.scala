@@ -31,7 +31,7 @@ case class AssessmentCyaValue(answers: AssessmentAnswer, codes: Seq[String], des
 
     val answerExemptions: String = answerCodes.flatMap { answerCode =>
       exemptions.collectFirst {
-        case (code, description) if code == answerCode => s"<p class='govuk-body'>$code - $description</p>"
+        case (code, description) if code == answerCode => s"<p class='govuk-body' lang='en'>$code - $description</p>"
       }
     }.mkString
 

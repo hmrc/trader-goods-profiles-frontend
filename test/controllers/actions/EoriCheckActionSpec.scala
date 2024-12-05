@@ -40,6 +40,7 @@ class EoriCheckActionSpec extends SpecBase with MockitoSugar {
   }
 
   "Eori Check Action" - {
+
     "must redirect to home page when eori does not need to be changed" in {
 
       val profile = TraderProfile(testEori, "UKIMS", None, None, eoriChanged = false)

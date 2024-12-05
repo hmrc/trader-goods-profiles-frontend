@@ -24,8 +24,7 @@ import models.Mode
 import models.helper.GoodsDetailsUpdate
 import navigation.GoodsRecordNavigator
 import pages.goodsRecord.{TraderReferencePage, TraderReferenceUpdatePage}
-import play.api.data.{Form, FormError}
-import play.api.i18n.{Messages, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import services.AuditService
@@ -146,12 +145,4 @@ class TraderReferenceController @Inject() (
             }
         )
     }
-
-  private def createFormWithErrors[T](form: Form[T], value: T, errorMessageKey: String, field: String = "value")(
-    implicit messages: Messages
-  ): Form[T] =
-    form
-      .fill(value)
-      .copy(errors = Seq(FormError(field, messages(errorMessageKey))))
-
 }

@@ -35,6 +35,7 @@ import uk.gov.hmrc.http.UpstreamErrorResponse
 import utils.SessionData._
 import views.html.goodsRecord.CommodityCodeView
 
+import java.time.{LocalDate, ZoneId}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -88,54 +89,49 @@ class CommodityCodeController @Inject() (
 
   def onSubmitCreate(mode: Mode): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val onSubmitAction: Call    = controllers.goodsRecord.routes.CommodityCodeController.onSubmitCreate(mode)
+      val onSubmitAction          = controllers.goodsRecord.routes.CommodityCodeController.onSubmitCreate(mode)
       val countryOfOrigin: String = request.userAnswers.get(CountryOfOriginPage).get
+
       form
         .bindFromRequest()
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, onSubmitAction))),
           value =>
             (for {
-              commodity               <- fetchCommodity(value, countryOfOrigin)
-              updatedAnswers          <- Future.fromTry(request.userAnswers.set(CommodityCodePage, value))
-              updatedAnswersWithQuery <-
-                Future.fromTry(updatedAnswers.set(CommodityQuery, commodity.copy(commodityCode = value)))
-              _                       <- sessionRepository.set(updatedAnswersWithQuery)
-            } yield Redirect(navigator.nextPage(CommodityCodePage, mode, updatedAnswersWithQuery))).recover {
-              case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
-                handleFormError(form, "commodityCode.error.invalid", onSubmitAction)
+              commodity <- fetchCommodity(value, countryOfOrigin)
+              result    <- validateAndProcessCommodityCreate(commodity, value, onSubmitAction, mode)
+            } yield result).recover { case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
+              handleFormError(form, "commodityCode.error.invalid", onSubmitAction)
             }
         )
     }
 
   def onSubmitUpdate(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      val onSubmitAction: Call    = controllers.goodsRecord.routes.CommodityCodeController.onSubmitUpdate(mode, recordId)
-      val countryOfOrigin: String = request.userAnswers.get(CountryOfOriginUpdatePage(recordId)).get
+      val onSubmitAction  = controllers.goodsRecord.routes.CommodityCodeController.onSubmitUpdate(mode, recordId)
+      val countryOfOrigin = request.userAnswers.get(CountryOfOriginUpdatePage(recordId)).get
+      val oldValueOpt     = request.userAnswers.get(CommodityCodeUpdatePage(recordId))
+
       form
         .bindFromRequest()
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, onSubmitAction))),
-          value =>
-            {
-              val oldValueOpt    = request.userAnswers.get(CommodityCodeUpdatePage(recordId))
-              val isValueChanged = oldValueOpt.exists(_ != value)
-              for {
-                commodity               <- fetchCommodity(value, countryOfOrigin)
-                updatedAnswers          <- Future.fromTry(request.userAnswers.set(CommodityCodeUpdatePage(recordId), value))
-                updatedAnswersWithQuery <-
-                  Future.fromTry(
-                    updatedAnswers.set(CommodityUpdateQuery(recordId), commodity.copy(commodityCode = value))
-                  )
-                _                       <- sessionRepository.set(updatedAnswersWithQuery)
-              } yield Redirect(navigator.nextPage(CommodityCodeUpdatePage(recordId), mode, updatedAnswersWithQuery))
-                .addingToSession(dataUpdated -> isValueChanged.toString)
-                .addingToSession(pageUpdated -> commodityCode)
-
+          value => {
+            val isValueChanged = oldValueOpt.exists(_ != value)
+            (for {
+              commodity <- fetchCommodity(value, countryOfOrigin)
+              result    <- validateAndProcessCommodityUpdate(
+                             commodity,
+                             value,
+                             recordId,
+                             isValueChanged,
+                             onSubmitAction,
+                             mode
+                           )
+            } yield result).recover { case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
+              handleFormError(form, "commodityCode.error.invalid", onSubmitAction)
             }
-              .recover { case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
-                handleFormError(form, "commodityCode.error.invalid", onSubmitAction)
-              }
+          }
         )
     }
 
@@ -151,11 +147,64 @@ class CommodityCodeController @Inject() (
       countryOfOrigin,
       None
     )
+
   private def handleFormError[T](form: Form[T], errorKey: String, onSubmitAction: Call)(implicit
     request: Request[AnyContent]
   ): Result = {
     val formWithApiErrors = form.copy(errors = Seq(FormError("value", getMessage(errorKey))))
     BadRequest(view(formWithApiErrors, onSubmitAction))
+  }
+
+  private def validateAndProcessCommodityCreate(
+    commodity: Commodity,
+    value: String,
+    onSubmitAction: Call,
+    mode: Mode
+  )(implicit request: DataRequest[AnyContent]): Future[Result] = {
+    val todayInstant = LocalDate.now(ZoneId.of("UTC")).atStartOfDay(ZoneId.of("UTC")).toInstant
+    if (
+      todayInstant.isBefore(commodity.validityStartDate) ||
+      commodity.validityEndDate.exists(todayInstant.isAfter)
+    ) {
+      val formWithErrors = createFormWithErrors(form, value, "commodityCode.error.expired")
+      Future.successful(BadRequest(view(formWithErrors, onSubmitAction)))
+    } else {
+      for {
+        updatedAnswers          <- Future.fromTry(request.userAnswers.set(CommodityCodePage, value))
+        updatedAnswersWithQuery <-
+          Future.fromTry(updatedAnswers.set(CommodityQuery, commodity.copy(commodityCode = value)))
+        _                       <- sessionRepository.set(updatedAnswersWithQuery)
+      } yield Redirect(navigator.nextPage(CommodityCodePage, mode, updatedAnswersWithQuery))
+    }
+  }
+
+  private def validateAndProcessCommodityUpdate(
+    commodity: Commodity,
+    value: String,
+    recordId: String,
+    isValueChanged: Boolean,
+    onSubmitAction: Call,
+    mode: Mode
+  )(implicit request: DataRequest[AnyContent]): Future[Result] = {
+    val todayInstant = LocalDate.now(ZoneId.of("UTC")).atStartOfDay(ZoneId.of("UTC")).toInstant
+    if (
+      todayInstant.isBefore(commodity.validityStartDate) ||
+      commodity.validityEndDate.exists(todayInstant.isAfter)
+    ) {
+      val formWithErrors = createFormWithErrors(form, value, "commodityCode.error.expired")
+      Future.successful(BadRequest(view(formWithErrors, onSubmitAction)))
+    } else {
+      for {
+        updatedAnswers          <- Future.fromTry(request.userAnswers.set(CommodityCodeUpdatePage(recordId), value))
+        updatedAnswersWithQuery <-
+          Future.fromTry(
+            updatedAnswers.set(CommodityUpdateQuery(recordId), commodity.copy(commodityCode = value))
+          )
+        _                       <- sessionRepository.set(updatedAnswersWithQuery)
+      } yield Redirect(navigator.nextPage(CommodityCodeUpdatePage(recordId), mode, updatedAnswersWithQuery))
+        .addingToSession(dataUpdated -> isValueChanged.toString)
+        .addingToSession(pageUpdated -> commodityCode)
+    }
   }
 
 }

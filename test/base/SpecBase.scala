@@ -23,7 +23,7 @@ import models.DeclarableStatus.NotReadyForUse
 import models.ott._
 import models.ott.response.{GoodsNomenclatureResponse, OttResponse}
 import models.router.responses.GetGoodsRecordResponse
-import models.{AssessmentAnswer, Commodity, UserAnswers}
+import models.{AssessmentAnswer, Commodity, ReviewReason, UserAnswers}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -366,6 +366,38 @@ trait SpecBase
       updatedDateTime
     )
 
+  def goodsRecordResponseWithReviewReason(
+    createdDateTime: Instant = Instant.now,
+    updatedDateTime: Instant = Instant.now,
+    reviewReason: ReviewReason
+  ): GetGoodsRecordResponse =
+    GetGoodsRecordResponse(
+      testRecordId,
+      "10410100",
+      "10410100",
+      "BAN0010011",
+      "12345678",
+      NotRequested,
+      "Organic bananas",
+      "GB",
+      Some(1),
+      None,
+      None,
+      None,
+      Instant.now(),
+      None,
+      1,
+      active = true,
+      toReview = true,
+      Some(reviewReason),
+      NotReadyForUse,
+      None,
+      None,
+      None,
+      createdDateTime,
+      updatedDateTime
+    )
+
   val recordForTestingSummaryRows: GetGoodsRecordResponse = goodsRecordResponse(
     Instant.parse("2022-11-18T23:20:19Z"),
     Instant.parse("2022-11-18T23:20:19Z")
@@ -379,7 +411,7 @@ trait SpecBase
   def toReviewGoodsRecordResponse(
     createdDateTime: Instant,
     updatedDateTime: Instant,
-    reviewReason: String
+    reviewReason: ReviewReason
   ): GetGoodsRecordResponse =
     GetGoodsRecordResponse(
       "1",

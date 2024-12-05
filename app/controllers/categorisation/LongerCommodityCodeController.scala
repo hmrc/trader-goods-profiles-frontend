@@ -34,6 +34,7 @@ import uk.gov.hmrc.http.UpstreamErrorResponse
 import utils.Constants.minimumLengthOfCommodityCode
 import views.html.categorisation.LongerCommodityCodeView
 
+import java.time.{LocalDate, ZoneId}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -103,28 +104,41 @@ class LongerCommodityCodeController @Inject() (
     value: String,
     shortCode: String
   )(implicit request: DataRequest[AnyContent]) = {
-    val longerCode = shortCode + value
+    val longerCode   = shortCode + value
+    val todayInstant = LocalDate.now(ZoneId.of("UTC")).atStartOfDay(ZoneId.of("UTC")).toInstant
     (for {
-      record                  <- goodsRecordConnector.getRecord(request.eori, recordId)
-      commodity               <- ottConnector.getCommodityCode(
-                                   longerCode,
-                                   request.eori,
-                                   request.affinityGroup,
-                                   UpdateRecordJourney,
-                                   record.countryOfOrigin,
-                                   Some(recordId)
-                                 )
-      updatedAnswers          <- Future.fromTry(request.userAnswers.set(LongerCommodityCodePage(recordId), value))
-      updatedAnswersWithQuery <-
-        Future.fromTry(updatedAnswers.set(LongerCommodityQuery(recordId), commodity.copy(commodityCode = longerCode)))
-      _                       <- sessionRepository.set(updatedAnswersWithQuery)
-    } yield Redirect(
-      navigator.nextPage(
-        LongerCommodityCodePage(recordId),
-        mode,
-        updatedAnswersWithQuery
-      )
-    )).recover { case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
+      record    <- goodsRecordConnector.getRecord(request.eori, recordId)
+      commodity <- ottConnector.getCommodityCode(
+                     longerCode,
+                     request.eori,
+                     request.affinityGroup,
+                     UpdateRecordJourney,
+                     record.countryOfOrigin,
+                     Some(recordId)
+                   )
+      result    <-
+        if (
+          todayInstant.isBefore(commodity.validityStartDate) || commodity.validityEndDate.exists(todayInstant.isAfter)
+        ) {
+          val formWithErrors = createFormWithErrors(form, value, "commodityCode.error.expired")
+          Future.successful(BadRequest(view(formWithErrors, mode, shortCode, recordId)))
+        } else {
+          for {
+            updatedAnswers          <- Future.fromTry(request.userAnswers.set(LongerCommodityCodePage(recordId), value))
+            updatedAnswersWithQuery <-
+              Future.fromTry(
+                updatedAnswers.set(LongerCommodityQuery(recordId), commodity.copy(commodityCode = longerCode))
+              )
+            _                       <- sessionRepository.set(updatedAnswersWithQuery)
+          } yield Redirect(
+            navigator.nextPage(
+              LongerCommodityCodePage(recordId),
+              mode,
+              updatedAnswersWithQuery
+            )
+          )
+        }
+    } yield result).recover { case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
       val formWithApiErrors =
         form.copy(errors = Seq(FormError("value", getMessage("longerCommodityCode.error.invalid"))))
       BadRequest(view(formWithApiErrors, mode, shortCode, recordId))

@@ -14,6 +14,8 @@
  * limitations under the License.
  *@
 
+@import models.outboundLink.OutboundLink
+
 @this(
         layout: templates.Layout,
         govukButton: GovukButton,
@@ -33,7 +35,8 @@
     <p class="govuk-body">@messages("profileSetup.p2")</p>
     <p class="govuk-body">
         @messages("profileSetup.p3")
-        <a target="_self" href="https://www.gov.uk/guidance/apply-for-authorisation-for-the-uk-internal-market-scheme-if-you-bring-goods-into-northern-ireland" class="govuk-link" >@messages("profileSetup.p3.linkText")</a>.
+        <a target="_self" href="@routes.OutboundController.redirect(OutboundLink.ApplyForAuth.link)"
+           class="govuk-link"> @messages(OutboundLink.ApplyForAuth.linkTextKey)</a>.
     </p>
 
     <h2 class="govuk-heading-m">@messages("profileSetup.nirms.h2")</h2>
@@ -41,7 +44,8 @@
     <p class="govuk-body">@messages("profileSetup.p5")</p>
     <p class="govuk-body">
         @messages("profileSetup.p6")
-        <a target="_self" href="https://www.gov.uk/guidance/northern-ireland-retail-movement-scheme-how-to-register-and-seal-consignments" class="govuk-link" >@messages("profileSetup.p6.linkText")</a>.
+        <a target="_self" href="@routes.OutboundController.redirect(OutboundLink.RetailMovementProfile.link)"
+           class="govuk-link" >@messages(OutboundLink.RetailMovementProfile.linkTextKey)</a>.
     </p>
 
     <h2 class="govuk-heading-m">@messages("profileSetup.niphl.h2")</h2>
@@ -49,7 +53,8 @@
     <p class="govuk-body">@messages("profileSetup.p8")</p>
     <p class="govuk-body">
         @messages("profileSetup.p9")
-        <a target="_self" href="https://www.gov.uk/guidance/moving-plants-from-great-britain-to-northern-ireland" class="govuk-link" >@messages("profileSetup.p9.linkText")</a>.
+        <a target="_self" href="@routes.OutboundController.redirect(OutboundLink.MovingPlantProfile.link)"
+           class="govuk-link" >@messages(OutboundLink.MovingPlantProfile.linkTextKey)</a>.
     </p>
 
     @formHelper(action = controllers.profile.routes.ProfileSetupController.onSubmit()) {

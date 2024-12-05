@@ -18,6 +18,7 @@ package viewmodels.checkAnswers.goodsRecord
 
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
@@ -28,6 +29,19 @@ object UpdateRecordSummary {
     SummaryListRowViewModel(
       key = key,
       value = ValueViewModel(HtmlFormat.escape(value).toString),
+      actions = Seq(
+        ActionItemViewModel(
+          "site.change",
+          url
+        )
+          .withVisuallyHiddenText(messages(hidden))
+      )
+    )
+
+  def countryRow(value: String, key: String, hidden: String, url: String)(implicit messages: Messages): SummaryListRow =
+    SummaryListRowViewModel(
+      key = key,
+      value = ValueViewModel(HtmlContent(s"<div lang='en'>${HtmlFormat.escape(value).toString}</div>")),
       actions = Seq(
         ActionItemViewModel(
           "site.change",

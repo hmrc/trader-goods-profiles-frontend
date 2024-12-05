@@ -349,21 +349,25 @@ class GoodsRecordConnectorSpec
       wasSupplementaryUnitAsked = false
     )
 
-    val updateRecordRequest = PatchRecordRequest(
-      testEori,
-      testRecordId,
-      testEori,
+    val updateRecordRequest = PutRecordRequest(
+      actorId = goodsRecord.actorId,
+      traderRef = goodsRecord.traderRef,
+      comcode = "1234567890",
+      goodsDescription = goodsRecord.goodsDescription,
+      countryOfOrigin = goodsRecord.countryOfOrigin,
       category = Some(1),
+      assessments = goodsRecord.assessments,
       supplementaryUnit = None,
       measurementUnit = None,
-      comcode = Some("1234567890")
+      comcodeEffectiveFromDate = goodsRecord.comcodeEffectiveFromDate,
+      comcodeEffectiveToDate = goodsRecord.comcodeEffectiveToDate
     )
 
     "must update a goods record" - {
       "with a category" in {
 
         wireMockServer.stubFor(
-          patch(urlEqualTo(goodsRecordUrl))
+          put(urlEqualTo(goodsRecordUrl))
             .withRequestBody(equalTo(Json.toJson(updateRecordRequest).toString))
             .withHeader(xClientIdName, equalTo(xClientId))
             .willReturn(ok())
@@ -381,13 +385,22 @@ class GoodsRecordConnectorSpec
           supplementaryUnit = Some("123")
         )
 
-        val updateRecordRequestWithSupp = updateRecordRequest.copy(
+        val updateRecordRequestWithSupp = PutRecordRequest(
+          actorId = goodsRecord.actorId,
+          traderRef = goodsRecord.traderRef,
+          comcode = "1234567890",
+          goodsDescription = goodsRecord.goodsDescription,
+          countryOfOrigin = goodsRecord.countryOfOrigin,
+          category = Some(1),
+          assessments = goodsRecord.assessments,
+          supplementaryUnit = Some(123),
           measurementUnit = Some("weight"),
-          supplementaryUnit = Some(123)
+          comcodeEffectiveFromDate = goodsRecord.comcodeEffectiveFromDate,
+          comcodeEffectiveToDate = goodsRecord.comcodeEffectiveToDate
         )
 
         wireMockServer.stubFor(
-          patch(urlEqualTo(goodsRecordUrl))
+          put(urlEqualTo(goodsRecordUrl))
             .withRequestBody(equalTo(Json.toJson(updateRecordRequestWithSupp).toString))
             .withHeader(xClientIdName, equalTo(xClientId))
             .willReturn(ok())
@@ -404,12 +417,22 @@ class GoodsRecordConnectorSpec
           finalComCode = "9988776655"
         )
 
-        val updateRecordWithLongerComCode = updateRecordRequest.copy(
-          comcode = Some("9988776655")
+        val updateRecordWithLongerComCode = PutRecordRequest(
+          actorId = goodsRecord.actorId,
+          traderRef = goodsRecord.traderRef,
+          comcode = "9988776655",
+          goodsDescription = goodsRecord.goodsDescription,
+          countryOfOrigin = goodsRecord.countryOfOrigin,
+          category = Some(1),
+          assessments = goodsRecord.assessments,
+          supplementaryUnit = None,
+          measurementUnit = None,
+          comcodeEffectiveFromDate = goodsRecord.comcodeEffectiveFromDate,
+          comcodeEffectiveToDate = goodsRecord.comcodeEffectiveToDate
         )
 
         wireMockServer.stubFor(
-          patch(urlEqualTo(goodsRecordUrl))
+          put(urlEqualTo(goodsRecordUrl))
             .withRequestBody(equalTo(Json.toJson(updateRecordWithLongerComCode).toString))
             .withHeader(xClientIdName, equalTo(xClientId))
             .willReturn(ok())
@@ -448,20 +471,25 @@ class GoodsRecordConnectorSpec
       measurementUnit = Some("1")
     )
 
-    val updateRecordRequest = PatchRecordRequest(
-      testEori,
-      testRecordId,
-      testEori,
-      category = None,
+    val putRecordRequest = PutRecordRequest(
+      actorId = goodsRecord.actorId,
+      traderRef = goodsRecord.traderRef,
+      comcode = goodsRecord.comcode,
+      goodsDescription = goodsRecord.goodsDescription,
+      countryOfOrigin = goodsRecord.countryOfOrigin,
+      category = goodsRecord.category,
+      assessments = goodsRecord.assessments,
       supplementaryUnit = Some(123),
-      measurementUnit = Some("1")
+      measurementUnit = Some("1"),
+      comcodeEffectiveFromDate = goodsRecord.comcodeEffectiveFromDate,
+      comcodeEffectiveToDate = goodsRecord.comcodeEffectiveToDate
     )
 
     "must update a goods record" in {
 
       wireMockServer.stubFor(
-        patch(urlEqualTo(goodsRecordUrl))
-          .withRequestBody(equalTo(Json.toJson(updateRecordRequest).toString))
+        put(urlEqualTo(goodsRecordUrl))
+          .withRequestBody(equalTo(Json.toJson(putRecordRequest).toString))
           .withHeader(xClientIdName, equalTo(xClientId))
           .willReturn(ok())
       )
@@ -475,7 +503,7 @@ class GoodsRecordConnectorSpec
 
       wireMockServer.stubFor(
         patch(urlEqualTo(goodsRecordUrl))
-          .withRequestBody(equalTo(Json.toJson(updateRecordRequest).toString))
+          .withRequestBody(equalTo(Json.toJson(putRecordRequest).toString))
           .withHeader(xClientIdName, equalTo(xClientId))
           .willReturn(serverError())
       )

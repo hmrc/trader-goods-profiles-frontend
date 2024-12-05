@@ -20,6 +20,8 @@ import play.api.libs.json.{JsError, JsString, JsSuccess, Reads, Writes}
 
 sealed trait DeclarableStatus {
   val messageKey: String
+  val paragraphKey: String
+  val paragraphTagColour: String
 }
 
 object DeclarableStatus {
@@ -31,26 +33,32 @@ object DeclarableStatus {
   )
 
   case object ImmiReady extends DeclarableStatus {
-    val messageKey = "declarableStatus.immiReady"
+    val messageKey         = "declarableStatus.immiReady"
+    val paragraphKey       = "declarableStatus.immiReady.paragraph"
+    val paragraphTagColour = "govuk-tag--green"
   }
 
   case object NotReadyForImmi extends DeclarableStatus {
-    val messageKey = "declarableStatus.notReadyForImmi"
+    val messageKey         = "declarableStatus.notReadyForImmi"
+    val paragraphKey       = "declarableStatus.notReadyForImmi.paragraph"
+    val paragraphTagColour = "govuk-tag--orange"
   }
 
   case object NotReadyForUse extends DeclarableStatus {
-    val messageKey = "declarableStatus.notReadyForUse"
+    val messageKey         = "declarableStatus.notReadyForUse"
+    val paragraphKey       = "declarableStatus.notReadyForUse.paragraph.start"
+    val paragraphTagColour = "govuk-tag--red"
   }
 
   implicit val writes: Writes[DeclarableStatus] = Writes[DeclarableStatus] {
     case ImmiReady       => JsString("IMMI Ready")
-    case NotReadyForImmi => JsString("Not Ready For IMMI")
+    case NotReadyForImmi => JsString("Not ready for IMMI")
     case NotReadyForUse  => JsString("Not Ready For Use")
   }
 
   implicit val reads: Reads[DeclarableStatus] = Reads[DeclarableStatus] {
     case JsString("IMMI Ready")         => JsSuccess(ImmiReady)
-    case JsString("Not Ready For IMMI") => JsSuccess(NotReadyForImmi)
+    case JsString("Not ready for IMMI") => JsSuccess(NotReadyForImmi)
     case JsString("Not Ready For Use")  => JsSuccess(NotReadyForUse)
     case other                          => JsError(s"[DeclarableStatus] Reads unknown DeclarableStatus: $other")
   }

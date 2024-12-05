@@ -38,7 +38,7 @@ import repositories.SessionRepository
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import views.html.categorisation.LongerCommodityCodeView
 
-import java.time.Instant
+import java.time.{Instant, LocalDate, ZoneId}
 import scala.concurrent.Future
 
 class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
@@ -180,7 +180,16 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         val uaCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
         when(mockSessionRepository.set(uaCaptor.capture())) thenReturn Future.successful(true)
 
-        val testCommodity = Commodity("6543211200", List("Description"), Instant.now, None)
+        val testCommodity = Commodity(
+          "6543211200",
+          List("Description"),
+          LocalDate
+            .now(ZoneId.of("UTC"))
+            .minusDays(1)
+            .atStartOfDay(ZoneId.of("UTC"))
+            .toInstant,
+          None
+        )
         when(mockOttConnector.getCommodityCode(anyString(), any(), any(), any(), any(), any())(any())) thenReturn Future
           .successful(
             testCommodity
@@ -281,6 +290,70 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
                 .withFormUrlEncodedBody(("value", "1234"))
 
             val boundForm = form.copy(errors = Seq(elems = FormError("value", "longerCommodityCode.error.invalid")))
+
+            val view = application.injector.instanceOf[LongerCommodityCodeView]
+
+            val result = route(application, request).value
+
+            status(result) mustEqual BAD_REQUEST
+            contentAsString(result) mustEqual view(boundForm, NormalMode, shortCommodity, testRecordId)(
+              request,
+              messages(application)
+            ).toString
+
+            verify(mockOttConnector, atLeastOnce()).getCommodityCode(any(), any(), any(), any(), any(), any())(any())
+          }
+
+        }
+
+        "when expired commodity code is submitted" in {
+          val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+          when(mockGoodsRecordConnector.getRecord(any(), any())(any()))
+            .thenReturn(Future.successful(goodsRecordResponse(Instant.now, Instant.now)))
+
+          val mockOttConnector = mock[OttConnector]
+          val userAnswers      = emptyUserAnswers
+            .set(CategorisationDetailsQuery(testRecordId), categorisationDetailsShortCommodity)
+            .success
+            .value
+
+          val testCommodity = Commodity(
+            "6543211200",
+            List("Description"),
+            LocalDate
+              .now(ZoneId.of("UTC"))
+              .minusDays(2)
+              .atStartOfDay(ZoneId.of("UTC"))
+              .toInstant,
+            Some(
+              LocalDate
+                .now(ZoneId.of("UTC"))
+                .minusDays(1)
+                .atStartOfDay(ZoneId.of("UTC"))
+                .toInstant
+            )
+          )
+          when(
+            mockOttConnector.getCommodityCode(anyString(), any(), any(), any(), any(), any())(any())
+          ) thenReturn Future
+            .successful(
+              testCommodity
+            )
+
+          val application = applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(
+              bind[OttConnector].toInstance(mockOttConnector),
+              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
+            )
+            .build()
+
+          running(application) {
+            val request =
+              FakeRequest(POST, longerCommodityCodeRoute2)
+                .withFormUrlEncodedBody(("value", "12"))
+
+            val boundForm =
+              form.fill("12").copy(errors = Seq(elems = FormError("value", "commodityCode.error.expired")))
 
             val view = application.injector.instanceOf[LongerCommodityCodeView]
 
