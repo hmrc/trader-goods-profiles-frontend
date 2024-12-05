@@ -142,6 +142,7 @@ class SingleRecordController @Inject() (
             para,
             record.declarable,
             record.toReview,
+            record.category.isDefined,
             record.reviewReason
           )
         ).removingFromSession(initialValueOfHasSuppUnit, initialValueOfSuppUnit)
