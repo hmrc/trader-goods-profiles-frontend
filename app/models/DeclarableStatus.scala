@@ -46,7 +46,7 @@ object DeclarableStatus {
 
   case object NotReadyForUse extends DeclarableStatus {
     val messageKey         = "declarableStatus.notReadyForUse"
-    val paragraphKey       = ""
+    val paragraphKey       = "declarableStatus.notReadyForUse.paragraph.start"
     val paragraphTagColour = "govuk-tag--red"
   }
 

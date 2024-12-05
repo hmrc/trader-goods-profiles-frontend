@@ -62,9 +62,10 @@
 
     @if( declarableStatus == DeclarableStatus.NotReadyForUse && !isCategorised) {
         <p class="govuk-body">@messages("declarableStatus.notReadyForUse.paragraph.start") <a href="@controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(recordId).url" class='govuk-link'>@messages("declarableStatus.notReadyForUse.paragraph.linkText")</a> @messages("declarableStatus.notReadyForUse.paragraph.end") </p>
-    } else {
+    } else if( declarableStatus != DeclarableStatus.NotReadyForUse){
         <p class="govuk-body">@messages(declarableStatus.paragraphKey)</p>
     }
+
 
 
     @if(recordLocked){

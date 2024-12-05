@@ -180,7 +180,6 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           NotReadyForUse,
           recordForTestingSummaryRows.category.isDefined,
           true
-
         )(
           request,
           messages(application)
