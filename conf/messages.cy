@@ -746,7 +746,6 @@ declarableStatus.immiReady = Barod ar gyfer IMMI
 declarableStatus.notReadyForImmi = Ddim yn barod ar gyfer IMMI
 declarableStatus.notReadyForUse = Angen cymryd camau
 
-# TODO: Add Welsh translation here when they are available in TGP-2934 , TGP-2935 & TGP-2936
 declarableStatus.immiReady.paragraph =
 declarableStatus.notReadyForImmi.paragraph =
 declarableStatus.notReadyForUse.paragraph.start =
