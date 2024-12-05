@@ -747,6 +747,5 @@ declarableStatus.notReadyForUse = Camau i’w cymryd
 # TODO: Add Welsh translation here when they are available in TGP-2934 , TGP-2935 & TGP-2936
 declarableStatus.immiReady.paragraph =
 declarableStatus.notReadyForImmi.paragraph =
-declarableStatus.notReadyForUse.paragraph.start =
+declarableStatus.notReadyForUse.paragraph =
 declarableStatus.notReadyForUse.paragraph.linkText =
-declarableStatus.notReadyForUse.paragraph.end =
