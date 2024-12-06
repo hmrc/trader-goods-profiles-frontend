@@ -335,7 +335,9 @@ singleRecord.h2.goodsDetails = Manylion nwyddau
 singleRecord.warning = Rhybudd
 singleRecord.warningText = Rydych yn atebol dros yr wybodaeth am unrhyw symudiadau a grëir gennych chi, neu ar eich rhan gan ddefnyddio eich cofnodion Proffil Nwyddau Masnachwr.
 
-singleRecord.inadequateReviewReason.linkText = newid disgrifiad y nwyddau
+
+singleRecord.unclearReviewReason = Nid yw disgrifiad y nwyddau’n glir. Bydd angen i chi {0} cyn bod modd i chi ei ddefnyddio ar Wybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI).
+singleRecord.unclearReviewReason.linkText = newid disgrifiad y nwyddau
 
 singleRecord.h2.categorisation = Categoreiddio
 singleRecord.category.row = Categori
@@ -359,8 +361,11 @@ singleRecord.adviceParagraph.inProgress = Mae CThEF wedi dechrau edrych dros eic
 singleRecord.adviceParagraph.informationRequested = Mae CThEF wedi gofyn i chi am beth gwybodaeth am y cofnod nwyddau hwn.
 singleRecord.adviceParagraph.adviceReceived = Mae CThEF wedi cytuno bod y cod nwyddau a’r disgrifiad o’r nwyddau’n cyd-fynd â’i gilydd.
 
-singleRecord.inadequateReviewReason = Nid oes digon o fanylion yn y disgrifiad o'r nwyddau i ddisgrifio'r nwyddau. Mae angen i chi {0} cyn y gallwch ei ddefnyddio ar Wybodaeth Symudiad y Farchnad Fewnol (IMMI).
+singleRecord.inadequateReviewReason = Nid yw disgrifiad y nwyddau’n disgrifio’r nwyddau’n ddigon manwl. Mae angen i chi {0} cyn bod modd i chi ei ddefnyddio ar Wybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI).
+singleRecord.inadequateReviewReason.linkText = newid disgrifiad y nwyddau
 singleRecord.h2 = Yr hyn i’w wneud nesaf
+
+singleRecord.mismatchReviewReason = Nid yw disgrifiad y nwyddau’n cyd-fynd â’r cod nwyddau. Mae angen i chi newid disgrifiad y nwyddau neu’r cod nwyddau cyn bod modd i chi ei ddefnyddio ar Wybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI).
 
 countryOfOrigin.title = Gwlad tarddiad
 countryOfOrigin.h1 = Gwlad tarddiad
@@ -702,7 +707,7 @@ previousMovementRecords.description.notReadyForUse = Mae gan gofnodion Ddim yn b
 hasSupplementaryUnit.title = Uned atodol
 hasSupplementaryUnit.h1 = Uned atodol
 hasSupplementaryUnit.h2 = A ydych am ychwanegu’r uned atodol?
-hasSupplementaryUnit.p1 = Gan fod eich nwyddau yn perthyn i Gategori 2, mae hyn yn golygu y bydd angen i chi ychwanegu uned atodol at eich Gwybodaeth Symud Marchnad Fewnol (IMMI).
+hasSupplementaryUnit.p1 = Gan fod eich nwyddau yn perthyn i Gategori 2, bydd angen i chi ychwanegu uned atodol at eich Gwybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI). Mae unedau atodol yn golygu uned fesur ychwanegol. Er enghraifft, cyfaint y nwyddau mewn litrau
 hasSupplementaryUnit.p2 = Mae’r opsiwn gennych i storio uned atodol yn eich TGP. Mae’r opsiwn hwn yn ddefnyddiol os ydych yn symud yr un faint o nwyddau yn aml.
 hasSupplementaryUnit.checkYourAnswersLabel = A ydych am ychwanegu’r uned atodol?
 hasSupplementaryUnit.error.required = Dewiswch ‘Iawn’ os ydych am ychwanegu uned atodol
@@ -739,5 +744,10 @@ adviceStatus.adviceRequestWithdrawn = Cais am gyngor wedi’i dynnu yn ôl
 
 declarableStatus.immiReady = Barod ar gyfer IMMI
 declarableStatus.notReadyForImmi = Ddim yn barod ar gyfer IMMI
-declarableStatus.notReadyForUse = Camau i’w cymryd
+declarableStatus.notReadyForUse = Angen cymryd camau
 
+
+declarableStatus.immiReady.paragraph = Gallwch ddefnyddio’r cofnod hwn i lenwi’r Wybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI).
+declarableStatus.notReadyForImmi.paragraph = Ni allwch ddefnyddio’r cofnod hwn i lenwi’r Wybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI). Efallai y byddwch yn gallu diweddaru’r wybodaeth neu gategoreiddio’r cofnod er mwyn gweld a yw’n barod ar gyfer IMMI.
+declarableStatus.notReadyForUse.paragraph = Mae angen i chi {0} i weld a allwch ei ddefnyddio ar Wybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI).
+declarableStatus.notReadyForUse.paragraph.linkText = gategoreiddio’r cofnod nwyddau hwn
