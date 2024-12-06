@@ -335,10 +335,6 @@ singleRecord.h2.goodsDetails = Manylion nwyddau
 singleRecord.warning = Rhybudd
 singleRecord.warningText = Rydych yn atebol dros yr wybodaeth am unrhyw symudiadau a grëir gennych chi, neu ar eich rhan gan ddefnyddio eich cofnodion Proffil Nwyddau Masnachwr.
 
-
-singleRecord.unclearReviewReason = Nid yw disgrifiad y nwyddau’n glir. Bydd angen i chi {0} cyn bod modd i chi ei ddefnyddio ar Wybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI).
-singleRecord.unclearReviewReason.linkText = newid disgrifiad y nwyddau
-
 singleRecord.h2.categorisation = Categoreiddio
 singleRecord.category.row = Categori
 singleRecord.h2.supplementaryUnit = Unedau atodol
@@ -365,7 +361,13 @@ singleRecord.inadequateReviewReason = Nid yw disgrifiad y nwyddau’n disgrifio�
 singleRecord.inadequateReviewReason.linkText = newid disgrifiad y nwyddau
 singleRecord.h2 = Yr hyn i’w wneud nesaf
 
+singleRecord.unclearReviewReason = Nid yw disgrifiad y nwyddau’n glir. Bydd angen i chi {0} cyn bod modd i chi ei ddefnyddio ar Wybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI).
+singleRecord.unclearReviewReason.linkText = newid disgrifiad y nwyddau
+
 singleRecord.mismatchReviewReason = Nid yw disgrifiad y nwyddau’n cyd-fynd â’r cod nwyddau. Mae angen i chi newid disgrifiad y nwyddau neu’r cod nwyddau cyn bod modd i chi ei ddefnyddio ar Wybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI).
+
+singleRecord.commodityReviewReason = Mae angen i chi {0} ac yna categoreiddio’r cofnod hwn i weld a allwch ei ddefnyddio ar Wybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI).
+singleRecord.commodityReviewReason.linkText = newid y cod nwyddau
 
 countryOfOrigin.title = Gwlad tarddiad
 countryOfOrigin.h1 = Gwlad tarddiad

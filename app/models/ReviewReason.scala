@@ -30,9 +30,9 @@ object ReviewReason {
 
   val values: Seq[ReviewReason] = Seq(Commodity, Inadequate, Unclear, Measure, Mismatch)
 
-  case object Commodity extends ReviewReason { // TODO: Update messageKey and values as part of TGP-2945
+  case object Commodity extends ReviewReason {
     val messageKey: String      = "singleRecord.commodityReviewReason"
-    val linkKey: Option[String] = None
+    val linkKey: Option[String] = Some("singleRecord.commodityReviewReason.linkText")
 
     override def url(recordId: String): Option[Call] = Some(
       controllers.problem.routes.JourneyRecoveryController.onPageLoad()

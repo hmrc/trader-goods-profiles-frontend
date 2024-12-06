@@ -78,25 +78,31 @@
         <p class="govuk-inset-text">@messages("singleRecord.recordLocked")</p>
     }
 
-            @if(toReview) {
-                @reviewReason.map { reviewReason =>
-                    @(reviewReason.linkKey, reviewReason.url(recordId)) match {
-                        case (Some(linkKey), Some(url)) => {
-                            @paragraphBody(messages(
-                                reviewReason.messageKey,
-                                link(
-                                    text = messages(linkKey),
-                                    call = url,
-                                    id = None
-                                )
+
+    @if(toReview) {
+        @reviewReason.map { reviewReason =>
+            @(reviewReason.linkKey, reviewReason.url(recordId)) match {
+                case (Some(linkKey), Some(url)) => {
+
+
+
+
+
+                    @paragraphBody(messages(
+                        reviewReason.messageKey,
+                            link(
+                                text = messages(linkKey),
+                                call = url,
+                                id = None
                             )
-                            )
-                        }
-                        case _ => {
-                            @paragraphBody(message = messages(reviewReason.messageKey))
-                        }
-                    }
+                        )
+                    )
                 }
+                case _ => {
+                    @paragraphBody(message = messages(reviewReason.messageKey))
+                }
+            }
+        }
     }
 
     <h2 class="govuk-heading-m">@messages("singleRecord.h2.goodsDetails")</h2>
