@@ -23,10 +23,11 @@
     formHelper: FormWithCSRF,
     link: components.link,
     paragraphBody: components.paragraphBody,
-    govukNotificationBanner: GovukNotificationBanner
+    govukNotificationBanner: GovukNotificationBanner,
+    tag: components.tag
 )
 
-@(recordId: String, detailsList: SummaryList, categorisationList: SummaryList, supplementaryUnitList: SummaryList, adviceStatusList: SummaryList, changesMade: Boolean, changedPage: String,dataRemoved: Boolean,recordLocked:Boolean, adviceStatusMessage:Option[AdviceStatusMessage], declarableStatus: DeclarableStatus,  toReview: Boolean = false, isCategorised: Boolean, reviewReason: Option[ReviewReason] = None)(implicit request: Request[_], messages: Messages)
+@(recordId: String, detailsList: SummaryList, categorisationList: SummaryList, supplementaryUnitList: SummaryList, adviceStatusList: SummaryList, changesMade: Boolean, changedPage: String,dataRemoved: Boolean,recordLocked:Boolean, adviceStatusMessage:Option[AdviceStatusMessage], declarableStatus: DeclarableStatus,  toReview: Boolean = false, isCategorised: Boolean, adviceStatus: AdviceStatus, reviewReason: Option[ReviewReason] = None)(implicit request: Request[_], messages: Messages)
 
     @bannerContentForUpdate(page: String, dataRemoved:Boolean) = {
         <h3 class="govuk-notification-banner__heading">
@@ -84,9 +85,13 @@
             @(reviewReason.linkKey, reviewReason.url(recordId)) match {
                 case (Some(linkKey), Some(url)) => {
 
-
-
-
+                    @{
+                        val additionalPara = reviewReason.setAdditionalContent(isCategorised, adviceStatus)
+                        additionalPara.map { case (paragraphText, tagText) => {
+                                    paragraphBody(messages(paragraphText, tag(messages(tagText))))
+                                }
+                        }
+                    }
 
                     @paragraphBody(messages(
                         reviewReason.messageKey,

@@ -368,6 +368,11 @@ singleRecord.mismatchReviewReason = Nid yw disgrifiad y nwyddau’n cyd-fynd â�
 
 singleRecord.commodityReviewReason = Mae angen i chi {0} ac yna categoreiddio’r cofnod hwn i weld a allwch ei ddefnyddio ar Wybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI).
 singleRecord.commodityReviewReason.linkText = newid y cod nwyddau
+singleRecord.commodityReviewReason.categorised.adviceReceived = Mae’r cod nwyddau wedi dod i ben, sy’n golygu bod y cod nwyddau, y categori a’r cyngor yn dangos fel a ganlyn: {0}
+singleRecord.commodityReviewReason.categorised = Mae’r cod nwyddau wedi dod i ben, sy’n golygu bod y cod nwyddau a’r categori yn dangos fel a ganlyn: {0}
+singleRecord.commodityReviewReason.adviceReceived = Mae’r cod nwyddau wedi dod i ben, sy’n golygu bod y cod nwyddau a’r cyngor yn dangos fel a ganlyn: {0}
+singleRecord.commodityReviewReason.notCategorised.noAdvice = Mae’r cod nwyddau wedi dod i ben, sy’n golygu bod y cod nwyddau’n dangos fel a ganlyn: {0}
+singleRecord.commodityReviewReason.tagText = Nid yw’n ddilys mwyach
 
 countryOfOrigin.title = Gwlad tarddiad
 countryOfOrigin.h1 = Gwlad tarddiad
