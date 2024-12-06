@@ -16,22 +16,37 @@
 
 package viewmodels.checkAnswers
 
-import models.AdviceStatus
+import models.{AdviceStatus, Commodity, ReviewReason}
 import models.AdviceStatus.AdviceReceived
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
+import uk.gov.hmrc.govukfrontend.views.Aliases.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 
 object AdviceStatusSummary {
 
-  def row(adviceStatus: AdviceStatus, recordId: String, recordLocked: Boolean)(implicit
-    messages: Messages
-  ): SummaryListRow =
+  def row(adviceStatus: AdviceStatus, recordId: String, recordLocked: Boolean, isReviewReasonCommodity: Boolean)(
+    implicit messages: Messages
+  ): SummaryListRow = {
+
+    val tagValue = messages("singleRecord.commodityReviewReason.tagText")
+
+    val viewModel =
+      if (isReviewReasonCommodity) {
+        ValueViewModel(
+          HtmlContent(
+            s"<strong class='govuk-tag govuk-tag--grey'>$tagValue</strong> ${messages(adviceStatus.messageKey)}"
+          )
+        )
+      } else {
+        ValueViewModel(HtmlFormat.escape(messages(adviceStatus.messageKey)).toString)
+      }
+
     SummaryListRowViewModel(
       key = "singleRecord.adviceStatus.row",
-      value = ValueViewModel(HtmlFormat.escape(messages(adviceStatus.messageKey)).toString),
+      value = viewModel,
       actions = if (adviceStatus == AdviceReceived) {
         Seq.empty
       } else if (recordLocked) {
@@ -50,4 +65,5 @@ object AdviceStatusSummary {
         )
       }
     )
+  }
 }

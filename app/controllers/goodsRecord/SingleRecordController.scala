@@ -128,7 +128,12 @@ class SingleRecordController @Inject() (
         )
         val adviceList                        = SummaryListViewModel(
           rows = Seq(
-            AdviceStatusSummary.row(record.adviceStatus, record.recordId, recordIsLocked)
+            AdviceStatusSummary.row(
+              record.adviceStatus,
+              record.recordId,
+              recordLocked = recordIsLocked,
+              isReviewReasonCommodity = isReviewReasonCommodity
+            )
           )
         )
         val changesMade                       = request.session.get(dataUpdated).contains("true")
