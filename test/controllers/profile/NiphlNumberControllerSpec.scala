@@ -242,7 +242,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
       "must return OK and the correct view for a GET when HasNiphl hasn't been answered when there is a niphl number" in {
         val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
         val traderProfile    = TraderProfile(testEori, "1", Some("2"), Some("3"), false)
         val mockAuditService = mock[AuditService]
@@ -287,7 +287,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
       "must return OK and the correct view for a GET when HasNiphl hasn't been answered when there isn't a niphl number" in {
         val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
         val traderProfile    = TraderProfile(testEori, "1", Some("2"), None, eoriChanged = false)
         val mockAuditService = mock[AuditService]
@@ -332,7 +332,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
       "must return OK and the correct view for a GET when HasNiphl has been answered when there is a niphl number" in {
         val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
         val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"), false)
 
@@ -379,7 +379,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
       "must return OK and the correct view for a GET when HasNiphl has been answered when there isn't a niphl number" in {
         val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
         val traderProfile = TraderProfile(testEori, "1", Some("3"), None, eoriChanged = false)
 
@@ -426,7 +426,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
       "must redirect to Profile for a POST and submit data if value is different from original" in {
         val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
         val answer = "SN12345"
 
@@ -488,7 +488,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
         when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
         val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
         when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
 
@@ -523,7 +523,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
       "must return a Bad Request and errors when invalid data is submitted" in {
         val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
@@ -555,7 +555,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
       "must redirect to Journey Recovery for a GET if no existing data is found" in {
         val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
         val application = applicationBuilder(userAnswers = None)
           .overrides(
@@ -575,7 +575,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
       "must redirect to Journey Recovery for a POST if no existing data is found" in {
         val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
         val application = applicationBuilder(userAnswers = None)
           .overrides(

@@ -39,6 +39,7 @@ class UkimsNumberController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   checkProfile: ProfileCheckAction,
+  profileAuth: ProfileAuthenticateAction,
   formProvider: UkimsNumberFormProvider,
   traderProfileConnector: TraderProfileConnector,
   val controllerComponents: MessagesControllerComponents,
@@ -82,7 +83,7 @@ class UkimsNumberController @Inject() (
     }
 
   def onPageLoadUpdate(mode: Mode): Action[AnyContent] =
-    (identify andThen checkProfile andThen getData andThen requireData).async { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       request.userAnswers.get(UkimsNumberUpdatePage) match {
         case None        =>
           for {
@@ -104,7 +105,7 @@ class UkimsNumberController @Inject() (
     }
 
   def onSubmitUpdate(mode: Mode): Action[AnyContent] =
-    (identify andThen checkProfile andThen getData andThen requireData).async { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(

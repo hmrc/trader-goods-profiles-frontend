@@ -39,6 +39,7 @@ class NiphlNumberController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   checkProfile: ProfileCheckAction,
+  profileAuth: ProfileAuthenticateAction,
   formProvider: NiphlNumberFormProvider,
   traderProfileConnector: TraderProfileConnector,
   val controllerComponents: MessagesControllerComponents,
@@ -72,7 +73,7 @@ class NiphlNumberController @Inject() (
     }
 
   def onPageLoadUpdate(mode: Mode): Action[AnyContent] =
-    (identify andThen checkProfile andThen getData andThen requireData).async { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
         request.userAnswers.get(HasNiphlUpdatePage) match {
           case Some(_) =>
@@ -114,7 +115,7 @@ class NiphlNumberController @Inject() (
     }
 
   def onSubmitUpdate(mode: Mode): Action[AnyContent] =
-    (identify andThen checkProfile andThen getData andThen requireData).async { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(

@@ -235,6 +235,8 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
       val ukimsNumberRoute = controllers.profile.routes.UkimsNumberController.onPageLoadUpdate(NormalMode).url
 
       "must return OK and the correct view for a GET with all trader profile complete" in {
+        val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
         val traderProfile    = TraderProfile(testEori, "1", Some("2"), Some("3"), eoriChanged = false)
         val mockAuditService = mock[AuditService]
@@ -278,6 +280,8 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
       }
 
       "must return OK and the correct view for a GET with all trader profile complete if the user is returning from the CYA page and UKIMS number should be filled in" in {
+        val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
         val ukimsNumberCheckRoute = controllers.profile.routes.UkimsNumberController.onPageLoadUpdate(CheckMode).url
         val newUkims              = "newUkims"
@@ -320,6 +324,8 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
       }
 
       "must redirect for a POST" in {
+        val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
         val answer = "XIUKIM47699357400020231115081800"
 
@@ -354,6 +360,8 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
       }
 
       "must return a Bad Request and errors when invalid data is submitted" in {
+        val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
@@ -384,6 +392,8 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
       }
 
       "must redirect to Journey Recovery for a GET if no existing data is found" in {
+        val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
         val application = applicationBuilder(userAnswers = None)
           .overrides(
@@ -402,6 +412,8 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
       }
 
       "must redirect to Journey Recovery for a POST if no existing data is found" in {
+        val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
         val application = applicationBuilder(userAnswers = None)
           .overrides(
