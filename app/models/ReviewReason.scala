@@ -24,6 +24,7 @@ sealed trait ReviewReason {
   val linkKey: Option[String]
 
   def url(recordId: String): Option[Call]
+  def setAdditionalContent(isCategorised: Boolean, adviceStatus: AdviceStatus): Option[(String, String)]
 }
 
 object ReviewReason {
@@ -37,40 +38,65 @@ object ReviewReason {
     override def url(recordId: String): Option[Call] = Some(
       controllers.problem.routes.JourneyRecoveryController.onPageLoad()
     )
+
+    override def setAdditionalContent(isCategorised: Boolean, adviceStatus: AdviceStatus): Option[(String, String)] =
+      (isCategorised, adviceStatus) match {
+        case (true, AdviceStatus.AdviceReceived)                                  =>
+          Some(
+            "singleRecord.commodityReviewReason.categorised.adviceReceived",
+            "singleRecord.commodityReviewReason.tagText"
+          )
+        case (true, _)                                                            =>
+          Some("singleRecord.commodityReviewReason.categorised", "singleRecord.commodityReviewReason.tagText")
+        case (_, adviceStatus) if adviceStatus == AdviceStatus.AdviceReceived     =>
+          Some("singleRecord.commodityReviewReason.adviceReceived", "singleRecord.commodityReviewReason.tagText")
+        case (false, adviceStatus) if adviceStatus != AdviceStatus.AdviceReceived =>
+          Some(
+            "singleRecord.commodityReviewReason.notCategorised.noAdvice",
+            "singleRecord.commodityReviewReason.tagText"
+          )
+      }
   }
 
   case object Inadequate extends ReviewReason {
     val messageKey: String      = "singleRecord.inadequateReviewReason"
     val linkKey: Option[String] = Some("singleRecord.inadequateReviewReason.linkText")
 
-    override def url(recordId: String): Option[Call] =
+    override def url(recordId: String): Option[Call]                                                                =
       Some(controllers.goodsRecord.routes.HasGoodsDescriptionChangeController.onPageLoad(NormalMode, recordId))
+    override def setAdditionalContent(isCategorised: Boolean, adviceStatus: AdviceStatus): Option[(String, String)] =
+      None
   }
 
   case object Unclear extends ReviewReason {
     val messageKey: String      = "singleRecord.unclearReviewReason"
     val linkKey: Option[String] = Some("singleRecord.unclearReviewReason.linkText")
 
-    override def url(recordId: String): Option[Call] =
+    override def url(recordId: String): Option[Call]                                                                =
       Some(controllers.goodsRecord.routes.HasGoodsDescriptionChangeController.onPageLoad(NormalMode, recordId))
-
+    override def setAdditionalContent(isCategorised: Boolean, adviceStatus: AdviceStatus): Option[(String, String)] =
+      None
   }
 
   case object Measure extends ReviewReason {
     val messageKey: String      = "singleRecord.measureReviewReason"
     val linkKey: Option[String] = Some("singleRecord.measureReviewReason.linkText")
 
-    override def url(recordId: String): Option[Call] =
+    override def url(recordId: String): Option[Call]                                                                =
       Some(
         controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(recordId)
       ) // TODO: Is this URL right?
+    override def setAdditionalContent(isCategorised: Boolean, adviceStatus: AdviceStatus): Option[(String, String)] =
+      None
   }
 
   case object Mismatch extends ReviewReason {
     val messageKey: String      = "singleRecord.mismatchReviewReason"
     val linkKey: Option[String] = None
 
-    override def url(recordId: String): Option[Call] = None
+    override def url(recordId: String): Option[Call]                                                                = None
+    override def setAdditionalContent(isCategorised: Boolean, adviceStatus: AdviceStatus): Option[(String, String)] =
+      None
   }
 
   implicit val writes: Writes[ReviewReason] = Writes[ReviewReason] {

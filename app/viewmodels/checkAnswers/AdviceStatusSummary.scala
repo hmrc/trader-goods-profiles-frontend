@@ -26,7 +26,6 @@ import viewmodels.implicits._
 
 object AdviceStatusSummary {
 
-  //TBD - this will be updated to route to the update trader reference page
   def row(adviceStatus: AdviceStatus, recordId: String, recordLocked: Boolean)(implicit
     messages: Messages
   ): SummaryListRow =
