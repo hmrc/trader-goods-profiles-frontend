@@ -128,7 +128,13 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
       val categorisationList = SummaryListViewModel(
         rows = Seq(
           CategorySummary
-            .row("singleRecord.cat1", testRecordId, recordIsLocked, recordForTestingSummaryRows.category.isDefined)
+            .row(
+              "singleRecord.cat1",
+              testRecordId,
+              recordIsLocked,
+              recordForTestingSummaryRows.category.isDefined,
+              recordForTestingSummaryRows.reviewReason
+            )
         )
       )
 
@@ -245,7 +251,13 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
       val categorisationList = SummaryListViewModel(
         rows = Seq(
           CategorySummary
-            .row("singleRecord.cat1", testRecordId, recordIsLocked, recordForTestingSummaryRows.category.isDefined)
+            .row(
+              "singleRecord.cat1",
+              testRecordId,
+              recordIsLocked,
+              recordForTestingSummaryRows.category.isDefined,
+              recordForTestingSummaryRows.reviewReason
+            )
         )
       )
 
@@ -378,7 +390,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
             "singleRecord.categoriseThisGood",
             testRecordId,
             recordIsLocked,
-            notCategorisedRecord.category.isDefined
+            notCategorisedRecord.category.isDefined,
+            recordForTestingSummaryRows.reviewReason
           )
         )
       )
@@ -573,7 +586,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
             recordForTestingSummaryRows.category.toString,
             testRecordId,
             recordLocked,
-            isCategorised = true
+            isCategorised = true,
+            recordForTestingSummaryRows.reviewReason
           )
 
           row.actions mustBe Some(Actions("", List()))
@@ -592,7 +606,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
             recordForTestingSummaryRows.category.toString,
             testRecordId,
             recordLocked,
-            isCategorised = true
+            isCategorised = true,
+            recordForTestingSummaryRows.reviewReason
           )
 
           row.actions mustBe defined
@@ -760,7 +775,13 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           val categorisationList = SummaryListViewModel(
             rows = Seq(
               CategorySummary
-                .row("singleRecord.cat1", record.recordId, recordIsLocked, record.category.isDefined)
+                .row(
+                  "singleRecord.cat1",
+                  record.recordId,
+                  recordIsLocked,
+                  record.category.isDefined,
+                  Some(reviewReason)
+                )
             )
           )
 
