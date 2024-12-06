@@ -121,7 +121,13 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           GoodsDescriptionSummary.rowUpdate(recordForTestingSummaryRows, testRecordId, NormalMode, recordIsLocked),
           CountryOfOriginSummary
             .rowUpdate(recordForTestingSummaryRows, testRecordId, NormalMode, recordIsLocked, countries),
-          CommodityCodeSummary.rowUpdate(recordForTestingSummaryRows, testRecordId, NormalMode, recordIsLocked)
+          CommodityCodeSummary.rowUpdate(
+            recordForTestingSummaryRows,
+            testRecordId,
+            NormalMode,
+            recordIsLocked,
+            isReviewReasonCommodity = false
+          )
         )
       )
 
@@ -239,7 +245,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           GoodsDescriptionSummary.rowUpdate(lockedRecord, lockedRecord.recordId, NormalMode, recordIsLocked),
           CountryOfOriginSummary
             .rowUpdate(lockedRecord, lockedRecord.recordId, NormalMode, recordIsLocked, countries),
-          CommodityCodeSummary.rowUpdate(lockedRecord, lockedRecord.recordId, NormalMode, recordIsLocked)
+          CommodityCodeSummary
+            .rowUpdate(lockedRecord, lockedRecord.recordId, NormalMode, recordIsLocked, isReviewReasonCommodity = false)
         )
       )
 
@@ -369,7 +376,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
               notCategorisedRecord,
               testRecordId,
               NormalMode,
-              recordIsLocked
+              recordIsLocked,
+              isReviewReasonCommodity = false
             )
         )
       )
@@ -756,7 +764,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
               GoodsDescriptionSummary.rowUpdate(record, record.recordId, NormalMode, recordIsLocked),
               CountryOfOriginSummary
                 .rowUpdate(record, record.recordId, NormalMode, recordIsLocked, countries),
-              CommodityCodeSummary.rowUpdate(record, record.recordId, NormalMode, recordIsLocked)
+              CommodityCodeSummary
+                .rowUpdate(record, record.recordId, NormalMode, recordIsLocked, isReviewReasonCommodity = false)
             )
           )
 

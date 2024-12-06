@@ -66,7 +66,7 @@ class ReviewReasonSpec extends SpecBase {
 
       "when Commodity" in {
         Commodity.messageKey mustBe "singleRecord.commodityReviewReason"
-        Commodity.linkKey mustBe None
+        Commodity.linkKey mustBe "singleRecord.commodityReviewReason.linkText"
         Commodity.url("recordId").value.url mustBe controllers.problem.routes.JourneyRecoveryController
           .onPageLoad()
           .url

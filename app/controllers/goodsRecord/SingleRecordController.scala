@@ -22,7 +22,7 @@ import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierA
 import models.AdviceStatus._
 import models.helper.{CategorisationJourney, RequestAdviceJourney, SupplementaryUnitUpdateJourney, WithdrawAdviceJourney}
 import models.requests.DataRequest
-import models.{AdviceStatusMessage, Country, NormalMode}
+import models.{AdviceStatusMessage, Country, NormalMode, ReviewReason}
 import pages.goodsRecord.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage, TraderReferenceUpdatePage}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.CountriesQuery
@@ -84,14 +84,24 @@ class SingleRecordController @Inject() (
         _ <- sessionRepository.set(updatedAnswersWithAll)
 
       } yield {
-        val isCategorised = record.category.isDefined
+        val isCategorised           = record.category.isDefined
+        val isReviewReasonCommodity = (record.toReview, record.reviewReason) match {
+          case (true, Some(ReviewReason.Commodity)) => true
+          case _                                    => false
+        }
 
         val detailsList = SummaryListViewModel(
           rows = Seq(
             TraderReferenceSummary.row(record.traderRef, recordId, NormalMode, recordIsLocked),
             GoodsDescriptionSummary.rowUpdate(record, recordId, NormalMode, recordIsLocked),
             CountryOfOriginSummary.rowUpdate(record, recordId, NormalMode, recordIsLocked, countries),
-            CommodityCodeSummary.rowUpdate(record, recordId, NormalMode, recordIsLocked)
+            CommodityCodeSummary.rowUpdate(
+              record,
+              recordId,
+              NormalMode,
+              recordLocked = recordIsLocked,
+              isReviewReasonCommodity = isReviewReasonCommodity
+            )
           )
         )
 
