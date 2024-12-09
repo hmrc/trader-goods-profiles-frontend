@@ -31,7 +31,13 @@ class CommodityCodeSummarySpec extends SpecBase {
   "must return a SummaryListRow without change links when record is locked" in {
 
     val row =
-      CommodityCodeSummary.rowUpdate(recordForTestingSummaryRows, testRecordId, NormalMode, recordLocked = true)
+      CommodityCodeSummary.rowUpdate(
+        recordForTestingSummaryRows,
+        testRecordId,
+        NormalMode,
+        recordLocked = true,
+        isReviewReasonCommodity = false
+      )
 
     row.actions mustBe Some(Actions("", List()))
   }
@@ -41,7 +47,13 @@ class CommodityCodeSummarySpec extends SpecBase {
     "and category is set" in {
 
       val row =
-        CommodityCodeSummary.rowUpdate(recordForTestingSummaryRows, testRecordId, NormalMode, recordLocked = false)
+        CommodityCodeSummary.rowUpdate(
+          recordForTestingSummaryRows,
+          testRecordId,
+          NormalMode,
+          recordLocked = false,
+          isReviewReasonCommodity = false
+        )
 
       row.actions mustBe defined
       row.actions.value.items.head.href mustEqual controllers.goodsRecord.routes.HasCommodityCodeChangeController
@@ -54,7 +66,13 @@ class CommodityCodeSummarySpec extends SpecBase {
       val recordAdviceProvided = recordForTestingSummaryRows.copy(adviceStatus = AdviceReceived)
 
       val row =
-        CommodityCodeSummary.rowUpdate(recordAdviceProvided, testRecordId, NormalMode, recordLocked = false)
+        CommodityCodeSummary.rowUpdate(
+          recordAdviceProvided,
+          testRecordId,
+          NormalMode,
+          recordLocked = false,
+          isReviewReasonCommodity = false
+        )
 
       row.actions mustBe defined
       row.actions.value.items.head.href mustEqual controllers.goodsRecord.routes.HasCommodityCodeChangeController
@@ -67,7 +85,13 @@ class CommodityCodeSummarySpec extends SpecBase {
       val recordNoCatNoAdvice = recordForTestingSummaryRows.copy(category = None)
 
       val row =
-        CommodityCodeSummary.rowUpdate(recordNoCatNoAdvice, testRecordId, NormalMode, recordLocked = false)
+        CommodityCodeSummary.rowUpdate(
+          recordNoCatNoAdvice,
+          testRecordId,
+          NormalMode,
+          recordLocked = false,
+          isReviewReasonCommodity = false
+        )
 
       row.actions mustBe defined
       row.actions.value.items.head.href mustEqual controllers.goodsRecord.routes.CommodityCodeController

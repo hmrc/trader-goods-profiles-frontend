@@ -71,7 +71,7 @@ object CommodityCodeSummary {
       controllers.goodsRecord.routes.CommodityCodeController.onPageLoadUpdate(mode, recordId).url
     }
 
-    val tagValue = messages("singleRecord.commodityReviewReason.tagText")
+    val tagValue  = messages("singleRecord.commodityReviewReason.tagText")
     val viewModel =
       if (isReviewReasonCommodity) {
         ValueViewModel(
