@@ -22,6 +22,7 @@ import models.{CheckMode, Mode, UserAnswers}
 import pages.goodsRecord.CommodityCodePage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
+import uk.gov.hmrc.govukfrontend.views.Aliases.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
@@ -55,7 +56,13 @@ object CommodityCodeSummary {
     )
   }
 
-  def rowUpdate(record: GetGoodsRecordResponse, recordId: String, mode: Mode, recordLocked: Boolean)(implicit
+  def rowUpdate(
+    record: GetGoodsRecordResponse,
+    recordId: String,
+    mode: Mode,
+    recordLocked: Boolean,
+    isReviewReasonCommodity: Boolean
+  )(implicit
     messages: Messages
   ): SummaryListRow = {
     val changeLink = if (record.category.isDefined || record.adviceStatus == AdviceReceived) {
@@ -64,9 +71,21 @@ object CommodityCodeSummary {
       controllers.goodsRecord.routes.CommodityCodeController.onPageLoadUpdate(mode, recordId).url
     }
 
+    val tagValue  = messages("singleRecord.commodityReviewReason.tagText")
+    val viewModel =
+      if (isReviewReasonCommodity) {
+        ValueViewModel(
+          HtmlContent(
+            s"<strong class='govuk-tag govuk-tag--grey'>$tagValue</strong> ${record.comcode}"
+          )
+        )
+      } else {
+        ValueViewModel(HtmlFormat.escape(record.comcode).toString)
+      }
+
     SummaryListRowViewModel(
       key = "commodityCode.checkYourAnswersLabel",
-      value = ValueViewModel(HtmlFormat.escape(record.comcode).toString),
+      value = viewModel,
       actions = if (recordLocked) {
         Seq.empty
       } else {

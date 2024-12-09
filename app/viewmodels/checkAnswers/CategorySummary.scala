@@ -17,7 +17,7 @@
 package viewmodels.checkAnswers
 
 import models.ReviewReason
-import models.ReviewReason.Measure
+import models.ReviewReason.{Commodity, Measure}
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.Aliases.HtmlContent
@@ -48,12 +48,24 @@ object CategorySummary {
           )
         }
 
+      val tagValue = messages("singleRecord.commodityReviewReason.tagText")
       if (reviewReason.exists(_ == Measure)) {
         val translatedValue = messages("singleRecord.categoriseThisGood")
         val viewModel       =
           ValueViewModel(
             HtmlContent(
               s"<a href=$url class='govuk-link'>$translatedValue</a>"
+            )
+          )
+        SummaryListRowViewModel(
+          key = "singleRecord.category.row",
+          value = viewModel
+        )
+      } else if (reviewReason.exists(_ == Commodity)) {
+        val viewModel =
+          ValueViewModel(
+            HtmlContent(
+              s"<strong class='govuk-tag govuk-tag--grey'>$tagValue</strong>$value"
             )
           )
         SummaryListRowViewModel(
@@ -68,16 +80,21 @@ object CategorySummary {
         )
       }
     } else {
-      val translatedValue = messages(value)
-      val viewModel       =
+      val viewModel =
         if (recordLocked) {
           ValueViewModel(HtmlFormat.escape(value).toString)
         } else {
-          ValueViewModel(
-            HtmlContent(
-              s"<a href=$url class='govuk-link'>$translatedValue</a>"
+          if (reviewReason.exists(_ == Commodity)) {
+            val translatedValue = messages("singleRecord.category.row.commodityReviewReason.notCategorised")
+            ValueViewModel(HtmlFormat.escape(translatedValue).toString())
+          } else {
+            val translatedValue = messages(value)
+            ValueViewModel(
+              HtmlContent(
+                s"<a href=$url class='govuk-link'>$translatedValue</a>"
+              )
             )
-          )
+          }
         }
       SummaryListRowViewModel(
         key = "singleRecord.category.row",

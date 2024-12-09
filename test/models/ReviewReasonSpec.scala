@@ -17,6 +17,7 @@
 package models
 
 import base.SpecBase
+import models.AdviceStatus.{AdviceReceived, AdviceRequestWithdrawn, NotRequested}
 import models.ReviewReason._
 import play.api.libs.json._
 
@@ -28,6 +29,10 @@ class ReviewReasonSpec extends SpecBase {
 
       "when Commodity" in {
         Json.fromJson[ReviewReason](JsString("commodity")) mustBe JsSuccess(Commodity)
+      }
+
+      "when Inadequate" in {
+        Json.fromJson[ReviewReason](JsString("inadequate")) mustBe JsSuccess(Inadequate)
       }
 
       "when Unclear" in {
@@ -49,6 +54,10 @@ class ReviewReasonSpec extends SpecBase {
         Json.toJson(Commodity: ReviewReason) mustBe JsString("commodity")
       }
 
+      "when Inadequate" in {
+        Json.toJson(Inadequate: ReviewReason) mustBe JsString("inadequate")
+      }
+
       "when Unclear" in {
         Json.toJson(Unclear: ReviewReason) mustBe JsString("unclear")
       }
@@ -64,12 +73,64 @@ class ReviewReasonSpec extends SpecBase {
 
     "must have correct information" - {
 
-      "when Commodity" in {
-        Commodity.messageKey mustBe "singleRecord.commodityReviewReason"
-        Commodity.linkKey mustBe None
-        Commodity.url("recordId").value.url mustBe controllers.problem.routes.JourneyRecoveryController
-          .onPageLoad()
+      "when Commodity and" - {
+
+        "is categorised, and advice status is AdviceReceived" in {
+          Commodity.messageKey mustBe "singleRecord.commodityReviewReason"
+          Commodity.linkKey mustBe Some("singleRecord.commodityReviewReason.linkText")
+          Commodity.url("recordId").value.url mustBe controllers.problem.routes.JourneyRecoveryController
+            .onPageLoad()
+            .url
+          Commodity.setAdditionalContent(isCategorised = true, AdviceReceived) mustBe Some(
+            "singleRecord.commodityReviewReason.categorised.adviceReceived",
+            "singleRecord.commodityReviewReason.tagText"
+          )
+        }
+
+        "is categorised, and advice status is NotRequested" in {
+          Commodity.messageKey mustBe "singleRecord.commodityReviewReason"
+          Commodity.linkKey mustBe Some("singleRecord.commodityReviewReason.linkText")
+          Commodity.url("recordId").value.url mustBe controllers.problem.routes.JourneyRecoveryController
+            .onPageLoad()
+            .url
+          Commodity.setAdditionalContent(isCategorised = true, NotRequested) mustBe Some(
+            "singleRecord.commodityReviewReason.categorised",
+            "singleRecord.commodityReviewReason.tagText"
+          )
+        }
+
+        "is not categorised, and advice status is AdviceReceived" in {
+          Commodity.messageKey mustBe "singleRecord.commodityReviewReason"
+          Commodity.linkKey mustBe Some("singleRecord.commodityReviewReason.linkText")
+          Commodity.url("recordId").value.url mustBe controllers.problem.routes.JourneyRecoveryController
+            .onPageLoad()
+            .url
+          Commodity.setAdditionalContent(isCategorised = false, AdviceReceived) mustBe Some(
+            "singleRecord.commodityReviewReason.adviceReceived",
+            "singleRecord.commodityReviewReason.tagText"
+          )
+        }
+
+        "is not categorised, and advice status is not AdviceReceived" in {
+          Commodity.messageKey mustBe "singleRecord.commodityReviewReason"
+          Commodity.linkKey mustBe Some("singleRecord.commodityReviewReason.linkText")
+          Commodity.url("recordId").value.url mustBe controllers.problem.routes.JourneyRecoveryController
+            .onPageLoad()
+            .url
+          Commodity.setAdditionalContent(isCategorised = false, AdviceRequestWithdrawn) mustBe Some(
+            "singleRecord.commodityReviewReason.notCategorised.noAdvice",
+            "singleRecord.commodityReviewReason.tagText"
+          )
+        }
+      }
+
+      "when Inadequate" in {
+        Inadequate.messageKey mustBe "singleRecord.inadequateReviewReason"
+        Inadequate.linkKey mustBe Some("singleRecord.inadequateReviewReason.linkText")
+        Inadequate.url("recordId").value.url mustBe controllers.goodsRecord.routes.HasGoodsDescriptionChangeController
+          .onPageLoad(NormalMode, "recordId")
           .url
+        Inadequate.setAdditionalContent(isCategorised = false, NotRequested) mustBe None
       }
 
       "when Unclear" in {
@@ -78,6 +139,7 @@ class ReviewReasonSpec extends SpecBase {
         Unclear.url("recordId").value.url mustBe controllers.goodsRecord.routes.HasGoodsDescriptionChangeController
           .onPageLoad(NormalMode, "recordId")
           .url
+        Unclear.setAdditionalContent(isCategorised = false, NotRequested) mustBe None
       }
 
       "when Measure" in {
@@ -86,12 +148,14 @@ class ReviewReasonSpec extends SpecBase {
         Measure.url("recordId").value.url mustBe controllers.categorisation.routes.CategorisationPreparationController
           .startCategorisation("recordId")
           .url
+        Measure.setAdditionalContent(isCategorised = false, NotRequested) mustBe None
       }
 
       "when Mismatch" in {
         Mismatch.messageKey mustBe "singleRecord.mismatchReviewReason"
         Mismatch.linkKey mustBe None
         Mismatch.url("recordId") mustBe None
+        Mismatch.setAdditionalContent(isCategorised = false, NotRequested) mustBe None
       }
     }
   }

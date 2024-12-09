@@ -121,7 +121,13 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           GoodsDescriptionSummary.rowUpdate(recordForTestingSummaryRows, testRecordId, NormalMode, recordIsLocked),
           CountryOfOriginSummary
             .rowUpdate(recordForTestingSummaryRows, testRecordId, NormalMode, recordIsLocked, countries),
-          CommodityCodeSummary.rowUpdate(recordForTestingSummaryRows, testRecordId, NormalMode, recordIsLocked)
+          CommodityCodeSummary.rowUpdate(
+            recordForTestingSummaryRows,
+            testRecordId,
+            NormalMode,
+            recordIsLocked,
+            isReviewReasonCommodity = false
+          )
         )
       )
 
@@ -159,7 +165,12 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
       val adviceList = SummaryListViewModel(
         rows = Seq(
-          AdviceStatusSummary.row(recordForTestingSummaryRows.adviceStatus, testRecordId, recordIsLocked)
+          AdviceStatusSummary.row(
+            recordForTestingSummaryRows.adviceStatus,
+            testRecordId,
+            recordIsLocked,
+            isReviewReasonCommodity = false
+          )
         )
       )
 
@@ -185,7 +196,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           Some(NotRequestedParagraph),
           NotReadyForUse,
           toReview = false,
-          recordForTestingSummaryRows.category.isDefined
+          isCategorised = recordForTestingSummaryRows.category.isDefined,
+          recordForTestingSummaryRows.adviceStatus
         )(
           request,
           messages(application)
@@ -244,7 +256,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           GoodsDescriptionSummary.rowUpdate(lockedRecord, lockedRecord.recordId, NormalMode, recordIsLocked),
           CountryOfOriginSummary
             .rowUpdate(lockedRecord, lockedRecord.recordId, NormalMode, recordIsLocked, countries),
-          CommodityCodeSummary.rowUpdate(lockedRecord, lockedRecord.recordId, NormalMode, recordIsLocked)
+          CommodityCodeSummary
+            .rowUpdate(lockedRecord, lockedRecord.recordId, NormalMode, recordIsLocked, isReviewReasonCommodity = false)
         )
       )
 
@@ -282,7 +295,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
       val adviceList = SummaryListViewModel(
         rows = Seq(
-          AdviceStatusSummary.row(lockedRecord.adviceStatus, lockedRecord.recordId, recordIsLocked)
+          AdviceStatusSummary
+            .row(lockedRecord.adviceStatus, lockedRecord.recordId, recordIsLocked, isReviewReasonCommodity = false)
         )
       )
 
@@ -309,7 +323,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           Some(RequestedParagraph),
           NotReadyForUse,
           toReview = false,
-          recordForTestingSummaryRows.category.isDefined
+          isCategorised = recordForTestingSummaryRows.category.isDefined,
+          recordForTestingSummaryRows.adviceStatus
         )(
           request,
           messages(application)
@@ -379,7 +394,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
               notCategorisedRecord,
               testRecordId,
               NormalMode,
-              recordIsLocked
+              recordIsLocked,
+              isReviewReasonCommodity = false
             )
         )
       )
@@ -417,7 +433,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
       val adviceList = SummaryListViewModel(
         rows = Seq(
-          AdviceStatusSummary.row(notCategorisedRecord.adviceStatus, testRecordId, recordIsLocked)
+          AdviceStatusSummary
+            .row(notCategorisedRecord.adviceStatus, testRecordId, recordIsLocked, isReviewReasonCommodity = false)
         )
       )
 
@@ -444,7 +461,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           Some(NotRequestedParagraph),
           NotReadyForUse,
           toReview = false,
-          notCategorisedRecord.category.isDefined
+          isCategorised = notCategorisedRecord.category.isDefined,
+          notCategorisedRecord.adviceStatus
         )(
           request,
           messages(application)
@@ -674,7 +692,12 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           .build()
         implicit val localMessages: Messages = messages(application)
         running(application) {
-          val row = AdviceStatusSummary.row(recordForTestingSummaryRows.adviceStatus, testRecordId, recordLocked)
+          val row = AdviceStatusSummary.row(
+            recordForTestingSummaryRows.adviceStatus,
+            testRecordId,
+            recordLocked,
+            isReviewReasonCommodity = false
+          )
 
           row.actions mustBe defined
           row.actions.value.items.head.href mustEqual controllers.advice.routes.WithdrawAdviceStartController
@@ -691,7 +714,12 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           .build()
         implicit val localMessages: Messages = messages(application)
         running(application) {
-          val row = AdviceStatusSummary.row(recordForTestingSummaryRows.adviceStatus, testRecordId, recordLocked)
+          val row = AdviceStatusSummary.row(
+            recordForTestingSummaryRows.adviceStatus,
+            testRecordId,
+            recordLocked,
+            isReviewReasonCommodity = false
+          )
 
           row.actions mustBe defined
           row.actions.value.items.head.href mustEqual controllers.advice.routes.AdviceStartController
@@ -711,7 +739,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           val row = AdviceStatusSummary.row(
             recordForTestingSummaryRowsWithAdviceProvided.adviceStatus,
             testRecordId,
-            recordLocked
+            recordLocked,
+            isReviewReasonCommodity = false
           )
 
           row.actions mustBe Some(Actions("", List()))
@@ -723,6 +752,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
       forAll(ReviewReason.values) { reviewReason =>
         s"is $reviewReason" in {
+
+          val isReviewReasonCommodity = reviewReason == ReviewReason.Commodity
 
           val record   = goodsRecordResponseWithReviewReason(reviewReason = reviewReason)
           val toReview = true
@@ -768,7 +799,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
               GoodsDescriptionSummary.rowUpdate(record, record.recordId, NormalMode, recordIsLocked),
               CountryOfOriginSummary
                 .rowUpdate(record, record.recordId, NormalMode, recordIsLocked, countries),
-              CommodityCodeSummary.rowUpdate(record, record.recordId, NormalMode, recordIsLocked)
+              CommodityCodeSummary
+                .rowUpdate(record, record.recordId, NormalMode, recordIsLocked, isReviewReasonCommodity)
             )
           )
 
@@ -806,7 +838,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
           val adviceList = SummaryListViewModel(
             rows = Seq(
-              AdviceStatusSummary.row(record.adviceStatus, record.recordId, recordIsLocked)
+              AdviceStatusSummary.row(record.adviceStatus, record.recordId, recordIsLocked, isReviewReasonCommodity)
             )
           )
 
@@ -831,8 +863,9 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
               recordIsLocked,
               Some(NotRequestedParagraph),
               NotReadyForUse,
-              recordForTestingSummaryRows.category.isDefined,
               toReview,
+              recordForTestingSummaryRows.category.isDefined,
+              recordForTestingSummaryRows.adviceStatus,
               Some(reviewReason)
             )(
               request,
