@@ -62,6 +62,8 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
       "for a GET" - {
 
         "must return OK and the correct view" in {
+          val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
           val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"), false)
 
@@ -76,7 +78,11 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             .success
             .value
 
-          val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+          val application = applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            )
+            .build()
 
           val action = controllers.profile.routes.CyaMaintainProfileController.onSubmitNirms()
 
@@ -96,8 +102,14 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
         }
 
         "must redirect to Journey Recovery if no answers are found" in {
+          val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
-          val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+          val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .overrides(
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            )
+            .build()
 
           running(application) {
 
@@ -115,8 +127,14 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
         }
 
         "must redirect to Journey Recovery if no existing data is found" in {
+          val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
-          val application = applicationBuilder(userAnswers = None).build()
+          val application = applicationBuilder(userAnswers = None)
+            .overrides(
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            )
+            .build()
 
           running(application) {
             val request =
@@ -154,6 +172,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val mockTraderProfileConnector = mock[TraderProfileConnector]
             val mockAuditService           = mock[AuditService]
 
+            when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
             when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
             when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any()))
               .thenReturn(Future.successful(Done))
@@ -211,6 +230,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val mockTraderProfileConnector = mock[TraderProfileConnector]
             val mockAuditService           = mock[AuditService]
 
+            when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
             when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(
               TraderProfile(testEori, "ukims", None, None, eoriChanged = false)
             )
@@ -249,6 +269,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val traderProfile              = TraderProfile(testEori, "1", Some("2"), Some("3"), false)
             val mockTraderProfileConnector = mock[TraderProfileConnector]
 
+            when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
             when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
 
             val application =
@@ -292,6 +313,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
           val mockTraderProfileConnector = mock[TraderProfileConnector]
           val mockAuditService           = mock[AuditService]
 
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
           when(mockTraderProfileConnector.getTraderProfile(any())(any()))
             .thenReturn(Future.failed(new RuntimeException("Connector failed")))
 
@@ -335,6 +357,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
           val mockTraderProfileConnector = mock[TraderProfileConnector]
           val mockAuditService           = mock[AuditService]
 
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
           when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
           when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any()))
             .thenReturn(Future.failed(new RuntimeException("Connector failed")))
@@ -366,8 +389,14 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
         }
 
         "must redirect to Journey Recovery if no existing data is found" in {
+          val mockTraderProfileConnector = mock[TraderProfileConnector]
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
-          val application = applicationBuilder(userAnswers = None).build()
+          val application = applicationBuilder(userAnswers = None)
+            .overrides(
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            )
+            .build()
 
           running(application) {
             val request = FakeRequest(POST, controllers.profile.routes.CyaMaintainProfileController.onSubmitNirms().url)
@@ -394,13 +423,19 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
       "for a GET" - {
 
         "must return OK and the correct view" in {
+          val mockTraderProfileConnector = mock[TraderProfileConnector]
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
           val userAnswers = emptyUserAnswers
             .set(UkimsNumberUpdatePage, "newUkims")
             .success
             .value
 
-          val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+          val application = applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            )
+            .build()
 
           val action = controllers.profile.routes.CyaMaintainProfileController.onSubmitUkimsNumber()
 
@@ -423,8 +458,14 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
         }
 
         "must redirect to Journey Recovery if no answers are found" in {
+          val mockTraderProfileConnector = mock[TraderProfileConnector]
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
-          val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+          val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .overrides(
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            )
+            .build()
 
           running(application) {
 
@@ -441,8 +482,14 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
         }
 
         "must redirect to Journey Recovery if no existing data is found" in {
+          val mockTraderProfileConnector = mock[TraderProfileConnector]
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
-          val application = applicationBuilder(userAnswers = None).build()
+          val application = applicationBuilder(userAnswers = None)
+            .overrides(
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            )
+            .build()
 
           running(application) {
             val request =
@@ -474,6 +521,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val mockTraderProfileConnector = mock[TraderProfileConnector]
             val mockAuditService           = mock[AuditService]
 
+            when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
             when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
             when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any()))
               .thenReturn(Future.successful(Done))
@@ -522,6 +570,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val mockTraderProfileConnector = mock[TraderProfileConnector]
             val mockAuditService           = mock[AuditService]
 
+            when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
             when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
             when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any()))
               .thenReturn(Future.successful(Done))
@@ -567,6 +616,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val mockTraderProfileConnector = mock[TraderProfileConnector]
             val mockAuditService           = mock[AuditService]
 
+            when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
             when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(
               TraderProfile(testEori, "ukims", None, None, eoriChanged = false)
             )
@@ -611,6 +661,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
           val mockTraderProfileConnector = mock[TraderProfileConnector]
           val mockAuditService           = mock[AuditService]
 
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
           when(mockTraderProfileConnector.getTraderProfile(any())(any()))
             .thenReturn(Future.failed(new RuntimeException("Connector failed")))
 
@@ -651,6 +702,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
           val mockTraderProfileConnector = mock[TraderProfileConnector]
           val mockAuditService           = mock[AuditService]
 
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
           when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
           when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any()))
             .thenReturn(Future.failed(new RuntimeException("Connector failed")))
@@ -683,8 +735,14 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
         }
 
         "must redirect to Journey Recovery if no existing data is found" in {
+          val mockTraderProfileConnector = mock[TraderProfileConnector]
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
-          val application = applicationBuilder(userAnswers = None).build()
+          val application = applicationBuilder(userAnswers = None)
+            .overrides(
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            )
+            .build()
 
           running(application) {
             val request =
@@ -713,6 +771,8 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
       "for a GET" - {
 
         "must return OK and the correct view" in {
+          val mockTraderProfileConnector = mock[TraderProfileConnector]
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
           val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"), false)
 
@@ -727,7 +787,11 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             .success
             .value
 
-          val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+          val application = applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            )
+            .build()
 
           val action = controllers.profile.routes.CyaMaintainProfileController.onSubmitNiphl()
 
@@ -747,8 +811,14 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
         }
 
         "must redirect to Journey Recovery if no answers are found" in {
+          val mockTraderProfileConnector = mock[TraderProfileConnector]
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
-          val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+          val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .overrides(
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            )
+            .build()
 
           running(application) {
 
@@ -766,8 +836,14 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
         }
 
         "must redirect to Journey Recovery if no existing data is found" in {
+          val mockTraderProfileConnector = mock[TraderProfileConnector]
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
-          val application = applicationBuilder(userAnswers = None).build()
+          val application = applicationBuilder(userAnswers = None)
+            .overrides(
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            )
+            .build()
 
           running(application) {
             val request =
@@ -805,6 +881,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val mockTraderProfileConnector = mock[TraderProfileConnector]
             val mockAuditService           = mock[AuditService]
 
+            when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
             when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
             when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any()))
               .thenReturn(Future.successful(Done))
@@ -857,6 +934,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val mockTraderProfileConnector = mock[TraderProfileConnector]
             val mockAuditService           = mock[AuditService]
 
+            when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
             when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
 
             val application = applicationBuilder(userAnswers = Some(userAnswers))
@@ -893,6 +971,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val traderProfile              = TraderProfile(testEori, "1", Some("2"), Some("3"), false)
             val mockTraderProfileConnector = mock[TraderProfileConnector]
 
+            when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
             when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
 
             val application =
@@ -936,6 +1015,8 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
           val mockTraderProfileConnector = mock[TraderProfileConnector]
           val mockAuditService           = mock[AuditService]
 
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
           when(mockTraderProfileConnector.getTraderProfile(any())(any()))
             .thenReturn(Future.failed(new RuntimeException("Connector failed")))
 
@@ -979,6 +1060,8 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
           val mockTraderProfileConnector = mock[TraderProfileConnector]
           val mockAuditService           = mock[AuditService]
 
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
           when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
           when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any()))
             .thenReturn(Future.failed(new RuntimeException("Connector failed")))
@@ -1007,8 +1090,14 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
         }
 
         "must redirect to Journey Recovery if no existing data is found" in {
+          val mockTraderProfileConnector = mock[TraderProfileConnector]
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
-          val application = applicationBuilder(userAnswers = None).build()
+          val application = applicationBuilder(userAnswers = None)
+            .overrides(
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            )
+            .build()
 
           running(application) {
             val request = FakeRequest(POST, controllers.profile.routes.CyaMaintainProfileController.onSubmitNiphl().url)
@@ -1065,6 +1154,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
           val mockTraderProfileConnector = mock[TraderProfileConnector]
 
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
           when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
           when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any()))
             .thenReturn(Future.successful(Done))
@@ -1098,7 +1188,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
         "must redirect to Journey Recovery if no answers are found" in {
 
           val mockTraderProfileConnector = mock[TraderProfileConnector]
-
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
           when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
           when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any()))
             .thenReturn(Future.successful(Done))
@@ -1125,8 +1215,14 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
         }
 
         "must redirect to Journey Recovery if no existing data is found" in {
+          val mockTraderProfileConnector = mock[TraderProfileConnector]
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
-          val application = applicationBuilder(userAnswers = None).build()
+          val application = applicationBuilder(userAnswers = None)
+            .overrides(
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            )
+            .build()
 
           running(application) {
             val request =
@@ -1149,6 +1245,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
           val mockTraderProfileConnector = mock[TraderProfileConnector]
           val mockAuditService           = mock[AuditService]
 
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
           when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
           when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any()))
             .thenReturn(Future.successful(Done))
@@ -1189,6 +1286,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
           val mockTraderProfileConnector = mock[TraderProfileConnector]
           val mockAuditService           = mock[AuditService]
 
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
           when(mockTraderProfileConnector.getTraderProfile(any())(any()))
             .thenReturn(Future.failed(new RuntimeException("Connector failed")))
 
@@ -1219,6 +1317,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
           val mockTraderProfileConnector = mock[TraderProfileConnector]
           val mockAuditService           = mock[AuditService]
 
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
           when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
           when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any()))
             .thenReturn(Future.failed(new RuntimeException("Connector failed")))
@@ -1251,8 +1350,14 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
         }
 
         "must redirect to Journey Recovery if no existing data is found" in {
+          val mockTraderProfileConnector = mock[TraderProfileConnector]
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
-          val application = applicationBuilder(userAnswers = None).build()
+          val application = applicationBuilder(userAnswers = None)
+            .overrides(
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            )
+            .build()
 
           running(application) {
             val request =
@@ -1280,7 +1385,14 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             .success
             .value
 
-          val application = applicationBuilder(userAnswers = Some(invalidNirmsNumberAnswers)).build()
+          val mockTraderProfileConnector = mock[TraderProfileConnector]
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+
+          val application = applicationBuilder(userAnswers = Some(invalidNirmsNumberAnswers))
+            .overrides(
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            )
+            .build()
 
           running(application) {
             val request =
@@ -1338,6 +1450,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
         "must return OK and the correct view" in {
 
           val mockTraderProfileConnector = mock[TraderProfileConnector]
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
           when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
           when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any()))
@@ -1372,6 +1485,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
         "must redirect to Journey Recovery if no answers are found" in {
 
           val mockTraderProfileConnector = mock[TraderProfileConnector]
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
           when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
           when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any()))
@@ -1399,8 +1513,14 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
         }
 
         "must redirect to Journey Recovery if no existing data is found" in {
+          val mockTraderProfileConnector = mock[TraderProfileConnector]
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
-          val application = applicationBuilder(userAnswers = None).build()
+          val application = applicationBuilder(userAnswers = None)
+            .overrides(
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            )
+            .build()
 
           running(application) {
             val request =
@@ -1423,6 +1543,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
           val mockTraderProfileConnector = mock[TraderProfileConnector]
           val mockAuditService           = mock[AuditService]
 
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
           when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
           when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any()))
             .thenReturn(Future.successful(Done))
@@ -1463,6 +1584,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
           val mockTraderProfileConnector = mock[TraderProfileConnector]
           val mockAuditService           = mock[AuditService]
 
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
           when(mockTraderProfileConnector.getTraderProfile(any())(any()))
             .thenReturn(Future.failed(new RuntimeException("Connector failed")))
 
@@ -1493,6 +1615,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
           val mockTraderProfileConnector = mock[TraderProfileConnector]
           val mockAuditService           = mock[AuditService]
 
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
           when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
           when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any()))
             .thenReturn(Future.failed(new RuntimeException("Connector failed")))
@@ -1525,8 +1648,14 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
         }
 
         "must redirect to Journey Recovery if no existing data is found" in {
+          val mockTraderProfileConnector = mock[TraderProfileConnector]
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
-          val application = applicationBuilder(userAnswers = None).build()
+          val application = applicationBuilder(userAnswers = None)
+            .overrides(
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            )
+            .build()
 
           running(application) {
             val request =
@@ -1554,7 +1683,14 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             .success
             .value
 
-          val application = applicationBuilder(userAnswers = Some(invalidNiphlNumberAnswers)).build()
+          val mockTraderProfileConnector = mock[TraderProfileConnector]
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+
+          val application = applicationBuilder(userAnswers = Some(invalidNiphlNumberAnswers))
+            .overrides(
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            )
+            .build()
 
           running(application) {
             val request =

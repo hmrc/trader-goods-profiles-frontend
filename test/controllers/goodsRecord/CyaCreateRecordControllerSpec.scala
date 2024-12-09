@@ -18,7 +18,7 @@ package controllers.goodsRecord
 
 import base.SpecBase
 import base.TestConstants.testEori
-import connectors.{GoodsRecordConnector, OttConnector}
+import connectors.{GoodsRecordConnector, OttConnector, TraderProfileConnector}
 import models.helper.CreateRecordJourney
 import models.{Country, GoodsRecord, UserAnswers}
 import org.apache.pekko.Done
@@ -57,6 +57,8 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
     "for a GET" - {
 
       "must return OK and the correct view with valid mandatory data" in {
+        val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
         val mockOttConnector = mock[OttConnector]
         when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
@@ -66,6 +68,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         val application =
           applicationBuilder(userAnswers = Some(mandatoryRecordUserAnswers))
             .overrides(
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
               bind[OttConnector].toInstance(mockOttConnector)
             )
             .build()
@@ -85,6 +88,8 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
       }
 
       "must return OK and the correct view with all data (including optional)" in {
+        val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
         val mockOttConnector = mock[OttConnector]
         when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
@@ -96,6 +101,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
               bind[OttConnector].toInstance(mockOttConnector)
             )
             .build()
@@ -115,11 +121,17 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
       }
 
       "must return OK and the correct view when countries query has countries in it" in {
+        val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
         val userAnswers = fullRecordUserAnswers.set(CountriesQuery, Seq(Country("CN", "China"))).success.value
 
         val application =
-          applicationBuilder(userAnswers = Some(userAnswers)).build()
+          applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+            )
+            .build()
 
         running(application) {
           val request = FakeRequest(GET, controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad().url)
@@ -135,8 +147,14 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
       }
 
       "must redirect to Journey Recovery if no answers are found" in {
+        val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
-        val application = applicationBuilder(Some(emptyUserAnswers)).build()
+        val application = applicationBuilder(Some(emptyUserAnswers))
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          )
+          .build()
         val continueUrl = RedirectUrl(controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad().url)
 
         running(application) {
@@ -153,8 +171,14 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
       }
 
       "must redirect to Journey Recovery if no existing data is found" in {
+        val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
-        val application = applicationBuilder(userAnswers = None).build()
+        val application = applicationBuilder(userAnswers = None)
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          )
+          .build()
 
         running(application) {
           val request = FakeRequest(GET, controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad().url)
@@ -172,6 +196,8 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
       "when user answers can create a valid goods record" - {
 
         "must submit the goods record and redirect to the CreateRecordSuccessController and cleanse userAnswers" in {
+          val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
           val userAnswers = mandatoryRecordUserAnswers
 
@@ -187,9 +213,12 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
           val application =
             applicationBuilder(userAnswers = Some(userAnswers))
-              .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
-              .overrides(bind[AuditService].toInstance(mockAuditService))
-              .overrides(bind[SessionRepository].toInstance(sessionRepository))
+              .overrides(
+                bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+                bind[GoodsRecordConnector].toInstance(mockConnector),
+                bind[AuditService].toInstance(mockAuditService),
+                bind[SessionRepository].toInstance(sessionRepository)
+              )
               .build()
 
           running(application) {
@@ -225,6 +254,8 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
       "when user answers cannot create a goods record" - {
 
         "must not submit anything, and redirect to Journey Recovery" in {
+          val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
           val mockConnector    = mock[GoodsRecordConnector]
           val mockAuditService = mock[AuditService]
@@ -235,9 +266,12 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
           val application =
             applicationBuilder(userAnswers = Some(emptyUserAnswers))
-              .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
-              .overrides(bind[AuditService].toInstance(mockAuditService))
-              .overrides(bind[SessionRepository].toInstance(sessionRepository))
+              .overrides(
+                bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+                bind[GoodsRecordConnector].toInstance(mockConnector),
+                bind[AuditService].toInstance(mockAuditService),
+                bind[SessionRepository].toInstance(sessionRepository)
+              )
               .build()
 
           running(application) {
@@ -263,6 +297,8 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
       }
 
       "must let the play error handler deal with connector failure" in {
+        val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
         val userAnswers = mandatoryRecordUserAnswers
 
@@ -278,9 +314,12 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
-            .overrides(bind[AuditService].toInstance(mockAuditService))
-            .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
-            .overrides(bind[SessionRepository].toInstance(sessionRepository))
+            .overrides(
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+              bind[GoodsRecordConnector].toInstance(mockConnector),
+              bind[AuditService].toInstance(mockAuditService),
+              bind[SessionRepository].toInstance(sessionRepository)
+            )
             .build()
 
         running(application) {
@@ -301,8 +340,14 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
       }
 
       "must redirect to Journey Recovery if no existing data is found" in {
+        val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
-        val application = applicationBuilder(userAnswers = None).build()
+        val application = applicationBuilder(userAnswers = None)
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          )
+          .build()
 
         running(application) {
           val request = FakeRequest(POST, controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad().url)
