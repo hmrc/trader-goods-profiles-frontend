@@ -46,7 +46,7 @@ object ReviewReason {
             "singleRecord.commodityReviewReason.categorised.adviceReceived",
             "singleRecord.commodityReviewReason.tagText"
           )
-        case (true, _)                                                            =>
+        case (true, adviceStatus) if adviceStatus == AdviceStatus.NotRequested    =>
           Some("singleRecord.commodityReviewReason.categorised", "singleRecord.commodityReviewReason.tagText")
         case (_, adviceStatus) if adviceStatus == AdviceStatus.AdviceReceived     =>
           Some("singleRecord.commodityReviewReason.adviceReceived", "singleRecord.commodityReviewReason.tagText")
