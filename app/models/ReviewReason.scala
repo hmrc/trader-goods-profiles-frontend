@@ -39,23 +39,25 @@ object ReviewReason {
       controllers.problem.routes.JourneyRecoveryController.onPageLoad()
     )
 
-    override def setAdditionalContent(isCategorised: Boolean, adviceStatus: AdviceStatus): Option[(String, String)] =
+    override def setAdditionalContent(isCategorised: Boolean, adviceStatus: AdviceStatus): Option[(String, String)] = {
+      val tagText = "singleRecord.commodityReviewReason.tagText"
       (isCategorised, adviceStatus) match {
         case (true, AdviceStatus.AdviceReceived)                                  =>
           Some(
             "singleRecord.commodityReviewReason.categorised.adviceReceived",
-            "singleRecord.commodityReviewReason.tagText"
+            tagText
           )
         case (true, adviceStatus) if adviceStatus == AdviceStatus.NotRequested    =>
-          Some("singleRecord.commodityReviewReason.categorised", "singleRecord.commodityReviewReason.tagText")
+          Some("singleRecord.commodityReviewReason.categorised", tagText)
         case (_, adviceStatus) if adviceStatus == AdviceStatus.AdviceReceived     =>
-          Some("singleRecord.commodityReviewReason.adviceReceived", "singleRecord.commodityReviewReason.tagText")
+          Some("singleRecord.commodityReviewReason.adviceReceived", tagText)
         case (false, adviceStatus) if adviceStatus != AdviceStatus.AdviceReceived =>
           Some(
             "singleRecord.commodityReviewReason.notCategorised.noAdvice",
-            "singleRecord.commodityReviewReason.tagText"
+            tagText
           )
       }
+    }
   }
 
   case object Inadequate extends ReviewReason {
