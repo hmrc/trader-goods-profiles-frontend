@@ -63,7 +63,7 @@ object ReviewReason {
     override def url(recordId: String): Option[Call] =
       Some(
         controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(recordId)
-      ) // TODO: Is this URL right?
+      )
   }
 
   case object Mismatch extends ReviewReason {

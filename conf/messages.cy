@@ -707,7 +707,7 @@ previousMovementRecords.description.notReadyForUse = Mae gan gofnodion Ddim yn b
 hasSupplementaryUnit.title = Uned atodol
 hasSupplementaryUnit.h1 = Uned atodol
 hasSupplementaryUnit.h2 = A ydych am ychwanegu’r uned atodol?
-hasSupplementaryUnit.p1 = Gan fod eich nwyddau yn perthyn i Gategori 2, mae hyn yn golygu y bydd angen i chi ychwanegu uned atodol at eich Gwybodaeth Symud Marchnad Fewnol (IMMI).
+hasSupplementaryUnit.p1 = Gan fod eich nwyddau yn perthyn i Gategori 2, bydd angen i chi ychwanegu uned atodol at eich Gwybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI). Mae unedau atodol yn golygu uned fesur ychwanegol. Er enghraifft, cyfaint y nwyddau mewn litrau
 hasSupplementaryUnit.p2 = Mae’r opsiwn gennych i storio uned atodol yn eich TGP. Mae’r opsiwn hwn yn ddefnyddiol os ydych yn symud yr un faint o nwyddau yn aml.
 hasSupplementaryUnit.checkYourAnswersLabel = A ydych am ychwanegu’r uned atodol?
 hasSupplementaryUnit.error.required = Dewiswch ‘Iawn’ os ydych am ychwanegu uned atodol
@@ -742,13 +742,11 @@ adviceStatus.adviceReceived = Cyngor wedi dod i law
 adviceStatus.adviceNotProvided = Cyngor heb ei ddarparu
 adviceStatus.adviceRequestWithdrawn = Cais am gyngor wedi’i dynnu yn ôl
 
-declarableStatus.immiReady = Barod ar gyfer IMMI
+declarableStatus.immiReady = Yn barod ar gyfer IMMI
 declarableStatus.notReadyForImmi = Ddim yn barod ar gyfer IMMI
-declarableStatus.notReadyForUse = Camau i’w cymryd
+declarableStatus.notReadyForUse = Angen cymryd camau
 
-# TODO: Add Welsh translation here when they are available in TGP-2934 , TGP-2935 & TGP-2936
-declarableStatus.immiReady.paragraph =
-declarableStatus.notReadyForImmi.paragraph =
-declarableStatus.notReadyForUse.paragraph.start =
-declarableStatus.notReadyForUse.paragraph.linkText =
-declarableStatus.notReadyForUse.paragraph.end =
+declarableStatus.immiReady.paragraph = Gallwch ddefnyddio’r cofnod hwn i lenwi’r Wybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI).
+declarableStatus.notReadyForImmi.paragraph = Ni allwch ddefnyddio’r cofnod hwn i lenwi’r Wybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI). Efallai y byddwch yn gallu diweddaru’r wybodaeth neu gategoreiddio’r cofnod er mwyn gweld a yw’n barod ar gyfer IMMI.
+declarableStatus.notReadyForUse.paragraph = Mae angen i chi {0} i weld a allwch ei ddefnyddio ar Wybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI).
+declarableStatus.notReadyForUse.paragraph.linkText = gategoreiddio’r cofnod nwyddau hwn

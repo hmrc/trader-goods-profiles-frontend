@@ -16,6 +16,8 @@
 
 package viewmodels.checkAnswers
 
+import models.ReviewReason
+import models.ReviewReason.Measure
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.Aliases.HtmlContent
@@ -25,7 +27,13 @@ import viewmodels.implicits._
 
 object CategorySummary {
 
-  def row(value: String, recordId: String, recordLocked: Boolean, isCategorised: Boolean)(implicit
+  def row(
+    value: String,
+    recordId: String,
+    recordLocked: Boolean,
+    isCategorised: Boolean,
+    reviewReason: Option[ReviewReason]
+  )(implicit
     messages: Messages
   ): SummaryListRow = {
     val url = controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(recordId).url
@@ -39,11 +47,26 @@ object CategorySummary {
               .withVisuallyHiddenText(messages("singleRecord.category.row"))
           )
         }
-      SummaryListRowViewModel(
-        key = "singleRecord.category.row",
-        value = ValueViewModel(HtmlFormat.escape(messages(value)).toString),
-        actions = action
-      )
+
+      if (reviewReason.exists(_ == Measure)) {
+        val translatedValue = messages("singleRecord.categoriseThisGood")
+        val viewModel       =
+          ValueViewModel(
+            HtmlContent(
+              s"<a href=$url class='govuk-link'>$translatedValue</a>"
+            )
+          )
+        SummaryListRowViewModel(
+          key = "singleRecord.category.row",
+          value = viewModel
+        )
+      } else {
+        SummaryListRowViewModel(
+          key = "singleRecord.category.row",
+          value = ValueViewModel(HtmlFormat.escape(messages(value)).toString),
+          actions = action
+        )
+      }
     } else {
       val translatedValue = messages(value)
       val viewModel       =
