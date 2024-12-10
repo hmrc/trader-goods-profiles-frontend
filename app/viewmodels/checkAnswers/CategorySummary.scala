@@ -21,7 +21,7 @@ import models.ReviewReason.{Commodity, Measure}
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.Aliases.HtmlContent
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{ActionItem, SummaryListRow, Value}
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 
@@ -36,70 +36,89 @@ object CategorySummary {
   )(implicit
     messages: Messages
   ): SummaryListRow = {
-    val url = controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(recordId).url
-    if (isCategorised) {
-      val action =
-        if (recordLocked) {
-          Seq.empty
-        } else {
-          Seq(
-            ActionItemViewModel("site.change", url)
-              .withVisuallyHiddenText(messages("singleRecord.category.row"))
-          )
-        }
+    val url = createCategorisationUrl(recordId)
 
-      val tagValue = messages("singleRecord.commodityReviewReason.tagText")
-      if (reviewReason.contains(Measure)) {
-        val translatedValue = messages("singleRecord.categoriseThisGood")
-        val viewModel       =
-          ValueViewModel(
-            HtmlContent(
-              s"<a href=$url class='govuk-link'>$translatedValue</a>"
-            )
-          )
-        SummaryListRowViewModel(
-          key = "singleRecord.category.row",
-          value = viewModel
-        )
-      } else if (reviewReason.contains(Commodity)) {
-        val viewModel =
-          ValueViewModel(
-            HtmlContent(
-              s"<strong class='govuk-tag govuk-tag--grey'>$tagValue</strong> ${messages(value)}"
-            )
-          )
-        SummaryListRowViewModel(
-          key = "singleRecord.category.row",
-          value = viewModel
-        )
-      } else {
-        SummaryListRowViewModel(
-          key = "singleRecord.category.row",
-          value = ValueViewModel(HtmlFormat.escape(messages(value)).toString),
-          actions = action
-        )
-      }
+    if (isCategorised) {
+      handleCategorisedRow(value, url, recordLocked, reviewReason)
     } else {
-      val viewModel =
-        if (recordLocked) {
-          ValueViewModel(HtmlFormat.escape(value).toString)
-        } else {
-          if (reviewReason.contains(Commodity)) {
-            val translatedValue = messages("singleRecord.category.row.commodityReviewReason.notCategorised")
-            ValueViewModel(HtmlFormat.escape(translatedValue).toString())
-          } else {
-            val translatedValue = messages(value)
-            ValueViewModel(
-              HtmlContent(
-                s"<a href=$url class='govuk-link'>$translatedValue</a>"
-              )
-            )
-          }
-        }
-      SummaryListRowViewModel(
-        key = "singleRecord.category.row",
-        value = viewModel
-      )
+      handleUncategorisedRow(value, url, recordLocked, reviewReason)
     }
   }
+
+  private def createCategorisationUrl(recordId: String): String =
+    controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(recordId).url
+
+  private def handleCategorisedRow(
+    value: String,
+    url: String,
+    recordLocked: Boolean,
+    reviewReason: Option[ReviewReason]
+  )(implicit messages: Messages): SummaryListRow = {
+    val actions = createCategorisedActions(recordLocked, url)
+
+    reviewReason match {
+      case Some(Measure)   =>
+        val viewModel = createMeasureViewModel(url)
+        SummaryListRowViewModel(key = "singleRecord.category.row", value = viewModel)
+      case Some(Commodity) =>
+        val viewModel = createCommodityViewModel(value)
+        SummaryListRowViewModel(key = "singleRecord.category.row", value = viewModel)
+      case _               =>
+        val escapedValue = ValueViewModel(HtmlFormat.escape(messages(value)).toString)
+        SummaryListRowViewModel(
+          key = "singleRecord.category.row",
+          value = escapedValue,
+          actions = actions
+        )
+    }
+  }
+
+  private def createCategorisedActions(recordLocked: Boolean, url: String)(implicit
+    messages: Messages
+  ): Seq[ActionItem] =
+    if (recordLocked) {
+      Seq.empty
+    } else {
+      Seq(ActionItemViewModel("site.change", url).withVisuallyHiddenText(messages("singleRecord.category.row")))
+    }
+
+  private def createMeasureViewModel(url: String)(implicit messages: Messages): Value = {
+    val translatedValue = messages("singleRecord.categoriseThisGood")
+    ValueViewModel(HtmlContent(s"<a href=$url class='govuk-link'>$translatedValue</a>"))
+  }
+
+  private def createCommodityViewModel(value: String)(implicit messages: Messages): Value = {
+    val tagValue = messages("singleRecord.commodityReviewReason.tagText")
+    ValueViewModel(HtmlContent(s"<strong class='govuk-tag govuk-tag--grey'>$tagValue</strong> ${messages(value)}"))
+  }
+
+  private def handleUncategorisedRow(
+    value: String,
+    url: String,
+    recordLocked: Boolean,
+    reviewReason: Option[ReviewReason]
+  )(implicit messages: Messages): SummaryListRow = {
+    val viewModel = if (recordLocked) {
+      ValueViewModel(HtmlFormat.escape(value).toString)
+    } else {
+      createUncategorisedViewModel(value, url, reviewReason)
+    }
+
+    SummaryListRowViewModel(key = "singleRecord.category.row", value = viewModel)
+  }
+
+  private def createUncategorisedViewModel(
+    value: String,
+    url: String,
+    reviewReason: Option[ReviewReason]
+  )(implicit messages: Messages): Value =
+    reviewReason match {
+      case Some(Commodity) =>
+        val translatedValue = messages("singleRecord.category.row.commodityReviewReason.notCategorised")
+        ValueViewModel(HtmlFormat.escape(translatedValue).toString())
+      case _               =>
+        val translatedValue = messages(value)
+        ValueViewModel(HtmlContent(s"<a href=$url class='govuk-link'>$translatedValue</a>"))
+    }
+
 }
