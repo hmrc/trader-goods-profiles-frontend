@@ -44,10 +44,10 @@
             title = Text(messages("homepage.downloadBanner.important")),
             content = HtmlContent(
                 f"""
-            <h3 class='govuk-notification-banner__heading'>
+            <p class='govuk-notification-banner__heading'>
                 ${messages("homepage.downloadBanner.content")}
                 <a href="${controllers.download.routes.FileManagementController.onPageLoad().url}" class='govuk-link'>${messages("homepage.downloadBanner.linkText")}</a>.
-            </h3>"""),
+            </p>"""),
             role = Some("alert"))
         )
     }
