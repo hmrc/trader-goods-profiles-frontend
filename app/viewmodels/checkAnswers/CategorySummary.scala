@@ -49,7 +49,7 @@ object CategorySummary {
         }
 
       val tagValue = messages("singleRecord.commodityReviewReason.tagText")
-      if (reviewReason.exists(_ == Measure)) {
+      if (reviewReason.contains(Measure)) {
         val translatedValue = messages("singleRecord.categoriseThisGood")
         val viewModel       =
           ValueViewModel(
@@ -61,11 +61,11 @@ object CategorySummary {
           key = "singleRecord.category.row",
           value = viewModel
         )
-      } else if (reviewReason.exists(_ == Commodity)) {
+      } else if (reviewReason.contains(Commodity)) {
         val viewModel =
           ValueViewModel(
             HtmlContent(
-              s"<strong class='govuk-tag govuk-tag--grey'>$tagValue</strong>$value"
+              s"<strong class='govuk-tag govuk-tag--grey'>$tagValue</strong> ${messages(value)}"
             )
           )
         SummaryListRowViewModel(
@@ -84,7 +84,7 @@ object CategorySummary {
         if (recordLocked) {
           ValueViewModel(HtmlFormat.escape(value).toString)
         } else {
-          if (reviewReason.exists(_ == Commodity)) {
+          if (reviewReason.contains(Commodity)) {
             val translatedValue = messages("singleRecord.category.row.commodityReviewReason.notCategorised")
             ValueViewModel(HtmlFormat.escape(translatedValue).toString())
           } else {
