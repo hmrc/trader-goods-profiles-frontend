@@ -460,6 +460,7 @@ singleRecord.status.row = Status
 singleRecord.askForAdvice = Ask for advice
 singleRecord.withdrawAdvice = Withdraw request
 singleRecord.categoriseThisGood = Categorise this good
+singleRecord.categoriseThisRecord = Categorise this record
 singleRecord.cat1 = Category 1
 singleRecord.cat2 = Category 2
 singleRecord.standardGoods = Standard goods
@@ -739,3 +740,8 @@ declarableStatus.immiReady.paragraph = You can use this record to complete the I
 declarableStatus.notReadyForImmi.paragraph = You cannot use this record to complete the Internal market Movement Information (IMMI). You may be able to update the information or categorise the record to see if it is ready for IMMI.
 declarableStatus.notReadyForUse.paragraph = You need to {0} to see if you can use it on an Internal Market Movement Information (IMMI).
 declarableStatus.notReadyForUse.paragraph.linkText = categorise this goods record
+
+updatedCommodityCode.title = You’ve updated the commodity code
+updatedCommodityCode.heading = You’ve updated the commodity code
+updatedCommodityCode.paragraph1 = The commodity code has changed which means you’ll need to catgegorise this record before you can use it.
+updatedCommodityCode.paragraph2 = You do not need to categorise this record now. You can review the record from your list of goods records and start categorisation from there.
