@@ -16,7 +16,7 @@
 
 package viewmodels.checkAnswers
 
-import models.{AdviceStatus, Commodity, ReviewReason}
+import models.AdviceStatus
 import models.AdviceStatus.AdviceReceived
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat

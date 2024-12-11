@@ -35,9 +35,8 @@ object ReviewReason {
     val messageKey: String      = "singleRecord.commodityReviewReason"
     val linkKey: Option[String] = Some("singleRecord.commodityReviewReason.linkText")
 
-    override def url(recordId: String): Option[Call] = Some(
-      controllers.problem.routes.JourneyRecoveryController.onPageLoad()
-    )
+    override def url(recordId: String): Option[Call] =
+      Some(controllers.goodsRecord.routes.HasCommodityCodeChangeController.onPageLoad(NormalMode, recordId))
 
     override def setAdditionalContent(isCategorised: Boolean, adviceStatus: AdviceStatus): Option[(String, String)] = {
       val tagText = "singleRecord.commodityReviewReason.tagText"
@@ -56,6 +55,7 @@ object ReviewReason {
             "singleRecord.commodityReviewReason.notCategorised.noAdvice",
             tagText
           )
+        case (_, _)                                                               => None
       }
     }
   }
