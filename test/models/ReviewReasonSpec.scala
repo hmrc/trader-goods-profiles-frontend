@@ -82,8 +82,10 @@ class ReviewReasonSpec extends SpecBase {
             .onPageLoad(NormalMode, "recordId")
             .url
           Commodity.setAdditionalContent(isCategorised = true, AdviceReceived) mustBe Some(
-            "singleRecord.commodityReviewReason.categorised.adviceReceived",
-            "singleRecord.commodityReviewReason.tagText"
+            (
+              "singleRecord.commodityReviewReason.categorised.adviceReceived",
+              "singleRecord.commodityReviewReason.tagText"
+            )
           )
         }
 
@@ -94,8 +96,10 @@ class ReviewReasonSpec extends SpecBase {
             .onPageLoad(NormalMode, "recordId")
             .url
           Commodity.setAdditionalContent(isCategorised = true, NotRequested) mustBe Some(
-            "singleRecord.commodityReviewReason.categorised",
-            "singleRecord.commodityReviewReason.tagText"
+            (
+              "singleRecord.commodityReviewReason.categorised",
+              "singleRecord.commodityReviewReason.tagText"
+            )
           )
         }
 
@@ -106,8 +110,10 @@ class ReviewReasonSpec extends SpecBase {
             .onPageLoad(NormalMode, "recordId")
             .url
           Commodity.setAdditionalContent(isCategorised = false, AdviceReceived) mustBe Some(
-            "singleRecord.commodityReviewReason.adviceReceived",
-            "singleRecord.commodityReviewReason.tagText"
+            (
+              "singleRecord.commodityReviewReason.adviceReceived",
+              "singleRecord.commodityReviewReason.tagText"
+            )
           )
         }
 
@@ -118,8 +124,10 @@ class ReviewReasonSpec extends SpecBase {
             .onPageLoad(NormalMode, "recordId")
             .url
           Commodity.setAdditionalContent(isCategorised = false, AdviceRequestWithdrawn) mustBe Some(
-            "singleRecord.commodityReviewReason.notCategorised.noAdvice",
-            "singleRecord.commodityReviewReason.tagText"
+            (
+              "singleRecord.commodityReviewReason.notCategorised.noAdvice",
+              "singleRecord.commodityReviewReason.tagText"
+            )
           )
         }
       }
