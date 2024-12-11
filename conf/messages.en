@@ -206,7 +206,7 @@ countryOfOrigin.error.invalid = Enter a valid country of origin
 countryOfOrigin.checkYourAnswersLabel = Country of origin
 countryOfOrigin.change.hidden = Country of origin
 
-homepage.title = Trader Goods Profile homepage
+homepage.title = Trader Goods Profile (TGP) homepage
 homepage.h1 = Trader Goods Profile (TGP) homepage
 homepage.p1 = You can manage your goods records, ask HMRC for an opinion on a goods record or update your profile details.
 homepage.h2.1 = Goods records
