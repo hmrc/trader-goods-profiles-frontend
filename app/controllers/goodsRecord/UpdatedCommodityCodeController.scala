@@ -26,12 +26,13 @@ import javax.inject.Inject
 
 class UpdatedCommodityCodeController @Inject() (
   override val messagesApi: MessagesApi,
-                                       identify: IdentifierAction,
-                                       getData: DataRetrievalAction,
-                                       requireData: DataRequiredAction,
-                                       val controllerComponents: MessagesControllerComponents,
-                                       view: UpdatedCommodityCodeView
-                                     ) extends FrontendBaseController with I18nSupport {
+  identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
+  val controllerComponents: MessagesControllerComponents,
+  view: UpdatedCommodityCodeView
+) extends FrontendBaseController
+    with I18nSupport {
 
   def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
