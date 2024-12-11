@@ -20,7 +20,7 @@ import cats.data
 import com.google.inject.Inject
 import connectors.GoodsRecordConnector
 import controllers.BaseController
-import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
+import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
 import models.helper.CategorisationJourney
 import models.ott.CategorisationInfo
 import models.requests.DataRequest
@@ -43,6 +43,7 @@ class CyaCategorisationController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
   view: CyaCategorisationView,
   goodsRecordConnector: GoodsRecordConnector,
@@ -55,8 +56,8 @@ class CyaCategorisationController @Inject() (
 
   private val errorMessage: String = "Unable to update Goods Profile."
 
-  def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
-    implicit request =>
+  def onPageLoad(recordId: String): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       val longerCategorisationInfo = request.userAnswers.get(LongerCategorisationDetailsQuery(recordId))
 
       longerCategorisationInfo match {
@@ -77,7 +78,7 @@ class CyaCategorisationController @Inject() (
               )
             }
       }
-  }
+    }
 
   private def showCyaPage(
     request: DataRequest[_],
@@ -153,8 +154,8 @@ class CyaCategorisationController @Inject() (
     )
   }
 
-  def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
+  def onSubmit(recordId: String): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       CategoryRecord
         .build(
           request.userAnswers,
@@ -187,5 +188,5 @@ class CyaCategorisationController @Inject() (
             )
           )
       }
-  }
+    }
 }

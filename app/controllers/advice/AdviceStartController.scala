@@ -44,8 +44,8 @@ class AdviceStartController @Inject() (
       Ok(view(recordId)).removingFromSession(dataUpdated, pageUpdated, dataRemoved)
     }
 
-  def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
-    implicit request =>
+  def onSubmit(recordId: String): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       Redirect(navigator.nextPage(AdviceStartPage(recordId), NormalMode, request.userAnswers))
-  }
+    }
 }

@@ -19,7 +19,7 @@ package controllers.categorisation
 import com.google.inject.Inject
 import connectors.GoodsRecordConnector
 import controllers.BaseController
-import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
+import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
 import models.helper.SupplementaryUnitUpdateJourney
 import models.{NormalMode, SupplementaryRequest}
 import navigation.CategorisationNavigator
@@ -42,6 +42,7 @@ class CyaSupplementaryUnitController @Inject() (
   requireData: DataRequiredAction,
   goodsRecordConnector: GoodsRecordConnector,
   dataCleansingService: DataCleansingService,
+  profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
   view: CyaSupplementaryUnitView,
   navigator: CategorisationNavigator,
@@ -53,8 +54,8 @@ class CyaSupplementaryUnitController @Inject() (
   private def continueUrl(recordId: String): Call =
     controllers.categorisation.routes.HasSupplementaryUnitController.onPageLoadUpdate(NormalMode, recordId)
 
-  def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
-    implicit request =>
+  def onPageLoad(recordId: String): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       SupplementaryRequest.build(request.userAnswers, request.eori, recordId) match {
         case Right(_)     =>
           val list = SummaryListViewModel(
@@ -68,10 +69,10 @@ class CyaSupplementaryUnitController @Inject() (
           dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
           logErrorsAndContinue(errorMessage, continueUrl(recordId), errors)
       }
-  }
+    }
 
-  def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
+  def onSubmit(recordId: String): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       SupplementaryRequest.build(request.userAnswers, request.eori, recordId) match {
         case Right(model) =>
           val initialHasSuppUnitOpt = request.session.get(initialValueOfHasSuppUnit).map(_.toBoolean)
@@ -116,7 +117,7 @@ class CyaSupplementaryUnitController @Inject() (
             logErrorsAndContinue(errorMessage, continueUrl(recordId), errors)
           )
       }
-  }
+    }
 
   private def compareSupplementaryUnits(
     initialSuppUnitOpt: Option[String],

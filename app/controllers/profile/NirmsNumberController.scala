@@ -41,6 +41,7 @@ class NirmsNumberController @Inject() (
   formProvider: NirmsNumberFormProvider,
   traderProfileConnector: TraderProfileConnector,
   checkProfile: ProfileCheckAction,
+  profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
   view: NirmsNumberView
 )(implicit ec: ExecutionContext)
@@ -54,8 +55,8 @@ class NirmsNumberController @Inject() (
       Ok(view(preparedForm, controllers.profile.routes.NirmsNumberController.onSubmitCreate(mode)))
     }
 
-  def onSubmitCreate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
+  def onSubmitCreate(mode: Mode): Action[AnyContent] =
+    (identify andThen checkProfile andThen getData andThen requireData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(
@@ -69,10 +70,10 @@ class NirmsNumberController @Inject() (
               _              <- sessionRepository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(NirmsNumberPage, mode, updatedAnswers))
         )
-  }
+    }
 
   def onPageLoadUpdate(mode: Mode): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
         val previousAnswerOpt = request.userAnswers.get(NirmsNumberUpdatePage)
         val nirmsNumberOpt    = previousAnswerOpt.orElse(traderProfile.nirmsNumber)
@@ -107,8 +108,8 @@ class NirmsNumberController @Inject() (
       }
     }
 
-  def onSubmitUpdate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
+  def onSubmitUpdate(mode: Mode): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(
@@ -125,6 +126,6 @@ class NirmsNumberController @Inject() (
               _              <- sessionRepository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(NirmsNumberUpdatePage, mode, updatedAnswers))
         )
-  }
+    }
 
 }

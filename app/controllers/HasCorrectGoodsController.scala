@@ -38,6 +38,7 @@ class HasCorrectGoodsController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  profileAuth: ProfileAuthenticateAction,
   formProvider: HasCorrectGoodsFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: HasCorrectGoodsView
@@ -46,18 +47,18 @@ class HasCorrectGoodsController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoadCreate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
-    implicit request =>
+  def onPageLoadCreate(mode: Mode): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       val preparedForm = prepareForm(HasCorrectGoodsPage, form)
       val submitAction = routes.HasCorrectGoodsController.onSubmitCreate(mode)
       request.userAnswers.get(CommodityQuery) match {
         case Some(commodity) => Ok(view(preparedForm, commodity, submitAction))
         case None            => navigator.journeyRecovery()
       }
-  }
+    }
 
   def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] =
-    (identify andThen getData andThen requireData) { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       val preparedForm = prepareForm(HasCorrectGoodsCommodityCodeUpdatePage(recordId), form)
       val submitAction = routes.HasCorrectGoodsController.onSubmitUpdate(mode, recordId)
       request.userAnswers.get(CommodityUpdateQuery(recordId)) match {
@@ -67,7 +68,7 @@ class HasCorrectGoodsController @Inject() (
     }
 
   def onPageLoadLongerCommodityCode(mode: Mode, recordId: String): Action[AnyContent] =
-    (identify andThen getData andThen requireData) { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       val preparedForm = prepareForm(HasCorrectGoodsLongerCommodityCodePage(recordId), form)
       val submitAction =
         routes.HasCorrectGoodsController.onSubmitLongerCommodityCode(mode, recordId)
@@ -80,8 +81,8 @@ class HasCorrectGoodsController @Inject() (
       }
     }
 
-  def onSubmitCreate(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
+  def onSubmitCreate(mode: Mode): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       val submitAction = routes.HasCorrectGoodsController.onSubmitCreate(mode)
       form
         .bindFromRequest()
@@ -97,10 +98,10 @@ class HasCorrectGoodsController @Inject() (
               _              <- sessionRepository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(HasCorrectGoodsPage, mode, updatedAnswers))
         )
-  }
+    }
 
   def onSubmitLongerCommodityCode(mode: Mode, recordId: String): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       val submitAction =
         routes.HasCorrectGoodsController.onSubmitLongerCommodityCode(mode, recordId)
 
@@ -129,7 +130,7 @@ class HasCorrectGoodsController @Inject() (
     }
 
   def onSubmitUpdate(mode: Mode, recordId: String): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       val submitAction = routes.HasCorrectGoodsController.onSubmitUpdate(mode, recordId)
       form
         .bindFromRequest()

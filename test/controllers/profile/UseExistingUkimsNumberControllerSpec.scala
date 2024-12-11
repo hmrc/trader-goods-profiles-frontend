@@ -112,12 +112,14 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
   "onSubmit" - {
 
     "must return OK and and navigate to the next page" in {
+      when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application = applicationBuilder(userAnswers = Some(userAnswersWithUkimsNumber))
         .overrides(
           bind[ProfileNavigator].toInstance(new FakeProfileNavigator(onwardRoute)),
-          bind[SessionRepository].toInstance(mockSessionRepository)
+          bind[SessionRepository].toInstance(mockSessionRepository),
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
         )
         .build()
 
@@ -134,7 +136,13 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(userAnswersWithUkimsNumber)).build()
+      when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
+
+      val application = applicationBuilder(userAnswers = Some(userAnswersWithUkimsNumber))
+        .overrides(
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+        )
+        .build()
 
       running(application) {
         val request =
@@ -161,11 +169,13 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
     "must throw exception to error handler if session repository fails" in {
       when(mockSessionRepository.set(any())) thenReturn Future.failed(new RuntimeException("failed"))
+      when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
 
       val application = applicationBuilder(userAnswers = Some(userAnswersWithUkimsNumber))
         .overrides(
           bind[ProfileNavigator].toInstance(new FakeProfileNavigator(onwardRoute)),
-          bind[SessionRepository].toInstance(mockSessionRepository)
+          bind[SessionRepository].toInstance(mockSessionRepository),
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
         )
         .build()
 

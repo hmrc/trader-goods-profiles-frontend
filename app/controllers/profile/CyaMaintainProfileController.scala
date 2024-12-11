@@ -54,38 +54,40 @@ class CyaMaintainProfileController @Inject() (
 
   private val errorMessage: String = "Unable to update Trader profile."
 
-  def onPageLoadNirms(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    TraderProfile.validateHasNirms(request.userAnswers) match {
-      case Right(_)     =>
-        val list = SummaryListViewModel(
-          rows = Seq(
-            HasNirmsSummary.rowUpdate(request.userAnswers)
-          ).flatten
-        )
-        Ok(view(list, routes.CyaMaintainProfileController.onSubmitNirms(), hasNirmsKey))
-          .removingFromSession(dataUpdated, pageUpdated, dataRemoved, dataAdded)
-      case Left(errors) =>
-        logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors)
-    }
-  }
-
-  def onPageLoadUkimsNumber(): Action[AnyContent] = (identify andThen getData andThen requireData) { implicit request =>
-    TraderProfile.validateUkimsNumber(request.userAnswers) match {
-      case Right(_)     =>
-        val list = SummaryListViewModel(
-          rows = Seq(
-            UkimsNumberSummary.rowUpdate(request.userAnswers)
-          ).flatten
-        )
-        Ok(view(list, routes.CyaMaintainProfileController.onSubmitUkimsNumber(), ukimsNumberKey))
-          .removingFromSession(dataUpdated, pageUpdated, dataRemoved, dataAdded)
-      case Left(errors) =>
-        logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors)
-    }
-  }
-
-  def onSubmitUkimsNumber(): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onPageLoadNirms(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
     implicit request =>
+      TraderProfile.validateHasNirms(request.userAnswers) match {
+        case Right(_)     =>
+          val list = SummaryListViewModel(
+            rows = Seq(
+              HasNirmsSummary.rowUpdate(request.userAnswers)
+            ).flatten
+          )
+          Ok(view(list, routes.CyaMaintainProfileController.onSubmitNirms(), hasNirmsKey))
+            .removingFromSession(dataUpdated, pageUpdated, dataRemoved, dataAdded)
+        case Left(errors) =>
+          logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors)
+      }
+  }
+
+  def onPageLoadUkimsNumber(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
+    implicit request =>
+      TraderProfile.validateUkimsNumber(request.userAnswers) match {
+        case Right(_)     =>
+          val list = SummaryListViewModel(
+            rows = Seq(
+              UkimsNumberSummary.rowUpdate(request.userAnswers)
+            ).flatten
+          )
+          Ok(view(list, routes.CyaMaintainProfileController.onSubmitUkimsNumber(), ukimsNumberKey))
+            .removingFromSession(dataUpdated, pageUpdated, dataRemoved, dataAdded)
+        case Left(errors) =>
+          logErrorsAndContinue(errorMessage, routes.ProfileController.onPageLoad(), errors)
+      }
+  }
+
+  def onSubmitUkimsNumber(): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       (for {
         ukimsNumber      <- handleValidateError(TraderProfile.validateUkimsNumber(request.userAnswers))
         oldTraderProfile <- traderProfileConnector.getTraderProfile(request.eori)
@@ -99,25 +101,26 @@ class CyaMaintainProfileController @Inject() (
         .addingToSession(pageUpdated -> ukimsNumberUpdatePage)).recover { case e: TraderProfileBuildFailure =>
         logErrorsAndContinue(e.getMessage, routes.ProfileController.onPageLoad())
       }
-  }
-
-  def onSubmitNirms(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
-    (for {
-      nirmsNumber      <- handleValidateError(TraderProfile.validateHasNirms(request.userAnswers))
-      oldTraderProfile <- traderProfileConnector.getTraderProfile(request.eori)
-      newTraderProfile <- Future.successful(oldTraderProfile.copy(nirmsNumber = nirmsNumber))
-      _                 = auditService.auditMaintainProfile(oldTraderProfile, newTraderProfile, request.affinityGroup)
-      _                <- submitTraderProfileIfValueChanged(newTraderProfile, oldTraderProfile, request.eori)
-    } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
-      .addingToSession(
-        dataUpdated -> (oldTraderProfile != newTraderProfile).toString
-      )
-      .addingToSession(
-        dataRemoved -> (oldTraderProfile.nirmsNumber.isDefined && newTraderProfile.nirmsNumber.isEmpty).toString
-      )
-      .addingToSession(pageUpdated -> hasNirmsUpdatePage)).recover { case e: TraderProfileBuildFailure =>
-      logErrorsAndContinue(e.getMessage, routes.ProfileController.onPageLoad())
     }
+
+  def onSubmitNirms(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData).async {
+    implicit request =>
+      (for {
+        nirmsNumber      <- handleValidateError(TraderProfile.validateHasNirms(request.userAnswers))
+        oldTraderProfile <- traderProfileConnector.getTraderProfile(request.eori)
+        newTraderProfile <- Future.successful(oldTraderProfile.copy(nirmsNumber = nirmsNumber))
+        _                 = auditService.auditMaintainProfile(oldTraderProfile, newTraderProfile, request.affinityGroup)
+        _                <- submitTraderProfileIfValueChanged(newTraderProfile, oldTraderProfile, request.eori)
+      } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
+        .addingToSession(
+          dataUpdated -> (oldTraderProfile != newTraderProfile).toString
+        )
+        .addingToSession(
+          dataRemoved -> (oldTraderProfile.nirmsNumber.isDefined && newTraderProfile.nirmsNumber.isEmpty).toString
+        )
+        .addingToSession(pageUpdated -> hasNirmsUpdatePage)).recover { case e: TraderProfileBuildFailure =>
+        logErrorsAndContinue(e.getMessage, routes.ProfileController.onPageLoad())
+      }
   }
 
   def onPageLoadNiphl(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData).async {
@@ -138,27 +141,28 @@ class CyaMaintainProfileController @Inject() (
       }
   }
 
-  def onSubmitNiphl(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
-    (for {
-      niphlNumber      <- handleValidateError(TraderProfile.validateHasNiphl(request.userAnswers))
-      oldTraderProfile <- traderProfileConnector.getTraderProfile(request.eori)
-      newTraderProfile <- Future.successful(oldTraderProfile.copy(niphlNumber = niphlNumber))
-      _                 = auditService.auditMaintainProfile(oldTraderProfile, newTraderProfile, request.affinityGroup)
-      _                <- submitTraderProfileIfValueChanged(newTraderProfile, oldTraderProfile, request.eori)
-    } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
-      .addingToSession(
-        dataUpdated -> (oldTraderProfile != newTraderProfile).toString
-      )
-      .addingToSession(
-        dataRemoved -> (oldTraderProfile.niphlNumber.isDefined && newTraderProfile.niphlNumber.isEmpty).toString
-      )
-      .addingToSession(pageUpdated -> hasNiphlUpdatePage)).recover { case e: TraderProfileBuildFailure =>
-      logErrorsAndContinue(e.getMessage, routes.ProfileController.onPageLoad())
-    }
+  def onSubmitNiphl(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData).async {
+    implicit request =>
+      (for {
+        niphlNumber      <- handleValidateError(TraderProfile.validateHasNiphl(request.userAnswers))
+        oldTraderProfile <- traderProfileConnector.getTraderProfile(request.eori)
+        newTraderProfile <- Future.successful(oldTraderProfile.copy(niphlNumber = niphlNumber))
+        _                 = auditService.auditMaintainProfile(oldTraderProfile, newTraderProfile, request.affinityGroup)
+        _                <- submitTraderProfileIfValueChanged(newTraderProfile, oldTraderProfile, request.eori)
+      } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
+        .addingToSession(
+          dataUpdated -> (oldTraderProfile != newTraderProfile).toString
+        )
+        .addingToSession(
+          dataRemoved -> (oldTraderProfile.niphlNumber.isDefined && newTraderProfile.niphlNumber.isEmpty).toString
+        )
+        .addingToSession(pageUpdated -> hasNiphlUpdatePage)).recover { case e: TraderProfileBuildFailure =>
+        logErrorsAndContinue(e.getMessage, routes.ProfileController.onPageLoad())
+      }
   }
 
   def onPageLoadNirmsNumber(): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       TraderProfile.validateNirmsNumber(
         request.userAnswers
       ) match {
@@ -178,8 +182,8 @@ class CyaMaintainProfileController @Inject() (
       }
     }
 
-  def onSubmitNirmsNumber(): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
+  def onSubmitNirmsNumber(): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       (for {
         nirmsNumber      <- handleValidateError(TraderProfile.validateNirmsNumber(request.userAnswers))
         oldTraderProfile <- traderProfileConnector.getTraderProfile(request.eori)
@@ -196,10 +200,10 @@ class CyaMaintainProfileController @Inject() (
         .addingToSession(pageUpdated -> nirmsNumberUpdatePage)).recover { case e: TraderProfileBuildFailure =>
         logErrorsAndContinue(e.getMessage, routes.ProfileController.onPageLoad())
       }
-  }
+    }
 
   def onPageLoadNiphlNumber(): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       TraderProfile.validateNiphlNumber(
         request.userAnswers
       ) match {
@@ -219,8 +223,8 @@ class CyaMaintainProfileController @Inject() (
       }
     }
 
-  def onSubmitNiphlNumber(): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
+  def onSubmitNiphlNumber(): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       (for {
         niphlNumber      <- handleValidateError(TraderProfile.validateNiphlNumber(request.userAnswers))
         oldTraderProfile <- traderProfileConnector.getTraderProfile(request.eori)
@@ -237,7 +241,7 @@ class CyaMaintainProfileController @Inject() (
         .addingToSession(pageUpdated -> niphlNumberUpdatePage)).recover { case e: TraderProfileBuildFailure =>
         logErrorsAndContinue(e.getMessage, routes.ProfileController.onPageLoad())
       }
-  }
+    }
 
   private def submitTraderProfileIfValueChanged(
     newTraderProfile: TraderProfile,

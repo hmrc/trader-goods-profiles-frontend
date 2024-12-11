@@ -99,6 +99,7 @@ class ProfileSetupControllerSpec extends SpecBase with MockitoSugar {
           val mockTraderProfileConnector = mock[TraderProfileConnector]
           val mockAppConfig              = mock[FrontendAppConfig]
 
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
           when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
           when(mockTraderProfileConnector.getHistoricProfileData(any())(any())).thenReturn(Future.successful(None))
           when(mockAppConfig.getHistoricProfileEnabled).thenReturn(true)
@@ -130,6 +131,7 @@ class ProfileSetupControllerSpec extends SpecBase with MockitoSugar {
           val mockTraderProfileConnector = mock[TraderProfileConnector]
           val mockAppConfig              = mock[FrontendAppConfig]
 
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
           when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
           when(mockAppConfig.getHistoricProfileEnabled).thenReturn(false)
 

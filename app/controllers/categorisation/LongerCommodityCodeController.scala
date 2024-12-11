@@ -45,6 +45,7 @@ class LongerCommodityCodeController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  profileAuth: ProfileAuthenticateAction,
   formProvider: LongerCommodityCodeFormProvider,
   ottConnector: OttConnector,
   val controllerComponents: MessagesControllerComponents,
@@ -55,8 +56,8 @@ class LongerCommodityCodeController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
-    implicit request =>
+  def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       val shortComcodeOpt = getShortCommodityCodeOpt(recordId, request.userAnswers)
       val preparedForm    = prepareForm(LongerCommodityCodePage(recordId), form)
       shortComcodeOpt match {
@@ -65,10 +66,10 @@ class LongerCommodityCodeController @Inject() (
         case _                                                                         =>
           navigator.journeyRecovery()
       }
-  }
+    }
 
   def onSubmit(mode: Mode, recordId: String): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       val shortComcodeOpt = getShortCommodityCodeOpt(recordId, request.userAnswers)
 
       shortComcodeOpt match {

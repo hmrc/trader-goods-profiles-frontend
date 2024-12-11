@@ -17,7 +17,7 @@
 package controllers.categorisation
 
 import controllers.BaseController
-import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
+import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
 import forms.AssessmentFormProvider
 import models.helper.CategorisationJourney
 import models.{Mode, ReassessmentAnswer, UserAnswers}
@@ -45,6 +45,7 @@ class AssessmentController @Inject() (
   requireData: DataRequiredAction,
   formProvider: AssessmentFormProvider,
   dataCleansingService: DataCleansingService,
+  profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
   view: AssessmentView
 )(implicit ec: ExecutionContext)
@@ -58,7 +59,7 @@ class AssessmentController @Inject() (
     }
 
   def onPageLoad(mode: Mode, recordId: String, number: Int): Action[AnyContent] =
-    (identify andThen getData andThen requireData) { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       getIndex(number, request.userAnswers.id, recordId) match {
         case Right(index) =>
           request.userAnswers
@@ -91,7 +92,7 @@ class AssessmentController @Inject() (
     }
 
   def onPageLoadReassessment(mode: Mode, recordId: String, number: Int): Action[AnyContent] =
-    (identify andThen getData andThen requireData) { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       getIndex(number, request.userAnswers.id, recordId) match {
         case Right(index) =>
           request.userAnswers
@@ -125,7 +126,7 @@ class AssessmentController @Inject() (
     }
 
   def onSubmit(mode: Mode, recordId: String, number: Int): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       getIndex(number, request.userAnswers.id, recordId) match {
         case Right(index) =>
           request.userAnswers
@@ -186,7 +187,7 @@ class AssessmentController @Inject() (
     }
 
   def onSubmitReassessment(mode: Mode, recordId: String, number: Int): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       getIndex(number, request.userAnswers.id, recordId) match {
         case Right(index) =>
           request.userAnswers
