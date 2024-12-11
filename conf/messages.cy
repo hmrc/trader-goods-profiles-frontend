@@ -68,42 +68,7 @@ unauthorised.p2.linkText = dylech allgofnodi
 unauthorised.p2.part2 = a mewngofnodi eto gan ddefnyddio’r manylion cywir.
 
 journeyRecovery.continue.title = Mae rhywbeth wedi mynd o’i le
-journeyRecovery.continue.heading = Mae rhywbeth wedi mynd o’i le
-journeyRecovery.continue.guidance = Mae rhywbeth wedi mynd o’i le – bydd angen i chi ddechrau eto.
-journeyRecovery.startAgain.title = Mae rhywbeth wedi mynd o’i le
-journeyRecovery.startAgain.heading = Mae rhywbeth wedi mynd o’i le
-journeyRecovery.startAgain.guidance = Mae rhywbeth wedi mynd o’i le – ewch i hafan y Proffil Nwyddau Masnachwyr.
-
-pageNotFound.title = Heb ddod o hyd i’r dudalen
-pageNotFound.h1 = Heb ddod o hyd i’r dudalen
-pageNotFound.p1 = Os gwnaethoch deipio’r cyfeiriad gwe, gwiriwch ei fod yn gywir.
-pageNotFound.p2 = Os gwnaethoch ludo’r cyfeiriad gwe, gwiriwch eich bod wedi copïo’r cyfeiriad yn llawn.
-pageNotFound.p3 = Os yw’r cyfeiriad gwe yn gywir, neu os dewisoch gysylltiad neu fotwm
-pageNotFound.p3.linkText = cysylltwch â llinell gymorth y Proffil Nwyddau Masnachwyr
-pageNotFound.p3.1 = os oes angen i chi siarad â rhywun am eich proffil.
-
-profileSetup.title = Sefydlu eich proffil
-profileSetup.h1 = Sefydlu eich proffil
-profileSetup.intro = Rydym am ofyn rhai cwestiynau i chi, yna byddwn yn gofyn am beth o wybodaeth gennych yn dibynnu ar eich atebion.
-profileSetup.ukimsNumber.h2 = Cynllun Marchnad Fewnol y DU (UKIMS)
-profileSetup.p1 = Mae’n rhaid i’r masnachwr sy’n cofrestru ar gyfer Proffil Nwyddau Masnachwyr fod wedi’i gofrestru ar gyfer yr UKIMS. Bydd angen eich rhifau UKIMS arnoch er mwyn sefydlu eich proffil.
-profileSetup.p2 = Os ydych wedi gwneud cais i’r UKIMS, bydd CThEF yn anfon llythyr atoch gyda’ch rhif awdurdodi UKIMS.
-profileSetup.p3 = Os nad ydych wedi cofrestru ar gyfer yr UKIMS, gallwch wirio yma i ddarganfod
-profileSetup.p3.linkText = pwy all wneud cais i’r UKIMS.
-profileSetup.nirms.h2 = Cynllun Symud Nwyddau Manwerthu Gogledd Iwerddon (NIRMS)
-profileSetup.p4 = Mae busnesau sy’n gyfrifol am werthu a chynorthwyo symud bwyd ar gyfer defnydd terfynol yng Ngogledd Iwerddon yn gymwys i gael mantais o drefniadau’r NIRMS.
-profileSetup.p5 = Gall masnachwyr sydd wedi’u cofrestru ar gyfer y NIRMS ychwanegu eu hawdurdodiad NIRMS at eu Proffil Nwyddau Masnachwyr. Bydd gwneud hyn yn helpu gyda chategoreiddio nwyddau sy’n destun y NIRMS.
-profileSetup.p6 = Mae awdurdodiad y NIRMS yn ddewisol ar gyfer Proffil Nwyddau Masnachwyr. Os nad ydych yn siŵr a ddylech fod wedi’ch awdurdodi ar gyfer y NIRMS, dysgwch ragor am y
-profileSetup.p6.linkText = Cynllun Symud Nwyddau Manwerthu Gogledd Iwerddon
-profileSetup.niphl.h2 = Label Iechyd Planhigion Gogledd Iwerddon (NIPHL)
-profileSetup.p7 = Mae’r cynllun NIPHL yn ffordd i dyfwyr a masnachwyr ym Mhrydain Fawr (Cymru, Lloegr a’r Alban) symud cynhyrchion penodol i Ogledd Iwerddon.
-profileSetup.p8 = Gall masnachwyr sydd wedi’u cofrestru ar gyfer y NIPHL ychwanegu eu hawdurdodiad NIPHL at eu Proffil Nwyddau Masnachwyr. Bydd gwneud hyn yn helpu gyda chategoreiddio nwyddau sy’n destun y NIPHL.
-profileSetup.p9 = Mae awdurdodiad y NIPHL yn ddewisol ar gyfer Proffil Nwyddau Masnachwyr. Os nad ydych yn siŵr a ddylech fod wedi’ch awdurdodi ar gyfer y NIPHL, dysgwch ragor am
-profileSetup.p9.linkText = Symud planhigion o Brydain Fawr i Ogledd Iwerddon
-
-ukimsNumber.title = Rhif Cynllun Marchnad Fewnol y DU (UKIMS)
-ukimsNumber.h1 = Rhif Cynllun Marchnad Fewnol y DU (UKIMS)
-ukimsNumber.p1 = Mae CThEF yn anfon llythyr gyda rhif awdurdodi UKIMS ar ôl i chi wneud cais. Os nad ydych wedi cofrestru ar gyfer yr UKIMS, ni allwch ddefnyddio’r Proffil Nwyddau Masnachwyr (TGP).
+journeyRecovery.continue.heading = Mae rhywbeth wedi mynd o’i leGP(TGP).
 ukimsNumber.p2 = Mae rhif UKIMS yn dechrau â GB neu XI, wedi’u dilyn gan UKIM, ac mae’ch rhif EORI heb y GB neu’r XI, ac yna wedi’i ddilyn gan 14 o rifau.
 ukimsNumber.heading = Beth yw’ch rhif UKIMS?
 ukimsNumber.hint = Er enghraifft, XIUKIM47699357400020231115081800
