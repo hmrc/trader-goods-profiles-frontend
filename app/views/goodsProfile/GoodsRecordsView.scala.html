@@ -27,7 +27,8 @@
     govukTable: GovukTable,
     tableRowActionList: components.TableRowActionList,
     boldWrapper: components.BoldWrapper,
-    govukPagination: GovukPagination
+    govukPagination: GovukPagination,
+    govukSelect: GovukSelect
 )
 
 @(
@@ -57,35 +58,99 @@
         @govukErrorSummary(ErrorSummaryViewModel(form))
     }
 
-<div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-l">@messages("goodsRecords.title")</h1>
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper">
+        <div class="govuk-grid-row"> <h1 class="govuk-heading-l">@messages("goodsRecords.title")</h1> </div>
 
-    <p class="govuk-body">@messages("goodsRecords.p1")</p>
+        <div class="govuk-grid-row">
 
-    <p class="govuk-body">@messages("goodsRecords.p2")</p>
+            <div class="govuk-grid-column-one-third custom-box">
+                <style>
+                    .custom-box {
+                      box-shadow: inset 0 0 0 1px #b1b4b6;
+                      margin-top: -1px;
+                      margin-bottom: -1px;
+                      padding-top: 20px;
+                      padding-right: 20px;
+                      padding-bottom: 15px;
+                      padding-left: 20px;
+                               }
+                </style>
 
-    <ul class="govuk-list govuk-list--bullet">
-      <li>'@messages("goodsRecords.li1")'</li>
-      <li>'@messages("goodsRecords.li2")'</li>
-    </ul>
+                <h2 class="govuk-heading-m">Search and filter options</h2>
+                <p class="govuk-body">You can use search and filters to find specific goods records. All fields are optional.</p>
 
-    <p class="govuk-body"><a href="@controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad().url" class="govuk-link">@messages("goodsRecords.link1")</a></p>
+                @formHelper(action = controllers.goodsProfile.routes.GoodsRecordsController.onSearch(page)) {
 
-        @formHelper(action = controllers.goodsProfile.routes.GoodsRecordsController.onSearch(page)) {
-            <div style="display: flex; align-items: flex-end;">
-                @govukInput(
+                <div class="govuk-label govuk-label--s">
+                    @govukInput(
                     InputViewModel(
-                        field = form("value"),
-                        label = LabelViewModel(messages("goodsRecords.label")).withCssClass("govuk-!-font-weight-bold")
+                    field = form("value"),
+                    label = LabelViewModel(messages("goodsRecords.label")).withCssClass("govuk-!-font-weight-bold")
                     )
-                )
+                    )
 
+                </div>
+                }
+                <fieldset class="govuk-fieldset govuk-!-margin-top-4" id="filters">
+                    <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+                        Record status
+                    </legend>
+                    <div class="checkbox-group">
+                        <div class="govuk-checkboxes__item">
+                            <input class="govuk-checkboxes__input" id="status-ready" name="filterRecordStatus" type="checkbox" value="immi-ready">
+                            <label class="govuk-label govuk-checkboxes__label" for="status-ready">
+                                IMMI ready
+                            </label>
+                        </div>
+                        <div class="govuk-checkboxes__item">
+                            <input class="govuk-checkboxes__input" id="status-not-ready" name="filterRecordStatus" type="checkbox" value="not-immi-ready">
+                            <label class="govuk-label govuk-checkboxes__label" for="status-not-ready">
+                                Not ready for IMMI
+                            </label>
+                        </div>
+                        <div class="govuk-checkboxes__item">
+                            <input class="govuk-checkboxes__input" id="status-action-needed" name="filterRecordStatus" type="checkbox" value="action-needed">
+                            <label class="govuk-label govuk-checkboxes__label" for="status-action-needed">
+                                Action needed
+                            </label>
+                        </div>
+                    </div>
+
+                </fieldset>
+                <label class="govuk-label govuk-label--s govuk-!-margin-top-4">
+                    Country of origin
+                </label>
+
+                <div class="govuk-form-group">
+                    <input class="govuk-input" type="text" aria-describedby="event-name-hint">
+                </div>
+
+                <div class="govuk-button-group">
                 @govukButton(
-                    ButtonViewModel(messages("site.search")).withAttribute("style", "margin-left: 10px")
+                ButtonViewModel(messages("site.search")).withAttribute("style", "margin-left: 10px")
                 )
+                    <a class="govuk-link" href="#">Clear</a>
+                </div>
             </div>
-        }
+            <div class="govuk-grid-column-two-thirds govuk-!-padding-left-20">
+
+                    <p class="govuk-body">@messages("goodsRecords.p1")</p>
+
+                    <p class="govuk-body">@messages("goodsRecords.p2")</p>
+
+                    <ul class="govuk-list govuk-list--bullet">
+                        <li>'@messages("goodsRecords.li1")'</li>
+                        <li>'@messages("goodsRecords.li2")'</li>
+                    </ul>
+
+                    <p class="govuk-body"><a href="@controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad().url" class="govuk-link">@messages("goodsRecords.link1")</a></p>
+
+            </div>
+        </div>
+    </main>
 </div>
+
 
 <div class="govuk-grid-column-full">
 
