@@ -526,7 +526,6 @@ goodsRecords.p2.3 = Os oes cofnod lle mae gwybodaeth ar goll, wedi dod i ben, ne
 goodsRecords.p2.4 = Bydd angen i chi gwblhau’r cofnod er mwyn gweld a yw’n barod ar gyfer IMMI
 goodsRecords.h2.1 = Gwybodaeth am gofnodion nwyddau
 goodsRecords.search = Opsiynau chwilio a hidlo
-
 goodsRecords.record.clear = Clirio Opsiynau chwilio a hidlo
 goodsRecords.record.search = Defnyddio Opsiynau chwilio a hidlo
 
@@ -536,7 +535,8 @@ goodsRecords.record.list = Rhestr o gofnodion nwyddau
 goodsRecordsEmptyView.p2 = Pan allwch chi, cludwr neu gyfryngwr arall gwblhau’r IMMI ar eich rhan, dylech ddefnyddio neu rannu’r canlynol:
 goodsRecords.p3 = Nid oes gennych unrhyw gofnodion yn eich rhestr gofnodion.
 goodsRecords.label = Chwiliwch yn ôl cyfeirnod masnachwr, disgrifiad nwyddau neu god nwyddau
-goodsRecords.link1 = Creu cofnod nwyddau newydd
+goodsRecords.link1 = Creu cofnod nwyddau newydd.
+goodsRecords.link1.text = Gallwch
 goodsRecords.downloadLinkText.requestFile = Gofyn am ffeil o’ch cofnodion TGP
 goodsRecords.downloadLinkText.fileInProgress = Cael diweddariad ar eich ffeil cofnodion TGP neu gofynnwch am ffeil newydd
 goodsRecords.downloadLinkText.fileReady = Lawrlwythwch eich ffeil cofnodion TGP neu gofynnwch am ffeil newydd
