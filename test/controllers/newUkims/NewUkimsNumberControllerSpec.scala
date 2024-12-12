@@ -44,7 +44,7 @@ class NewUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
   val mockSessionRepository: SessionRepository = mock[SessionRepository]
 
-  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
+  when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(false)
 
   "NewUkimsNumberController" - {
 
@@ -111,7 +111,7 @@ class NewUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       val mockSessionRepository: SessionRepository = mock[SessionRepository]
 
-      when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
+      when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(false)
 
       val traderProfile =
         TraderProfile(testEori, "XIUKIM47699357400020231115081801", Some("2"), Some("3"), eoriChanged = false)

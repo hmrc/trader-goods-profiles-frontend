@@ -54,7 +54,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
     controllers.categorisation.routes.SupplementaryUnitController.onSubmit(NormalMode, testRecordId)
 
   val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+  when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
 
   private val record                       = goodsRecordResponseWithSupplementaryUnit(
     Instant.parse("2022-11-18T23:20:19Z"),

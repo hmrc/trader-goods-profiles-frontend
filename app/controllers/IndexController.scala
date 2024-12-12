@@ -38,7 +38,7 @@ class IndexController @Inject() (
 
   def onPageLoad: Action[AnyContent] = identify.async { implicit request =>
     def checkProfileAndContinue =
-      traderProfileConnector.checkTraderProfile(request.eori).flatMap {
+      traderProfileConnector.checkTraderProfile.flatMap {
         case true  => eoriChanged(request)
         case false => Future.successful(Redirect(controllers.profile.routes.ProfileSetupController.onPageLoad()))
       }

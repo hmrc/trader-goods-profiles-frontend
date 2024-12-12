@@ -249,7 +249,7 @@ class CyaMaintainProfileController @Inject() (
     eori: String
   )(implicit hc: HeaderCarrier): Future[Done] =
     if (newTraderProfile != oldTraderProfile) {
-      traderProfileConnector.submitTraderProfile(newTraderProfile, eori)
+      traderProfileConnector.submitTraderProfile(newTraderProfile)
     } else {
       Future.successful(Done)
     }

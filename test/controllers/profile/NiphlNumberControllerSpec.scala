@@ -49,7 +49,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
   val mockSessionRepository: SessionRepository = mock[SessionRepository]
 
-  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
+  when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(false)
 
   private lazy val niphlNumberRouteCreate =
     controllers.profile.routes.NiphlNumberController.onPageLoadCreate(NormalMode).url
@@ -115,7 +115,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
       "must redirect to the next page when valid data is submitted" in {
 
         val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
+        when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(false)
         when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
         val application =
@@ -141,7 +141,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
       "must return a Bad Request and errors when invalid data is submitted" in {
         val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
+        when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(false)
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
@@ -191,7 +191,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
       "must redirect to Homepage for a GET if profile already exists" in {
 
-        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+        when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
 
         val application = applicationBuilder(userAnswers = None)
           .overrides(
@@ -212,7 +212,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
       "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
         val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
+        when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(false)
 
         val application = applicationBuilder(userAnswers = None)
           .overrides(
@@ -496,7 +496,7 @@ class NiphlNumberControllerSpec extends SpecBase with MockitoSugar {
             .onPageLoadNiphlNumber()
             .url
           verify(mockTraderProfileConnector, never())
-            .submitTraderProfile(any(), any())(any())
+            .submitTraderProfile(any())(any())
 
           withClue("must not try and submit an audit") {
             verify(mockAuditService, never()).auditMaintainProfile(any(), any(), any())(any())

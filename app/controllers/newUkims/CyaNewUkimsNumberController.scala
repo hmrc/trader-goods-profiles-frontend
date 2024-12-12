@@ -80,7 +80,7 @@ class CyaNewUkimsNumberController @Inject() (
         oldTraderProfile           <- traderProfileConnector.getTraderProfile(request.eori)
         newTraderProfile           <- Future.successful(oldTraderProfile.copy(ukimsNumber = ukimsNumber))
         _                           = auditService.auditMaintainProfile(oldTraderProfile, newTraderProfile, request.affinityGroup)
-        _                          <- traderProfileConnector.submitTraderProfile(newTraderProfile, request.eori)
+        _                          <- traderProfileConnector.submitTraderProfile(newTraderProfile)
         updatedAnswersRemovedUkims <-
           Future.fromTry(request.userAnswers.remove(NewUkimsNumberPage))
         _                          <- sessionRepository.set(updatedAnswersRemovedUkims)

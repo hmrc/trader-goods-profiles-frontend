@@ -56,12 +56,12 @@ class TraderProfileConnectorSpec
       val traderProfile = TraderProfile(testEori, "1", Some("2"), None, eoriChanged = false)
 
       wireMockServer.stubFor(
-        put(urlEqualTo(s"/trader-goods-profiles-data-store/traders/$testEori/profile"))
+        put(urlEqualTo(s"/trader-goods-profiles-data-store/traders/profile"))
           .withRequestBody(equalTo(Json.toJson(traderProfile).toString))
           .willReturn(ok())
       )
 
-      connector.submitTraderProfile(traderProfile, testEori).futureValue
+      connector.submitTraderProfile(traderProfile).futureValue
     }
 
     "must return a failed future when the response status is anything but Ok" in {
@@ -69,12 +69,12 @@ class TraderProfileConnectorSpec
       val traderProfile = TraderProfile(testEori, "1", Some("2"), None, eoriChanged = false)
 
       wireMockServer.stubFor(
-        put(urlEqualTo(s"/trader-goods-profiles-data-store/traders/$testEori/profile"))
+        put(urlEqualTo(s"/trader-goods-profiles-data-store/traders/profile"))
           .withRequestBody(equalTo(Json.toJson(traderProfile).toString))
           .willReturn(status(errorResponses.sample.value))
       )
 
-      connector.submitTraderProfile(traderProfile, testEori).failed.futureValue
+      connector.submitTraderProfile(traderProfile).failed.futureValue
 
     }
 
@@ -83,12 +83,12 @@ class TraderProfileConnectorSpec
         val traderProfile = TraderProfile(testEori, "1", Some("2"), None, eoriChanged = false)
 
         wireMockServer.stubFor(
-          put(urlEqualTo(s"/trader-goods-profiles-data-store/traders/$testEori/profile"))
+          put(urlEqualTo(s"/trader-goods-profiles-data-store/traders/profile"))
             .withRequestBody(equalTo(Json.toJson(traderProfile).toString))
             .willReturn(serverError())
         )
 
-        connector.submitTraderProfile(traderProfile, testEori).failed.futureValue
+        connector.submitTraderProfile(traderProfile).failed.futureValue
       }
     }
 
@@ -167,41 +167,41 @@ class TraderProfileConnectorSpec
       "must return true if present" in {
 
         wireMockServer.stubFor(
-          head(urlEqualTo(s"/trader-goods-profiles-data-store/traders/$testEori/profile"))
+          head(urlEqualTo(s"/trader-goods-profiles-data-store/traders/profile"))
             .willReturn(ok())
         )
 
-        connector.checkTraderProfile(testEori).futureValue mustBe true
+        connector.checkTraderProfile.futureValue mustBe true
       }
 
       "must return false if not present" in {
 
         wireMockServer.stubFor(
-          head(urlEqualTo(s"/trader-goods-profiles-data-store/traders/$testEori/profile"))
+          head(urlEqualTo(s"/trader-goods-profiles-data-store/traders/profile"))
             .willReturn(notFound())
         )
 
-        connector.checkTraderProfile(testEori).futureValue mustBe false
+        connector.checkTraderProfile.futureValue mustBe false
       }
 
       "must return a failed future when the response status is anything but Ok or Not_Found" in {
 
         wireMockServer.stubFor(
-          head(urlEqualTo(s"/trader-goods-profiles-data-store/traders/$testEori/profile"))
+          head(urlEqualTo(s"/trader-goods-profiles-data-store/traders/profile"))
             .willReturn(status(errorResponses.sample.value))
         )
 
-        connector.checkTraderProfile(testEori).failed.futureValue
+        connector.checkTraderProfile.failed.futureValue
       }
 
       "must return a failed future when the server returns an error" in {
 
         wireMockServer.stubFor(
-          head(urlEqualTo(s"/trader-goods-profiles-data-store/traders/$testEori/profile"))
+          head(urlEqualTo(s"/trader-goods-profiles-data-store/traders/profile"))
             .willReturn(serverError())
         )
 
-        connector.checkTraderProfile(testEori).failed.futureValue
+        connector.checkTraderProfile.failed.futureValue
       }
     }
 
