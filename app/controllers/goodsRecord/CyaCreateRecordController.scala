@@ -19,7 +19,7 @@ package controllers.goodsRecord
 import com.google.inject.Inject
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.BaseController
-import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
+import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
 import models.helper.CreateRecordJourney
 import models.{Country, GoodsRecord, NormalMode, UserAnswers}
 import navigation.GoodsRecordNavigator
@@ -41,6 +41,7 @@ class CyaCreateRecordController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
   view: CyaCreateRecordView,
   goodsRecordConnector: GoodsRecordConnector,
@@ -54,28 +55,29 @@ class CyaCreateRecordController @Inject() (
 
   private val errorMessage: String = "Unable to create Goods Record."
 
-  def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
-    GoodsRecord.build(request.userAnswers, request.eori) match {
-      case Right(_)     =>
-        request.userAnswers.get(CountriesQuery) match {
-          case Some(countries) => Future.successful(displayView(request.userAnswers, countries))
-          case None            =>
-            for {
-              countries               <- ottConnector.getCountries
-              updatedAnswersWithQuery <- Future.fromTry(request.userAnswers.set(CountriesQuery, countries))
-              _                       <- sessionRepository.set(updatedAnswersWithQuery)
-            } yield displayView(updatedAnswersWithQuery, countries)
-        }
-      case Left(errors) =>
-        dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
-        Future.successful(
-          logErrorsAndContinue(
-            errorMessage,
-            controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad(),
-            errors
+  def onPageLoad(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData).async {
+    implicit request =>
+      GoodsRecord.build(request.userAnswers, request.eori) match {
+        case Right(_)     =>
+          request.userAnswers.get(CountriesQuery) match {
+            case Some(countries) => Future.successful(displayView(request.userAnswers, countries))
+            case None            =>
+              for {
+                countries               <- ottConnector.getCountries
+                updatedAnswersWithQuery <- Future.fromTry(request.userAnswers.set(CountriesQuery, countries))
+                _                       <- sessionRepository.set(updatedAnswersWithQuery)
+              } yield displayView(updatedAnswersWithQuery, countries)
+          }
+        case Left(errors) =>
+          dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
+          Future.successful(
+            logErrorsAndContinue(
+              errorMessage,
+              controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad(),
+              errors
+            )
           )
-        )
-    }
+      }
   }
 
   private def displayView(userAnswers: UserAnswers, countries: Seq[Country])(implicit request: Request[_]): Result = {
@@ -90,24 +92,25 @@ class CyaCreateRecordController @Inject() (
     Ok(view(list))
   }
 
-  def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
-    GoodsRecord.build(request.userAnswers, request.eori) match {
-      case Right(model) =>
-        auditService.auditFinishCreateGoodsRecord(request.eori, request.affinityGroup, request.userAnswers)
-        for {
-          recordId <- goodsRecordConnector.submitGoodsRecord(model)
-          _        <- dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
-        } yield Redirect(navigator.nextPage(CyaCreateRecordPage(recordId), NormalMode, request.userAnswers))
-      case Left(errors) =>
-        dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
-        Future.successful(
-          logErrorsAndContinue(
-            errorMessage,
-            controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad(),
-            errors
+  def onSubmit(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData).async {
+    implicit request =>
+      GoodsRecord.build(request.userAnswers, request.eori) match {
+        case Right(model) =>
+          auditService.auditFinishCreateGoodsRecord(request.eori, request.affinityGroup, request.userAnswers)
+          for {
+            recordId <- goodsRecordConnector.submitGoodsRecord(model)
+            _        <- dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
+          } yield Redirect(navigator.nextPage(CyaCreateRecordPage(recordId), NormalMode, request.userAnswers))
+        case Left(errors) =>
+          dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
+          Future.successful(
+            logErrorsAndContinue(
+              errorMessage,
+              controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad(),
+              errors
+            )
           )
-        )
-    }
+      }
   }
 
 }

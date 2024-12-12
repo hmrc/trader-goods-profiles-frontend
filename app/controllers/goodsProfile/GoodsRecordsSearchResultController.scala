@@ -17,7 +17,7 @@
 package controllers.goodsProfile
 
 import connectors.{GoodsRecordConnector, OttConnector}
-import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
+import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
 import controllers.BaseController
 import models.GoodsRecordsPagination.{getFirstRecordIndex, getLastRecordIndex, getSearchPagination}
 import navigation.GoodsProfileNavigator
@@ -37,6 +37,7 @@ class GoodsRecordsSearchResultController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   identify: IdentifierAction,
+  profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
   view: GoodsRecordsSearchResultView,
   emptyView: GoodsRecordsSearchResultEmptyView,
@@ -46,8 +47,8 @@ class GoodsRecordsSearchResultController @Inject() (
 
   private val pageSize = 10
 
-  def onPageLoad(page: Int): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
+  def onPageLoad(page: Int): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       request.userAnswers.get(GoodsRecordsPage) match {
         case Some(searchText) =>
           if (page < 1) {
@@ -99,5 +100,5 @@ class GoodsRecordsSearchResultController @Inject() (
           }
         case None             => Future(navigator.journeyRecovery())
       }
-  }
+    }
 }
