@@ -743,5 +743,5 @@ declarableStatus.notReadyForUse.paragraph.linkText = categorise this goods recor
 
 updatedCommodityCode.title = You’ve updated the commodity code
 updatedCommodityCode.heading = You’ve updated the commodity code
-updatedCommodityCode.paragraph1 = The commodity code has changed which means you’ll need to catgegorise this record before you can use it.
+updatedCommodityCode.paragraph1 = The commodity code has changed which means you’ll need to categorise this record before you can use it.
 updatedCommodityCode.paragraph2 = You do not need to categorise this record now. You can review the record from your list of goods records and start categorisation from there.
