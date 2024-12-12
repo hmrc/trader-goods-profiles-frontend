@@ -38,8 +38,8 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
   private def downloadDataUrl(eori: String) =
     url"${config.dataStoreBaseUrl}/trader-goods-profiles-data-store/traders/$eori/download-data"
 
-  private def emailUrl(eori: String) =
-    url"${config.dataStoreBaseUrl}/trader-goods-profiles-data-store/traders/$eori/email"
+  private def emailUrl =
+    url"${config.dataStoreBaseUrl}/trader-goods-profiles-data-store/traders/email"
 
   def requestDownloadData(eori: String)(implicit hc: HeaderCarrier): Future[Done] =
     httpClient
@@ -83,9 +83,9 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
       Future.successful(Seq.empty)
     }
 
-  def getEmail(eori: String)(implicit hc: HeaderCarrier): Future[Option[Email]] =
+  def getEmail(implicit hc: HeaderCarrier): Future[Option[Email]] =
     httpClient
-      .get(emailUrl(eori))
+      .get(emailUrl)
       .execute[HttpResponse]
       .flatMap { response =>
         response.status match {

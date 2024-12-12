@@ -44,7 +44,7 @@ class IndexController @Inject() (
       }
 
     if (config.downloadFileEnabled) {
-      downloadDataConnector.getEmail(request.eori).flatMap {
+      downloadDataConnector.getEmail.flatMap {
         case Some(_) =>
           checkProfileAndContinue
         case None    =>

@@ -195,7 +195,7 @@ class DownloadDataConnectorSpec
 
     ".getEmail" - {
       val emailUrl =
-        s"/trader-goods-profiles-data-store/traders/$testEori/email"
+        s"/trader-goods-profiles-data-store/traders/email"
 
       val address   = "somebody@email.com"
       val timestamp = Instant.now
@@ -207,7 +207,7 @@ class DownloadDataConnectorSpec
             .willReturn(ok().withBody(Json.toJson(email).toString))
         )
 
-        connector.getEmail(testEori).futureValue mustBe Some(email)
+        connector.getEmail.futureValue mustBe Some(email)
       }
 
       "must return a failed future when the server returns an error" in {
@@ -217,7 +217,7 @@ class DownloadDataConnectorSpec
             .willReturn(serverError())
         )
 
-        connector.getEmail(testEori).failed.futureValue
+        connector.getEmail.failed.futureValue
       }
 
       "must return None when the email isn't found" in {
@@ -227,7 +227,7 @@ class DownloadDataConnectorSpec
             .willReturn(notFound())
         )
 
-        connector.getEmail(testEori).futureValue mustBe None
+        connector.getEmail.futureValue mustBe None
       }
     }
 

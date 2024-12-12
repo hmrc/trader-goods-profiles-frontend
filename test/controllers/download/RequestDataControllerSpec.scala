@@ -49,7 +49,7 @@ class RequestDataControllerSpec extends SpecBase {
       when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
 
       val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
-      when(mockDownloadDataConnector.getEmail(any())(any())) thenReturn Future.successful(None)
+      when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(None)
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(inject.bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
@@ -80,7 +80,7 @@ class RequestDataControllerSpec extends SpecBase {
       when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
 
       val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
-      when(mockDownloadDataConnector.getEmail(any())(any())) thenReturn Future.successful(Some(email))
+      when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(Some(email))
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(inject.bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
@@ -98,7 +98,7 @@ class RequestDataControllerSpec extends SpecBase {
         contentAsString(result) mustEqual view(email.address)(request, messages(application)).toString
 
         verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
-        verify(mockDownloadDataConnector, atLeastOnce()).getEmail(any())(any())
+        verify(mockDownloadDataConnector, atLeastOnce()).getEmail(any())
       }
     }
 
@@ -132,7 +132,7 @@ class RequestDataControllerSpec extends SpecBase {
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
         verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
-        verify(mockDownloadDataConnector, never()).getEmail(any())(any())
+        verify(mockDownloadDataConnector, never()).getEmail(any())
       }
     }
   }

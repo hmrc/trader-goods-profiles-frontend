@@ -40,7 +40,7 @@ class DownloadRequestSuccessController @Inject() (
 
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData).async {
     implicit request =>
-      downloadDataConnector.getEmail(request.eori).map {
+      downloadDataConnector.getEmail.map {
         case Some(email) => Ok(view(email.address))
         case _           =>
           logErrorsAndContinue(

@@ -42,7 +42,7 @@ class DownloadRequestSuccessControllerSpec extends SpecBase {
       when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
 
       val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
-      when(mockDownloadDataConnector.getEmail(any())(any())) thenReturn Future.successful(None)
+      when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(None)
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(inject.bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
@@ -74,7 +74,7 @@ class DownloadRequestSuccessControllerSpec extends SpecBase {
       when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
 
       val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
-      when(mockDownloadDataConnector.getEmail(any())(any())) thenReturn Future.successful(Some(email))
+      when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(Some(email))
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(inject.bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
@@ -95,7 +95,7 @@ class DownloadRequestSuccessControllerSpec extends SpecBase {
         ).toString
 
         verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
-        verify(mockDownloadDataConnector, atLeastOnce()).getEmail(any())(any())
+        verify(mockDownloadDataConnector, atLeastOnce()).getEmail(any())
       }
     }
   }

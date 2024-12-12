@@ -52,7 +52,7 @@ class IndexControllerSpec extends SpecBase {
           when(mockTraderProfileConnector.checkTraderProfile(any())).thenReturn(Future.successful(false))
 
           val mockDownloadDataConnector = mock[DownloadDataConnector]
-          when(mockDownloadDataConnector.getEmail(any())(any())).thenReturn(Future.successful(Some(email)))
+          when(mockDownloadDataConnector.getEmail(any())).thenReturn(Future.successful(Some(email)))
 
           val application =
             applicationBuilder(userAnswers = None)
@@ -71,7 +71,7 @@ class IndexControllerSpec extends SpecBase {
             redirectLocation(result).value mustEqual controllers.profile.routes.ProfileSetupController.onPageLoad().url
 
             verify(mockTraderProfileConnector).checkTraderProfile(any())
-            verify(mockDownloadDataConnector).getEmail(any())(any())
+            verify(mockDownloadDataConnector).getEmail(any())
           }
         }
 
@@ -81,7 +81,7 @@ class IndexControllerSpec extends SpecBase {
           when(mockTraderProfileConnector.checkTraderProfile(any())).thenReturn(Future.successful(false))
 
           val mockDownloadDataConnector = mock[DownloadDataConnector]
-          when(mockDownloadDataConnector.getEmail(any())(any())).thenReturn(Future.successful(Some(email)))
+          when(mockDownloadDataConnector.getEmail(any())).thenReturn(Future.successful(Some(email)))
 
           val application =
             applicationBuilder(userAnswers = None)
@@ -100,7 +100,7 @@ class IndexControllerSpec extends SpecBase {
             redirectLocation(result).value mustEqual controllers.profile.routes.ProfileSetupController.onPageLoad().url
 
             verify(mockTraderProfileConnector).checkTraderProfile(any())
-            verify(mockDownloadDataConnector).getEmail(any())(any())
+            verify(mockDownloadDataConnector).getEmail(any())
           }
         }
 
@@ -115,7 +115,7 @@ class IndexControllerSpec extends SpecBase {
             )
 
           val mockDownloadDataConnector = mock[DownloadDataConnector]
-          when(mockDownloadDataConnector.getEmail(any())(any())).thenReturn(Future.successful(Some(email)))
+          when(mockDownloadDataConnector.getEmail(any())).thenReturn(Future.successful(Some(email)))
 
           val application =
             applicationBuilder(userAnswers = None)
@@ -134,7 +134,7 @@ class IndexControllerSpec extends SpecBase {
             redirectLocation(result).value mustEqual routes.HomePageController.onPageLoad().url
 
             verify(mockTraderProfileConnector).checkTraderProfile(any())
-            verify(mockDownloadDataConnector).getEmail(any())(any())
+            verify(mockDownloadDataConnector).getEmail(any())
             verify(mockTraderProfileConnector).getTraderProfile(any())(any())
           }
         }
@@ -149,7 +149,7 @@ class IndexControllerSpec extends SpecBase {
             )
 
           val mockDownloadDataConnector = mock[DownloadDataConnector]
-          when(mockDownloadDataConnector.getEmail(any())(any())).thenReturn(Future.successful(Some(email)))
+          when(mockDownloadDataConnector.getEmail(any())).thenReturn(Future.successful(Some(email)))
 
           val application =
             applicationBuilder(userAnswers = None)
@@ -170,7 +170,7 @@ class IndexControllerSpec extends SpecBase {
               .url
 
             verify(mockTraderProfileConnector).checkTraderProfile(any())
-            verify(mockDownloadDataConnector).getEmail(any())(any())
+            verify(mockDownloadDataConnector).getEmail(any())
             verify(mockTraderProfileConnector).getTraderProfile(any())(any())
           }
         }
@@ -179,7 +179,7 @@ class IndexControllerSpec extends SpecBase {
       "when email is not present must redirect to custom email frontend" in {
 
         val mockConnector = mock[DownloadDataConnector]
-        when(mockConnector.getEmail(any())(any())).thenReturn(Future.successful(None))
+        when(mockConnector.getEmail(any())).thenReturn(Future.successful(None))
 
         val mockConfig = mock[FrontendAppConfig]
         when(mockConfig.customsEmailUrl).thenReturn(Service("localhost", "3000", "http"))
@@ -201,7 +201,7 @@ class IndexControllerSpec extends SpecBase {
 
           redirectLocation(result).value contains "/manage-email-cds/service/trader-goods-profiles"
 
-          verify(mockConnector).getEmail(any())(any())
+          verify(mockConnector).getEmail(any())
         }
       }
     }
@@ -218,7 +218,7 @@ class IndexControllerSpec extends SpecBase {
         when(mockTraderProfileConnector.checkTraderProfile(any())).thenReturn(Future.successful(false))
 
         val mockDownloadDataConnector = mock[DownloadDataConnector]
-        when(mockDownloadDataConnector.getEmail(any())(any())).thenReturn(Future.successful(Some(email)))
+        when(mockDownloadDataConnector.getEmail(any())).thenReturn(Future.successful(Some(email)))
 
         val application =
           applicationBuilder(userAnswers = None)
@@ -237,7 +237,7 @@ class IndexControllerSpec extends SpecBase {
           redirectLocation(result).value mustEqual controllers.profile.routes.ProfileSetupController.onPageLoad().url
 
           verify(mockTraderProfileConnector).checkTraderProfile(any())
-          verify(mockDownloadDataConnector, never()).getEmail(any())(any())
+          verify(mockDownloadDataConnector, never()).getEmail(any())
         }
       }
 
@@ -247,7 +247,7 @@ class IndexControllerSpec extends SpecBase {
         when(mockTraderProfileConnector.checkTraderProfile(any())).thenReturn(Future.successful(false))
 
         val mockDownloadDataConnector = mock[DownloadDataConnector]
-        when(mockDownloadDataConnector.getEmail(any())(any())).thenReturn(Future.successful(Some(email)))
+        when(mockDownloadDataConnector.getEmail(any())).thenReturn(Future.successful(Some(email)))
 
         val application =
           applicationBuilder(userAnswers = None)
@@ -266,7 +266,7 @@ class IndexControllerSpec extends SpecBase {
           redirectLocation(result).value mustEqual controllers.profile.routes.ProfileSetupController.onPageLoad().url
 
           verify(mockTraderProfileConnector).checkTraderProfile(any())
-          verify(mockDownloadDataConnector, never()).getEmail(any())(any())
+          verify(mockDownloadDataConnector, never()).getEmail(any())
         }
       }
 
@@ -281,7 +281,7 @@ class IndexControllerSpec extends SpecBase {
           )
 
         val mockDownloadDataConnector = mock[DownloadDataConnector]
-        when(mockDownloadDataConnector.getEmail(any())(any())).thenReturn(Future.successful(Some(email)))
+        when(mockDownloadDataConnector.getEmail(any())).thenReturn(Future.successful(Some(email)))
 
         val application =
           applicationBuilder(userAnswers = None)
@@ -300,7 +300,7 @@ class IndexControllerSpec extends SpecBase {
           redirectLocation(result).value mustEqual routes.HomePageController.onPageLoad().url
 
           verify(mockTraderProfileConnector).checkTraderProfile(any())
-          verify(mockDownloadDataConnector, never()).getEmail(any())(any())
+          verify(mockDownloadDataConnector, never()).getEmail(any())
           verify(mockTraderProfileConnector).getTraderProfile(any())(any())
         }
       }
@@ -315,7 +315,7 @@ class IndexControllerSpec extends SpecBase {
           )
 
         val mockDownloadDataConnector = mock[DownloadDataConnector]
-        when(mockDownloadDataConnector.getEmail(any())(any())).thenReturn(Future.successful(Some(email)))
+        when(mockDownloadDataConnector.getEmail(any())).thenReturn(Future.successful(Some(email)))
 
         val application =
           applicationBuilder(userAnswers = None)
@@ -336,7 +336,7 @@ class IndexControllerSpec extends SpecBase {
             .url
 
           verify(mockTraderProfileConnector).checkTraderProfile(any())
-          verify(mockDownloadDataConnector, never()).getEmail(any())(any())
+          verify(mockDownloadDataConnector, never()).getEmail(any())
           verify(mockTraderProfileConnector).getTraderProfile(any())(any())
         }
       }
