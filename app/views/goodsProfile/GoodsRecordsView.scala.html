@@ -28,7 +28,8 @@
     tableRowActionList: components.TableRowActionList,
     boldWrapper: components.BoldWrapper,
     govukPagination: GovukPagination,
-    govukSelect: GovukSelect
+    govukSelect: GovukSelect,
+    tag: components.Tag
 )
 
 @(
@@ -77,8 +78,8 @@
                                }
                 </style>
 
-                <h2 class="govuk-heading-m">Search and filter options</h2>
-                <p class="govuk-body">You can use search and filters to find specific goods records. All fields are optional.</p>
+                <h2 class="govuk-heading-m">@messages("goodsRecords.search")</h2>
+                <p class="govuk-body"> @messages("goodsRecords.search.1")</p>
 
                 @formHelper(action = controllers.goodsProfile.routes.GoodsRecordsController.onSearch(page)) {
 
@@ -94,32 +95,32 @@
                 }
                 <fieldset class="govuk-fieldset govuk-!-margin-top-4" id="filters">
                     <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
-                        Record status
+                        @messages("goodsRecords.record")
                     </legend>
                     <div class="checkbox-group">
                         <div class="govuk-checkboxes__item">
                             <input class="govuk-checkboxes__input" id="status-ready" name="filterRecordStatus" type="checkbox" value="immi-ready">
                             <label class="govuk-label govuk-checkboxes__label" for="status-ready">
-                                IMMI ready
+                                @messages("declarableStatus.immiReady")
                             </label>
                         </div>
                         <div class="govuk-checkboxes__item">
                             <input class="govuk-checkboxes__input" id="status-not-ready" name="filterRecordStatus" type="checkbox" value="not-immi-ready">
                             <label class="govuk-label govuk-checkboxes__label" for="status-not-ready">
-                                Not ready for IMMI
+                                @messages("declarableStatus.notReadyForImmi")
                             </label>
                         </div>
                         <div class="govuk-checkboxes__item">
                             <input class="govuk-checkboxes__input" id="status-action-needed" name="filterRecordStatus" type="checkbox" value="action-needed">
                             <label class="govuk-label govuk-checkboxes__label" for="status-action-needed">
-                                Action needed
+                                @messages("declarableStatus.notReadyForUse")
                             </label>
                         </div>
                     </div>
 
                 </fieldset>
                 <label class="govuk-label govuk-label--s govuk-!-margin-top-4">
-                    Country of origin
+                    @messages("goodsRecords.tableHeader.countryOfOrigin")
                 </label>
 
                 <div class="govuk-form-group">
@@ -128,21 +129,26 @@
 
                 <div class="govuk-button-group">
                 @govukButton(
-                ButtonViewModel(messages("site.search")).withAttribute("style", "margin-left: 10px")
+                ButtonViewModel(messages("site.apply")).withAttribute("style", "margin-left: 10px")
                 )
-                    <a class="govuk-link" href="#">Clear</a>
+                    <a class="govuk-link" href="#">@messages("site.clear")</a>
                 </div>
             </div>
             <div class="govuk-grid-column-two-thirds govuk-!-padding-left-20">
+                <h2 class="govuk-heading-m">@messages("goodsRecords.h2.1")</h2>
 
                     <p class="govuk-body">@messages("goodsRecords.p1")</p>
 
-                    <p class="govuk-body">@messages("goodsRecords.p2")</p>
+                <p class="govuk-body">@messages("goodsRecords.p2")
+                    <strong class="govuk-tag govuk-tag--green">@messages("declarableStatus.immiReady")</strong></p>
 
-                    <ul class="govuk-list govuk-list--bullet">
-                        <li>'@messages("goodsRecords.li1")'</li>
-                        <li>'@messages("goodsRecords.li2")'</li>
-                    </ul>
+                <p class="govuk-body">@messages("goodsRecords.p2.1")
+                    <strong class="govuk-tag govuk-tag--orange">@messages("declarableStatus.notReadyForImmi")</strong>.
+                    @messages("goodsRecords.p2.2")</p>
+
+                <p class="govuk-body">@messages("goodsRecords.p2.3")
+                    <strong class="govuk-tag govuk-tag--red">@messages("declarableStatus.notReadyForUse")</strong>.
+                    @messages("goodsRecords.p2.4")</p>
 
                     <p class="govuk-body"><a href="@controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad().url" class="govuk-link">@messages("goodsRecords.link1")</a></p>
 
@@ -153,7 +159,7 @@
 
 
 <div class="govuk-grid-column-full">
-
+    <h2 class="govuk-heading-m" id="goodsRecords">@messages("goodsRecords.record.list")</h2>
         <p class="govuk-body">@Html(messages("goodsRecords.pagination", boldWrapper(firstRecord.toString()), boldWrapper(lastRecord.toString()), boldWrapper(totalRecords.toString())))</p>
 
         <div style="overflow-x: auto;">
@@ -206,8 +212,12 @@
                             content = Text(goodsRecord.comcode)
                         ),
                         TableRow(
-                            content = Text(messages(goodsRecord.declarable.messageKey))
+
+                            content = HtmlContent(
+                            tag(messages(goodsRecord.declarable.messageKey), goodsRecord.declarable.paragraphTagColour))
+
                         ),
+
                         TableRow(
                             content = HtmlContent(
                                 tableRowActionList(

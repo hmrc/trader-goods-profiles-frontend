@@ -20,6 +20,9 @@ site.removeThisGoodsRecord = Tynnwch y cofnod nwyddau hwn
 site.goBackToTGPRecords = Ewch i ffeiliau cofnodion TGP
 site.view = Bwrw golwg
 
+site.apply = Defnyddio
+site.clear = Clirio
+
 
 date.day = Diwrnod
 date.month = Mis
@@ -513,18 +516,26 @@ goodsRecords.heading = Proffil Nwyddau
 goodsRecords.heading.withPage = Proffil Nwyddau – tudalen {0} o {1}
 goodsRecords.error.required = Nodwch eich term i’w chwilio
 goodsRecords.error.length = Mae’n rhaid i’r term i’w chwilio fod yn 100 o gymeriadau neu lai
-goodsRecords.p1 = Dyma restr o nwyddau yn eich TGP. Os yw cofnod nwyddau yn barod ar gyfer Gwybodaeth Symud Marchnad Fewnol (IMMI), gallwch ddefnyddio’r cofnod hwnnw i helpu i lenwi’r ffurflen IMMI.
-goodsRecords.p2 = Os bydd cludwr neu gyfryngwr arall yn cwblhau’r IMMI ar eich rhan, dylech ddefnyddio neu rannu’r canlynol:
+goodsRecords.p1 = Bydd y Proffil Nwyddau Masnachwyr (TGP) yn rhoi gwybod i chi a yw cofnod yn barod i’w ddefnyddio mewn Gwybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI) drwy ddefnyddio statws. Byddwch yn gallu gweld y statws ar bob cofnod nwyddau.
+goodsRecords.p2 = Os yw cofnod yn barod i’w ddefnyddio mewn IMMI, bydd ei statws fel a ganlyn:
+
+goodsRecords.p2.1 = Os oes cofnod na ellir ei symud gan ddefnyddio IMMI, bydd ei statws fel a ganlyn:
+goodsRecords.p2.2 = Efallai y byddwch yn gallu diweddaru’r wybodaeth neu gategoreiddio’r cofnod er mwyn gweld a yw’n barod ar gyfer IMMI.
+goodsRecords.p2.3 = Os oes cofnod lle mae gwybodaeth ar goll, wedi dod i ben, neu’n annilys, bydd ei statws fel a ganlyn:
+goodsRecords.p2.4 = Bydd angen i chi gwblhau’r cofnod er mwyn gweld a yw’n barod ar gyfer IMMI
+goodsRecords.h2.1 = Gwybodaeth am gofnodion nwyddau
+goodsRecords.search = Opsiynau chwilio a hidlo
+goodsRecords.search.1 = Gallwch ddod o hyd i gofnodion nwyddau penodol drwy ddefnyddio’r nodweddion chwilio a hidlo. Mae pob maes yn ddewisol.
+goodsRecords.record = Statws y cofnod
+goodsRecords.record.list = Rhestr o gofnodion nwyddau
 goodsRecordsEmptyView.p2 = Pan allwch chi, cludwr neu gyfryngwr arall gwblhau’r IMMI ar eich rhan, dylech ddefnyddio neu rannu’r canlynol:
-goodsRecords.li1 = 'Cyfeirnod masnachwr'
-goodsRecords.li2 = 'Disgrifiad o’r nwyddau'
 goodsRecords.p3 = Nid oes gennych unrhyw gofnodion yn eich rhestr gofnodion.
 goodsRecords.label = Chwiliwch yn ôl cyfeirnod masnachwr, disgrifiad nwyddau neu god nwyddau
 goodsRecords.link1 = Creu cofnod nwyddau newydd
 goodsRecords.downloadLinkText.requestFile = Gofyn am ffeil o’ch cofnodion TGP
 goodsRecords.downloadLinkText.fileInProgress = Cael diweddariad ar eich ffeil cofnodion TGP neu gofynnwch am ffeil newydd
 goodsRecords.downloadLinkText.fileReady = Lawrlwythwch eich ffeil cofnodion TGP neu gofynnwch am ffeil newydd
-goodsRecords.pagination = Yn dangos {0} i {1} o {2} cofnod nwyddau. Mae’r cofnodion wedi’u didoli gan y rhai a ddiwygiwyd neu ychwanegwyd yn fwyaf diweddar yn gyntaf.
+goodsRecords.pagination = Yn dangos {0} i {1} o {2} o gofnodion nwyddau, gan ddechrau gyda’r dyddiad diweddaru mwyaf diweddar.
 goodsRecords.tableHeader.traderReference = Cyfeirnod masnachwr
 goodsRecords.tableHeader.goodsDescription = Disgrifiad o’r nwyddau
 goodsRecords.tableHeader.countryOfOrigin = Gwlad wreiddiol

@@ -24,7 +24,7 @@
     link: components.link,
     paragraphBody: components.paragraphBody,
     govukNotificationBanner: GovukNotificationBanner,
-    tag: components.tag
+    tag: components.Tag
 )
 
 @(recordId: String, detailsList: SummaryList, categorisationList: SummaryList, supplementaryUnitList: SummaryList, adviceStatusList: SummaryList, changesMade: Boolean, changedPage: String,dataRemoved: Boolean,recordLocked:Boolean, adviceStatusMessage:Option[AdviceStatusMessage], declarableStatus: DeclarableStatus,  toReview: Boolean = false, isCategorised: Boolean, adviceStatus: AdviceStatus, reviewReason: Option[ReviewReason] = None)(implicit request: Request[_], messages: Messages)
@@ -88,7 +88,7 @@
                     @{
                         val additionalPara = reviewReason.setAdditionalContent(isCategorised, adviceStatus)
                         additionalPara.map { case (paragraphText, tagText) => {
-                                    paragraphBody(messages(paragraphText, tag(messages(tagText))))
+                                    paragraphBody(messages(paragraphText, tag(messages(tagText), "govuk-tag--grey")))
                                 }
                         }
                     }

@@ -16,8 +16,8 @@
 
 @this()
 
-@(text: String)
+@(text: String, tagColor: String)
 
-<strong class="govuk-tag govuk-tag--grey">
+<strong class="govuk-tag @tagColor">
  @Html(text)
 </strong>
