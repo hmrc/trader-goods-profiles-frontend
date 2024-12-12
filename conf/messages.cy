@@ -569,8 +569,8 @@ cyaMaintainProfile.warning = Rhybudd
 cyaMaintainProfile.warningText = Mae angen i chi wneud yn siŵr bod y manylion hyn yn gywir. Ni fydd unrhyw symudiadau y byddwch yn defnyddio manylion or TGP iw creu yn ddilys os byddant yn anghywir.
 
 
-hasGoodsDescriptionChange.title = Newid gwybodaeth y cofnod
-hasGoodsDescriptionChange.h1 = Newid gwybodaeth y cofnod
+hasGoodsDescriptionChange.title = Newid disgrifiad o’r nwyddau
+hasGoodsDescriptionChange.h1 = Newid disgrifiad o’r nwyddau
 hasGoodsDescriptionChange.p1 = Bydd newid disgrifiad y nwyddau ar y cofnod nwyddau hwn yn dileu’r statws cyngor. Os ydych am wirio bod y cod nwyddau yn gywir ac yn cyd-fynd â’r disgrifiad nwyddau, bydd angen i chi ofyn am gyngor eto.
 hasGoodsDescriptionChange.h2 = A ydych am newid disgrifiad y nwyddau?
 hasGoodsDescriptionChange.error.required = Dewiswch ‘Iawn’ os ydych am newid disgrifiad o’r nwyddau
@@ -581,14 +581,14 @@ ukimsNumberChangeController.paragraph = Gan fod gennych rif EORI newydd, mae gen
 ukimsNumberChangeController.button = Diweddaru rhif UKIMS
 ukimsNumberChangeController.duplicateUkimsNumber = Yr ydych wedi nodi’r rhif UKIMS blaenorol. Nodwch y rhif UKIMS newydd.
 
-hasCountryOfOriginChange.title = Newid gwybodaeth y cofnod
-hasCountryOfOriginChange.h1 = Newid gwybodaeth y cofnod
+hasCountryOfOriginChange.title = Newid y wlad tarddiad
+hasCountryOfOriginChange.h1 = Newid y wlad tarddiad
 hasCountryOfOriginChange.p1 = Bydd angen i chi ail-gategoreiddio’r cofnod nwyddau os byddwch yn newid y wlad wreiddiol.
 hasCountryOfOriginChange.h2 = A ydych am newid y wlad wreiddiol?
 hasCountryOfOriginChange.error.required = Dewiswch ‘Iawn’ os ydych am newid y wlad tarddiad
 
-hasCommodityCodeChange.title = Newid gwybodaeth y cofnod
-hasCommodityCodeChange.h1 = Newid gwybodaeth y cofnod
+hasCommodityCodeChange.title = Newid y cod nwyddau
+hasCommodityCodeChange.h1 = Newid y cod nwyddau
 hasCommodityCodeChange.h2 = A ydych am newid y cod nwyddau?
 hasCommodityCodeChange.advice = Bydd newid y cod nwyddau ar y cofnod nwyddau hwn yn dileu’r statws cyngor. Os ydych am wirio bod y cod nwyddau yn gywir ac yn cyd-fynd â’r disgrifiad, bydd angen i chi ofyn am gyngor eto.
 hasCommodityCodeChange.category = Bydd angen i chi ail-gategoreiddio’r cofnod nwyddau os byddwch yn newid y cod nwyddau.

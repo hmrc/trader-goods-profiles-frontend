@@ -34,12 +34,12 @@
 
     <h1 class="govuk-heading-l">@messages("hasCommodityCodeChange.h1")</h1>
 
-    @if(adviceWarning){
-        <p class="govuk-body">@messages("hasCommodityCodeChange.advice")</p>
-    }
-
     @if(categoryWarning){
         <p class="govuk-body">@messages("hasCommodityCodeChange.category")</p>
+    }
+
+    @if(adviceWarning){
+        <p class="govuk-body">@messages("hasCommodityCodeChange.advice")</p>
     }
 
     @formHelper(action = controllers.goodsRecord.routes.HasCommodityCodeChangeController.onSubmit(mode, recordId), Symbol("autoComplete") -> "off") {
