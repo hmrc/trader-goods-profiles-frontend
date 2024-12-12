@@ -420,7 +420,6 @@ goodsRecords.heading = Goods profile
 goodsRecords.heading.withPage = Goods profile - page {0} of {1}
 goodsRecords.p1 = This is a list of goods in your TGP. If a goods record is ready for Internal Market Movement Information (IMMI), you can use that record to help complete the IMMI form.
 goodsRecords.p2 = If a haulier or other intermediary completes the IMMI on your behalf, you should use or share the:
-goodsRecordsEmptyView.p2 = When you, a haulier or other intermediary can complete the IMMI on your behalf, you should use or share the:
 goodsRecords.li1 = 'Trader reference'
 goodsRecords.li2 = 'Goods description'
 goodsRecords.p3 = You do not have any records in your records list.
@@ -433,6 +432,10 @@ goodsRecords.tableHeader.countryOfOrigin = Country of origin
 goodsRecords.tableHeader.commodityCode = Commodity code
 goodsRecords.tableHeader.status = Status
 goodsRecords.tableHeader.actions = Actions
+
+goodsRecordsEmptyView.p1 = You do not have any records in your goods profile.
+goodsRecordsEmptyView.p2 = You can
+goodsRecordsEmptyView.p2.link = create a new goods record
 
 removeGoodsRecord.title = Removing goods record
 removeGoodsRecord.heading = Removing goods record

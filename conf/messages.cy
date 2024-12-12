@@ -516,7 +516,6 @@ goodsRecords.error.required = Nodwch eich term i’w chwilio
 goodsRecords.error.length = Mae’n rhaid i’r term i’w chwilio fod yn 100 o gymeriadau neu lai
 goodsRecords.p1 = Dyma restr o nwyddau yn eich TGP. Os yw cofnod nwyddau yn barod ar gyfer Gwybodaeth Symud Marchnad Fewnol (IMMI), gallwch ddefnyddio’r cofnod hwnnw i helpu i lenwi’r ffurflen IMMI.
 goodsRecords.p2 = Os bydd cludwr neu gyfryngwr arall yn cwblhau’r IMMI ar eich rhan, dylech ddefnyddio neu rannu’r canlynol:
-goodsRecordsEmptyView.p2 = Pan allwch chi, cludwr neu gyfryngwr arall gwblhau’r IMMI ar eich rhan, dylech ddefnyddio neu rannu’r canlynol:
 goodsRecords.li1 = 'Cyfeirnod masnachwr'
 goodsRecords.li2 = 'Disgrifiad o’r nwyddau'
 goodsRecords.p3 = Nid oes gennych unrhyw gofnodion yn eich rhestr gofnodion.
@@ -532,6 +531,10 @@ goodsRecords.tableHeader.countryOfOrigin = Gwlad wreiddiol
 goodsRecords.tableHeader.commodityCode = Cod nwyddau
 goodsRecords.tableHeader.status = Statws
 goodsRecords.tableHeader.actions = Camau gweithredu
+
+goodsRecordsEmptyView.p1 = Does gennych chi ddim cofnodion yn eich proffil nwyddau.
+goodsRecordsEmptyView.p2 = Gallwch
+goodsRecordsEmptyView.p2.link = greu cofnod nwyddau newydd
 
 goodsRecordSearchResult.title = Mae yna {0} o ganlyniadau chwilio
 goodsRecordSearchResult.title.withPage = Mae yna {0} o ganlyniadau chwilio – tudalen {1} o {2}
