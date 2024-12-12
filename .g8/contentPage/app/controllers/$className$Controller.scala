@@ -12,11 +12,12 @@ class $className$Controller @Inject()(
                                        identify: IdentifierAction,
                                        getData: DataRetrievalAction,
                                        requireData: DataRequiredAction,
+                                       profileAuth: ProfileAuthenticateAction,
                                        val controllerComponents: MessagesControllerComponents,
                                        view: $className$View
                                      ) extends FrontendBaseController with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
     implicit request =>
       Ok(view())
   }

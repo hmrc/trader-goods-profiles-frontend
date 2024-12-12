@@ -70,21 +70,22 @@ class CyaCreateProfileController @Inject() (
       }
   }
 
-  def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData).async { implicit request =>
-    TraderProfile.build(request.userAnswers, request.eori) match {
-      case Right(model) =>
-        auditService.auditProfileSetUp(model, request.affinityGroup)
-        traderProfileConnector.submitTraderProfile(model, request.eori).map { _ =>
-          dataCleansingService.deleteMongoData(request.userAnswers.id, CreateProfileJourney)
-          Redirect(navigator.nextPage(CyaCreateProfilePage, NormalMode, request.userAnswers))
-        }
+  def onSubmit(): Action[AnyContent] = (identify andThen checkProfile andThen getData andThen requireData).async {
+    implicit request =>
+      TraderProfile.build(request.userAnswers, request.eori) match {
+        case Right(model) =>
+          auditService.auditProfileSetUp(model, request.affinityGroup)
+          traderProfileConnector.submitTraderProfile(model, request.eori).map { _ =>
+            dataCleansingService.deleteMongoData(request.userAnswers.id, CreateProfileJourney)
+            Redirect(navigator.nextPage(CyaCreateProfilePage, NormalMode, request.userAnswers))
+          }
 
-      case Left(errors) =>
-        dataCleansingService.deleteMongoData(request.userAnswers.id, CreateProfileJourney)
-        Future.successful(
-          logErrorsAndContinue(errorMessage, controllers.profile.routes.ProfileSetupController.onPageLoad(), errors)
-        )
-    }
+        case Left(errors) =>
+          dataCleansingService.deleteMongoData(request.userAnswers.id, CreateProfileJourney)
+          Future.successful(
+            logErrorsAndContinue(errorMessage, controllers.profile.routes.ProfileSetupController.onPageLoad(), errors)
+          )
+      }
 
   }
 

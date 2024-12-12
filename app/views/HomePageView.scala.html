@@ -46,7 +46,7 @@
                 f"""
             <p class='govuk-notification-banner__heading'>
                 ${messages("homepage.downloadBanner.content")}
-                <a href="${controllers.download.routes.FileManagementController.onPageLoad().url}" class='govuk-link'>${messages("homepage.downloadBanner.linkText")}</a>.
+                <a href="${controllers.download.routes.FileManagementController.onPageLoad().url}" class='govuk-notification-banner__link'>${messages("homepage.downloadBanner.linkText")}</a>.
             </p>"""),
             role = Some("alert"))
         )
