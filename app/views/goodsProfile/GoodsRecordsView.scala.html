@@ -16,6 +16,8 @@
 
 @import models.router.responses.GetGoodsRecordResponse
 @import config.FrontendAppConfig
+@import viewmodels.LabelSize._
+@import models.Country._
 
 @this(
     appConfig: FrontendAppConfig,
@@ -61,7 +63,7 @@
 
 <div class="govuk-width-container">
     <main class="govuk-main-wrapper">
-        <div class="govuk-grid-row"> <h1 class="govuk-heading-l">@messages("goodsRecords.title")</h1> </div>
+        <div class="govuk-grid-row"><h1 class="govuk-heading-l">@messages("goodsRecords.title")</h1></div>
 
         <div class="govuk-grid-row">
 
@@ -93,25 +95,28 @@
 
                 </div>
                 }
-                <fieldset class="govuk-fieldset govuk-!-margin-top-4" id="filters">
+                <fieldset class="govuk-fieldset govuk-!-margin-top-4 govuk-!-margin-bottom-4" id="filters">
                     <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
                         @messages("goodsRecords.record")
                     </legend>
                     <div class="checkbox-group">
                         <div class="govuk-checkboxes__item">
-                            <input class="govuk-checkboxes__input" id="status-ready" name="filterRecordStatus" type="checkbox" value="immi-ready">
+                            <input class="govuk-checkboxes__input" id="status-ready" name="filterRecordStatus"
+                                   type="checkbox" value="immi-ready">
                             <label class="govuk-label govuk-checkboxes__label" for="status-ready">
                                 @messages("declarableStatus.immiReady")
                             </label>
                         </div>
                         <div class="govuk-checkboxes__item">
-                            <input class="govuk-checkboxes__input" id="status-not-ready" name="filterRecordStatus" type="checkbox" value="not-immi-ready">
+                            <input class="govuk-checkboxes__input" id="status-not-ready" name="filterRecordStatus"
+                                   type="checkbox" value="not-immi-ready">
                             <label class="govuk-label govuk-checkboxes__label" for="status-not-ready">
                                 @messages("declarableStatus.notReadyForImmi")
                             </label>
                         </div>
                         <div class="govuk-checkboxes__item">
-                            <input class="govuk-checkboxes__input" id="status-action-needed" name="filterRecordStatus" type="checkbox" value="action-needed">
+                            <input class="govuk-checkboxes__input" id="status-action-needed" name="filterRecordStatus"
+                                   type="checkbox" value="action-needed">
                             <label class="govuk-label govuk-checkboxes__label" for="status-action-needed">
                                 @messages("declarableStatus.notReadyForUse")
                             </label>
@@ -119,25 +124,28 @@
                     </div>
 
                 </fieldset>
-                <label class="govuk-label govuk-label--s govuk-!-margin-top-4">
-                    @messages("goodsRecords.tableHeader.countryOfOrigin")
-                </label>
 
-                <div class="govuk-form-group">
-                    <input class="govuk-input" type="text" aria-describedby="event-name-hint">
-                </div>
+                @govukSelect(
+                SelectViewModel(
+                field = form("value"),
+                items = selectItems(countries),
+                label = LabelViewModel(messages("goodsRecords.tableHeader.countryOfOrigin")).withSize(Small)
+                )
+                .withCssClass("autocomplete")
+                .withAttribute(("lang", "en"))
+                )
 
                 <div class="govuk-button-group">
-                @govukButton(
-                ButtonViewModel(messages("site.apply")).withAttribute("style", "margin-left: 10px")
-                )
+                    @govukButton(
+                    ButtonViewModel(messages("site.apply")).withAttribute("style", "margin-left: 10px")
+                    )
                     <a class="govuk-link" href="#">@messages("site.clear")</a>
                 </div>
             </div>
             <div class="govuk-grid-column-two-thirds govuk-!-padding-left-20">
                 <h2 class="govuk-heading-m">@messages("goodsRecords.h2.1")</h2>
 
-                    <p class="govuk-body">@messages("goodsRecords.p1")</p>
+                <p class="govuk-body">@messages("goodsRecords.p1")</p>
 
                 <p class="govuk-body">@messages("goodsRecords.p2")
                     <strong class="govuk-tag govuk-tag--green">@messages("declarableStatus.immiReady")</strong></p>
@@ -150,7 +158,9 @@
                     <strong class="govuk-tag govuk-tag--red">@messages("declarableStatus.notReadyForUse")</strong>.
                     @messages("goodsRecords.p2.4")</p>
 
-                    <p class="govuk-body"><a href="@controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad().url" class="govuk-link">@messages("goodsRecords.link1")</a></p>
+                <p class="govuk-body"><a
+                        href="@controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad().url"
+                        class="govuk-link">@messages("goodsRecords.link1")</a></p>
 
             </div>
         </div>
@@ -160,7 +170,8 @@
 
 <div class="govuk-grid-column-full">
     <h2 class="govuk-heading-m" id="goodsRecords">@messages("goodsRecords.record.list")</h2>
-        <p class="govuk-body">@Html(messages("goodsRecords.pagination", boldWrapper(firstRecord.toString()), boldWrapper(lastRecord.toString()), boldWrapper(totalRecords.toString())))</p>
+    <p class="govuk-body">@Html(messages("goodsRecords.pagination", boldWrapper(firstRecord.toString()),
+        boldWrapper(lastRecord.toString()), boldWrapper(totalRecords.toString())))</p>
 
         <div style="overflow-x: auto;">
 
@@ -212,11 +223,10 @@
                             content = Text(goodsRecord.comcode)
                         ),
                         TableRow(
-
                             content = HtmlContent(
                             tag(messages(goodsRecord.declarable.messageKey), goodsRecord.declarable.paragraphTagColour))
 
-                        ),
+                         ),
 
                         TableRow(
                             content = HtmlContent(
@@ -236,7 +246,7 @@
             )
         )
 
-        </div>
+    </div>
 
         @govukPagination(pagination)
 
