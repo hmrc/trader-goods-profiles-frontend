@@ -41,8 +41,8 @@ error.summary.title = Nodwch eich cyfeiriad e-bost
 signedOut.title = Rydych bellach wedi allgofnodi
 signedOut.heading = Rydych bellach wedi allgofnodi
 
-homepage.title = Hafan Proffil Nwyddau Masnachwyr
-homepage.h1 = Hafan Proffil Nwyddau Masnachwyr
+homepage.title = Hafan Proffil Nwyddau Masnachwyr (TGP)
+homepage.h1 = Hafan Proffil Nwyddau Masnachwyr (TGP)
 homepage.p1 = Gallwch reoli eich cofnodion nwyddau, gofyn i CThEF am farn ar gofnod nwyddau neu ddiweddaru manylion eich proffil.
 homepage.h2.1 = Cofnodion nwyddau
 homepage.p2.linkText = Bwrw golwg dros eich cofnodion nwyddau neu eu diweddaru
