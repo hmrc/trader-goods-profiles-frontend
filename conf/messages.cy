@@ -531,7 +531,7 @@ goodsRecords.tableHeader.commodityCode = Cod nwyddau
 goodsRecords.tableHeader.status = Statws
 goodsRecords.tableHeader.actions = Camau gweithredu
 
-goodsRecordsEmptyView.p1 = Nid ydym wedi gallu dod o hyd i unrhyw gofnodion ar sail yr opsiynau chwilio a hidlo y gwnaethoch eu defnyddio.
+goodsRecordsEmptyView.p1 = Does gennych chi ddim cofnodion yn eich proffil nwyddau.
 goodsRecordsEmptyView.p2 = Gallwch
 goodsRecordsEmptyView.p2.link = greu cofnod nwyddau newydd
 
