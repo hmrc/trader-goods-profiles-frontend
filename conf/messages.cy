@@ -526,6 +526,10 @@ goodsRecords.p2.3 = Os oes cofnod lle mae gwybodaeth ar goll, wedi dod i ben, ne
 goodsRecords.p2.4 = Bydd angen i chi gwblhau’r cofnod er mwyn gweld a yw’n barod ar gyfer IMMI
 goodsRecords.h2.1 = Gwybodaeth am gofnodion nwyddau
 goodsRecords.search = Opsiynau chwilio a hidlo
+
+goodsRecords.record.clear = Clirio Opsiynau chwilio a hidlo
+goodsRecords.record.search = Defnyddio Opsiynau chwilio a hidlo
+
 goodsRecords.search.1 = Gallwch ddod o hyd i gofnodion nwyddau penodol drwy ddefnyddio’r nodweddion chwilio a hidlo. Mae pob maes yn ddewisol.
 goodsRecords.record = Statws y cofnod
 goodsRecords.record.list = Rhestr o gofnodion nwyddau

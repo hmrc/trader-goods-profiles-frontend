@@ -60,9 +60,10 @@
     @if(form.errors.nonEmpty) {
         @govukErrorSummary(ErrorSummaryViewModel(form))
     }
-
+    <a href="#goodsRecords" class="govuk-skip-link" data-module="govuk-skip-link">@messages("goodsRecords.skip.record")</a>
+    <a href="#main-content" class="govuk-skip-link" data-module="govuk-skip-link">@messages("goodsRecords.skip.main")</a>
 <div class="govuk-width-container">
-    <main class="govuk-main-wrapper">
+    <main class="govuk-main-wrapper" id="main-content">
         <div class="govuk-grid-row"><h1 class="govuk-heading-l">@messages("goodsRecords.title")</h1></div>
 
         <div class="govuk-grid-row">
@@ -83,7 +84,7 @@
                 <h2 class="govuk-heading-m">@messages("goodsRecords.search")</h2>
                 <p class="govuk-body"> @messages("goodsRecords.search.1")</p>
 
-                @formHelper(action = controllers.goodsProfile.routes.GoodsRecordsController.onSearch(page)) {
+                @formHelper(action = controllers.goodsProfile.routes.GoodsRecordsController.onSearch(page), 'role -> "search") {
 
                 <div class="govuk-label govuk-label--s">
                     @govukInput(
@@ -136,12 +137,19 @@
                 )
 
                 <div class="govuk-button-group">
+
                     @govukButton(
-                    ButtonViewModel(messages("site.apply")).withAttribute("style", "margin-left: 10px")
+                    ButtonViewModel(
+                    content = HtmlContent(
+                    s"""${messages("site.apply")}<span class="govuk-visually-hidden">${messages("goodsRecords.record.search")}</span>"""
                     )
-                    <a class="govuk-link" href="#">@messages("site.clear")</a>
+                    ).withAttribute("style", "margin-left: 10px")
+                    )
+
+                    <a class="govuk-link" href="#">@messages("site.clear")<span class="govuk-visually-hidden"> @messages("goodsRecords.record.clear")</span></a>
                 </div>
             </div>
+
             <div class="govuk-grid-column-two-thirds govuk-!-padding-left-20">
                 <h2 class="govuk-heading-m">@messages("goodsRecords.h2.1")</h2>
 
@@ -169,7 +177,7 @@
 
 
 <div class="govuk-grid-column-full">
-    <h2 class="govuk-heading-m" id="goodsRecords">@messages("goodsRecords.record.list")</h2>
+    <h3 class="govuk-heading-m" id="goodsRecords">@messages("goodsRecords.record.list")</h3>
     <p class="govuk-body">@Html(messages("goodsRecords.pagination", boldWrapper(firstRecord.toString()),
         boldWrapper(lastRecord.toString()), boldWrapper(totalRecords.toString())))</p>
 

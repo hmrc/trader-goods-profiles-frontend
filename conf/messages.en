@@ -430,6 +430,8 @@ goodsRecords.h2.1 = Information about goods records
 goodsRecords.search = Search and filter options
 goodsRecords.search.1 =You can use search and filters to find specific goods records. All fields are optional.
 goodsRecords.record = Record status
+goodsRecords.record.clear =Clear search and filter options
+goodsRecords.record.search = Apply search and filter options
 goodsRecords.record.list = List of goods records
 goodsRecordsEmptyView.p2 = When you, a haulier or other intermediary can complete the IMMI on your behalf, you should use or share the:
 goodsRecords.p3 = You do not have any records in your records list.
@@ -443,9 +445,15 @@ goodsRecords.tableHeader.commodityCode = Commodity code
 goodsRecords.tableHeader.status = Status
 goodsRecords.tableHeader.actions = Actions
 
+goodsRecords.skip.record = Skip to goods records
+goodsRecords.skip.main = Skip to main
+
 goodsRecordsEmptyView.p1 = You do not have any records in your goods profile.
 goodsRecordsEmptyView.p2 = You can
 goodsRecordsEmptyView.p2.link = create a new goods record
+
+
+
 
 removeGoodsRecord.title = Removing goods record
 removeGoodsRecord.heading = Removing goods record
