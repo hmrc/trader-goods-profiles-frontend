@@ -22,7 +22,7 @@ import com.google.inject.Inject
 import config.FrontendAppConfig
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.BaseController
-import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
+import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
 import models.router.requests.PutRecordRequest
 import models.{CheckMode, Country, NormalMode, UpdateGoodsRecord, UserAnswers, ValidationError}
 import navigation.GoodsRecordNavigator
@@ -48,6 +48,7 @@ class CyaUpdateRecordController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
   auditService: AuditService,
   view: CyaUpdateRecordView,
@@ -62,7 +63,7 @@ class CyaUpdateRecordController @Inject() (
   private val errorMessage: String = "Unable to update Goods Record."
 
   def onPageLoadCountryOfOrigin(recordId: String): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       goodsRecordConnector
         .getRecord(request.eori, recordId)
         .flatMap { recordResponse =>
@@ -108,7 +109,7 @@ class CyaUpdateRecordController @Inject() (
     }
 
   def onPageLoadGoodsDescription(recordId: String): Action[AnyContent] =
-    (identify andThen getData andThen requireData) { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       UpdateGoodsRecord.validateGoodsDescription(request.userAnswers, recordId) match {
         case Right(goodsDescription) =>
           val onSubmitAction =
@@ -128,7 +129,7 @@ class CyaUpdateRecordController @Inject() (
     }
 
   def onPageLoadTraderReference(recordId: String): Action[AnyContent] =
-    (identify andThen getData andThen requireData) { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       UpdateGoodsRecord.validateTraderReference(request.userAnswers, recordId) match {
         case Right(traderReference) =>
           val onSubmitAction =
@@ -148,7 +149,7 @@ class CyaUpdateRecordController @Inject() (
     }
 
   def onPageLoadCommodityCode(recordId: String): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       goodsRecordConnector
         .getRecord(request.eori, recordId)
         .flatMap { recordResponse =>
@@ -277,7 +278,7 @@ class CyaUpdateRecordController @Inject() (
     }
 
   def onSubmitTraderReference(recordId: String): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       (for {
         traderReference   <- handleValidateError(UpdateGoodsRecord.validateTraderReference(request.userAnswers, recordId))
         updateGoodsRecord <-
@@ -294,7 +295,7 @@ class CyaUpdateRecordController @Inject() (
     }
 
   def onSubmitCountryOfOrigin(recordId: String): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       (for {
         oldRecord                <- goodsRecordConnector.getRecord(request.eori, recordId)
         countryOfOrigin          <-
@@ -335,7 +336,7 @@ class CyaUpdateRecordController @Inject() (
     }
 
   def onSubmitGoodsDescription(recordId: String): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       (for {
         goodsDescription  <-
           handleValidateError(UpdateGoodsRecord.validateGoodsDescription(request.userAnswers, recordId))
@@ -353,7 +354,7 @@ class CyaUpdateRecordController @Inject() (
     }
 
   def onSubmitCommodityCode(recordId: String): Action[AnyContent] =
-    (identify andThen getData andThen requireData).async { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       (for {
         oldRecord                <- goodsRecordConnector.getRecord(request.eori, recordId)
         commodity                <-
