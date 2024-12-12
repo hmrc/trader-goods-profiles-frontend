@@ -34,7 +34,7 @@ object AdviceStatusSummary {
     val tagValue = messages("singleRecord.commodityReviewReason.tagText")
 
     val viewModel =
-      if (isReviewReasonCommodity) {
+      if (isReviewReasonCommodity && adviceStatus == AdviceReceived) {
         ValueViewModel(
           HtmlContent(
             s"<strong class='govuk-tag govuk-tag--grey'>$tagValue</strong> ${messages(adviceStatus.messageKey)}"

@@ -208,7 +208,7 @@ countryOfOrigin.error.invalid = Enter a valid country of origin
 countryOfOrigin.checkYourAnswersLabel = Country of origin
 countryOfOrigin.change.hidden = Country of origin
 
-homepage.title = Trader Goods Profile homepage
+homepage.title = Trader Goods Profile (TGP) homepage
 homepage.h1 = Trader Goods Profile (TGP) homepage
 homepage.p1 = You can manage your goods records, ask HMRC for an opinion on a goods record or update your profile details.
 homepage.h2.1 = Goods records
@@ -442,6 +442,10 @@ goodsRecords.tableHeader.countryOfOrigin = Country of origin
 goodsRecords.tableHeader.commodityCode = Commodity code
 goodsRecords.tableHeader.status = Status
 goodsRecords.tableHeader.actions = Actions
+
+goodsRecordsEmptyView.p1 = You do not have any records in your goods profile.
+goodsRecordsEmptyView.p2 = You can
+goodsRecordsEmptyView.p2.link = create a new goods record
 
 removeGoodsRecord.title = Removing goods record
 removeGoodsRecord.heading = Removing goods record

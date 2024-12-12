@@ -19,7 +19,7 @@ package controllers.advice
 import com.google.inject.Inject
 import connectors.AccreditationConnector
 import controllers.BaseController
-import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
+import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
 import models.helper.RequestAdviceJourney
 import models.{AdviceRequest, NormalMode}
 import navigation.AdviceNavigator
@@ -39,6 +39,7 @@ class CyaRequestAdviceController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   auditService: AuditService,
+  profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
   view: CyaRequestAdviceView,
   dataCleansingService: DataCleansingService,
@@ -49,8 +50,8 @@ class CyaRequestAdviceController @Inject() (
 
   private val errorMessage: String = "Unable to create Request Advice."
 
-  def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
-    implicit request =>
+  def onPageLoad(recordId: String): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       AdviceRequest.build(request.userAnswers, request.eori, recordId) match {
         case Right(_)     =>
           val list = SummaryListViewModel(
@@ -68,10 +69,10 @@ class CyaRequestAdviceController @Inject() (
             errors
           )
       }
-  }
+    }
 
-  def onSubmit(recordId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
+  def onSubmit(recordId: String): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       AdviceRequest.build(request.userAnswers, request.eori, recordId) match {
         case Right(model) =>
           auditService.auditRequestAdvice(request.affinityGroup, model)
@@ -91,5 +92,5 @@ class CyaRequestAdviceController @Inject() (
             )
           )
       }
-  }
+    }
 }

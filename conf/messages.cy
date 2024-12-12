@@ -44,8 +44,8 @@ error.summary.title = Nodwch eich cyfeiriad e-bost
 signedOut.title = Rydych bellach wedi allgofnodi
 signedOut.heading = Rydych bellach wedi allgofnodi
 
-homepage.title = Hafan Proffil Nwyddau Masnachwyr
-homepage.h1 = Hafan Proffil Nwyddau Masnachwyr
+homepage.title = Hafan Proffil Nwyddau Masnachwyr (TGP)
+homepage.h1 = Hafan Proffil Nwyddau Masnachwyr (TGP)
 homepage.p1 = Gallwch reoli eich cofnodion nwyddau, gofyn i CThEF am farn ar gofnod nwyddau neu ddiweddaru manylion eich proffil.
 homepage.h2.1 = Cofnodion nwyddau
 homepage.p2.linkText = Bwrw golwg dros eich cofnodion nwyddau neu eu diweddaru
@@ -379,6 +379,7 @@ singleRecord.commodityReviewReason.categorised = Mae’r cod nwyddau wedi dod i 
 singleRecord.commodityReviewReason.adviceReceived = Mae’r cod nwyddau wedi dod i ben, sy’n golygu bod y cod nwyddau a’r cyngor yn dangos fel a ganlyn: {0}
 singleRecord.commodityReviewReason.notCategorised.noAdvice = Mae’r cod nwyddau wedi dod i ben, sy’n golygu bod y cod nwyddau’n dangos fel a ganlyn: {0}
 singleRecord.commodityReviewReason.tagText = Nid yw’n ddilys mwyach
+singleRecord.category.row.commodityReviewReason.notCategorised = Ni fyddwch yn gallu categoreiddio’r cofnod hwn nes i chi ddiweddaru’r cod nwyddau.
 
 countryOfOrigin.title = Gwlad tarddiad
 countryOfOrigin.h1 = Gwlad tarddiad
@@ -542,6 +543,10 @@ goodsRecords.tableHeader.countryOfOrigin = Gwlad wreiddiol
 goodsRecords.tableHeader.commodityCode = Cod nwyddau
 goodsRecords.tableHeader.status = Statws
 goodsRecords.tableHeader.actions = Camau gweithredu
+
+goodsRecordsEmptyView.p1 = Does gennych chi ddim cofnodion yn eich proffil nwyddau.
+goodsRecordsEmptyView.p2 = Gallwch
+goodsRecordsEmptyView.p2.link = greu cofnod nwyddau newydd
 
 goodsRecordSearchResult.title = Mae yna {0} o ganlyniadau chwilio
 goodsRecordSearchResult.title.withPage = Mae yna {0} o ganlyniadau chwilio – tudalen {1} o {2}

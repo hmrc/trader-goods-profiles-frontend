@@ -67,7 +67,7 @@ class CommodityCodeController @Inject() (
     }
 
   def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] =
-    (identify andThen getData andThen requireData) { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       val preparedForm = prepareForm(CommodityCodeUpdatePage(recordId), form)
 
       request.userAnswers.get(HasCommodityCodeChangePage(recordId)) match {
