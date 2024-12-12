@@ -547,6 +547,8 @@ goodsRecords.tableHeader.countryOfOrigin = Gwlad wreiddiol
 goodsRecords.tableHeader.commodityCode = Cod nwyddau
 goodsRecords.tableHeader.status = Statws
 goodsRecords.tableHeader.actions = Camau gweithredu
+goodsRecords.skip.record = Neidio i gofnodion nwyddau
+goodsRecords.skip.main = Neidio i'r prif
 
 goodsRecordsEmptyView.p1 = Does gennych chi ddim cofnodion yn eich proffil nwyddau.
 goodsRecordsEmptyView.p2 = Gallwch
