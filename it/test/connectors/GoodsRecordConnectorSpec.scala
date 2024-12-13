@@ -850,4 +850,40 @@ class GoodsRecordConnectorSpec
       connector.getRecordsSummary(testEori).failed.futureValue
     }
   }
+
+  ".isTraderReferenceUnique" - {
+    val traderReference = "traderReference"
+    val url = s"/trader-goods-profiles-data-store/traders/records/is-trader-reference-unique/$traderReference"
+
+    "must return true if trader reference is unique" in {
+      wireMockServer.stubFor(
+        get(urlEqualTo(url))
+          .withHeader(xClientIdName, equalTo(xClientId))
+          .willReturn(ok().withBody(Json.obj("isUnique" -> true).toString))
+      )
+
+      connector.isTraderReferenceUnique(traderReference).futureValue mustBe true
+    }
+
+    "must return false if trader reference is not unique" in {
+      wireMockServer.stubFor(
+        get(urlEqualTo(url))
+          .withHeader(xClientIdName, equalTo(xClientId))
+          .willReturn(ok().withBody(Json.obj("isUnique" -> false).toString))
+      )
+
+      connector.isTraderReferenceUnique(traderReference).futureValue mustBe false
+    }
+
+    "must return a failed future when the server returns an error" in {
+      wireMockServer.stubFor(
+        get(urlEqualTo(url))
+          .withHeader(xClientIdName, equalTo(xClientId))
+          .willReturn(serverError())
+      )
+
+      connector.isTraderReferenceUnique(traderReference).failed.futureValue
+    }
+  }
+
 }

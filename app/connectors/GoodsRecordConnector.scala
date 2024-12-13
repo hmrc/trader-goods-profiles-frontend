@@ -57,6 +57,9 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
   private def filterRecordsUrl(eori: String, queryParams: Map[String, String]) =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/filter?$queryParams"
 
+  private def isTraderReferenceUniqueUrl(traderReference: String) =
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/records/is-trader-reference-unique/$traderReference"
+
   private def searchRecordsUrl(
     eori: String,
     searchTerm: String,
@@ -219,6 +222,15 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .execute[HttpResponse]
       .map { response =>
         response.json.as[RecordsSummary]
+      }
+
+  def isTraderReferenceUnique(traderReference: String)(implicit hc: HeaderCarrier): Future[Boolean] =
+    httpClient
+      .get(isTraderReferenceUniqueUrl(traderReference))
+      .setHeader(clientIdHeader)
+      .execute[HttpResponse]
+      .map { response =>
+        (response.json \ "isUnique").as[Boolean]
       }
 
   def filterRecordsByField(
