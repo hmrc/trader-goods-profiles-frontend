@@ -42,7 +42,7 @@ class HomePageController @Inject() (
 
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getOrCreate).async { implicit request =>
     for {
-      downloadDataSummary <- downloadDataConnector.getDownloadDataSummary(request.eori)
+      downloadDataSummary <- downloadDataConnector.getDownloadDataSummary
       goodsRecords        <- goodsRecordConnector.getRecords(request.eori, 1, 1)
       doesGoodsRecordExist = goodsRecords.exists(_.goodsItemRecords.nonEmpty)
     } yield {

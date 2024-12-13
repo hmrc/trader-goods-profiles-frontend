@@ -108,7 +108,7 @@ class RequestDataControllerSpec extends SpecBase {
       when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
 
       val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
-      when(mockDownloadDataConnector.requestDownloadData(any())(any())) thenReturn Future.successful(Done)
+      when(mockDownloadDataConnector.requestDownloadData(any())) thenReturn Future.successful(Done)
 
       val mockSessionRepository = mock[SessionRepository]
 

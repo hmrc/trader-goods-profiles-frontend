@@ -73,7 +73,7 @@ class HomePageControllerSpec extends SpecBase {
         when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
 
         val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
-        when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
+        when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(
           downloadDataSummary
         )
 
@@ -104,7 +104,7 @@ class HomePageControllerSpec extends SpecBase {
 
           verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
           verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any(), any())(any())
-          verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())(any())
+          verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())
         }
       }
 
@@ -125,7 +125,7 @@ class HomePageControllerSpec extends SpecBase {
         )
 
         val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
-        when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
+        when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(
           downloadDataSummary
         )
 
@@ -156,7 +156,7 @@ class HomePageControllerSpec extends SpecBase {
 
           verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
           verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any(), any())(any())
-          verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())(any())
+          verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())
         }
       }
 
@@ -166,7 +166,7 @@ class HomePageControllerSpec extends SpecBase {
           when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
 
           val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
-          when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
+          when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(
             Seq.empty
           )
 
@@ -197,7 +197,7 @@ class HomePageControllerSpec extends SpecBase {
 
             verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
             verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any(), any())(any())
-            verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())(any())
+            verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())
           }
         }
 
@@ -217,7 +217,7 @@ class HomePageControllerSpec extends SpecBase {
           when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
 
           val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
-          when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
+          when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(
             downloadDataSummary
           )
 
@@ -248,7 +248,7 @@ class HomePageControllerSpec extends SpecBase {
 
             verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
             verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any(), any())(any())
-            verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())(any())
+            verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())
           }
         }
 
@@ -268,7 +268,7 @@ class HomePageControllerSpec extends SpecBase {
           when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
 
           val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
-          when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
+          when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(
             downloadDataSummary
           )
 
@@ -315,7 +315,7 @@ class HomePageControllerSpec extends SpecBase {
           when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
 
           val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
-          when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
+          when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(
             downloadDataSummary
           )
 
@@ -346,7 +346,7 @@ class HomePageControllerSpec extends SpecBase {
 
             verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
             verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any(), any())(any())
-            verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())(any())
+            verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())
           }
         }
       }
@@ -363,7 +363,7 @@ class HomePageControllerSpec extends SpecBase {
           .successful(None)
 
         val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
-        when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
+        when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(
           Seq.empty
         )
 
@@ -390,7 +390,7 @@ class HomePageControllerSpec extends SpecBase {
 
           verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
           verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any(), any())(any())
-          verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())(any())
+          verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())
         }
       }
     }
@@ -406,7 +406,7 @@ class HomePageControllerSpec extends SpecBase {
           .successful(None)
 
         val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
-        when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
+        when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(
           Seq.empty
         )
 
@@ -434,7 +434,7 @@ class HomePageControllerSpec extends SpecBase {
 
           verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
           verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any(), any())(any())
-          verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())(any())
+          verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())
         }
       }
       "true when pageUpdated contains a newUKIMS value" in {
@@ -447,7 +447,7 @@ class HomePageControllerSpec extends SpecBase {
           .successful(None)
 
         val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
-        when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
+        when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(
           Seq.empty
         )
 
@@ -476,7 +476,7 @@ class HomePageControllerSpec extends SpecBase {
 
           verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
           verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any(), any())(any())
-          verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())(any())
+          verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())
         }
       }
 
