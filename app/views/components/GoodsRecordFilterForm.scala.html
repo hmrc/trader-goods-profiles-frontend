@@ -43,7 +43,7 @@
                  <div class="govuk-label govuk-label--s">
                   @govukInput(
                   InputViewModel(
-                  field = form("value"),
+                  field = form("searchTerm"),
                   label = LabelViewModel(messages("goodsRecords.label")).withCssClass("govuk-!-font-weight-bold")
                   )
                   )
@@ -64,15 +64,15 @@
                         items = Seq(
                         CheckboxItem(
                         content = Text(messages("declarableStatus.immiReady")),
-                        value = "none"
+                        value = "ImmiReady"
                         ),
                         CheckboxItem(
                         content = Text(messages("declarableStatus.notReadyForImmi")),
-                        value = "none"
+                        value = "NotReadyForImmi"
                         ),
                         CheckboxItem(
                         content = Text(messages("declarableStatus.notReadyForUse")),
-                        value = "none"
+                        value = "NotReadyForUse"
                         )
                         )
                         ))
