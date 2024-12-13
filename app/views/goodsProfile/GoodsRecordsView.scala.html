@@ -18,6 +18,7 @@
 @import config.FrontendAppConfig
 @import viewmodels.LabelSize._
 @import models.Country._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
 
 @this(
     appConfig: FrontendAppConfig,
@@ -31,7 +32,11 @@
     boldWrapper: components.BoldWrapper,
     govukPagination: GovukPagination,
     govukSelect: GovukSelect,
-    tag: components.Tag
+    tag: components.Tag,
+    govukCheckboxes : GovukCheckboxes,
+    paragraphBody: components.paragraphBody,
+    link: components.link,
+    goodsRecordFilterForm: components.GoodsRecordFilterForm
 )
 
 @(
@@ -67,108 +72,37 @@
         <div class="govuk-grid-row"><h1 class="govuk-heading-l">@messages("goodsRecords.title")</h1></div>
 
         <div class="govuk-grid-row">
-
-            <div class="govuk-grid-column-one-third custom-box">
-                <style>
-                    .custom-box {
-                      box-shadow: inset 0 0 0 1px #b1b4b6;
-                      margin-top: -1px;
-                      margin-bottom: -1px;
-                      padding-top: 20px;
-                      padding-right: 20px;
-                      padding-bottom: 15px;
-                      padding-left: 20px;
-                               }
-                </style>
-
-                <h2 class="govuk-heading-m">@messages("goodsRecords.search")</h2>
-                <p class="govuk-body"> @messages("goodsRecords.search.1")</p>
-
-                @formHelper(action = controllers.goodsProfile.routes.GoodsRecordsController.onSearch(page), 'role -> "search") {
-
-                <div class="govuk-label govuk-label--s">
-                    @govukInput(
-                    InputViewModel(
-                    field = form("value"),
-                    label = LabelViewModel(messages("goodsRecords.label")).withCssClass("govuk-!-font-weight-bold")
-                    )
-                    )
-
-                </div>
-                }
-                <fieldset class="govuk-fieldset govuk-!-margin-top-4 govuk-!-margin-bottom-4" id="filters">
-                    <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
-                        @messages("goodsRecords.record")
-                    </legend>
-                    <div class="checkbox-group">
-                        <div class="govuk-checkboxes__item">
-                            <input class="govuk-checkboxes__input" id="status-ready" name="filterRecordStatus"
-                                   type="checkbox" value="immi-ready">
-                            <label class="govuk-label govuk-checkboxes__label" for="status-ready">
-                                @messages("declarableStatus.immiReady")
-                            </label>
-                        </div>
-                        <div class="govuk-checkboxes__item">
-                            <input class="govuk-checkboxes__input" id="status-not-ready" name="filterRecordStatus"
-                                   type="checkbox" value="not-immi-ready">
-                            <label class="govuk-label govuk-checkboxes__label" for="status-not-ready">
-                                @messages("declarableStatus.notReadyForImmi")
-                            </label>
-                        </div>
-                        <div class="govuk-checkboxes__item">
-                            <input class="govuk-checkboxes__input" id="status-action-needed" name="filterRecordStatus"
-                                   type="checkbox" value="action-needed">
-                            <label class="govuk-label govuk-checkboxes__label" for="status-action-needed">
-                                @messages("declarableStatus.notReadyForUse")
-                            </label>
-                        </div>
-                    </div>
-
-                </fieldset>
-
-                @govukSelect(
-                SelectViewModel(
-                field = form("value"),
-                items = selectItems(countries),
-                label = LabelViewModel(messages("goodsRecords.tableHeader.countryOfOrigin")).withSize(Small)
-                )
-                .withCssClass("autocomplete")
-                .withAttribute(("lang", "en"))
-                )
-
-                <div class="govuk-button-group">
-
-                    @govukButton(
-                    ButtonViewModel(
-                    content = HtmlContent(
-                    s"""${messages("site.apply")}<span class="govuk-visually-hidden">${messages("goodsRecords.record.search")}</span>"""
-                    )
-                    ).withAttribute("style", "margin-left: 10px")
-                    )
-
-                    <a class="govuk-link" href="#">@messages("site.clear")<span class="govuk-visually-hidden"> @messages("goodsRecords.record.clear")</span></a>
-                </div>
-            </div>
+            @goodsRecordFilterForm(form, countries, page)
 
             <div class="govuk-grid-column-two-thirds govuk-!-padding-left-20">
                 <h2 class="govuk-heading-m">@messages("goodsRecords.h2.1")</h2>
 
-                <p class="govuk-body">@messages("goodsRecords.p1")</p>
+                @paragraphBody(messages("goodsRecords.p1"))
 
-                <p class="govuk-body">@messages("goodsRecords.p2")
-                    <strong class="govuk-tag govuk-tag--green">@messages("declarableStatus.immiReady")</strong></p>
+                @paragraphBody(
+                messages("goodsRecords.p2") +
+                tag(messages("declarableStatus.immiReady"), "govuk-tag govuk-tag--green")
+                )
 
-                <p class="govuk-body">@messages("goodsRecords.p2.1")
-                    <strong class="govuk-tag govuk-tag--orange">@messages("declarableStatus.notReadyForImmi")</strong>.
-                    @messages("goodsRecords.p2.2")</p>
+                @paragraphBody(
+                messages("goodsRecords.p2.1") +
+                tag(messages("declarableStatus.notReadyForImmi"), "govuk-tag govuk-tag--orange") +
+                messages("goodsRecords.p2.2")
+                )
 
-                <p class="govuk-body">@messages("goodsRecords.p2.3")
-                    <strong class="govuk-tag govuk-tag--red">@messages("declarableStatus.notReadyForUse")</strong>.
-                    @messages("goodsRecords.p2.4")</p>
-
-                <p class="govuk-body"> @messages("goodsRecords.link1.text") <a
-                        href="@controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad().url"
-                        class="govuk-link">@messages("goodsRecords.link1")</a></p>
+                @paragraphBody(
+                messages("goodsRecords.p2.3") +
+                tag(messages("declarableStatus.notReadyForUse"), "govuk-tag govuk-tag--orange") +
+                messages("goodsRecords.p2.4")
+                )
+                @paragraphBody(
+                message = messages("goodsRecords.link1.text") +
+                link(
+                text = messages("goodsRecords.link1"),
+                call = controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad(),
+                id = None
+                )
+                )
 
             </div>
         </div>
