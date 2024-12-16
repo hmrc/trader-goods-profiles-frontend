@@ -345,6 +345,7 @@ singleRecord.status.row = Statws
 singleRecord.askForAdvice = Gofyn am gyngor
 singleRecord.withdrawAdvice = Tynnu’r cais yn ôl
 singleRecord.categoriseThisGood = Categoreiddio‘r nwydd
+singleRecord.categoriseThisRecord = Categoreiddio’r cofnod hwn
 singleRecord.cat1 = Categori 1
 singleRecord.cat2 = Categori 2
 singleRecord.standardGoods = Nwyddau safonol
@@ -764,3 +765,8 @@ declarableStatus.immiReady.paragraph = Gallwch ddefnyddio’r cofnod hwn i lenwi
 declarableStatus.notReadyForImmi.paragraph = Ni allwch ddefnyddio’r cofnod hwn i lenwi’r Wybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI). Efallai y byddwch yn gallu diweddaru’r wybodaeth neu gategoreiddio’r cofnod er mwyn gweld a yw’n barod ar gyfer IMMI.
 declarableStatus.notReadyForUse.paragraph = Mae angen i chi {0} i weld a allwch ei ddefnyddio ar Wybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI).
 declarableStatus.notReadyForUse.paragraph.linkText = gategoreiddio’r cofnod nwyddau hwn
+
+updatedCommodityCode.title = Rydych chi wedi diweddaru’r cod nwyddau
+updatedCommodityCode.heading = Rydych chi wedi diweddaru’r cod nwyddau
+updatedCommodityCode.paragraph1 = Mae’r cod nwyddau wedi newid sy’n golygu y bydd angen i chi gategoreiddio’r cofnod hwn cyn bydd modd i chi ei ddefnyddio.
+updatedCommodityCode.paragraph2 = Nid oes raid i chi gategoreiddio’r cofnod hwn nawr. Gallwch adolygu’r cofnod o’ch rhestr o gofnodion nwyddau a dechrau categoreiddio oddi yno.

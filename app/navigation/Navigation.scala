@@ -86,7 +86,7 @@ class Navigation @Inject() (categorisationService: CategorisationService) extend
     answers
       .get(HasCorrectGoodsCommodityCodeUpdatePage(recordId))
       .map {
-        case true  => controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadCommodityCode(recordId)
+        case true  => controllers.goodsRecord.routes.UpdatedCommodityCodeController.onPageLoad(recordId)
         case false => controllers.goodsRecord.routes.CommodityCodeController.onPageLoadUpdate(NormalMode, recordId)
       }
       .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())

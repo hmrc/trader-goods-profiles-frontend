@@ -223,7 +223,7 @@ class NavigationSpec extends SpecBase with BeforeAndAfterEach {
               HasCorrectGoodsCommodityCodeUpdatePage(testRecordId),
               NormalMode,
               answers
-            ) mustBe controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadCommodityCode(testRecordId)
+            ) mustBe controllers.goodsRecord.routes.UpdatedCommodityCodeController.onPageLoad(testRecordId)
           }
 
           "to CommodityCodePage when answer is No" in {
