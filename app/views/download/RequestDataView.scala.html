@@ -17,7 +17,8 @@
 @this(
         layout: templates.Layout,
         govukButton: GovukButton,
-        formHelper: FormWithCSRF
+        formHelper: FormWithCSRF,
+        tag: components.Tag
 )
 
 @(email: String)(implicit request: Request[_], messages: Messages)
@@ -25,7 +26,8 @@
 @layout(pageTitle = titleNoForm(messages("requestData.title"))) {
 
     <h1 class="govuk-heading-l">@messages("requestData.heading")</h1>
-    <p class="govuk-body">@messages("requestData.p1", email)</p>
+    <p class="govuk-body">@Html(messages("requestData.p1", s"<span class='govuk-!-font-weight-bold'>$email</span>"))</p>
+
     <p class="govuk-body">@messages("requestData.p2")</p>
 
         @formHelper(action = controllers.download.routes.RequestDataController.onSubmit()) {
