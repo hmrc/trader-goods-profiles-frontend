@@ -57,7 +57,8 @@
         case _ => title(form, messages("goodsRecords.title"))
     }
 }
-
+<a href="#goodsRecords" class="govuk-skip-link" data-module="govuk-skip-link">@messages("goodsRecords.skip.record")</a>
+<a href="#main-content" class="govuk-skip-link" data-module="govuk-skip-link">@messages("goodsRecords.skip.main")</a>
 @layout(
     pageTitle = preparedTitle, isFullWidth = true
   ) {
@@ -65,8 +66,7 @@
     @if(form.errors.nonEmpty) {
         @govukErrorSummary(ErrorSummaryViewModel(form))
     }
-    <a href="#goodsRecords" class="govuk-skip-link" data-module="govuk-skip-link">@messages("goodsRecords.skip.record")</a>
-    <a href="#main-content" class="govuk-skip-link" data-module="govuk-skip-link">@messages("goodsRecords.skip.main")</a>
+
 <div class="govuk-width-container">
     <main class="govuk-main-wrapper" id="main-content">
         <div class="govuk-grid-row"><h1 class="govuk-heading-l">@messages("goodsRecords.title")</h1></div>
@@ -111,10 +111,13 @@
 
 
 <div class="govuk-grid-column-full">
-    <h3 class="govuk-heading-m" id="goodsRecords">@messages("goodsRecords.record.list")</h3>
+    <h2 class="govuk-heading-m" id="goodsRecords">@messages("goodsRecords.record.list")</h2>
+    @if(totalRecords > 10){
     <p class="govuk-body">@Html(messages("goodsRecords.pagination", boldWrapper(firstRecord.toString()),
         boldWrapper(lastRecord.toString()), boldWrapper(totalRecords.toString())))</p>
-
+        } else{
+    <p class="govuk-body">@Html(messages("goodsRecords.pagination.less", boldWrapper(totalRecords.toString())))</p>
+      }
         <div style="overflow-x: auto;">
 
         @govukTable(

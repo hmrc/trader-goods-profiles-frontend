@@ -542,6 +542,7 @@ goodsRecords.downloadLinkText.requestFile = Gofyn am ffeil o’ch cofnodion TGP
 goodsRecords.downloadLinkText.fileInProgress = Cael diweddariad ar eich ffeil cofnodion TGP neu gofynnwch am ffeil newydd
 goodsRecords.downloadLinkText.fileReady = Lawrlwythwch eich ffeil cofnodion TGP neu gofynnwch am ffeil newydd
 goodsRecords.pagination = Yn dangos {0} i {1} o {2} o gofnodion nwyddau, gan ddechrau gyda’r dyddiad diweddaru mwyaf diweddar.
+goodsRecords.pagination.less = Yn dangos {0} o gofnodion nwyddau, gan ddechrau gyda’r dyddiad diweddaru mwyaf defnyddio.
 goodsRecords.tableHeader.traderReference = Cyfeirnod masnachwr
 goodsRecords.tableHeader.goodsDescription = Disgrifiad o’r nwyddau
 goodsRecords.tableHeader.countryOfOrigin = Gwlad wreiddiol
