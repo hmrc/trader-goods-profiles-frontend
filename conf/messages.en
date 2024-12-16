@@ -420,7 +420,6 @@ goodsRecords.heading = Goods profile
 goodsRecords.heading.withPage = Goods profile - page {0} of {1}
 goodsRecords.p1 = This is a list of goods in your TGP. If a goods record is ready for Internal Market Movement Information (IMMI), you can use that record to help complete the IMMI form.
 goodsRecords.p2 = If a haulier or other intermediary completes the IMMI on your behalf, you should use or share the:
-goodsRecordsEmptyView.p2 = When you, a haulier or other intermediary can complete the IMMI on your behalf, you should use or share the:
 goodsRecords.li1 = 'Trader reference'
 goodsRecords.li2 = 'Goods description'
 goodsRecords.p3 = You do not have any records in your records list.
@@ -433,6 +432,10 @@ goodsRecords.tableHeader.countryOfOrigin = Country of origin
 goodsRecords.tableHeader.commodityCode = Commodity code
 goodsRecords.tableHeader.status = Status
 goodsRecords.tableHeader.actions = Actions
+
+goodsRecordsEmptyView.p1 = You do not have any records in your goods profile.
+goodsRecordsEmptyView.p2 = You can
+goodsRecordsEmptyView.p2.link = create a new goods record
 
 removeGoodsRecord.title = Removing goods record
 removeGoodsRecord.heading = Removing goods record
@@ -460,6 +463,7 @@ singleRecord.status.row = Status
 singleRecord.askForAdvice = Ask for advice
 singleRecord.withdrawAdvice = Withdraw request
 singleRecord.categoriseThisGood = Categorise this good
+singleRecord.categoriseThisRecord = Categorise this record
 singleRecord.cat1 = Category 1
 singleRecord.cat2 = Category 2
 singleRecord.standardGoods = Standard goods
@@ -492,21 +496,21 @@ singleRecord.commodityReviewReason.notCategorised.noAdvice = The commodity code 
 singleRecord.commodityReviewReason.tagText = No longer valid
 singleRecord.category.row.commodityReviewReason.notCategorised = You will not be able to categorise this record until you update the commodity code
 
-hasCountryOfOriginChange.title = Change record information
-hasCountryOfOriginChange.h1 = Change record information
+hasCountryOfOriginChange.title = Changing the country of origin
+hasCountryOfOriginChange.h1 = Changing the country of origin
 hasCountryOfOriginChange.p1 = You’ll need to recategorise this goods record if you change the country of origin
 hasCountryOfOriginChange.h2 = Do you want to change the country of origin?
 hasCountryOfOriginChange.error.required = Select yes if you want to change the country of origin
 
-hasCommodityCodeChange.title = Change record information
-hasCommodityCodeChange.h1 = Change record information
+hasCommodityCodeChange.title = Changing the commodity code
+hasCommodityCodeChange.h1 = Changing the commodity code
 hasCommodityCodeChange.h2 = Do you want to change the commodity code?
 hasCommodityCodeChange.advice = Changing the commodity code on this goods record will remove the advice status. If you want to check the commodity code is correct and matches the description, you’ll need to ask for advice again.
 hasCommodityCodeChange.category = You’ll need to recategorise this goods record if you change the commodity code.
 hasCommodityCodeChange.error.required = Select yes if you want to change the commodity code
 
-hasGoodsDescriptionChange.title = Change record information
-hasGoodsDescriptionChange.h1 = Change record information
+hasGoodsDescriptionChange.title = Changing the goods description
+hasGoodsDescriptionChange.h1 = Changing the goods description
 hasGoodsDescriptionChange.p1 = Changing the goods description on this goods record will remove the advice status. If you want to check the commodity code is correct and matches the goods description, you’ll need to ask for advice again.
 hasGoodsDescriptionChange.h2 = Do you want to change the goods description?
 hasGoodsDescriptionChange.error.required = Select yes if you want to change the goods description
@@ -739,3 +743,8 @@ declarableStatus.immiReady.paragraph = You can use this record to complete the I
 declarableStatus.notReadyForImmi.paragraph = You cannot use this record to complete the Internal market Movement Information (IMMI). You may be able to update the information or categorise the record to see if it is ready for IMMI.
 declarableStatus.notReadyForUse.paragraph = You need to {0} to see if you can use it on an Internal Market Movement Information (IMMI).
 declarableStatus.notReadyForUse.paragraph.linkText = categorise this goods record
+
+updatedCommodityCode.title = You’ve updated the commodity code
+updatedCommodityCode.heading = You’ve updated the commodity code
+updatedCommodityCode.paragraph1 = The commodity code has changed which means you’ll need to categorise this record before you can use it.
+updatedCommodityCode.paragraph2 = You do not need to categorise this record now. You can review the record from your list of goods records and start categorisation from there.

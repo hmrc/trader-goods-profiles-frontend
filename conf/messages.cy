@@ -41,8 +41,8 @@ error.summary.title = Nodwch eich cyfeiriad e-bost
 signedOut.title = Rydych bellach wedi allgofnodi
 signedOut.heading = Rydych bellach wedi allgofnodi
 
-homepage.title = Hafan Proffil Nwyddau Masnachwyr
-homepage.h1 = Hafan Proffil Nwyddau Masnachwyr
+homepage.title = Hafan Proffil Nwyddau Masnachwyr (TGP)
+homepage.h1 = Hafan Proffil Nwyddau Masnachwyr (TGP)
 homepage.p1 = Gallwch reoli eich cofnodion nwyddau, gofyn i CThEF am farn ar gofnod nwyddau neu ddiweddaru manylion eich proffil.
 homepage.h2.1 = Cofnodion nwyddau
 homepage.p2.linkText = Bwrw golwg dros eich cofnodion nwyddau neu eu diweddaru
@@ -345,6 +345,7 @@ singleRecord.status.row = Statws
 singleRecord.askForAdvice = Gofyn am gyngor
 singleRecord.withdrawAdvice = Tynnu’r cais yn ôl
 singleRecord.categoriseThisGood = Categoreiddio‘r nwydd
+singleRecord.categoriseThisRecord = Categoreiddio’r cofnod hwn
 singleRecord.cat1 = Categori 1
 singleRecord.cat2 = Categori 2
 singleRecord.standardGoods = Nwyddau safonol
@@ -516,7 +517,6 @@ goodsRecords.error.required = Nodwch eich term i’w chwilio
 goodsRecords.error.length = Mae’n rhaid i’r term i’w chwilio fod yn 100 o gymeriadau neu lai
 goodsRecords.p1 = Dyma restr o nwyddau yn eich TGP. Os yw cofnod nwyddau yn barod ar gyfer Gwybodaeth Symud Marchnad Fewnol (IMMI), gallwch ddefnyddio’r cofnod hwnnw i helpu i lenwi’r ffurflen IMMI.
 goodsRecords.p2 = Os bydd cludwr neu gyfryngwr arall yn cwblhau’r IMMI ar eich rhan, dylech ddefnyddio neu rannu’r canlynol:
-goodsRecordsEmptyView.p2 = Pan allwch chi, cludwr neu gyfryngwr arall gwblhau’r IMMI ar eich rhan, dylech ddefnyddio neu rannu’r canlynol:
 goodsRecords.li1 = 'Cyfeirnod masnachwr'
 goodsRecords.li2 = 'Disgrifiad o’r nwyddau'
 goodsRecords.p3 = Nid oes gennych unrhyw gofnodion yn eich rhestr gofnodion.
@@ -532,6 +532,10 @@ goodsRecords.tableHeader.countryOfOrigin = Gwlad wreiddiol
 goodsRecords.tableHeader.commodityCode = Cod nwyddau
 goodsRecords.tableHeader.status = Statws
 goodsRecords.tableHeader.actions = Camau gweithredu
+
+goodsRecordsEmptyView.p1 = Does gennych chi ddim cofnodion yn eich proffil nwyddau.
+goodsRecordsEmptyView.p2 = Gallwch
+goodsRecordsEmptyView.p2.link = greu cofnod nwyddau newydd
 
 goodsRecordSearchResult.title = Mae yna {0} o ganlyniadau chwilio
 goodsRecordSearchResult.title.withPage = Mae yna {0} o ganlyniadau chwilio – tudalen {1} o {2}
@@ -569,8 +573,8 @@ cyaMaintainProfile.warning = Rhybudd
 cyaMaintainProfile.warningText = Mae angen i chi wneud yn siŵr bod y manylion hyn yn gywir. Ni fydd unrhyw symudiadau y byddwch yn defnyddio manylion or TGP iw creu yn ddilys os byddant yn anghywir.
 
 
-hasGoodsDescriptionChange.title = Newid gwybodaeth y cofnod
-hasGoodsDescriptionChange.h1 = Newid gwybodaeth y cofnod
+hasGoodsDescriptionChange.title = Newid disgrifiad o’r nwyddau
+hasGoodsDescriptionChange.h1 = Newid disgrifiad o’r nwyddau
 hasGoodsDescriptionChange.p1 = Bydd newid disgrifiad y nwyddau ar y cofnod nwyddau hwn yn dileu’r statws cyngor. Os ydych am wirio bod y cod nwyddau yn gywir ac yn cyd-fynd â’r disgrifiad nwyddau, bydd angen i chi ofyn am gyngor eto.
 hasGoodsDescriptionChange.h2 = A ydych am newid disgrifiad y nwyddau?
 hasGoodsDescriptionChange.error.required = Dewiswch ‘Iawn’ os ydych am newid disgrifiad o’r nwyddau
@@ -581,14 +585,14 @@ ukimsNumberChangeController.paragraph = Gan fod gennych rif EORI newydd, mae gen
 ukimsNumberChangeController.button = Diweddaru rhif UKIMS
 ukimsNumberChangeController.duplicateUkimsNumber = Yr ydych wedi nodi’r rhif UKIMS blaenorol. Nodwch y rhif UKIMS newydd.
 
-hasCountryOfOriginChange.title = Newid gwybodaeth y cofnod
-hasCountryOfOriginChange.h1 = Newid gwybodaeth y cofnod
+hasCountryOfOriginChange.title = Newid y wlad tarddiad
+hasCountryOfOriginChange.h1 = Newid y wlad tarddiad
 hasCountryOfOriginChange.p1 = Bydd angen i chi ail-gategoreiddio’r cofnod nwyddau os byddwch yn newid y wlad wreiddiol.
 hasCountryOfOriginChange.h2 = A ydych am newid y wlad wreiddiol?
 hasCountryOfOriginChange.error.required = Dewiswch ‘Iawn’ os ydych am newid y wlad tarddiad
 
-hasCommodityCodeChange.title = Newid gwybodaeth y cofnod
-hasCommodityCodeChange.h1 = Newid gwybodaeth y cofnod
+hasCommodityCodeChange.title = Newid y cod nwyddau
+hasCommodityCodeChange.h1 = Newid y cod nwyddau
 hasCommodityCodeChange.h2 = A ydych am newid y cod nwyddau?
 hasCommodityCodeChange.advice = Bydd newid y cod nwyddau ar y cofnod nwyddau hwn yn dileu’r statws cyngor. Os ydych am wirio bod y cod nwyddau yn gywir ac yn cyd-fynd â’r disgrifiad, bydd angen i chi ofyn am gyngor eto.
 hasCommodityCodeChange.category = Bydd angen i chi ail-gategoreiddio’r cofnod nwyddau os byddwch yn newid y cod nwyddau.
@@ -761,3 +765,8 @@ declarableStatus.immiReady.paragraph = Gallwch ddefnyddio’r cofnod hwn i lenwi
 declarableStatus.notReadyForImmi.paragraph = Ni allwch ddefnyddio’r cofnod hwn i lenwi’r Wybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI). Efallai y byddwch yn gallu diweddaru’r wybodaeth neu gategoreiddio’r cofnod er mwyn gweld a yw’n barod ar gyfer IMMI.
 declarableStatus.notReadyForUse.paragraph = Mae angen i chi {0} i weld a allwch ei ddefnyddio ar Wybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI).
 declarableStatus.notReadyForUse.paragraph.linkText = gategoreiddio’r cofnod nwyddau hwn
+
+updatedCommodityCode.title = Rydych chi wedi diweddaru’r cod nwyddau
+updatedCommodityCode.heading = Rydych chi wedi diweddaru’r cod nwyddau
+updatedCommodityCode.paragraph1 = Mae’r cod nwyddau wedi newid sy’n golygu y bydd angen i chi gategoreiddio’r cofnod hwn cyn bydd modd i chi ei ddefnyddio.
+updatedCommodityCode.paragraph2 = Nid oes raid i chi gategoreiddio’r cofnod hwn nawr. Gallwch adolygu’r cofnod o’ch rhestr o gofnodion nwyddau a dechrau categoreiddio oddi yno.
