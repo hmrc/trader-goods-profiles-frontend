@@ -135,9 +135,9 @@ class GoodsRecordsController @Inject() (
                   )
                 )
             },
-          value =>
+          searchTerm =>
             for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(GoodsRecordsPage, value))
+              updatedAnswers <- Future.fromTry(request.userAnswers.set(GoodsRecordsPage, searchTerm))
               _              <- sessionRepository.set(updatedAnswers)
             } yield Redirect(controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(1))
         )
