@@ -118,6 +118,31 @@ class NavigationSpec extends SpecBase with BeforeAndAfterEach {
 
           }
 
+          "to categorisation preparation page when the longer commodity code is not same as short commodity code" in {
+            val userAnswers =
+              emptyUserAnswers
+                .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
+                .success
+                .value
+                .set(CategorisationDetailsQuery(testRecordId), categorisationInfo.copy(commodityCode = "123456"))
+                .success
+                .value
+                .set(
+                  LongerCommodityQuery(testRecordId),
+                  Commodity("1234560000", List("Description", "Other"), Instant.now, None)
+                )
+                .success
+                .value
+
+            navigator.nextPage(
+              HasCorrectGoodsLongerCommodityCodePage(testRecordId),
+              NormalMode,
+              userAnswers
+            ) mustEqual
+              controllers.categorisation.routes.CategorisationPreparationController
+                .startLongerCategorisation(NormalMode, testRecordId)
+          }
+
           "to longer commodity page when answer is no" in {
             val userAnswers =
               emptyUserAnswers
@@ -167,7 +192,6 @@ class NavigationSpec extends SpecBase with BeforeAndAfterEach {
               controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId)
 
           }
-
         }
 
         "to journey recovery page" - {
