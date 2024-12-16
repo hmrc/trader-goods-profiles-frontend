@@ -1,0 +1,102 @@
+@*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.FrontendAppConfig
+@import views.html.components._
+@import models.Country._
+@import viewmodels.LabelSize._
+
+
+@this(
+      config: FrontendAppConfig,
+      paragraphBody: paragraphBody,
+      link: link,
+      formHelper: FormWithCSRF,
+      govukInput: GovukInput,
+      govukButton: GovukButton,
+      govukCheckboxes : GovukCheckboxes,
+      govukSelect: GovukSelect
+)
+
+@(form: Form[_], countries: Seq[Country], page: Int)(implicit request: Request[_], messages: Messages)
+
+     <div class="govuk-grid-column-one-third custom-box">
+
+          <h2 class="govuk-heading-m">@messages("goodsRecords.search")</h2>
+          <p class="govuk-body"> @messages("goodsRecords.search.1")</p>
+
+         @formHelper(action = controllers.goodsProfile.routes.GoodsRecordsController.onSearch(page), 'role -> "search") {
+
+                 <div class="govuk-label govuk-label--s">
+                  @govukInput(
+                  InputViewModel(
+                  field = form("value"),
+                  label = LabelViewModel(messages("goodsRecords.label")).withCssClass("govuk-!-font-weight-bold")
+                  )
+                  )
+
+                 </div>
+
+
+                   @govukCheckboxes(Checkboxes(
+                      fieldset = Some(Fieldset(
+                      legend = Some(Legend(
+                      content = Text(messages("goodsRecords.record")),
+                      classes = "govuk-fieldset__legend--s",
+                      isPageHeading = true
+                      ))
+                   )),
+
+                        name = "value",
+                        items = Seq(
+                        CheckboxItem(
+                        content = Text(messages("declarableStatus.immiReady")),
+                        value = "ImmiReady"
+                        ),
+                        CheckboxItem(
+                        content = Text(messages("declarableStatus.notReadyForImmi")),
+                        value = "NotReadyForImmi"
+                        ),
+                        CheckboxItem(
+                        content = Text(messages("declarableStatus.notReadyForUse")),
+                        value = "NotReadyForUse"
+                        )
+                        )
+                        ))
+
+                   @govukSelect(
+                        SelectViewModel(
+                        field = form("value"),
+                        items = selectItems(countries),
+                        label = LabelViewModel(messages("goodsRecords.tableHeader.countryOfOrigin")).withSize(Small)
+                        )
+                        .withCssClass("autocomplete")
+                        .withAttribute(("lang", "en"))
+                   )
+
+            <div class="govuk-button-group">
+
+                   @govukButton(
+                          ButtonViewModel(
+                          content = HtmlContent(
+                          s"""${messages("site.apply")}<span class="govuk-visually-hidden">${messages("goodsRecords.record.search")}</span>"""
+                          )
+                          ).withAttribute("style", "margin-left: 10px")
+                   )
+             }
+             <a class="govuk-link" href="#">@messages("site.clear")<span class="govuk-visually-hidden"> @messages("goodsRecords.record.clear")</span></a>
+            </div>
+     </div>

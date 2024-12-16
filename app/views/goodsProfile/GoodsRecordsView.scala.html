@@ -16,6 +16,9 @@
 
 @import models.router.responses.GetGoodsRecordResponse
 @import config.FrontendAppConfig
+@import viewmodels.LabelSize._
+@import models.Country._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
 
 @this(
     appConfig: FrontendAppConfig,
@@ -27,7 +30,13 @@
     govukTable: GovukTable,
     tableRowActionList: components.TableRowActionList,
     boldWrapper: components.BoldWrapper,
-    govukPagination: GovukPagination
+    govukPagination: GovukPagination,
+    govukSelect: GovukSelect,
+    tag: components.Tag,
+    govukCheckboxes : GovukCheckboxes,
+    paragraphBody: components.paragraphBody,
+    link: components.link,
+    goodsRecordFilterForm: components.GoodsRecordFilterForm
 )
 
 @(
@@ -56,40 +65,55 @@
     @if(form.errors.nonEmpty) {
         @govukErrorSummary(ErrorSummaryViewModel(form))
     }
+    <a href="#goodsRecords" class="govuk-skip-link" data-module="govuk-skip-link">@messages("goodsRecords.skip.record")</a>
+    <a href="#main-content" class="govuk-skip-link" data-module="govuk-skip-link">@messages("goodsRecords.skip.main")</a>
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper" id="main-content">
+        <div class="govuk-grid-row"><h1 class="govuk-heading-l">@messages("goodsRecords.title")</h1></div>
 
-<div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-l">@messages("goodsRecords.title")</h1>
+        <div class="govuk-grid-row">
+            @goodsRecordFilterForm(form, countries, page)
 
-    <p class="govuk-body">@messages("goodsRecords.p1")</p>
+            <div class="govuk-grid-column-two-thirds govuk-!-padding-left-20">
+                <h2 class="govuk-heading-m">@messages("goodsRecords.h2.1")</h2>
 
-    <p class="govuk-body">@messages("goodsRecords.p2")</p>
+                @paragraphBody(messages("goodsRecords.p1"))
 
-    <ul class="govuk-list govuk-list--bullet">
-      <li>'@messages("goodsRecords.li1")'</li>
-      <li>'@messages("goodsRecords.li2")'</li>
-    </ul>
-
-    <p class="govuk-body"><a href="@controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad().url" class="govuk-link">@messages("goodsRecords.link1")</a></p>
-
-        @formHelper(action = controllers.goodsProfile.routes.GoodsRecordsController.onSearch(page)) {
-            <div style="display: flex; align-items: flex-end;">
-                @govukInput(
-                    InputViewModel(
-                        field = form("value"),
-                        label = LabelViewModel(messages("goodsRecords.label")).withCssClass("govuk-!-font-weight-bold")
-                    )
+                @paragraphBody(
+                messages("goodsRecords.p2") +
+                tag(messages("declarableStatus.immiReady"), "govuk-tag govuk-tag--green")
                 )
 
-                @govukButton(
-                    ButtonViewModel(messages("site.search")).withAttribute("style", "margin-left: 10px")
+                @paragraphBody(
+                messages("goodsRecords.p2.1") +
+                tag(messages("declarableStatus.notReadyForImmi"), "govuk-tag govuk-tag--orange") +
+                messages("goodsRecords.p2.2")
                 )
+
+                @paragraphBody(
+                messages("goodsRecords.p2.3") +
+                tag(messages("declarableStatus.notReadyForUse"), "govuk-tag govuk-tag--orange") +
+                messages("goodsRecords.p2.4")
+                )
+                @paragraphBody(
+                message = messages("goodsRecords.link1.text") +
+                link(
+                text = messages("goodsRecords.link1"),
+                call = controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad(),
+                id = None
+                )
+                )
+
             </div>
-        }
+        </div>
+    </main>
 </div>
 
-<div class="govuk-grid-column-full">
 
-        <p class="govuk-body">@Html(messages("goodsRecords.pagination", boldWrapper(firstRecord.toString()), boldWrapper(lastRecord.toString()), boldWrapper(totalRecords.toString())))</p>
+<div class="govuk-grid-column-full">
+    <h3 class="govuk-heading-m" id="goodsRecords">@messages("goodsRecords.record.list")</h3>
+    <p class="govuk-body">@Html(messages("goodsRecords.pagination", boldWrapper(firstRecord.toString()),
+        boldWrapper(lastRecord.toString()), boldWrapper(totalRecords.toString())))</p>
 
         <div style="overflow-x: auto;">
 
@@ -141,8 +165,11 @@
                             content = Text(goodsRecord.comcode)
                         ),
                         TableRow(
-                            content = Text(messages(goodsRecord.declarable.messageKey))
-                        ),
+                            content = HtmlContent(
+                            tag(messages(goodsRecord.declarable.messageKey), goodsRecord.declarable.paragraphTagColour))
+
+                         ),
+
                         TableRow(
                             content = HtmlContent(
                                 tableRowActionList(
@@ -161,8 +188,7 @@
             )
         )
 
-        </div>
-
+    </div>
         @govukPagination(pagination)
 
         <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad().url" class="govuk-link">@messages("site.goBackToHomePage")</a></p>

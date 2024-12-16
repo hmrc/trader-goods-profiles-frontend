@@ -73,4 +73,4 @@ POST        /update-record/:recordId/check-your-answers/trader-reference        
 GET         /update-record/:recordId/check-your-answers/commodity-code                              controllers.goodsRecord.CyaUpdateRecordController.onPageLoadCommodityCode(recordId: String)
 POST        /update-record/:recordId/check-your-answers/commodity-code                              controllers.goodsRecord.CyaUpdateRecordController.onSubmitCommodityCode(recordId: String)
 
-GET         /update-record/:recordId/updated-commodity-code                                         controllers.goodsRecord.UpdatedCommodityCodeController.onPageLoad(recordId: String)
+GET         /update-record/:recordId/change-record-warning/updated-commodity-code                                         controllers.goodsRecord.UpdatedCommodityCodeController.onPageLoad(recordId: String)
