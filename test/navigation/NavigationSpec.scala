@@ -118,7 +118,7 @@ class NavigationSpec extends SpecBase with BeforeAndAfterEach {
 
           }
 
-          "to categorisation preparation page when the longer commodity code is not same as short commodity code" in {
+          "to categorisation preparation page when the longer commodity code is same as short commodity code" in {
             val userAnswers =
               emptyUserAnswers
                 .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
