@@ -23,7 +23,7 @@ import controllers.routes
 import forms.profile.UkimsNumberFormProvider
 import models.{CheckMode, NormalMode, TraderProfile, UserAnswers}
 import navigation.{FakeProfileNavigator, ProfileNavigator}
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{never, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.profile.{UkimsNumberPage, UkimsNumberUpdatePage}
@@ -246,7 +246,7 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
         val traderProfile    = TraderProfile(testEori, "1", Some("2"), Some("3"), eoriChanged = false)
         val mockAuditService = mock[AuditService]
 
-        when(mockTraderProfileConnector.getTraderProfile(eqTo(testEori))(any())) thenReturn Future.successful(
+        when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future.successful(
           traderProfile
         )
 

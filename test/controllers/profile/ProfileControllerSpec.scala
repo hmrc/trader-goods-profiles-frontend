@@ -61,7 +61,7 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
         )
         .build()
 
-      when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future
+      when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future
         .successful(profileResponse)
 
       implicit val message: Messages = messages(application)
@@ -107,7 +107,7 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
         )
         .build()
 
-      when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future
+      when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future
         .successful(profileResponse)
 
       implicit val message: Messages = messages(application)
@@ -153,7 +153,7 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
         )
         .build()
 
-      when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future
+      when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future
         .successful(profileResponse)
 
       implicit val message: Messages = messages(application)
@@ -199,7 +199,7 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
         )
         .build()
 
-      when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future
+      when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future
         .successful(profileResponse)
 
       implicit val message: Messages = messages(application)
@@ -237,7 +237,7 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
         )
         .build()
 
-      when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future
+      when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future
         .failed(new NotFoundException("Failed to find record"))
 
       running(application) {

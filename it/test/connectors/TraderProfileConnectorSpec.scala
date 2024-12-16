@@ -95,65 +95,61 @@ class TraderProfileConnectorSpec
     "getTraderProfile" - {
 
       "return a valid TraderProfile when the response status is 200 (OK)" in {
-        val eori = "GB1234567890"
 
         val traderProfile = TraderProfile("TestName", "TestAddress", Some("TestPostcode"), Some("UK"), eoriChanged = true)
 
         wireMockServer.stubFor(
-          get(urlEqualTo(s"/trader-goods-profiles-data-store/customs/traders/goods-profiles/$eori"))
+          get(urlEqualTo(s"/trader-goods-profiles-data-store/customs/traders/goods-profiles"))
             .willReturn(
               ok(Json.toJson(traderProfile).toString())
             )
         )
 
-        whenReady(connector.getTraderProfile(eori)) { result =>
+        whenReady(connector.getTraderProfile) { result =>
           result mustBe traderProfile
         }
       }
 
       "fail with UpstreamErrorResponse when the response status is 500 (Internal Server Error)" in {
-        val eori = "GB1234567890"
 
         wireMockServer.stubFor(
-          get(urlEqualTo(s"/trader-goods-profiles-data-store/customs/traders/goods-profiles/$eori"))
+          get(urlEqualTo(s"/trader-goods-profiles-data-store/customs/traders/goods-profiles"))
             .willReturn(
               serverError()
             )
         )
 
-        whenReady(connector.getTraderProfile(eori).failed) { result =>
+        whenReady(connector.getTraderProfile.failed) { result =>
           result mustBe an[UpstreamErrorResponse]
           result.asInstanceOf[UpstreamErrorResponse].statusCode mustBe INTERNAL_SERVER_ERROR
         }
       }
 
       "fail with UpstreamErrorResponse when the response status is 404 (Not Found)" in {
-        val eori = "GB1234567890"
 
         wireMockServer.stubFor(
-          get(urlEqualTo(s"/trader-goods-profiles-data-store/customs/traders/goods-profiles/$eori"))
+          get(urlEqualTo(s"/trader-goods-profiles-data-store/customs/traders/goods-profiles"))
             .willReturn(
               notFound()
             )
         )
 
-        whenReady(connector.getTraderProfile(eori).failed) { result =>
+        whenReady(connector.getTraderProfile.failed) { result =>
           result mustBe an[UpstreamErrorResponse]
           result.asInstanceOf[UpstreamErrorResponse].statusCode mustBe NOT_FOUND
         }
       }
 
       "fail with UpstreamErrorResponse when the response status is 400 (Bad Request)" in {
-        val eori = "GB1234567890"
 
         wireMockServer.stubFor(
-          get(urlEqualTo(s"/trader-goods-profiles-data-store/customs/traders/goods-profiles/$eori"))
+          get(urlEqualTo(s"/trader-goods-profiles-data-store/customs/traders/goods-profiles"))
             .willReturn(
               badRequest()
             )
         )
 
-        whenReady(connector.getTraderProfile(eori).failed) {
+        whenReady(connector.getTraderProfile.failed) {
           result =>
             result mustBe an[UpstreamErrorResponse]
             result.asInstanceOf[UpstreamErrorResponse].statusCode mustBe BAD_REQUEST

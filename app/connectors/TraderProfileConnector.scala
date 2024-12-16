@@ -67,12 +67,12 @@ class TraderProfileConnector @Inject() (config: Configuration, httpClient: HttpC
           false
       }
 
-  private def getTraderProfileUrl(eori: String) =
-    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/customs/traders/goods-profiles/$eori"
+  private def getTraderProfileUrl =
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/customs/traders/goods-profiles"
 
-  def getTraderProfile(eori: String)(implicit hc: HeaderCarrier): Future[TraderProfile] =
+  def getTraderProfile(implicit hc: HeaderCarrier): Future[TraderProfile] =
     httpClient
-      .get(getTraderProfileUrl(eori))
+      .get(getTraderProfileUrl)
       .execute[TraderProfile]
 
   def getHistoricProfileData(eori: String)(implicit hc: HeaderCarrier): Future[Option[HistoricProfileData]] = {

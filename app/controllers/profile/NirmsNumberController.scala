@@ -74,7 +74,7 @@ class NirmsNumberController @Inject() (
 
   def onPageLoadUpdate(mode: Mode): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
+      traderProfileConnector.getTraderProfile.flatMap { traderProfile =>
         val previousAnswerOpt = request.userAnswers.get(NirmsNumberUpdatePage)
         val nirmsNumberOpt    = previousAnswerOpt.orElse(traderProfile.nirmsNumber)
         val preparedForm      = nirmsNumberOpt match {

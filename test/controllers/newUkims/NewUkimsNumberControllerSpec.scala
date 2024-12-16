@@ -21,7 +21,7 @@ import base.TestConstants.{testEori, userAnswersId}
 import connectors.TraderProfileConnector
 import forms.profile.UkimsNumberFormProvider
 import models.{NormalMode, TraderProfile, UserAnswers}
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.newUkims.NewUkimsNumberPage
@@ -116,7 +116,7 @@ class NewUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
       val traderProfile =
         TraderProfile(testEori, "XIUKIM47699357400020231115081801", Some("2"), Some("3"), eoriChanged = false)
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-      when(mockTraderProfileConnector.getTraderProfile(eqTo(testEori))(any())) thenReturn Future.successful(
+      when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future.successful(
         traderProfile
       )
 
@@ -171,7 +171,7 @@ class NewUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
       val traderProfile =
         TraderProfile(testEori, "XIUKIM47699357400020231115081800", Some("2"), Some("3"), eoriChanged = false)
 
-      when(mockTraderProfileConnector.getTraderProfile(eqTo(testEori))(any())) thenReturn Future.successful(
+      when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future.successful(
         traderProfile
       )
 

@@ -90,7 +90,7 @@ class CyaMaintainProfileController @Inject() (
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       (for {
         ukimsNumber      <- handleValidateError(TraderProfile.validateUkimsNumber(request.userAnswers))
-        oldTraderProfile <- traderProfileConnector.getTraderProfile(request.eori)
+        oldTraderProfile <- traderProfileConnector.getTraderProfile
         newTraderProfile <- Future.successful(oldTraderProfile.copy(ukimsNumber = ukimsNumber))
         _                 = auditService.auditMaintainProfile(oldTraderProfile, newTraderProfile, request.affinityGroup)
         _                <- submitTraderProfileIfValueChanged(newTraderProfile, oldTraderProfile, request.eori)
@@ -107,7 +107,7 @@ class CyaMaintainProfileController @Inject() (
     implicit request =>
       (for {
         nirmsNumber      <- handleValidateError(TraderProfile.validateHasNirms(request.userAnswers))
-        oldTraderProfile <- traderProfileConnector.getTraderProfile(request.eori)
+        oldTraderProfile <- traderProfileConnector.getTraderProfile
         newTraderProfile <- Future.successful(oldTraderProfile.copy(nirmsNumber = nirmsNumber))
         _                 = auditService.auditMaintainProfile(oldTraderProfile, newTraderProfile, request.affinityGroup)
         _                <- submitTraderProfileIfValueChanged(newTraderProfile, oldTraderProfile, request.eori)
@@ -145,7 +145,7 @@ class CyaMaintainProfileController @Inject() (
     implicit request =>
       (for {
         niphlNumber      <- handleValidateError(TraderProfile.validateHasNiphl(request.userAnswers))
-        oldTraderProfile <- traderProfileConnector.getTraderProfile(request.eori)
+        oldTraderProfile <- traderProfileConnector.getTraderProfile
         newTraderProfile <- Future.successful(oldTraderProfile.copy(niphlNumber = niphlNumber))
         _                 = auditService.auditMaintainProfile(oldTraderProfile, newTraderProfile, request.affinityGroup)
         _                <- submitTraderProfileIfValueChanged(newTraderProfile, oldTraderProfile, request.eori)
@@ -186,7 +186,7 @@ class CyaMaintainProfileController @Inject() (
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       (for {
         nirmsNumber      <- handleValidateError(TraderProfile.validateNirmsNumber(request.userAnswers))
-        oldTraderProfile <- traderProfileConnector.getTraderProfile(request.eori)
+        oldTraderProfile <- traderProfileConnector.getTraderProfile
         newTraderProfile <- Future.successful(oldTraderProfile.copy(nirmsNumber = nirmsNumber))
         _                 = auditService.auditMaintainProfile(oldTraderProfile, newTraderProfile, request.affinityGroup)
         _                <- submitTraderProfileIfValueChanged(newTraderProfile, oldTraderProfile, request.eori)
@@ -227,7 +227,7 @@ class CyaMaintainProfileController @Inject() (
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       (for {
         niphlNumber      <- handleValidateError(TraderProfile.validateNiphlNumber(request.userAnswers))
-        oldTraderProfile <- traderProfileConnector.getTraderProfile(request.eori)
+        oldTraderProfile <- traderProfileConnector.getTraderProfile
         newTraderProfile <- Future.successful(oldTraderProfile.copy(niphlNumber = niphlNumber))
         _                 = auditService.auditMaintainProfile(oldTraderProfile, newTraderProfile, request.affinityGroup)
         _                <- submitTraderProfileIfValueChanged(newTraderProfile, oldTraderProfile, request.eori)

@@ -92,7 +92,7 @@ class RemoveNiphlControllerSpec extends SpecBase with MockitoSugar {
       val finalUserAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
       when(mockSessionRepository.set(finalUserAnswersCaptor.capture())).thenReturn(Future.successful(true))
 
-      when(mockTraderProfileConnector.getTraderProfile(any())(any())).thenReturn(
+      when(mockTraderProfileConnector.getTraderProfile(any())).thenReturn(
         Future.successful(TraderProfile(testEori, "1", None, Some("SN12345"), eoriChanged = false))
       )
 
@@ -132,7 +132,7 @@ class RemoveNiphlControllerSpec extends SpecBase with MockitoSugar {
       val finalUserAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
       when(mockSessionRepository.set(finalUserAnswersCaptor.capture())).thenReturn(Future.successful(true))
 
-      when(mockTraderProfileConnector.getTraderProfile(any())(any())).thenReturn(
+      when(mockTraderProfileConnector.getTraderProfile(any())).thenReturn(
         Future.successful(TraderProfile(testEori, "1", None, Some("SN12345"), eoriChanged = false))
       )
 
@@ -174,7 +174,7 @@ class RemoveNiphlControllerSpec extends SpecBase with MockitoSugar {
       val finalUserAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
       when(mockSessionRepository.set(finalUserAnswersCaptor.capture())).thenReturn(Future.successful(true))
 
-      when(mockTraderProfileConnector.getTraderProfile(any())(any())).thenReturn(
+      when(mockTraderProfileConnector.getTraderProfile(any())).thenReturn(
         Future.successful(TraderProfile(testEori, "1", None, Some("933844"), eoriChanged = false))
       )
 

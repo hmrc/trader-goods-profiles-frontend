@@ -107,7 +107,7 @@ class IndexControllerSpec extends SpecBase {
         "must redirect to HomePageController if no profile present and eori has not changed" in {
           val mockTraderProfileConnector = mock[TraderProfileConnector]
           when(mockTraderProfileConnector.checkTraderProfile(any())).thenReturn(Future.successful(true))
-          when(mockTraderProfileConnector.getTraderProfile(any())(any()))
+          when(mockTraderProfileConnector.getTraderProfile(any()))
             .thenReturn(
               Future.successful(
                 TraderProfile("name", "address", Some("postcode"), Some("country"), eoriChanged = false)
@@ -135,7 +135,7 @@ class IndexControllerSpec extends SpecBase {
 
             verify(mockTraderProfileConnector).checkTraderProfile(any())
             verify(mockDownloadDataConnector).getEmail(any())
-            verify(mockTraderProfileConnector).getTraderProfile(any())(any())
+            verify(mockTraderProfileConnector).getTraderProfile(any())
           }
         }
 
@@ -143,7 +143,7 @@ class IndexControllerSpec extends SpecBase {
 
           val mockTraderProfileConnector = mock[TraderProfileConnector]
           when(mockTraderProfileConnector.checkTraderProfile(any())).thenReturn(Future.successful(true))
-          when(mockTraderProfileConnector.getTraderProfile(any())(any()))
+          when(mockTraderProfileConnector.getTraderProfile(any()))
             .thenReturn(
               Future.successful(TraderProfile("name", "address", Some("postcode"), Some("country"), eoriChanged = true))
             )
@@ -171,7 +171,7 @@ class IndexControllerSpec extends SpecBase {
 
             verify(mockTraderProfileConnector).checkTraderProfile(any())
             verify(mockDownloadDataConnector).getEmail(any())
-            verify(mockTraderProfileConnector).getTraderProfile(any())(any())
+            verify(mockTraderProfileConnector).getTraderProfile(any())
           }
         }
       }
@@ -273,7 +273,7 @@ class IndexControllerSpec extends SpecBase {
       "must redirect to HomePageController if no profile present and eori has not changed" in {
         val mockTraderProfileConnector = mock[TraderProfileConnector]
         when(mockTraderProfileConnector.checkTraderProfile(any())).thenReturn(Future.successful(true))
-        when(mockTraderProfileConnector.getTraderProfile(any())(any()))
+        when(mockTraderProfileConnector.getTraderProfile(any()))
           .thenReturn(
             Future.successful(
               TraderProfile("name", "address", Some("postcode"), Some("country"), eoriChanged = false)
@@ -301,7 +301,7 @@ class IndexControllerSpec extends SpecBase {
 
           verify(mockTraderProfileConnector).checkTraderProfile(any())
           verify(mockDownloadDataConnector, never()).getEmail(any())
-          verify(mockTraderProfileConnector).getTraderProfile(any())(any())
+          verify(mockTraderProfileConnector).getTraderProfile(any())
         }
       }
 
@@ -309,7 +309,7 @@ class IndexControllerSpec extends SpecBase {
 
         val mockTraderProfileConnector = mock[TraderProfileConnector]
         when(mockTraderProfileConnector.checkTraderProfile(any())).thenReturn(Future.successful(true))
-        when(mockTraderProfileConnector.getTraderProfile(any())(any()))
+        when(mockTraderProfileConnector.getTraderProfile(any()))
           .thenReturn(
             Future.successful(TraderProfile("name", "address", Some("postcode"), Some("country"), eoriChanged = true))
           )
@@ -337,7 +337,7 @@ class IndexControllerSpec extends SpecBase {
 
           verify(mockTraderProfileConnector).checkTraderProfile(any())
           verify(mockDownloadDataConnector, never()).getEmail(any())
-          verify(mockTraderProfileConnector).getTraderProfile(any())(any())
+          verify(mockTraderProfileConnector).getTraderProfile(any())
         }
       }
 
