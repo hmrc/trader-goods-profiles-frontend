@@ -42,7 +42,7 @@
         text = messages("downloadRequestSuccess.p1.linkText"),
         call = controllers.download.routes.FileManagementController.onPageLoad(),
         id = None
-    ), email))
+    ), s"<span class='govuk-!-font-weight-bold'>$email</span>"))
 
     <p class="govuk-body">@messages("downloadRequestSuccess.p2")</p>
     <p class="govuk-body">@messages("downloadRequestSuccess.p3")</p>

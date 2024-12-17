@@ -106,7 +106,7 @@ class SingleRecordController @Inject() (
         )
 
         val categoryValue                     = record.category match {
-          case None        => "singleRecord.categoriseThisGood"
+          case None        => if (recordIsLocked) "singleRecord.recordLocked" else "singleRecord.categoriseThisGood"
           case Some(value) =>
             value match {
               case 1 => "singleRecord.cat1"

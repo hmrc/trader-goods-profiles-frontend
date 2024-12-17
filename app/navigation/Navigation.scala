@@ -114,7 +114,10 @@ class Navigation @Inject() (categorisationService: CategorisationService) extend
       categorisationInfo <- answers.get(CategorisationDetailsQuery(recordId))
       commodity          <- answers.get(LongerCommodityQuery(recordId))
     } yield
-      if (categorisationInfo.commodityCode == getShortenedCommodityCode(commodity)) {
+      if (
+        categorisationInfo.commodityCode == getShortenedCommodityCode(commodity)
+        && !commodity.commodityCode.endsWith("0000")
+      ) {
         controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(mode, recordId)
       } else {
         answers.get(HasCorrectGoodsLongerCommodityCodePage(recordId)) match {
