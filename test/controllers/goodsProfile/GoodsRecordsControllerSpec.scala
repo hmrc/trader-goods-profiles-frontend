@@ -47,6 +47,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
   private val numberOfPages          = 3
   private val firstRecord            = 1
   private val lastRecord             = 10
+  private val pageSize               = 10
   private lazy val goodsRecordsRoute =
     controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(currentPage).url
 
@@ -161,7 +162,8 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
             lastRecord,
             Seq(Country("EC", "Ecuador")),
             pagination,
-            currentPage
+            currentPage,
+            pageSize
           )(
             request,
             messages(application)
@@ -207,7 +209,8 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
             lastRecord,
             Seq(Country("EC", "Ecuador")),
             pagination,
-            currentPage
+            currentPage,
+            pageSize
           )(
             request,
             messages(application)
@@ -252,7 +255,8 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
             lastRecord,
             Seq(Country("EC", "Ecuador")),
             pagination,
-            currentPage
+            currentPage,
+            pageSize
           )(
             request,
             messages(application)
@@ -297,7 +301,8 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
             lastRecord,
             Seq(Country("EC", "Ecuador")),
             pagination,
-            currentPage
+            currentPage,
+            pageSize
           )(
             request,
             messages(application)
@@ -415,7 +420,8 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
           lastRecord,
           Seq(Country("EC", "Ecuador")),
           pagination,
-          middlePage
+          middlePage,
+          pageSize
         )(
           request,
           messages(application)
@@ -533,7 +539,8 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
           lastRecord,
           Seq(Country("EC", "Ecuador")),
           pagination,
-          currentPage
+          currentPage,
+          pageSize
         )(
           request,
           messages(application)

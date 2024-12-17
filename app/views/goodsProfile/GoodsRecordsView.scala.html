@@ -47,7 +47,8 @@
     lastRecord: Int,
     countries: Seq[Country],
     pagination: Pagination,
-    page: Int
+    page: Int,
+    pageSize: Int
 )(implicit request: Request[_], messages: Messages)
 
 
@@ -112,7 +113,7 @@
 
 <div class="govuk-grid-column-full">
     <h2 class="govuk-heading-m" id="goodsRecords">@messages("goodsRecords.record.list")</h2>
-    @if(totalRecords > 10){
+    @if(totalRecords > pageSize){
       <p class="govuk-body">@Html(messages("goodsRecords.pagination", boldWrapper(firstRecord.toString()),
         boldWrapper(lastRecord.toString()), boldWrapper(totalRecords.toString())))</p>
         } else {
