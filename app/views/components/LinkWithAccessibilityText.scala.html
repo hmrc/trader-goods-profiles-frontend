@@ -18,4 +18,4 @@
 
 @(text: String, hiddenText: String, url: String, classes: String = "govuk-link govuk-!-font-weight-bold")
 
-<a class="@classes" href="@url">@text<span class="govuk-visually-hidden"> @hiddenText</span></a>
+<a class="@classes" href="@url" download="@url" >@text<span class="govuk-visually-hidden"> @hiddenText</span></a>
