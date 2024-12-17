@@ -250,7 +250,6 @@ class HasCorrectGoodsController @Inject() (
   )(implicit hc: HeaderCarrier): Future[Done] =
     if (newValue != oldValue) {
 
-      // TODO: remove this flag when EIS has implemented the PATCH method - TGP-2417 and keep the call to putGoodsRecord as default
       if (config.useEisPatchMethod) {
         goodsRecordConnector.putGoodsRecord(
           putRecordRequest,
