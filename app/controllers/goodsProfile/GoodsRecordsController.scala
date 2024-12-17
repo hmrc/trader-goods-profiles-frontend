@@ -78,7 +78,8 @@ class GoodsRecordsController @Inject() (
                     goodsRecordsResponse.pagination.currentPage,
                     goodsRecordsResponse.pagination.totalPages
                   ),
-                  page
+                  page,
+                  pageSize
                 )
               ).removingFromSession(dataUpdated, pageUpdated, dataRemoved)
             }
@@ -121,7 +122,8 @@ class GoodsRecordsController @Inject() (
                         goodsRecordsResponse.pagination.currentPage,
                         goodsRecordsResponse.pagination.totalPages
                       ),
-                      page
+                      page,
+                      pageSize
                     )
                   )
                 }
