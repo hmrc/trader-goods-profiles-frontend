@@ -113,11 +113,11 @@
 <div class="govuk-grid-column-full">
     <h2 class="govuk-heading-m" id="goodsRecords">@messages("goodsRecords.record.list")</h2>
     @if(totalRecords > 10){
-    <p class="govuk-body">@Html(messages("goodsRecords.pagination", boldWrapper(firstRecord.toString()),
+      <p class="govuk-body">@Html(messages("goodsRecords.pagination", boldWrapper(firstRecord.toString()),
         boldWrapper(lastRecord.toString()), boldWrapper(totalRecords.toString())))</p>
-        } else{
-    <p class="govuk-body">@Html(messages("goodsRecords.pagination.less", boldWrapper(totalRecords.toString())))</p>
-      }
+        } else {
+      <p class="govuk-body">@Html(messages("goodsRecords.pagination.less", boldWrapper(totalRecords.toString())))</p>
+               }
         <div style="overflow-x: auto;">
 
         @govukTable(
