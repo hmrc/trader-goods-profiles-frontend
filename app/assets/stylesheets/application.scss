@@ -31,6 +31,10 @@
   .custom-col-width-2
   { width: 38%; }
 
+  .new-line {
+      display: block;
+  }
+
 @-webkit-keyframes spin {
   0% {
     -webkit-transform: rotate(0deg);
