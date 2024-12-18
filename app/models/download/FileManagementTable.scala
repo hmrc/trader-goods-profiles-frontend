@@ -62,15 +62,18 @@ object AvailableFilesTable {
         val fileLink           = fileManagementTableComponentHelper.createLink(
           messages("fileManagement.availableFiles.downloadText"),
           messages("fileManagement.availableFiles.downloadText.hidden", fileCreated),
-          data.downloadURL
+          data.downloadURL,
+          data.fileSize.toString
         )
 
         Seq(
           TableRow(
-            content = Text(fileCreated)
+            content = Text(fileCreated),
+            classes = "custom-col-width-1"
           ),
           TableRow(
-            content = Text(fileExpirationDate)
+            content = Text(fileExpirationDate),
+            classes = "custom-col-width-2"
           ),
           TableRow(
             content = fileLink

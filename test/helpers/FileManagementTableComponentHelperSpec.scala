@@ -41,8 +41,9 @@ class FileManagementTableComponentHelperSpec extends SpecBase {
 
     "createLink" - {
       "must return correct html" in {
-        val link = fileManagementTableComponentHelper.createLink("text", "hiddenText", "url").toTestableString
-        link mustEqual """<a class="govuk-link govuk-!-font-weight-bold" href="url" download="url" >text<span class="govuk-visually-hidden"> hiddenText</span></a>"""
+        val link =
+          fileManagementTableComponentHelper.createLink("text", "hiddenText", "url", "fileSize").toTestableString
+        link mustEqual """<a class="govuk-link govuk-!-font-weight-bold" href="url" download="url" >text <span class="new-line">(fileSizeKB)</span><span class="govuk-visually-hidden"> hiddenText</span></a>"""
       }
     }
   }
