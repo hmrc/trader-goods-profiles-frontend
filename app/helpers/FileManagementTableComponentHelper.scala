@@ -16,7 +16,6 @@
 
 package helpers
 
-
 import uk.gov.hmrc.govukfrontend.views.Aliases.{HtmlContent, Tag, Text}
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukTag
 import views.html.components.LinkWithAccessibilityText

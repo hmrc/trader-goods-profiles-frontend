@@ -64,7 +64,6 @@ object AvailableFilesTable {
           messages("fileManagement.availableFiles.downloadText.hidden", fileCreated),
           data.downloadURL,
           data.fileSize.toString
-
         )
 
         Seq(
