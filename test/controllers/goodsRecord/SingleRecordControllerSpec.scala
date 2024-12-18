@@ -554,7 +554,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
         rows = Seq(
           CategorySummary
             .row(
-              "singleRecord.recordLocked",
+              "singleRecord.notCategorised.recordLocked",
               notCategorisedLockedRecord.recordId,
               recordIsLocked,
               notCategorisedLockedRecord.category.isDefined,

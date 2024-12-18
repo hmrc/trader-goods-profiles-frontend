@@ -439,6 +439,7 @@ goodsRecords.label = Search by trader reference, goods description or commodity 
 goodsRecords.link1.text = You can
 goodsRecords.link1 = create a new goods record.
 goodsRecords.pagination = Showing {0} to {1} of {2} goods records sorted by most recently updated.
+goodsRecords.pagination.less = Showing {0} goods records sorted by most recently used.
 goodsRecords.tableHeader.traderReference = Trader reference
 goodsRecords.tableHeader.goodsDescription = Goods description
 goodsRecords.tableHeader.countryOfOrigin = Country of origin
@@ -675,6 +676,7 @@ pageNotFound.p3.linkText = contact the Trader Goods Profile helpline
 pageNotFound.p3.1 = if you need to speak to someone about your Trader Goods Profile.
 
 singleRecord.recordLocked = This record is locked as you’ve asked HMRC for advice if it is correct. You cannot make any changes, or remove  this record until HMRC have made a decision, or you withdraw your request.
+singleRecord.notCategorised.recordLocked = This record is locked as you’ve asked HMRC for advice. You will not be able to categorise this good until HMRC make a decision or you withdraw your request.
 
 requestData.title = Making a request to download your TGP data
 requestData.heading = Making a request to download your TGP data
