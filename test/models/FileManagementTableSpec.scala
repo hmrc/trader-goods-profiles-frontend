@@ -56,7 +56,7 @@ class FileManagementTableSpec extends SpecBase with Generators {
         table.headRows mustBe Seq(
           HeadCell(content = Text("Date and time requested")),
           HeadCell(content = Text("Expiry date")),
-          HeadCell(content = Text("File(.csv)"))
+          HeadCell(content = Text("File (.csv)"))
         )
       }
 
