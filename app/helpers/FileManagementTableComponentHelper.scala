@@ -16,6 +16,7 @@
 
 package helpers
 
+
 import uk.gov.hmrc.govukfrontend.views.Aliases.{HtmlContent, Tag, Text}
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukTag
 import views.html.components.LinkWithAccessibilityText
@@ -30,6 +31,6 @@ class FileManagementTableComponentHelper @Inject() (implicit
   def createTag(text: String): HtmlContent =
     HtmlContent(govukTag(Tag(content = Text(text))))
 
-  def createLink(text: String, hiddenText: String, url: String): HtmlContent =
-    HtmlContent(linkWithAccessibilityText(text, hiddenText, url))
+  def createLink(text: String, hiddenText: String, url: String, fileSize: String): HtmlContent =
+    HtmlContent(linkWithAccessibilityText(text, hiddenText, url, fileSize))
 }

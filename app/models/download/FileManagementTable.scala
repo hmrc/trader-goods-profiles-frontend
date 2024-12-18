@@ -62,7 +62,9 @@ object AvailableFilesTable {
         val fileLink           = fileManagementTableComponentHelper.createLink(
           messages("fileManagement.availableFiles.downloadText"),
           messages("fileManagement.availableFiles.downloadText.hidden", fileCreated),
-          data.downloadURL
+          data.downloadURL,
+          data.fileSize.toString
+
         )
 
         Seq(
