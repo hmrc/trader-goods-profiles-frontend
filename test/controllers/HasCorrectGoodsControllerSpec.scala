@@ -18,6 +18,7 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId}
+import config.FrontendAppConfig
 import connectors.GoodsRecordConnector
 import forms.HasCorrectGoodsFormProvider
 import models.router.requests.PutRecordRequest
@@ -647,6 +648,76 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
               redirectLocation(result).value mustEqual onwardRoute.url
 
               verify(mockGoodsRecordConnector).putGoodsRecord(eqTo(newRecord), eqTo(testRecordId))(any())
+              verify(mockSessionRepository, times(2)).set(any())
+
+              withClue("must call the audit connector with the supplied details") {
+                verify(mockAuditService)
+                  .auditFinishUpdateGoodsRecord(
+                    eqTo(testRecordId),
+                    eqTo(AffinityGroup.Individual),
+                    eqTo(expectedPayload)
+                  )(
+                    any()
+                  )
+              }
+            }
+          }
+
+          "must PATCH the goods record, cleanse the data and redirect to the Goods record Page" in {
+
+            val userAnswers = emptyUserAnswers
+              .set(updatePage, testCommodity.commodityCode)
+              .success
+              .value
+              .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true)
+              .success
+              .value
+              .set(warningPage, true)
+              .success
+              .value
+              .set(HasCommodityCodeChangePage(testRecordId), true)
+              .success
+              .value
+              .set(CommodityUpdateQuery(testRecordId), testCommodity)
+              .success
+              .value
+
+            val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+            val mockAuditService         = mock[AuditService]
+            val mockSessionRepository    = mock[SessionRepository]
+            val mockFrontendAppConfig    = mock[FrontendAppConfig]
+
+            when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
+
+            when(mockGoodsRecordConnector.updateGoodsRecord(any())(any())).thenReturn(Future.successful(Done))
+            when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
+              .thenReturn(Future.successful(Done))
+            when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
+              .successful(record)
+
+            when(mockFrontendAppConfig.useEisPatchMethod) thenReturn false
+
+            val application =
+              applicationBuilder(userAnswers = Some(userAnswers))
+                .overrides(
+                  bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
+                  bind[SessionRepository].toInstance(mockSessionRepository),
+                  bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+                  bind[AuditService].toInstance(mockAuditService),
+                  bind[FrontendAppConfig].toInstance(mockFrontendAppConfig)
+                )
+                .build()
+
+            running(application) {
+              val request = FakeRequest(POST, hasCorrectGoodsUpdateRoute)
+                .withFormUrlEncodedBody(("value", "true"))
+
+              val result = route(application, request).value
+              status(result) mustEqual SEE_OTHER
+
+              redirectLocation(result).value mustEqual onwardRoute.url
+
+              verify(mockGoodsRecordConnector).updateGoodsRecord(any())(any())
               verify(mockSessionRepository, times(2)).set(any())
 
               withClue("must call the audit connector with the supplied details") {
