@@ -164,7 +164,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
       "must redirect to the next page when valid data is submitted" in {
 
         val mockGoodsRecordConnector = mock[GoodsRecordConnector]
-        when(mockGoodsRecordConnector.getRecord(any(), any())(any()))
+        when(mockGoodsRecordConnector.getRecord(any())(any()))
           .thenReturn(Future.successful(goodsRecordResponse(Instant.now, Instant.now)))
 
         val mockSessionRepository = mock[SessionRepository]
@@ -261,7 +261,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
         "when correct data format but not valid commodity code" in {
           val mockGoodsRecordConnector = mock[GoodsRecordConnector]
-          when(mockGoodsRecordConnector.getRecord(any(), any())(any()))
+          when(mockGoodsRecordConnector.getRecord(any())(any()))
             .thenReturn(Future.successful(goodsRecordResponse(Instant.now, Instant.now)))
 
           val mockOttConnector = mock[OttConnector]
@@ -308,7 +308,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
         "when expired commodity code is submitted" in {
           val mockGoodsRecordConnector = mock[GoodsRecordConnector]
-          when(mockGoodsRecordConnector.getRecord(any(), any())(any()))
+          when(mockGoodsRecordConnector.getRecord(any())(any()))
             .thenReturn(Future.successful(goodsRecordResponse(Instant.now, Instant.now)))
 
           val mockOttConnector = mock[OttConnector]

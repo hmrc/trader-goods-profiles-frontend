@@ -17,7 +17,6 @@
 package controllers.goodsProfile
 
 import base.SpecBase
-import base.TestConstants.testEori
 import connectors.{GoodsRecordConnector, OttConnector}
 import forms.goodsProfile.GoodsRecordsFormProvider
 import models.GoodsRecordsPagination.firstPage
@@ -131,7 +130,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
         val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
-        when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(currentPage), any())(any())) thenReturn Future
+        when(mockGoodsRecordConnector.getRecords(eqTo(currentPage), any())(any())) thenReturn Future
           .successful(Some(response))
 
         val mockOttConnector = mock[OttConnector]
@@ -170,7 +169,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
           ).toString
 
           verify(mockOttConnector, atLeastOnce()).getCountries(any())
-          verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(eqTo(testEori), eqTo(currentPage), any())(any())
+          verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(eqTo(currentPage), any())(any())
         }
       }
 
@@ -178,7 +177,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
         val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
-        when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(currentPage), any())(any())) thenReturn Future
+        when(mockGoodsRecordConnector.getRecords(eqTo(currentPage), any())(any())) thenReturn Future
           .successful(Some(response))
 
         val mockOttConnector = mock[OttConnector]
@@ -216,7 +215,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
             messages(application)
           ).toString
           verify(mockOttConnector, atLeastOnce()).getCountries(any())
-          verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(eqTo(testEori), eqTo(currentPage), any())(any())
+          verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(eqTo(currentPage), any())(any())
         }
       }
 
@@ -224,7 +223,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
         val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
-        when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(currentPage), any())(any())) thenReturn Future
+        when(mockGoodsRecordConnector.getRecords(eqTo(currentPage), any())(any())) thenReturn Future
           .successful(Some(response))
 
         val mockOttConnector = mock[OttConnector]
@@ -262,7 +261,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
             messages(application)
           ).toString
           verify(mockOttConnector, atLeastOnce()).getCountries(any())
-          verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(eqTo(testEori), eqTo(currentPage), any())(any())
+          verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(eqTo(currentPage), any())(any())
         }
       }
 
@@ -270,7 +269,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
         val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
-        when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(currentPage), any())(any())) thenReturn Future
+        when(mockGoodsRecordConnector.getRecords(eqTo(currentPage), any())(any())) thenReturn Future
           .successful(Some(response))
 
         val mockOttConnector = mock[OttConnector]
@@ -308,7 +307,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
             messages(application)
           ).toString
           verify(mockOttConnector, atLeastOnce()).getCountries(any())
-          verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(eqTo(testEori), eqTo(currentPage), any())(any())
+          verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(eqTo(currentPage), any())(any())
         }
       }
     }
@@ -317,7 +316,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
       val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
-      when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(currentPage), any())(any())) thenReturn Future
+      when(mockGoodsRecordConnector.getRecords(eqTo(currentPage), any())(any())) thenReturn Future
         .successful(None)
 
       val mockOttConnector = mock[OttConnector]
@@ -342,7 +341,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
           .onPageLoad(Some(RedirectUrl(goodsRecordsRoute)))
           .url
         verify(mockOttConnector, never()).getCountries(any())
-        verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(eqTo(testEori), eqTo(currentPage), any())(any())
+        verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(eqTo(currentPage), any())(any())
       }
     }
 
@@ -355,7 +354,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         records,
         GoodsRecordsPagination(totalRecords, middlePage, numberOfPages, None, None)
       )
-      when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(middlePage), any())(any())) thenReturn Future
+      when(mockGoodsRecordConnector.getRecords(eqTo(middlePage), any())(any())) thenReturn Future
         .successful(Some(response))
 
       val mockOttConnector = mock[OttConnector]
@@ -427,7 +426,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
           messages(application)
         ).toString
         verify(mockOttConnector, atLeastOnce()).getCountries(any())
-        verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(eqTo(testEori), eqTo(middlePage), any())(any())
+        verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(eqTo(middlePage), any())(any())
       }
     }
 
@@ -435,7 +434,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
       val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
-      when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(currentPage), any())(any())) thenReturn Future
+      when(mockGoodsRecordConnector.getRecords(eqTo(currentPage), any())(any())) thenReturn Future
         .successful(Some(GetRecordsResponse(Seq.empty, GoodsRecordsPagination(0, 1, 0, None, None))))
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -452,7 +451,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view()(request, messages(application)).toString
-        verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(eqTo(testEori), eqTo(currentPage), any())(any())
+        verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(eqTo(currentPage), any())(any())
       }
     }
 
@@ -503,7 +502,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
       val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
-      when(mockGoodsRecordConnector.getRecords(eqTo(testEori), eqTo(currentPage), any())(any())) thenReturn Future
+      when(mockGoodsRecordConnector.getRecords(eqTo(currentPage), any())(any())) thenReturn Future
         .successful(Some(response))
 
       val mockOttConnector = mock[OttConnector]
@@ -546,7 +545,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
           messages(application)
         ).toString
         verify(mockOttConnector, atLeastOnce()).getCountries(any())
-        verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(eqTo(testEori), eqTo(currentPage), any())(any())
+        verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(eqTo(currentPage), any())(any())
       }
     }
   }

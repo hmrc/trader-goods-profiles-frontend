@@ -109,7 +109,7 @@ class TraderReferenceController @Inject() (
           value =>
             for {
               isTraderReferenceUnique <- goodsRecordConnector.isTraderReferenceUnique(value)
-              oldRecord               <- goodsRecordConnector.getRecord(request.eori, recordId)
+              oldRecord               <- goodsRecordConnector.getRecord(recordId)
               updatedAnswers          <-
                 Future.fromTry(request.userAnswers.set(TraderReferenceUpdatePage(recordId), value))
             } yield

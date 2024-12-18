@@ -36,28 +36,33 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
   private val dataStoreBaseUrl: Service = config.get[Service]("microservice.services.trader-goods-profiles-data-store")
   private val clientIdHeader            = ("X-Client-ID", "tgp-frontend")
 
-  private def createGoodsRecordUrl(eori: String) =
-    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records"
+  private def createGoodsRecordUrl =
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/records"
 
-  private def deleteGoodsRecordUrl(eori: String, recordId: String) =
-    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/$recordId"
+  private def deleteGoodsRecordUrl(recordId: String) =
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/records/$recordId"
 
-  private def singleGoodsRecordUrl(eori: String, recordId: String) =
-    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/$recordId"
+  private def singleGoodsRecordUrl(recordId: String) =
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/records/$recordId"
 
-  private def goodsRecordUrl(eori: String, recordId: String) =
-    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/$recordId"
+  private def goodsRecordUrl(recordId: String) =
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/records/$recordId"
 
-  private def goodsRecordsUrl(eori: String, queryParams: Map[String, String]) =
-    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records?$queryParams"
+  private def goodsRecordsQueryParamasUrl(queryParams: Map[String, String]) =
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/records?$queryParams"
 
-  private def recordsSummaryUrl(eori: String) =
-    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records-summary"
+  private def recordsSummaryUrl =
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/records-summary"
 
-  private def filterRecordsUrl(eori: String, queryParams: Map[String, String]) =
+  private def filterRecordsUrl(
+    eori: String,
+    queryParams: Map[String, String]
+  ) = // TODO: This is part of the filtering work and will be replaced with the new filter endpoint as part of TGP-3003
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/filter?$queryParams"
 
-  private def isTraderReferenceUniqueUrl(traderReference: String) =
+  private def isTraderReferenceUniqueUrl(
+    traderReference: String
+  ) = // TODO: This is part of the filtering work and will be replaced with the new filter endpoint as part of TGP-3003
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/records/is-trader-reference-unique/$traderReference"
 
   private def searchRecordsUrl(
@@ -72,17 +77,17 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     hc: HeaderCarrier
   ): Future[String] =
     httpClient
-      .post(createGoodsRecordUrl(goodsRecord.eori))
+      .post(createGoodsRecordUrl)
       .setHeader(clientIdHeader)
       .withBody(Json.toJson(CreateRecordRequest.map(goodsRecord)))
       .execute[HttpResponse]
       .map(response => response.body)
 
-  def removeGoodsRecord(eori: String, recordId: String)(implicit
+  def removeGoodsRecord(recordId: String)(implicit
     hc: HeaderCarrier
   ): Future[Boolean] =
     httpClient
-      .delete(deleteGoodsRecordUrl(eori, recordId))
+      .delete(deleteGoodsRecordUrl(recordId))
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
       .flatMap { response =>
@@ -102,7 +107,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     hc: HeaderCarrier
   ): Future[Done] =
     httpClient
-      .patch(goodsRecordUrl(updateGoodsRecord.eori, updateGoodsRecord.recordId))
+      .patch(goodsRecordUrl(updateGoodsRecord.recordId))
       .setHeader(clientIdHeader)
       .withBody(Json.toJson(PatchRecordRequest.map(updateGoodsRecord)))
       .execute[HttpResponse]
@@ -112,7 +117,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     hc: HeaderCarrier
   ): Future[Done] =
     httpClient
-      .patch(goodsRecordUrl(updateGoodsRecord.eori, updateGoodsRecord.recordId))
+      .patch(goodsRecordUrl(updateGoodsRecord.recordId))
       .setHeader(clientIdHeader)
       .withBody(Json.toJson(PatchRecordRequest.map(updateGoodsRecord)))
       .execute[HttpResponse]
@@ -122,14 +127,13 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     hc: HeaderCarrier
   ): Future[Done] =
     httpClient
-      .put(goodsRecordUrl(updateGoodsRecord.actorId, recordId))
+      .put(goodsRecordUrl(recordId))
       .setHeader(clientIdHeader)
       .withBody(Json.toJson(updateGoodsRecord))
       .execute[HttpResponse]
       .map(_ => Done)
 
   def updateCategoryAndComcodeForGoodsRecord(
-    eori: String,
     recordId: String,
     categoryRecord: CategoryRecord,
     oldRecord: GetGoodsRecordResponse
@@ -139,14 +143,14 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     // TODO: remove this flag when EIS has implemented the PATCH method - TGP-2417 and keep the put call as default
     if (appConfig.useEisPatchMethod) {
       httpClient
-        .put(goodsRecordUrl(eori, recordId))
+        .put(goodsRecordUrl(recordId))
         .setHeader(clientIdHeader)
         .withBody(Json.toJson(PutRecordRequest.mapFromCategoryAndComcode(categoryRecord, oldRecord)))
         .execute[HttpResponse]
         .map(_ => Done)
     } else {
       httpClient
-        .patch(goodsRecordUrl(eori, recordId))
+        .patch(goodsRecordUrl(recordId))
         .setHeader(clientIdHeader)
         .withBody(Json.toJson(PatchRecordRequest.mapFromCategoryAndComcode(categoryRecord)))
         .execute[HttpResponse]
@@ -154,7 +158,6 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     }
 
   def updateSupplementaryUnitForGoodsRecord(
-    eori: String,
     recordId: String,
     supplementaryRequest: SupplementaryRequest,
     oldRecord: GetGoodsRecordResponse
@@ -164,31 +167,30 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     // TODO: remove this flag when EIS has implemented the PATCH method - TGP-2417 and keep the put call as default
     if (appConfig.useEisPatchMethod) {
       httpClient
-        .put(goodsRecordUrl(eori, recordId))
+        .put(goodsRecordUrl(recordId))
         .setHeader(clientIdHeader)
         .withBody(Json.toJson(PutRecordRequest.mapFromSupplementary(supplementaryRequest, oldRecord)))
         .execute[HttpResponse]
         .map(_ => Done)
     } else {
       httpClient
-        .patch(goodsRecordUrl(eori, recordId))
+        .patch(goodsRecordUrl(recordId))
         .setHeader(clientIdHeader)
         .withBody(Json.toJson(PatchRecordRequest.mapFromSupplementary(supplementaryRequest)))
         .execute[HttpResponse]
         .map(_ => Done)
     }
 
-  def getRecord(eori: String, recordId: String)(implicit
+  def getRecord(recordId: String)(implicit
     hc: HeaderCarrier
   ): Future[GetGoodsRecordResponse] =
     httpClient
-      .get(singleGoodsRecordUrl(eori, recordId))
+      .get(singleGoodsRecordUrl(recordId))
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
       .map(response => response.json.as[GetGoodsRecordResponse])
 
   def getRecords(
-    eori: String,
     page: Int,
     size: Int
   )(implicit
@@ -201,7 +203,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     )
 
     httpClient
-      .get(goodsRecordsUrl(eori, queryParams))
+      .get(goodsRecordsQueryParamasUrl(queryParams))
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
       .flatMap { response =>
@@ -213,11 +215,9 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       }
   }
 
-  def getRecordsSummary(
-    eori: String
-  )(implicit hc: HeaderCarrier): Future[RecordsSummary] =
+  def getRecordsSummary(implicit hc: HeaderCarrier): Future[RecordsSummary] =
     httpClient
-      .get(recordsSummaryUrl(eori))
+      .get(recordsSummaryUrl)
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
       .map { response =>
@@ -233,7 +233,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
         (response.json \ "isUnique").as[Boolean]
       }
 
-  def filterRecordsByField(
+  def filterRecordsByField( // TODO: This is part of the filtering work and will be replaced with the new filter endpoint as part of TGP-3003
     eori: String,
     searchTerm: String,
     field: String
@@ -259,7 +259,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       }
   }
 
-  def searchRecords(
+  def searchRecords( // TODO: This is part of the filtering work and will be replaced with the new filter endpoint as part of TGP-3003
     eori: String,
     searchTerm: String,
     exactMatch: Boolean,

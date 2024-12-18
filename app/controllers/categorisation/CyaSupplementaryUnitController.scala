@@ -99,8 +99,8 @@ class CyaSupplementaryUnitController @Inject() (
           )
 
           val result = for {
-            oldRecord <- goodsRecordConnector.getRecord(request.eori, recordId)
-            _         <- goodsRecordConnector.updateSupplementaryUnitForGoodsRecord(request.eori, recordId, model, oldRecord)
+            oldRecord <- goodsRecordConnector.getRecord(recordId)
+            _         <- goodsRecordConnector.updateSupplementaryUnitForGoodsRecord(recordId, model, oldRecord)
           } yield {
             dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
             Redirect(navigator.nextPage(CyaSupplementaryUnitPage(recordId), NormalMode, request.userAnswers))

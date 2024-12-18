@@ -65,7 +65,7 @@ class CyaUpdateRecordController @Inject() (
   def onPageLoadCountryOfOrigin(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       goodsRecordConnector
-        .getRecord(request.eori, recordId)
+        .getRecord(recordId)
         .flatMap { recordResponse =>
           UpdateGoodsRecord
             .validateCountryOfOrigin(
@@ -151,7 +151,7 @@ class CyaUpdateRecordController @Inject() (
   def onPageLoadCommodityCode(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       goodsRecordConnector
-        .getRecord(request.eori, recordId)
+        .getRecord(recordId)
         .flatMap { recordResponse =>
           val isCommCodeExpired = request.session.get(fromExpiredCommodityCodePage).contains("true")
           UpdateGoodsRecord
@@ -284,7 +284,7 @@ class CyaUpdateRecordController @Inject() (
         updateGoodsRecord <-
           Future.successful(UpdateGoodsRecord(request.eori, recordId, traderReference = Some(traderReference)))
         _                  = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
-        oldRecord         <- goodsRecordConnector.getRecord(request.eori, recordId)
+        oldRecord         <- goodsRecordConnector.getRecord(recordId)
         _                 <- updateGoodsRecordIfValueChanged(traderReference, oldRecord.traderRef, updateGoodsRecord)
         updatedAnswers    <- Future.fromTry(request.userAnswers.remove(TraderReferenceUpdatePage(recordId)))
         _                 <- sessionRepository.set(updatedAnswers)
@@ -297,7 +297,7 @@ class CyaUpdateRecordController @Inject() (
   def onSubmitCountryOfOrigin(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       (for {
-        oldRecord                <- goodsRecordConnector.getRecord(request.eori, recordId)
+        oldRecord                <- goodsRecordConnector.getRecord(recordId)
         countryOfOrigin          <-
           handleValidateError(
             UpdateGoodsRecord.validateCountryOfOrigin(request.userAnswers, recordId, oldRecord.category.isDefined)
@@ -343,7 +343,7 @@ class CyaUpdateRecordController @Inject() (
         updateGoodsRecord <-
           Future.successful(UpdateGoodsRecord(request.eori, recordId, goodsDescription = Some(goodsDescription)))
         _                  = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
-        oldRecord         <- goodsRecordConnector.getRecord(request.eori, recordId)
+        oldRecord         <- goodsRecordConnector.getRecord(recordId)
         _                 <- updateGoodsRecordIfValueChanged(goodsDescription, oldRecord.goodsDescription, updateGoodsRecord)
         updatedAnswers    <- Future.fromTry(request.userAnswers.remove(GoodsDescriptionUpdatePage(recordId)))
         _                 <- sessionRepository.set(updatedAnswers)
@@ -356,7 +356,7 @@ class CyaUpdateRecordController @Inject() (
   def onSubmitCommodityCode(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       (for {
-        oldRecord                <- goodsRecordConnector.getRecord(request.eori, recordId)
+        oldRecord                <- goodsRecordConnector.getRecord(recordId)
         commodity                <-
           handleValidateError(
             UpdateGoodsRecord

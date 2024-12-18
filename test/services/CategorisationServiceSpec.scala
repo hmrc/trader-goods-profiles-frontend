@@ -120,7 +120,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
     when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
     when(mockOttConnector.getCategorisationInfo(any(), any(), any(), any(), any(), any())(any()))
       .thenReturn(Future.successful(mockOttResponse()))
-    when(mockGoodsRecordsConnector.getRecord(any(), any())(any()))
+    when(mockGoodsRecordsConnector.getRecord(any())(any()))
       .thenReturn(Future.successful(mockGoodsRecordResponse))
     when(mockTraderProfileConnector.getTraderProfile(any()))
       .thenReturn(Future.successful(testTraderProfileResponseWithoutNiphl))

@@ -95,7 +95,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
         .success
         .value
 
-      when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
+      when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
         .successful(recordForTestingSummaryRows)
 
       val mockSessionRepository = mock[SessionRepository]
@@ -230,7 +230,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
         .success
         .value
 
-      when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
+      when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
         .successful(lockedRecord)
 
       val mockSessionRepository = mock[SessionRepository]
@@ -359,7 +359,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
       val mockSessionRepository = mock[SessionRepository]
 
-      when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
+      when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
         .successful(notCategorisedRecord)
 
       when(mockSessionRepository.set(any())) thenReturn Future
@@ -504,7 +504,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
         .success
         .value
 
-      when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
+      when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
         .successful(notCategorisedLockedRecord)
 
       val mockSessionRepository = mock[SessionRepository]
@@ -638,7 +638,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
       val mockSessionRepository = mock[SessionRepository]
 
-      when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
+      when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
         .successful(notCategorisedRecord)
 
       when(mockSessionRepository.set(any())) thenReturn Future
@@ -663,7 +663,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           await(route(application, request).value)
         }
 
-        verify(mockGoodsRecordConnector, times(5)).getRecord(any(), any())(any())
+        verify(mockGoodsRecordConnector, times(5)).getRecord(any())(any())
         verify(mockOttConnector, times(5)).getCountries(any())
 
       }
@@ -730,7 +730,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
         )
         .build()
 
-      when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
+      when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
         .failed(new NotFoundException("Failed to find record"))
 
       running(application) {
@@ -742,7 +742,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           await(result)
         }
 
-        verify(mockGoodsRecordConnector, times(6)).getRecord(any(), any())(any())
+        verify(mockGoodsRecordConnector, times(6)).getRecord(any())(any())
       }
     }
 
@@ -928,7 +928,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
             .success
             .value
 
-          when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
+          when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
             .successful(record)
 
           val mockSessionRepository = mock[SessionRepository]

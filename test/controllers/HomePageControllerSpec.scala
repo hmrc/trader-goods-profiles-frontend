@@ -78,7 +78,7 @@ class HomePageControllerSpec extends SpecBase {
         )
 
         val mockGoodsRecordConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
-        when(mockGoodsRecordConnector.getRecords(any(), any(), any())(any())) thenReturn Future
+        when(mockGoodsRecordConnector.getRecords(any(), any())(any())) thenReturn Future
           .successful(Some(goodsResponse))
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -103,7 +103,7 @@ class HomePageControllerSpec extends SpecBase {
           )(request, messages(application)).toString
 
           verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
-          verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any(), any())(any())
+          verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any())(any())
           verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())
         }
       }
@@ -130,7 +130,7 @@ class HomePageControllerSpec extends SpecBase {
         )
 
         val mockGoodsRecordConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
-        when(mockGoodsRecordConnector.getRecords(any(), any(), any())(any())) thenReturn Future
+        when(mockGoodsRecordConnector.getRecords(any(), any())(any())) thenReturn Future
           .successful(Some(goodsResponse))
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -155,7 +155,7 @@ class HomePageControllerSpec extends SpecBase {
           )(request, messages(application)).toString
 
           verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
-          verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any(), any())(any())
+          verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any())(any())
           verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())
         }
       }
@@ -171,7 +171,7 @@ class HomePageControllerSpec extends SpecBase {
           )
 
           val mockGoodsRecordConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
-          when(mockGoodsRecordConnector.getRecords(any(), any(), any())(any())) thenReturn Future
+          when(mockGoodsRecordConnector.getRecords(any(), any())(any())) thenReturn Future
             .successful(Some(goodsResponse))
 
           val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -196,7 +196,7 @@ class HomePageControllerSpec extends SpecBase {
             )(request, messages(application)).toString
 
             verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
-            verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any(), any())(any())
+            verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any())(any())
             verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())
           }
         }
@@ -222,7 +222,7 @@ class HomePageControllerSpec extends SpecBase {
           )
 
           val mockGoodsRecordConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
-          when(mockGoodsRecordConnector.getRecords(any(), any(), any())(any())) thenReturn Future
+          when(mockGoodsRecordConnector.getRecords(any(), any())(any())) thenReturn Future
             .successful(Some(goodsResponse))
 
           val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -247,7 +247,7 @@ class HomePageControllerSpec extends SpecBase {
             )(request, messages(application)).toString
 
             verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
-            verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any(), any())(any())
+            verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any())(any())
             verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())
           }
         }
@@ -273,7 +273,7 @@ class HomePageControllerSpec extends SpecBase {
           )
 
           val mockGoodsRecordConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
-          when(mockGoodsRecordConnector.getRecords(any(), any(), any())(any())) thenReturn Future
+          when(mockGoodsRecordConnector.getRecords(any(), any())(any())) thenReturn Future
             .successful(Some(goodsResponse))
 
           val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -320,7 +320,7 @@ class HomePageControllerSpec extends SpecBase {
           )
 
           val mockGoodsRecordConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
-          when(mockGoodsRecordConnector.getRecords(any(), any(), any())(any())) thenReturn Future
+          when(mockGoodsRecordConnector.getRecords(any(), any())(any())) thenReturn Future
             .successful(Some(goodsResponse))
 
           val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -345,7 +345,7 @@ class HomePageControllerSpec extends SpecBase {
             )(request, messages(application)).toString
 
             verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
-            verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any(), any())(any())
+            verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any())(any())
             verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())
           }
         }
@@ -359,7 +359,7 @@ class HomePageControllerSpec extends SpecBase {
         when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
 
         val mockGoodsRecordConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
-        when(mockGoodsRecordConnector.getRecords(any(), any(), any())(any())) thenReturn Future
+        when(mockGoodsRecordConnector.getRecords(any(), any())(any())) thenReturn Future
           .successful(None)
 
         val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
@@ -389,7 +389,7 @@ class HomePageControllerSpec extends SpecBase {
           )(request, messages(application)).toString
 
           verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
-          verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any(), any())(any())
+          verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any())(any())
           verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())
         }
       }
@@ -402,7 +402,7 @@ class HomePageControllerSpec extends SpecBase {
         when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
 
         val mockGoodsRecordConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
-        when(mockGoodsRecordConnector.getRecords(any(), any(), any())(any())) thenReturn Future
+        when(mockGoodsRecordConnector.getRecords(any(), any())(any())) thenReturn Future
           .successful(None)
 
         val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
@@ -433,7 +433,7 @@ class HomePageControllerSpec extends SpecBase {
           )(request, messages(application)).toString
 
           verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
-          verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any(), any())(any())
+          verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any())(any())
           verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())
         }
       }
@@ -443,7 +443,7 @@ class HomePageControllerSpec extends SpecBase {
         when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
 
         val mockGoodsRecordConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
-        when(mockGoodsRecordConnector.getRecords(any(), any(), any())(any())) thenReturn Future
+        when(mockGoodsRecordConnector.getRecords(any(), any())(any())) thenReturn Future
           .successful(None)
 
         val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
@@ -475,7 +475,7 @@ class HomePageControllerSpec extends SpecBase {
           )(request, messages(application)).toString
 
           verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
-          verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any(), any())(any())
+          verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any())(any())
           verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())
         }
       }
