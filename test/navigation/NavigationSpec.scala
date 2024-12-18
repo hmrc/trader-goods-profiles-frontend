@@ -262,17 +262,16 @@ class NavigationSpec extends SpecBase with BeforeAndAfterEach {
               .onPageLoadUpdate(NormalMode, testRecordId)
           }
 
-          "to JourneyRecoveryPage when answer is not present" in {
+          "to Updated Commodity Code page when answer is not present" in {
 
             navigator.nextPage(
               HasCorrectGoodsCommodityCodeUpdatePage(testRecordId),
               NormalMode,
               emptyUserAnswers
-            ) mustBe controllers.problem.routes.JourneyRecoveryController
-              .onPageLoad()
+            ) mustBe controllers.goodsRecord.routes.UpdatedCommodityCodeController.onPageLoad(testRecordId)
+
           }
         }
-
       }
 
       "must go from ReviewReasonPage to Single Record page" in {
