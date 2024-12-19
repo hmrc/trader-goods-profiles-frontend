@@ -552,6 +552,9 @@ goodsRecords.tableHeader.actions = Camau gweithredu
 goodsRecords.skip.record = Neidio i gofnodion nwyddau
 goodsRecords.skip.main = Neidio i'r prif
 
+goodsRecords.li1 = 'Cyfeirnod masnachwr'
+goodsRecords.li2 = 'Disgrifiad o’r nwyddau'
+
 goodsRecordsEmptyView.p1 = Does gennych chi ddim cofnodion yn eich proffil nwyddau.
 goodsRecordsEmptyView.p2 = Gallwch
 goodsRecordsEmptyView.p2.link = greu cofnod nwyddau newydd
