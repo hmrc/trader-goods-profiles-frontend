@@ -36,7 +36,8 @@
     govukCheckboxes : GovukCheckboxes,
     paragraphBody: components.paragraphBody,
     link: components.link,
-    goodsRecordFilterForm: components.GoodsRecordFilterForm
+    goodsRecordFilterForm: components.GoodsRecordFilterForm,
+    goodsRecordSearchFeature: components.GoodsRecordSearchFeature
 )
 
 @(
@@ -67,47 +68,52 @@
         @govukErrorSummary(ErrorSummaryViewModel(form))
     }
 
-<div class="govuk-width-container">
-    <main class="govuk-main-wrapper" id="main-content">
-        <div class="govuk-grid-row"><h1 class="govuk-heading-l">@messages("goodsRecords.title")</h1></div>
+    @if(appConfig.enhancedSearch) {
+    @goodsRecordSearchFeature(form, page)
+    } else {
+    <div class="govuk-width-container">
+        <main class="govuk-main-wrapper" id="main-content">
+            <div class="govuk-grid-row"><h1 class="govuk-heading-l">@messages("goodsRecords.title")</h1></div>
 
-        <div class="govuk-grid-row">
-            @goodsRecordFilterForm(form, countries, page)
+            <div class="govuk-grid-row">
+                @goodsRecordFilterForm(form, countries, page)
 
-            <div class="govuk-grid-column-two-thirds govuk-!-padding-left-20">
-                <h2 class="govuk-heading-m">@messages("goodsRecords.h2.1")</h2>
+                <div class="govuk-grid-column-two-thirds govuk-!-padding-left-20">
+                    <h2 class="govuk-heading-m">@messages("goodsRecords.h2.1")</h2>
 
-                @paragraphBody(messages("goodsRecords.p1"))
+                    @paragraphBody(messages("goodsRecords.p1"))
 
-                @paragraphBody(
-                messages("goodsRecords.p2") +
-                tag(messages("declarableStatus.immiReady"), "govuk-tag govuk-tag--green")
-                )
+                    @paragraphBody(
+                    messages("goodsRecords.p2") +
+                    tag(messages("declarableStatus.immiReady"), "govuk-tag govuk-tag--green")
+                    )
 
-                @paragraphBody(
-                messages("goodsRecords.p2.1") +
-                tag(messages("declarableStatus.notReadyForImmi"), "govuk-tag govuk-tag--orange") +
-                messages("goodsRecords.p2.2")
-                )
+                    @paragraphBody(
+                    messages("goodsRecords.p2.1") +
+                    tag(messages("declarableStatus.notReadyForImmi"), "govuk-tag govuk-tag--orange") +
+                    messages("goodsRecords.p2.2")
+                    )
 
-                @paragraphBody(
-                messages("goodsRecords.p2.3") +
-                tag(messages("declarableStatus.notReadyForUse"), "govuk-tag govuk-tag--orange") +
-                messages("goodsRecords.p2.4")
-                )
-                @paragraphBody(
-                message = messages("goodsRecords.link1.text") +
-                link(
-                text = messages("goodsRecords.link1"),
-                call = controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad(),
-                id = None
-                )
-                )
+                    @paragraphBody(
+                    messages("goodsRecords.p2.3") +
+                    tag(messages("declarableStatus.notReadyForUse"), "govuk-tag govuk-tag--orange") +
+                    messages("goodsRecords.p2.4")
+                    )
+                    @paragraphBody(
+                    message = messages("goodsRecords.link1.text") +
+                    link(
+                    text = messages("goodsRecords.link1"),
+                    call = controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad(),
+                    id = None
+                    )
+                    )
 
+                </div>
             </div>
-        </div>
-    </main>
-</div>
+        </main>
+    </div>
+
+    }
 
 <div class="govuk-grid-column-full">
     <h2 class="govuk-heading-m" id="goodsRecords">@messages("goodsRecords.record.list")</h2>
@@ -166,11 +172,21 @@
                         TableRow(
                             content = Text(goodsRecord.comcode)
                         ),
-                        TableRow(
-                            content = HtmlContent(
-                            tag(messages(goodsRecord.declarable.messageKey), goodsRecord.declarable.paragraphTagColour))
 
-                         ),
+                        TableRow(
+                             content = {
+                       if (appConfig.enhancedSearch) {
+                                HtmlContent(
+                                messages(goodsRecord.declarable.messageKey)
+
+                        )
+                        } else {
+                                HtmlContent(
+                                tag(messages(goodsRecord.declarable.messageKey), goodsRecord.declarable.paragraphTagColour)
+                        )
+                            }
+                         }
+                        ),
 
                         TableRow(
                             content = HtmlContent(
