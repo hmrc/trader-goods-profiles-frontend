@@ -259,7 +259,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       }
   }
 
-  def searchRecords(
+  def searchRecords( // TODO: add more parameter when we pick TGP:3003 and change the condition in the else.
     eori: String,
     searchTerm: String,
     exactMatch: Boolean,
@@ -273,17 +273,30 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       "page" -> page.toString,
       "size" -> size.toString
     )
-
-    httpClient
-      .get(searchRecordsUrl(eori, searchTerm, exactMatch, queryParams))
-      .setHeader(clientIdHeader)
-      .execute[HttpResponse]
-      .flatMap { response =>
-        response.status match {
-          case OK       => Future.successful(Some(response.json.as[GetRecordsResponse]))
-          case ACCEPTED => Future.successful(None)
-          case _        => Future.failed(UpstreamErrorResponse(response.body, response.status))
+    if (appConfig.enhancedSearch) { // TODO: remove this flag when
+      httpClient
+        .get(searchRecordsUrl(eori, searchTerm, exactMatch, queryParams))
+        .setHeader(clientIdHeader)
+        .execute[HttpResponse]
+        .flatMap { response =>
+          response.status match {
+            case OK       => Future.successful(Some(response.json.as[GetRecordsResponse]))
+            case ACCEPTED => Future.successful(None)
+            case _        => Future.failed(UpstreamErrorResponse(response.body, response.status))
+          }
         }
-      }
+    } else {
+      httpClient
+        .get(searchRecordsUrl(eori, searchTerm, exactMatch, queryParams))
+        .setHeader(clientIdHeader)
+        .execute[HttpResponse]
+        .flatMap { response =>
+          response.status match {
+            case OK       => Future.successful(Some(response.json.as[GetRecordsResponse]))
+            case ACCEPTED => Future.successful(None)
+            case _        => Future.failed(UpstreamErrorResponse(response.body, response.status))
+          }
+        }
+    }
   }
 }
