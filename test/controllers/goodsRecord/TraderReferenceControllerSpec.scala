@@ -309,7 +309,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
             true
           )
 
-        when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
+        when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
           .successful(
             record
           )
@@ -337,7 +337,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
           verify(mockSessionRepository).set(any())
           verify(mockGoodsRecordConnector).isTraderReferenceUnique(any())(any())
-          verify(mockGoodsRecordConnector).getRecord(any(), any())(any())
+          verify(mockGoodsRecordConnector).getRecord(any())(any())
         }
       }
 
@@ -349,7 +349,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
         val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
-        when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
+        when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
           .successful(
             record
           )
@@ -382,7 +382,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
           verify(mockSessionRepository).set(any())
           verify(mockGoodsRecordConnector).isTraderReferenceUnique(any())(any())
-          verify(mockGoodsRecordConnector).getRecord(any(), any())(any())
+          verify(mockGoodsRecordConnector).getRecord(any())(any())
         }
       }
 
@@ -394,7 +394,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
         val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
-        when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
+        when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
           .successful(
             record
           )
@@ -431,7 +431,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
           verify(mockSessionRepository).set(any())
           verify(mockGoodsRecordConnector).isTraderReferenceUnique(any())(any())
-          verify(mockGoodsRecordConnector).getRecord(any(), any())(any())
+          verify(mockGoodsRecordConnector).getRecord(any())(any())
         }
       }
 
@@ -443,7 +443,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
         val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
-        when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
+        when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
           .successful(
             record
           )
@@ -479,7 +479,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
           verify(mockSessionRepository).set(any())
           verify(mockGoodsRecordConnector).isTraderReferenceUnique(any())(any())
-          verify(mockGoodsRecordConnector).getRecord(any(), any())(any())
+          verify(mockGoodsRecordConnector).getRecord(any())(any())
         }
       }
 
@@ -508,7 +508,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
 
         val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
-        when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
+        when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
           .successful(
             record
           )
@@ -549,7 +549,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
           contentAsString(result) mustEqual view(boundForm, onSubmitAction)(request, messages(application)).toString
 
           verify(mockGoodsRecordConnector).isTraderReferenceUnique(any())(any())
-          verify(mockGoodsRecordConnector).getRecord(any(), any())(any())
+          verify(mockGoodsRecordConnector).getRecord(any())(any())
         }
       }
 

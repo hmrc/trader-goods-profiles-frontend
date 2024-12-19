@@ -36,7 +36,7 @@ class WithdrawAdviceSuccessControllerSpec extends SpecBase with MockitoSugar {
     "must return OK and the correct view for a GET" in {
 
       val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-      when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+      when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
@@ -52,7 +52,7 @@ class WithdrawAdviceSuccessControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(testRecordId)(request, messages(application)).toString
-        verify(mockTraderProfileConnector, never()).checkTraderProfile(any())(any())
+        verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
       }
     }
   }

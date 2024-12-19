@@ -44,7 +44,7 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
 
   val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
 
-  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
+  when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(false)
 
   "CyaCreateProfileController" - {
 
@@ -150,7 +150,7 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
 
       "must redirect to Home page if profile already exists" in {
 
-        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+        when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
         val application = applicationBuilder(userAnswers = None)
           .overrides(
             bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
@@ -177,8 +177,8 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
           val userAnswers = mandatoryProfileUserAnswers
 
           val mockTraderProfileConnector = mock[TraderProfileConnector]
-          when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any())).thenReturn(Future.successful(Done))
-          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
+          when(mockTraderProfileConnector.submitTraderProfile(any())(any())).thenReturn(Future.successful(Done))
+          when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(false)
 
           val mockAuditService = mock[AuditService]
           when(mockAuditService.auditProfileSetUp(any(), any())(any())).thenReturn(Future.successful(Done))
@@ -204,7 +204,7 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
             redirectLocation(result).value mustEqual controllers.profile.routes.CreateProfileSuccessController
               .onPageLoad()
               .url
-            verify(mockTraderProfileConnector).submitTraderProfile(eqTo(expectedPayload), eqTo(testEori))(any())
+            verify(mockTraderProfileConnector).submitTraderProfile(eqTo(expectedPayload))(any())
 
             withClue("must call the audit connector with the supplied details") {
               verify(mockAuditService)
@@ -224,7 +224,7 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
         "must not submit anything, and redirect to Journey Recovery" in {
 
           val mockTraderProfileConnector = mock[TraderProfileConnector]
-          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
+          when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(false)
 
           val mockAuditService = mock[AuditService]
           val continueUrl      = RedirectUrl(routes.ProfileSetupController.onSubmit().url)
@@ -248,7 +248,7 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
             redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
               .onPageLoad(Some(continueUrl))
               .url
-            verify(mockTraderProfileConnector, never()).submitTraderProfile(any(), any())(any())
+            verify(mockTraderProfileConnector, never()).submitTraderProfile(any())(any())
 
             withClue("must not try and submit an audit") {
               verify(mockAuditService, never()).auditProfileSetUp(any(), any())(any())
@@ -265,8 +265,8 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
         val userAnswers = mandatoryProfileUserAnswers
 
         val mockTraderProfileConnector = mock[TraderProfileConnector]
-        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
-        when(mockTraderProfileConnector.submitTraderProfile(any(), any())(any()))
+        when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(false)
+        when(mockTraderProfileConnector.submitTraderProfile(any())(any()))
           .thenReturn(Future.failed(new RuntimeException("Connector failed")))
 
         val mockAuditService = mock[AuditService]
@@ -301,7 +301,7 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
       "must redirect to Journey Recovery if no existing data is found" in {
 
         val mockTraderProfileConnector = mock[TraderProfileConnector]
-        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
+        when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(false)
 
         val application = applicationBuilder(userAnswers = None)
           .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))

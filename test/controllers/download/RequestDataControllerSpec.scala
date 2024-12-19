@@ -46,10 +46,10 @@ class RequestDataControllerSpec extends SpecBase {
     "must redirect to Journey Recovery for a GET if no email is found" in {
 
       val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-      when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+      when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
 
       val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
-      when(mockDownloadDataConnector.getEmail(any())(any())) thenReturn Future.successful(None)
+      when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(None)
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(inject.bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
@@ -77,10 +77,10 @@ class RequestDataControllerSpec extends SpecBase {
       val email     = Email(address, timestamp)
 
       val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-      when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+      when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
 
       val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
-      when(mockDownloadDataConnector.getEmail(any())(any())) thenReturn Future.successful(Some(email))
+      when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(Some(email))
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(inject.bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
@@ -97,18 +97,18 @@ class RequestDataControllerSpec extends SpecBase {
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(email.address)(request, messages(application)).toString
 
-        verify(mockTraderProfileConnector, never()).checkTraderProfile(any())(any())
-        verify(mockDownloadDataConnector, atLeastOnce()).getEmail(any())(any())
+        verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
+        verify(mockDownloadDataConnector, atLeastOnce()).getEmail(any())
       }
     }
 
     "must redirect to the next page when button clicked and data requested" in {
 
       val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-      when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+      when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
 
       val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
-      when(mockDownloadDataConnector.requestDownloadData(any())(any())) thenReturn Future.successful(Done)
+      when(mockDownloadDataConnector.requestDownloadData(any())) thenReturn Future.successful(Done)
 
       val mockSessionRepository = mock[SessionRepository]
 
@@ -131,8 +131,8 @@ class RequestDataControllerSpec extends SpecBase {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
-        verify(mockTraderProfileConnector, never()).checkTraderProfile(any())(any())
-        verify(mockDownloadDataConnector, never()).getEmail(any())(any())
+        verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
+        verify(mockDownloadDataConnector, never()).getEmail(any())
       }
     }
   }

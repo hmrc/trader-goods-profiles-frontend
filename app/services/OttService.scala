@@ -36,7 +36,7 @@ class OttService @Inject() (
   ): Future[Option[String]] = {
 
     val response = for {
-      getGoodsRecordResponse <- goodsRecordsConnector.getRecord(eori = request.eori, recordId = recordId)
+      getGoodsRecordResponse <- goodsRecordsConnector.getRecord(recordId = recordId)
       goodsNomenclature      <- ottConnector.getCategorisationInfo(
                                   getGoodsRecordResponse.comcode,
                                   request.eori,

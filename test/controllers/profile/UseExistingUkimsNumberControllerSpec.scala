@@ -48,7 +48,7 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
   private lazy val onPageLoadRoute = controllers.profile.routes.UseExistingUkimsNumberController.onPageLoad().url
   private lazy val onSubmitRoute   = controllers.profile.routes.UseExistingUkimsNumberController.onSubmit().url
 
-  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
+  when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(false)
 
   private val ukimsNumber = "UKIMS123"
 
@@ -88,7 +88,7 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to the journey recovery page when user answers doesn't have a ukims number pre-populated" in {
-      when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
+      when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(false)
 
       val application = applicationBuilder(userAnswers = None)
         .overrides(
@@ -104,7 +104,7 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
-        verify(mockTraderProfileConnector, times(2)).checkTraderProfile(any())(any())
+        verify(mockTraderProfileConnector, times(2)).checkTraderProfile(any())
       }
     }
   }
@@ -112,7 +112,7 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
   "onSubmit" - {
 
     "must return OK and and navigate to the next page" in {
-      when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
+      when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(false)
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application = applicationBuilder(userAnswers = Some(userAnswersWithUkimsNumber))
@@ -136,7 +136,7 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
+      when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(false)
 
       val application = applicationBuilder(userAnswers = Some(userAnswersWithUkimsNumber))
         .overrides(
@@ -169,7 +169,7 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
     "must throw exception to error handler if session repository fails" in {
       when(mockSessionRepository.set(any())) thenReturn Future.failed(new RuntimeException("failed"))
-      when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
+      when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(false)
 
       val application = applicationBuilder(userAnswers = Some(userAnswersWithUkimsNumber))
         .overrides(

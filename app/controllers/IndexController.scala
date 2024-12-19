@@ -38,13 +38,13 @@ class IndexController @Inject() (
 
   def onPageLoad: Action[AnyContent] = identify.async { implicit request =>
     def checkProfileAndContinue =
-      traderProfileConnector.checkTraderProfile(request.eori).flatMap {
+      traderProfileConnector.checkTraderProfile.flatMap {
         case true  => eoriChanged(request)
         case false => Future.successful(Redirect(controllers.profile.routes.ProfileSetupController.onPageLoad()))
       }
 
     if (config.downloadFileEnabled) {
-      downloadDataConnector.getEmail(request.eori).flatMap {
+      downloadDataConnector.getEmail.flatMap {
         case Some(_) =>
           checkProfileAndContinue
         case None    =>
@@ -58,7 +58,7 @@ class IndexController @Inject() (
   }
 
   private def eoriChanged(request: IdentifierRequest[AnyContent])(implicit hc: HeaderCarrier) =
-    traderProfileConnector.getTraderProfile(request.eori).map {
+    traderProfileConnector.getTraderProfile.map {
       case TraderProfile(_, _, _, _, eoriChanged) if eoriChanged =>
         Redirect(controllers.newUkims.routes.UkimsNumberChangeController.onPageLoad())
       case _                                                     =>

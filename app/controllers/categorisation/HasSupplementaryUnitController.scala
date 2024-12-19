@@ -88,7 +88,7 @@ class HasSupplementaryUnitController @Inject() (
         )
       val userAnswerValue = request.userAnswers.get(HasSupplementaryUnitUpdatePage(recordId))
 
-      goodsRecordConnector.getRecord(request.eori, recordId).flatMap { record =>
+      goodsRecordConnector.getRecord(recordId).flatMap { record =>
         val initialValue = record.supplementaryUnit.exists(_ != 0)
 
         val preparedFormFuture = userAnswerValue match {

@@ -47,7 +47,7 @@ class EoriCheckActionSpec extends SpecBase with MockitoSugar {
 
       val mockTraderProfileConnector = mock[TraderProfileConnector]
 
-      when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(profile)
+      when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future.successful(profile)
 
       val action = new Harness(mockTraderProfileConnector)
       val result =
@@ -61,7 +61,7 @@ class EoriCheckActionSpec extends SpecBase with MockitoSugar {
 
       val mockTraderProfileConnector = mock[TraderProfileConnector]
 
-      when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(profile)
+      when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future.successful(profile)
 
       val action = new Harness(mockTraderProfileConnector)
       val result =

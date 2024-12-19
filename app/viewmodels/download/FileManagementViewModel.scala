@@ -54,12 +54,11 @@ object FileManagementViewModel {
     fileManagementTableComponentHelper: FileManagementTableComponentHelper
   ) {
     def apply(
-      eori: String,
       downloadDataConnector: DownloadDataConnector
     )(implicit messages: Messages, ec: ExecutionContext, hc: HeaderCarrier): Future[FileManagementViewModel] =
       for {
-        downloadDataSummary <- downloadDataConnector.getDownloadDataSummary(eori)
-        downloadData        <- downloadDataConnector.getDownloadData(eori)
+        downloadDataSummary <- downloadDataConnector.getDownloadDataSummary
+        downloadData        <- downloadDataConnector.getDownloadData
 
         availableDataSummaries = downloadDataSummary.filterToOption(summary =>
                                    summary.status == FileReadySeen || summary.status == FileReadyUnseen
@@ -80,7 +79,7 @@ object FileManagementViewModel {
       } yield {
 
         if (availableFiles.isDefined) {
-          downloadDataConnector.updateSeenStatus(eori)
+          downloadDataConnector.updateSeenStatus
         }
 
         val availableFilesTable = AvailableFilesTable(availableFiles)

@@ -108,7 +108,7 @@ class LongerCommodityCodeController @Inject() (
     val longerCode   = shortCode + value
     val todayInstant = LocalDate.now(ZoneId.of("UTC")).atStartOfDay(ZoneId.of("UTC")).toInstant
     (for {
-      record    <- goodsRecordConnector.getRecord(request.eori, recordId)
+      record    <- goodsRecordConnector.getRecord(recordId)
       commodity <- ottConnector.getCommodityCode(
                      longerCode,
                      request.eori,

@@ -92,7 +92,7 @@ class CategorisationService @Inject() (
     recordId: String,
     longerCode: Boolean = false
   )(implicit hc: HeaderCarrier): Future[CategorisationInfo] =
-    profileConnector.getTraderProfile(request.eori).flatMap { profile =>
+    profileConnector.getTraderProfile.flatMap { profile =>
       ottConnector
         .getCategorisationInfo(
           commodityCode,

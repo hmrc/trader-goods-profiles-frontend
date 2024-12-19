@@ -42,7 +42,7 @@ class ProfileAuthenticateActionSpec extends SpecBase with MockitoSugar {
     "must redirect to profile setup page when profile does not exists" in {
       val mockTraderProfileConnector = mock[TraderProfileConnector]
 
-      when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
+      when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(false)
 
       val action = new Harness(mockTraderProfileConnector)
       val result =
@@ -53,7 +53,7 @@ class ProfileAuthenticateActionSpec extends SpecBase with MockitoSugar {
     "must not redirect when profile does exist" in {
       val mockTraderProfileConnector = mock[TraderProfileConnector]
 
-      when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+      when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
 
       val action = new Harness(mockTraderProfileConnector)
       val result =

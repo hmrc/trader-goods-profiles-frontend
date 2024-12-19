@@ -23,7 +23,7 @@ import controllers.routes
 import forms.profile.UkimsNumberFormProvider
 import models.{CheckMode, NormalMode, TraderProfile, UserAnswers}
 import navigation.{FakeProfileNavigator, ProfileNavigator}
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{never, times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.profile.{UkimsNumberPage, UkimsNumberUpdatePage}
@@ -48,7 +48,7 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
   val mockSessionRepository: SessionRepository = mock[SessionRepository]
 
-  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
+  when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(false)
 
   "UkimsNumberController" - {
 
@@ -117,7 +117,7 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
       "must redirect to the next page when valid data is submitted" in {
 
         val mockTraderProfileConnector = mock[TraderProfileConnector]
-        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
+        when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(false)
 
         when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
@@ -146,7 +146,7 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
       "must return a Bad Request and errors when invalid data is submitted" in {
 
         val mockTraderProfileConnector = mock[TraderProfileConnector]
-        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
+        when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(false)
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
@@ -198,7 +198,7 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
         val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
 
-        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+        when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
         val application = applicationBuilder(userAnswers = None)
           .overrides(
             bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
@@ -218,7 +218,7 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
       "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
         val mockTraderProfileConnector = mock[TraderProfileConnector]
-        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
+        when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(false)
 
         val application = applicationBuilder(userAnswers = None)
           .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
@@ -246,7 +246,7 @@ class UkimsNumberControllerSpec extends SpecBase with MockitoSugar {
         val traderProfile    = TraderProfile(testEori, "1", Some("2"), Some("3"), eoriChanged = false)
         val mockAuditService = mock[AuditService]
 
-        when(mockTraderProfileConnector.getTraderProfile(eqTo(testEori))(any())) thenReturn Future.successful(
+        when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future.successful(
           traderProfile
         )
 

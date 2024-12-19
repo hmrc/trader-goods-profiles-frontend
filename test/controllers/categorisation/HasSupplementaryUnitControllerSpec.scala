@@ -61,7 +61,7 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
     controllers.categorisation.routes.HasSupplementaryUnitController.onSubmitUpdate(NormalMode, recordId)
 
   val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+  when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
 
   private val record = goodsRecordResponseWithSupplementaryUnit(
     Instant.parse("2022-11-18T23:20:19Z"),
@@ -206,7 +206,7 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
         val mockAuditService = mock[AuditService]
 
         val mockGoodsRecordConnector = mock[GoodsRecordConnector]
-        when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
+        when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
           .successful(record)
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -247,10 +247,10 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
         val mockAuditService = mock[AuditService]
 
         val mockGoodsRecordConnector = mock[GoodsRecordConnector]
-        when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
+        when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
           .successful(recordWithoutSuppUnit)
 
-        when(mockGoodsRecordConnector.updateSupplementaryUnitForGoodsRecord(any(), any(), any(), any())(any()))
+        when(mockGoodsRecordConnector.updateSupplementaryUnitForGoodsRecord(any(), any(), any())(any()))
           .thenReturn(Future.successful(Done))
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -292,7 +292,7 @@ class HasSupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
         val mockAuditService = mock[AuditService]
 
         val mockGoodsRecordConnector = mock[GoodsRecordConnector]
-        when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
+        when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
           .successful(record)
 
         val application = applicationBuilder(userAnswers = Some(userAnswers))

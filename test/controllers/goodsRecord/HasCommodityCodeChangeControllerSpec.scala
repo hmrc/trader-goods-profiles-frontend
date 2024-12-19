@@ -68,7 +68,7 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
 
   override def beforeEach(): Unit = {
 
-    when(mockGoodsRecordConnector.getRecord(any(), any())(any())).thenReturn(
+    when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(
       Future.successful(goodsRecord)
     )
 
@@ -84,7 +84,7 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
 
         when(mockAuditService.auditStartUpdateGoodsRecord(any(), any(), any(), any(), any())(any()))
           .thenReturn(Future.successful(Done))
-        when(mockGoodsRecordConnector.getRecord(any(), any())(any())).thenReturn(
+        when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(
           Future.successful(goodsRecordCatNoAdvice)
         )
 
@@ -125,7 +125,7 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
 
       "when advice status has happened" in {
 
-        when(mockGoodsRecordConnector.getRecord(any(), any())(any())).thenReturn(
+        when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(
           Future.successful(goodsRecordNoCatAdvice)
         )
 
@@ -153,7 +153,7 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
 
       "when categorisation and advice has happened" in {
 
-        when(mockGoodsRecordConnector.getRecord(any(), any())(any())).thenReturn(
+        when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(
           Future.successful(goodsRecordCatAdvice)
         )
 
@@ -182,7 +182,7 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-      when(mockGoodsRecordConnector.getRecord(any(), any())(any())).thenReturn(
+      when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(
         Future.successful(goodsRecordCatNoAdvice)
       )
       val userAnswers = UserAnswers(userAnswersId).set(HasCommodityCodeChangePage(testRecordId), true).success.value
@@ -244,7 +244,7 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      when(mockGoodsRecordConnector.getRecord(any(), any())(any())).thenReturn(
+      when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(
         Future.successful(goodsRecordCatAdvice)
       )
 
@@ -313,7 +313,7 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
 
     "must redirect to Journey Recovery when POST and goods connector fails" in {
 
-      when(mockGoodsRecordConnector.getRecord(any(), any())(any())).thenReturn(
+      when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(
         Future.failed(new Exception(":("))
       )
 
@@ -343,7 +343,7 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
 
     "must redirect to Journey Recovery when GET and goods connector fails" in {
 
-      when(mockGoodsRecordConnector.getRecord(any(), any())(any())).thenReturn(
+      when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(
         Future.failed(new Exception(":("))
       )
 

@@ -44,7 +44,7 @@ class RequestDataController @Inject() (
 
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData).async {
     implicit request =>
-      downloadDataConnector.getEmail(request.eori).map {
+      downloadDataConnector.getEmail.map {
         case Some(email) => Ok(view(email.address))
         case _           =>
           logErrorsAndContinue(
@@ -56,7 +56,7 @@ class RequestDataController @Inject() (
 
   def onSubmit: Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      downloadDataConnector.requestDownloadData(request.eori).map { _ =>
+      downloadDataConnector.requestDownloadData.map { _ =>
         Redirect(navigator.nextPage(RequestDataPage, NormalMode, request.userAnswers))
       }
     }

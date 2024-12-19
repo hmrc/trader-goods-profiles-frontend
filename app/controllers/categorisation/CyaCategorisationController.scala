@@ -166,10 +166,10 @@ class CyaCategorisationController @Inject() (
         case Right(categoryRecord) =>
           auditService.auditFinishCategorisation(request.eori, request.affinityGroup, recordId, categoryRecord)
           for {
-            oldRecord <- goodsRecordConnector.getRecord(request.eori, recordId)
+            oldRecord <- goodsRecordConnector.getRecord(recordId)
             _         <-
               goodsRecordConnector
-                .updateCategoryAndComcodeForGoodsRecord(request.eori, recordId, categoryRecord, oldRecord)
+                .updateCategoryAndComcodeForGoodsRecord(recordId, categoryRecord, oldRecord)
             _         <- dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
           } yield Redirect(
             navigator.nextPage(

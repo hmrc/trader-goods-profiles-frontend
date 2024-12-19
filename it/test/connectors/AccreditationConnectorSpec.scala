@@ -54,7 +54,7 @@ class AccreditationConnectorSpec
       wireMockServer.stubFor(
         post(
           urlEqualTo(
-            s"/trader-goods-profiles-data-store/traders/${adviceRequest.eori}/records/${adviceRequest.recordId}/advice"
+            s"/trader-goods-profiles-data-store/traders/records/${adviceRequest.recordId}/advice"
           )
         )
           .withHeader("X-Client-ID", equalTo("tgp-frontend"))
@@ -71,7 +71,7 @@ class AccreditationConnectorSpec
       wireMockServer.stubFor(
         post(
           urlEqualTo(
-            s"/trader-goods-profiles-data-store/traders/${adviceRequest.eori}/records/${adviceRequest.recordId}/advice"
+            s"/trader-goods-profiles-data-store/traders/records/${adviceRequest.recordId}/advice"
           )
         )
           .withHeader("X-Client-ID", equalTo("tgp-frontend"))
@@ -91,7 +91,7 @@ class AccreditationConnectorSpec
       wireMockServer.stubFor(
         put(
           urlEqualTo(
-            s"/trader-goods-profiles-data-store/traders/$testEori/records/$testRecordId/advice"
+            s"/trader-goods-profiles-data-store/traders/records/$testRecordId/advice"
           )
         )
           .withHeader("X-Client-ID", equalTo("tgp-frontend"))
@@ -100,7 +100,7 @@ class AccreditationConnectorSpec
           .willReturn(noContent())
       )
 
-      connector.withdrawRequestAccreditation(testEori, testRecordId, Some(withdrawReason)).futureValue
+      connector.withdrawRequestAccreditation(testRecordId, Some(withdrawReason)).futureValue
     }
 
     "must return a failed future when the server returns an error" in {
@@ -117,7 +117,7 @@ class AccreditationConnectorSpec
           .willReturn(serverError())
       )
 
-      connector.withdrawRequestAccreditation(testEori, testRecordId, Some(withdrawReason)).failed.futureValue
+      connector.withdrawRequestAccreditation(testRecordId, Some(withdrawReason)).failed.futureValue
     }
   }
 }

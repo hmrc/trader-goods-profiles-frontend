@@ -32,18 +32,18 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
 
   private val clientIdHeader = ("X-Client-ID", "tgp-frontend")
 
-  private def downloadDataSummaryUrl(eori: String) =
-    url"${config.dataStoreBaseUrl}/trader-goods-profiles-data-store/traders/$eori/download-data-summary"
+  private def downloadDataSummaryUrl =
+    url"${config.dataStoreBaseUrl}/trader-goods-profiles-data-store/traders/download-data-summary"
 
-  private def downloadDataUrl(eori: String) =
-    url"${config.dataStoreBaseUrl}/trader-goods-profiles-data-store/traders/$eori/download-data"
+  private def downloadDataUrl =
+    url"${config.dataStoreBaseUrl}/trader-goods-profiles-data-store/traders/download-data"
 
-  private def emailUrl(eori: String) =
-    url"${config.dataStoreBaseUrl}/trader-goods-profiles-data-store/traders/$eori/email"
+  private def emailUrl =
+    url"${config.dataStoreBaseUrl}/trader-goods-profiles-data-store/traders/email"
 
-  def requestDownloadData(eori: String)(implicit hc: HeaderCarrier): Future[Done] =
+  def requestDownloadData(implicit hc: HeaderCarrier): Future[Done] =
     httpClient
-      .post(downloadDataUrl(eori))
+      .post(downloadDataUrl)
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
       .flatMap { response =>
@@ -53,10 +53,10 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
         }
       }
 
-  def getDownloadDataSummary(eori: String)(implicit hc: HeaderCarrier): Future[Seq[DownloadDataSummary]] =
+  def getDownloadDataSummary(implicit hc: HeaderCarrier): Future[Seq[DownloadDataSummary]] =
     if (config.downloadFileEnabled) {
       httpClient
-        .get(downloadDataSummaryUrl(eori))
+        .get(downloadDataSummaryUrl)
         .execute[HttpResponse]
         .map { response =>
           response.status match {
@@ -68,10 +68,10 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
       Future.successful(Seq.empty)
     }
 
-  def getDownloadData(eori: String)(implicit hc: HeaderCarrier): Future[Seq[DownloadData]] =
+  def getDownloadData(implicit hc: HeaderCarrier): Future[Seq[DownloadData]] =
     if (config.downloadFileEnabled) {
       httpClient
-        .get(downloadDataUrl(eori))
+        .get(downloadDataUrl)
         .execute[HttpResponse]
         .map { response =>
           response.status match {
@@ -83,9 +83,9 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
       Future.successful(Seq.empty)
     }
 
-  def getEmail(eori: String)(implicit hc: HeaderCarrier): Future[Option[Email]] =
+  def getEmail(implicit hc: HeaderCarrier): Future[Option[Email]] =
     httpClient
-      .get(emailUrl(eori))
+      .get(emailUrl)
       .execute[HttpResponse]
       .flatMap { response =>
         response.status match {
@@ -99,9 +99,9 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
           None
       }
 
-  def updateSeenStatus(eori: String)(implicit hc: HeaderCarrier): Future[Done] =
+  def updateSeenStatus(implicit hc: HeaderCarrier): Future[Done] =
     httpClient
-      .patch(downloadDataSummaryUrl(eori))
+      .patch(downloadDataSummaryUrl)
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
       .flatMap { response =>

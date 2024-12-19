@@ -120,9 +120,9 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
     when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
     when(mockOttConnector.getCategorisationInfo(any(), any(), any(), any(), any(), any())(any()))
       .thenReturn(Future.successful(mockOttResponse()))
-    when(mockGoodsRecordsConnector.getRecord(any(), any())(any()))
+    when(mockGoodsRecordsConnector.getRecord(any())(any()))
       .thenReturn(Future.successful(mockGoodsRecordResponse))
-    when(mockTraderProfileConnector.getTraderProfile(any())(any()))
+    when(mockTraderProfileConnector.getTraderProfile(any()))
       .thenReturn(Future.successful(testTraderProfileResponseWithoutNiphl))
 
     when(mockDataRequest.eori).thenReturn("eori")
@@ -175,7 +175,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
 
     "should return future failed when the call to trader profile connector fails" in {
       val expectedException = new RuntimeException("Failed communicating with Trader profile connector")
-      when(mockTraderProfileConnector.getTraderProfile(any())(any()))
+      when(mockTraderProfileConnector.getTraderProfile(any()))
         .thenReturn(Future.failed(expectedException))
 
       val mockDataRequest = mock[DataRequest[AnyContent]]

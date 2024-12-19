@@ -54,7 +54,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
     controllers.categorisation.routes.SupplementaryUnitController.onSubmit(NormalMode, testRecordId)
 
   val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+  when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
 
   private val record                       = goodsRecordResponseWithSupplementaryUnit(
     Instant.parse("2022-11-18T23:20:19Z"),
@@ -523,7 +523,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
         val mockGoodsRecordConnector = mock[GoodsRecordConnector]
         val mockAuditService         = mock[AuditService]
 
-        when(mockGoodsRecordConnector.getRecord(any(), any())(any()))
+        when(mockGoodsRecordConnector.getRecord(any())(any()))
           .thenReturn(Future.successful(record))
 
         val application =
@@ -569,7 +569,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
                 eqTo(testRecordId),
                 any()
               )(any())
-            verify(mockGoodsRecordConnector).getRecord(any(), any())(any())
+            verify(mockGoodsRecordConnector).getRecord(any())(any())
           }
         }
       }
@@ -582,7 +582,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
           .success
           .value
 
-        when(mockGoodsRecordConnector.getRecord(any(), any())(any()))
+        when(mockGoodsRecordConnector.getRecord(any())(any()))
           .thenReturn(Future.successful(record))
 
         val application =
@@ -628,7 +628,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
                 any(),
                 any()
               )(any())
-            verify(mockGoodsRecordConnector).getRecord(any(), any())(any())
+            verify(mockGoodsRecordConnector).getRecord(any())(any())
           }
         }
       }
@@ -642,7 +642,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
 
         val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
-        when(mockGoodsRecordConnector.getRecord(any(), any())(any()))
+        when(mockGoodsRecordConnector.getRecord(any())(any()))
           .thenReturn(Future.successful(record))
 
         val application = applicationBuilder(userAnswers = Some(userAnswers))
@@ -687,7 +687,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
                 eqTo(testRecordId),
                 any()
               )(any())
-            verify(mockGoodsRecordConnector).getRecord(any(), any())(any())
+            verify(mockGoodsRecordConnector).getRecord(any())(any())
           }
         }
       }
@@ -845,7 +845,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
         val mockGoodsRecordConnector = mock[GoodsRecordConnector]
         val mockAuditService         = mock[AuditService]
 
-        when(mockGoodsRecordConnector.getRecord(any(), any())(any()))
+        when(mockGoodsRecordConnector.getRecord(any())(any()))
           .thenReturn(Future.failed(new RuntimeException()))
 
         val application =
@@ -881,7 +881,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
                 any()
               )(any())
 
-            verify(mockGoodsRecordConnector).getRecord(any(), any())(any())
+            verify(mockGoodsRecordConnector).getRecord(any())(any())
           }
         }
       }

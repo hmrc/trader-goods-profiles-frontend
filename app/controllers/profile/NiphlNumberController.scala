@@ -74,7 +74,7 @@ class NiphlNumberController @Inject() (
 
   def onPageLoadUpdate(mode: Mode): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
+      traderProfileConnector.getTraderProfile.flatMap { traderProfile =>
         request.userAnswers.get(HasNiphlUpdatePage) match {
           case Some(_) =>
             traderProfile.niphlNumber match {

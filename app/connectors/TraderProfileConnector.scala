@@ -36,12 +36,12 @@ class TraderProfileConnector @Inject() (config: Configuration, httpClient: HttpC
   private val dataStoreBaseUrl: Service = config.get[Service]("microservice.services.trader-goods-profiles-data-store")
   private val routerUrl: Service        = config.get[Service]("microservice.services.trader-goods-profiles-router")
 
-  private def traderProfileUrl(eori: String) =
-    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/profile"
+  private val traderProfileUrl =
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/profile"
 
-  def submitTraderProfile(traderProfile: TraderProfile, eori: String)(implicit hc: HeaderCarrier): Future[Done] =
+  def submitTraderProfile(traderProfile: TraderProfile)(implicit hc: HeaderCarrier): Future[Done] =
     httpClient
-      .put(traderProfileUrl(eori))
+      .put(traderProfileUrl)
       .withBody(Json.toJson(traderProfile))
       .execute[HttpResponse]
       .flatMap(response =>
@@ -51,9 +51,9 @@ class TraderProfileConnector @Inject() (config: Configuration, httpClient: HttpC
         }
       )
 
-  def checkTraderProfile(eori: String)(implicit hc: HeaderCarrier): Future[Boolean] =
+  def checkTraderProfile(implicit hc: HeaderCarrier): Future[Boolean] =
     httpClient
-      .head(traderProfileUrl(eori))
+      .head(traderProfileUrl)
       .execute[HttpResponse]
       .flatMap { response =>
         response.status match {
@@ -67,12 +67,12 @@ class TraderProfileConnector @Inject() (config: Configuration, httpClient: HttpC
           false
       }
 
-  private def getTraderProfileUrl(eori: String) =
-    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/customs/traders/goods-profiles/$eori"
+  private def getTraderProfileUrl =
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/customs/traders/goods-profiles"
 
-  def getTraderProfile(eori: String)(implicit hc: HeaderCarrier): Future[TraderProfile] =
+  def getTraderProfile(implicit hc: HeaderCarrier): Future[TraderProfile] =
     httpClient
-      .get(getTraderProfileUrl(eori))
+      .get(getTraderProfileUrl)
       .execute[TraderProfile]
 
   def getHistoricProfileData(eori: String)(implicit hc: HeaderCarrier): Future[Option[HistoricProfileData]] = {

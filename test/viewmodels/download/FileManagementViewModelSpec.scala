@@ -128,10 +128,10 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
 
               val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
 
-              when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
+              when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(
                 Seq.empty
               )
-              when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(Seq.empty)
+              when(mockDownloadDataConnector.getDownloadData(any())) thenReturn Future.successful(Seq.empty)
 
               val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
                 .overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector))
@@ -141,12 +141,12 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
               val ec: ExecutionContextExecutor = scala.concurrent.ExecutionContext.global
               val hc: HeaderCarrier            = HeaderCarrier()
 
-              val result = viewModelProvider.apply("eori", mockDownloadDataConnector)(messagesImp, ec, hc).futureValue
+              val result = viewModelProvider.apply(mockDownloadDataConnector)(messagesImp, ec, hc).futureValue
 
               result.pendingFilesTable mustBe None
               result.availableFilesTable mustBe None
 
-              verify(mockDownloadDataConnector, never()).updateSeenStatus(any())(any())
+              verify(mockDownloadDataConnector, never()).updateSeenStatus(any())
 
             }
 
@@ -158,10 +158,10 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
               val downloadDataSummary =
                 Seq(DownloadDataSummary("id", "eori", FileInProgress, Instant.now(), Instant.now(), None))
 
-              when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
+              when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(
                 downloadDataSummary
               )
-              when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(Seq.empty)
+              when(mockDownloadDataConnector.getDownloadData(any())) thenReturn Future.successful(Seq.empty)
 
               val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
                 .overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector))
@@ -171,14 +171,14 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
               val ec: ExecutionContextExecutor = scala.concurrent.ExecutionContext.global
               val hc: HeaderCarrier            = HeaderCarrier()
 
-              val result = viewModelProvider.apply("eori", mockDownloadDataConnector)(messagesImp, ec, hc).futureValue
+              val result = viewModelProvider.apply(mockDownloadDataConnector)(messagesImp, ec, hc).futureValue
 
               val pendingFilesTable = PendingFilesTable(Some(downloadDataSummary))
 
               result.pendingFilesTable mustBe pendingFilesTable
               result.availableFilesTable mustBe None
 
-              verify(mockDownloadDataConnector, never()).updateSeenStatus(any())(any())
+              verify(mockDownloadDataConnector, never()).updateSeenStatus(any())
 
             }
 
@@ -194,14 +194,14 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
                 DownloadDataSummary("id", "eori", FileReadyUnseen, Instant.now(), Instant.now(), Some(fileInfo))
               val downloadData        = DownloadData("file", fileName, 1, Seq.empty)
 
-              when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
+              when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(
                 Seq(downloadDataSummary)
               )
-              when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(
+              when(mockDownloadDataConnector.getDownloadData(any())) thenReturn Future.successful(
                 Seq(downloadData)
               )
 
-              when(mockDownloadDataConnector.updateSeenStatus(any())(any())) thenReturn Future.successful(
+              when(mockDownloadDataConnector.updateSeenStatus(any())) thenReturn Future.successful(
                 Done
               )
 
@@ -213,7 +213,7 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
               val ec: ExecutionContextExecutor = scala.concurrent.ExecutionContext.global
               val hc: HeaderCarrier            = HeaderCarrier()
 
-              val result = viewModelProvider.apply("eori", mockDownloadDataConnector)(messagesImp, ec, hc).futureValue
+              val result = viewModelProvider.apply(mockDownloadDataConnector)(messagesImp, ec, hc).futureValue
 
               val availableFilesTable =
                 AvailableFilesTable(Some(Seq((downloadDataSummary, downloadData))))
@@ -221,7 +221,7 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
               result.pendingFilesTable mustBe None
               result.availableFilesTable mustBe availableFilesTable
 
-              verify(mockDownloadDataConnector).updateSeenStatus(any())(any())
+              verify(mockDownloadDataConnector).updateSeenStatus(any())
             }
 
             "when both files are available and pending" in {
@@ -239,14 +239,14 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
 
               val downloadData = DownloadData("file", fileName, 1, Seq.empty)
 
-              when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
+              when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(
                 downloadDataSummary
               )
-              when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(
+              when(mockDownloadDataConnector.getDownloadData(any())) thenReturn Future.successful(
                 Seq(downloadData)
               )
 
-              when(mockDownloadDataConnector.updateSeenStatus(any())(any())) thenReturn Future.successful(
+              when(mockDownloadDataConnector.updateSeenStatus(any())) thenReturn Future.successful(
                 Done
               )
 
@@ -258,7 +258,7 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
               val ec: ExecutionContextExecutor = scala.concurrent.ExecutionContext.global
               val hc: HeaderCarrier            = HeaderCarrier()
 
-              val result = viewModelProvider.apply("eori", mockDownloadDataConnector)(messagesImp, ec, hc).futureValue
+              val result = viewModelProvider.apply(mockDownloadDataConnector)(messagesImp, ec, hc).futureValue
 
               val availableFilesTable =
                 AvailableFilesTable(Some(Seq((downloadDataSummary.head, downloadData))))
@@ -268,7 +268,7 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
               result.pendingFilesTable mustBe pendingFilesTable
               result.availableFilesTable mustBe availableFilesTable
 
-              verify(mockDownloadDataConnector).updateSeenStatus(any())(any())
+              verify(mockDownloadDataConnector).updateSeenStatus(any())
             }
 
             "when files should be available, but there is no DownloadData" in {
@@ -283,10 +283,10 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
                 DownloadDataSummary("id", "eori", FileReadyUnseen, Instant.now(), Instant.now(), Some(fileInfo))
               )
 
-              when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
+              when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(
                 downloadDataSummary
               )
-              when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(
+              when(mockDownloadDataConnector.getDownloadData(any())) thenReturn Future.successful(
                 Seq.empty
               )
 
@@ -298,12 +298,12 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
               val ec: ExecutionContextExecutor = scala.concurrent.ExecutionContext.global
               val hc: HeaderCarrier            = HeaderCarrier()
 
-              val result = viewModelProvider.apply("eori", mockDownloadDataConnector)(messagesImp, ec, hc).futureValue
+              val result = viewModelProvider.apply(mockDownloadDataConnector)(messagesImp, ec, hc).futureValue
 
               result.pendingFilesTable mustBe None
               result.availableFilesTable mustBe None
 
-              verify(mockDownloadDataConnector, never()).updateSeenStatus(any())(any())
+              verify(mockDownloadDataConnector, never()).updateSeenStatus(any())
 
             }
 
@@ -320,10 +320,10 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
               )
               val downloadData        = DownloadData("unmatched", "unmatched", 1, Seq.empty)
 
-              when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(
+              when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(
                 downloadDataSummary
               )
-              when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(
+              when(mockDownloadDataConnector.getDownloadData(any())) thenReturn Future.successful(
                 Seq(downloadData)
               )
 
@@ -335,12 +335,12 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
               val ec: ExecutionContextExecutor = scala.concurrent.ExecutionContext.global
               val hc: HeaderCarrier            = HeaderCarrier()
 
-              val result = viewModelProvider.apply("eori", mockDownloadDataConnector)(messagesImp, ec, hc).futureValue
+              val result = viewModelProvider.apply(mockDownloadDataConnector)(messagesImp, ec, hc).futureValue
 
               result.pendingFilesTable mustBe None
               result.availableFilesTable mustBe None
 
-              verify(mockDownloadDataConnector, never()).updateSeenStatus(any())(any())
+              verify(mockDownloadDataConnector, never()).updateSeenStatus(any())
 
             }
           }

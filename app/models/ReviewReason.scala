@@ -43,10 +43,7 @@ object ReviewReason {
       (isCategorised, adviceStatus) match {
         case (true, AdviceStatus.AdviceReceived)                                  =>
           Some(
-            (
-              "singleRecord.commodityReviewReason.categorised.adviceReceived",
-              tagText
-            )
+            ("singleRecord.commodityReviewReason.categorised.adviceReceived", tagText)
           )
         case (true, adviceStatus) if adviceStatus == AdviceStatus.NotRequested    =>
           Some(("singleRecord.commodityReviewReason.categorised", tagText))
@@ -54,10 +51,7 @@ object ReviewReason {
           Some(("singleRecord.commodityReviewReason.adviceReceived", tagText))
         case (false, adviceStatus) if adviceStatus != AdviceStatus.AdviceReceived =>
           Some(
-            (
-              "singleRecord.commodityReviewReason.notCategorised.noAdvice",
-              tagText
-            )
+            ("singleRecord.commodityReviewReason.notCategorised.noAdvice", tagText)
           )
         case (_, _)                                                               => None
       }

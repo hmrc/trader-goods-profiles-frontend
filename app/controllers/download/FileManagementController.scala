@@ -45,7 +45,7 @@ class FileManagementController @Inject() (
   def onPageLoad(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData).async {
     implicit request =>
       if (config.downloadFileEnabled) {
-        viewModelProvider(request.eori, downloadDataConnector).map { viewModel =>
+        viewModelProvider(downloadDataConnector).map { viewModel =>
           Ok(view(viewModel))
         }
       } else {

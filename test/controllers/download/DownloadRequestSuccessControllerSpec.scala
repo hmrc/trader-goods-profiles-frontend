@@ -39,10 +39,10 @@ class DownloadRequestSuccessControllerSpec extends SpecBase {
     "must redirect to Journey Recovery for a GET if no email is found" in {
 
       val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-      when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+      when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
 
       val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
-      when(mockDownloadDataConnector.getEmail(any())(any())) thenReturn Future.successful(None)
+      when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(None)
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(inject.bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
@@ -71,10 +71,10 @@ class DownloadRequestSuccessControllerSpec extends SpecBase {
       val email     = Email(address, timestamp)
 
       val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-      when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+      when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
 
       val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
-      when(mockDownloadDataConnector.getEmail(any())(any())) thenReturn Future.successful(Some(email))
+      when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(Some(email))
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(inject.bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
@@ -94,8 +94,8 @@ class DownloadRequestSuccessControllerSpec extends SpecBase {
           messages(application)
         ).toString
 
-        verify(mockTraderProfileConnector, never()).checkTraderProfile(any())(any())
-        verify(mockDownloadDataConnector, atLeastOnce()).getEmail(any())(any())
+        verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
+        verify(mockDownloadDataConnector, atLeastOnce()).getEmail(any())
       }
     }
   }

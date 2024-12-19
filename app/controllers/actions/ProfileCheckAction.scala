@@ -33,7 +33,7 @@ class ProfileCheckActionImpl @Inject() (
 
   def filter[A](request: IdentifierRequest[A]): Future[Option[Result]] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
-    traderProfileConnector.checkTraderProfile(request.eori).map {
+    traderProfileConnector.checkTraderProfile.map {
       case true  => Some(Redirect(routes.HomePageController.onPageLoad()))
       case false => None
     }
