@@ -16,22 +16,19 @@
 
 @import config.FrontendAppConfig
 @import views.html.components._
-@import models.Country._
 @import viewmodels.LabelSize._
 
 
 @this(
       config: FrontendAppConfig,
-      paragraphBody: paragraphBody,
       link: link,
       formHelper: FormWithCSRF,
       govukInput: GovukInput,
-      govukButton: GovukButton,
-      govukCheckboxes : GovukCheckboxes,
-      govukSelect: GovukSelect
+      govukButton: GovukButton
+
 )
 
-@(form: Form[_], countries: Seq[Country], page: Int)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], page: Int)(implicit request: Request[_], messages: Messages)
 
 <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l">@messages("goodsRecords.title")</h1>
