@@ -19,179 +19,155 @@ package models.outboundLink
 sealed trait OutboundLink {
   val link: String
   val linkTextKey: String
+  val originatingPage: String
 }
 
-object OutboundLink {
+object OutboundLink { // TODO: Use case class for the links, but take the link text in have an approved list of message keys for the links?
 
   // Help & Support Page
-  case object ImportGoodsIntoUK extends OutboundLink {
+  case class ImportGoodsIntoUK(linkTextKey: String, originatingPage: String) extends OutboundLink {
     val link: String        = "https://www.gov.uk/import-goods-into-uk"
-    val linkTextKey: String = "helpAndSupport.p2.linkText"
   }
 
-  case object TradingNI extends OutboundLink {
+  case class TradingNI(linkTextKey: String, originatingPage: String) extends OutboundLink {
     val link: String        = "https://www.gov.uk/guidance/trading-and-moving-goods-in-and-out-of-northern-ireland"
-    val linkTextKey: String = "helpAndSupport.p3.linkText"
   }
 
-  case object GoodsNotAtRisk extends OutboundLink {
+  case class GoodsNotAtRisk(linkTextKey: String, originatingPage: String) extends OutboundLink {
     val link: String        =
       "https://www.gov.uk/guidance/check-if-you-can-declare-goods-you-bring-into-northern-ireland-not-at-risk-of-moving-to-the-eu"
-    val linkTextKey: String = "helpAndSupport.p4.linkText"
   }
 
-  case object HMRCContact extends OutboundLink {
+  case class HMRCContact(linkTextKey: String, originatingPage: String) extends OutboundLink {
     val link: String        =
       "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/customs-international-trade-and-excise-enquiries"
-    val linkTextKey: String = "helpAndSupport.p5.linkText"
   }
 
-  case object FindingCommodityCodes extends OutboundLink {
+  case class FindingCommodityCodes(linkTextKey: String, originatingPage: String) extends OutboundLink {
     val link: String        =
       "https://www.gov.uk/guidance/finding-commodity-codes-for-imports-or-exports?step-by-step-nav=849f71d1-f290-4a8e-9458-add936efefc5"
-    val linkTextKey: String = "helpAndSupport.p6.linkText"
   }
 
-  case object TradeTariffXI extends OutboundLink {
+  case class TradeTariffXI(linkTextKey: String, originatingPage: String) extends OutboundLink {
     val link: String        = "https://www.trade-tariff.service.gov.uk/xi/find_commodity"
-    val linkTextKey: String = "helpAndSupport.p7.linkText"
   }
 
-  case object TradeTariffHelp extends OutboundLink {
+  case class TradeTariffHelp(linkTextKey: String, originatingPage: String) extends OutboundLink {
     val link: String        = "https://www.trade-tariff.service.gov.uk/help"
-    val linkTextKey: String = "helpAndSupport.p8.linkText"
   }
 
-  case object BindingTariff extends OutboundLink {
+  case class BindingTariff(linkTextKey: String, originatingPage: String) extends OutboundLink {
     val link: String        = "https://www.gov.uk/guidance/apply-for-a-binding-tariff-information-decision"
-    val linkTextKey: String = "helpAndSupport.p9.linkText"
   }
 
-  case object AskHMRCChat extends OutboundLink {
+  case class AskHMRCChat(linkTextKey: String, originatingPage: String) extends OutboundLink {
     val link: String        = "https://www.tax.service.gov.uk/ask-hmrc/chat/trade-tariff"
-    val linkTextKey: String = "helpAndSupport.p10.linkText"
   }
 
-  case object RetailMovementScheme extends OutboundLink {
+  case class RetailMovementScheme(linkTextKey: String, originatingPage: String) extends OutboundLink {
     val link: String        =
       "https://www.gov.uk/government/publications/retail-movement-scheme-how-the-scheme-will-work/retail-movement-scheme-how-the-scheme-will-work"
-    val linkTextKey: String = "helpAndSupport.p11.linkText"
   }
 
-  case object RegisterAndSeal extends OutboundLink {
+  case class RegisterAndSeal(linkTextKey: String, originatingPage: String) extends OutboundLink {
     val link: String        =
       "https://www.gov.uk/guidance/northern-ireland-retail-movement-scheme-how-to-register-and-seal-consignments"
-    val linkTextKey: String = "helpAndSupport.p12.linkText"
   }
 
-  case object MovingPlantsGBtoNI extends OutboundLink {
+  case class MovingPlantsGBtoNI(linkTextKey: String, originatingPage: String) extends OutboundLink {
     val link: String        = "https://www.gov.uk/guidance/moving-plants-from-great-britain-to-northern-ireland"
-    val linkTextKey: String = "helpAndSupport.p13.linkText"
   }
 
-  case object AdditionalSupportContacts extends OutboundLink {
+  case class AdditionalSupportContacts(linkTextKey: String, originatingPage: String) extends OutboundLink {
     val link: String        = "#" // TODO add correct link when defined by design
-    val linkTextKey: String = "helpAndSupport.p14.linkText"
   }
 
-  case object TraderSupportService extends OutboundLink {
+  case class TraderSupportService(linkTextKey: String, originatingPage: String) extends OutboundLink {
     val link: String        = "https://www.gov.uk/guidance/trader-support-service"
-    val linkTextKey: String = "helpAndSupport.p15.linkText"
   }
 
   // Country of Origin Page
-  case object CountryOfOrigin extends OutboundLink {
+  case class CountryOfOrigin(linkTextKey: String, originatingPage: String) extends OutboundLink {
     val link: String        = "https://www.gov.uk/guidance/check-your-goods-meet-the-rules-of-origin"
-    val linkTextKey: String = "countryOfOrigin.p2.linkText"
   }
 
   // Commodity Code Page
-  case object FindCommodity extends OutboundLink {
+  case class FindCommodity(linkTextKey: String, originatingPage: String) extends OutboundLink {
     val link: String        = "https://www.trade-tariff.service.gov.uk/xi/find_commodity"
-    val linkTextKey: String = "commodityCode.p1.linkText"
   }
 
   // Longer Commodity Code Page
-  case object FindLongCommodity extends OutboundLink {
+  case class FindLongCommodity(linkTextKey: String, originatingPage: String) extends OutboundLink {
     val link: String        = "https://www.trade-tariff.service.gov.uk/xi/find_commodity"
-    val linkTextKey: String = "longerCommodityCode.linkText"
   }
 
   // Has Correct Goods Page
-  case object FindCommodityHasCorrectGoods extends OutboundLink {
+  case class FindCommodityHasCorrectGoods(linkTextKey: String, originatingPage: String) extends OutboundLink {
     val link: String        = "https://www.trade-tariff.service.gov.uk/xi/find_commodity"
-    val linkTextKey: String = "hasCorrectGoods.p2.linkText"
   }
 
   // Assessment Page
-  case object FindCommodityAssessments extends OutboundLink {
+  case class FindCommodityAssessments(linkTextKey: String, originatingPage: String) extends OutboundLink {
     val link: String        = "https://www.trade-tariff.service.gov.uk/xi/find_commodity"
-    val linkTextKey: String = "assessment.linkText"
   }
 
   // Has Nirms Page
-  case object RetailMovement extends OutboundLink {
+  case class RetailMovement(linkTextKey: String, originatingPage: String) extends OutboundLink {
     val link: String        =
       "https://www.gov.uk/government/publications/retail-movement-scheme-how-the-scheme-will-work/retail-movement-scheme-how-the-scheme-will-work#product-eligibility"
-    val linkTextKey: String = "hasNirms.p2.linkText"
   }
 
   // Has Niphl Page
-  case object MovingPlants extends OutboundLink {
+  case class MovingPlants(linkTextKey: String, originatingPage: String) extends OutboundLink {
     val link: String        = "https://www.gov.uk/guidance/moving-plants-from-great-britain-to-northern-ireland"
-    val linkTextKey: String = "hasNiphl.p2.linkText"
   }
 
   // Profile Setup Page
-  case object ApplyForAuth extends OutboundLink {
+  case class ApplyForAuth(linkTextKey: String, originatingPage: String) extends OutboundLink {
     val link: String        =
       "https://www.gov.uk/guidance/apply-for-authorisation-for-the-uk-internal-market-scheme-if-you-bring-goods-into-northern-ireland"
-    val linkTextKey: String = "profileSetup.p3.linkText"
   }
 
-  case object RetailMovementProfile extends OutboundLink {
+  case class RetailMovementProfile(linkTextKey: String, originatingPage: String) extends OutboundLink {
     val link: String        =
       "https://www.gov.uk/guidance/northern-ireland-retail-movement-scheme-how-to-register-and-seal-consignments"
-    val linkTextKey: String = "profileSetup.p6.linkText"
   }
 
-  case object MovingPlantProfile extends OutboundLink {
+  case class MovingPlantProfile(linkTextKey: String, originatingPage: String) extends OutboundLink {
     val link: String        = "https://www.gov.uk/guidance/moving-plants-from-great-britain-to-northern-ireland"
-    val linkTextKey: String = "profileSetup.p9.linkText"
   }
 
   // Advice Start Page
-  case object ApplyBinding extends OutboundLink {
+  case class ApplyBinding(linkTextKey: String, originatingPage: String) extends OutboundLink {
     val link: String        = "https://www.gov.uk/guidance/apply-for-a-binding-tariff-information-decision"
-    val linkTextKey: String = "adviceStart.p2.linkText"
   }
-
-  val allLinks: Seq[OutboundLink] = Seq(
-    ImportGoodsIntoUK,
-    TradingNI,
-    GoodsNotAtRisk,
-    HMRCContact,
-    FindingCommodityCodes,
-    TradeTariffXI,
-    TradeTariffHelp,
-    BindingTariff,
-    AskHMRCChat,
-    RetailMovementScheme,
-    RegisterAndSeal,
-    MovingPlantsGBtoNI,
-    AdditionalSupportContacts,
-    TraderSupportService,
-    CountryOfOrigin,
-    FindCommodity,
-    FindLongCommodity,
-    FindCommodityHasCorrectGoods,
-    FindCommodityAssessments,
-    RetailMovement,
-    MovingPlants,
-    ApplyForAuth,
-    RetailMovementProfile,
-    MovingPlantProfile,
-    ApplyBinding
-  )
+//
+//  val allLinks: Seq[OutboundLink] = Seq(
+//    ImportGoodsIntoUK,
+//    TradingNI,
+//    GoodsNotAtRisk,
+//    HMRCContact,
+//    FindingCommodityCodes,
+//    TradeTariffXI,
+//    TradeTariffHelp,
+//    BindingTariff,
+//    AskHMRCChat,
+//    RetailMovementScheme,
+//    RegisterAndSeal,
+//    MovingPlantsGBtoNI,
+//    AdditionalSupportContacts,
+//    TraderSupportService,
+//    CountryOfOrigin,
+//    FindCommodity,
+//    FindLongCommodity,
+//    FindCommodityHasCorrectGoods,
+//    FindCommodityAssessments,
+//    RetailMovement,
+//    MovingPlants,
+//    ApplyForAuth,
+//    RetailMovementProfile,
+//    MovingPlantProfile,
+//    ApplyBinding
+//  )
 
 }

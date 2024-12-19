@@ -17,6 +17,7 @@
 package controllers
 
 import controllers.actions._
+import models.outboundLink.OutboundLink
 import models.outboundLink.OutboundLink.allLinks
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -32,13 +33,13 @@ class OutboundController @Inject() (
   val controllerComponents: MessagesControllerComponents
 ) extends BaseController {
 
-  def redirect(link: String): Action[AnyContent] = identify { implicit request =>
+  def redirect(outboundLink: OutboundLink): Action[AnyContent] = identify { implicit request =>
     val linkInfo = allLinks.find(_.link == link)
 
     linkInfo match {
       case Some(linkInfo) =>
         val message = messagesApi.preferred(request)(linkInfo.linkTextKey)
-        auditService.auditOutboundClick(request.affinityGroup, request.eori, link, message)
+        auditService.auditOutboundClick(request.affinityGroup, request.eori, link, message, originatingPage)
         Redirect(linkInfo.link)
       case None           =>
         Redirect(
