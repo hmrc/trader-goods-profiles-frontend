@@ -35,10 +35,4 @@ class OutboundController @Inject() (
     auditService.auditOutboundClick(request.affinityGroup, request.eori, link, message, page)
     Redirect(link)
   }
-
-  def dynamicLinkRedirect(link: String, message: String, page: String): Action[AnyContent] = identify {
-    implicit request =>
-      auditService.auditOutboundClick(request.affinityGroup, request.eori, link, message, page)
-      Redirect(link)
-  }
 }

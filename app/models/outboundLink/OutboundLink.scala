@@ -165,6 +165,23 @@ object OutboundLink {
     }
   }
 
+  case class AssessmentDynamicLink(
+    link: String,
+    mode: Mode,
+    recordId: String,
+    assessmentNumber: Int,
+    isReassessment: Boolean
+  ) extends OutboundLink {
+    val linkTextKey: String     = "assessment.regulationUrl.linkText"
+    val originatingPage: String = if (isReassessment) {
+      controllers.categorisation.routes.AssessmentController
+        .onPageLoadReassessment(mode, recordId, assessmentNumber)
+        .url
+    } else {
+      controllers.categorisation.routes.AssessmentController.onPageLoad(mode, recordId, assessmentNumber).url
+    }
+  }
+
   // Has Nirms Page
   case class RetailMovement(mode: Mode, isCreateJourney: Boolean) extends OutboundLink {
     val link: String            =

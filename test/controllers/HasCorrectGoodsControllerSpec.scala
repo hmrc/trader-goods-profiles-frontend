@@ -286,7 +286,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
               Commodity("654321", List("Description", "Other"), Instant.now, None),
               onSubmitAction,
               NormalMode,
-              None
+              Some(testRecordId)
             )(
               request,
               messages(application)
@@ -331,7 +331,13 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
             val result = route(application, request).value
 
             status(result) mustEqual OK
-            contentAsString(result) mustEqual view(form.fill(true), commodity, onSubmitAction, NormalMode, None)(
+            contentAsString(result) mustEqual view(
+              form.fill(true),
+              commodity,
+              onSubmitAction,
+              NormalMode,
+              Some(testRecordId)
+            )(
               request,
               messages(application)
             ).toString
@@ -441,7 +447,13 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
             val result = route(application, request).value
 
             status(result) mustEqual BAD_REQUEST
-            contentAsString(result) mustEqual view(boundForm, commodity, onSubmitAction, NormalMode, None)(
+            contentAsString(result) mustEqual view(
+              boundForm,
+              commodity,
+              onSubmitAction,
+              NormalMode,
+              Some(testRecordId)
+            )(
               request,
               messages(application)
             ).toString
@@ -483,7 +495,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
             Commodity("654321", List("Description"), Instant.now, None),
             onSubmitAction,
             NormalMode,
-            None
+            Some(testRecordId)
           )(
             request,
             messages(application)
@@ -526,7 +538,13 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form.fill(true), commodity, onSubmitAction, NormalMode, None)(
+          contentAsString(result) mustEqual view(
+            form.fill(true),
+            commodity,
+            onSubmitAction,
+            NormalMode,
+            Some(testRecordId)
+          )(
             request,
             messages(application)
           ).toString
@@ -1018,7 +1036,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(boundForm, commodity, onSubmitAction, NormalMode, None)(
+          contentAsString(result) mustEqual view(boundForm, commodity, onSubmitAction, NormalMode, Some(testRecordId))(
             request,
             messages(application)
           ).toString

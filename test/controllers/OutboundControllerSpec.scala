@@ -64,37 +64,5 @@ class OutboundControllerSpec extends SpecBase {
         }
       }
     }
-
-    "dynamicLinkRedirect" - {
-      "must redirect to the link" in {
-
-        val mockAuditService = mock[AuditService]
-        when(mockAuditService.auditOutboundClick(any(), any(), any(), any(), any())(any()))
-          .thenReturn(Future.successful(Done))
-
-        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(bind[AuditService].toInstance(mockAuditService))
-          .build()
-
-        running(application) {
-          val request =
-            FakeRequest(
-              GET,
-              routes.OutboundController
-                .dynamicLinkRedirect(
-                  "dynamic link",
-                  "dynamic message",
-                  "dynamic page"
-                )
-                .url
-            )
-
-          val result = route(application, request).value
-
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustBe "dynamic link"
-        }
-      }
-    }
   }
 }

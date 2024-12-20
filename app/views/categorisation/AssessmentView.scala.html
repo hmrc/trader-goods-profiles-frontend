@@ -40,9 +40,11 @@
         <p class="govuk-body">@messages("assessment.guidance", commodityCode)</p>
         <p class="govuk-body" lang="en">@themeDescription</p>
 
-        @if(regulationUrl.nonEmpty) {
+        @regulationUrl.map { regulationUrl =>
             <p class="govuk-body">@messages("assessment.regulationUrl.text")
-                <a target="_blank" href="@regulationUrl" class="govuk-link">@messages("assessment.regulationUrl.linkText")</a>
+                <a target="_blank"
+                href="@OutboundLink.AssessmentDynamicLink(regulationUrl, mode, recordId, number, isReassessment).outboundCall"
+                class="govuk-link">@messages(OutboundLink.AssessmentDynamicLink(regulationUrl, mode, recordId, number, isReassessment).linkTextKey)</a>
             </p>
         }
 
