@@ -26,7 +26,7 @@
         govukCheckboxes: GovukCheckboxes,
 )
 
-@(form: Form[_], mode: Mode, recordId: String, number: Int, codesAndDescriptions: Seq[(String, String)], commodityCode: String, onSubmitAction: Call, themeDescription: String, regulationUrl: Option[String] = None)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, recordId: String, number: Int, codesAndDescriptions: Seq[(String, String)], commodityCode: String, onSubmitAction: Call, themeDescription: String, regulationUrl: Option[String] = None, isReassessment: Boolean)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("assessment.title", number))) {
 
@@ -47,8 +47,8 @@
         }
 
         <p class="govuk-body">
-            <a href="@routes.OutboundController.redirect(OutboundLink.FindCommodityAssessments.link)"
-               target="_blank" class="govuk-link">@messages(OutboundLink.FindCommodityAssessments.linkTextKey)</a>
+            <a href="@OutboundLink.FindCommodityAssessments(mode, recordId, number, isReassessment).outboundCall"
+               target="_blank" class="govuk-link">@messages(OutboundLink.FindCommodityAssessments(mode, recordId, number, isReassessment).linkTextKey)</a>
         </p>
 
             @govukCheckboxes(

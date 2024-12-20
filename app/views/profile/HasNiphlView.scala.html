@@ -25,7 +25,7 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_], action: Call)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], action: Call, mode: Mode, isCreateJourney: Boolean)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("hasNiphl.title"))) {
 
@@ -36,8 +36,8 @@
     <h1 class="govuk-heading-l">@messages("hasNiphl.heading")</h1>
     <p class="govuk-body">@messages("hasNiphl.p1")</p>
     <p class="govuk-body">@messages("hasNiphl.p2")
-        <a class="govuk-link" href="@routes.OutboundController.redirect(OutboundLink.MovingPlants.link)">
-            @messages(OutboundLink.MovingPlants.linkTextKey)</a>.
+        <a class="govuk-link" href="@OutboundLink.MovingPlants(mode, isCreateJourney).outboundCall">
+            @messages(OutboundLink.MovingPlants(mode, isCreateJourney).linkTextKey)</a>.
     </p>
 
     @formHelper(action = action, Symbol("autoComplete") -> "off") {

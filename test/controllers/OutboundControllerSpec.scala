@@ -37,7 +37,8 @@ class OutboundControllerSpec extends SpecBase {
     "must redirect to the link when the link is valid" in {
 
       val mockAuditService = mock[AuditService]
-      when(mockAuditService.auditOutboundClick(any(), any(), any(), any())(any())).thenReturn(Future.successful(Done))
+      when(mockAuditService.auditOutboundClick(any(), any(), any(), any(), any())(any()))
+        .thenReturn(Future.successful(Done))
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(bind[AuditService].toInstance(mockAuditService))
@@ -45,7 +46,16 @@ class OutboundControllerSpec extends SpecBase {
 
       running(application) {
         val request =
-          FakeRequest(GET, routes.OutboundController.redirect(OutboundLink.ImportGoodsIntoUK.link).url)
+          FakeRequest(
+            GET,
+            routes.OutboundController
+              .redirect(
+                OutboundLink.ImportGoodsIntoUK.link,
+                OutboundLink.ImportGoodsIntoUK.linkTextKey,
+                OutboundLink.ImportGoodsIntoUK.originatingPage
+              )
+              .url
+          )
 
         val result = route(application, request).value
 
@@ -57,7 +67,8 @@ class OutboundControllerSpec extends SpecBase {
     "must redirect to the journey recovery page if the link is invalid" in {
 
       val mockAuditService = mock[AuditService]
-      when(mockAuditService.auditOutboundClick(any(), any(), any(), any())(any())).thenReturn(Future.successful(Done))
+      when(mockAuditService.auditOutboundClick(any(), any(), any(), any(), any())(any()))
+        .thenReturn(Future.successful(Done))
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(bind[AuditService].toInstance(mockAuditService))
@@ -65,7 +76,7 @@ class OutboundControllerSpec extends SpecBase {
 
       running(application) {
         val request =
-          FakeRequest(GET, routes.OutboundController.redirect("someLink").url)
+          FakeRequest(GET, routes.OutboundController.redirect("someLink", "someKey", "page").url)
 
         val result = route(application, request).value
 
@@ -77,7 +88,7 @@ class OutboundControllerSpec extends SpecBase {
 
         withClue("must not call audit service") {
           verify(mockAuditService, times(0))
-            .auditOutboundClick(any(), any(), any(), any())(any())
+            .auditOutboundClick(any(), any(), any(), any(), any())(any())
         }
       }
     }

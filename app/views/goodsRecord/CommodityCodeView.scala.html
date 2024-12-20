@@ -26,7 +26,7 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_], action: Call)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], action: Call, mode: Mode, recordId: Option[String])(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("commodityCode.title"))) {
 
@@ -38,7 +38,7 @@
     <p class="govuk-body">
         @messages("commodityCode.p1")
         <a class="govuk-link" target="_blank"
-           href="@routes.OutboundController.redirect(OutboundLink.FindCommodity.link)">@messages(OutboundLink.FindCommodity.linkTextKey)</a>.
+           href="@OutboundLink.FindCommodity(mode, recordId).outboundCall">@messages(OutboundLink.FindCommodity(mode, recordId).linkTextKey)</a>.
     </p>
 
     @formHelper(action = action) {

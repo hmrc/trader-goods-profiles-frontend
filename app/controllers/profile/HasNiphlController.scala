@@ -53,7 +53,7 @@ class HasNiphlController @Inject() (
   def onPageLoadCreate(mode: Mode): Action[AnyContent] =
     (identify andThen checkProfile andThen getData andThen requireData) { implicit request =>
       val preparedForm = prepareForm(HasNiphlPage, form)
-      Ok(view(preparedForm, controllers.profile.routes.HasNiphlController.onSubmitCreate(mode)))
+      Ok(view(preparedForm, controllers.profile.routes.HasNiphlController.onSubmitCreate(mode), mode, isCreateJourney = true))
     }
 
   def onSubmitCreate(mode: Mode): Action[AnyContent] =
@@ -63,7 +63,7 @@ class HasNiphlController @Inject() (
         .fold(
           formWithErrors =>
             Future.successful(
-              BadRequest(view(formWithErrors, controllers.profile.routes.HasNiphlController.onSubmitCreate(mode)))
+              BadRequest(view(formWithErrors, controllers.profile.routes.HasNiphlController.onSubmitCreate(mode), mode, isCreateJourney = true))
             ),
           value =>
             for {
@@ -85,12 +85,14 @@ class HasNiphlController @Inject() (
           } yield Ok(
             view(
               form.fill(traderProfile.niphlNumber.isDefined),
-              controllers.profile.routes.HasNiphlController.onSubmitUpdate(mode)
+              controllers.profile.routes.HasNiphlController.onSubmitUpdate(mode),
+              mode,
+              isCreateJourney = false
             )
           )
         case Some(value) =>
           Future.successful(
-            Ok(view(form.fill(value), controllers.profile.routes.HasNiphlController.onSubmitUpdate(mode)))
+            Ok(view(form.fill(value), controllers.profile.routes.HasNiphlController.onSubmitUpdate(mode), mode, isCreateJourney = false))
           )
       }
     }
@@ -102,7 +104,7 @@ class HasNiphlController @Inject() (
         .fold(
           formWithErrors =>
             Future.successful(
-              BadRequest(view(formWithErrors, controllers.profile.routes.HasNiphlController.onSubmitUpdate(mode)))
+              BadRequest(view(formWithErrors, controllers.profile.routes.HasNiphlController.onSubmitUpdate(mode), mode, isCreateJourney = false))
             ),
           value =>
             traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
