@@ -24,8 +24,8 @@ sealed trait OutboundLink {
   val linkTextKey: String
   val originatingPage: String
 
-  val outboundCall: Call =
-    controllers.routes.OutboundController.redirect(this.link, this.linkTextKey, this.originatingPage)
+  def outboundCall: Call =
+    controllers.routes.OutboundController.redirect(link, linkTextKey, originatingPage)
 }
 
 sealed trait HelpAndSupportLink extends OutboundLink {
