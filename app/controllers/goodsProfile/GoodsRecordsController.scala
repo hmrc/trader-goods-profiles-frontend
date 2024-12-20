@@ -100,6 +100,7 @@ class GoodsRecordsController @Inject() (
 
   def onSearch(page: Int): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
+
       form
         .bindFromRequest()
         .fold(
@@ -137,9 +138,61 @@ class GoodsRecordsController @Inject() (
                   )
                 )
             },
-          searchTerm =>
+          searchTerms =>
+
             for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(GoodsRecordsPage, searchTerm))
+
+              updatedAnswers <- Future.fromTry(request.userAnswers.set(GoodsRecordsPage, searchTerms))
+              _              <- sessionRepository.set(updatedAnswers)
+            } yield Redirect(controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(1))
+        )
+    }
+
+  def onSearchFilter(page: Int): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
+
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors =>
+            goodsRecordConnector.getRecords(request.eori, page, pageSize).flatMap {
+              case Some(goodsRecordsResponse) =>
+                for {
+                  countries <- ottConnector.getCountries
+                } yield {
+                  val firstRecord = getFirstRecordIndex(goodsRecordsResponse.pagination, pageSize)
+                  BadRequest(
+                    view(
+                      formWithErrors,
+                      goodsRecordsResponse.goodsItemRecords,
+                      goodsRecordsResponse.pagination.totalRecords,
+                      getFirstRecordIndex(goodsRecordsResponse.pagination, pageSize),
+                      getLastRecordIndex(firstRecord, pageSize),
+                      countries,
+                      getPagination(
+                        goodsRecordsResponse.pagination.currentPage,
+                        goodsRecordsResponse.pagination.totalPages
+                      ),
+                      page,
+                      pageSize
+                    )
+                  )
+                }
+              case None                       =>
+                Future.successful(
+                  Redirect(
+                    controllers.goodsProfile.routes.GoodsRecordsLoadingController
+                      .onPageLoad(
+                        Some(RedirectUrl(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(page).url))
+                      )
+                  )
+                )
+            },
+          SearchFilterForm =>
+
+            for {
+
+              updatedAnswers <- Future.fromTry(request.userAnswers.set(GoodsRecordsPage, SearchFilterForm))
               _              <- sessionRepository.set(updatedAnswers)
             } yield Redirect(controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(1))
         )

@@ -26,6 +26,8 @@ import play.api.http.Status.{ACCEPTED, NOT_FOUND, NO_CONTENT, OK}
 import play.api.libs.json.Json
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.client.HttpClientV2
+import java.net.URL
+
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -62,11 +64,52 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
 
   private def searchRecordsUrl(
     eori: String,
-    searchTerm: String,
+    searchTerm: Option[String],
     exactMatch: Boolean,
     queryParams: Map[String, String]
   ) =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/filter?searchTerm=$searchTerm&exactMatch=$exactMatch&$queryParams"
+
+//  private def filterSearchRecordsUrl2(
+//                                searchTerm: Option[String],
+//                                exactMatch: Boolean,
+//                                countryOfOrigin: Option[String],
+//                                immiReady: Option[Boolean] = None,
+//                                notReadyForIMMI: Option[Boolean] = None,
+//                                actionNeeded: Option[Boolean] = None,
+//                                queryParams: Map[String, String]
+//                              ) = {
+//
+//    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/records/filter?searchTerm=$searchTerm&exactMatch=$exactMatch&countryOfOrigin=$countryOfOrigin&immiReady=$immiReady&notReadyForIMMI=$notReadyForIMMI&actionNeeded=$actionNeeded&$queryParams"
+//  }
+//
+
+  private def filterSearchRecordsUrl(
+                                      searchTerm: Option[String],
+                                      exactMatch: Boolean,
+                                      countryOfOrigin: Option[String],
+                                      immiReady: Option[Boolean] = None,
+                                      notReadyForIMMI: Option[Boolean] = None,
+                                      actionNeeded: Option[Boolean] = None,
+                                      queryParams: Map[String, String]
+                                    ): URL = {
+
+    val queryParamsSeq = Seq(
+      searchTerm.map(term => s"searchTerm=$term"),
+      Some(s"exactMatch=$exactMatch"),
+      countryOfOrigin.filter(_.nonEmpty).map(origin => s"countryOfOrigin=$origin"),
+      immiReady.map(ready => s"immiReady=$ready"),
+      notReadyForIMMI.map(notReady => s"notReadyForIMMI=$notReady"),
+      actionNeeded.map(needed => s"actionNeeded=$needed")
+    ).flatten ++ queryParams.map { case (key, value) => s"$key=$value" }
+
+    val queryString = queryParamsSeq.mkString("&")
+
+    val urlString = s"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/records/filter?$queryString"
+
+    new URL(urlString)
+  }
+
 
   def submitGoodsRecord(goodsRecord: GoodsRecord)(implicit
     hc: HeaderCarrier
@@ -261,10 +304,15 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
 
   def searchRecords( // TODO: add more parameter when we pick TGP:3003 and change the condition in the else.
     eori: String,
-    searchTerm: String,
+    searchTerm: Option[String] = None,
     exactMatch: Boolean,
+    countryOfOrigin: Option[String],
+    IMMIReady: Option[Boolean] = None,
+    notReadyForIMMI: Option[Boolean] = None,
+    actionNeeded: Option[Boolean] = None,
     page: Int,
     size: Int
+
   )(implicit
     hc: HeaderCarrier
   ): Future[Option[GetRecordsResponse]] = {
@@ -286,8 +334,9 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
           }
         }
     } else {
+      println("+++++++++++++++++++++"+filterSearchRecordsUrl(searchTerm, exactMatch, countryOfOrigin, IMMIReady, notReadyForIMMI, actionNeeded,  queryParams))
       httpClient
-        .get(searchRecordsUrl(eori, searchTerm, exactMatch, queryParams))
+        .get(filterSearchRecordsUrl(searchTerm, exactMatch, countryOfOrigin, IMMIReady, notReadyForIMMI, actionNeeded,  queryParams))
         .setHeader(clientIdHeader)
         .execute[HttpResponse]
         .flatMap { response =>

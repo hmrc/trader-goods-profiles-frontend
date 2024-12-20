@@ -54,7 +54,10 @@ class GoodsRecordsSearchResultController @Inject() (
           if (page < 1) {
             Future.successful(navigator.journeyRecovery())
           } else {
-            goodsRecordConnector.searchRecords(request.eori, searchText, exactMatch = false, page, pageSize).flatMap {
+            goodsRecordConnector.searchRecords(request.eori, Some(searchText), exactMatch = false, countryOfOrigin = Some(""),
+              IMMIReady = Some(false),
+              notReadyForIMMI = Some(false),
+              actionNeeded = Some(false), page, pageSize).flatMap {
               case Some(searchResponse) =>
                 if (searchResponse.pagination.totalRecords != 0) {
                   ottConnector.getCountries.map { countries =>
