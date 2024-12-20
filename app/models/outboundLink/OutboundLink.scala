@@ -125,11 +125,11 @@ object OutboundLink {
 
   // Commodity Code Page
   case class FindCommodity(mode: Mode, recordId: Option[String]) extends OutboundLink {
-    val link: String = "https://www.trade-tariff.service.gov.uk/xi/find_commodity"
-    val linkTextKey: String = "commodityCode.p1.linkText"
+    val link: String            = "https://www.trade-tariff.service.gov.uk/xi/find_commodity"
+    val linkTextKey: String     = "commodityCode.p1.linkText"
     val originatingPage: String = recordId match {
       case Some(recordId) => controllers.goodsRecord.routes.CommodityCodeController.onSubmitUpdate(mode, recordId).url
-      case _ => controllers.goodsRecord.routes.CommodityCodeController.onSubmitCreate(mode).url
+      case _              => controllers.goodsRecord.routes.CommodityCodeController.onSubmitCreate(mode).url
     }
   }
 
@@ -146,8 +146,8 @@ object OutboundLink {
     val link: String            = "https://www.trade-tariff.service.gov.uk/xi/find_commodity"
     val linkTextKey: String     = "hasCorrectGoods.p2.linkText"
     val originatingPage: String = recordId match {
-      case Some(recordId) =>   controllers.routes.HasCorrectGoodsController.onSubmitUpdate(mode, recordId).url
-      case _ =>       controllers.routes.HasCorrectGoodsController.onSubmitCreate(mode).url
+      case Some(recordId) => controllers.routes.HasCorrectGoodsController.onSubmitUpdate(mode, recordId).url
+      case _              => controllers.routes.HasCorrectGoodsController.onSubmitCreate(mode).url
     }
   }
 

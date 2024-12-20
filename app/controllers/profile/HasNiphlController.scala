@@ -53,7 +53,14 @@ class HasNiphlController @Inject() (
   def onPageLoadCreate(mode: Mode): Action[AnyContent] =
     (identify andThen checkProfile andThen getData andThen requireData) { implicit request =>
       val preparedForm = prepareForm(HasNiphlPage, form)
-      Ok(view(preparedForm, controllers.profile.routes.HasNiphlController.onSubmitCreate(mode), mode, isCreateJourney = true))
+      Ok(
+        view(
+          preparedForm,
+          controllers.profile.routes.HasNiphlController.onSubmitCreate(mode),
+          mode,
+          isCreateJourney = true
+        )
+      )
     }
 
   def onSubmitCreate(mode: Mode): Action[AnyContent] =
@@ -63,7 +70,14 @@ class HasNiphlController @Inject() (
         .fold(
           formWithErrors =>
             Future.successful(
-              BadRequest(view(formWithErrors, controllers.profile.routes.HasNiphlController.onSubmitCreate(mode), mode, isCreateJourney = true))
+              BadRequest(
+                view(
+                  formWithErrors,
+                  controllers.profile.routes.HasNiphlController.onSubmitCreate(mode),
+                  mode,
+                  isCreateJourney = true
+                )
+              )
             ),
           value =>
             for {
@@ -92,7 +106,14 @@ class HasNiphlController @Inject() (
           )
         case Some(value) =>
           Future.successful(
-            Ok(view(form.fill(value), controllers.profile.routes.HasNiphlController.onSubmitUpdate(mode), mode, isCreateJourney = false))
+            Ok(
+              view(
+                form.fill(value),
+                controllers.profile.routes.HasNiphlController.onSubmitUpdate(mode),
+                mode,
+                isCreateJourney = false
+              )
+            )
           )
       }
     }
@@ -104,7 +125,14 @@ class HasNiphlController @Inject() (
         .fold(
           formWithErrors =>
             Future.successful(
-              BadRequest(view(formWithErrors, controllers.profile.routes.HasNiphlController.onSubmitUpdate(mode), mode, isCreateJourney = false))
+              BadRequest(
+                view(
+                  formWithErrors,
+                  controllers.profile.routes.HasNiphlController.onSubmitUpdate(mode),
+                  mode,
+                  isCreateJourney = false
+                )
+              )
             ),
           value =>
             traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>

@@ -84,7 +84,8 @@ class CommodityCodeController @Inject() (
 
       val onSubmitAction: Call = controllers.goodsRecord.routes.CommodityCodeController.onSubmitUpdate(mode, recordId)
 
-      Ok(view(preparedForm, onSubmitAction, mode, Some(recordId))).removingFromSession(dataRemoved, dataUpdated, pageUpdated)
+      Ok(view(preparedForm, onSubmitAction, mode, Some(recordId)))
+        .removingFromSession(dataRemoved, dataUpdated, pageUpdated)
     }
 
   def onSubmitCreate(mode: Mode): Action[AnyContent] =
@@ -148,7 +149,13 @@ class CommodityCodeController @Inject() (
       None
     )
 
-  private def handleFormError[T](form: Form[T], errorKey: String, onSubmitAction: Call, mode: Mode, recordId: Option[String])(implicit
+  private def handleFormError[T](
+    form: Form[T],
+    errorKey: String,
+    onSubmitAction: Call,
+    mode: Mode,
+    recordId: Option[String]
+  )(implicit
     request: Request[AnyContent]
   ): Result = {
     val formWithApiErrors = form.copy(errors = Seq(FormError("value", getMessage(errorKey))))
