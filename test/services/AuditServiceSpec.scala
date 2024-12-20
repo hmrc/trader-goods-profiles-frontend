@@ -1230,10 +1230,11 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
 
       val fakeAuditEvent = DataEvent("source", "type")
-      when(mockAuditFactory.createOutboundClickEvent(any(), any(), any(), any())(any()))
+      when(mockAuditFactory.createOutboundClickEvent(any(), any(), any(), any(), any())(any()))
         .thenReturn(fakeAuditEvent)
 
-      val result = await(auditService.auditOutboundClick(AffinityGroup.Individual, testEori, "link", "linkText"))
+      val result =
+        await(auditService.auditOutboundClick(AffinityGroup.Individual, testEori, "link", "linkText", "page"))
 
       result mustBe Done
 
@@ -1243,7 +1244,8 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
             eqTo(AffinityGroup.Individual),
             eqTo(testEori),
             eqTo("link"),
-            eqTo("linkText")
+            eqTo("linkText"),
+            eqTo("page")
           )(any())
       }
 
@@ -1259,10 +1261,11 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(auditFailure))
 
       val fakeAuditEvent = DataEvent("source", "type")
-      when(mockAuditFactory.createOutboundClickEvent(any(), any(), any(), any())(any()))
+      when(mockAuditFactory.createOutboundClickEvent(any(), any(), any(), any(), any())(any()))
         .thenReturn(fakeAuditEvent)
 
-      val result = await(auditService.auditOutboundClick(AffinityGroup.Individual, testEori, "link", "linkText"))
+      val result =
+        await(auditService.auditOutboundClick(AffinityGroup.Individual, testEori, "link", "linkText", "page"))
 
       result mustBe Done
 
@@ -1272,7 +1275,8 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
             eqTo(AffinityGroup.Individual),
             eqTo(testEori),
             eqTo("link"),
-            eqTo("linkText")
+            eqTo("linkText"),
+            eqTo("page")
           )(any())
       }
 
@@ -1287,7 +1291,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
         .thenReturn(Future.failed(new RuntimeException("audit error")))
 
       intercept[RuntimeException] {
-        await(auditService.auditOutboundClick(AffinityGroup.Individual, testEori, "link", "linkText"))
+        await(auditService.auditOutboundClick(AffinityGroup.Individual, testEori, "link", "linkText", "page"))
       }
 
     }

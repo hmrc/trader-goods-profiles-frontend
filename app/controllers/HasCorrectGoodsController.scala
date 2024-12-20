@@ -66,7 +66,7 @@ class HasCorrectGoodsController @Inject() (
       val preparedForm = prepareForm(HasCorrectGoodsPage, form)
       val submitAction = routes.HasCorrectGoodsController.onSubmitCreate(mode)
       request.userAnswers.get(CommodityQuery) match {
-        case Some(commodity) => Ok(view(preparedForm, commodity, submitAction))
+        case Some(commodity) => Ok(view(preparedForm, commodity, submitAction, mode, recordId = None))
         case None            => navigator.journeyRecovery()
       }
     }
@@ -76,7 +76,7 @@ class HasCorrectGoodsController @Inject() (
       val preparedForm = prepareForm(HasCorrectGoodsCommodityCodeUpdatePage(recordId), form)
       val submitAction = routes.HasCorrectGoodsController.onSubmitUpdate(mode, recordId)
       request.userAnswers.get(CommodityUpdateQuery(recordId)) match {
-        case Some(commodity) => Ok(view(preparedForm, commodity, submitAction))
+        case Some(commodity) => Ok(view(preparedForm, commodity, submitAction, mode, Some(recordId)))
         case None            => navigator.journeyRecovery()
       }
     }
@@ -89,7 +89,7 @@ class HasCorrectGoodsController @Inject() (
       request.userAnswers.get(LongerCommodityQuery(recordId)) match {
         case Some(commodity) =>
           Ok(
-            view(preparedForm, commodity, submitAction)
+            view(preparedForm, commodity, submitAction, mode, Some(recordId))
           )
         case None            => navigator.journeyRecovery()
       }
@@ -103,7 +103,8 @@ class HasCorrectGoodsController @Inject() (
         .fold(
           formWithErrors =>
             request.userAnswers.get(CommodityQuery) match {
-              case Some(commodity) => Future.successful(BadRequest(view(formWithErrors, commodity, submitAction)))
+              case Some(commodity) =>
+                Future.successful(BadRequest(view(formWithErrors, commodity, submitAction, mode, recordId = None)))
               case None            => Future.successful(navigator.journeyRecovery())
             },
           value =>
@@ -127,7 +128,7 @@ class HasCorrectGoodsController @Inject() (
               case Some(commodity) =>
                 Future.successful(
                   BadRequest(
-                    view(formWithErrors, commodity, submitAction)
+                    view(formWithErrors, commodity, submitAction, mode, Some(recordId))
                   )
                 )
               case None            => Future.successful(navigator.journeyRecovery())
@@ -151,7 +152,8 @@ class HasCorrectGoodsController @Inject() (
         .fold(
           formWithErrors =>
             request.userAnswers.get(CommodityUpdateQuery(recordId)) match {
-              case Some(commodity) => Future.successful(BadRequest(view(formWithErrors, commodity, submitAction)))
+              case Some(commodity) =>
+                Future.successful(BadRequest(view(formWithErrors, commodity, submitAction, mode, Some(recordId))))
               case None            => Future.successful(navigator.journeyRecovery())
             },
           value => {

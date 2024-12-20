@@ -63,7 +63,7 @@ class CommodityCodeController @Inject() (
 
       val onSubmitAction: Call = controllers.goodsRecord.routes.CommodityCodeController.onSubmitCreate(mode)
 
-      Ok(view(preparedForm, onSubmitAction))
+      Ok(view(preparedForm, onSubmitAction, mode, recordId = None))
     }
 
   def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] =
@@ -84,7 +84,8 @@ class CommodityCodeController @Inject() (
 
       val onSubmitAction: Call = controllers.goodsRecord.routes.CommodityCodeController.onSubmitUpdate(mode, recordId)
 
-      Ok(view(preparedForm, onSubmitAction)).removingFromSession(dataRemoved, dataUpdated, pageUpdated)
+      Ok(view(preparedForm, onSubmitAction, mode, Some(recordId)))
+        .removingFromSession(dataRemoved, dataUpdated, pageUpdated)
     }
 
   def onSubmitCreate(mode: Mode): Action[AnyContent] =
@@ -95,13 +96,13 @@ class CommodityCodeController @Inject() (
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, onSubmitAction))),
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, onSubmitAction, mode, recordId = None))),
           value =>
             (for {
               commodity <- fetchCommodity(value, countryOfOrigin)
               result    <- validateAndProcessCommodityCreate(commodity, value, onSubmitAction, mode)
             } yield result).recover { case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
-              handleFormError(form, "commodityCode.error.invalid", onSubmitAction)
+              handleFormError(form, "commodityCode.error.invalid", onSubmitAction, mode, recordId = None)
             }
         )
     }
@@ -115,7 +116,7 @@ class CommodityCodeController @Inject() (
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, onSubmitAction))),
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, onSubmitAction, mode, Some(recordId)))),
           value => {
             val isValueChanged = oldValueOpt.exists(_ != value)
             (for {
@@ -129,7 +130,7 @@ class CommodityCodeController @Inject() (
                              mode
                            )
             } yield result).recover { case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
-              handleFormError(form, "commodityCode.error.invalid", onSubmitAction)
+              handleFormError(form, "commodityCode.error.invalid", onSubmitAction, mode, Some(recordId))
             }
           }
         )
@@ -148,11 +149,17 @@ class CommodityCodeController @Inject() (
       None
     )
 
-  private def handleFormError[T](form: Form[T], errorKey: String, onSubmitAction: Call)(implicit
+  private def handleFormError[T](
+    form: Form[T],
+    errorKey: String,
+    onSubmitAction: Call,
+    mode: Mode,
+    recordId: Option[String]
+  )(implicit
     request: Request[AnyContent]
   ): Result = {
     val formWithApiErrors = form.copy(errors = Seq(FormError("value", getMessage(errorKey))))
-    BadRequest(view(formWithApiErrors, onSubmitAction))
+    BadRequest(view(formWithApiErrors, onSubmitAction, mode, recordId))
   }
 
   private def validateAndProcessCommodityCreate(
@@ -167,7 +174,7 @@ class CommodityCodeController @Inject() (
       commodity.validityEndDate.exists(todayInstant.isAfter)
     ) {
       val formWithErrors = createFormWithErrors(form, value, "commodityCode.error.expired")
-      Future.successful(BadRequest(view(formWithErrors, onSubmitAction)))
+      Future.successful(BadRequest(view(formWithErrors, onSubmitAction, mode, recordId = None)))
     } else {
       for {
         updatedAnswers          <- Future.fromTry(request.userAnswers.set(CommodityCodePage, value))
@@ -192,7 +199,7 @@ class CommodityCodeController @Inject() (
       commodity.validityEndDate.exists(todayInstant.isAfter)
     ) {
       val formWithErrors = createFormWithErrors(form, value, "commodityCode.error.expired")
-      Future.successful(BadRequest(view(formWithErrors, onSubmitAction)))
+      Future.successful(BadRequest(view(formWithErrors, onSubmitAction, mode, Some(recordId))))
     } else {
       for {
         updatedAnswers          <- Future.fromTry(request.userAnswers.set(CommodityCodeUpdatePage(recordId), value))

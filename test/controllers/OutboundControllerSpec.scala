@@ -20,13 +20,12 @@ import base.SpecBase
 import models.outboundLink.OutboundLink
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{times, verify, when}
+import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.AuditService
-import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 
 import scala.concurrent.Future
 
@@ -34,50 +33,34 @@ class OutboundControllerSpec extends SpecBase {
 
   "Outbound Controller" - {
 
-    "must redirect to the link when the link is valid" in {
+    "redirect" - {
+      "must redirect to the link" in {
 
-      val mockAuditService = mock[AuditService]
-      when(mockAuditService.auditOutboundClick(any(), any(), any(), any())(any())).thenReturn(Future.successful(Done))
+        val mockAuditService = mock[AuditService]
+        when(mockAuditService.auditOutboundClick(any(), any(), any(), any(), any())(any()))
+          .thenReturn(Future.successful(Done))
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(bind[AuditService].toInstance(mockAuditService))
-        .build()
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(bind[AuditService].toInstance(mockAuditService))
+          .build()
 
-      running(application) {
-        val request =
-          FakeRequest(GET, routes.OutboundController.redirect(OutboundLink.ImportGoodsIntoUK.link).url)
+        running(application) {
+          val request =
+            FakeRequest(
+              GET,
+              routes.OutboundController
+                .redirect(
+                  OutboundLink.ImportGoodsIntoUK.link,
+                  OutboundLink.ImportGoodsIntoUK.linkTextKey,
+                  OutboundLink.ImportGoodsIntoUK.originatingPage
+                )
+                .url
+            )
 
-        val result = route(application, request).value
+          val result = route(application, request).value
 
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustBe OutboundLink.ImportGoodsIntoUK.link
-      }
-    }
-
-    "must redirect to the journey recovery page if the link is invalid" in {
-
-      val mockAuditService = mock[AuditService]
-      when(mockAuditService.auditOutboundClick(any(), any(), any(), any())(any())).thenReturn(Future.successful(Done))
-
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(bind[AuditService].toInstance(mockAuditService))
-        .build()
-
-      running(application) {
-        val request =
-          FakeRequest(GET, routes.OutboundController.redirect("someLink").url)
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-
-        redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
-          .onPageLoad(continueUrl = Some(RedirectUrl(routes.HelpAndSupportController.onPageLoad().url)))
-          .url
-
-        withClue("must not call audit service") {
-          verify(mockAuditService, times(0))
-            .auditOutboundClick(any(), any(), any(), any())(any())
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustBe OutboundLink.ImportGoodsIntoUK.link
         }
       }
     }

@@ -25,7 +25,7 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_], action: Call)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], action: Call, mode: Mode, isCreateJourney: Boolean)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("hasNirms.title"))) {
 
@@ -40,8 +40,8 @@
     <p class="govuk-body">
         @messages("hasNirms.p2")
         <a target="_self"
-           href="@routes.OutboundController.redirect(OutboundLink.RetailMovement.link)"
-           class="govuk-link">@messages(OutboundLink.RetailMovement.linkTextKey).
+           href="@OutboundLink.RetailMovement(mode, isCreateJourney).outboundCall"
+           class="govuk-link">@messages(OutboundLink.RetailMovement(mode, isCreateJourney).linkTextKey).
         </a>
     </p>
 

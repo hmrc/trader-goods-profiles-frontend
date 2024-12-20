@@ -94,7 +94,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 categorisationInfo.commodityCode,
                 onSubmitAction,
                 categorisationInfo.categoryAssessments.head.themeDescription,
-                categorisationInfo.categoryAssessments.head.regulationUrl
+                categorisationInfo.categoryAssessments.head.regulationUrl,
+                isReassessment = false
               )(
                 request,
                 messages(application)
@@ -141,7 +142,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 categorisationInfo.commodityCode,
                 onSubmitAction,
                 categorisationInfo.categoryAssessments.head.themeDescription,
-                categorisationInfo.categoryAssessments.head.regulationUrl
+                categorisationInfo.categoryAssessments.head.regulationUrl,
+                isReassessment = false
               )(
                 request,
                 messages(application)
@@ -304,7 +306,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               categorisationInfo.commodityCode,
               onSubmitAction,
               categorisationInfo.categoryAssessments.head.themeDescription,
-              categorisationInfo.categoryAssessments.head.regulationUrl
+              categorisationInfo.categoryAssessments.head.regulationUrl,
+              isReassessment = false
             )(
               request,
               messages(application)
@@ -480,7 +483,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 categorisationInfo.commodityCode,
                 onSubmitAction,
                 categorisationInfo.categoryAssessments.head.themeDescription,
-                categorisationInfo.categoryAssessments.head.regulationUrl
+                categorisationInfo.categoryAssessments.head.regulationUrl,
+                isReassessment = true
               )(
                 request,
                 messages(application)
@@ -526,7 +530,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 categorisationInfo.commodityCode,
                 onSubmitAction,
                 categorisationInfo.categoryAssessments.head.themeDescription,
-                categorisationInfo.categoryAssessments.head.regulationUrl
+                categorisationInfo.categoryAssessments.head.regulationUrl,
+                isReassessment = true
               )(
                 request,
                 messages(application)
@@ -696,7 +701,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               categorisationInfo.commodityCode,
               onSubmitAction,
               categorisationInfo.categoryAssessments.head.themeDescription,
-              categorisationInfo.categoryAssessments.head.regulationUrl
+              categorisationInfo.categoryAssessments.head.regulationUrl,
+              isReassessment = true
             )(
               request,
               messages(application)

@@ -54,7 +54,7 @@
 
         <p class="govuk-body">
             <a class="govuk-link" target="_blank"
-               href="@routes.OutboundController.redirect(OutboundLink.FindLongCommodity.link)">@messages(OutboundLink.FindLongCommodity.linkTextKey)</a>
+               href="@OutboundLink.FindLongCommodity(mode, recordId).outboundCall">@messages(OutboundLink.FindLongCommodity(mode, recordId).linkTextKey)</a>
         </p>
 
         @govukButton(
