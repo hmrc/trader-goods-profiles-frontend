@@ -542,7 +542,7 @@ goodsRecords.downloadLinkText.requestFile = Gofyn am ffeil o’ch cofnodion TGP
 goodsRecords.downloadLinkText.fileInProgress = Cael diweddariad ar eich ffeil cofnodion TGP neu gofynnwch am ffeil newydd
 goodsRecords.downloadLinkText.fileReady = Lawrlwythwch eich ffeil cofnodion TGP neu gofynnwch am ffeil newydd
 goodsRecords.pagination = Wrthi’n dangos {0} i {1} o {2} o gofnodion nwyddau, gan ddechrau gyda’r dyddiad diweddaru mwyaf diweddar.
-goodsRecords.pagination.less = Yn dangos {0} o gofnodion nwyddau, gan ddechrau gyda’r dyddiad diweddaru mwyaf diweddar.
+goodsRecords.pagination.less = Wrthi’n dangos {0} o gofnodion nwyddau, gan ddechrau gyda’r dyddiad diweddaru mwyaf diweddar.
 goodsRecords.tableHeader.traderReference = Cyfeirnod masnachwr
 goodsRecords.tableHeader.goodsDescription = Disgrifiad o’r nwyddau
 goodsRecords.tableHeader.countryOfOrigin = Gwlad tarddiad
@@ -551,6 +551,9 @@ goodsRecords.tableHeader.status = Statws
 goodsRecords.tableHeader.actions = Camau gweithredu
 goodsRecords.skip.record = Neidio i gofnodion nwyddau
 goodsRecords.skip.main = Neidio i'r prif
+
+goodsRecords.li1 = 'Cyfeirnod masnachwr'
+goodsRecords.li2 = 'Disgrifiad o’r nwyddau'
 
 goodsRecordsEmptyView.p1 = Does gennych chi ddim cofnodion yn eich proffil nwyddau.
 goodsRecordsEmptyView.p2 = Gallwch
