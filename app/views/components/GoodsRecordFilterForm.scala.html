@@ -59,6 +59,7 @@
                       ))
                    )),
 
+                        name = "statusValue",
                         items = Seq(
                         CheckboxItem(
                         content = Text(messages("declarableStatus.immiReady")),
@@ -77,14 +78,13 @@
 
                    @govukSelect(
                         SelectViewModel(
-                        field = form("value"),
+                        field = form("countries"),
                         items = selectItems(countries),
                         label = LabelViewModel(messages("goodsRecords.tableHeader.countryOfOrigin")).withSize(Small)
                         )
                         .withCssClass("autocomplete")
                         .withAttribute(("lang", "en"))
                    )
-
 
             <div class="govuk-button-group">
 
@@ -96,6 +96,6 @@
                           ).withAttribute("style", "margin-left: 10px")
                    )
              }
-             <a class="govuk-link" href="#">@messages("site.clear")<span class="govuk-visually-hidden"> @messages("goodsRecords.record.clear")</span></a>
+             <a class="govuk-link" href="@controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(page)">@messages("site.clear")<span class="govuk-visually-hidden"> @messages("goodsRecords.record.clear")</span></a>
             </div>
      </div>
