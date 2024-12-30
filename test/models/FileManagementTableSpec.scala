@@ -56,7 +56,7 @@ class FileManagementTableSpec extends SpecBase with Generators {
         table.headRows mustBe Seq(
           HeadCell(content = Text("Date and time requested")),
           HeadCell(content = Text("Expiry date")),
-          HeadCell(content = Text("File"))
+          HeadCell(content = Text("File (.csv)"))
         )
       }
 
@@ -84,16 +84,19 @@ class FileManagementTableSpec extends SpecBase with Generators {
             val file       = fileManagementTableComponentHelper.createLink(
               "Download file",
               "requested on 22 April 2024 10:05am",
-              fileName
+              fileName,
+              fileInfo.fileSize.toString
             )
 
             val tableRows = Seq(
               Seq(
                 TableRow(
-                  content = Text(dateTime)
+                  content = Text(dateTime),
+                  classes = "custom-col-width-1"
                 ),
                 TableRow(
-                  content = Text(expiryDate)
+                  content = Text(expiryDate),
+                  classes = "custom-col-width-2"
                 ),
                 TableRow(
                   content = file

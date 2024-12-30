@@ -59,7 +59,7 @@
                       ))
                    )),
 
-                        name = "value",
+                        name = "statusValue",
                         items = Seq(
                         CheckboxItem(
                         content = Text(messages("declarableStatus.immiReady")),
@@ -78,7 +78,7 @@
 
                    @govukSelect(
                         SelectViewModel(
-                        field = form("value"),
+                        field = form("countries"),
                         items = selectItems(countries),
                         label = LabelViewModel(messages("goodsRecords.tableHeader.countryOfOrigin")).withSize(Small)
                         )

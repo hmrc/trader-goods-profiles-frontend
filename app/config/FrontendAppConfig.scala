@@ -66,6 +66,9 @@ class FrontendAppConfig @Inject() (configuration: Configuration) {
   val useEisPatchMethod: Boolean =
     configuration.get[Boolean]("features.use-eis-patch-method")
 
+  val enhancedSearch: Boolean =
+    configuration.get[Boolean]("features.enhancedSearch")
+
   def languageMap: Map[String, Lang] = Map(
     "en" -> Lang("en"),
     "cy" -> Lang("cy")
