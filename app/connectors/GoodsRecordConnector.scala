@@ -334,7 +334,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
           }
         }
     } else {
-      println("+++++++++++++++++++++"+filterSearchRecordsUrl(searchTerm, exactMatch, countryOfOrigin, IMMIReady, notReadyForIMMI, actionNeeded,  queryParams))
+
       httpClient
         .get(filterSearchRecordsUrl(searchTerm, exactMatch, countryOfOrigin, IMMIReady, notReadyForIMMI, actionNeeded,  queryParams))
         .setHeader(clientIdHeader)

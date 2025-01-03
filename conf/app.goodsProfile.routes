@@ -3,6 +3,7 @@ POST        /previous-movement-records                                          
 
 GET         /goods-profile                                                                          controllers.goodsProfile.GoodsRecordsController.onPageLoad(page: Int)
 POST        /goods-profile                                                                          controllers.goodsProfile.GoodsRecordsController.onSearch(page: Int)
+GET        /goods-profile                                                                          controllers.goodsProfile.GoodsRecordsController.onPageLoadFilter(page: Int)
 
 GET         /goods-profile/search-results                                                           controllers.goodsProfile.GoodsRecordsSearchResultController.onPageLoad(page: Int)
 

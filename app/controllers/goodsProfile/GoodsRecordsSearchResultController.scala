@@ -25,7 +25,7 @@ import pages.goodsProfile.GoodsRecordsPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import views.html.goodsProfile.{GoodsRecordsSearchResultEmptyView, GoodsRecordsSearchResultView}
+import views.html.goodsProfile.{GoodsRecordsSearchResultEmptyView, GoodsRecordsSearchResultView, GoodsRecordsView}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -40,6 +40,7 @@ class GoodsRecordsSearchResultController @Inject() (
   profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
   view: GoodsRecordsSearchResultView,
+  view2: GoodsRecordsView,
   emptyView: GoodsRecordsSearchResultEmptyView,
   navigator: GoodsProfileNavigator
 )(implicit ec: ExecutionContext)
@@ -104,4 +105,5 @@ class GoodsRecordsSearchResultController @Inject() (
         case None             => Future(navigator.journeyRecovery())
       }
     }
+
 }

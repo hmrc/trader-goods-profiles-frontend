@@ -132,7 +132,16 @@ class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar 
       val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
       when(
-        mockGoodsRecordConnector.searchRecords(eqTo(testEori), eqTo(searchText), any(), eqTo(currentPage), any())(any())
+        mockGoodsRecordConnector.searchRecords(eqTo(testEori),
+          Some(eqTo(searchText)),
+          any(),
+          eqTo(Some(currentPage.toString)),
+          Some(eqTo(false)),
+          Some(eqTo(false)),
+          Some(eqTo(false)),
+          any(),
+          any())
+          (any())
       ) thenReturn Future
         .successful(Some(response))
 
@@ -173,7 +182,9 @@ class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar 
 
         verify(mockOttConnector, atLeastOnce()).getCountries(any())
         verify(mockGoodsRecordConnector, atLeastOnce())
-          .searchRecords(eqTo(testEori), eqTo(searchText), any(), eqTo(currentPage), any())(any())
+          .searchRecords(eqTo(testEori), Some(eqTo(searchText)), any(), Some(""), Some(eqTo(currentPage.toString)), Some(eqTo(false)),
+            Some(eqTo(false)),
+            Some(eqTo(false)), any(), any())(any())
       }
     }
 
@@ -184,7 +195,7 @@ class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar 
       val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
       when(
-        mockGoodsRecordConnector.searchRecords(eqTo(testEori), eqTo(searchText), any(), eqTo(currentPage), any())(any())
+        mockGoodsRecordConnector.searchRecords(eqTo(testEori), eqTo(searchText), any(), Some(""), eqTo(currentPage), any())(any())
       ) thenReturn Future
         .successful(None)
 
