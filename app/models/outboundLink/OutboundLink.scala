@@ -36,6 +36,18 @@ sealed trait ProfileSetupLink extends OutboundLink {
   val originatingPage: String = controllers.profile.routes.ProfileSetupController.onPageLoad().url
 }
 
+sealed trait AssessmentViewLink extends OutboundLink {
+  def originatingPage(mode: Mode, recordId: String, assessmentNumber: Int, isReassessment: Boolean): String = if (
+    isReassessment
+  ) {
+    controllers.categorisation.routes.AssessmentController
+      .onPageLoadReassessment(mode, recordId, assessmentNumber)
+      .url
+  } else {
+    controllers.categorisation.routes.AssessmentController.onPageLoad(mode, recordId, assessmentNumber).url
+  }
+}
+
 object OutboundLink {
 
   case object ImportGoodsIntoUK extends HelpAndSupportLink {
@@ -153,16 +165,10 @@ object OutboundLink {
 
   // Assessment Page
   case class FindCommodityAssessments(mode: Mode, recordId: String, assessmentNumber: Int, isReassessment: Boolean)
-      extends OutboundLink {
+      extends AssessmentViewLink {
     val link: String            = "https://www.trade-tariff.service.gov.uk/xi/find_commodity"
     val linkTextKey: String     = "assessment.linkText"
-    val originatingPage: String = if (isReassessment) {
-      controllers.categorisation.routes.AssessmentController
-        .onPageLoadReassessment(mode, recordId, assessmentNumber)
-        .url
-    } else {
-      controllers.categorisation.routes.AssessmentController.onPageLoad(NormalMode, recordId, assessmentNumber).url
-    }
+    val originatingPage: String = originatingPage(mode, recordId, assessmentNumber, isReassessment)
   }
 
   case class AssessmentDynamicLink(
@@ -171,15 +177,9 @@ object OutboundLink {
     recordId: String,
     assessmentNumber: Int,
     isReassessment: Boolean
-  ) extends OutboundLink {
+  ) extends AssessmentViewLink {
     val linkTextKey: String     = "assessment.regulationUrl.linkText"
-    val originatingPage: String = if (isReassessment) {
-      controllers.categorisation.routes.AssessmentController
-        .onPageLoadReassessment(mode, recordId, assessmentNumber)
-        .url
-    } else {
-      controllers.categorisation.routes.AssessmentController.onPageLoad(mode, recordId, assessmentNumber).url
-    }
+    val originatingPage: String = originatingPage(mode, recordId, assessmentNumber, isReassessment)
   }
 
   // Has Nirms Page
