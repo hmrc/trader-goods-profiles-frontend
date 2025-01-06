@@ -17,23 +17,25 @@
 package models
 
 import play.api.data.Form
-import play.api.data.Forms.{mapping, optional, text, boolean}
+import play.api.data.Forms.{mapping, optional, seq, text}
+import play.api.libs.json.{Format, Json}
 
 
-case class SearchFilter(searchTerm: Option[String],
-                        countryOfOrigin: Option[String],
-                        immiReady: Option[Boolean] = None,
-                        notReadyForIMMI: Option[Boolean] = None,
-                        actionNeeded: Option[Boolean] = None)
+case class SearchForm(searchTerm: Option[String],
+                      countryOfOrigin: Option[String],
+                      statusValue: Seq[String] = Seq()
 
-object SearchFilter {
-  val form: Form[SearchFilter] = Form(
+                     )
+
+object SearchForm {
+  implicit val format: Format[SearchForm] = Json.format[SearchForm]
+
+  val form: Form[SearchForm] = Form(
     mapping(
       "searchTerm" -> optional(text),
       "countryOfOrigin" -> optional(text),
-      "immiReady" -> optional(boolean),
-      "notReadyForIMMI" -> optional(boolean),
-      "actionNeeded" -> optional(boolean)
-    )(SearchFilter.apply)(SearchFilter.unapply)
+      "statusValue" -> seq(text)
+    )(SearchForm.apply)(SearchForm.unapply)
   )
 }
+

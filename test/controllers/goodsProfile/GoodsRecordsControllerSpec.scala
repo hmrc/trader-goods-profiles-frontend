@@ -18,6 +18,7 @@ package controllers.goodsProfile
 
 import base.SpecBase
 import base.TestConstants.testEori
+import config.FrontendAppConfig
 import connectors.{GoodsRecordConnector, OttConnector}
 import forms.goodsProfile.GoodsRecordsFormProvider
 import models.GoodsRecordsPagination.firstPage
@@ -163,7 +164,9 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
             Seq(Country("EC", "Ecuador")),
             pagination,
             currentPage,
-            pageSize
+            pageSize,
+            None,
+            None
           )(
             request,
             messages(application)
@@ -210,7 +213,9 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
             Seq(Country("EC", "Ecuador")),
             pagination,
             currentPage,
-            pageSize
+            pageSize,
+            None,
+            None
           )(
             request,
             messages(application)
@@ -256,7 +261,9 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
             Seq(Country("EC", "Ecuador")),
             pagination,
             currentPage,
-            pageSize
+            pageSize,
+            None,
+            None
           )(
             request,
             messages(application)
@@ -302,7 +309,9 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
             Seq(Country("EC", "Ecuador")),
             pagination,
             currentPage,
-            pageSize
+            pageSize,
+            None,
+            None
           )(
             request,
             messages(application)
@@ -421,7 +430,9 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
           Seq(Country("EC", "Ecuador")),
           pagination,
           middlePage,
-          pageSize
+          pageSize,
+          None,
+          None
         )(
           request,
           messages(application)
@@ -475,13 +486,15 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
     "must redirect to result page when valid data is submitted via onSearch" in {
 
       val mockSessionRepository = mock[SessionRepository]
+      val mockFrontendAppConfig = mock[FrontendAppConfig]
 
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-
+      when(mockFrontendAppConfig.enhancedSearch) thenReturn true
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
-            bind[SessionRepository].toInstance(mockSessionRepository)
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[FrontendAppConfig].toInstance(mockFrontendAppConfig)
           )
           .build()
 
@@ -540,7 +553,9 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
           Seq(Country("EC", "Ecuador")),
           pagination,
           currentPage,
-          pageSize
+          pageSize,
+          None,
+          None
         )(
           request,
           messages(application)

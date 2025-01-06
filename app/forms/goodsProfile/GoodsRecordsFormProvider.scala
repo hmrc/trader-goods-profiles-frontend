@@ -18,6 +18,7 @@ package forms.goodsProfile
 
 import forms.mappings.Mappings
 import play.api.data.Form
+import play.api.data.Forms.optional
 
 import javax.inject.Inject
 
@@ -25,7 +26,9 @@ class GoodsRecordsFormProvider @Inject() extends Mappings {
 
   def apply(): Form[String] =
     Form(
-      "value" -> text("goodsRecords.error.required")
+      "value" -> optional(text("goodsRecords.error.required"))
+        .transform[String](_.getOrElse(""), Some(_))
         .verifying(maxLength(100, "goodsRecords.error.length"))
     )
+
 }

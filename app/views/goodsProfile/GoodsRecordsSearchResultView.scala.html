@@ -23,7 +23,7 @@
     govukPagination: GovukPagination
   )
 
-@(goodsRecordsItems: Seq[GetGoodsRecordResponse], totalRecords: Int, firstRecord: Int, lastRecord: Int, countries: Seq[Country], pagination: Pagination, page: Int, searchString: String, totalPages: Int)(implicit request: Request[_], messages: Messages)
+@(goodsRecordsItems: Seq[GetGoodsRecordResponse], totalRecords: Int, firstRecord: Int, lastRecord: Int, countries: Seq[Country], pagination: Pagination, page: Int, searchString: Option[String], totalPages: Int)(implicit request: Request[_], messages: Messages)
 
 @preparedTitle = @{
     pagination.items match {

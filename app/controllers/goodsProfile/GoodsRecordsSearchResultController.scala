@@ -40,7 +40,6 @@ class GoodsRecordsSearchResultController @Inject() (
   profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
   view: GoodsRecordsSearchResultView,
-  view2: GoodsRecordsView,
   emptyView: GoodsRecordsSearchResultEmptyView,
   navigator: GoodsProfileNavigator
 )(implicit ec: ExecutionContext)
@@ -55,10 +54,12 @@ class GoodsRecordsSearchResultController @Inject() (
           if (page < 1) {
             Future.successful(navigator.journeyRecovery())
           } else {
-            goodsRecordConnector.searchRecords(request.eori, Some(searchText), exactMatch = false, countryOfOrigin = Some(""),
+            goodsRecordConnector.searchRecords(request.eori, searchText.searchTerm, exactMatch = false, countryOfOrigin = Some(""),
               IMMIReady = Some(false),
               notReadyForIMMI = Some(false),
-              actionNeeded = Some(false), page, pageSize).flatMap {
+              actionNeeded = Some(false),
+              page,
+              pageSize).flatMap {
               case Some(searchResponse) =>
                 if (searchResponse.pagination.totalRecords != 0) {
                   ottConnector.getCountries.map { countries =>
@@ -75,14 +76,14 @@ class GoodsRecordsSearchResultController @Inject() (
                           searchResponse.pagination.totalPages
                         ),
                         page,
-                        searchText,
+                        searchText.searchTerm,
                         searchResponse.pagination.totalPages
                       )
                     )
                   }
                 } else {
                   request.userAnswers.get(GoodsRecordsPage) match {
-                    case Some(searchText) => Future.successful(Ok(emptyView(searchText)))
+                    case Some(searchText) => Future.successful(Ok(emptyView(searchText.searchTerm)))
                     case None             => Future.successful(navigator.journeyRecovery())
                   }
                 }
