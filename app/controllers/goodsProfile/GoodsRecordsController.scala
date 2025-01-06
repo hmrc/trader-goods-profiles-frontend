@@ -89,7 +89,6 @@ class GoodsRecordsController @Inject() (
                   pageSize,
                   None,
                   None
-
                 )
               ).removingFromSession(dataUpdated, pageUpdated, dataRemoved)
             }
@@ -108,20 +107,17 @@ class GoodsRecordsController @Inject() (
       }
     }
 
-
-
   def onSearch(page: Int): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       SearchForm.form
         .bindFromRequest()
         .fold(
-          formWithErrors =>
-            handleFormErrors(page, formWithErrors),
+          formWithErrors => handleFormErrors(page, formWithErrors),
           searchFormData => processSearchForm(page, searchFormData)
         )
     }
 
-  private def handleFormErrors(page: Int, formWithErrors: Form[SearchForm])(implicit request: DataRequest[AnyContent]) = {
+  private def handleFormErrors(page: Int, formWithErrors: Form[SearchForm])(implicit request: DataRequest[AnyContent]) =
     goodsRecordConnector.getRecords(request.eori, page, pageSize).flatMap {
       case Some(goodsRecordsResponse) =>
         for {
@@ -144,64 +140,68 @@ class GoodsRecordsController @Inject() (
             )
           )
         }
-      case None =>
+      case None                       =>
         Future.successful(
-          Redirect(controllers.goodsProfile.routes.GoodsRecordsLoadingController.onPageLoad(
-            Some(RedirectUrl(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(page).url))
-          ))
+          Redirect(
+            controllers.goodsProfile.routes.GoodsRecordsLoadingController.onPageLoad(
+              Some(RedirectUrl(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(page).url))
+            )
+          )
         )
     }
-  }
 
-  private def processSearchForm(page: Int, searchFormData: SearchForm)(implicit request: DataRequest[AnyContent]) = {
+  private def processSearchForm(page: Int, searchFormData: SearchForm)(implicit request: DataRequest[AnyContent]) =
     for {
       updatedAnswers <- Future.fromTry(request.userAnswers.set(GoodsRecordsPage, searchFormData))
       _              <- sessionRepository.set(updatedAnswers)
       result         <- if (appConfig.enhancedSearch) {
-        Future.successful(
-          Redirect(controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(1))
-        )
-      } else {
-        onPageLoadFilter(page)(request)
-      }
+                          Future.successful(
+                            Redirect(controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(1))
+                          )
+                        } else {
+                          onPageLoadFilter(page)(request)
+                        }
     } yield result
-  }
 
   def onPageLoadFilter(page: Int): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       request.userAnswers.get(GoodsRecordsPage) match {
         case Some(searchText) if page >= 1 =>
           executeSearch(page, searchText)
-        case _ =>
+        case _                             =>
           Future.successful(navigator.journeyRecovery())
       }
     }
 
-  private def executeSearch(page: Int, searchText: SearchForm)(implicit request: DataRequest[AnyContent]) = {
-    goodsRecordConnector.searchRecords(
-      request.eori,
-      searchText.searchTerm,
-      exactMatch = false,
-      countryOfOrigin = searchText.countryOfOrigin,
-      IMMIReady = Some(searchText.statusValue.contains("IMMIReady")),
-      notReadyForIMMI = Some(searchText.statusValue.contains("notReadyForImmi")),
-      actionNeeded = Some(searchText.statusValue.contains("actionNeeded")),
-      page,
-      pageSize
-    ).flatMap {
-      case Some(searchResponse) if searchResponse.pagination.totalRecords > 0 =>
-        renderSearchResults(page, searchResponse, searchText)
-      case _ =>
-        Future.successful(
-          Redirect(controllers.goodsProfile.routes.GoodsRecordsLoadingController.onPageLoad(
-            Some(RedirectUrl(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoadFilter(page).url))
-          ))
-        )
-    }
-  }
+  private def executeSearch(page: Int, searchText: SearchForm)(implicit request: DataRequest[AnyContent]) =
+    goodsRecordConnector
+      .searchRecords(
+        request.eori,
+        searchText.searchTerm,
+        exactMatch = false,
+        countryOfOrigin = searchText.countryOfOrigin,
+        IMMIReady = Some(searchText.statusValue.contains("IMMIReady")),
+        notReadyForIMMI = Some(searchText.statusValue.contains("notReadyForImmi")),
+        actionNeeded = Some(searchText.statusValue.contains("actionNeeded")),
+        page,
+        pageSize
+      )
+      .flatMap {
+        case Some(searchResponse) if searchResponse.pagination.totalRecords > 0 =>
+          renderSearchResults(page, searchResponse, searchText)
+        case _                                                                  =>
+          Future.successful(
+            Redirect(
+              controllers.goodsProfile.routes.GoodsRecordsLoadingController.onPageLoad(
+                Some(RedirectUrl(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoadFilter(page).url))
+              )
+            )
+          )
+      }
 
-  private def renderSearchResults(page: Int, searchResponse: GetRecordsResponse, searchText: SearchForm)
-                                 (implicit request: DataRequest[AnyContent]) = {
+  private def renderSearchResults(page: Int, searchResponse: GetRecordsResponse, searchText: SearchForm)(implicit
+    request: DataRequest[AnyContent]
+  ) =
     ottConnector.getCountries.map { countries =>
       val firstRecord = getFirstRecordIndex(searchResponse.pagination, pageSize)
       Ok(
@@ -220,5 +220,4 @@ class GoodsRecordsController @Inject() (
         )
       )
     }
-  }
 }

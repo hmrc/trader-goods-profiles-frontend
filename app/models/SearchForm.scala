@@ -20,22 +20,16 @@ import play.api.data.Form
 import play.api.data.Forms.{mapping, optional, seq, text}
 import play.api.libs.json.{Format, Json}
 
-
-case class SearchForm(searchTerm: Option[String],
-                      countryOfOrigin: Option[String],
-                      statusValue: Seq[String] = Seq()
-
-                     )
+case class SearchForm(searchTerm: Option[String], countryOfOrigin: Option[String], statusValue: Seq[String] = Seq())
 
 object SearchForm {
   implicit val format: Format[SearchForm] = Json.format[SearchForm]
 
   val form: Form[SearchForm] = Form(
     mapping(
-      "searchTerm" -> optional(text),
+      "searchTerm"      -> optional(text),
       "countryOfOrigin" -> optional(text),
-      "statusValue" -> seq(text)
+      "statusValue"     -> seq(text)
     )(SearchForm.apply)(SearchForm.unapply)
   )
 }
-

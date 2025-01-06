@@ -54,54 +54,61 @@ class GoodsRecordsSearchResultController @Inject() (
           if (page < 1) {
             Future.successful(navigator.journeyRecovery())
           } else {
-            goodsRecordConnector.searchRecords(request.eori, searchText.searchTerm, exactMatch = false, countryOfOrigin = Some(""),
-              IMMIReady = Some(false),
-              notReadyForIMMI = Some(false),
-              actionNeeded = Some(false),
-              page,
-              pageSize).flatMap {
-              case Some(searchResponse) =>
-                if (searchResponse.pagination.totalRecords != 0) {
-                  ottConnector.getCountries.map { countries =>
-                    val firstRecord = getFirstRecordIndex(searchResponse.pagination, pageSize)
-                    Ok(
-                      view(
-                        searchResponse.goodsItemRecords,
-                        searchResponse.pagination.totalRecords,
-                        getFirstRecordIndex(searchResponse.pagination, pageSize),
-                        getLastRecordIndex(firstRecord, searchResponse.goodsItemRecords.size),
-                        countries,
-                        getSearchPagination(
-                          searchResponse.pagination.currentPage,
+            goodsRecordConnector
+              .searchRecords(
+                request.eori,
+                searchText.searchTerm,
+                exactMatch = false,
+                countryOfOrigin = Some(""),
+                IMMIReady = Some(false),
+                notReadyForIMMI = Some(false),
+                actionNeeded = Some(false),
+                page,
+                pageSize
+              )
+              .flatMap {
+                case Some(searchResponse) =>
+                  if (searchResponse.pagination.totalRecords != 0) {
+                    ottConnector.getCountries.map { countries =>
+                      val firstRecord = getFirstRecordIndex(searchResponse.pagination, pageSize)
+                      Ok(
+                        view(
+                          searchResponse.goodsItemRecords,
+                          searchResponse.pagination.totalRecords,
+                          getFirstRecordIndex(searchResponse.pagination, pageSize),
+                          getLastRecordIndex(firstRecord, searchResponse.goodsItemRecords.size),
+                          countries,
+                          getSearchPagination(
+                            searchResponse.pagination.currentPage,
+                            searchResponse.pagination.totalPages
+                          ),
+                          page,
+                          searchText.searchTerm,
                           searchResponse.pagination.totalPages
-                        ),
-                        page,
-                        searchText.searchTerm,
-                        searchResponse.pagination.totalPages
-                      )
-                    )
-                  }
-                } else {
-                  request.userAnswers.get(GoodsRecordsPage) match {
-                    case Some(searchText) => Future.successful(Ok(emptyView(searchText.searchTerm)))
-                    case None             => Future.successful(navigator.journeyRecovery())
-                  }
-                }
-              case None                 =>
-                Future.successful(
-                  Redirect(
-                    controllers.goodsProfile.routes.GoodsRecordsLoadingController
-                      .onPageLoad(
-                        Some(
-                          RedirectUrl(
-                            controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(page).url
-                          )
                         )
                       )
+                    }
+                  } else {
+                    request.userAnswers.get(GoodsRecordsPage) match {
+                      case Some(searchText) => Future.successful(Ok(emptyView(searchText.searchTerm)))
+                      case None             => Future.successful(navigator.journeyRecovery())
+                    }
+                  }
+                case None                 =>
+                  Future.successful(
+                    Redirect(
+                      controllers.goodsProfile.routes.GoodsRecordsLoadingController
+                        .onPageLoad(
+                          Some(
+                            RedirectUrl(
+                              controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(page).url
+                            )
+                          )
+                        )
+                    )
                   )
-                )
 
-            }
+              }
           }
         case None             => Future(navigator.journeyRecovery())
       }

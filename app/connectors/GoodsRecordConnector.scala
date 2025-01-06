@@ -28,7 +28,6 @@ import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.client.HttpClientV2
 import java.net.URL
 
-
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -70,17 +69,15 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
   ) =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/filter?searchTerm=$searchTerm&exactMatch=$exactMatch&$queryParams"
 
-
-
   private def filterSearchRecordsUrl(
-                                      searchTerm: Option[String],
-                                      exactMatch: Boolean,
-                                      countryOfOrigin: Option[String],
-                                      immiReady: Option[Boolean],
-                                      notReadyForIMMI: Option[Boolean],
-                                      actionNeeded: Option[Boolean],
-                                      queryParams: Map[String, String]
-                                    ): URL = {
+    searchTerm: Option[String],
+    exactMatch: Boolean,
+    countryOfOrigin: Option[String],
+    immiReady: Option[Boolean],
+    notReadyForIMMI: Option[Boolean],
+    actionNeeded: Option[Boolean],
+    queryParams: Map[String, String]
+  ): URL = {
 
     val queryParamsSeq = Seq(
       searchTerm.map(term => s"searchTerm=$term"),
@@ -91,13 +88,12 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       actionNeeded.map(needed => s"actionNeeded=$needed")
     ).flatten ++ queryParams.map { case (key, value) => s"$key=$value" }
 
-    val queryString = queryParamsSeq.mkString("&")
+    val queryString    = queryParamsSeq.mkString("&")
 
     val urlString = s"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/records/filter?$queryString"
 
     new URL(urlString)
   }
-
 
   def submitGoodsRecord(goodsRecord: GoodsRecord)(implicit
     hc: HeaderCarrier
@@ -300,7 +296,6 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     actionNeeded: Option[Boolean] = None,
     page: Int,
     size: Int
-
   )(implicit
     hc: HeaderCarrier
   ): Future[Option[GetRecordsResponse]] = {
@@ -324,7 +319,17 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     } else {
 
       httpClient
-        .get(filterSearchRecordsUrl(searchTerm, exactMatch, countryOfOrigin, IMMIReady, notReadyForIMMI, actionNeeded,  queryParams))
+        .get(
+          filterSearchRecordsUrl(
+            searchTerm,
+            exactMatch,
+            countryOfOrigin,
+            IMMIReady,
+            notReadyForIMMI,
+            actionNeeded,
+            queryParams
+          )
+        )
         .setHeader(clientIdHeader)
         .execute[HttpResponse]
         .flatMap { response =>
