@@ -774,7 +774,7 @@ class GoodsRecordConnectorSpec
       )
 
       connector
-        .searchRecords(testEori, searchString, exactMatch = false, 1, 3)
+        .searchRecords(testEori, Some(searchString), exactMatch = false, Some(""), Some(false), Some(false), Some(false), 1, 3)
         .futureValue
         .value mustBe getRecordsResponse.as[GetRecordsResponse]
     }
@@ -787,7 +787,7 @@ class GoodsRecordConnectorSpec
           .willReturn(status(ACCEPTED))
       )
 
-      connector.searchRecords(testEori, searchString, exactMatch = false, 1, 3).futureValue mustBe None
+      connector.searchRecords(testEori, Some(searchString), exactMatch = false,  Some(""), Some(false), Some(false), Some(false),1, 3).futureValue mustBe None
     }
 
     "must return a failed future when the response is anything but Ok or Accepted" in {
@@ -798,7 +798,7 @@ class GoodsRecordConnectorSpec
           .willReturn(status(errorResponses.sample.value))
       )
 
-      connector.searchRecords(testEori, searchString, exactMatch = false, 1, 3).failed.futureValue
+      connector.searchRecords(testEori, Some(searchString), exactMatch = false, Some(""), Some(false), Some(false), Some(false), 1, 3).failed.futureValue
     }
 
     "must return a failed future when the server returns an error" in {
@@ -809,7 +809,7 @@ class GoodsRecordConnectorSpec
           .willReturn(serverError())
       )
 
-      connector.searchRecords(testEori, searchString, exactMatch = false, 1, 3).failed.futureValue
+      connector.searchRecords(testEori, Some(searchString), exactMatch = false, Some(""), Some(false), Some(false), Some(false), 1, 3).failed.futureValue
     }
 
     "must return a failed future when the json does not match the format" in {
@@ -820,7 +820,7 @@ class GoodsRecordConnectorSpec
           .willReturn(ok().withBody("{'eori': '123', 'commodity': '10410100'}"))
       )
 
-      connector.searchRecords(testEori, searchString, exactMatch = false, 1, 3).failed.futureValue
+      connector.searchRecords(testEori, Some(searchString), exactMatch = false, Some(""), Some(false), Some(false), Some(false), 1, 3).failed.futureValue
     }
   }
 

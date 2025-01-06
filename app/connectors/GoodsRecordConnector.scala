@@ -76,9 +76,9 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
                                       searchTerm: Option[String],
                                       exactMatch: Boolean,
                                       countryOfOrigin: Option[String],
-                                      immiReady: Option[Boolean] = None,
-                                      notReadyForIMMI: Option[Boolean] = None,
-                                      actionNeeded: Option[Boolean] = None,
+                                      immiReady: Option[Boolean],
+                                      notReadyForIMMI: Option[Boolean],
+                                      actionNeeded: Option[Boolean],
                                       queryParams: Map[String, String]
                                     ): URL = {
 
