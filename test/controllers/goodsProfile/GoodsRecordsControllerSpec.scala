@@ -23,7 +23,7 @@ import connectors.{GoodsRecordConnector, OttConnector}
 import forms.goodsProfile.GoodsRecordsFormProvider
 import models.GoodsRecordsPagination.firstPage
 import models.router.responses.GetRecordsResponse
-import models.{Country, GoodsRecordsPagination}
+import models.{Country, GoodsRecordsPagination, SearchForm}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{atLeastOnce, never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
@@ -564,5 +564,6 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(eqTo(testEori), eqTo(currentPage), any())(any())
       }
     }
+
   }
 }

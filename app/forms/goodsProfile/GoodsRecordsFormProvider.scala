@@ -24,11 +24,17 @@ import javax.inject.Inject
 
 class GoodsRecordsFormProvider @Inject() extends Mappings {
 
-  def apply(): Form[String] =
+  def apply2(): Form[String] =
     Form(
       "value" -> optional(text("goodsRecords.error.required"))
         .transform[String](_.getOrElse(""), Some(_))
         .verifying(maxLength(100, "goodsRecords.error.length"))
     )
 
+
+  def apply(): Form[String] =
+    Form(
+      "value" -> text("goodsRecords.error.required")
+        .verifying(maxLength(100, "goodsRecords.error.length"))
+    )
 }

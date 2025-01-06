@@ -70,19 +70,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
   ) =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/filter?searchTerm=$searchTerm&exactMatch=$exactMatch&$queryParams"
 
-//  private def filterSearchRecordsUrl2(
-//                                searchTerm: Option[String],
-//                                exactMatch: Boolean,
-//                                countryOfOrigin: Option[String],
-//                                immiReady: Option[Boolean] = None,
-//                                notReadyForIMMI: Option[Boolean] = None,
-//                                actionNeeded: Option[Boolean] = None,
-//                                queryParams: Map[String, String]
-//                              ) = {
-//
-//    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/records/filter?searchTerm=$searchTerm&exactMatch=$exactMatch&countryOfOrigin=$countryOfOrigin&immiReady=$immiReady&notReadyForIMMI=$notReadyForIMMI&actionNeeded=$actionNeeded&$queryParams"
-//  }
-//
+
 
   private def filterSearchRecordsUrl(
                                       searchTerm: Option[String],
