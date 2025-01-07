@@ -76,7 +76,9 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             form,
-            controllers.profile.routes.HasNirmsController.onSubmitCreate(NormalMode)
+            controllers.profile.routes.HasNirmsController.onSubmitCreate(NormalMode),
+            NormalMode,
+            isCreateJourney = true
           )(
             request,
             messages(application)
@@ -107,7 +109,9 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             form.fill(true),
-            controllers.profile.routes.HasNirmsController.onSubmitCreate(NormalMode)
+            controllers.profile.routes.HasNirmsController.onSubmitCreate(NormalMode),
+            NormalMode,
+            isCreateJourney = true
           )(
             request,
             messages(application)
@@ -166,7 +170,9 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual BAD_REQUEST
           contentAsString(result) mustEqual view(
             boundForm,
-            controllers.profile.routes.HasNirmsController.onSubmitCreate(NormalMode)
+            controllers.profile.routes.HasNirmsController.onSubmitCreate(NormalMode),
+            NormalMode,
+            isCreateJourney = true
           )(
             request,
             messages(application)
@@ -247,7 +253,7 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
 
       "must return OK and the correct view for a GET with saved answers" in {
 
-        val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"), false)
+        val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"), eoriChanged = false)
 
         when(mockTraderProfileConnector.getTraderProfile(eqTo(testEori))(any())) thenReturn Future.successful(
           traderProfile
@@ -274,7 +280,9 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             form.fill(true),
-            controllers.profile.routes.HasNirmsController.onSubmitUpdate(NormalMode)
+            controllers.profile.routes.HasNirmsController.onSubmitUpdate(NormalMode),
+            NormalMode,
+            isCreateJourney = false
           )(
             request,
             messages(application)
@@ -303,7 +311,9 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             form.fill(true),
-            controllers.profile.routes.HasNirmsController.onSubmitUpdate(NormalMode)
+            controllers.profile.routes.HasNirmsController.onSubmitUpdate(NormalMode),
+            NormalMode,
+            isCreateJourney = false
           )(
             request,
             messages(application)
@@ -345,7 +355,7 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
 
         when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
-        val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"), false)
+        val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"), eoriChanged = false)
 
         when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future.successful(traderProfile)
 
@@ -390,7 +400,9 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual BAD_REQUEST
           contentAsString(result) mustEqual view(
             boundForm,
-            controllers.profile.routes.HasNirmsController.onSubmitUpdate(NormalMode)
+            controllers.profile.routes.HasNirmsController.onSubmitUpdate(NormalMode),
+            NormalMode,
+            isCreateJourney = false
           )(
             request,
             messages(application)

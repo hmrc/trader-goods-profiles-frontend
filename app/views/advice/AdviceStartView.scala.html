@@ -37,8 +37,8 @@
     ))
 
     <p class="govuk-body">@messages("adviceStart.p2")
-        <a href="@routes.OutboundController.redirect(OutboundLink.ApplyBinding.link)"
-           class="govuk-link">@messages(OutboundLink.ApplyBinding.linkTextKey)</a>.
+        <a href="@OutboundLink.ApplyBinding(recordId).outboundCall"
+           class="govuk-link">@messages(OutboundLink.ApplyBinding(recordId).linkTextKey)</a>.
     </p>
 
     <h2 class="govuk-heading-m">@messages("adviceStart.subheading1")</h2>

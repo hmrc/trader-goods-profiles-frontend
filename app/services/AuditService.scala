@@ -329,11 +329,12 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
     affinityGroup: AffinityGroup,
     eori: String,
     link: String,
-    linkText: String
+    linkText: String,
+    page: String
   )(implicit
     hc: HeaderCarrier
   ): Future[Done] = {
-    val event = auditEventFactory.createOutboundClickEvent(affinityGroup, eori, link, linkText)
+    val event = auditEventFactory.createOutboundClickEvent(affinityGroup, eori, link, linkText, page)
     auditConnector.sendEvent(event).map { auditResult =>
       logger.info(s"OutboundClicks audit event status: $auditResult")
       Done
