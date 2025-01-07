@@ -17,12 +17,13 @@
 package viewmodels.checkAnswers.profile
 
 import models.{CheckMode, NormalMode, UserAnswers}
-import pages.profile.{UkimsNumberPage, UkimsNumberUpdatePage}
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
+import controllers.profile.ukims.routes._
+import pages.profile.ukims.{UkimsNumberPage, UkimsNumberUpdatePage}
 
 object UkimsNumberSummary {
 
@@ -34,7 +35,7 @@ object UkimsNumberSummary {
         actions = Seq(
           ActionItemViewModel(
             "site.change",
-            controllers.profile.routes.UkimsNumberController.onPageLoadCreate(CheckMode).url
+            UkimsNumberController.onPageLoadCreate(CheckMode).url
           )
             .withVisuallyHiddenText(messages("ukimsNumber.change.hidden"))
         )
@@ -48,7 +49,7 @@ object UkimsNumberSummary {
       actions = Seq(
         ActionItemViewModel(
           "site.change",
-          controllers.profile.routes.UkimsNumberController.onPageLoadUpdate(NormalMode).url
+          UkimsNumberController.onPageLoadUpdate(NormalMode).url
         )
           .withVisuallyHiddenText(messages("ukimsNumber.change.hidden"))
       )
@@ -62,7 +63,7 @@ object UkimsNumberSummary {
         actions = Seq(
           ActionItemViewModel(
             "site.change",
-            controllers.profile.routes.UkimsNumberController.onPageLoadUpdate(CheckMode).url
+            UkimsNumberController.onPageLoadUpdate(CheckMode).url
           )
             .withVisuallyHiddenText(messages("ukimsNumber.change.hidden"))
         )

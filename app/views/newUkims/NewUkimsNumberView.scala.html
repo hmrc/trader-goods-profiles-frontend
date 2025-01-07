@@ -17,6 +17,7 @@
 @import viewmodels.LabelSize._
 @import viewmodels.InputWidth._
 @import models.Mode
+@import controllers.profile.ukims.routes._
 
 
 @this(
@@ -61,7 +62,7 @@
 
     @if(isCreateJourney) {
         <p class="govuk-body">
-            <a href="@controllers.profile.routes.UkimsKickOutController.onPageLoad().url" class="govuk-link">@messages("newUkimsNumber.linkText")</a>
+            <a href="@UkimsKickOutController.onPageLoad().url" class="govuk-link">@messages("newUkimsNumber.linkText")</a>
         </p>
     }
 

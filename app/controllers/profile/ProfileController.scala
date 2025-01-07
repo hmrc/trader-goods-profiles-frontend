@@ -20,7 +20,9 @@ import connectors.TraderProfileConnector
 import controllers.BaseController
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
 import models.{NormalMode, UserAnswers}
-import pages.profile._
+import pages.profile.niphl.{HasNiphlUpdatePage, NiphlNumberUpdatePage, RemoveNiphlPage}
+import pages.profile.nirms.{HasNirmsUpdatePage, NirmsNumberUpdatePage, RemoveNirmsPage}
+import pages.profile.ukims.UkimsNumberUpdatePage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.TraderProfileQuery

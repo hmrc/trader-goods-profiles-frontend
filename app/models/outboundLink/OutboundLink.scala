@@ -16,7 +16,9 @@
 
 package models.outboundLink
 
-import models.{Mode, NormalMode}
+import controllers.profile.niphl.routes._
+import controllers.profile.nirms.routes._
+import models.Mode
 import play.api.mvc.Call
 
 sealed trait OutboundLink {
@@ -188,9 +190,9 @@ object OutboundLink {
       "https://www.gov.uk/government/publications/retail-movement-scheme-how-the-scheme-will-work/retail-movement-scheme-how-the-scheme-will-work#product-eligibility"
     val linkTextKey: String     = "hasNirms.p2.linkText"
     val originatingPage: String = if (isCreateJourney) {
-      controllers.profile.routes.HasNirmsController.onPageLoadCreate(mode).url
+      HasNirmsController.onPageLoadCreate(mode).url
     } else {
-      controllers.profile.routes.HasNirmsController.onSubmitUpdate(mode).url
+      HasNirmsController.onSubmitUpdate(mode).url
     }
   }
 
@@ -199,9 +201,9 @@ object OutboundLink {
     val link: String            = "https://www.gov.uk/guidance/moving-plants-from-great-britain-to-northern-ireland"
     val linkTextKey: String     = "hasNiphl.p2.linkText"
     val originatingPage: String = if (isCreateJourney) {
-      controllers.profile.routes.HasNiphlController.onPageLoadCreate(mode).url
+      HasNiphlController.onPageLoadCreate(mode).url
     } else {
-      controllers.profile.routes.HasNiphlController.onSubmitUpdate(mode).url
+      HasNiphlController.onSubmitUpdate(mode).url
     }
   }
 
