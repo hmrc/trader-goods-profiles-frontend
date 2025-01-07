@@ -118,7 +118,7 @@ class GoodsRecordsController @Inject() (
     }
 
   private def handleFormErrors(page: Int, formWithErrors: Form[SearchForm])(implicit request: DataRequest[AnyContent]) =
-    goodsRecordConnector.getRecords(request.eori, page, pageSize).flatMap {
+    goodsRecordConnector.getRecords(page, pageSize).flatMap {
       case Some(goodsRecordsResponse) =>
         for {
           countries <- ottConnector.getCountries
