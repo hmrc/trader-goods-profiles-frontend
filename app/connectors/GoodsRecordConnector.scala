@@ -88,7 +88,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       searchTerm.map(term => s"searchTerm=$term"),
       Some(s"exactMatch=$exactMatch"),
       countryOfOrigin.filter(_.nonEmpty).map(origin => s"countryOfOrigin=$origin"),
-      immiReady.map(ready => s"immiReady=$ready"),
+      immiReady.map(ready => s"IMMIReady=$ready"),
       notReadyForIMMI.map(notReady => s"notReadyForIMMI=$notReady"),
       actionNeeded.map(needed => s"actionNeeded=$needed")
     ).flatten ++ queryParams.map { case (key, value) => s"$key=$value" }
