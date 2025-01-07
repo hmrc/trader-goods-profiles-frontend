@@ -419,6 +419,8 @@ goodsRecords.error.length = Search term must be 100 characters or less
 goodsRecords.title = Goods profile
 goodsRecords.title.withPage = Goods profile - page {0} of {1}
 goodsRecords.heading = Goods profile
+goodsRecords.title.withoutPageFilter = {0} records found - Goods profile
+goodsRecords.title.withPageFilter = {0} records found - Goods profile (page {1} of {2}) - Trader Goods Profile
 goodsRecords.heading.withPage = Goods profile - page {0} of {1}
 goodsRecords.p1 = TGP will let you know if a record is ready to use in an Internal Market Movement Information (IMMI) by using a status. You''ll be able to see the status on each goods record.
 goodsRecords.p2 = Records ready to use in an IMMI have a status of:
@@ -441,6 +443,7 @@ goodsRecords.link1 = create a new goods record.
 goodsRecords.pagination = Showing {0} to {1} of {2} goods records sorted by most recently updated.
 goodsRecords.pagination.less = Showing {0} goods records sorted by most recently updated.
 goodsRecords.tableHeader.traderReference = Trader reference
+goodsRecords.relatedTo = Related to
 goodsRecords.tableHeader.goodsDescription = Goods description
 goodsRecords.tableHeader.countryOfOrigin = Country of origin
 goodsRecords.tableHeader.commodityCode = Commodity code
@@ -603,6 +606,12 @@ goodsRecordSearchResult.title = There are {0} search results
 goodsRecordSearchResult.title.withPage = There are {0} search results - page {1} of {2}
 goodsRecordSearchResult.h1 = There are {0} search results
 goodsRecordSearchResult.p1 = You searched for the term ''{0}''.
+
+goodsRecordSearchResult.p2 = {0} records found
+goodsRecordSearchResult.p4 = Status:
+goodsRecordSearchResult.p5 = Search term: ''{0}''
+goodsRecordSearchResult.p6 = Country: {0}
+
 
 goodsRecordSearchResultEmptyView.title = There are no matching results
 goodsRecordSearchResultEmptyView.h1 = There are no matching results

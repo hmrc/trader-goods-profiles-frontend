@@ -18,12 +18,11 @@ package controllers.goodsProfile
 
 import config.FrontendAppConfig
 import connectors.{GoodsRecordConnector, OttConnector}
-import controllers.actions._
 import controllers.BaseController
+import controllers.actions._
 import forms.goodsProfile.GoodsRecordsFormProvider
 import models.GoodsRecordsPagination._
 import models.SearchForm
-import models.ott.ExemptionType.writes
 import models.requests.DataRequest
 import models.router.responses.GetRecordsResponse
 import navigation.GoodsProfileNavigator
@@ -59,6 +58,7 @@ class GoodsRecordsController @Inject() (
 
   private val form     = formProvider()
   private val pageSize = 10
+  private val emptySearchForm = SearchForm(None, None, List.empty)
 
   def onPageLoad(page: Int): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
@@ -87,7 +87,7 @@ class GoodsRecordsController @Inject() (
                   ),
                   page,
                   pageSize,
-                  None,
+                  emptySearchForm,
                   None
                 )
               ).removingFromSession(dataUpdated, pageUpdated, dataRemoved)
@@ -135,7 +135,7 @@ class GoodsRecordsController @Inject() (
               getPagination(goodsRecordsResponse.pagination.currentPage, goodsRecordsResponse.pagination.totalPages),
               page,
               pageSize,
-              None,
+              emptySearchForm,
               None
             )
           )
@@ -215,7 +215,7 @@ class GoodsRecordsController @Inject() (
           getSearchPagination(searchResponse.pagination.currentPage, searchResponse.pagination.totalPages),
           page,
           pageSize,
-          searchText.searchTerm,
+          searchText,
           Some(searchResponse.pagination.totalPages)
         )
       )

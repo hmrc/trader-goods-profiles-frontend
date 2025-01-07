@@ -1,0 +1,71 @@
+@*
+ * Copyright 2025 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.FrontendAppConfig
+@import views.html.components._
+@import models.Country._
+
+
+@this(
+      config: FrontendAppConfig
+)
+
+@(form: Form[_], countries: Seq[Country], page: Int, searchForm: SearchForm)(implicit request: Request[_], messages: Messages)
+
+    @if(!searchForm.searchTerm.isEmpty
+    || !searchForm.countryOfOrigin.isEmpty
+    || !searchForm.statusValue.isEmpty) {
+
+    <ul class="govuk-list govuk-!-margin-top-1 moj-filter__tag_lock">
+        @Html(messages("goodsRecords.relatedTo"))
+        @if(!searchForm.searchTerm.isEmpty) {
+        <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock">
+            @messages("goodsRecordSearchResult.p5",searchForm.searchTerm.getOrElse(""))
+        </li>
+        }
+        @if(!searchForm.statusValue.isEmpty) {
+        <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock">
+            @messages("goodsRecordSearchResult.p4")
+            @if(searchForm.statusValue.contains("IMMIReady")) {
+        <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock">
+            @messages("declarableStatus.immiReady")
+        </li>
+        }
+
+        @if(searchForm.statusValue.contains("notReadyForImmi")) {
+        <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock">
+            @messages("declarableStatus.notReadyForImmi")
+        </li>
+        }
+
+        @if(searchForm.statusValue.contains("actionNeeded")) {
+        <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock">
+            @messages("declarableStatus.notReadyForUse")
+        </li>
+        }
+        </li>
+        }
+        @if(!searchForm.countryOfOrigin.isEmpty) {
+        <li  class="govuk-tag govuk-tag--grey moj-filter__tag_lock" lang="en"> @messages("goodsRecordSearchResult.p6",  {
+            countries
+            .find(_.id == searchForm.countryOfOrigin.getOrElse(""))
+            .map(_.description)
+            .getOrElse("")
+            })
+        </li>
+        }
+    </ul>
+}
