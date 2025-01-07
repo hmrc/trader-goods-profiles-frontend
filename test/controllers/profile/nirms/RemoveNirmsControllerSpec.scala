@@ -47,7 +47,7 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
   private lazy val removeNirmsRoute = RemoveNirmsController.onPageLoad().url
 
   private val mockTraderProfileConnector = mock[TraderProfileConnector]
-  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+  when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
 
   "RemoveNirms Controller" - {
 
@@ -93,7 +93,7 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
       val finalUserAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
       when(mockSessionRepository.set(finalUserAnswersCaptor.capture())).thenReturn(Future.successful(true))
 
-      when(mockTraderProfileConnector.getTraderProfile(any())(any())).thenReturn(
+      when(mockTraderProfileConnector.getTraderProfile(any())).thenReturn(
         Future.successful(TraderProfile(testEori, "1", Some("RMS-GB-848211"), None, eoriChanged = false))
       )
 
@@ -133,7 +133,7 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
       val finalUserAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
       when(mockSessionRepository.set(finalUserAnswersCaptor.capture())).thenReturn(Future.successful(true))
 
-      when(mockTraderProfileConnector.getTraderProfile(any())(any())).thenReturn(
+      when(mockTraderProfileConnector.getTraderProfile(any())).thenReturn(
         Future.successful(TraderProfile(testEori, "1", Some("RMS-GB-848211"), None, eoriChanged = false))
       )
 
@@ -175,7 +175,7 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
       val finalUserAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
       when(mockSessionRepository.set(finalUserAnswersCaptor.capture())).thenReturn(Future.successful(true))
 
-      when(mockTraderProfileConnector.getTraderProfile(any())(any())).thenReturn(
+      when(mockTraderProfileConnector.getTraderProfile(any())).thenReturn(
         Future.successful(TraderProfile(testEori, "1", Some("RMS-GB-848211"), None, eoriChanged = false))
       )
 

@@ -93,7 +93,7 @@ class HasNirmsController @Inject() (
       request.userAnswers.get(HasNirmsUpdatePage) match {
         case None        =>
           for {
-            traderProfile  <- traderProfileConnector.getTraderProfile(request.eori)
+            traderProfile  <- traderProfileConnector.getTraderProfile
             updatedAnswers <-
               Future.fromTry(request.userAnswers.set(HasNirmsUpdatePage, traderProfile.nirmsNumber.isDefined))
             _              <- sessionRepository.set(updatedAnswers)
@@ -136,7 +136,7 @@ class HasNirmsController @Inject() (
               )
             ),
           value =>
-            traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
+            traderProfileConnector.getTraderProfile.flatMap { traderProfile =>
               for {
                 updatedAnswers                  <- Future.fromTry(request.userAnswers.set(HasNirmsUpdatePage, value))
                 updatedAnswersWithTraderProfile <-

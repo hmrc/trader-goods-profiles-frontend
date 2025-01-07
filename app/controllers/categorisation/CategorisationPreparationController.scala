@@ -59,7 +59,7 @@ class CategorisationPreparationController @Inject() (
   def startCategorisation(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       (for {
-        goodsRecord                           <- goodsRecordsConnector.getRecord(request.eori, recordId)
+        goodsRecord                           <- goodsRecordsConnector.getRecord(recordId)
         categorisationInfo                    <-
           categorisationService
             .getCategorisationInfo(request, goodsRecord.comcode, goodsRecord.countryOfOrigin, recordId)
@@ -100,7 +100,7 @@ class CategorisationPreparationController @Inject() (
   def startLongerCategorisation(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       (for {
-        goodsRecord               <- goodsRecordsConnector.getRecord(request.eori, recordId)
+        goodsRecord               <- goodsRecordsConnector.getRecord(recordId)
         shorterCategorisationInfo <-
           Future.fromTry(Try(request.userAnswers.get(CategorisationDetailsQuery(recordId)).get))
 
@@ -204,8 +204,8 @@ class CategorisationPreparationController @Inject() (
           )
 
           val result = for {
-            oldRecord <- goodsRecordsConnector.getRecord(eori, recordId)
-            _         <- goodsRecordsConnector.updateCategoryAndComcodeForGoodsRecord(eori, recordId, record, oldRecord)
+            oldRecord <- goodsRecordsConnector.getRecord(recordId)
+            _         <- goodsRecordsConnector.updateCategoryAndComcodeForGoodsRecord(recordId, record, oldRecord)
           } yield Done
 
           result

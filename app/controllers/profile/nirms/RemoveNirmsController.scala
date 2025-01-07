@@ -74,7 +74,7 @@ class RemoveNirmsController @Inject() (
             } else {
 
               for {
-                traderProfile     <- traderProfileConnector.getTraderProfile(request.eori)
+                traderProfile     <- traderProfileConnector.getTraderProfile
                 nirmsNumberOpt     = request.userAnswers.get(NirmsNumberUpdatePage).orElse(traderProfile.nirmsNumber)
                 nirmsNumber       <- Future.fromTry(Try(nirmsNumberOpt.get))
                 uaWithRemoveValue <- Future.fromTry(request.userAnswers.set(RemoveNirmsPage, value))

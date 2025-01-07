@@ -46,7 +46,7 @@ class GoodsRecordsLoadingControllerSpec extends SpecBase {
 
       val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
-      when(mockGoodsRecordConnector.getRecordsSummary(any())(any())) thenReturn Future
+      when(mockGoodsRecordConnector.getRecordsSummary(any())) thenReturn Future
         .successful(RecordsSummary(testEori, Some(Update(recordsStored, recordsToStore)), Instant.now))
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -82,7 +82,7 @@ class GoodsRecordsLoadingControllerSpec extends SpecBase {
 
       val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
-      when(mockGoodsRecordConnector.getRecordsSummary(any())(any())) thenReturn Future
+      when(mockGoodsRecordConnector.getRecordsSummary(any())) thenReturn Future
         .successful(RecordsSummary(testEori, None, Instant.now))
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))

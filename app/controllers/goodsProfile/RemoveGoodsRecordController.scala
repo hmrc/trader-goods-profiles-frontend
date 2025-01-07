@@ -66,7 +66,7 @@ class RemoveGoodsRecordController @Inject() (
           {
             case true  =>
               goodsRecordConnector
-                .removeGoodsRecord(request.eori, recordId)
+                .removeGoodsRecord(recordId)
                 .map { value =>
                   auditService.auditFinishRemoveGoodsRecord(request.eori, request.affinityGroup, recordId)
                   if (value) {

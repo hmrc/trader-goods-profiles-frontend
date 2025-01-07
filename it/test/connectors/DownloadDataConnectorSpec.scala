@@ -59,10 +59,10 @@ class DownloadDataConnectorSpec
   private val xClientIdName: String  = "X-Client-ID"
   private val xClientId: String      = "tgp-frontend"
   private val downloadDataSummaryUrl =
-    s"/trader-goods-profiles-data-store/traders/$testEori/download-data-summary"
+    s"/trader-goods-profiles-data-store/traders/download-data-summary"
 
   private val downloadDataUrl =
-    s"/trader-goods-profiles-data-store/traders/$testEori/download-data"
+    s"/trader-goods-profiles-data-store/traders/download-data"
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -79,7 +79,7 @@ class DownloadDataConnectorSpec
           .willReturn(status(ACCEPTED))
       )
 
-      connector.requestDownloadData(testEori).futureValue mustEqual Done
+      connector.requestDownloadData.futureValue mustEqual Done
     }
 
     "must return a failed future when anything but Accepted is returned" in {
@@ -90,7 +90,7 @@ class DownloadDataConnectorSpec
           .willReturn(status(errorResponses.sample.value))
       )
 
-      val result = connector.requestDownloadData(testEori)
+      val result = connector.requestDownloadData
 
       result.failed.futureValue
     }
@@ -103,7 +103,7 @@ class DownloadDataConnectorSpec
           .willReturn(serverError())
       )
 
-      connector.requestDownloadData(testEori).failed.futureValue
+      connector.requestDownloadData.failed.futureValue
     }
 
   }
@@ -123,7 +123,7 @@ class DownloadDataConnectorSpec
           .willReturn(ok().withBody(Json.toJson(downloadData).toString))
       )
 
-      connector.getDownloadData(testEori).futureValue mustBe downloadData
+      connector.getDownloadData.futureValue mustBe downloadData
     }
 
     "must return Seq.empty" - {
@@ -134,7 +134,7 @@ class DownloadDataConnectorSpec
             .willReturn(serverError())
         )
 
-        connector.getDownloadData(testEori).failed.futureValue
+        connector.getDownloadData.failed.futureValue
       }
 
       "if feature flag for downloading data is disabled" in {
@@ -151,7 +151,7 @@ class DownloadDataConnectorSpec
             .willReturn(ok())
         )
 
-        connectorNoDownload.getDownloadData(testEori).futureValue mustBe Seq.empty
+        connectorNoDownload.getDownloadData.futureValue mustBe Seq.empty
       }
     }
 
@@ -167,7 +167,7 @@ class DownloadDataConnectorSpec
             .willReturn(ok().withBody(Json.toJson(downloadDataSummary).toString))
         )
 
-        connector.getDownloadDataSummary(testEori).futureValue mustBe downloadDataSummary
+        connector.getDownloadDataSummary.futureValue mustBe downloadDataSummary
       }
 
       "must return Seq.empty" - {
@@ -187,7 +187,7 @@ class DownloadDataConnectorSpec
               .willReturn(ok())
           )
 
-          connectorNoDownload.getDownloadDataSummary(testEori).futureValue mustBe Seq.empty
+          connectorNoDownload.getDownloadDataSummary.futureValue mustBe Seq.empty
         }
 
       }
@@ -195,7 +195,7 @@ class DownloadDataConnectorSpec
 
     ".getEmail" - {
       val emailUrl =
-        s"/trader-goods-profiles-data-store/traders/$testEori/email"
+        s"/trader-goods-profiles-data-store/traders/email"
 
       val address   = "somebody@email.com"
       val timestamp = Instant.now
@@ -207,7 +207,7 @@ class DownloadDataConnectorSpec
             .willReturn(ok().withBody(Json.toJson(email).toString))
         )
 
-        connector.getEmail(testEori).futureValue mustBe Some(email)
+        connector.getEmail.futureValue mustBe Some(email)
       }
 
       "must return a failed future when the server returns an error" in {
@@ -217,7 +217,7 @@ class DownloadDataConnectorSpec
             .willReturn(serverError())
         )
 
-        connector.getEmail(testEori).failed.futureValue
+        connector.getEmail.failed.futureValue
       }
 
       "must return None when the email isn't found" in {
@@ -227,7 +227,7 @@ class DownloadDataConnectorSpec
             .willReturn(notFound())
         )
 
-        connector.getEmail(testEori).futureValue mustBe None
+        connector.getEmail.futureValue mustBe None
       }
     }
 
@@ -240,7 +240,7 @@ class DownloadDataConnectorSpec
             .willReturn(noContent())
         )
 
-        connector.updateSeenStatus(testEori).futureValue mustBe Done
+        connector.updateSeenStatus.futureValue mustBe Done
       }
 
       "must return exception on 4xx+ responses" in {
@@ -250,7 +250,7 @@ class DownloadDataConnectorSpec
             .willReturn(status(errorResponses.sample.value))
         )
 
-        connector.updateSeenStatus(testEori).failed.futureValue
+        connector.updateSeenStatus.failed.futureValue
       }
     }
   }

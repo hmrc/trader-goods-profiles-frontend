@@ -34,7 +34,7 @@ class EoriCheckActionImpl @Inject() (
 
   def filter[A](request: IdentifierRequest[A]): Future[Option[Result]] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
-    traderProfileConnector.getTraderProfile(request.eori).map {
+    traderProfileConnector.getTraderProfile.map {
       case TraderProfile(_, _, _, _, eoriChanged) if eoriChanged =>
         None
       case _                                                     =>

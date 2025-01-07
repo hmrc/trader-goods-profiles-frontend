@@ -97,7 +97,7 @@ class ReasonForWithdrawAdviceControllerSpec extends SpecBase with MockitoSugar {
       val mockSessionRepository = mock[SessionRepository]
 
       val mockConnector = mock[AccreditationConnector]
-      when(mockConnector.withdrawRequestAccreditation(any(), any(), any())(any())).thenReturn(Future.successful(Done))
+      when(mockConnector.withdrawRequestAccreditation(any(), any())(any())).thenReturn(Future.successful(Done))
 
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
       when(mockSessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
@@ -137,7 +137,7 @@ class ReasonForWithdrawAdviceControllerSpec extends SpecBase with MockitoSugar {
             )(
               any()
             )
-          verify(mockConnector, atLeastOnce()).withdrawRequestAccreditation(any(), any(), any())(any())
+          verify(mockConnector, atLeastOnce()).withdrawRequestAccreditation(any(), any())(any())
           verify(mockSessionRepository, atLeastOnce()).clearData(any(), any())
         }
       }
@@ -150,7 +150,7 @@ class ReasonForWithdrawAdviceControllerSpec extends SpecBase with MockitoSugar {
       when(mockSessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
 
       val mockConnector = mock[AccreditationConnector]
-      when(mockConnector.withdrawRequestAccreditation(any(), any(), any())(any())).thenReturn(Future.successful(Done))
+      when(mockConnector.withdrawRequestAccreditation(any(), any())(any())).thenReturn(Future.successful(Done))
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
@@ -170,7 +170,7 @@ class ReasonForWithdrawAdviceControllerSpec extends SpecBase with MockitoSugar {
         redirectLocation(result).value mustEqual controllers.advice.routes.WithdrawAdviceSuccessController
           .onPageLoad(testRecordId)
           .url
-        verify(mockConnector, atLeastOnce()).withdrawRequestAccreditation(any(), any(), any())(any())
+        verify(mockConnector, atLeastOnce()).withdrawRequestAccreditation(any(), any())(any())
         verify(mockSessionRepository, atLeastOnce()).clearData(any(), any())
       }
     }
@@ -183,7 +183,7 @@ class ReasonForWithdrawAdviceControllerSpec extends SpecBase with MockitoSugar {
       when(mockSessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
 
       val mockConnector = mock[AccreditationConnector]
-      when(mockConnector.withdrawRequestAccreditation(any(), any(), any())(any())).thenReturn(Future.successful(Done))
+      when(mockConnector.withdrawRequestAccreditation(any(), any())(any())).thenReturn(Future.successful(Done))
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
@@ -210,7 +210,7 @@ class ReasonForWithdrawAdviceControllerSpec extends SpecBase with MockitoSugar {
           boundForm,
           testRecordId
         )(request, messages(application)).toString
-        verify(mockConnector, never()).withdrawRequestAccreditation(any(), any(), any())(any())
+        verify(mockConnector, never()).withdrawRequestAccreditation(any(), any())(any())
         verify(mockSessionRepository, never()).clearData(any(), any())
       }
     }
@@ -252,7 +252,7 @@ class ReasonForWithdrawAdviceControllerSpec extends SpecBase with MockitoSugar {
       val mockSessionRepository = mock[SessionRepository]
 
       val mockConnector = mock[AccreditationConnector]
-      when(mockConnector.withdrawRequestAccreditation(any(), any(), any())(any()))
+      when(mockConnector.withdrawRequestAccreditation(any(), any())(any()))
         .thenReturn(Future.failed(new RuntimeException("Connector failed")))
 
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
@@ -290,7 +290,7 @@ class ReasonForWithdrawAdviceControllerSpec extends SpecBase with MockitoSugar {
             )(
               any()
             )
-          verify(mockConnector).withdrawRequestAccreditation(any(), any(), any())(any())
+          verify(mockConnector).withdrawRequestAccreditation(any(), any())(any())
           verify(mockSessionRepository, never()).clearData(any(), any())
         }
         withClue("must not cleanse the user answers data when connector fails") {

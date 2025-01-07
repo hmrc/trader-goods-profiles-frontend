@@ -114,7 +114,7 @@ class SupplementaryUnitController @Inject() (
       val userAnswerValue = request.userAnswers.get(SupplementaryUnitUpdatePage(recordId))
 
       goodsRecordConnector
-        .getRecord(request.eori, recordId)
+        .getRecord(recordId)
         .flatMap { record =>
           val initialValue: String = record.supplementaryUnit match {
             case Some(value) if value != 0 => value.toString

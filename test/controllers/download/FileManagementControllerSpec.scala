@@ -48,8 +48,8 @@ class FileManagementControllerSpec extends SpecBase with MockitoSugar with Befor
 
     "must return OK and view for a GET if download data feature is enabled" in {
 
-      when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(Seq.empty)
-      when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(Seq.empty)
+      when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(Seq.empty)
+      when(mockDownloadDataConnector.getDownloadData(any())) thenReturn Future.successful(Seq.empty)
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector))
@@ -71,14 +71,14 @@ class FileManagementControllerSpec extends SpecBase with MockitoSugar with Befor
         ).toString
       }
 
-      verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())(any())
-      verify(mockDownloadDataConnector, atLeastOnce()).getDownloadData(any())(any())
+      verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())
+      verify(mockDownloadDataConnector, atLeastOnce()).getDownloadData(any())
     }
 
     "must return SEE_OTHER and redirect to journey recovery if download feature is disabled" in {
 
-      when(mockDownloadDataConnector.getDownloadDataSummary(any())(any())) thenReturn Future.successful(Seq.empty)
-      when(mockDownloadDataConnector.getDownloadData(any())(any())) thenReturn Future.successful(Seq.empty)
+      when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(Seq.empty)
+      when(mockDownloadDataConnector.getDownloadData(any())) thenReturn Future.successful(Seq.empty)
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .configure("features.download-file-enabled" -> false)
@@ -94,8 +94,8 @@ class FileManagementControllerSpec extends SpecBase with MockitoSugar with Befor
           .url
       }
 
-      verify(mockDownloadDataConnector, never()).getDownloadDataSummary(any())(any())
-      verify(mockDownloadDataConnector, never()).getDownloadData(any())(any())
+      verify(mockDownloadDataConnector, never()).getDownloadDataSummary(any())
+      verify(mockDownloadDataConnector, never()).getDownloadData(any())
     }
 
   }

@@ -55,7 +55,7 @@ class HasCommodityCodeChangeController @Inject() (
 
   def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val record = goodsRecordConnector.getRecord(request.eori, recordId)
+      val record = goodsRecordConnector.getRecord(recordId)
       record
         .map { goodsRecord =>
           auditService.auditStartUpdateGoodsRecord(
@@ -79,7 +79,7 @@ class HasCommodityCodeChangeController @Inject() (
 
   def onSubmit(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val record = goodsRecordConnector.getRecord(request.eori, recordId)
+      val record = goodsRecordConnector.getRecord(recordId)
 
       record
         .flatMap { goodsRecord =>

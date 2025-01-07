@@ -32,7 +32,7 @@ import scala.concurrent.Future
 
 class ExpiredCommodityCodeControllerSpec extends SpecBase {
   val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+  when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
 
   "ExpiredCommodityCode Controller" - {
 

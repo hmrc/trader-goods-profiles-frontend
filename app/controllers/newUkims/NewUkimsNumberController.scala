@@ -71,7 +71,7 @@ class NewUkimsNumberController @Inject() (
               ),
           value =>
             for {
-              profile        <- traderProfileConnector.getTraderProfile(request.eori)
+              profile        <- traderProfileConnector.getTraderProfile
               updatedAnswers <- Future.fromTry(request.userAnswers.set(NewUkimsNumberPage, value))
               _              <- sessionRepository.set(updatedAnswers)
             } yield

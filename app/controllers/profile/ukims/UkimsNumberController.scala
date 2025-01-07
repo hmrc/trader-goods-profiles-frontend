@@ -88,7 +88,7 @@ class UkimsNumberController @Inject() (
       request.userAnswers.get(UkimsNumberUpdatePage) match {
         case None        =>
           for {
-            traderProfile  <- traderProfileConnector.getTraderProfile(request.eori)
+            traderProfile  <- traderProfileConnector.getTraderProfile
             updatedAnswers <-
               Future.fromTry(request.userAnswers.set(UkimsNumberUpdatePage, traderProfile.ukimsNumber))
             _              <- sessionRepository.set(updatedAnswers)
