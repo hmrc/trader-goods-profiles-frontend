@@ -49,7 +49,7 @@ class ProfileController @Inject() (
   def onPageLoad(): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       cleanseProfileData(request.userAnswers).flatMap { _ =>
-        traderProfileConnector.getTraderProfile(request.eori).map { profile =>
+        traderProfileConnector.getTraderProfile.map { profile =>
           val detailsList = SummaryListViewModel(
             rows = Seq(
               Some(UkimsNumberSummary.row(profile.ukimsNumber)),

@@ -82,7 +82,7 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
           val call = onSubmitAction
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form, call, countries)(
+          contentAsString(result) mustEqual view(form, call, countries, NormalMode, None)(
             request,
             messages(application)
           ).toString
@@ -117,7 +117,7 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
           val call = onSubmitAction
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form.fill("answer"), call, countries)(
+          contentAsString(result) mustEqual view(form.fill("answer"), call, countries, NormalMode, None)(
             request,
             messages(application)
           ).toString
@@ -146,7 +146,7 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
           val call = onSubmitAction
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form, call, countries)(
+          contentAsString(result) mustEqual view(form, call, countries, NormalMode, None)(
             request,
             messages(application)
           ).toString
@@ -224,7 +224,7 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
           val call = onSubmitAction
 
           status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(boundForm, call, countries)(
+          contentAsString(result) mustEqual view(boundForm, call, countries, NormalMode, None)(
             request,
             messages(application)
           ).toString
@@ -302,7 +302,7 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
           val call = onSubmitAction
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form, call, countries)(
+          contentAsString(result) mustEqual view(form, call, countries, NormalMode, Some(testRecordId))(
             request,
             messages(application)
           ).toString
@@ -352,7 +352,7 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
           val call = onSubmitAction
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form, call, countries)(
+          contentAsString(result) mustEqual view(form, call, countries, NormalMode, Some(testRecordId))(
             request,
             messages(application)
           ).toString
@@ -400,7 +400,7 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
           val call = onSubmitAction
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form.fill("answer"), call, countries)(
+          contentAsString(result) mustEqual view(form.fill("answer"), call, countries, NormalMode, Some(testRecordId))(
             request,
             messages(application)
           ).toString
@@ -429,7 +429,7 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
           val call = onSubmitAction
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form, call, countries)(
+          contentAsString(result) mustEqual view(form, call, countries, NormalMode, Some(testRecordId))(
             request,
             messages(application)
           ).toString
@@ -572,7 +572,7 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
           val call = onSubmitAction
 
           status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(boundForm, call, countries)(
+          contentAsString(result) mustEqual view(boundForm, call, countries, NormalMode, Some(testRecordId))(
             request,
             messages(application)
           ).toString

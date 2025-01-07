@@ -65,7 +65,7 @@ class GoodsRecordsController @Inject() (
       if (page < 1) {
         Future.successful(navigator.journeyRecovery())
       } else {
-        goodsRecordConnector.getRecords(request.eori, page, pageSize).flatMap {
+        goodsRecordConnector.getRecords(page, pageSize).flatMap {
           case Some(goodsRecordsResponse) if goodsRecordsResponse.pagination.totalRecords > 0 =>
             for {
               countries      <- ottConnector.getCountries

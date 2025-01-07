@@ -63,7 +63,7 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
       val page: QuestionPage[String] = CommodityCodePage
 
-      runCommodityCodeControllerTests(commodityCodeRoute, onSubmitAction, page)
+      runCommodityCodeControllerTests(commodityCodeRoute, onSubmitAction, page, None)
     }
 
     "For update journey" - {
@@ -75,14 +75,15 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
       val page: QuestionPage[String] = CommodityCodeUpdatePage(testRecordId)
 
-      runCommodityCodeControllerTests(commodityCodeRoute, onSubmitAction, page)
+      runCommodityCodeControllerTests(commodityCodeRoute, onSubmitAction, page, Some(testRecordId))
 
     }
 
     def runCommodityCodeControllerTests(
       commodityCodeRoute: String,
       onSubmitAction: Call,
-      page: QuestionPage[String]
+      page: QuestionPage[String],
+      recordId: Option[String]
     ): Unit = {
 
       "must return OK and the correct view for a GET" in {
@@ -106,7 +107,10 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
           val view = application.injector.instanceOf[CommodityCodeView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form, onSubmitAction)(request, messages(application)).toString
+          contentAsString(result) mustEqual view(form, onSubmitAction, NormalMode, recordId)(
+            request,
+            messages(application)
+          ).toString
 
           if (page == CommodityCodePage) {
             withClue("must not audit") {
@@ -147,7 +151,10 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
           val view = application.injector.instanceOf[CommodityCodeView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form, onSubmitAction)(request, messages(application)).toString
+          contentAsString(result) mustEqual view(form, onSubmitAction, NormalMode, recordId)(
+            request,
+            messages(application)
+          ).toString
 
           withClue("must not audit") {
             verify(mockAuditService, never()).auditStartUpdateGoodsRecord(any(), any(), any(), any(), any())(any())
@@ -171,7 +178,7 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form.fill("654321"), onSubmitAction)(
+          contentAsString(result) mustEqual view(form.fill("654321"), onSubmitAction, NormalMode, recordId)(
             request,
             messages(application)
           ).toString
@@ -277,7 +284,10 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(boundForm, onSubmitAction)(request, messages(application)).toString
+          contentAsString(result) mustEqual view(boundForm, onSubmitAction, NormalMode, recordId)(
+            request,
+            messages(application)
+          ).toString
         }
       }
 
@@ -310,7 +320,10 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(boundForm, onSubmitAction)(request, messages(application)).toString
+          contentAsString(result) mustEqual view(boundForm, onSubmitAction, NormalMode, recordId)(
+            request,
+            messages(application)
+          ).toString
         }
       }
 
@@ -353,7 +366,10 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(boundForm, onSubmitAction)(request, messages(application)).toString
+          contentAsString(result) mustEqual view(boundForm, onSubmitAction, NormalMode, recordId)(
+            request,
+            messages(application)
+          ).toString
 
           verify(mockOttConnector)
             .getCommodityCode(eqTo("654321"), eqTo(testEori), any(), any(), any(), any())(
@@ -413,7 +429,10 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
           val result = route(application, request).value
 
           status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(boundForm, onSubmitAction)(request, messages(application)).toString
+          contentAsString(result) mustEqual view(boundForm, onSubmitAction, NormalMode, recordId)(
+            request,
+            messages(application)
+          ).toString
 
           verify(mockOttConnector)
             .getCommodityCode(eqTo("654321"), eqTo(testEori), any(), any(), any(), any())(

@@ -43,7 +43,7 @@ class GoodsRecordsLoadingController @Inject() (
 
   def onPageLoad(continueUrl: Option[RedirectUrl] = None): Action[AnyContent] =
     identify.async { implicit request =>
-      goodsRecordConnector.getRecordsSummary(request.eori).map { recordsSummary =>
+      goodsRecordConnector.getRecordsSummary.map { recordsSummary =>
         recordsSummary.currentUpdate
           .map { update =>
             val recordsStored = update.recordsStored

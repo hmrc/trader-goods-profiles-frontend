@@ -53,7 +53,14 @@ class HasNirmsController @Inject() (
   def onPageLoadCreate(mode: Mode): Action[AnyContent] =
     (identify andThen checkProfile andThen getData andThen requireData) { implicit request =>
       val preparedForm = prepareForm(HasNirmsPage, form)
-      Ok(view(preparedForm, controllers.profile.routes.HasNirmsController.onSubmitCreate(mode)))
+      Ok(
+        view(
+          preparedForm,
+          controllers.profile.routes.HasNirmsController.onSubmitCreate(mode),
+          mode,
+          isCreateJourney = true
+        )
+      )
     }
 
   def onSubmitCreate(mode: Mode): Action[AnyContent] =
@@ -63,7 +70,14 @@ class HasNirmsController @Inject() (
         .fold(
           formWithErrors =>
             Future.successful(
-              BadRequest(view(formWithErrors, controllers.profile.routes.HasNirmsController.onSubmitCreate(mode)))
+              BadRequest(
+                view(
+                  formWithErrors,
+                  controllers.profile.routes.HasNirmsController.onSubmitCreate(mode),
+                  mode,
+                  isCreateJourney = true
+                )
+              )
             ),
           value =>
             for {
@@ -78,19 +92,28 @@ class HasNirmsController @Inject() (
       request.userAnswers.get(HasNirmsUpdatePage) match {
         case None        =>
           for {
-            traderProfile  <- traderProfileConnector.getTraderProfile(request.eori)
+            traderProfile  <- traderProfileConnector.getTraderProfile
             updatedAnswers <-
               Future.fromTry(request.userAnswers.set(HasNirmsUpdatePage, traderProfile.nirmsNumber.isDefined))
             _              <- sessionRepository.set(updatedAnswers)
           } yield Ok(
             view(
               form.fill(traderProfile.nirmsNumber.isDefined),
-              controllers.profile.routes.HasNirmsController.onSubmitUpdate(mode)
+              controllers.profile.routes.HasNirmsController.onSubmitUpdate(mode),
+              mode,
+              isCreateJourney = false
             )
           )
         case Some(value) =>
           Future.successful(
-            Ok(view(form.fill(value), controllers.profile.routes.HasNirmsController.onSubmitUpdate(mode)))
+            Ok(
+              view(
+                form.fill(value),
+                controllers.profile.routes.HasNirmsController.onSubmitUpdate(mode),
+                mode,
+                isCreateJourney = false
+              )
+            )
           )
       }
     }
@@ -102,10 +125,17 @@ class HasNirmsController @Inject() (
         .fold(
           formWithErrors =>
             Future.successful(
-              BadRequest(view(formWithErrors, controllers.profile.routes.HasNirmsController.onSubmitUpdate(mode)))
+              BadRequest(
+                view(
+                  formWithErrors,
+                  controllers.profile.routes.HasNirmsController.onSubmitUpdate(mode),
+                  mode,
+                  isCreateJourney = false
+                )
+              )
             ),
           value =>
-            traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
+            traderProfileConnector.getTraderProfile.flatMap { traderProfile =>
               for {
                 updatedAnswers                  <- Future.fromTry(request.userAnswers.set(HasNirmsUpdatePage, value))
                 updatedAnswersWithTraderProfile <-

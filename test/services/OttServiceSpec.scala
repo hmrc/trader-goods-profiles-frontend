@@ -82,7 +82,7 @@ class OttServiceSpec extends SpecBase with BeforeAndAfterEach with Generators {
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    when(mockGoodsRecordsConnector.getRecord(any(), any())(any()))
+    when(mockGoodsRecordsConnector.getRecord(any())(any()))
       .thenReturn(Future.successful(mockGoodsRecordResponse))
     when(mockOttConnector.getCategorisationInfo(any(), any(), any(), any(), any(), any())(any()))
       .thenReturn(Future.successful(mockOttResponse()))
@@ -109,7 +109,7 @@ class OttServiceSpec extends SpecBase with BeforeAndAfterEach with Generators {
       result shouldBe Some(expectedMeasurementUnit)
 
       withClue("Should call Goods Records Connector") {
-        verify(mockGoodsRecordsConnector).getRecord(any(), any())(any())
+        verify(mockGoodsRecordsConnector).getRecord(any())(any())
       }
 
       withClue("Should call OTT Connector") {
@@ -121,7 +121,7 @@ class OttServiceSpec extends SpecBase with BeforeAndAfterEach with Generators {
       val mockDataRequest = mock[DataRequest[AnyContent]]
       when(mockDataRequest.userAnswers).thenReturn(emptyUserAnswers)
 
-      when(mockGoodsRecordsConnector.getRecord(any(), any())(any()))
+      when(mockGoodsRecordsConnector.getRecord(any())(any()))
         .thenReturn(Future.failed(new RuntimeException("Failed to get goods record")))
 
       val result = await(ottService.getMeasurementUnit(mockDataRequest, "recordId"))

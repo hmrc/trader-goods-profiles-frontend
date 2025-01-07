@@ -81,7 +81,8 @@ class AssessmentController @Inject() (
                     categorisationInfo.commodityCode,
                     submitAction,
                     assessment.themeDescription,
-                    assessment.regulationUrl
+                    assessment.regulationUrl,
+                    isReassessment = false
                   )
                 )
               }
@@ -115,7 +116,8 @@ class AssessmentController @Inject() (
                     categorisationInfo.commodityCode,
                     submitAction,
                     assessment.themeDescription,
-                    assessment.regulationUrl
+                    assessment.regulationUrl,
+                    isReassessment = true
                   )
                 )
               }
@@ -152,7 +154,8 @@ class AssessmentController @Inject() (
                             categorisationInfo.commodityCode,
                             submitAction,
                             assessment.themeDescription,
-                            assessment.regulationUrl
+                            assessment.regulationUrl,
+                            isReassessment = false
                           )
                         )
                       ),
@@ -213,7 +216,8 @@ class AssessmentController @Inject() (
                             categorisationInfo.commodityCode,
                             submitAction,
                             assessment.themeDescription,
-                            assessment.regulationUrl
+                            assessment.regulationUrl,
+                            isReassessment = true
                           )
                         )
                       ),

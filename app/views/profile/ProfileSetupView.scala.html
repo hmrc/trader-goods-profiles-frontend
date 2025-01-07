@@ -35,7 +35,7 @@
     <p class="govuk-body">@messages("profileSetup.p2")</p>
     <p class="govuk-body">
         @messages("profileSetup.p3")
-        <a target="_self" href="@routes.OutboundController.redirect(OutboundLink.ApplyForAuth.link)"
+        <a target="_self" href="@OutboundLink.ApplyForAuth.outboundCall"
            class="govuk-link"> @messages(OutboundLink.ApplyForAuth.linkTextKey)</a>.
     </p>
 
@@ -44,7 +44,7 @@
     <p class="govuk-body">@messages("profileSetup.p5")</p>
     <p class="govuk-body">
         @messages("profileSetup.p6")
-        <a target="_self" href="@routes.OutboundController.redirect(OutboundLink.RetailMovementProfile.link)"
+        <a target="_self" href="@OutboundLink.RetailMovementProfile.outboundCall"
            class="govuk-link" >@messages(OutboundLink.RetailMovementProfile.linkTextKey)</a>.
     </p>
 
@@ -53,7 +53,7 @@
     <p class="govuk-body">@messages("profileSetup.p8")</p>
     <p class="govuk-body">
         @messages("profileSetup.p9")
-        <a target="_self" href="@routes.OutboundController.redirect(OutboundLink.MovingPlantProfile.link)"
+        <a target="_self" href="@OutboundLink.MovingPlantProfile.outboundCall"
            class="govuk-link" >@messages(OutboundLink.MovingPlantProfile.linkTextKey)</a>.
     </p>
 

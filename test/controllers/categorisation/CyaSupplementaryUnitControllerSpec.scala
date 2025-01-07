@@ -145,8 +145,8 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
           val mockAuditService = mock[AuditService]
 
           val mockGoodsRecordConnector = mock[GoodsRecordConnector]
-          when(mockGoodsRecordConnector.getRecord(any(), any())(any())).thenReturn(Future.successful(record))
-          when(mockGoodsRecordConnector.updateSupplementaryUnitForGoodsRecord(any(), any(), any(), any())(any()))
+          when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(record))
+          when(mockGoodsRecordConnector.updateSupplementaryUnitForGoodsRecord(any(), any(), any())(any()))
             .thenReturn(Future.successful(Done))
 
           val sessionRepository = mock[SessionRepository]
@@ -181,7 +181,7 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
               .onPageLoad(testRecordId)
               .url
             verify(mockGoodsRecordConnector)
-              .updateSupplementaryUnitForGoodsRecord(eqTo(testEori), eqTo(testRecordId), eqTo(expectedPayload), any())(
+              .updateSupplementaryUnitForGoodsRecord(eqTo(testRecordId), eqTo(expectedPayload), any())(
                 any()
               )
 
@@ -211,8 +211,8 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
           val mockAuditService = mock[AuditService]
 
           val mockGoodsRecordConnector = mock[GoodsRecordConnector]
-          when(mockGoodsRecordConnector.getRecord(any(), any())(any())).thenReturn(Future.successful(record))
-          when(mockGoodsRecordConnector.updateSupplementaryUnitForGoodsRecord(any(), any(), any(), any())(any()))
+          when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(record))
+          when(mockGoodsRecordConnector.updateSupplementaryUnitForGoodsRecord(any(), any(), any())(any()))
             .thenReturn(Future.successful(Done))
 
           val sessionRepository = mock[SessionRepository]
@@ -268,8 +268,8 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
           val mockAuditService = mock[AuditService]
 
           val mockGoodsRecordConnector = mock[GoodsRecordConnector]
-          when(mockGoodsRecordConnector.getRecord(any(), any())(any())).thenReturn(Future.successful(record))
-          when(mockGoodsRecordConnector.updateSupplementaryUnitForGoodsRecord(any(), any(), any(), any())(any()))
+          when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(record))
+          when(mockGoodsRecordConnector.updateSupplementaryUnitForGoodsRecord(any(), any(), any())(any()))
             .thenReturn(Future.successful(Done))
 
           val sessionRepository = mock[SessionRepository]
@@ -326,8 +326,8 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
           val mockAuditService = mock[AuditService]
 
           val mockGoodsRecordConnector = mock[GoodsRecordConnector]
-          when(mockGoodsRecordConnector.getRecord(any(), any())(any())).thenReturn(Future.successful(record))
-          when(mockGoodsRecordConnector.updateSupplementaryUnitForGoodsRecord(any(), any(), any(), any())(any()))
+          when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(record))
+          when(mockGoodsRecordConnector.updateSupplementaryUnitForGoodsRecord(any(), any(), any())(any()))
             .thenReturn(Future.successful(Done))
 
           val sessionRepository = mock[SessionRepository]
@@ -378,8 +378,8 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
         val mockAuditService = mock[AuditService]
 
         val mockGoodsRecordConnector = mock[GoodsRecordConnector]
-        when(mockGoodsRecordConnector.getRecord(any(), any())(any())).thenReturn(Future.successful(record))
-        when(mockGoodsRecordConnector.updateSupplementaryUnitForGoodsRecord(any(), any(), any(), any())(any()))
+        when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(record))
+        when(mockGoodsRecordConnector.updateSupplementaryUnitForGoodsRecord(any(), any(), any())(any()))
           .thenReturn(Future.successful(Done))
 
         val sessionRepository = mock[SessionRepository]
@@ -428,8 +428,8 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
         val mockAuditService = mock[AuditService]
 
         val mockGoodsRecordConnector = mock[GoodsRecordConnector]
-        when(mockGoodsRecordConnector.getRecord(any(), any())(any())).thenReturn(Future.successful(record))
-        when(mockGoodsRecordConnector.updateSupplementaryUnitForGoodsRecord(any(), any(), any(), any())(any()))
+        when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(record))
+        when(mockGoodsRecordConnector.updateSupplementaryUnitForGoodsRecord(any(), any(), any())(any()))
           .thenReturn(Future.failed(new RuntimeException("Connector failed")))
 
         val sessionRepository = mock[SessionRepository]
@@ -517,7 +517,7 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
             redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
               .onPageLoad(Some(continueUrl))
               .url
-            verify(mockGoodsRecordConnector, never()).updateSupplementaryUnitForGoodsRecord(any(), any(), any(), any())(
+            verify(mockGoodsRecordConnector, never()).updateSupplementaryUnitForGoodsRecord(any(), any(), any())(
               any()
             )
 
