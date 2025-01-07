@@ -56,7 +56,7 @@ class SingleRecordController @Inject() (
   def onPageLoad(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       for {
-        record                             <- goodsRecordConnector.getRecord(request.eori, recordId)
+        record                             <- goodsRecordConnector.getRecord(recordId)
         recordIsLocked                      = record.adviceStatus match {
                                                 case status
                                                     if status == Requested ||

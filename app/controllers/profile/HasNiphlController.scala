@@ -92,7 +92,7 @@ class HasNiphlController @Inject() (
       request.userAnswers.get(HasNiphlUpdatePage) match {
         case None        =>
           for {
-            traderProfile  <- traderProfileConnector.getTraderProfile(request.eori)
+            traderProfile  <- traderProfileConnector.getTraderProfile
             updatedAnswers <-
               Future.fromTry(request.userAnswers.set(HasNiphlUpdatePage, traderProfile.niphlNumber.isDefined))
             _              <- sessionRepository.set(updatedAnswers)
@@ -135,7 +135,7 @@ class HasNiphlController @Inject() (
               )
             ),
           value =>
-            traderProfileConnector.getTraderProfile(request.eori).flatMap { traderProfile =>
+            traderProfileConnector.getTraderProfile.flatMap { traderProfile =>
               for {
                 updatedAnswers                  <- Future.fromTry(request.userAnswers.set(HasNiphlUpdatePage, value))
                 updatedAnswersWithTraderProfile <-

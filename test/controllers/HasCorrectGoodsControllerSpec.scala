@@ -581,7 +581,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
             when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
               .thenReturn(Future.successful(Done))
             when(mockGoodsRecordConnector.putGoodsRecord(any(), any())(any())).thenReturn(Future.successful(Done))
-            when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
+            when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
               .successful(record)
             when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
@@ -649,7 +649,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
             when(mockGoodsRecordConnector.putGoodsRecord(any(), any())(any())).thenReturn(Future.successful(Done))
             when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
               .thenReturn(Future.successful(Done))
-            when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
+            when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
               .successful(record)
 
             val application =
@@ -716,7 +716,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
             when(mockGoodsRecordConnector.updateGoodsRecord(any())(any())).thenReturn(Future.successful(Done))
             when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
               .thenReturn(Future.successful(Done))
-            when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
+            when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
               .successful(record)
 
             when(mockFrontendAppConfig.useEisPatchMethod) thenReturn false
@@ -783,7 +783,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
             val mockAuditService      = mock[AuditService]
             val mockSessionRepository = mock[SessionRepository]
 
-            when(mockConnector.getRecord(any(), any())(any())).thenReturn(Future.successful(record))
+            when(mockConnector.getRecord(any())(any())).thenReturn(Future.successful(record))
             when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
               .thenReturn(Future.successful(Done))
             when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
@@ -808,7 +808,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
               redirectLocation(result).value mustEqual onwardRoute.url
 
               verify(mockConnector, never()).patchGoodsRecord(any())(any())
-              verify(mockConnector).getRecord(eqTo(testEori), eqTo(testRecordId))(any())
+              verify(mockConnector).getRecord(eqTo(testRecordId))(any())
 
               withClue("must call the audit connector with the supplied details") {
                 verify(mockAuditService, atLeastOnce())
@@ -830,7 +830,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
               val mockAuditService         = mock[AuditService]
               val mockSessionRepository    = mock[SessionRepository]
 
-              when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
+              when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
                 .successful(record)
               when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
 
@@ -855,7 +855,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
                     .onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl)))
                     .url
 
-                verify(mockGoodsRecordConnector, atLeastOnce()).getRecord(any(), any())(any())
+                verify(mockGoodsRecordConnector, atLeastOnce()).getRecord(any())(any())
               }
             }
 
@@ -866,7 +866,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
               val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
               when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
-              when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
+              when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
                 .failed(new RuntimeException("Something went very wrong"))
 
               val application =
@@ -883,7 +883,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
                   .withFormUrlEncodedBody(("value", "true"))
                 intercept[RuntimeException] {
                   await(route(application, request).value)
-                  verify(mockGoodsRecordConnector, atLeastOnce()).getRecord(any(), any())(any())
+                  verify(mockGoodsRecordConnector, atLeastOnce()).getRecord(any())(any())
                 }
               }
             }
@@ -915,7 +915,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
                 .thenReturn(Future.successful(Done))
               when(mockGoodsRecordConnector.patchGoodsRecord(any())(any()))
                 .thenReturn(Future.failed(new RuntimeException("Connector failed")))
-              when(mockGoodsRecordConnector.getRecord(any(), any())(any())) thenReturn Future
+              when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
                 .successful(record)
 
               val application =
@@ -944,7 +944,7 @@ class HasCorrectGoodsControllerSpec extends SpecBase with MockitoSugar {
                     )(
                       any()
                     )
-                  verify(mockGoodsRecordConnector, atLeastOnce()).getRecord(any(), any())(any())
+                  verify(mockGoodsRecordConnector, atLeastOnce()).getRecord(any())(any())
                   verify(mockGoodsRecordConnector, atLeastOnce()).putGoodsRecord(any(), any())(any())
                 }
               }

@@ -41,7 +41,7 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
   private val mockSessionRepository      = mock[SessionRepository]
   when(mockSessionRepository.set(any())) thenReturn Future
     .successful(true)
-  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+  when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
 
   "Profile Controller" - {
 
@@ -61,7 +61,7 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
         )
         .build()
 
-      when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future
+      when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future
         .successful(profileResponse)
 
       implicit val message: Messages = messages(application)
@@ -107,7 +107,7 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
         )
         .build()
 
-      when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future
+      when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future
         .successful(profileResponse)
 
       implicit val message: Messages = messages(application)
@@ -153,7 +153,7 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
         )
         .build()
 
-      when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future
+      when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future
         .successful(profileResponse)
 
       implicit val message: Messages = messages(application)
@@ -199,7 +199,7 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
         )
         .build()
 
-      when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future
+      when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future
         .successful(profileResponse)
 
       implicit val message: Messages = messages(application)
@@ -237,7 +237,7 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
         )
         .build()
 
-      when(mockTraderProfileConnector.getTraderProfile(any())(any())) thenReturn Future
+      when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future
         .failed(new NotFoundException("Failed to find record"))
 
       running(application) {

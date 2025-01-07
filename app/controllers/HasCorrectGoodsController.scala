@@ -183,7 +183,7 @@ class HasCorrectGoodsController @Inject() (
     implicit hc: HeaderCarrier
   ): Future[Result] =
     (for {
-      oldRecord                <- goodsRecordConnector.getRecord(request.eori, recordId)
+      oldRecord                <- goodsRecordConnector.getRecord(recordId)
       commodity                <-
         handleValidateError(
           UpdateGoodsRecord

@@ -77,10 +77,10 @@ class CyaNewUkimsNumberController @Inject() (
     (identify andThen profileAuth andThen checkEori andThen getData andThen requireData).async { implicit request =>
       (for {
         ukimsNumber                <- handleValidateError(TraderProfile.validateNewUkimsNumber(request.userAnswers))
-        oldTraderProfile           <- traderProfileConnector.getTraderProfile(request.eori)
+        oldTraderProfile           <- traderProfileConnector.getTraderProfile
         newTraderProfile           <- Future.successful(oldTraderProfile.copy(ukimsNumber = ukimsNumber))
         _                           = auditService.auditMaintainProfile(oldTraderProfile, newTraderProfile, request.affinityGroup)
-        _                          <- traderProfileConnector.submitTraderProfile(newTraderProfile, request.eori)
+        _                          <- traderProfileConnector.submitTraderProfile(newTraderProfile)
         updatedAnswersRemovedUkims <-
           Future.fromTry(request.userAnswers.remove(NewUkimsNumberPage))
         _                          <- sessionRepository.set(updatedAnswersRemovedUkims)

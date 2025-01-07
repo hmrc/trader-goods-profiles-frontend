@@ -61,8 +61,8 @@ class GoodsRecordConnectorSpec
   private val xClientId: String     = "tgp-frontend"
   private val testRecordId          = "8ebb6b04-6ab0-4fe2-ad62-e6389a8a204f"
 
-  private val goodsRecordUrl    = s"/trader-goods-profiles-data-store/traders/$testEori/records/$testRecordId"
-  private val recordsSummaryUrl = s"/trader-goods-profiles-data-store/traders/$testEori/records-summary"
+  private val goodsRecordUrl    = s"/trader-goods-profiles-data-store/traders/records/$testRecordId"
+  private val recordsSummaryUrl = s"/trader-goods-profiles-data-store/traders/records-summary"
 
   private lazy val getRecordResponse = Json
     .parse(s"""
@@ -239,7 +239,7 @@ class GoodsRecordConnectorSpec
 
   ".submitGoodsRecord" - {
 
-    val routerGoodsRecordsUrl = s"/trader-goods-profiles-data-store/traders/$testEori/records"
+    val createGoodsRecordUrl = s"/trader-goods-profiles-data-store/traders/records"
 
     val goodsRecord = GoodsRecord(
       testEori,
@@ -264,7 +264,7 @@ class GoodsRecordConnectorSpec
     "must submit a goods record" in {
 
       wireMockServer.stubFor(
-        post(urlEqualTo(routerGoodsRecordsUrl))
+        post(urlEqualTo(createGoodsRecordUrl))
           .withRequestBody(equalTo(Json.toJson(createRecordRequest).toString))
           .withHeader(xClientIdName, equalTo(xClientId))
           .willReturn(ok().withBody(testRecordId))
@@ -276,7 +276,7 @@ class GoodsRecordConnectorSpec
     "must return a failed future when the server returns an error" in {
 
       wireMockServer.stubFor(
-        post(urlEqualTo(routerGoodsRecordsUrl))
+        post(urlEqualTo(createGoodsRecordUrl))
           .withRequestBody(equalTo(Json.toJson(createRecordRequest).toString))
           .withHeader(xClientIdName, equalTo(xClientId))
           .willReturn(serverError())
@@ -288,7 +288,7 @@ class GoodsRecordConnectorSpec
 
   ".removeGoodsRecord" - {
 
-    val removeRecordUrl = s"/trader-goods-profiles-data-store/traders/$testEori/records/$testRecordId"
+    val removeRecordUrl = s"/trader-goods-profiles-data-store/traders/records/$testRecordId"
 
     "must return true when goods record is removed" in {
 
@@ -298,7 +298,7 @@ class GoodsRecordConnectorSpec
           .willReturn(noContent())
       )
 
-      connector.removeGoodsRecord(testEori, testRecordId).futureValue mustBe true
+      connector.removeGoodsRecord(testRecordId).futureValue mustBe true
     }
 
     "must return a false when anything, but NO_CONTENT is returned" in {
@@ -309,7 +309,7 @@ class GoodsRecordConnectorSpec
           .willReturn(status(errorResponses.sample.value))
       )
 
-      connector.removeGoodsRecord(testEori, testRecordId).failed.futureValue
+      connector.removeGoodsRecord(testRecordId).failed.futureValue
     }
 
     "must return a failed future when the server returns an error" in {
@@ -320,7 +320,7 @@ class GoodsRecordConnectorSpec
           .willReturn(serverError())
       )
 
-      connector.removeGoodsRecord(testEori, testRecordId).failed.futureValue
+      connector.removeGoodsRecord(testRecordId).failed.futureValue
     }
 
     "must return false when the server returns not found" in {
@@ -331,7 +331,7 @@ class GoodsRecordConnectorSpec
           .willReturn(notFound())
       )
 
-      connector.removeGoodsRecord(testEori, testRecordId).futureValue mustBe false
+      connector.removeGoodsRecord(testRecordId).futureValue mustBe false
     }
   }
 
@@ -374,7 +374,7 @@ class GoodsRecordConnectorSpec
         )
 
         connector
-          .updateCategoryAndComcodeForGoodsRecord(testEori, testRecordId, categoryRecord, goodsRecord)
+          .updateCategoryAndComcodeForGoodsRecord(testRecordId, categoryRecord, goodsRecord)
           .futureValue
       }
 
@@ -407,7 +407,7 @@ class GoodsRecordConnectorSpec
         )
 
         connector
-          .updateCategoryAndComcodeForGoodsRecord(testEori, testRecordId, categoryRecordWithSupp, goodsRecord)
+          .updateCategoryAndComcodeForGoodsRecord(testRecordId, categoryRecordWithSupp, goodsRecord)
           .futureValue
       }
 
@@ -439,7 +439,7 @@ class GoodsRecordConnectorSpec
         )
 
         connector
-          .updateCategoryAndComcodeForGoodsRecord(testEori, testRecordId, categoryRecordWithLongerComCode, goodsRecord)
+          .updateCategoryAndComcodeForGoodsRecord(testRecordId, categoryRecordWithLongerComCode, goodsRecord)
           .futureValue
       }
 
@@ -455,7 +455,7 @@ class GoodsRecordConnectorSpec
       )
 
       connector
-        .updateCategoryAndComcodeForGoodsRecord(testEori, testRecordId, categoryRecord, goodsRecord)
+        .updateCategoryAndComcodeForGoodsRecord(testRecordId, categoryRecord, goodsRecord)
         .failed
         .futureValue
     }
@@ -495,7 +495,7 @@ class GoodsRecordConnectorSpec
       )
 
       connector
-        .updateSupplementaryUnitForGoodsRecord(testEori, testRecordId, supplementaryRequest, goodsRecord)
+        .updateSupplementaryUnitForGoodsRecord(testRecordId, supplementaryRequest, goodsRecord)
         .futureValue
     }
 
@@ -509,7 +509,7 @@ class GoodsRecordConnectorSpec
       )
 
       connector
-        .updateSupplementaryUnitForGoodsRecord(testEori, testRecordId, supplementaryRequest, goodsRecord)
+        .updateSupplementaryUnitForGoodsRecord(testRecordId, supplementaryRequest, goodsRecord)
         .failed
         .futureValue
     }
@@ -601,7 +601,7 @@ class GoodsRecordConnectorSpec
 
   ".getRecord" - {
 
-    val dataStoreGoodsRecordUrl = s"/trader-goods-profiles-data-store/traders/$testEori/records/$testRecordId"
+    val dataStoreGoodsRecordUrl = s"/trader-goods-profiles-data-store/traders/records/$testRecordId"
 
     "must get a goods record" in {
 
@@ -610,7 +610,7 @@ class GoodsRecordConnectorSpec
           .willReturn(ok().withBody(getRecordResponse.toString))
       )
 
-      connector.getRecord(testEori, testRecordId).futureValue mustBe getRecordResponse
+      connector.getRecord(testRecordId).futureValue mustBe getRecordResponse
         .validate[GetGoodsRecordResponse]
         .get
     }
@@ -622,7 +622,7 @@ class GoodsRecordConnectorSpec
           .willReturn(serverError())
       )
 
-      connector.getRecord(testEori, testRecordId).failed.futureValue
+      connector.getRecord(testRecordId).failed.futureValue
     }
 
     "must return a failed future when the json does not match the format" in {
@@ -632,13 +632,13 @@ class GoodsRecordConnectorSpec
           .willReturn(ok().withBody("{'eori': '123', 'commodity': '10410100'}"))
       )
 
-      connector.getRecord(testEori, testRecordId).failed.futureValue
+      connector.getRecord(testRecordId).failed.futureValue
     }
   }
 
   ".getRecords" - {
 
-    val pagedGoodsRecordsUrl = s"/trader-goods-profiles-data-store/traders/$testEori/records?page=1&size=3"
+    val pagedGoodsRecordsUrl = s"/trader-goods-profiles-data-store/traders/records?page=1&size=3"
 
     "must get a page of goods records" in {
 
@@ -648,7 +648,7 @@ class GoodsRecordConnectorSpec
           .willReturn(ok().withBody(getRecordsResponse.toString))
       )
 
-      connector.getRecords(testEori, 1, 3).futureValue.value mustEqual getRecordsResponse.as[GetRecordsResponse]
+      connector.getRecords(1, 3).futureValue.value mustEqual getRecordsResponse.as[GetRecordsResponse]
     }
 
     "must return done when the status is ACCEPTED" in {
@@ -659,7 +659,7 @@ class GoodsRecordConnectorSpec
           .willReturn(status(ACCEPTED))
       )
 
-      connector.getRecords(testEori, 1, 3).futureValue mustBe None
+      connector.getRecords(1, 3).futureValue mustBe None
     }
 
     "must return a failed future when the status code is anything but Accepted or Ok" in {
@@ -670,7 +670,7 @@ class GoodsRecordConnectorSpec
           .willReturn(status(errorResponses.sample.value))
       )
 
-      connector.getRecords(testEori, 1, 3).failed.futureValue
+      connector.getRecords(1, 3).failed.futureValue
     }
 
     "must return a failed future when the server returns an error" in {
@@ -681,7 +681,7 @@ class GoodsRecordConnectorSpec
           .willReturn(serverError())
       )
 
-      connector.getRecords(testEori, 1, 3).failed.futureValue
+      connector.getRecords(1, 3).failed.futureValue
     }
 
     "must return a failed future when the json does not match the format" in {
@@ -692,7 +692,7 @@ class GoodsRecordConnectorSpec
           .willReturn(ok().withBody("{'eori': '123', 'commodity': '10410100'}"))
       )
 
-      connector.getRecords(testEori, 1, 3).failed.futureValue
+      connector.getRecords(1, 3).failed.futureValue
     }
   }
 
@@ -836,7 +836,7 @@ class GoodsRecordConnectorSpec
           .willReturn(ok().withBody(Json.toJson(recordsSummary).toString))
       )
 
-      connector.getRecordsSummary(testEori).futureValue.eori mustBe recordsSummary.eori
+      connector.getRecordsSummary.futureValue.eori mustBe recordsSummary.eori
     }
 
     "must return a failed future when the server returns an error" in {
@@ -847,7 +847,7 @@ class GoodsRecordConnectorSpec
           .willReturn(serverError())
       )
 
-      connector.getRecordsSummary(testEori).failed.futureValue
+      connector.getRecordsSummary.failed.futureValue
     }
   }
 
