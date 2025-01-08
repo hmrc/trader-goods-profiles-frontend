@@ -56,8 +56,8 @@ class GoodsRecordsController @Inject() (
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
-  private val form     = formProvider()
-  private val pageSize = 10
+  private val form            = formProvider()
+  private val pageSize        = 10
   private val emptySearchForm = SearchForm(None, None, List.empty)
 
   def onPageLoad(page: Int): Action[AnyContent] =
