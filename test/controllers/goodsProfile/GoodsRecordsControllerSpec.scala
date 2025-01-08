@@ -17,13 +17,12 @@
 package controllers.goodsProfile
 
 import base.SpecBase
-import base.TestConstants.testEori
 import config.FrontendAppConfig
 import connectors.{GoodsRecordConnector, OttConnector}
 import forms.goodsProfile.GoodsRecordsFormProvider
 import models.GoodsRecordsPagination.firstPage
 import models.router.responses.GetRecordsResponse
-import models.{Country, GoodsRecordsPagination}
+import models.{Country, GoodsRecordsPagination, SearchForm}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{atLeastOnce, never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
@@ -152,7 +151,8 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
           val result = route(application, request).value
 
-          val view = application.injector.instanceOf[GoodsRecordsView]
+          val view            = application.injector.instanceOf[GoodsRecordsView]
+          val emptySearchForm = SearchForm(None, None, List.empty)
 
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
@@ -165,7 +165,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
             pagination,
             currentPage,
             pageSize,
-            None,
+            emptySearchForm,
             None
           )(
             request,
@@ -201,7 +201,8 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
           val result = route(application, request).value
 
-          val view = application.injector.instanceOf[GoodsRecordsView]
+          val view            = application.injector.instanceOf[GoodsRecordsView]
+          val emptySearchForm = SearchForm(None, None, List.empty)
 
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
@@ -214,7 +215,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
             pagination,
             currentPage,
             pageSize,
-            None,
+            emptySearchForm,
             None
           )(
             request,
@@ -251,6 +252,8 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
           val view = application.injector.instanceOf[GoodsRecordsView]
 
+          val emptySearchForm = SearchForm(None, None, List.empty)
+
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             form,
@@ -262,7 +265,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
             pagination,
             currentPage,
             pageSize,
-            None,
+            emptySearchForm,
             None
           )(
             request,
@@ -299,6 +302,8 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
           val view = application.injector.instanceOf[GoodsRecordsView]
 
+          val emptySearchForm = SearchForm(None, None, List.empty)
+
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             form,
@@ -310,7 +315,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
             pagination,
             currentPage,
             pageSize,
-            None,
+            emptySearchForm,
             None
           )(
             request,
@@ -420,6 +425,8 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         val firstRecord = 11
         val lastRecord  = 20
 
+        val emptySearchForm = SearchForm(None, None, List.empty)
+
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(
           form,
@@ -431,7 +438,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
           pagination,
           middlePage,
           pageSize,
-          None,
+          emptySearchForm,
           None
         )(
           request,
