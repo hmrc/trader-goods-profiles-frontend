@@ -530,6 +530,10 @@ goodsRecords.search = Opsiynau chwilio a hidlo
 goodsRecords.record.clear = Clirio Opsiynau chwilio a hidlo
 goodsRecords.record.search = Defnyddio Opsiynau chwilio a hidlo
 
+goodsRecords.title.withoutPageFilter = Wedi dod o hyd i {0} o gofnodion - Goods profile
+goodsRecords.title.withPageFilter =  Wedi dod o hyd i {0} o gofnodion - Goods profile (page {1} of {2}) - Trader Goods Profile
+
+
 goodsRecords.search.1 = Gallwch ddod o hyd i gofnodion nwyddau penodol drwy ddefnyddio’r nodweddion chwilio a hidlo. Mae pob maes yn ddewisol.
 goodsRecords.record = Statws y cofnod
 goodsRecords.record.list = Rhestr o gofnodion nwyddau
@@ -564,7 +568,7 @@ goodsRecordSearchResult.title.withPage = Mae yna {0} o ganlyniadau chwilio – t
 goodsRecordSearchResult.h1 = Mae yna {0} o ganlyniadau chwilio
 goodsRecordSearchResult.p1 = Roeddech yn chwilio am y term {0}.
 
-goodsRecordSearchResult.p2 = {0} records found
+goodsRecordSearchResult.p2 =  Wedi dod o hyd i {0} o gofnodion
 goodsRecordSearchResult.p4 = Statws:
 goodsRecordSearchResult.p5 = Term chwilio: ''{0}''
 goodsRecordSearchResult.p6 = Gwlad tarddiad: {0}
