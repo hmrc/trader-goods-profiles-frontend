@@ -91,7 +91,9 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       immiReady.map(ready => s"IMMIReady=$ready"),
       notReadyForIMMI.map(notReady => s"notReadyForIMMI=$notReady"),
       actionNeeded.map(needed => s"actionNeeded=$needed")
-    ).flatten ++ queryParams.map { case (key, value) => s"${URLEncoder.encode(key, "UTF-8")}=${URLEncoder.encode(value, "UTF-8")}" }
+    ).flatten ++ queryParams.map { case (key, value) =>
+      s"${URLEncoder.encode(key, "UTF-8")}=${URLEncoder.encode(value, "UTF-8")}"
+    }
 
     val queryString = queryParamsSeq.mkString("&")
 
