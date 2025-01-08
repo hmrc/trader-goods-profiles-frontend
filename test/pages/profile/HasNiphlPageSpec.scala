@@ -21,6 +21,7 @@ import models.UserAnswers
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{OptionValues, TryValues}
+import pages.profile.niphl.{HasNiphlPage, NiphlNumberPage}
 
 class HasNiphlPageSpec extends AnyFreeSpec with Matchers with TryValues with OptionValues {
 

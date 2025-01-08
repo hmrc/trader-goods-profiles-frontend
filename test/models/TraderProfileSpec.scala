@@ -21,12 +21,15 @@ import org.scalatest.Inside.inside
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{OptionValues, TryValues}
-import pages.profile._
+import pages.profile.niphl._
+import pages.profile.nirms._
+import pages.profile.ukims.{UkimsNumberPage, UkimsNumberUpdatePage}
 import queries.TraderProfileQuery
 
 class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with OptionValues {
 
-  val traderProfile = TraderProfile("actorId", "ukims", Some("nirmsNumber"), Some("niphlNumber"), eoriChanged = false)
+  val traderProfile: TraderProfile =
+    TraderProfile("actorId", "ukims", Some("nirmsNumber"), Some("niphlNumber"), eoriChanged = false)
 
   ".build" - {
 
@@ -54,7 +57,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
         val result = TraderProfile.build(answers, testEori)
 
-        result mustEqual Right(TraderProfile(testEori, "1", Some("2"), Some("3"), false))
+        result mustBe Right(TraderProfile(testEori, "1", Some("2"), Some("3"), eoriChanged = false))
       }
 
       "and all optional data is missing" in {
@@ -73,7 +76,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
         val result = TraderProfile.build(answers, testEori)
 
-        result mustEqual Right(TraderProfile(testEori, "1", None, None, false))
+        result mustBe Right(TraderProfile(testEori, "1", None, None, eoriChanged = false))
       }
     }
 
@@ -185,7 +188,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
         val result = TraderProfile.validateHasNirms(answers)
 
-        result mustEqual Right(None)
+        result mustBe Right(None)
       }
 
       "except RemoveNirms and TraderProfileQuery has no nirms number" in {
@@ -201,7 +204,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
         val result = TraderProfile.validateHasNirms(answers)
 
-        result mustEqual Right(None)
+        result mustBe Right(None)
       }
     }
 
@@ -297,7 +300,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
         val result = TraderProfile.validateNirmsNumber(answers)
 
-        result mustEqual Right(Some("2"))
+        result mustBe Right(Some("2"))
       }
 
     }
@@ -371,7 +374,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
         val result = TraderProfile.validateHasNiphl(answers)
 
-        result mustEqual Right(None)
+        result mustBe Right(None)
       }
 
       "except RemoveNiphl and TraderProfileQuery has no niphl number" in {
@@ -387,7 +390,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
         val result = TraderProfile.validateHasNiphl(answers)
 
-        result mustEqual Right(None)
+        result mustBe Right(None)
       }
     }
 
@@ -483,7 +486,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
         val result = TraderProfile.validateNiphlNumber(answers)
 
-        result mustEqual Right(Some("2"))
+        result mustBe Right(Some("2"))
       }
 
     }
@@ -552,7 +555,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
       val result = TraderProfile.validateUkimsNumber(answers)
 
-      result mustEqual Right("newUkims")
+      result mustBe Right("newUkims")
 
     }
 

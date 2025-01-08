@@ -20,7 +20,9 @@ import cats.data.{EitherNec, NonEmptyChain}
 import cats.implicits._
 import pages._
 import pages.newUkims.NewUkimsNumberPage
-import pages.profile._
+import pages.profile.niphl._
+import pages.profile.nirms._
+import pages.profile.ukims.{UkimsNumberPage, UkimsNumberUpdatePage}
 import play.api.libs.json.{Json, OFormat}
 import queries.TraderProfileQuery
 

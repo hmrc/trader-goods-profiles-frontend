@@ -23,6 +23,12 @@ import pages.profile._
 import play.api.mvc.Call
 import queries._
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
+import controllers.profile.niphl.routes._
+import controllers.profile.nirms.routes._
+import controllers.profile.ukims.routes._
+import pages.profile.niphl.{HasNiphlPage, HasNiphlUpdatePage, NiphlNumberPage, NiphlNumberUpdatePage, RemoveNiphlPage}
+import pages.profile.nirms.{HasNirmsPage, HasNirmsUpdatePage, NirmsNumberPage, NirmsNumberUpdatePage, RemoveNirmsPage}
+import pages.profile.ukims.{UkimsNumberPage, UkimsNumberUpdatePage, UseExistingUkimsNumberPage}
 
 import javax.inject.{Inject, Singleton}
 
@@ -32,9 +38,9 @@ class ProfileNavigator @Inject() extends Navigator {
   val normalRoutes: Page => UserAnswers => Call = {
     case ProfileSetupPage           => navigateFromProfileSetUp
     case UseExistingUkimsNumberPage => navigateFromUseExistingUkimsNumber
-    case UkimsNumberPage            => _ => controllers.profile.routes.HasNirmsController.onPageLoadCreate(NormalMode)
+    case UkimsNumberPage            => _ => HasNirmsController.onPageLoadCreate(NormalMode)
     case HasNirmsPage               => navigateFromHasNirms
-    case NirmsNumberPage            => _ => controllers.profile.routes.HasNiphlController.onPageLoadCreate(NormalMode)
+    case NirmsNumberPage            => _ => HasNiphlController.onPageLoadCreate(NormalMode)
     case HasNiphlPage               => navigateFromHasNiphl
     case NiphlNumberPage            => _ => controllers.profile.routes.CyaCreateProfileController.onPageLoad()
     case UkimsNumberUpdatePage      => _ => controllers.profile.routes.CyaMaintainProfileController.onPageLoadUkimsNumber()
@@ -69,16 +75,16 @@ class ProfileNavigator @Inject() extends Navigator {
     answers
       .get(HistoricProfileDataQuery) match {
       case Some(_) =>
-        controllers.profile.routes.UseExistingUkimsNumberController.onPageLoad()
-      case None    => controllers.profile.routes.UkimsNumberController.onPageLoadCreate(NormalMode)
+        UseExistingUkimsNumberController.onPageLoad()
+      case None    => UkimsNumberController.onPageLoadCreate(NormalMode)
     }
 
   private def navigateFromUseExistingUkimsNumber(answers: UserAnswers): Call =
     answers
       .get(UseExistingUkimsNumberPage)
       .map {
-        case true  => controllers.profile.routes.HasNirmsController.onPageLoadCreate(NormalMode)
-        case false => controllers.profile.routes.UkimsNumberController.onPageLoadCreate(NormalMode)
+        case true  => HasNirmsController.onPageLoadCreate(NormalMode)
+        case false => UkimsNumberController.onPageLoadCreate(NormalMode)
       }
       .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
 
@@ -86,8 +92,8 @@ class ProfileNavigator @Inject() extends Navigator {
     answers
       .get(HasNirmsPage)
       .map {
-        case true  => controllers.profile.routes.NirmsNumberController.onPageLoadCreate(NormalMode)
-        case false => controllers.profile.routes.HasNiphlController.onPageLoadCreate(NormalMode)
+        case true  => NirmsNumberController.onPageLoadCreate(NormalMode)
+        case false => HasNiphlController.onPageLoadCreate(NormalMode)
       }
       .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
 
@@ -114,13 +120,13 @@ class ProfileNavigator @Inject() extends Navigator {
     answers
       .get(HasNirmsUpdatePage)
       .map {
-        case true  => controllers.profile.routes.NirmsNumberController.onPageLoadUpdate(mode)
+        case true  => NirmsNumberController.onPageLoadUpdate(mode)
         case false =>
           answers
             .get(TraderProfileQuery)
             .map { userProfile =>
               if (userProfile.nirmsNumber.isDefined) {
-                controllers.profile.routes.RemoveNirmsController.onPageLoad()
+                RemoveNirmsController.onPageLoad()
               } else {
                 controllers.profile.routes.CyaMaintainProfileController.onPageLoadNirms()
               }
@@ -134,7 +140,7 @@ class ProfileNavigator @Inject() extends Navigator {
     answers
       .get(HasNiphlPage)
       .map {
-        case true  => controllers.profile.routes.NiphlNumberController.onPageLoadCreate(NormalMode)
+        case true  => NiphlNumberController.onPageLoadCreate(NormalMode)
         case false => controllers.profile.routes.CyaCreateProfileController.onPageLoad()
       }
       .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
@@ -144,13 +150,13 @@ class ProfileNavigator @Inject() extends Navigator {
     answers
       .get(HasNiphlUpdatePage)
       .map {
-        case true  => controllers.profile.routes.NiphlNumberController.onPageLoadUpdate(mode)
+        case true  => NiphlNumberController.onPageLoadUpdate(mode)
         case false =>
           answers
             .get(TraderProfileQuery)
             .map { userProfile =>
               if (userProfile.niphlNumber.isDefined) {
-                controllers.profile.routes.RemoveNiphlController.onPageLoad()
+                RemoveNiphlController.onPageLoad()
               } else {
                 controllers.profile.routes.CyaMaintainProfileController.onPageLoadNiphl()
               }
@@ -168,7 +174,7 @@ class ProfileNavigator @Inject() extends Navigator {
           if (answers.isDefined(NirmsNumberPage)) {
             controllers.profile.routes.CyaCreateProfileController.onPageLoad()
           } else {
-            controllers.profile.routes.NirmsNumberController.onPageLoadCreate(CheckMode)
+            NirmsNumberController.onPageLoadCreate(CheckMode)
           }
         case false => controllers.profile.routes.CyaCreateProfileController.onPageLoad()
       }
@@ -182,7 +188,7 @@ class ProfileNavigator @Inject() extends Navigator {
           if (answers.isDefined(NiphlNumberPage)) {
             controllers.profile.routes.CyaCreateProfileController.onPageLoad()
           } else {
-            controllers.profile.routes.NiphlNumberController.onPageLoadCreate(CheckMode)
+            NiphlNumberController.onPageLoadCreate(CheckMode)
           }
         case false => controllers.profile.routes.CyaCreateProfileController.onPageLoad()
       }

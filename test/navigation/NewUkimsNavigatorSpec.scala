@@ -17,13 +17,13 @@
 package navigation
 
 import base.SpecBase
-import controllers.routes
 import controllers.newUkims.{routes => newUkimsRoutes}
+import controllers.routes
 import models._
 import org.scalatest.BeforeAndAfterEach
 import pages._
 import pages.newUkims.{NewUkimsNumberPage, UkimsNumberChangePage}
-import pages.profile._
+import pages.profile.ukims.CyaNewUkimsNumberPage
 import play.api.http.Status.SEE_OTHER
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 

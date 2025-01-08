@@ -19,7 +19,7 @@ package controllers.newUkims
 import base.SpecBase
 import base.TestConstants.{testEori, userAnswersId}
 import connectors.TraderProfileConnector
-import forms.profile.UkimsNumberFormProvider
+import forms.profile.ukims.UkimsNumberFormProvider
 import models.{NormalMode, TraderProfile, UserAnswers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when

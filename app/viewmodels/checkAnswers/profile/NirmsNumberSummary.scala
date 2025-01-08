@@ -17,12 +17,13 @@
 package viewmodels.checkAnswers.profile
 
 import models.{CheckMode, NormalMode, UserAnswers}
-import pages.profile.{NirmsNumberPage, NirmsNumberUpdatePage}
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
+import controllers.profile.nirms.routes._
+import pages.profile.nirms.{NirmsNumberPage, NirmsNumberUpdatePage}
 
 object NirmsNumberSummary {
 
@@ -34,7 +35,7 @@ object NirmsNumberSummary {
         actions = Seq(
           ActionItemViewModel(
             "site.change",
-            controllers.profile.routes.NirmsNumberController.onPageLoadCreate(CheckMode).url
+            NirmsNumberController.onPageLoadCreate(CheckMode).url
           )
             .withVisuallyHiddenText(messages("nirmsNumber.change.hidden"))
         )
@@ -49,7 +50,7 @@ object NirmsNumberSummary {
         actions = Seq(
           ActionItemViewModel(
             "site.change",
-            controllers.profile.routes.NirmsNumberController.onPageLoadUpdate(NormalMode).url
+            NirmsNumberController.onPageLoadUpdate(NormalMode).url
           )
             .withVisuallyHiddenText(messages("nirmsNumber.change.hidden"))
         )
@@ -64,7 +65,7 @@ object NirmsNumberSummary {
         actions = Seq(
           ActionItemViewModel(
             "site.change",
-            controllers.profile.routes.NirmsNumberController.onPageLoadUpdate(CheckMode).url
+            NirmsNumberController.onPageLoadUpdate(CheckMode).url
           )
             .withVisuallyHiddenText(messages("nirmsNumber.change.hidden"))
         )

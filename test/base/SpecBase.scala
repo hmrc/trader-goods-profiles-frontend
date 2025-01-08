@@ -32,7 +32,9 @@ import pages._
 import pages.advice.{EmailPage, NamePage}
 import pages.categorisation.{AssessmentPage, HasSupplementaryUnitUpdatePage}
 import pages.goodsRecord.{CommodityCodePage, CountryOfOriginPage, GoodsDescriptionPage, TraderReferencePage}
-import pages.profile._
+import pages.profile.niphl.{HasNiphlPage, NiphlNumberPage}
+import pages.profile.nirms.{HasNirmsPage, NirmsNumberPage}
+import pages.profile.ukims.UkimsNumberPage
 import play.api.Application
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.bind

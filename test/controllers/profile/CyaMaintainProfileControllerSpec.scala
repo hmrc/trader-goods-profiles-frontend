@@ -25,7 +25,9 @@ import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{atLeastOnce, never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.profile._
+import pages.profile.niphl.{HasNiphlUpdatePage, NiphlNumberUpdatePage, RemoveNiphlPage}
+import pages.profile.nirms.{HasNirmsUpdatePage, NirmsNumberUpdatePage, RemoveNirmsPage}
+import pages.profile.ukims.UkimsNumberUpdatePage
 import play.api.Application
 import play.api.inject.bind
 import play.api.mvc.Call
