@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,17 +12,24 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@this(layout: templates.Layout)
+package models
 
-@(searchText: Option[String])(implicit request: Request[_], messages: Messages)
+import play.api.data.Form
+import play.api.data.Forms.{mapping, optional, seq, text}
+import play.api.libs.json.{Format, Json}
 
-@layout(pageTitle = titleNoForm(messages("goodsRecordSearchResultEmptyView.title"))) {
+case class SearchForm(searchTerm: Option[String], countryOfOrigin: Option[String], statusValue: Seq[String] = Seq())
 
-    <h1 class="govuk-heading-l">@messages("goodsRecordSearchResultEmptyView.h1")</h1>
+object SearchForm {
+  implicit val format: Format[SearchForm] = Json.format[SearchForm]
 
-    <p class="govuk-body">@messages("goodsRecordSearchResultEmptyView.p1", searchText)</p>
-
-    <p class="govuk-body"><a href="@controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url" class="govuk-link" >@messages("site.goBackToGoodsProfile")</a></p>
+  val form: Form[SearchForm] = Form(
+    mapping(
+      "searchTerm"      -> optional(text),
+      "countryOfOrigin" -> optional(text),
+      "statusValue"     -> seq(text)
+    )(SearchForm.apply)(SearchForm.unapply)
+  )
 }

@@ -26,6 +26,7 @@ import play.api.http.Status.{ACCEPTED, NOT_FOUND, NO_CONTENT, OK}
 import play.api.libs.json.Json
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.client.HttpClientV2
+import java.net.{URL, URLEncoder}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -67,11 +68,40 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
 
   private def searchRecordsUrl(
     eori: String,
-    searchTerm: String,
+    searchTerm: Option[String],
     exactMatch: Boolean,
     queryParams: Map[String, String]
   ) =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/filter?searchTerm=$searchTerm&exactMatch=$exactMatch&$queryParams"
+
+  private def filterSearchRecordsUrl(
+    searchTerm: Option[String],
+    exactMatch: Boolean,
+    countryOfOrigin: Option[String],
+    immiReady: Option[Boolean],
+    notReadyForIMMI: Option[Boolean],
+    actionNeeded: Option[Boolean],
+    queryParams: Map[String, String]
+  ): URL = {
+
+    val queryParamsSeq = Seq(
+      searchTerm.map(term => s"searchTerm=${URLEncoder.encode(term, "UTF-8")}"),
+      Some(s"exactMatch=$exactMatch"),
+      countryOfOrigin.filter(_.nonEmpty).map(origin => s"countryOfOrigin=${URLEncoder.encode(origin, "UTF-8")}"),
+      immiReady.map(ready => s"IMMIReady=$ready"),
+      notReadyForIMMI.map(notReady => s"notReadyForIMMI=$notReady"),
+      actionNeeded.map(needed => s"actionNeeded=$needed")
+    ).flatten ++ queryParams.map { case (key, value) =>
+      s"${URLEncoder.encode(key, "UTF-8")}=${URLEncoder.encode(value, "UTF-8")}"
+    }
+
+    val queryString = queryParamsSeq.mkString("&")
+
+    val urlString = s"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/records/filter?$queryString"
+
+    new URL(urlString)
+
+  }
 
   def submitGoodsRecord(goodsRecord: GoodsRecord)(implicit
     hc: HeaderCarrier
@@ -261,8 +291,12 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
 
   def searchRecords( // TODO: add more parameter when we pick TGP:3003 and change the condition in the else.
     eori: String,
-    searchTerm: String,
+    searchTerm: Option[String] = None,
     exactMatch: Boolean,
+    countryOfOrigin: Option[String],
+    IMMIReady: Option[Boolean] = None,
+    notReadyForIMMI: Option[Boolean] = None,
+    actionNeeded: Option[Boolean] = None,
     page: Int,
     size: Int
   )(implicit
@@ -286,8 +320,19 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
           }
         }
     } else {
+
       httpClient
-        .get(searchRecordsUrl(eori, searchTerm, exactMatch, queryParams))
+        .get(
+          filterSearchRecordsUrl(
+            searchTerm,
+            exactMatch,
+            countryOfOrigin,
+            IMMIReady,
+            notReadyForIMMI,
+            actionNeeded,
+            queryParams
+          )
+        )
         .setHeader(clientIdHeader)
         .execute[HttpResponse]
         .flatMap { response =>

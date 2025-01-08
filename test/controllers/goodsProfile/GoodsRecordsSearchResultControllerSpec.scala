@@ -21,7 +21,7 @@ import base.TestConstants.{testEori, userAnswersId}
 import connectors.{GoodsRecordConnector, OttConnector}
 import models.GoodsRecordsPagination.firstPage
 import models.router.responses.GetRecordsResponse
-import models.{Country, GoodsRecordsPagination, UserAnswers}
+import models.{Country, GoodsRecordsPagination, SearchForm, UserAnswers}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{atLeastOnce, never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
@@ -48,6 +48,12 @@ class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar 
     controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(currentPage).url
 
   val searchText = "bananas"
+
+  val searchFormData = SearchForm(
+    searchTerm = Some("bananas"),
+    statusValue = Seq.empty,
+    countryOfOrigin = None
+  )
 
   private val records = Seq(
     goodsRecordResponse(
@@ -127,12 +133,22 @@ class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar 
 
     "must return OK and the correct view for a GET with search results records" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(GoodsRecordsPage, searchText).success.value
+      val userAnswers = UserAnswers(userAnswersId).set(GoodsRecordsPage, searchFormData).success.value
 
       val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
       when(
-        mockGoodsRecordConnector.searchRecords(eqTo(testEori), eqTo(searchText), any(), eqTo(currentPage), any())(any())
+        mockGoodsRecordConnector.searchRecords(
+          eqTo(testEori),
+          eqTo(Some(searchText)),
+          any(),
+          eqTo(Some("")),
+          eqTo(Some(false)),
+          eqTo(Some(false)),
+          eqTo(Some(false)),
+          eqTo(currentPage),
+          any()
+        )(any())
       ) thenReturn Future
         .successful(Some(response))
 
@@ -164,7 +180,7 @@ class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar 
           Seq(Country("EC", "Ecuador")),
           pagination,
           currentPage,
-          searchText,
+          Some(searchText),
           numberOfPages
         )(
           request,
@@ -173,18 +189,38 @@ class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar 
 
         verify(mockOttConnector, atLeastOnce()).getCountries(any())
         verify(mockGoodsRecordConnector, atLeastOnce())
-          .searchRecords(eqTo(testEori), eqTo(searchText), any(), eqTo(currentPage), any())(any())
+          .searchRecords(
+            eqTo(testEori),
+            eqTo(Some(searchText)),
+            any(),
+            eqTo(Some("")),
+            eqTo(Some(false)),
+            eqTo(Some(false)),
+            eqTo(Some(false)),
+            eqTo(currentPage),
+            any()
+          )(any())
       }
     }
 
     "must redirect to the loading page when the records need updating" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(GoodsRecordsPage, searchText).success.value
+      val userAnswers = UserAnswers(userAnswersId).set(GoodsRecordsPage, searchFormData).success.value
 
       val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
       when(
-        mockGoodsRecordConnector.searchRecords(eqTo(testEori), eqTo(searchText), any(), eqTo(currentPage), any())(any())
+        mockGoodsRecordConnector.searchRecords(
+          eqTo(testEori),
+          eqTo(Some(searchText)),
+          any(),
+          eqTo(Some("")),
+          eqTo(Some(false)),
+          eqTo(Some(false)),
+          eqTo(Some(false)),
+          eqTo(currentPage),
+          any()
+        )(any())
       ) thenReturn Future
         .successful(None)
 
@@ -211,7 +247,17 @@ class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar 
           .url
         verify(mockOttConnector, never()).getCountries(any())
         verify(mockGoodsRecordConnector, atLeastOnce())
-          .searchRecords(eqTo(testEori), eqTo(searchText), any(), eqTo(currentPage), any())(any())
+          .searchRecords(
+            eqTo(testEori),
+            eqTo(Some(searchText)),
+            any(),
+            eqTo(Some("")),
+            eqTo(Some(false)),
+            eqTo(Some(false)),
+            eqTo(Some(false)),
+            eqTo(currentPage),
+            any()
+          )(any())
 
       }
     }
@@ -220,7 +266,7 @@ class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar 
 
       val middlePage = 2
 
-      val userAnswers = UserAnswers(userAnswersId).set(GoodsRecordsPage, searchText).success.value
+      val userAnswers = UserAnswers(userAnswersId).set(GoodsRecordsPage, searchFormData).success.value
 
       val mockGoodsRecordConnector = mock[GoodsRecordConnector]
       val response                 = GetRecordsResponse(
@@ -228,7 +274,17 @@ class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar 
         GoodsRecordsPagination(totalRecords, middlePage, numberOfPages, None, None)
       )
       when(
-        mockGoodsRecordConnector.searchRecords(eqTo(testEori), eqTo(searchText), any(), eqTo(middlePage), any())(any())
+        mockGoodsRecordConnector.searchRecords(
+          eqTo(testEori),
+          eqTo(Some(searchText)),
+          any(),
+          eqTo(Some("")),
+          eqTo(Some(false)),
+          eqTo(Some(false)),
+          eqTo(Some(false)),
+          eqTo(middlePage),
+          any()
+        )(any())
       ) thenReturn Future
         .successful(Some(response))
 
@@ -301,7 +357,7 @@ class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar 
           Seq(Country("EC", "Ecuador")),
           pagination,
           middlePage,
-          searchText,
+          Some(searchText),
           numberOfPages
         )(
           request,
@@ -310,7 +366,17 @@ class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar 
 
         verify(mockOttConnector, atLeastOnce()).getCountries(any())
         verify(mockGoodsRecordConnector, atLeastOnce())
-          .searchRecords(eqTo(testEori), eqTo(searchText), any(), eqTo(middlePage), any())(any())
+          .searchRecords(
+            eqTo(testEori),
+            eqTo(Some(searchText)),
+            any(),
+            eqTo(Some("")),
+            eqTo(Some(false)),
+            eqTo(Some(false)),
+            eqTo(Some(false)),
+            eqTo(middlePage),
+            any()
+          )(any())
 
       }
     }
@@ -322,11 +388,21 @@ class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar 
         GoodsRecordsPagination(0, 0, 1, None, None)
       )
 
-      val userAnswers = UserAnswers(userAnswersId).set(GoodsRecordsPage, searchText).success.value
+      val userAnswers = UserAnswers(userAnswersId).set(GoodsRecordsPage, searchFormData).success.value
 
       val mockGoodsRecordConnector = mock[GoodsRecordConnector]
       when(
-        mockGoodsRecordConnector.searchRecords(eqTo(testEori), eqTo(searchText), any(), eqTo(currentPage), any())(any())
+        mockGoodsRecordConnector.searchRecords(
+          eqTo(testEori),
+          eqTo(Some(searchText)),
+          any(),
+          eqTo(Some("")),
+          eqTo(Some(false)),
+          eqTo(Some(false)),
+          eqTo(Some(false)),
+          eqTo(currentPage),
+          any()
+        )(any())
       ) thenReturn Future
         .successful(Some(emptyResultResponse))
 
@@ -349,11 +425,21 @@ class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar 
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(searchText)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(searchFormData.searchTerm)(request, messages(application)).toString
 
         verify(mockOttConnector, never()).getCountries(any())
         verify(mockGoodsRecordConnector, atLeastOnce())
-          .searchRecords(eqTo(testEori), eqTo(searchText), any(), eqTo(currentPage), any())(any())
+          .searchRecords(
+            eqTo(testEori),
+            eqTo(Some(searchText)),
+            any(),
+            eqTo(Some("")),
+            eqTo(Some(false)),
+            eqTo(Some(false)),
+            eqTo(Some(false)),
+            eqTo(currentPage),
+            any()
+          )(any())
 
       }
     }
@@ -376,7 +462,7 @@ class GoodsRecordsSearchResultControllerSpec extends SpecBase with MockitoSugar 
 
     "must redirect to JourneyRecovery when page number is less than 1" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(GoodsRecordsPage, searchText).success.value
+      val userAnswers = UserAnswers(userAnswersId).set(GoodsRecordsPage, searchFormData).success.value
 
       val badPageRoute = controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(0).url
 

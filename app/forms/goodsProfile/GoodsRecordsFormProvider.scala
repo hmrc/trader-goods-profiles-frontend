@@ -18,6 +18,7 @@ package forms.goodsProfile
 
 import forms.mappings.Mappings
 import play.api.data.Form
+import play.api.data.Forms.optional
 
 import javax.inject.Inject
 

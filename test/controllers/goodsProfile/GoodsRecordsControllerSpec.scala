@@ -17,6 +17,8 @@
 package controllers.goodsProfile
 
 import base.SpecBase
+import base.TestConstants.testEori
+import config.FrontendAppConfig
 import connectors.{GoodsRecordConnector, OttConnector}
 import forms.goodsProfile.GoodsRecordsFormProvider
 import models.GoodsRecordsPagination.firstPage
@@ -162,7 +164,9 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
             Seq(Country("EC", "Ecuador")),
             pagination,
             currentPage,
-            pageSize
+            pageSize,
+            None,
+            None
           )(
             request,
             messages(application)
@@ -209,7 +213,9 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
             Seq(Country("EC", "Ecuador")),
             pagination,
             currentPage,
-            pageSize
+            pageSize,
+            None,
+            None
           )(
             request,
             messages(application)
@@ -255,7 +261,9 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
             Seq(Country("EC", "Ecuador")),
             pagination,
             currentPage,
-            pageSize
+            pageSize,
+            None,
+            None
           )(
             request,
             messages(application)
@@ -301,7 +309,9 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
             Seq(Country("EC", "Ecuador")),
             pagination,
             currentPage,
-            pageSize
+            pageSize,
+            None,
+            None
           )(
             request,
             messages(application)
@@ -420,7 +430,9 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
           Seq(Country("EC", "Ecuador")),
           pagination,
           middlePage,
-          pageSize
+          pageSize,
+          None,
+          None
         )(
           request,
           messages(application)
@@ -474,13 +486,15 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
     "must redirect to result page when valid data is submitted via onSearch" in {
 
       val mockSessionRepository = mock[SessionRepository]
+      val mockFrontendAppConfig = mock[FrontendAppConfig]
 
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-
+      when(mockFrontendAppConfig.enhancedSearch) thenReturn true
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
-            bind[SessionRepository].toInstance(mockSessionRepository)
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[FrontendAppConfig].toInstance(mockFrontendAppConfig)
           )
           .build()
 
@@ -498,55 +512,38 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must return a Bad Request and errors when invalid data is submitted" in {
+    "must redirect to result page when invalid data is submitted via onSearch" in {
 
       val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
       when(mockGoodsRecordConnector.getRecords(eqTo(currentPage), any())(any())) thenReturn Future
         .successful(Some(response))
+      val mockSessionRepository = mock[SessionRepository]
+      val mockFrontendAppConfig = mock[FrontendAppConfig]
 
-      val mockOttConnector = mock[OttConnector]
-      when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
-        Seq(Country("EC", "Ecuador"))
-      )
-
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+      when(mockFrontendAppConfig.enhancedSearch) thenReturn true
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
-            bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-            bind[OttConnector].toInstance(mockOttConnector)
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[FrontendAppConfig].toInstance(mockFrontendAppConfig)
           )
           .build()
 
       running(application) {
         val request =
           FakeRequest(POST, goodsRecordsRoute)
-            .withFormUrlEncodedBody(("value", ""))
-
-        val boundForm = form.bind(Map("value" -> ""))
-
-        val view = application.injector.instanceOf[GoodsRecordsView]
+            .withFormUrlEncodedBody(("value", "answer"))
 
         val result = route(application, request).value
 
-        status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(
-          boundForm,
-          response.goodsItemRecords,
-          totalRecords,
-          firstRecord,
-          lastRecord,
-          Seq(Country("EC", "Ecuador")),
-          pagination,
-          currentPage,
-          pageSize
-        )(
-          request,
-          messages(application)
-        ).toString
-        verify(mockOttConnector, atLeastOnce()).getCountries(any())
-        verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(eqTo(currentPage), any())(any())
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.goodsProfile.routes.GoodsRecordsSearchResultController
+          .onPageLoad(1)
+          .url
       }
     }
+
   }
 }

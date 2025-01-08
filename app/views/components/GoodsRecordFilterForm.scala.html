@@ -43,7 +43,7 @@
                  <div class="govuk-label govuk-label--s">
                   @govukInput(
                   InputViewModel(
-                  field = form("value"),
+                  field = form("searchTerm"),
                   label = LabelViewModel(messages("goodsRecords.label")).withCssClass("govuk-!-font-weight-bold")
                   )
                   )
@@ -51,6 +51,7 @@
                  </div>
 
                    @govukCheckboxes(Checkboxes(
+                      name = "statusValue[]",
                       fieldset = Some(Fieldset(
                       legend = Some(Legend(
                       content = Text(messages("goodsRecords.record")),
@@ -59,26 +60,29 @@
                       ))
                    )),
 
-                        name = "statusValue",
+
                         items = Seq(
                         CheckboxItem(
                         content = Text(messages("declarableStatus.immiReady")),
-                        value = "ImmiReady"
+                        value = "IMMIReady",
+                        id = Some("IMMIReady")
                         ),
                         CheckboxItem(
                         content = Text(messages("declarableStatus.notReadyForImmi")),
-                        value = "NotReadyForImmi"
+                        value = "notReadyForImmi",
+                        id = Some("notReadyForImmi")
                         ),
                         CheckboxItem(
                         content = Text(messages("declarableStatus.notReadyForUse")),
-                        value = "NotReadyForUse"
+                        value = "actionNeeded",
+                        id = Some("actionNeeded")
                         )
                         )
                         ))
 
                    @govukSelect(
                         SelectViewModel(
-                        field = form("countries"),
+                        field = form("countryOfOrigin"),
                         items = selectItems(countries),
                         label = LabelViewModel(messages("goodsRecords.tableHeader.countryOfOrigin")).withSize(Small)
                         )
@@ -96,6 +100,6 @@
                           ).withAttribute("style", "margin-left: 10px")
                    )
              }
-             <a class="govuk-link" href="#">@messages("site.clear")<span class="govuk-visually-hidden"> @messages("goodsRecords.record.clear")</span></a>
+             <a class="govuk-link" href="@controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(page)">@messages("site.clear")<span class="govuk-visually-hidden"> @messages("goodsRecords.record.clear")</span></a>
             </div>
      </div>
