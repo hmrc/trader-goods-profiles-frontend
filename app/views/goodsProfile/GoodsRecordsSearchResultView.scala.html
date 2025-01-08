@@ -37,7 +37,7 @@
 <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l">@messages("goodsRecordSearchResult.h1", totalRecords)</h1>
 
-    searchString.map(searchString => <p class="govuk-body">@messages("goodsRecordSearchResult.p1", searchString))</p>
+    @searchString.map{searchString => <p class="govuk-body">@messages("goodsRecordSearchResult.p1", searchString)</p>}
 
 </div>
 
