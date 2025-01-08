@@ -37,7 +37,7 @@
 <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l">@messages("goodsRecordSearchResult.h1", totalRecords)</h1>
 
-    <p class="govuk-body">@messages("goodsRecordSearchResult.p1", searchString)</p>
+    <p class="govuk-body">@messages("goodsRecordSearchResult.p1", searchString.getOrElse(""))</p>
 </div>
 
 <div class="govuk-grid-column-full">

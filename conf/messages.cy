@@ -564,6 +564,11 @@ goodsRecordSearchResult.title.withPage = Mae yna {0} o ganlyniadau chwilio – t
 goodsRecordSearchResult.h1 = Mae yna {0} o ganlyniadau chwilio
 goodsRecordSearchResult.p1 = Roeddech yn chwilio am y term {0}.
 
+goodsRecordSearchResult.p2 = {0} records found
+goodsRecordSearchResult.p4 = Statws:
+goodsRecordSearchResult.p5 = Term chwilio: ''{0}''
+goodsRecordSearchResult.p6 = Gwlad tarddiad: {0}
+
 goodsRecordSearchResultEmptyView.title = Does dim canlyniadau cyfatebol
 goodsRecordSearchResultEmptyView.h1 = Does dim canlyniadau cyfatebol
 goodsRecordSearchResultEmptyView.p1 = Roeddech yn chwilio am y term {0}.
