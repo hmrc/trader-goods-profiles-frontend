@@ -22,7 +22,8 @@ import controllers.BaseController
 import controllers.actions._
 import models.{HistoricProfileData, NormalMode, UserAnswers}
 import navigation.ProfileNavigator
-import pages.profile.{ProfileSetupPage, UkimsNumberPage}
+import pages.profile.ProfileSetupPage
+import pages.profile.ukims.UkimsNumberPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.HistoricProfileDataQuery

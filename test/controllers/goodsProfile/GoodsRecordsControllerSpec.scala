@@ -17,6 +17,7 @@
 package controllers.goodsProfile
 
 import base.SpecBase
+import base.TestConstants.testEori
 import config.FrontendAppConfig
 import connectors.{GoodsRecordConnector, OttConnector}
 import forms.goodsProfile.GoodsRecordsFormProvider

@@ -22,7 +22,7 @@ import play.api.mvc.Call
 import controllers.routes
 import controllers.newUkims.{routes => newUkimsRoutes}
 import pages.newUkims.{NewUkimsNumberPage, UkimsNumberChangePage}
-import pages.profile.CyaNewUkimsNumberPage
+import pages.profile.ukims.CyaNewUkimsNumberPage
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 
 import javax.inject.{Inject, Singleton}

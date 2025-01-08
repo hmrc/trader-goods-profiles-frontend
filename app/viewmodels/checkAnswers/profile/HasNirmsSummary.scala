@@ -17,12 +17,13 @@
 package viewmodels.checkAnswers.profile
 
 import models.{CheckMode, Mode, UserAnswers}
-import pages.profile.{HasNirmsPage, HasNirmsUpdatePage}
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
+import controllers.profile.nirms.routes._
+import pages.profile.nirms.{HasNirmsPage, HasNirmsUpdatePage}
 
 object HasNirmsSummary {
 
@@ -36,7 +37,7 @@ object HasNirmsSummary {
         actions = Seq(
           ActionItemViewModel(
             "site.change",
-            controllers.profile.routes.HasNirmsController.onPageLoadCreate(CheckMode).url
+            HasNirmsController.onPageLoadCreate(CheckMode).url
           )
             .withVisuallyHiddenText(messages("hasNirms.change.hidden"))
         )
@@ -49,7 +50,7 @@ object HasNirmsSummary {
       key = "hasNirms.checkYourAnswersLabel",
       value = ValueViewModel(HtmlFormat.escape(textValue).toString),
       actions = Seq(
-        ActionItemViewModel("site.change", controllers.profile.routes.HasNirmsController.onPageLoadUpdate(mode).url)
+        ActionItemViewModel("site.change", HasNirmsController.onPageLoadUpdate(mode).url)
           .withVisuallyHiddenText(messages("hasNirms.change.hidden"))
       )
     )
@@ -65,7 +66,7 @@ object HasNirmsSummary {
         actions = Seq(
           ActionItemViewModel(
             "site.change",
-            controllers.profile.routes.HasNirmsController.onPageLoadUpdate(CheckMode).url
+            HasNirmsController.onPageLoadUpdate(CheckMode).url
           )
             .withVisuallyHiddenText(messages("hasNirms.change.hidden"))
         )

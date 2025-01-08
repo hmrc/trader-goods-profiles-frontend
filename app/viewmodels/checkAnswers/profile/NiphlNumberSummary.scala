@@ -17,12 +17,13 @@
 package viewmodels.checkAnswers.profile
 
 import models.{CheckMode, Mode, UserAnswers}
-import pages.profile.{NiphlNumberPage, NiphlNumberUpdatePage}
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
+import controllers.profile.niphl.routes._
+import pages.profile.niphl.{NiphlNumberPage, NiphlNumberUpdatePage}
 
 object NiphlNumberSummary {
 
@@ -34,7 +35,7 @@ object NiphlNumberSummary {
         actions = Seq(
           ActionItemViewModel(
             "site.change",
-            controllers.profile.routes.NiphlNumberController.onPageLoadCreate(CheckMode).url
+            NiphlNumberController.onPageLoadCreate(CheckMode).url
           )
             .withVisuallyHiddenText(messages("niphlNumber.change.hidden"))
         )
@@ -49,7 +50,7 @@ object NiphlNumberSummary {
         actions = Seq(
           ActionItemViewModel(
             "site.change",
-            controllers.profile.routes.NiphlNumberController.onPageLoadUpdate(mode).url
+            NiphlNumberController.onPageLoadUpdate(mode).url
           )
             .withVisuallyHiddenText(messages("niphlNumber.change.hidden"))
         )
@@ -64,7 +65,7 @@ object NiphlNumberSummary {
         actions = Seq(
           ActionItemViewModel(
             "site.change",
-            controllers.profile.routes.NiphlNumberController.onPageLoadUpdate(CheckMode).url
+            NiphlNumberController.onPageLoadUpdate(CheckMode).url
           )
             .withVisuallyHiddenText(messages("niphlNumber.change.hidden"))
         )

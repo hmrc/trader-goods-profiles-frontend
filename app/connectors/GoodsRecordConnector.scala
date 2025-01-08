@@ -26,7 +26,7 @@ import play.api.http.Status.{ACCEPTED, NOT_FOUND, NO_CONTENT, OK}
 import play.api.libs.json.Json
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.client.HttpClientV2
-import java.net.URL
+import java.net.{URL, URLEncoder}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -85,19 +85,22 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
   ): URL = {
 
     val queryParamsSeq = Seq(
-      searchTerm.map(term => s"searchTerm=$term"),
+      searchTerm.map(term => s"searchTerm=${URLEncoder.encode(term, "UTF-8")}"),
       Some(s"exactMatch=$exactMatch"),
-      countryOfOrigin.filter(_.nonEmpty).map(origin => s"countryOfOrigin=$origin"),
+      countryOfOrigin.filter(_.nonEmpty).map(origin => s"countryOfOrigin=${URLEncoder.encode(origin, "UTF-8")}"),
       immiReady.map(ready => s"IMMIReady=$ready"),
       notReadyForIMMI.map(notReady => s"notReadyForIMMI=$notReady"),
       actionNeeded.map(needed => s"actionNeeded=$needed")
-    ).flatten ++ queryParams.map { case (key, value) => s"$key=$value" }
+    ).flatten ++ queryParams.map { case (key, value) =>
+      s"${URLEncoder.encode(key, "UTF-8")}=${URLEncoder.encode(value, "UTF-8")}"
+    }
 
-    val queryString    = queryParamsSeq.mkString("&")
+    val queryString = queryParamsSeq.mkString("&")
 
     val urlString = s"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/records/filter?$queryString"
 
     new URL(urlString)
+
   }
 
   def submitGoodsRecord(goodsRecord: GoodsRecord)(implicit

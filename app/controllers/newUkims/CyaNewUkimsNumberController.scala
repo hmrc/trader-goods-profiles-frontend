@@ -25,7 +25,7 @@ import controllers.newUkims.{routes => newUkimsRoutes}
 import models.{NormalMode, TraderProfile, ValidationError}
 import navigation.NewUkimsNavigator
 import pages.newUkims.NewUkimsNumberPage
-import pages.profile.CyaNewUkimsNumberPage
+import pages.profile.ukims.CyaNewUkimsNumberPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository

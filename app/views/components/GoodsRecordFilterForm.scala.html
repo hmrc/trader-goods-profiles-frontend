@@ -31,7 +31,7 @@
       govukSelect: GovukSelect
 )
 
-@(form: Form[_], countries: Seq[Country], page: Int, searchForm: SearchForm)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], countries: Seq[Country], page: Int)(implicit request: Request[_], messages: Messages)
 
      <div class="govuk-grid-column-one-third custom-box">
 
@@ -65,20 +65,17 @@
                         CheckboxItem(
                         content = Text(messages("declarableStatus.immiReady")),
                         value = "IMMIReady",
-                        id = Some("IMMIReady"),
-                        checked = searchForm.statusValue.contains("IMMIReady")
+                        id = Some("IMMIReady")
                         ),
                         CheckboxItem(
                         content = Text(messages("declarableStatus.notReadyForImmi")),
                         value = "notReadyForImmi",
-                        id = Some("notReadyForImmi"),
-                        checked = searchForm.statusValue.contains("notReadyForImmi")
+                        id = Some("notReadyForImmi")
                         ),
                         CheckboxItem(
                         content = Text(messages("declarableStatus.notReadyForUse")),
                         value = "actionNeeded",
-                        id = Some("actionNeeded"),
-                        checked = searchForm.statusValue.contains("actionNeeded")
+                        id = Some("actionNeeded")
                         )
                         )
                         ))
