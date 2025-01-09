@@ -187,7 +187,7 @@ class GoodsRecordsController @Inject() (
         pageSize
       )
       .flatMap {
-        case Some(searchResponse) if searchResponse.pagination.totalRecords > 0 =>
+        case Some(searchResponse) =>
           renderSearchResults(page, searchResponse, searchText)
         case _                                                                  =>
           Future.successful(

@@ -22,7 +22,7 @@
 
     <h1 class="govuk-heading-l">@messages("goodsRecordSearchResultEmptyView.h1")</h1>
 
-    <p class="govuk-body">@messages("goodsRecordSearchResultEmptyView.p1", searchText)</p>
+    @searchText.map{searchText => <p class="govuk-body">@messages("goodsRecordSearchResultEmptyView.p1", searchText)</p>}
 
     <p class="govuk-body"><a href="@controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url" class="govuk-link" >@messages("site.goBackToGoodsProfile")</a></p>
 }

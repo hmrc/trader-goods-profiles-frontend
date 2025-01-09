@@ -63,10 +63,14 @@
             case _ => title(form, messages("goodsRecords.title"))
         }
     } else {
-        pagination.items match {
-            case Some(items) if (items.size > 1) => title(form, messages("goodsRecords.title.withPageFilter",totalRecords, page, items.size))
-            case _ => title(form, messages("goodsRecords.title.withoutPageFilter", totalRecords))
-        }
+        if(totalRecords > 0)  {
+            pagination.items match {
+                case Some(items) if (items.size > 1) => title(form, messages("goodsRecords.title.withPageFilter",totalRecords, page, items.size))
+                case _ => title(form, messages("goodsRecords.title.withoutPageFilter", totalRecords))
+                }
+            } else {
+                title(form, messages("goodsRecords.title.noResults"))
+            }
     }
 }
 
@@ -88,15 +92,17 @@
             @if(totalRecords > 0) {
                 <h1 class="govuk-heading-l"> @messages("goodsRecordSearchResult.p2", totalRecords.toString())</h1>
             } else {
-                <h1 class="govuk-heading-l"> @messages("goodsRecordSearchResult.p3")</h1>
+                <h1 class="govuk-heading-l"> @messages("goodsRecordSearchResult.noRecordsHeading")</h1>
+                <p class="govuk-body"> @messages("goodsRecordSearchResult.noRecordsParagraph")</p>
             }
 
             <div class="govuk-grid-row">
                 @goodsRecordFilterForm(form, countries, page, searchForm)
 
                 <div class="govuk-grid-column-two-thirds govuk-!-padding-left-20">
-                    <h2 class="govuk-heading-m">@messages("goodsRecords.h2.1")</h2>
 
+                    @if(totalRecords > 0) {
+                    <h2 class="govuk-heading-m">@messages("goodsRecords.h2.1")</h2>
                     @paragraphBody(messages("goodsRecords.p1"))
 
                     @paragraphBody(
@@ -115,6 +121,7 @@
                     tag(messages("declarableStatus.notReadyForUse"), "govuk-tag govuk-tag--orange") +
                     messages("goodsRecords.p2.4")
                     )
+                    }
                     @paragraphBody(
                     message = messages("goodsRecords.link1.text") +
                     link(
@@ -130,6 +137,8 @@
     </div>
 
     }
+
+@if(totalRecords > 0) {
 
 <div class="govuk-grid-column-full govuk-!-margin-top-4">
     <h2 class="govuk-heading-m" id="goodsRecords">@messages("goodsRecords.record.list")</h2>
@@ -229,6 +238,9 @@
         @govukPagination(pagination)
 
         <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad().url" class="govuk-link">@messages("site.goBackToHomePage")</a></p>
+    } else {
+        <p class="govuk-body govuk-!-margin-top-4"><a href="@routes.HomePageController.onPageLoad().url" class="govuk-link">@messages("site.goBackToHomePage")</a></p>
+    }
 
 </div>
 }
