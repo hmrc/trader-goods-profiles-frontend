@@ -57,17 +57,19 @@
 
 
 @preparedTitle = @{
-    if(appConfig.enhancedSearch) {
+    if(!appConfig.enhancedSearch) {
         pagination.items match {
             case Some(items) if (items.size > 1) => title(form, messages("goodsRecords.title.withPage", page, items.size))
             case _ => title(form, messages("goodsRecords.title"))
         }
     } else {
-        if(totalRecords > 0)  {
-            pagination.items match {
-                case Some(items) if (items.size > 1) => title(form, messages("goodsRecords.title.withPageFilter",totalRecords, page, items.size))
-                case _ => title(form, messages("goodsRecords.title.withoutPageFilter", totalRecords))
-                }
+            if(totalRecords == 1) {
+                title(form, messages("goodsRecords.title.singleRecord"))
+            }else if(totalRecords > 0)  {
+                pagination.items match {
+                    case Some(items) if (items.size > 1) => title(form, messages("goodsRecords.title.withPageFilter",totalRecords, page, items.size))
+                    case _ => title(form, messages("goodsRecords.title.withoutPageFilter", totalRecords))
+                    }
             } else {
                 title(form, messages("goodsRecords.title.noResults"))
             }
@@ -83,15 +85,17 @@
         @govukErrorSummary(ErrorSummaryViewModel(form))
     }
 
-    @if(appConfig.enhancedSearch) {
+    @if(!appConfig.enhancedSearch) {
     @goodsRecordSearchFeature(form, page)
     } else {
     <div class="govuk-width-container">
 
         <span class="govuk-caption-l">@messages("goodsRecords.title")</span>
-            @if(totalRecords > 0) {
+            @if(totalRecords == 1) {
+                <h1 class="govuk-heading-l"> @messages("goodsRecordSearchResult.singleRecord")</h1>
+            } else if(totalRecords > 0) {
                 <h1 class="govuk-heading-l"> @messages("goodsRecordSearchResult.p2", totalRecords.toString())</h1>
-            } else {
+            } else  {
                 <h1 class="govuk-heading-l"> @messages("goodsRecordSearchResult.noRecordsHeading")</h1>
                 <p class="govuk-body"> @messages("goodsRecordSearchResult.noRecordsParagraph")</p>
             }
@@ -203,7 +207,7 @@
 
                         TableRow(
                              content = {
-                       if (appConfig.enhancedSearch) {
+                       if (!appConfig.enhancedSearch) {
                                 HtmlContent(
                                 messages(goodsRecord.declarable.messageKey)
 

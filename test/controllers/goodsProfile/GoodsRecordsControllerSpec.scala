@@ -17,7 +17,6 @@
 package controllers.goodsProfile
 
 import base.SpecBase
-import base.TestConstants.testEori
 import config.FrontendAppConfig
 import connectors.{GoodsRecordConnector, OttConnector}
 import forms.goodsProfile.GoodsRecordsFormProvider
@@ -497,7 +496,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
       val mockFrontendAppConfig = mock[FrontendAppConfig]
 
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-      when(mockFrontendAppConfig.enhancedSearch) thenReturn true
+      when(mockFrontendAppConfig.enhancedSearch) thenReturn false
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
@@ -530,7 +529,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
       val mockFrontendAppConfig = mock[FrontendAppConfig]
 
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-      when(mockFrontendAppConfig.enhancedSearch) thenReturn true
+      when(mockFrontendAppConfig.enhancedSearch) thenReturn false
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(

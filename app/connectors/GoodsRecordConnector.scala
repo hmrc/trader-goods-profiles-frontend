@@ -307,7 +307,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       "page" -> page.toString,
       "size" -> size.toString
     )
-    if (appConfig.enhancedSearch) { // TODO: remove this flag when filter search is ready
+    if (!appConfig.enhancedSearch) { // TODO: remove this flag when filter search is ready
       httpClient
         .get(searchRecordsUrl(eori, searchTerm, exactMatch, queryParams))
         .setHeader(clientIdHeader)

@@ -154,7 +154,7 @@ class GoodsRecordsController @Inject() (
     for {
       updatedAnswers <- Future.fromTry(request.userAnswers.set(GoodsRecordsPage, searchFormData))
       _              <- sessionRepository.set(updatedAnswers)
-      result         <- if (appConfig.enhancedSearch) {
+      result         <- if (!appConfig.enhancedSearch) {
                           Future.successful(
                             Redirect(controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(1))
                           )
