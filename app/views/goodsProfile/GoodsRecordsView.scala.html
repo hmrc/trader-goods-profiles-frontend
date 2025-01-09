@@ -37,7 +37,8 @@
     paragraphBody: components.paragraphBody,
     link: components.link,
     goodsRecordFilterForm: components.GoodsRecordFilterForm,
-    goodsRecordSearchFeature: components.GoodsRecordSearchFeature
+    goodsRecordSearchFeature: components.GoodsRecordSearchFeature,
+    goodsRecordFilterSearchTerm: components.GoodsRecordFilterSearchTerm
 )
 
 @(
@@ -50,17 +51,25 @@
     pagination: Pagination,
     page: Int,
     pageSize: Int,
-    searchString: Option[String],
+    searchForm: SearchForm,
     totalPages: Option[Int]
 )(implicit request: Request[_], messages: Messages)
 
 
 @preparedTitle = @{
-    pagination.items match {
-        case Some(items) if (items.size > 1) => title(form, messages("goodsRecords.title.withPage", page, items.size))
-        case _ => title(form, messages("goodsRecords.title"))
+    if(appConfig.enhancedSearch) {
+        pagination.items match {
+            case Some(items) if (items.size > 1) => title(form, messages("goodsRecords.title.withPage", page, items.size))
+            case _ => title(form, messages("goodsRecords.title"))
+        }
+    } else {
+        pagination.items match {
+            case Some(items) if (items.size > 1) => title(form, messages("goodsRecords.title.withPageFilter",totalRecords, page, items.size))
+            case _ => title(form, messages("goodsRecords.title.withoutPageFilter", totalRecords))
+        }
     }
 }
+
 <a href="#goodsRecords" class="govuk-skip-link" data-module="govuk-skip-link">@messages("goodsRecords.skip.record")</a>
 @layout(
     pageTitle = preparedTitle, isFullWidth = true
@@ -75,10 +84,15 @@
     } else {
     <div class="govuk-width-container">
 
-            <div class="govuk-grid-row"><h1 class="govuk-heading-l">@messages("goodsRecords.title")</h1></div>
+        <span class="govuk-caption-l">@messages("goodsRecords.title")</span>
+            @if(totalRecords > 0) {
+                <h1 class="govuk-heading-l"> @messages("goodsRecordSearchResult.p2", totalRecords.toString())</h1>
+            } else {
+                <h1 class="govuk-heading-l"> @messages("goodsRecordSearchResult.p3")</h1>
+            }
 
             <div class="govuk-grid-row">
-                @goodsRecordFilterForm(form, countries, page)
+                @goodsRecordFilterForm(form, countries, page, searchForm)
 
                 <div class="govuk-grid-column-two-thirds govuk-!-padding-left-20">
                     <h2 class="govuk-heading-m">@messages("goodsRecords.h2.1")</h2>
@@ -125,6 +139,9 @@
         } else {
       <p class="govuk-body">@Html(messages("goodsRecords.pagination.less", boldWrapper(totalRecords.toString())))</p>
                }
+
+        @goodsRecordFilterSearchTerm(form, countries, page, searchForm)
+
         <div style="overflow-x: auto;">
 
         @govukTable(
