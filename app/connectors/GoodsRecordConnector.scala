@@ -76,7 +76,6 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
 
   private def filterSearchRecordsUrl(
     searchTerm: Option[String],
-    exactMatch: Boolean,
     countryOfOrigin: Option[String],
     immiReady: Option[Boolean],
     notReadyForIMMI: Option[Boolean],
@@ -86,7 +85,6 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
 
     val queryParamsSeq = Seq(
       searchTerm.map(term => s"searchTerm=${URLEncoder.encode(term, "UTF-8")}"),
-      Some(s"exactMatch=$exactMatch"),
       countryOfOrigin.filter(_.nonEmpty).map(origin => s"countryOfOrigin=${URLEncoder.encode(origin, "UTF-8")}"),
       immiReady.map(ready => s"IMMIReady=$ready"),
       notReadyForIMMI.map(notReady => s"notReadyForIMMI=$notReady"),
@@ -307,7 +305,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       "page" -> page.toString,
       "size" -> size.toString
     )
-    if (appConfig.enhancedSearch) { // TODO: remove this flag when filter search is ready
+    if (!appConfig.enhancedSearch) { // TODO: remove this flag when filter search is ready
       httpClient
         .get(searchRecordsUrl(eori, searchTerm, exactMatch, queryParams))
         .setHeader(clientIdHeader)
@@ -325,7 +323,6 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
         .get(
           filterSearchRecordsUrl(
             searchTerm,
-            exactMatch,
             countryOfOrigin,
             IMMIReady,
             notReadyForIMMI,

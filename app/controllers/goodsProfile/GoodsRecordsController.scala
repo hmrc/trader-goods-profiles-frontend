@@ -154,7 +154,7 @@ class GoodsRecordsController @Inject() (
     for {
       updatedAnswers <- Future.fromTry(request.userAnswers.set(GoodsRecordsPage, searchFormData))
       _              <- sessionRepository.set(updatedAnswers)
-      result         <- if (appConfig.enhancedSearch) {
+      result         <- if (!appConfig.enhancedSearch) {
                           Future.successful(
                             Redirect(controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(1))
                           )
@@ -187,9 +187,9 @@ class GoodsRecordsController @Inject() (
         pageSize
       )
       .flatMap {
-        case Some(searchResponse) if searchResponse.pagination.totalRecords > 0 =>
+        case Some(searchResponse) =>
           renderSearchResults(page, searchResponse, searchText)
-        case _                                                                  =>
+        case _                    =>
           Future.successful(
             Redirect(
               controllers.goodsProfile.routes.GoodsRecordsLoadingController.onPageLoad(

@@ -57,18 +57,30 @@
 
 
 @preparedTitle = @{
-    if(appConfig.enhancedSearch) {
+   if(!appConfig.enhancedSearch) {
         pagination.items match {
             case Some(items) if (items.size > 1) => title(form, messages("goodsRecords.title.withPage", page, items.size))
             case _ => title(form, messages("goodsRecords.title"))
         }
     } else {
-        pagination.items match {
-            case Some(items) if (items.size > 1) => title(form, messages("goodsRecords.title.withPageFilter",totalRecords, page, items.size))
-            case _ => title(form, messages("goodsRecords.title.withoutPageFilter", totalRecords))
+        if(searchForm.searchTerm.isEmpty
+            && searchForm.countryOfOrigin.isEmpty
+            && searchForm.statusValue.isEmpty){
+                title(form, messages("goodsRecords.title"))
+        } else {
+                totalRecords match {
+                    case 0 => title(form, messages("goodsRecords.title.noResults"))
+                    case 1 => title(form, messages("goodsRecords.title.singleRecord"))
+                    case _  =>
+                        pagination.items match {
+                            case Some(items) if (items.size > 1) => title(form, messages("goodsRecords.title.withPageFilter",totalRecords, page, items.size))
+                            case _ => title(form, messages("goodsRecords.title.withoutPageFilter", totalRecords))
+                        }
+                }
+            }
         }
     }
-}
+
 
 <a href="#goodsRecords" class="govuk-skip-link" data-module="govuk-skip-link">@messages("goodsRecords.skip.record")</a>
 @layout(
@@ -79,24 +91,33 @@
         @govukErrorSummary(ErrorSummaryViewModel(form))
     }
 
-    @if(appConfig.enhancedSearch) {
+    @if(!appConfig.enhancedSearch) {
     @goodsRecordSearchFeature(form, page)
     } else {
     <div class="govuk-width-container">
 
-        <span class="govuk-caption-l">@messages("goodsRecords.title")</span>
-            @if(totalRecords > 0) {
-                <h1 class="govuk-heading-l"> @messages("goodsRecordSearchResult.p2", totalRecords.toString())</h1>
+            @if(searchForm.searchTerm.nonEmpty
+            || searchForm.countryOfOrigin.nonEmpty
+            || searchForm.statusValue.nonEmpty){
+                <span class="govuk-caption-l">@messages("goodsRecords.title")</span>
+                @if(totalRecords == 1) {
+                    <h1 class="govuk-heading-l"> @messages("goodsRecordSearchResult.singleRecord")</h1>
+                } else if(totalRecords > 0) {
+                    <h1 class="govuk-heading-l"> @messages("goodsRecordSearchResult.p2", totalRecords.toString())</h1>
+                } else  {
+                    <h1 class="govuk-heading-l"> @messages("goodsRecordSearchResult.noRecordsHeading")</h1>
+                    <p class="govuk-body"> @messages("goodsRecordSearchResult.noRecordsParagraph")</p>
+                }
             } else {
-                <h1 class="govuk-heading-l"> @messages("goodsRecordSearchResult.p3")</h1>
+                <h1 class="govuk-heading-l"> @messages("goodsRecords.title")</h1>
             }
-
             <div class="govuk-grid-row">
                 @goodsRecordFilterForm(form, countries, page, searchForm)
 
                 <div class="govuk-grid-column-two-thirds govuk-!-padding-left-20">
-                    <h2 class="govuk-heading-m">@messages("goodsRecords.h2.1")</h2>
 
+                    @if(totalRecords > 0) {
+                    <h2 class="govuk-heading-m">@messages("goodsRecords.h2.1")</h2>
                     @paragraphBody(messages("goodsRecords.p1"))
 
                     @paragraphBody(
@@ -115,6 +136,7 @@
                     tag(messages("declarableStatus.notReadyForUse"), "govuk-tag govuk-tag--orange") +
                     messages("goodsRecords.p2.4")
                     )
+                    }
                     @paragraphBody(
                     message = messages("goodsRecords.link1.text") +
                     link(
@@ -130,6 +152,8 @@
     </div>
 
     }
+
+@if(totalRecords > 0) {
 
 <div class="govuk-grid-column-full govuk-!-margin-top-4">
     <h2 class="govuk-heading-m" id="goodsRecords">@messages("goodsRecords.record.list")</h2>
@@ -194,7 +218,7 @@
 
                         TableRow(
                              content = {
-                       if (appConfig.enhancedSearch) {
+                       if (!appConfig.enhancedSearch) {
                                 HtmlContent(
                                 messages(goodsRecord.declarable.messageKey)
 
@@ -229,6 +253,9 @@
         @govukPagination(pagination)
 
         <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad().url" class="govuk-link">@messages("site.goBackToHomePage")</a></p>
+    } else {
+        <p class="govuk-body govuk-!-margin-top-4"><a href="@routes.HomePageController.onPageLoad().url" class="govuk-link">@messages("site.goBackToHomePage")</a></p>
+    }
 
 </div>
 }
