@@ -577,6 +577,14 @@ goodsRecordSearchResultEmptyView.title = Does dim canlyniadau cyfatebol
 goodsRecordSearchResultEmptyView.h1 = Does dim canlyniadau cyfatebol
 goodsRecordSearchResultEmptyView.p1 = Roeddech yn chwilio am y term {0}.
 
+goodsRecordSearchResult.noRecordsParagraph = Nid ydym wedi gallu dod o hyd i unrhyw gofnodion ar sail yr opsiynau chwilio a hidlo y gwnaethoch eu defnyddio.
+goodsRecordSearchResult.noRecordsHeading = Heb ddod o hyd i unrhyw gofnodion
+goodsRecords.title.noResults = Heb ddod o hyd i unrhyw gofnodion - Proffil Nwyddau
+
+#todo : need to translate below two in welsh for ticket 3019
+goodsRecords.title.singleRecord = 1 record found - Goods profile
+goodsRecordSearchResult.singleRecord = 1 record found
+
 existingUkimsNumber.title = Rhif presennol ar gyfer Cynllun Marchnad Fewnol y DU (UKIMS)
 existingUkimsNumber.h1 = Rhif presennol ar gyfer Cynllun Marchnad Fewnol y DU (UKIMS)
 existingUkimsNumber.h2 = Ai dyma’r rhif UKIMS cywir ar eich cyfer o hyd?

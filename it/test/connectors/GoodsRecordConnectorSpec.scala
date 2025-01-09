@@ -765,63 +765,147 @@ class GoodsRecordConnectorSpec
     val pagedGoodsRecordsSearchUrl =
       s"/trader-goods-profiles-data-store/traders/$testEori/records/filter?searchTerm=$searchString&exactMatch=$exactMatch&page=1&size=3"
 
-    "must get a page of goods records" in {
+    "when enhance search false" - {
 
-      wireMockServer.stubFor(
-        get(urlEqualTo(pagedGoodsRecordsSearchUrl))
-          .withHeader(xClientIdName, equalTo(xClientId))
-          .willReturn(ok().withBody(getRecordsResponse.toString))
-      )
+      val app: Application =
+        new GuiceApplicationBuilder()
+          .configure("microservice.services.trader-goods-profiles-router.port" -> wireMockPort)
+          .configure("microservice.services.trader-goods-profiles-data-store.port" -> wireMockPort)
+          .configure("features.enhancedSearch" -> false)
+          .build()
 
-      connector
-        .searchRecords(testEori, Some(searchString), exactMatch = false, Some(""), Some(false), Some(false), Some(false), 1, 3)
-        .futureValue
-        .value mustBe getRecordsResponse.as[GetRecordsResponse]
+      val connector = app.injector.instanceOf[GoodsRecordConnector]
+
+      "must get a page of goods records" in {
+
+        wireMockServer.stubFor(
+          get(urlEqualTo(pagedGoodsRecordsSearchUrl))
+            .withHeader(xClientIdName, equalTo(xClientId))
+            .willReturn(ok().withBody(getRecordsResponse.toString))
+        )
+
+        connector
+          .searchRecords(testEori, Some(searchString), exactMatch = false, Some(""), Some(false), Some(false), Some(false), 1, 3)
+          .futureValue
+          .value mustBe getRecordsResponse.as[GetRecordsResponse]
+      }
+
+      "must return done when the status is ACCEPTED" in {
+
+        wireMockServer.stubFor(
+          get(urlEqualTo(pagedGoodsRecordsSearchUrl))
+            .withHeader(xClientIdName, equalTo(xClientId))
+            .willReturn(status(ACCEPTED))
+        )
+
+        connector.searchRecords(testEori, Some(searchString), exactMatch = false, Some(""), Some(false), Some(false), Some(false), 1, 3).futureValue mustBe None
+      }
+
+      "must return a failed future when the response is anything but Ok or Accepted" in {
+
+        wireMockServer.stubFor(
+          get(urlEqualTo(pagedGoodsRecordsSearchUrl))
+            .withHeader(xClientIdName, equalTo(xClientId))
+            .willReturn(status(errorResponses.sample.value))
+        )
+
+        connector.searchRecords(testEori, Some(searchString), exactMatch = false, Some(""), Some(false), Some(false), Some(false), 1, 3).failed.futureValue
+      }
+
+      "must return a failed future when the server returns an error" in {
+
+        wireMockServer.stubFor(
+          get(urlEqualTo(pagedGoodsRecordsSearchUrl))
+            .withHeader(xClientIdName, equalTo(xClientId))
+            .willReturn(serverError())
+        )
+
+        connector.searchRecords(testEori, Some(searchString), exactMatch = false, Some(""), Some(false), Some(false), Some(false), 1, 3).failed.futureValue
+      }
+
+      "must return a failed future when the json does not match the format" in {
+
+        wireMockServer.stubFor(
+          get(urlEqualTo(pagedGoodsRecordsSearchUrl))
+            .withHeader(xClientIdName, equalTo(xClientId))
+            .willReturn(ok().withBody("{'eori': '123', 'commodity': '10410100'}"))
+        )
+
+        connector.searchRecords(testEori, Some(searchString), exactMatch = false, Some(""), Some(false), Some(false), Some(false), 1, 3).failed.futureValue
+      }
+    }
+    "when enhance search true" - {
+
+      val app: Application =
+        new GuiceApplicationBuilder()
+          .configure("microservice.services.trader-goods-profiles-router.port" -> wireMockPort)
+          .configure("microservice.services.trader-goods-profiles-data-store.port" -> wireMockPort)
+          .configure("features.enhancedSearch" -> true)
+          .build()
+
+      val connector = app.injector.instanceOf[GoodsRecordConnector]
+      val pagedGoodsRecordsSearchUrl =
+        s"/trader-goods-profiles-data-store/traders/records/filter?searchTerm=$searchString&IMMIReady=false&notReadyForIMMI=false&actionNeeded=false&page=1&size=3"
+
+      "must get a page of goods records" in {
+
+        wireMockServer.stubFor(
+          get(urlEqualTo(pagedGoodsRecordsSearchUrl))
+            .withHeader(xClientIdName, equalTo(xClientId))
+            .willReturn(ok().withBody(getRecordsResponse.toString))
+        )
+
+        connector
+          .searchRecords(testEori, Some(searchString), exactMatch = false, Some(""), Some(false), Some(false), Some(false), 1, 3)
+          .futureValue
+          .value mustBe getRecordsResponse.as[GetRecordsResponse]
+      }
+
+      "must return done when the status is ACCEPTED" in {
+
+        wireMockServer.stubFor(
+          get(urlEqualTo(pagedGoodsRecordsSearchUrl))
+            .withHeader(xClientIdName, equalTo(xClientId))
+            .willReturn(status(ACCEPTED))
+        )
+
+        connector.searchRecords(testEori, Some(searchString), exactMatch = false, Some(""), Some(false), Some(false), Some(false), 1, 3).futureValue mustBe None
+      }
+
+      "must return a failed future when the response is anything but Ok or Accepted" in {
+
+        wireMockServer.stubFor(
+          get(urlEqualTo(pagedGoodsRecordsSearchUrl))
+            .withHeader(xClientIdName, equalTo(xClientId))
+            .willReturn(status(errorResponses.sample.value))
+        )
+
+        connector.searchRecords(testEori, Some(searchString), exactMatch = false, Some(""), Some(false), Some(false), Some(false), 1, 3).failed.futureValue
+      }
+
+      "must return a failed future when the server returns an error" in {
+
+        wireMockServer.stubFor(
+          get(urlEqualTo(pagedGoodsRecordsSearchUrl))
+            .withHeader(xClientIdName, equalTo(xClientId))
+            .willReturn(serverError())
+        )
+
+        connector.searchRecords(testEori, Some(searchString), exactMatch = false, Some(""), Some(false), Some(false), Some(false), 1, 3).failed.futureValue
+      }
+
+      "must return a failed future when the json does not match the format" in {
+
+        wireMockServer.stubFor(
+          get(urlEqualTo(pagedGoodsRecordsSearchUrl))
+            .withHeader(xClientIdName, equalTo(xClientId))
+            .willReturn(ok().withBody("{'eori': '123', 'commodity': '10410100'}"))
+        )
+
+        connector.searchRecords(testEori, Some(searchString), exactMatch = false, Some(""), Some(false), Some(false), Some(false), 1, 3).failed.futureValue
+      }
     }
 
-    "must return done when the status is ACCEPTED" in {
-
-      wireMockServer.stubFor(
-        get(urlEqualTo(pagedGoodsRecordsSearchUrl))
-          .withHeader(xClientIdName, equalTo(xClientId))
-          .willReturn(status(ACCEPTED))
-      )
-
-      connector.searchRecords(testEori, Some(searchString), exactMatch = false,  Some(""), Some(false), Some(false), Some(false),1, 3).futureValue mustBe None
-    }
-
-    "must return a failed future when the response is anything but Ok or Accepted" in {
-
-      wireMockServer.stubFor(
-        get(urlEqualTo(pagedGoodsRecordsSearchUrl))
-          .withHeader(xClientIdName, equalTo(xClientId))
-          .willReturn(status(errorResponses.sample.value))
-      )
-
-      connector.searchRecords(testEori, Some(searchString), exactMatch = false, Some(""), Some(false), Some(false), Some(false), 1, 3).failed.futureValue
-    }
-
-    "must return a failed future when the server returns an error" in {
-
-      wireMockServer.stubFor(
-        get(urlEqualTo(pagedGoodsRecordsSearchUrl))
-          .withHeader(xClientIdName, equalTo(xClientId))
-          .willReturn(serverError())
-      )
-
-      connector.searchRecords(testEori, Some(searchString), exactMatch = false, Some(""), Some(false), Some(false), Some(false), 1, 3).failed.futureValue
-    }
-
-    "must return a failed future when the json does not match the format" in {
-
-      wireMockServer.stubFor(
-        get(urlEqualTo(pagedGoodsRecordsSearchUrl))
-          .withHeader(xClientIdName, equalTo(xClientId))
-          .willReturn(ok().withBody("{'eori': '123', 'commodity': '10410100'}"))
-      )
-
-      connector.searchRecords(testEori, Some(searchString), exactMatch = false, Some(""), Some(false), Some(false), Some(false), 1, 3).failed.futureValue
-    }
   }
 
   ".getRecordsSummary" - {

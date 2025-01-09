@@ -189,7 +189,7 @@ class GoodsRecordsController @Inject() (
       .flatMap {
         case Some(searchResponse) =>
           renderSearchResults(page, searchResponse, searchText)
-        case _                                                                  =>
+        case _                    =>
           Future.successful(
             Redirect(
               controllers.goodsProfile.routes.GoodsRecordsLoadingController.onPageLoad(
