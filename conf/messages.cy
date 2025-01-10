@@ -39,7 +39,7 @@ timeout.signOut = Allgofnodi
 error.title.prefix = Gwall:
 error.prefix = Gwall
 
-error.summary.title = Nodwch eich cyfeiriad e-bost
+error.summary.title = Mae problem.
 
 signedOut.title = Rydych bellach wedi allgofnodi
 signedOut.heading = Rydych bellach wedi allgofnodi
@@ -626,8 +626,8 @@ ukimsNumberChangeController.duplicateUkimsNumber = Yr ydych wedi nodi’r rhif U
 
 hasCountryOfOriginChange.title = Newid y wlad tarddiad
 hasCountryOfOriginChange.h1 = Newid y wlad tarddiad
-hasCountryOfOriginChange.p1 = Bydd angen i chi ail-gategoreiddio’r cofnod nwyddau os byddwch yn newid y wlad wreiddiol.
-hasCountryOfOriginChange.h2 = A ydych am newid y wlad wreiddiol?
+hasCountryOfOriginChange.p1 = Bydd angen i chi ail-gategoreiddio’r cofnod nwyddau os byddwch yn newid y wlad tarddiad.
+hasCountryOfOriginChange.h2 = A ydych am newid y wlad tarddiad?
 hasCountryOfOriginChange.error.required = Dewiswch ‘Iawn’ os ydych am newid y wlad tarddiad
 
 hasCommodityCodeChange.title = Newid y cod nwyddau
@@ -762,7 +762,7 @@ previousMovementRecords.description.notReadyForUse = Mae gan gofnodion Ddim yn b
 hasSupplementaryUnit.title = Uned atodol
 hasSupplementaryUnit.h1 = Uned atodol
 hasSupplementaryUnit.h2 = A ydych am ychwanegu’r uned atodol?
-hasSupplementaryUnit.p1 = Gan fod eich nwyddau yn perthyn i Gategori 2, bydd angen i chi ychwanegu uned atodol at eich Gwybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI). Mae unedau atodol yn golygu uned fesur ychwanegol. Er enghraifft, cyfaint y nwyddau mewn litrau
+hasSupplementaryUnit.p1 = Gan fod eich nwyddau yn perthyn i Gategori 2, bydd angen i chi ychwanegu uned atodol at eich Gwybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI). Mae uned atodol yn golygu uned fesur ychwanegol. Er enghraifft, cyfaint y nwyddau mewn litrau
 hasSupplementaryUnit.p2 = Mae’r opsiwn gennych i storio uned atodol yn eich TGP. Mae’r opsiwn hwn yn ddefnyddiol os ydych yn symud yr un faint o nwyddau yn aml.
 hasSupplementaryUnit.checkYourAnswersLabel = A ydych am ychwanegu’r uned atodol?
 hasSupplementaryUnit.error.required = Dewiswch ‘Iawn’ os ydych am ychwanegu uned atodol
