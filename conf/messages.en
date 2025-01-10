@@ -335,9 +335,11 @@ adviceStart.p2.linkText = apply for a Binding Tariff information decision
 adviceStart.subheading1 = What HMRC needs
 adviceStart.p3 = We’ll ask for your name and email address. An HMRC caseworker will look at the goods record you’ve asked for advice on.
 adviceStart.subheading2 = What happens when HMRC are looking at your record
-adviceStart.p4 = Whilst your record is under review by HMRC, you will not be able to make any changes. Please note that email communication may not always be secure, as emails can be read or changed by someone else.
-adviceStart.p5 = If you want to send the HMRC caseworker more information about the goods record, you’ll be able to by email.
+adviceStart.p4 = Whilst your record is under review by HMRC, you will not be able to make any changes.
+adviceStart.p5 = The HMRC caseworker may contact you by email if they need more information from you. Email communication may not always be secure, as emails can be read or changed by someone else.
 adviceStart.p6 = You should get a response to your request within 5 working days, but it could take longer.
+adviceStart.p7 = Find information about how HMRC handle confidentiality in section 18 of the
+adviceStart.p7.link = Commissioners for Revenue and Customs Act 2005
 
 adviceSuccess.title = Request for advice complete
 adviceSuccess.h1 = Request for advice complete
@@ -348,9 +350,7 @@ adviceSuccess.p2.1 = agreeing the commodity code is correct
 adviceSuccess.p2.2 = asking for more information about the goods
 adviceSuccess.p2.3 = suggesting a change to the commodity code or goods description
 adviceSuccess.p2.4 = saying the record is wrong, and why
-adviceSuccess.p3 = You can send more information to HMRC about your goods to [email address] with your EORI number.
-adviceSuccess.p4 = Email is not a secure method of communication so do not include any personal details if you email HMRC.
-adviceSuccess.p5 = You should get a response to your request within 5 working days, but it could take longer.
+adviceSuccess.p3 = You should get a response to your request within 5 working days, but it could take longer.
 
 email.title = What is your email address?
 email.heading = What is your email address?
