@@ -212,7 +212,7 @@ class GoodsRecordsController @Inject() (
           firstRecord,
           getLastRecordIndex(firstRecord, searchResponse.goodsItemRecords.size),
           countries,
-          getSearchPagination(searchResponse.pagination.currentPage, searchResponse.pagination.totalPages),
+          getSearchPaginationFilter(searchResponse.pagination.currentPage, searchResponse.pagination.totalPages),
           page,
           pageSize,
           searchText,
