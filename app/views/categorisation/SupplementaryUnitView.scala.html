@@ -52,7 +52,7 @@
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = Label(content = "")
+                label = Label(content = "supplementaryUnit.title").asPageHeading(Large).withCssClass("govuk-visually-hidden")
             )
             .asNumeric()
             .withWidth(Fixed10)
