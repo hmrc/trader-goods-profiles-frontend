@@ -16,8 +16,10 @@
 
 @import viewmodels.InputWidth._
 @import viewmodels.LabelSize._
+@import uk.gov.hmrc.play.language.LanguageUtils
 
 @this(
+    languageUtils: LanguageUtils,
     layout: templates.Layout,
     formHelper: FormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
@@ -39,12 +41,18 @@
         @govukErrorSummary(ErrorSummaryViewModel(form))
     }
 
+    <h1 class="govuk-heading-l">@messages("supplementaryUnit.h1")</h1>
+
+    @if(languageUtils.getCurrentLang == Lang("cy")) {
+        <p class="govuk-body">@messages("supplementaryUnit.welshDescription")</p>
+    }
+
     @formHelper(action = action) {
 
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = Label(content = "supplementaryUnit.h1").asPageHeading(Large)
+                label = Label(content = "")
             )
             .asNumeric()
             .withWidth(Fixed10)
