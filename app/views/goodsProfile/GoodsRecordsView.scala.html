@@ -157,12 +157,29 @@
 
 <div class="govuk-grid-column-full govuk-!-margin-top-4">
     <h2 class="govuk-heading-m" id="goodsRecords">@messages("goodsRecords.record.list")</h2>
-    @if(totalRecords > pageSize){
-      <p class="govuk-body">@Html(messages("goodsRecords.pagination", boldWrapper(firstRecord.toString()),
-        boldWrapper(lastRecord.toString()), boldWrapper(totalRecords.toString())))</p>
-        } else {
-      <p class="govuk-body">@Html(messages("goodsRecords.pagination.less", boldWrapper(totalRecords.toString())))</p>
-               }
+        @if(!appConfig.enhancedSearch || (searchForm.searchTerm.isEmpty
+            && searchForm.countryOfOrigin.isEmpty
+            && searchForm.statusValue.isEmpty)) {
+            @if(totalRecords > pageSize) {
+                <p class="govuk-body">
+                    @Html(messages("goodsRecords.pagination", boldWrapper(firstRecord.toString()),
+                    boldWrapper(lastRecord.toString()), boldWrapper(totalRecords.toString())))</p>
+                } else {
+                <p class="govuk-body">
+                    @Html(messages("goodsRecords.pagination.less", boldWrapper(totalRecords.toString())))</p>
+                }
+            }   else {
+                @if(totalRecords > pageSize) {
+                    <p class="govuk-body">@Html(messages("goodsRecords.pagination.searchFilterwithPage", boldWrapper(firstRecord.toString()),
+                        boldWrapper(lastRecord.toString()), boldWrapper(totalRecords.toString())))</p>
+                } else if (totalRecords == pageSize) {
+                    <p class="govuk-body">@Html(messages("goodsRecords.pagination.searchFilterwithoutPage", boldWrapper(firstRecord.toString()),
+                        boldWrapper(lastRecord.toString()), boldWrapper(totalRecords.toString())))</p>
+                } else if (totalRecords == 1) {
+                    <p class="govuk-body">@Html(messages("goodsRecords.pagination.singleRecord", boldWrapper(firstRecord.toString()),
+                        boldWrapper(lastRecord.toString()), boldWrapper(totalRecords.toString())))</p>
+                }
+            }
 
         @goodsRecordFilterSearchTerm(form, countries, page, searchForm)
 
