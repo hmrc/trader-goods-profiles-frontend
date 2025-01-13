@@ -106,7 +106,8 @@ class HomePageControllerSpec extends SpecBase {
           contentAsString(result) mustEqual view(
             downloadReady = true,
             downloadLinkMessagesKey = "homepage.downloadLinkText.filesRequested",
-            viewUpdateGoodsRecordsLink = controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url
+            viewUpdateGoodsRecordsLink =
+              controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url
           )(request, messages(application)).toString
 
           verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
@@ -162,7 +163,8 @@ class HomePageControllerSpec extends SpecBase {
           contentAsString(result) mustEqual view(
             downloadReady = false,
             downloadLinkMessagesKey = "homepage.downloadLinkText.filesRequested",
-            viewUpdateGoodsRecordsLink = controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url
+            viewUpdateGoodsRecordsLink =
+              controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url
           )(request, messages(application)).toString
 
           verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
@@ -207,7 +209,8 @@ class HomePageControllerSpec extends SpecBase {
             contentAsString(result) mustEqual view(
               downloadReady = false,
               downloadLinkMessagesKey = "homepage.downloadLinkText.noFilesRequested",
-              viewUpdateGoodsRecordsLink = controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url
+              viewUpdateGoodsRecordsLink =
+                controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url
             )(request, messages(application)).toString
 
             verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
@@ -262,7 +265,8 @@ class HomePageControllerSpec extends SpecBase {
             contentAsString(result) mustEqual view(
               downloadReady = false,
               downloadLinkMessagesKey = "homepage.downloadLinkText.filesRequested",
-              viewUpdateGoodsRecordsLink = controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url
+              viewUpdateGoodsRecordsLink =
+                controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url
             )(request, messages(application)).toString
 
             verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
@@ -317,7 +321,8 @@ class HomePageControllerSpec extends SpecBase {
             contentAsString(result) mustEqual view(
               downloadReady = true,
               downloadLinkMessagesKey = "homepage.downloadLinkText.filesRequested",
-              viewUpdateGoodsRecordsLink = controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url
+              viewUpdateGoodsRecordsLink =
+                controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url
             )(request, messages(application)).toString
           }
         }
@@ -368,7 +373,8 @@ class HomePageControllerSpec extends SpecBase {
             contentAsString(result) mustEqual view(
               downloadReady = false,
               downloadLinkMessagesKey = "homepage.downloadLinkText.filesRequested",
-              viewUpdateGoodsRecordsLink = controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url
+              viewUpdateGoodsRecordsLink =
+                controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url
             )(request, messages(application)).toString
 
             verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
@@ -416,7 +422,8 @@ class HomePageControllerSpec extends SpecBase {
           contentAsString(result) mustEqual view(
             downloadReady = false,
             downloadLinkMessagesKey = "homepage.downloadLinkText.noGoodsRecords",
-            viewUpdateGoodsRecordsLink = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url
+            viewUpdateGoodsRecordsLink =
+              controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url
           )(request, messages(application)).toString
 
           verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
@@ -464,7 +471,8 @@ class HomePageControllerSpec extends SpecBase {
             downloadReady = false,
             downloadLinkMessagesKey = "homepage.downloadLinkText.noGoodsRecords",
             ukimsNumberChanged = false,
-            viewUpdateGoodsRecordsLink = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url
+            viewUpdateGoodsRecordsLink =
+              controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url
           )(request, messages(application)).toString
 
           verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
@@ -510,7 +518,8 @@ class HomePageControllerSpec extends SpecBase {
             downloadReady = false,
             downloadLinkMessagesKey = "homepage.downloadLinkText.noGoodsRecords",
             ukimsNumberChanged = true,
-            viewUpdateGoodsRecordsLink = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url
+            viewUpdateGoodsRecordsLink =
+              controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url
           )(request, messages(application)).toString
 
           verify(mockTraderProfileConnector, never()).checkTraderProfile(any())

@@ -52,9 +52,16 @@ class HomePageController @Inject() (
     } yield {
       val downloadLinkMessagesKey     = getDownloadLinkMessagesKey(downloadDataSummary, doesGoodsRecordExist)
       val showNewUkimsBanner: Boolean = request.session.get(pageUpdated).contains(newUkimsNumberPage)
-      val viewUpdateGoodsRecordsLink        = getViewUpdateRecordsLink(historicProfileData)
+      val viewUpdateGoodsRecordsLink  = getViewUpdateRecordsLink(historicProfileData)
 
-      Ok(view(downloadReady(downloadDataSummary), downloadLinkMessagesKey, showNewUkimsBanner, viewUpdateGoodsRecordsLink))
+      Ok(
+        view(
+          downloadReady(downloadDataSummary),
+          downloadLinkMessagesKey,
+          showNewUkimsBanner,
+          viewUpdateGoodsRecordsLink
+        )
+      )
         .removingFromSession(pageUpdated)
     }
   }

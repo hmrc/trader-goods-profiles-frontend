@@ -28,47 +28,7 @@ formHelper: FormWithCSRF
 <h1 class="govuk-heading-l">@messages("previousMovementRecords.h1")</h1>
 <p class="govuk-body">@messages("previousMovementRecords.p1")</p>
 <p class="govuk-body">@messages("previousMovementRecords.p2")</p>
-<h2 class="govuk-heading-m">@messages("previousMovementRecords.h2")</h2>
-<p class="govuk-body">@messages("previousMovementRecords.p3")</p>
 
-<div class="govuk-grid-column-xl-full">
- @govukTable(
- Table(
- caption = Some(messages("previousMovementRecords.h2")),
- captionClasses = "govuk-visually-hidden",
- firstCellIsHeader = true,
- head = Some(Seq(
- HeadCell(
- content = Text(messages("previousMovementRecords.tableHeader.state"))
- ),
- HeadCell(
- content = Text(messages("previousMovementRecords.tableHeader.description"))
- )
- )),
- rows = Seq(
- Seq(
- TableRow(
- content = Text(messages("previousMovementRecords.state.immiReady"))
- ),
- TableRow(
- content = Text(messages("previousMovementRecords.description.immiReady"))
- )),
- Seq(
- TableRow(
- content = Text(messages("previousMovementRecords.state.notImmiReady"))
- ),
- TableRow(
- content = Text(messages("previousMovementRecords.description.notImmiReady"))
- )),
- Seq(
- TableRow(
- content = Text(messages("previousMovementRecords.state.notReadyForUse"))
- ),
- TableRow(
- content = Text(messages("previousMovementRecords.description.notReadyForUse"))
- ))
-)))
-</div>
 
  @formHelper(action = controllers.goodsProfile.routes.PreviousMovementRecordsController.onSubmit()) {
   @govukButton(
