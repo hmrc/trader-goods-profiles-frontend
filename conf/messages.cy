@@ -395,10 +395,10 @@ countryOfOrigin.error.invalid = Rhowch wlad wreiddiol wreiddiol
 countryOfOrigin.checkYourAnswersLabel = Gwlad tarddiad
 countryOfOrigin.change.hidden = Gwlad tarddiad
 
-feedback.header = Dywedwch wrthym beth yw eich barn
-feedback.line.1 = Mae hwn yn wasanaeth newydd ac rydym eisiau gwybod beth yw eich barn amdano.
-feedback.line.2 = {0}. Bydd eich meddyliau a’ch syniadau yn ein helpu i wneud gwelliannau.
-feedback.link = Anfonwch eich adborth atom
+feedback.header = Cyn i chi fynd
+feedback.line.1 = Mae’ch adborth yn ein helpu i wella ein gwasanaeth.
+feedback.line.2 = {0} i rannu’ch adborth ar y gwasanaeth.
+feedback.link = Llenwch ein harolwg
 
 profileSuccess.title = Rydych wedi creu eich Proffil Nwyddau Masnachwyr
 profileSuccess.h1 = Rydych wedi creu eich Proffil Nwyddau Masnachwyr
