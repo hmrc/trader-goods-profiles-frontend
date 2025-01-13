@@ -52,9 +52,9 @@ class HomePageController @Inject() (
     } yield {
       val downloadLinkMessagesKey     = getDownloadLinkMessagesKey(downloadDataSummary, doesGoodsRecordExist)
       val showNewUkimsBanner: Boolean = request.session.get(pageUpdated).contains(newUkimsNumberPage)
-      val viewGoodsRecordsLink        = getViewRecordsLink(historicProfileData)
+      val viewUpdateGoodsRecordsLink        = getViewUpdateRecordsLink(historicProfileData)
 
-      Ok(view(downloadReady(downloadDataSummary), downloadLinkMessagesKey, showNewUkimsBanner, viewGoodsRecordsLink))
+      Ok(view(downloadReady(downloadDataSummary), downloadLinkMessagesKey, showNewUkimsBanner, viewUpdateGoodsRecordsLink))
         .removingFromSession(pageUpdated)
     }
   }
@@ -75,7 +75,7 @@ class HomePageController @Inject() (
     case _                                      => "homepage.downloadLinkText.noGoodsRecords"
   }
 
-  private def getViewRecordsLink(historicProfileData: Option[HistoricProfileData]): String =
+  private def getViewUpdateRecordsLink(historicProfileData: Option[HistoricProfileData]): String =
     historicProfileData
       .map(_ => controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url)
       .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url)

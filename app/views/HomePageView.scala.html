@@ -24,7 +24,7 @@
         govukNotificationBanner: GovukNotificationBanner
 )
 
-@(downloadReady: Boolean = false, downloadLinkMessagesKey: String, ukimsNumberChanged: Boolean = false, viewGoodsRecordsLink: String)(implicit request: Request[_], messages: Messages)
+@(downloadReady: Boolean = false, downloadLinkMessagesKey: String, ukimsNumberChanged: Boolean = false, viewUpdateGoodsRecordsLink: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = s"${messages("homepage.title")} - ${messages("site.govuk")}", showBackLink = false, headerShouldHaveServiceLink = false) {
 
@@ -58,7 +58,7 @@
     <h2 class="govuk-heading-m">@messages("homepage.h2.1")</h2>
 
     <p class="govuk-body">
-        <a href="@viewGoodsRecordsLink" class="govuk-link">@messages("homepage.p2.linkText")</a>
+        <a href="@viewUpdateGoodsRecordsLink" class="govuk-link">@messages("homepage.p2.linkText")</a>
     </p>
 
     <p class="govuk-body">
