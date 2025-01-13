@@ -635,10 +635,10 @@ successProfileBanner.changeNumber.heading = You have changed your {0} number
 successProfileBanner.removeRegistration.heading = You have removed your {0} registration
 successProfileBanner.addNumber.heading = You have added your {0} number
 
-feedback.header = Tell us what you think
-feedback.line.1 = This is a new service and we want to know what you think of it.
-feedback.line.2 = {0}. Your thoughts and ideas will help us to make improvements.
-feedback.link = Send us your feedback
+feedback.header = Before you go
+feedback.line.1 = Your feedback helps us make our service better.
+feedback.line.2 = {0} to share your feedback on this service.
+feedback.link = Take a short survey
 
 goodsRecordsLoading.title = We’re loading your records
 goodsRecordsLoading.heading = We’re loading your records
