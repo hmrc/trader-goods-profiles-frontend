@@ -61,7 +61,7 @@
     </p>
 
 
-    @if( declarableStatus == DeclarableStatus.NotReadyForUse && !isCategorised && (toReview && !reviewReason.contains(ReviewReason.Commodity))) {
+    @if( declarableStatus == DeclarableStatus.NotReadyForUse && !isCategorised && !reviewReason.contains(ReviewReason.Commodity)) {
         @paragraphBody(message = messages(declarableStatus.paragraphKey,
             link(
             text = messages("declarableStatus.notReadyForUse.paragraph.linkText"),
