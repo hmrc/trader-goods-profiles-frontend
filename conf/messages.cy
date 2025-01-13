@@ -533,9 +533,9 @@ goodsRecords.search = Opsiynau chwilio a hidlo
 goodsRecords.record.clear = Clirio Opsiynau chwilio a hidlo
 goodsRecords.record.search = Defnyddio Opsiynau chwilio a hidlo
 
-goodsRecords.title.withoutPageFilter = Wedi dod o hyd i {0} o gofnodion - Goods profile
-goodsRecords.title.withPageFilter =  Wedi dod o hyd i {0} o gofnodion - Goods profile (page {1} of {2}) - Trader Goods Profile
-
+goodsRecords.title.withoutPageFilter = Wedi dod o hyd i {0} o gofnodion - Proffil Nwyddau
+goodsRecords.title.withPageFilter =  Wedi dod o hyd i {0} o gofnodion - Proffil Nwyddau (page {1} of {2})
+goodsRecords.relatedTo = Mewn perthynas â’r canlynol
 
 goodsRecords.search.1 = Gallwch ddod o hyd i gofnodion nwyddau penodol drwy ddefnyddio’r nodweddion chwilio a hidlo. Mae pob maes yn ddewisol.
 goodsRecords.record = Statws y cofnod
@@ -550,6 +550,9 @@ goodsRecords.downloadLinkText.fileInProgress = Cael diweddariad ar eich ffeil co
 goodsRecords.downloadLinkText.fileReady = Lawrlwythwch eich ffeil cofnodion TGP neu gofynnwch am ffeil newydd
 goodsRecords.pagination = Wrthi’n dangos {0} i {1} o {2} o gofnodion nwyddau, gan ddechrau gyda’r dyddiad diweddaru mwyaf diweddar.
 goodsRecords.pagination.less = Wrthi’n dangos {0} o gofnodion nwyddau, gan ddechrau gyda’r dyddiad diweddaru mwyaf diweddar.
+goodsRecords.pagination.searchFilterwithPage = Wrthi’n dangos {0} i {1} o {2} o gofnodion nwyddau.
+goodsRecords.pagination.searchFilterwithoutPage = Wrthi’n dangos {0} o gofnodion nwyddau.
+goodsRecords.pagination.singleRecord = Wrthi’n dangos {0} o gofnodion nwyddau.
 goodsRecords.tableHeader.traderReference = Cyfeirnod masnachwr
 goodsRecords.tableHeader.goodsDescription = Disgrifiad o’r nwyddau
 goodsRecords.tableHeader.countryOfOrigin = Gwlad tarddiad
@@ -585,7 +588,7 @@ goodsRecordSearchResult.noRecordsHeading = Heb ddod o hyd i unrhyw gofnodion
 goodsRecords.title.noResults = Heb ddod o hyd i unrhyw gofnodion - Proffil Nwyddau
 
 #todo : need to translate below two in welsh for ticket 3019
-goodsRecords.title.singleRecord = 1 record found - Goods profile
+goodsRecords.title.singleRecord = 1 record found - Proffil Nwyddau
 goodsRecordSearchResult.singleRecord = 1 record found
 
 existingUkimsNumber.title = Rhif presennol ar gyfer Cynllun Marchnad Fewnol y DU (UKIMS)
