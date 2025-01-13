@@ -215,7 +215,7 @@ adviceStart.p4 = Tra bo CThEF yn adolygu’ch cofnod, ni allwch wneud unrhyw new
 adviceStart.p5 = Efallai bydd gweithiwr achos CThEF yn cysylltu â chi drwy e-bost os bydd angen rhagor o wybodaeth gennych. Efallai na fydd cyfathrebu drwy e-bost bob amser yn ddiogel, gan ei bod hi’n bosibl y gall e-byst gael eu darllen neu eu newid gan rywun arall.
 adviceStart.p6 = Dylech gael ymateb i’ch cais cyn pen 5 diwrnod gwaith, er y gallai hyn gymryd yn hirach.
 adviceStart.p7 = Dod o hyd i wybodaeth am sut mae CThEF yn trin cyfrinachedd yn adran 18 o
-adviceStart.p7.link = Ddeddf Comisiynwyr Cyllid a Thollau 2005.
+adviceStart.p7.link = Ddeddf Comisiynwyr Cyllid a Thollau 2005
 
 name.title = Beth yw eich enw?
 name.heading = Beth yw eich enw?
