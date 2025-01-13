@@ -16,8 +16,10 @@
 
 @import viewmodels.InputWidth._
 @import viewmodels.govuk.characterCount._
+@import uk.gov.hmrc.play.language.LanguageUtils
 
 @this(
+    languageUtils: LanguageUtils,
     layout: templates.Layout,
     formHelper: FormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
@@ -39,6 +41,11 @@
         <h1 class="govuk-heading-l">@messages("goodsDescription.h1")</h1>
         <p class="govuk-body">@messages("goodsDescription.p1")</p>
         <p class="govuk-body">@messages("goodsDescription.p2")</p>
+
+    @if(languageUtils.getCurrentLang == Lang("cy")) {
+        <p class="govuk-body">@messages("goodsDescription.welshDescription")</p>
+    }
+
 
         @textArea(
             CharacterCountViewModel(
