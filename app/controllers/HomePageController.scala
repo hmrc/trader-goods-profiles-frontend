@@ -49,7 +49,7 @@ class HomePageController @Inject() (
       val downloadLinkMessagesKey     = getDownloadLinkMessagesKey(downloadDataSummary, doesGoodsRecordExist)
       val showNewUkimsBanner: Boolean = request.session.get(pageUpdated).contains(newUkimsNumberPage)
 
-      Ok(view(downloadReady(downloadDataSummary), downloadLinkMessagesKey, showNewUkimsBanner))
+      Ok(view(downloadReady(downloadDataSummary), downloadLinkMessagesKey, showNewUkimsBanner, doesGoodsRecordExist))
         .removingFromSession(pageUpdated)
     }
   }
@@ -67,6 +67,6 @@ class HomePageController @Inject() (
   ): String = doesGoodsRecordExist match {
     case true if downloadDataSummaries.nonEmpty => "homepage.downloadLinkText.filesRequested"
     case true if downloadDataSummaries.isEmpty  => "homepage.downloadLinkText.noFilesRequested"
-    case _                                      => "homepage.downloadLinkText.noGoodsRecords"
+    case _                                      => "homepage.noRecords"
   }
 }

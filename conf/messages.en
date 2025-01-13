@@ -214,6 +214,9 @@ homepage.p1 = You can manage your goods records, ask HMRC for an opinion on a go
 homepage.h2.1 = Goods records
 homepage.p2.linkText = View or update your goods records
 homepage.p3.linkText = Create a new goods record
+homepage.noRecords = You do not have any records in your records list.
+homepage.p3 = You can
+homepage.p3.linkText2 = create a new goods record
 homepage.h2.2 = Manage your profile
 homepage.p4.linkText = Ask for an opinion from HMRC if a commodity code is correct
 homepage.p5.linkText = Manage your profile details
@@ -227,7 +230,6 @@ homepage.downloadLinkText.noGoodsRecords = You do not have TGP goods records to 
 homepage.downloadLinkText.noFilesRequested = Get your TGP records file
 homepage.downloadLinkText.filesRequested = Get or download your TGP records file
 homepage.newUkims.success = You have changed your UKIMS number
-
 
 createRecordStart.title = Creating a goods record
 createRecordStart.h1 = Creating a goods record
