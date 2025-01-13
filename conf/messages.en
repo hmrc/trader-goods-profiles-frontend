@@ -604,7 +604,7 @@ helpAndSupport.p9.linkText = Apply for a Binding Tariff Information decision to 
 helpAndSupport.p10.linkText = Webchat to get help on classifying your goods
 helpAndSupport.p11.linkText = Find out about moving goods from Great Britain to Northern Ireland under the Windsor Framework.
 helpAndSupport.p12.linkText = Apply to use the UK Internal Market Scheme entry in declarant’s records (UKIMS-EIDR) process.
-helpAndSupport.p13.linkText = Find out how to check and categorise goods you move from Great Britain to Northern Ireland to use the simplified process for internal market movements
+helpAndSupport.p13.linkText = Find out how to check and categorise goods you move from Great Britain to Northern Ireland to use the simplified process for internal market movements.
 
 goodsRecordSearchResult.title = There are {0} search results
 goodsRecordSearchResult.title.withPage = There are {0} search results - page {1} of {2}
