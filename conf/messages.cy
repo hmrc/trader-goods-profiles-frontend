@@ -681,9 +681,9 @@ removeNiphl.warningText = Os ydych yn symud nwyddau o dan SPIMM, ac nad ydynt yn
 
 helpAndSupport.title = Help a chymorth
 helpAndSupport.h1 = Help a chymorth
-helpAndSupport.h2.1 = Tollau cyffredinol
+helpAndSupport.h2.1 = Gogledd Iwerddon: gwybodaeth gyffredinol am y tollau
 helpAndSupport.h2.2 = Codau nwyddau a Thariff
-helpAndSupport.h2.3 = Cynllun Symud Nwyddau Manwerthu Gogledd Iwerddon (NIRMS) a Label Iechyd Planhigion Gogledd Iwerddon (NIPHL)
+helpAndSupport.h2.3 = Categoreiddio
 helpAndSupport.h2.4 = Proffil Nwyddau Masnachwyr
 helpAndSupport.h2.5 = cefnogaeth Gwybodaeth Symud Marchnad Fewnol (IMMI)
 helpAndSupport.h3 = Cysylltu
@@ -697,13 +697,9 @@ helpAndSupport.p7.linkText = Chwilio am Dariff Ar-lein Gogledd Iwerddon
 helpAndSupport.p8.linkText = Help i ddefnyddio’r Offeryn Tariff Ar-lein
 helpAndSupport.p9.linkText = Gwneud cais am benderfyniad Gwybodaeth am Dariff sy’n Rhwymo i gael penderfyniad cyfreithiol rwymol ar y cod nwyddau i’w ddefnyddio
 helpAndSupport.p10.linkText = Webchat i gael help i ddosbarthu’ch nwyddau
-helpAndSupport.p11.linkText = Arweiniad ar sut y bydd Cynllun Symud Nwyddau Manwerthu Gogledd Iwerddon yn gweithio
-helpAndSupport.p12.linkText = Sut i gofrestru ar gyfer Cynllun Symud Nwyddau Manwerthu Gogledd Iwerddon i werthu neu symud bwyd i Ogledd Iwerddon
-helpAndSupport.p13.linkText = Arweiniad ar gyfer defnyddio label iechyd planhigion Gogledd Iwerddon (NIPHL)
-helpAndSupport.p14.linkText = Dewch o hyd i gymorth ychwanegol a chysylltiadau i’ch helpu
-helpAndSupport.p15 = Gallwch ddefnyddio’r Gwasanaeth Cymorth i Fasnachwyr i greu ffurflenni IMMI gyda gwybodaeth gan eich TGP.
-helpAndSupport.p15.linkText = Cofrestrwch ar gyfer y Gwasanaeth Cymorth i Fasnachwyr
-
+helpAndSupport.p11.linkText = Dysgwch am symud nwyddau o Brydain Fawr i Ogledd Iwerddon o dan Fframwaith Windsor.
+helpAndSupport.p12.linkText = Gwnewch gais i ddefnyddio’r broses Cofnod yng Nghofnodion y Datganydd o dan Gynllun Marchnad Fewnol y DU (proses UKIMS-EIDR).
+helpAndSupport.p13.linkText = Dysgwch sut i wirio a chategoreiddio nwyddau rydych chi’n eu symud o Brydain Fawr i Ogledd Iwerddon er mwyn defnyddio’r broses symlach ar gyfer symudiadau yn y farchnad fewnol
 
 successBanner.title = Llwyddiant
 successBanner.heading = Rydych wedi newid y {0}

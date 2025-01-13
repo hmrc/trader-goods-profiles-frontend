@@ -581,9 +581,9 @@ removeNiphl.warningText = If you move goods under SPIMM and they are not eligibl
 
 helpAndSupport.title = Help and support
 helpAndSupport.h1 = Help and support
-helpAndSupport.h2.1 = General customs
+helpAndSupport.h2.1 = Northern Ireland general customs information
 helpAndSupport.h2.2 = Commodity codes and Tariff
-helpAndSupport.h2.3 = Northern Ireland Retail Movement Scheme (NIRMS) and Northern Ireland Plant Health Label (NIPHL)
+helpAndSupport.h2.3 = Categorisation
 helpAndSupport.h2.4 = Trader Goods Profile
 helpAndSupport.h2.5 = Internal Market Movement Information (IMMI) support
 helpAndSupport.h3 = Contact
@@ -597,12 +597,9 @@ helpAndSupport.p7.linkText = Northern Ireland Online Tariff Look up
 helpAndSupport.p8.linkText = Help on using the Online Tariff Tool
 helpAndSupport.p9.linkText = Apply for a Binding Tariff Information decision to get a legally binding decision on the commodity code to use
 helpAndSupport.p10.linkText = Webchat to get help on classifying your goods
-helpAndSupport.p11.linkText = Guidance on how the Northern Ireland Retail Movement Scheme will work
-helpAndSupport.p12.linkText = How to register for the Northern Ireland Retail Movement Scheme to sell or move food to Northern Ireland
-helpAndSupport.p13.linkText = Guidance for using a Northern Ireland plant health label (NIPHL)
-helpAndSupport.p14.linkText = Find additional support and contacts to help you
-helpAndSupport.p15 = You can use the Trader Support Service to create IMMI forms with information from your TGP.
-helpAndSupport.p15.linkText = Sign up for the Trader Support Service
+helpAndSupport.p11.linkText = Find out about moving goods from Great Britain to Northern Ireland under the Windsor Framework.
+helpAndSupport.p12.linkText = Apply to use the UK Internal Market Scheme entry in declarant’s records (UKIMS-EIDR) process.
+helpAndSupport.p13.linkText = Find out how to check and categorise goods you move from Great Britain to Northern Ireland to use the simplified process for internal market movements
 
 goodsRecordSearchResult.title = There are {0} search results
 goodsRecordSearchResult.title.withPage = There are {0} search results - page {1} of {2}

@@ -36,7 +36,9 @@ object HelpAndSupportSection {
       linksUnderHeading = Seq(
         OutboundLink.ImportGoodsIntoUK,
         OutboundLink.TradingNI,
-        OutboundLink.GoodsNotAtRisk
+        OutboundLink.GoodsNotAtRisk,
+        OutboundLink.ExportGoodsOutUK,
+        OutboundLink.GuidanceUKIMSSummary
       ),
       linksUnderSubHeading = Seq(
         OutboundLink.HMRCContact
@@ -61,27 +63,7 @@ object HelpAndSupportSection {
       subHeadingKey = None,
       paragraphTextKey = None,
       linksUnderHeading = Seq(
-        OutboundLink.RetailMovementScheme,
-        OutboundLink.RegisterAndSeal,
-        OutboundLink.MovingPlantsGBtoNI
-      ),
-      linksUnderSubHeading = Seq.empty
-    ),
-    HelpAndSupportSection(
-      headingKey = "helpAndSupport.h2.4",
-      subHeadingKey = None,
-      paragraphTextKey = None,
-      linksUnderHeading = Seq(
-        OutboundLink.AdditionalSupportContacts
-      ),
-      linksUnderSubHeading = Seq.empty
-    ),
-    HelpAndSupportSection(
-      headingKey = "helpAndSupport.h2.5",
-      subHeadingKey = None,
-      paragraphTextKey = Some("helpAndSupport.p15"),
-      linksUnderHeading = Seq(
-        OutboundLink.TraderSupportService
+        OutboundLink.CategoriseGoodsForSimplifiedProcess
       ),
       linksUnderSubHeading = Seq.empty
     )
