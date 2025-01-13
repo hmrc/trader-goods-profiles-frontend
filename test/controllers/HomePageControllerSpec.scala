@@ -99,7 +99,9 @@ class HomePageControllerSpec extends SpecBase {
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             downloadReady = true,
-            downloadLinkMessagesKey = "homepage.downloadLinkText.filesRequested"
+            downloadLinkMessagesKey = "homepage.downloadLinkText.filesRequested",
+            ukimsNumberChanged = false,
+            doesGoodsRecordExist = true
           )(request, messages(application)).toString
 
           verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
@@ -151,7 +153,9 @@ class HomePageControllerSpec extends SpecBase {
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             downloadReady = false,
-            downloadLinkMessagesKey = "homepage.downloadLinkText.filesRequested"
+            downloadLinkMessagesKey = "homepage.downloadLinkText.filesRequested",
+            ukimsNumberChanged = false,
+            doesGoodsRecordExist = true
           )(request, messages(application)).toString
 
           verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
@@ -192,7 +196,9 @@ class HomePageControllerSpec extends SpecBase {
             status(result) mustEqual OK
             contentAsString(result) mustEqual view(
               downloadReady = false,
-              downloadLinkMessagesKey = "homepage.downloadLinkText.noFilesRequested"
+              downloadLinkMessagesKey = "homepage.downloadLinkText.noFilesRequested",
+              ukimsNumberChanged = false,
+              doesGoodsRecordExist = true
             )(request, messages(application)).toString
 
             verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
@@ -243,7 +249,9 @@ class HomePageControllerSpec extends SpecBase {
             status(result) mustEqual OK
             contentAsString(result) mustEqual view(
               downloadReady = false,
-              downloadLinkMessagesKey = "homepage.downloadLinkText.filesRequested"
+              downloadLinkMessagesKey = "homepage.downloadLinkText.filesRequested",
+              ukimsNumberChanged = false,
+              doesGoodsRecordExist = true
             )(request, messages(application)).toString
 
             verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
@@ -294,7 +302,9 @@ class HomePageControllerSpec extends SpecBase {
             status(result) mustEqual OK
             contentAsString(result) mustEqual view(
               downloadReady = true,
-              downloadLinkMessagesKey = "homepage.downloadLinkText.filesRequested"
+              downloadLinkMessagesKey = "homepage.downloadLinkText.filesRequested",
+              ukimsNumberChanged = false,
+              doesGoodsRecordExist = true
             )(request, messages(application)).toString
           }
         }
@@ -341,7 +351,9 @@ class HomePageControllerSpec extends SpecBase {
             status(result) mustEqual OK
             contentAsString(result) mustEqual view(
               downloadReady = false,
-              downloadLinkMessagesKey = "homepage.downloadLinkText.filesRequested"
+              downloadLinkMessagesKey = "homepage.downloadLinkText.filesRequested",
+              ukimsNumberChanged = false,
+              doesGoodsRecordExist = true
             )(request, messages(application)).toString
 
             verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
@@ -385,7 +397,9 @@ class HomePageControllerSpec extends SpecBase {
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             downloadReady = false,
-            downloadLinkMessagesKey = "homepage.downloadLinkText.noGoodsRecords"
+            downloadLinkMessagesKey = "homepage.noRecords",
+            ukimsNumberChanged = false,
+            doesGoodsRecordExist = false
           )(request, messages(application)).toString
 
           verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
@@ -428,8 +442,9 @@ class HomePageControllerSpec extends SpecBase {
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             downloadReady = false,
-            downloadLinkMessagesKey = "homepage.downloadLinkText.noGoodsRecords",
-            ukimsNumberChanged = false
+            downloadLinkMessagesKey = "homepage.noRecords",
+            ukimsNumberChanged = false,
+            doesGoodsRecordExist = false
           )(request, messages(application)).toString
 
           verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
@@ -470,8 +485,9 @@ class HomePageControllerSpec extends SpecBase {
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             downloadReady = false,
-            downloadLinkMessagesKey = "homepage.downloadLinkText.noGoodsRecords",
-            ukimsNumberChanged = true
+            downloadLinkMessagesKey = "homepage.noRecords",
+            ukimsNumberChanged = true,
+            doesGoodsRecordExist = false
           )(request, messages(application)).toString
 
           verify(mockTraderProfileConnector, never()).checkTraderProfile(any())

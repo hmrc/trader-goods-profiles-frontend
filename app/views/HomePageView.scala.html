@@ -16,6 +16,7 @@
 
 @import config.FrontendAppConfig
 @import uk.gov.hmrc.govukfrontend.views.html.components._
+@import models.DownloadDataSummary
 
 @this(
         appConfig: FrontendAppConfig,
@@ -24,7 +25,7 @@
         govukNotificationBanner: GovukNotificationBanner
 )
 
-@(downloadReady: Boolean = false, downloadLinkMessagesKey: String, ukimsNumberChanged: Boolean = false)(implicit request: Request[_], messages: Messages)
+@(downloadReady: Boolean = false, downloadLinkMessagesKey: String, ukimsNumberChanged: Boolean = false, doesGoodsRecordExist: Boolean)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = s"${messages("homepage.title")} - ${messages("site.govuk")}", showBackLink = false, headerShouldHaveServiceLink = false) {
 
@@ -57,13 +58,22 @@
 
     <h2 class="govuk-heading-m">@messages("homepage.h2.1")</h2>
 
+    @if(doesGoodsRecordExist == false){
+         <p class="govuk-body">@messages("homepage.noRecords")</p>
+    } else {
     <p class="govuk-body">
         <a href="@controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url" class="govuk-link">@messages("homepage.p2.linkText")</a>
     </p>
-
+    }
+    @if(doesGoodsRecordExist == true) {
     <p class="govuk-body">
         <a href="@controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad().url" class="govuk-link">@messages("homepage.p3.linkText")</a>
     </p>
+    } else {
+    <p class="govuk-body">@messages("homepage.p3")
+        <a href="@controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad().url" class="govuk-link">@messages("homepage.p3.linkText2")</a>
+    </p>
+    }
 
     <h2 class="govuk-heading-m">@messages("homepage.h2.2")</h2>
 
