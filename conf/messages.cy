@@ -213,7 +213,7 @@ adviceStart.p3 = Byddwn yn gofyn am eich enw a’ch cyfeiriad e-bost. Bydd gweit
 adviceStart.subheading2 = Yr hyn sy’n digwydd tra bo CThEF yn edrych ar eich cofnod
 adviceStart.p4 = Tra bo CThEF yn adolygu’ch cofnod, ni allwch wneud unrhyw newidiadau.
 adviceStart.p5 = Efallai bydd gweithiwr achos CThEF yn cysylltu â chi drwy e-bost os bydd angen rhagor o wybodaeth gennych. Efallai na fydd cyfathrebu drwy e-bost bob amser yn ddiogel, gan ei bod hi’n bosibl y gall e-byst gael eu darllen neu eu newid gan rywun arall.
-adviceStart.p6 = Dylech gael ymateb i’ch cais cyn pen 5 diwrnod gwaith, ond gallai gymryd yn hirach.
+adviceStart.p6 = Dylech gael ymateb i’ch cais cyn pen 5 diwrnod gwaith, er y gallai hyn gymryd yn hirach.
 adviceStart.p7 = Dod o hyd i wybodaeth am sut mae CThEF yn trin cyfrinachedd yn adran 18 o
 adviceStart.p7.link = Ddeddf Comisiynwyr Cyllid a Thollau 2005.
 
@@ -247,10 +247,8 @@ adviceSuccess.p2.1 = cytuno bod y cod nwyddau yn gywir
 adviceSuccess.p2.2 = gofyn am ragor o wybodaeth am y nwyddau
 adviceSuccess.p2.3 = cynnig newid i’r cod nwyddau neu i ddisgrifiad y nwyddau
 adviceSuccess.p2.4 = nodi bod y cofnod yn anghywir, ac yn esbonio pam
-adviceSuccess.p3 = Gallwch anfon rhagor o wybodaeth am eich nwyddau at CThEF yn [email address] – cofiwch nodi’ch rhif EORI.
-adviceSuccess.p4 = Nid yw e-bost yn ddull diogel o gyfathrebu, felly peidiwch â chynnwys unrhyw fanylion personol yn eich e-bost at CThEF.
-adviceSuccess.p5 = Dylech gael ymateb i’ch cais cyn pen 5 diwrnod gwaith, ond gallai gymryd yn hirach.
-adviceSuccess.p7.linkText = Ewch i’r hafan
+adviceSuccess.p3 = Dylech gael ymateb ich cais cyn pen 5 diwrnod gwaith, ond gallai gymryd yn hirach.
+
 
 createRecordStart.title = Creu cofnod nwyddau
 createRecordStart.h1 = Creu cofnod nwyddau
