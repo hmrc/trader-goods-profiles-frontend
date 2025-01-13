@@ -231,4 +231,10 @@ object OutboundLink {
     val linkTextKey: String     = "adviceStart.p2.linkText"
     val originatingPage: String = controllers.advice.routes.AdviceStartController.onPageLoad(recordId).url
   }
+
+  case class RevenueAndCustomsAct(recordId: String) extends OutboundLink {
+    val link: String            = "https://www.legislation.gov.uk/ukpga/2005/11/contents"
+    val linkTextKey: String     = "adviceStart.p7.link"
+    val originatingPage: String = controllers.advice.routes.AdviceStartController.onPageLoad(recordId).url
+  }
 }

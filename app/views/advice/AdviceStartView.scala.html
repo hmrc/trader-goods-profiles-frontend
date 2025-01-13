@@ -38,7 +38,7 @@
 
     <p class="govuk-body">@messages("adviceStart.p2")
         <a href="@OutboundLink.ApplyBinding(recordId).outboundCall"
-           class="govuk-link">@messages(OutboundLink.ApplyBinding(recordId).linkTextKey)</a>.
+           class="govuk-link">@messages(OutboundLink.ApplyBinding(recordId).linkTextKey)</a>
     </p>
 
     <h2 class="govuk-heading-m">@messages("adviceStart.subheading1")</h2>
@@ -49,7 +49,8 @@
     <p class="govuk-body">@messages("adviceStart.p5")</p>
     <p class="govuk-body">@messages("adviceStart.p6")</p>
     <p class="govuk-body">@messages("adviceStart.p7")
-        <a target="_blank" href="https://www.legislation.gov.uk/ukpga/2005/11/contents" class="govuk-link">@messages("adviceStart.p7.link")</a>.
+        <a target="_blank" href="@OutboundLink.RevenueAndCustomsAct(recordId).outboundCall"
+        class="govuk-link">@messages(OutboundLink.RevenueAndCustomsAct(recordId).linkTextKey)</a>.
     </p>
 
     @formHelper(action = controllers.advice.routes.AdviceStartController.onSubmit(recordId)) {
