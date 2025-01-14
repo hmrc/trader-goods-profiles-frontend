@@ -706,7 +706,7 @@ helpAndSupport.p9.linkText = Gwneud cais am benderfyniad Gwybodaeth am Dariff sy
 helpAndSupport.p10.linkText = Webchat i gael help i ddosbarthu’ch nwyddau
 helpAndSupport.p11.linkText = Dysgwch am symud nwyddau o Brydain Fawr i Ogledd Iwerddon o dan Fframwaith Windsor.
 helpAndSupport.p12.linkText = Gwnewch gais i ddefnyddio’r broses Cofnod yng Nghofnodion y Datganydd o dan Gynllun Marchnad Fewnol y DU (proses UKIMS-EIDR).
-helpAndSupport.p13.linkText = Dysgwch sut i wirio a chategoreiddio nwyddau rydych chi’n eu symud o Brydain Fawr i Ogledd Iwerddon er mwyn defnyddio’r broses symlach ar gyfer symudiadau yn y farchnad fewnol
+helpAndSupport.p13.linkText = Dysgwch sut i wirio a chategoreiddio nwyddau rydych chi’n eu symud o Brydain Fawr i Ogledd Iwerddon er mwyn defnyddio’r broses symlach ar gyfer symudiadau yn y farchnad fewnol.
 
 successBanner.title = Llwyddiant
 successBanner.heading = Rydych wedi newid y {0}
