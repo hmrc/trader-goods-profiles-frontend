@@ -299,13 +299,12 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     size: Int
   )(implicit
     hc: HeaderCarrier
-  ): Future[Option[GetRecordsResponse]] = {
-
-    val queryParams = Map(
-      "page" -> page.toString,
-      "size" -> size.toString
-    )
+  ): Future[Option[GetRecordsResponse]] =
     if (!appConfig.enhancedSearch) { // TODO: remove this flag when filter search is ready
+      val queryParams = Map(
+        "page" -> page.toString,
+        "size" -> size.toString
+      )
       httpClient
         .get(searchRecordsUrl(eori, searchTerm, exactMatch, queryParams))
         .setHeader(clientIdHeader)
@@ -318,7 +317,10 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
           }
         }
     } else {
-
+      val queryParams = Map(
+        "pageOpt" -> page.toString,
+        "sizeOpt" -> size.toString
+      )
       httpClient
         .get(
           filterSearchRecordsUrl(
@@ -340,5 +342,4 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
           }
         }
     }
-  }
 }

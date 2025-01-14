@@ -845,7 +845,7 @@ class GoodsRecordConnectorSpec
 
       val connector = app.injector.instanceOf[GoodsRecordConnector]
       val pagedGoodsRecordsSearchUrl =
-        s"/trader-goods-profiles-data-store/traders/records/filter?searchTerm=$searchString&IMMIReady=false&notReadyForIMMI=false&actionNeeded=false&page=1&size=3"
+        s"/trader-goods-profiles-data-store/traders/records/filter?searchTerm=$searchString&IMMIReady=false&notReadyForIMMI=false&actionNeeded=false&pageOpt=1&sizeOpt=3"
 
       "must get a page of goods records" in {
 
