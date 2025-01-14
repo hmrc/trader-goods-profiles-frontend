@@ -83,8 +83,8 @@ class TraderProfileConnector @Inject() (config: Configuration, httpClient: HttpC
       .setHeader(("Accept", "application/vnd.hmrc.1.0+json"))
       .execute[HistoricProfileData]
       .map(Some(_))
-      .recover {
-        case UpstreamErrorResponse(_, FORBIDDEN, _, _) => None
+      .recover { case UpstreamErrorResponse(_, FORBIDDEN, _, _) =>
+        None
       }
 
   }

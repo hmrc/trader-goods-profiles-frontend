@@ -49,7 +49,10 @@ homepage.h1 = Hafan Proffil Nwyddau Masnachwyr (TGP)
 homepage.p1 = Gallwch reoli eich cofnodion nwyddau, gofyn i CThEF am farn ar gofnod nwyddau neu ddiweddaru manylion eich proffil.
 homepage.h2.1 = Cofnodion nwyddau
 homepage.p2.linkText = Bwrw golwg dros eich cofnodion nwyddau neu eu diweddaru
-homepage.p3.linkText = Creu cofnod nwyddau newydd
+homepage.noRecords = Does gennych chi ddim cofnodion yn eich proffil nwyddau.
+homepage.p3 = Gallwch
+homepage.p3ext2= Gallwch
+homepage.p3.linkText2 = greu cofnod nwyddau newydd
 homepage.h2.2 = Rheoli’ch proffil
 homepage.p5.linkText = Rheoli manylion eich proffil
 homepage.h2.4 = Help a chysylltu
@@ -215,7 +218,7 @@ adviceStart.p4 = Tra bo CThEF yn adolygu’ch cofnod, ni allwch wneud unrhyw new
 adviceStart.p5 = Efallai bydd gweithiwr achos CThEF yn cysylltu â chi drwy e-bost os bydd angen rhagor o wybodaeth gennych. Efallai na fydd cyfathrebu drwy e-bost bob amser yn ddiogel, gan ei bod hi’n bosibl y gall e-byst gael eu darllen neu eu newid gan rywun arall.
 adviceStart.p6 = Dylech gael ymateb i’ch cais cyn pen 5 diwrnod gwaith, er y gallai hyn gymryd yn hirach.
 adviceStart.p7 = Dod o hyd i wybodaeth am sut mae CThEF yn trin cyfrinachedd yn adran 18 o
-adviceStart.p7.link = Ddeddf Comisiynwyr Cyllid a Thollau 2005.
+adviceStart.p7.link = Ddeddf Comisiynwyr Cyllid a Thollau 2005
 
 name.title = Beth yw eich enw?
 name.heading = Beth yw eich enw?
@@ -395,10 +398,10 @@ countryOfOrigin.error.invalid = Rhowch wlad wreiddiol wreiddiol
 countryOfOrigin.checkYourAnswersLabel = Gwlad tarddiad
 countryOfOrigin.change.hidden = Gwlad tarddiad
 
-feedback.header = Dywedwch wrthym beth yw eich barn
-feedback.line.1 = Mae hwn yn wasanaeth newydd ac rydym eisiau gwybod beth yw eich barn amdano.
-feedback.line.2 = {0}. Bydd eich meddyliau a’ch syniadau yn ein helpu i wneud gwelliannau.
-feedback.link = Anfonwch eich adborth atom
+feedback.header = Cyn i chi fynd
+feedback.line.1 = Mae’ch adborth yn ein helpu i wella ein gwasanaeth.
+feedback.line.2 = {0} i rannu’ch adborth ar y gwasanaeth.
+feedback.link = Llenwch ein harolwg
 
 profileSuccess.title = Rydych wedi creu eich Proffil Nwyddau Masnachwyr
 profileSuccess.h1 = Rydych wedi creu eich Proffil Nwyddau Masnachwyr
@@ -685,9 +688,9 @@ removeNiphl.warningText = Os ydych yn symud nwyddau o dan SPIMM, ac nad ydynt yn
 
 helpAndSupport.title = Help a chymorth
 helpAndSupport.h1 = Help a chymorth
-helpAndSupport.h2.1 = Tollau cyffredinol
+helpAndSupport.h2.1 = Gogledd Iwerddon: gwybodaeth gyffredinol am y tollau
 helpAndSupport.h2.2 = Codau nwyddau a Thariff
-helpAndSupport.h2.3 = Cynllun Symud Nwyddau Manwerthu Gogledd Iwerddon (NIRMS) a Label Iechyd Planhigion Gogledd Iwerddon (NIPHL)
+helpAndSupport.h2.3 = Categoreiddio
 helpAndSupport.h2.4 = Proffil Nwyddau Masnachwyr
 helpAndSupport.h2.5 = cefnogaeth Gwybodaeth Symud Marchnad Fewnol (IMMI)
 helpAndSupport.h3 = Cysylltu
@@ -701,13 +704,9 @@ helpAndSupport.p7.linkText = Chwilio am Dariff Ar-lein Gogledd Iwerddon
 helpAndSupport.p8.linkText = Help i ddefnyddio’r Offeryn Tariff Ar-lein
 helpAndSupport.p9.linkText = Gwneud cais am benderfyniad Gwybodaeth am Dariff sy’n Rhwymo i gael penderfyniad cyfreithiol rwymol ar y cod nwyddau i’w ddefnyddio
 helpAndSupport.p10.linkText = Webchat i gael help i ddosbarthu’ch nwyddau
-helpAndSupport.p11.linkText = Arweiniad ar sut y bydd Cynllun Symud Nwyddau Manwerthu Gogledd Iwerddon yn gweithio
-helpAndSupport.p12.linkText = Sut i gofrestru ar gyfer Cynllun Symud Nwyddau Manwerthu Gogledd Iwerddon i werthu neu symud bwyd i Ogledd Iwerddon
-helpAndSupport.p13.linkText = Arweiniad ar gyfer defnyddio label iechyd planhigion Gogledd Iwerddon (NIPHL)
-helpAndSupport.p14.linkText = Dewch o hyd i gymorth ychwanegol a chysylltiadau i’ch helpu
-helpAndSupport.p15 = Gallwch ddefnyddio’r Gwasanaeth Cymorth i Fasnachwyr i greu ffurflenni IMMI gyda gwybodaeth gan eich TGP.
-helpAndSupport.p15.linkText = Cofrestrwch ar gyfer y Gwasanaeth Cymorth i Fasnachwyr
-
+helpAndSupport.p11.linkText = Dysgwch am symud nwyddau o Brydain Fawr i Ogledd Iwerddon o dan Fframwaith Windsor.
+helpAndSupport.p12.linkText = Gwnewch gais i ddefnyddio’r broses Cofnod yng Nghofnodion y Datganydd o dan Gynllun Marchnad Fewnol y DU (proses UKIMS-EIDR).
+helpAndSupport.p13.linkText = Dysgwch sut i wirio a chategoreiddio nwyddau rydych chi’n eu symud o Brydain Fawr i Ogledd Iwerddon er mwyn defnyddio’r broses symlach ar gyfer symudiadau yn y farchnad fewnol.
 
 successBanner.title = Llwyddiant
 successBanner.heading = Rydych wedi newid y {0}

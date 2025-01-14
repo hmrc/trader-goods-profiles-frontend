@@ -68,6 +68,18 @@ object OutboundLink {
     val linkTextKey: String = "helpAndSupport.p4.linkText"
   }
 
+  case object ExportGoodsOutUK extends HelpAndSupportLink {
+    val link: String        =
+      "https://www.gov.uk/guidance/internal-market-movements-from-great-britain-to-northern-ireland"
+    val linkTextKey: String = "helpAndSupport.p11.linkText"
+  }
+
+  case object GuidanceUKIMSSummary extends HelpAndSupportLink {
+    val link: String        =
+      "https://www.gov.uk/guidance/making-an-entry-summary-declaration"
+    val linkTextKey: String = "helpAndSupport.p12.linkText"
+  }
+
   case object HMRCContact extends HelpAndSupportLink {
     val link: String        =
       "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/customs-international-trade-and-excise-enquiries"
@@ -100,31 +112,10 @@ object OutboundLink {
     val linkTextKey: String = "helpAndSupport.p10.linkText"
   }
 
-  case object RetailMovementScheme extends HelpAndSupportLink {
+  case object CategoriseGoodsForSimplifiedProcess extends HelpAndSupportLink {
     val link: String        =
-      "https://www.gov.uk/government/publications/retail-movement-scheme-how-the-scheme-will-work/retail-movement-scheme-how-the-scheme-will-work"
-    val linkTextKey: String = "helpAndSupport.p11.linkText"
-  }
-
-  case object RegisterAndSeal extends HelpAndSupportLink {
-    val link: String        =
-      "https://www.gov.uk/guidance/northern-ireland-retail-movement-scheme-how-to-register-and-seal-consignments"
-    val linkTextKey: String = "helpAndSupport.p12.linkText"
-  }
-
-  case object MovingPlantsGBtoNI extends HelpAndSupportLink {
-    val link: String        = "https://www.gov.uk/guidance/moving-plants-from-great-britain-to-northern-ireland"
+      "https://www.gov.uk/guidance/categorising-goods-for-internal-market-movements-from-great-britain-to-northern-ireland"
     val linkTextKey: String = "helpAndSupport.p13.linkText"
-  }
-
-  case object AdditionalSupportContacts extends HelpAndSupportLink {
-    val link: String        = "#" // TODO add correct link when defined by design
-    val linkTextKey: String = "helpAndSupport.p14.linkText"
-  }
-
-  case object TraderSupportService extends HelpAndSupportLink {
-    val link: String        = "https://www.gov.uk/guidance/trader-support-service"
-    val linkTextKey: String = "helpAndSupport.p15.linkText"
   }
 
   // Country of Origin Page
@@ -229,6 +220,12 @@ object OutboundLink {
   case class ApplyBinding(recordId: String) extends OutboundLink {
     val link: String            = "https://www.gov.uk/guidance/apply-for-a-binding-tariff-information-decision"
     val linkTextKey: String     = "adviceStart.p2.linkText"
+    val originatingPage: String = controllers.advice.routes.AdviceStartController.onPageLoad(recordId).url
+  }
+
+  case class RevenueAndCustomsAct(recordId: String) extends OutboundLink {
+    val link: String            = "https://www.legislation.gov.uk/ukpga/2005/11/contents"
+    val linkTextKey: String     = "adviceStart.p7.link"
     val originatingPage: String = controllers.advice.routes.AdviceStartController.onPageLoad(recordId).url
   }
 }

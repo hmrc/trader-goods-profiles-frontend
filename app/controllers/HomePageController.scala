@@ -20,11 +20,10 @@ import connectors.{DownloadDataConnector, GoodsRecordConnector, TraderProfileCon
 import controllers.actions._
 import models.DownloadDataStatus.FileReadyUnseen
 import models.GoodsRecordsPagination.firstPage
-import models.{DownloadDataSummary, HistoricProfileData, NormalMode}
-import pages.goodsProfile.PreviousMovementRecordsPage
+import models.{DownloadDataSummary, HistoricProfileData}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import utils.SessionData.{historicProfileDataQuery, newUkimsNumberPage, pageUpdated}
+import utils.SessionData.{newUkimsNumberPage, pageUpdated}
 import views.html.HomePageView
 
 import javax.inject.Inject
@@ -59,6 +58,7 @@ class HomePageController @Inject() (
           downloadReady(downloadDataSummary),
           downloadLinkMessagesKey,
           showNewUkimsBanner,
+          doesGoodsRecordExist,
           viewUpdateGoodsRecordsLink
         )
       )
@@ -79,12 +79,12 @@ class HomePageController @Inject() (
   ): String = doesGoodsRecordExist match {
     case true if downloadDataSummaries.nonEmpty => "homepage.downloadLinkText.filesRequested"
     case true if downloadDataSummaries.isEmpty  => "homepage.downloadLinkText.noFilesRequested"
-    case _                                      => "homepage.downloadLinkText.noGoodsRecords"
+    case _                                      => "homepage.noRecords"
   }
 
   private def getViewUpdateRecordsLink(historicProfileData: Option[HistoricProfileData]): String =
     historicProfileData match {
       case Some(_) => controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url
-      case _ => controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url
+      case _       => controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url
     }
 }
