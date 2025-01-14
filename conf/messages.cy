@@ -49,7 +49,10 @@ homepage.h1 = Hafan Proffil Nwyddau Masnachwyr (TGP)
 homepage.p1 = Gallwch reoli eich cofnodion nwyddau, gofyn i CThEF am farn ar gofnod nwyddau neu ddiweddaru manylion eich proffil.
 homepage.h2.1 = Cofnodion nwyddau
 homepage.p2.linkText = Bwrw golwg dros eich cofnodion nwyddau neu eu diweddaru
-homepage.p3.linkText = Creu cofnod nwyddau newydd
+homepage.noRecords = Does gennych chi ddim cofnodion yn eich proffil nwyddau.
+homepage.p3 = Gallwch
+homepage.p3ext2= Gallwch
+homepage.p3.linkText2 = greu cofnod nwyddau newydd
 homepage.h2.2 = Rheoli’ch proffil
 homepage.p5.linkText = Rheoli manylion eich proffil
 homepage.h2.4 = Help a chysylltu
@@ -282,6 +285,7 @@ goodsDescription.title = Disgrifiad o’r nwyddau
 goodsDescription.h1 = Disgrifiad o’r nwyddau
 goodsDescription.p1 = Mae disgrifiad o’r nwyddau yn ddisgrifiad o’r nwyddau mewn iaith glir. Dylai awdurdodau allu adnabod eich nwyddau o’r disgrifiad.
 goodsDescription.p2 = Ni allwch ddefnyddio termau cyffredinol i ddisgrifio’r nwyddau.
+goodsDescription.welshDescription = Mae angen i ddisgrifiad o’r nwyddau fod yn Saesneg, neu’n Gymraeg ac yn Saesneg. Mae hyn yn caniatáu awdurdodau i adnabod eich nwyddau.
 goodsDescription.inputHeading = Beth yw’r disgrifiad o’r nwyddau?
 goodsDescription.hint = Gall hyn fod hyd at 512 o gymeriadau.
 goodsDescription.checkYourAnswersLabel = Disgrifiad o’r nwyddau
@@ -387,16 +391,17 @@ countryOfOrigin.h1 = Gwlad tarddiad
 countryOfOrigin.p1 = Mae ‘gwlad tarddiad’ yn cyfeirio at y wlad lle cafodd y nwyddau eu gweithgynhyrchu (naill ai’n gyfan gwbl, neu gan fwyaf), eu tyfu neu eu haddasu. Mae’n cael ei ddefnyddio at ddibenion labelu, ac mae’n effeithio ar gyfraddau’r tollau.
 countryOfOrigin.p2 =  Pan fydd y nwyddau’n cael eu datgan wrth y ffin, os yw’r wlad tarddiad yn wahanol i’r wlad ymadael, efallai y bydd y rheoliadau, y dreth a’r tollau yn wahanol i’r arweiniad sydd ar y gwasanaeth hwn.
 countryOfOrigin.p2.linkText = Gwirio a yw’r nwyddau’n bodloni’r rheolau o ran tarddiad (yn agor tab newydd)
+countryOfOrigin.welshDescription = Daw’r wybodaeth am y wlad tarddiad o’r offeryn tariff ar-lein, ac nid yw ar gael yn Gymraeg.
 countryOfOrigin.heading = Beth yw gwlad tarddiad y nwyddau?
 countryOfOrigin.error.required = Ewch i mewn i’r wlad tarddiad
 countryOfOrigin.error.invalid = Rhowch wlad wreiddiol wreiddiol
 countryOfOrigin.checkYourAnswersLabel = Gwlad tarddiad
 countryOfOrigin.change.hidden = Gwlad tarddiad
 
-feedback.header = Dywedwch wrthym beth yw eich barn
-feedback.line.1 = Mae hwn yn wasanaeth newydd ac rydym eisiau gwybod beth yw eich barn amdano.
-feedback.line.2 = {0}. Bydd eich meddyliau a’ch syniadau yn ein helpu i wneud gwelliannau.
-feedback.link = Anfonwch eich adborth atom
+feedback.header = Cyn i chi fynd
+feedback.line.1 = Mae’ch adborth yn ein helpu i wella ein gwasanaeth.
+feedback.line.2 = {0} i rannu’ch adborth ar y gwasanaeth.
+feedback.link = Llenwch ein harolwg
 
 profileSuccess.title = Rydych wedi creu eich Proffil Nwyddau Masnachwyr
 profileSuccess.h1 = Rydych wedi creu eich Proffil Nwyddau Masnachwyr
@@ -451,6 +456,7 @@ assessment.exemption.none.checkYourAnswersLabel = Dim wedi’i ddewis
 assessment.checkYourAnswersLabel = Asesiadau categori {0} o {1}
 assessment.none = Dim
 assessment.change.hidden = Eithriadau ar gyfer asesiadau categori {0}
+assessment.welshDescription = Daw’r wybodaeth am esemptiadau o offeryn tariff ar-lein Gogledd Iwerddon. Cytundebau cyfreithiol yw’r rhain rhwng y DU a’r UE, ac nid ydynt ar gael yn Gymraeg.
 assessment.guidance = Mae angen i chi gadarnhau p’un o’r eithriadau hyn sydd gennych ar gyfer {0}. Y thema ar gyfer yr asesiad hwn yw:
 assessment.error.required = Dewiswch yr eithriadau sydd gennych, neu dewiswch ‘Dim un o’r uchod’
 assessment.regulationUrl.text =  Os oes angen rhagor o wybodaeth arnoch am y thema a’r eithriadau, gallwch
@@ -530,9 +536,9 @@ goodsRecords.search = Opsiynau chwilio a hidlo
 goodsRecords.record.clear = Clirio Opsiynau chwilio a hidlo
 goodsRecords.record.search = Defnyddio Opsiynau chwilio a hidlo
 
-goodsRecords.title.withoutPageFilter = Wedi dod o hyd i {0} o gofnodion - Goods profile
-goodsRecords.title.withPageFilter =  Wedi dod o hyd i {0} o gofnodion - Goods profile (page {1} of {2}) - Trader Goods Profile
-
+goodsRecords.title.withoutPageFilter = Wedi dod o hyd i {0} o gofnodion - Proffil Nwyddau
+goodsRecords.title.withPageFilter =  Wedi dod o hyd i {0} o gofnodion - Proffil Nwyddau (page {1} of {2})
+goodsRecords.relatedTo = Mewn perthynas â’r canlynol
 
 goodsRecords.search.1 = Gallwch ddod o hyd i gofnodion nwyddau penodol drwy ddefnyddio’r nodweddion chwilio a hidlo. Mae pob maes yn ddewisol.
 goodsRecords.record = Statws y cofnod
@@ -547,6 +553,9 @@ goodsRecords.downloadLinkText.fileInProgress = Cael diweddariad ar eich ffeil co
 goodsRecords.downloadLinkText.fileReady = Lawrlwythwch eich ffeil cofnodion TGP neu gofynnwch am ffeil newydd
 goodsRecords.pagination = Wrthi’n dangos {0} i {1} o {2} o gofnodion nwyddau, gan ddechrau gyda’r dyddiad diweddaru mwyaf diweddar.
 goodsRecords.pagination.less = Wrthi’n dangos {0} o gofnodion nwyddau, gan ddechrau gyda’r dyddiad diweddaru mwyaf diweddar.
+goodsRecords.pagination.searchFilterwithPage = Wrthi’n dangos {0} i {1} o {2} o gofnodion nwyddau.
+goodsRecords.pagination.searchFilterwithoutPage = Wrthi’n dangos {0} o gofnodion nwyddau.
+goodsRecords.pagination.singleRecord = Wrthi’n dangos {0} o gofnodion nwyddau.
 goodsRecords.tableHeader.traderReference = Cyfeirnod masnachwr
 goodsRecords.tableHeader.goodsDescription = Disgrifiad o’r nwyddau
 goodsRecords.tableHeader.countryOfOrigin = Gwlad tarddiad
@@ -582,7 +591,7 @@ goodsRecordSearchResult.noRecordsHeading = Heb ddod o hyd i unrhyw gofnodion
 goodsRecords.title.noResults = Heb ddod o hyd i unrhyw gofnodion - Proffil Nwyddau
 
 #todo : need to translate below two in welsh for ticket 3019
-goodsRecords.title.singleRecord = 1 record found - Goods profile
+goodsRecords.title.singleRecord = 1 record found - Proffil Nwyddau
 goodsRecordSearchResult.singleRecord = 1 record found
 
 existingUkimsNumber.title = Rhif presennol ar gyfer Cynllun Marchnad Fewnol y DU (UKIMS)
@@ -679,9 +688,9 @@ removeNiphl.warningText = Os ydych yn symud nwyddau o dan SPIMM, ac nad ydynt yn
 
 helpAndSupport.title = Help a chymorth
 helpAndSupport.h1 = Help a chymorth
-helpAndSupport.h2.1 = Tollau cyffredinol
+helpAndSupport.h2.1 = Gogledd Iwerddon: gwybodaeth gyffredinol am y tollau
 helpAndSupport.h2.2 = Codau nwyddau a Thariff
-helpAndSupport.h2.3 = Cynllun Symud Nwyddau Manwerthu Gogledd Iwerddon (NIRMS) a Label Iechyd Planhigion Gogledd Iwerddon (NIPHL)
+helpAndSupport.h2.3 = Categoreiddio
 helpAndSupport.h2.4 = Proffil Nwyddau Masnachwyr
 helpAndSupport.h2.5 = cefnogaeth Gwybodaeth Symud Marchnad Fewnol (IMMI)
 helpAndSupport.h3 = Cysylltu
@@ -695,13 +704,9 @@ helpAndSupport.p7.linkText = Chwilio am Dariff Ar-lein Gogledd Iwerddon
 helpAndSupport.p8.linkText = Help i ddefnyddio’r Offeryn Tariff Ar-lein
 helpAndSupport.p9.linkText = Gwneud cais am benderfyniad Gwybodaeth am Dariff sy’n Rhwymo i gael penderfyniad cyfreithiol rwymol ar y cod nwyddau i’w ddefnyddio
 helpAndSupport.p10.linkText = Webchat i gael help i ddosbarthu’ch nwyddau
-helpAndSupport.p11.linkText = Arweiniad ar sut y bydd Cynllun Symud Nwyddau Manwerthu Gogledd Iwerddon yn gweithio
-helpAndSupport.p12.linkText = Sut i gofrestru ar gyfer Cynllun Symud Nwyddau Manwerthu Gogledd Iwerddon i werthu neu symud bwyd i Ogledd Iwerddon
-helpAndSupport.p13.linkText = Arweiniad ar gyfer defnyddio label iechyd planhigion Gogledd Iwerddon (NIPHL)
-helpAndSupport.p14.linkText = Dewch o hyd i gymorth ychwanegol a chysylltiadau i’ch helpu
-helpAndSupport.p15 = Gallwch ddefnyddio’r Gwasanaeth Cymorth i Fasnachwyr i greu ffurflenni IMMI gyda gwybodaeth gan eich TGP.
-helpAndSupport.p15.linkText = Cofrestrwch ar gyfer y Gwasanaeth Cymorth i Fasnachwyr
-
+helpAndSupport.p11.linkText = Dysgwch am symud nwyddau o Brydain Fawr i Ogledd Iwerddon o dan Fframwaith Windsor.
+helpAndSupport.p12.linkText = Gwnewch gais i ddefnyddio’r broses Cofnod yng Nghofnodion y Datganydd o dan Gynllun Marchnad Fewnol y DU (proses UKIMS-EIDR).
+helpAndSupport.p13.linkText = Dysgwch sut i wirio a chategoreiddio nwyddau rydych chi’n eu symud o Brydain Fawr i Ogledd Iwerddon er mwyn defnyddio’r broses symlach ar gyfer symudiadau yn y farchnad fewnol
 
 successBanner.title = Llwyddiant
 successBanner.heading = Rydych wedi newid y {0}
@@ -770,6 +775,7 @@ hasSupplementaryUnit.change.hidden = HasSupplementaryUnit
 
 supplementaryUnit.title = Beth yw uned atodol y nwyddau?
 supplementaryUnit.h1 = Beth yw uned atodol y nwyddau?
+supplementaryUnit.welshDescription = Daw’r wybodaeth am yr uned atodol o’r offeryn tariff ar-lein, ac nid yw ar gael yn Gymraeg.
 supplementaryUnit.checkYourAnswersLabel = Beth yw uned atodol y nwyddau?
 supplementaryUnit.error.nonNumeric = Nodwch uned atodol yn y fformat cywir
 supplementaryUnit.error.required = Nodwch uned atodol y nwyddau
