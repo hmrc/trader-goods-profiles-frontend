@@ -553,8 +553,8 @@ goodsRecords.downloadLinkText.fileInProgress = Cael diweddariad ar eich ffeil co
 goodsRecords.downloadLinkText.fileReady = Lawrlwythwch eich ffeil cofnodion TGP neu gofynnwch am ffeil newydd
 goodsRecords.pagination = Wrthi’n dangos {0} i {1} o {2} o gofnodion nwyddau, gan ddechrau gyda’r dyddiad diweddaru mwyaf diweddar.
 goodsRecords.pagination.less = Wrthi’n dangos {0} o gofnodion nwyddau, gan ddechrau gyda’r dyddiad diweddaru mwyaf diweddar.
-goodsRecords.pagination.searchFilterwithPage = Wrthi’n dangos {0} i {1} o {2} o gofnodion nwyddau.
-goodsRecords.pagination.searchFilterwithoutPage = Wrthi’n dangos {0} o gofnodion nwyddau.
+goodsRecords.pagination.less.singleRecord = Wrthi’n dangos {0} o gofnodion nwyddau, gan ddechrau gyda’r dyddiad diweddaru mwyaf diweddar.
+goodsRecords.pagination.searchFilter = Wrthi’n dangos {0} o gofnodion nwyddau.
 goodsRecords.pagination.singleRecord = Wrthi’n dangos {0} o gofnodion nwyddau.
 goodsRecords.tableHeader.traderReference = Cyfeirnod masnachwr
 goodsRecords.tableHeader.goodsDescription = Disgrifiad o’r nwyddau
@@ -587,8 +587,7 @@ goodsRecordSearchResultEmptyView.h1 = Does dim canlyniadau cyfatebol
 goodsRecordSearchResultEmptyView.p1 = Roeddech yn chwilio am y term {0}.
 
 goodsRecordSearchResult.noRecordsParagraph = Nid ydym wedi gallu dod o hyd i unrhyw gofnodion ar sail yr opsiynau chwilio a hidlo y gwnaethoch eu defnyddio.
-goodsRecordSearchResult.noRecordsHeading = Heb ddod o hyd i unrhyw gofnodion
-goodsRecords.title.noResults = Heb ddod o hyd i unrhyw gofnodion - Proffil Nwyddau
+goodsRecords.title.noResults = Heb ddod o hyd i unrhyw gofnodion
 
 #todo : need to translate below two in welsh for ticket 3019
 goodsRecords.title.singleRecord = 1 record found - Proffil Nwyddau
