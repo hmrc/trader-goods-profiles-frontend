@@ -83,8 +83,8 @@ class HomePageController @Inject() (
   }
 
   private def getViewUpdateRecordsLink(historicProfileData: Option[HistoricProfileData]): String =
-    historicProfileData
-      .map(_ => controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url)
-      .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url)
-
+    historicProfileData match {
+      case Some(_) => controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url
+      case _ => controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url
+    }
 }

@@ -20,7 +20,7 @@ import config.Service
 import models.{HistoricProfileData, LegacyRawReads, TraderProfile}
 import org.apache.pekko.Done
 import play.api.Configuration
-import play.api.http.Status.{FORBIDDEN, NOT_FOUND, OK}
+import play.api.http.Status.{BAD_REQUEST, FORBIDDEN, NOT_FOUND, OK}
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.HttpReads.Implicits.readFromJson
 import uk.gov.hmrc.http._
@@ -83,8 +83,9 @@ class TraderProfileConnector @Inject() (config: Configuration, httpClient: HttpC
       .setHeader(("Accept", "application/vnd.hmrc.1.0+json"))
       .execute[HistoricProfileData]
       .map(Some(_))
-      .recover { case UpstreamErrorResponse(_, FORBIDDEN, _, _) =>
-        None
+      .recover {
+        case UpstreamErrorResponse(_, FORBIDDEN, _, _) => None
+        case UpstreamErrorResponse(message, BAD_REQUEST, _, _) if message.contains("007") => None
       }
 
   }
