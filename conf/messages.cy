@@ -587,7 +587,7 @@ goodsRecordSearchResultEmptyView.h1 = Does dim canlyniadau cyfatebol
 goodsRecordSearchResultEmptyView.p1 = Roeddech yn chwilio am y term {0}.
 
 goodsRecordSearchResult.noRecordsParagraph = Nid ydym wedi gallu dod o hyd i unrhyw gofnodion ar sail yr opsiynau chwilio a hidlo y gwnaethoch eu defnyddio.
-goodsRecords.title.noResults = Heb ddod o hyd i unrhyw gofnodion
+goodsRecords.title.noResults = Heb ddod o hyd i unrhyw gofnodion - Proffil Nwyddau
 
 #todo : need to translate below two in welsh for ticket 3019
 goodsRecords.title.singleRecord = 1 record found - Proffil Nwyddau
