@@ -16,10 +16,11 @@
 
 package controllers
 
-import connectors.{DownloadDataConnector, GoodsRecordConnector}
+import connectors.{DownloadDataConnector, GoodsRecordConnector, TraderProfileConnector}
 import controllers.actions._
 import models.DownloadDataStatus.FileReadyUnseen
-import models.DownloadDataSummary
+import models.GoodsRecordsPagination.firstPage
+import models.{DownloadDataSummary, HistoricProfileData}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import utils.SessionData.{newUkimsNumberPage, pageUpdated}
@@ -35,6 +36,7 @@ class HomePageController @Inject() (
   profileAuth: ProfileAuthenticateAction,
   downloadDataConnector: DownloadDataConnector,
   goodsRecordConnector: GoodsRecordConnector,
+  traderProfileConnector: TraderProfileConnector,
   val controllerComponents: MessagesControllerComponents,
   view: HomePageView
 )(implicit ec: ExecutionContext)
@@ -45,11 +47,21 @@ class HomePageController @Inject() (
       downloadDataSummary <- downloadDataConnector.getDownloadDataSummary
       goodsRecords        <- goodsRecordConnector.getRecords(1, 1)
       doesGoodsRecordExist = goodsRecords.exists(_.goodsItemRecords.nonEmpty)
+      historicProfileData <- traderProfileConnector.getHistoricProfileData(request.eori)
     } yield {
       val downloadLinkMessagesKey     = getDownloadLinkMessagesKey(downloadDataSummary, doesGoodsRecordExist)
       val showNewUkimsBanner: Boolean = request.session.get(pageUpdated).contains(newUkimsNumberPage)
+      val viewUpdateGoodsRecordsLink  = getViewUpdateRecordsLink(historicProfileData)
 
-      Ok(view(downloadReady(downloadDataSummary), downloadLinkMessagesKey, showNewUkimsBanner, doesGoodsRecordExist))
+      Ok(
+        view(
+          downloadReady(downloadDataSummary),
+          downloadLinkMessagesKey,
+          showNewUkimsBanner,
+          doesGoodsRecordExist,
+          viewUpdateGoodsRecordsLink
+        )
+      )
         .removingFromSession(pageUpdated)
     }
   }
@@ -69,4 +81,10 @@ class HomePageController @Inject() (
     case true if downloadDataSummaries.isEmpty  => "homepage.downloadLinkText.noFilesRequested"
     case _                                      => "homepage.noRecords"
   }
+
+  private def getViewUpdateRecordsLink(historicProfileData: Option[HistoricProfileData]): String =
+    historicProfileData match {
+      case Some(_) => controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url
+      case _       => controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url
+    }
 }

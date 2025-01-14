@@ -25,7 +25,7 @@
         govukNotificationBanner: GovukNotificationBanner
 )
 
-@(downloadReady: Boolean = false, downloadLinkMessagesKey: String, ukimsNumberChanged: Boolean = false, doesGoodsRecordExist: Boolean)(implicit request: Request[_], messages: Messages)
+@(downloadReady: Boolean = false, downloadLinkMessagesKey: String, ukimsNumberChanged: Boolean = false, doesGoodsRecordExist: Boolean, viewUpdateGoodsRecordsLink: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = s"${messages("homepage.title")} - ${messages("site.govuk")}", showBackLink = false, headerShouldHaveServiceLink = false) {
 
@@ -62,7 +62,7 @@
          <p class="govuk-body">@messages("homepage.noRecords")</p>
     } else {
     <p class="govuk-body">
-        <a href="@controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url" class="govuk-link">@messages("homepage.p2.linkText")</a>
+        <a href="@viewUpdateGoodsRecordsLink" class="govuk-link">@messages("homepage.p2.linkText")</a>
     </p>
     }
     @if(doesGoodsRecordExist == true) {

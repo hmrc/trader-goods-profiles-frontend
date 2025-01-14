@@ -751,17 +751,6 @@ previousMovementRecords.title = Cofnodion symud blaenorol
 previousMovementRecords.h1 = Cofnodion symud blaenorol
 previousMovementRecords.p1 = Mae gan Broffil Nwyddau Masnachwr (TGP) eich gwybodaeth symud flaenorol o 1 Ebrill 2023 i 19 Mehefin 2024 wedi’i chadw fel cofnodion unigol. Mae CThEF wedi tynnu unrhyw gofnodion dyblyg. Mae’n bosibl y byddwch am wirio bod gwybodaeth y cofnod yn gywir cyn eu defnyddio ar symudiad.
 previousMovementRecords.p2 = Mae TGP wedi creu cyfeirnodau masnachwr o wybodaeth sydd gennym eisoes. Gallwch newid y cyfeirnod masnachwr at unrhyw beth i’ch helpu i nodi’r cofnod.
-previousMovementRecords.h2 = Gwladwriaethau
-previousMovementRecords.p3 = Bydd TGP yn rhoi gwybod i chi a yw cofnod yn barod i symud o dan Gwybodaeth Symud Marchnad Fewnol (IMMI) trwy ddefnyddio gwladwriaethau. Gallwch weld y gwladwriaethau ar eich rhestr cofnodion nwyddau.
-previousMovementRecords.tableHeader.state = Gwladwriaethau
-previousMovementRecords.tableHeader.description = Disgrifiad
-previousMovementRecords.state.immiReady = Barod ar gyfer IMMI
-previousMovementRecords.description.immiReady = Mae’r cofnod hwn yn barod i symud o dan IMMI
-previousMovementRecords.state.notImmiReady = Ddim yn barod ar gyfer IMMI
-previousMovementRecords.description.notImmiReady = Ni allwch ddefnyddio’r cofnodion hyn i symud gan ddefnyddio IMMI. Mae’n bosibl y gallwch ddiweddaru’r wybodaeth neu gategoreiddio’r cofnod i weld a yw’n barod ar gyfer IMMI.
-previousMovementRecords.state.notReadyForUse = Ddim yn barod i’w ddefnyddio
-previousMovementRecords.description.notReadyForUse = Mae gan gofnodion Ddim yn barod i’w defnyddio gwybodaeth sydd ar goll, wedi dod i ben neu annilys. Bydd angen i chi gwblhau’r cofnod i weld a yw’n barod ar gyfer IMMI.
-
 
 hasSupplementaryUnit.title = Uned atodol
 hasSupplementaryUnit.h1 = Uned atodol
