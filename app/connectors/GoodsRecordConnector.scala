@@ -295,15 +295,15 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     IMMIReady: Option[Boolean] = None,
     notReadyForIMMI: Option[Boolean] = None,
     actionNeeded: Option[Boolean] = None,
-    page: Int,
-    size: Int
+    pageOpt: Int,
+    sizeOpt: Int
   )(implicit
     hc: HeaderCarrier
   ): Future[Option[GetRecordsResponse]] = {
 
     val queryParams = Map(
-      "page" -> page.toString,
-      "size" -> size.toString
+      "pageOpt" -> pageOpt.toString,
+      "sizeOpt" -> sizeOpt.toString
     )
     if (!appConfig.enhancedSearch) { // TODO: remove this flag when filter search is ready
       httpClient
