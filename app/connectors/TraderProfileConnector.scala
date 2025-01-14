@@ -85,7 +85,6 @@ class TraderProfileConnector @Inject() (config: Configuration, httpClient: HttpC
       .map(Some(_))
       .recover {
         case UpstreamErrorResponse(_, FORBIDDEN, _, _) => None
-        case UpstreamErrorResponse(message, BAD_REQUEST, _, _) if message.contains("007") => None
       }
 
   }
