@@ -423,6 +423,7 @@ goodsRecords.title.withPage = Goods profile - page {0} of {1}
 goodsRecords.heading = Goods profile
 goodsRecords.title.withoutPageFilter = {0} records found - Goods profile
 goodsRecords.title.noResults = No records found - Goods profile
+goodsRecordSearchResult.noRecordsHeading = No records found
 goodsRecords.title.singleRecord = 1 record found - Goods profile
 goodsRecords.title.withPageFilter = {0} records found - Goods profile (page {1} of {2})
 goodsRecords.heading.withPage = Goods profile - page {0} of {1}
