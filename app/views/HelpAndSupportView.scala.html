@@ -34,7 +34,7 @@
             <p class="govuk-body">
                 @section.paragraphTextKey.map { paragraphTextKey => @messages(paragraphTextKey) }
             <a href="@link.outboundCall"
-            target="_blank" class="govuk-link">@messages(link.linkTextKey)</a>
+             class="govuk-link">@messages(link.linkTextKey)</a>
             </p>
         }
 
@@ -44,7 +44,7 @@
         @for(link <- section.linksUnderSubHeading) {
             <p class="govuk-body">
                 <a href="@link.outboundCall"
-                target="_blank" class="govuk-link">@messages(link.linkTextKey)</a>
+                 class="govuk-link">@messages(link.linkTextKey)</a>
             </p>
         }
         }
