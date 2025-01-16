@@ -2,7 +2,7 @@ GET         /previous-movement-records                                          
 POST        /previous-movement-records                                                              controllers.goodsProfile.PreviousMovementRecordsController.onSubmit()
 
 GET         /goods-profile                                                                          controllers.goodsProfile.GoodsRecordsController.onPageLoad(page: Int)
-POST        /goods-profile                                                                          controllers.goodsProfile.GoodsRecordsController.onSearch(page: Int)
+POST        /goods-profile/search-results-filter                                                    controllers.goodsProfile.GoodsRecordsController.onSearch(page: Int)
 GET        /goods-profile/search-results-filter                                                     controllers.goodsProfile.GoodsRecordsController.onPageLoadFilter(page: Int)
 
 GET         /goods-profile/search-results                                                           controllers.goodsProfile.GoodsRecordsSearchResultController.onPageLoad(page: Int)
