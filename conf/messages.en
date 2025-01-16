@@ -71,7 +71,7 @@ cyaCategorisation.title = Check your category assessment answers for {0}
 cyaCategorisation.heading = Check your category assessment answers for {0}
 cyaCategorisation.supplementaryUnitHeader = Supplementary Unit
 cyaCategorisation.longerCommodityCode = Longer commodity code
-cyaCategorisation.assessmentKey = Exclusions for category assessment {0}
+cyaCategorisation.assessmentKey = Exemptions for category assessment {0}
 
 journeyRecovery.continue.title = Something has gone wrong
 journeyRecovery.continue.heading = Something has gone wrong
@@ -177,13 +177,13 @@ newUkimsNumber.change.hidden = UKIMS number
 categoryGuidance.title = Categorisation
 categoryGuidance.heading = Categorisation
 categoryGuidance.p1 = Categorisation allows you to know what category your goods are in and if they are eligible for Simplified Process for Internal Market Movements (SPIMM).
-categoryGuidance.p2 = We’ll ask you questions about exclusions that you hold and then tell you what category your goods are. We could ask you up to 10 questions.
-categoryGuidance.subheading = Exclusions
+categoryGuidance.p2 = We’ll ask you questions about exemptions that you hold and then tell you what category your goods are. We could ask you up to 10 questions.
+categoryGuidance.subheading = Exemptions
 categoryGuidance.p3 = Your goods will be placed into 1 of 3 categories:
 categoryGuidance.p3.1 = Category 1 – goods that are excluded for using SPIMM
 categoryGuidance.p3.2 = Category 2 – goods that are controlled and require additional details to use SPIMM
 categoryGuidance.p3.3 = Standard – goods that can use SPIMM
-categoryGuidance.p4 = You’ll need to know the certificate number or name of any exclusions you have for your goods. Example certificate numbers are C644, Y929 or C640. If you get a new exclusion, you’ll be able to change this later.
+categoryGuidance.p4 = You’ll need to know the certificate number or name of any exemptions you have for your goods. Example certificate numbers are C644, Y929 or C640. If you get a new exclusion, you’ll be able to change this later.
 
 commodityCode.title = Commodity code
 commodityCode.h1 = Commodity code
@@ -245,7 +245,7 @@ createRecordStart.p4 = You’ll also be able to use the trader reference when cr
 createRecordStart.h3 = Categorisation
 createRecordStart.p5 = Once you’ve created the goods record, you’ll be able to categorise it.
 createRecordStart.p6 = Categorisation will let you know if your goods are eligible to move with the Simplified Process for Internal Market Movements (SPIMM).
-createRecordStart.p7 = To complete categorisation, you may need to know the exclusions your goods move under.
+createRecordStart.p7 = To complete categorisation, you may need to know the exemptions your goods move under.
 createRecordStart.p8 = You’ll need to complete categorisation before you can use the goods record on movements.
 
 createRecordSuccess.title = You’ve created a goods record
@@ -291,9 +291,9 @@ traderReference.change.hidden = Trader reference
 
 assessment.title = Category assessment {0}
 assessment.heading = Category assessment {0}
-assessment.guidance = You need to confirm which of these exclusions you hold for {0}. The theme for this assessment is:
+assessment.guidance = You need to confirm which of these exemptions you hold for {0}. The theme for this assessment is:
 assessment.linkText = Search for a commodity code on the Online Tariff Tool (opens in new tab)
-assessment.question = Which of these exclusions do you hold for {0}?
+assessment.question = Which of these exemptions do you hold for {0}?
 assessment.hint = Select all that apply.
 assessment.exemption = {0} - {1}
 assessment.exemption.none = None of the above
@@ -302,7 +302,7 @@ assessment.exemption.none.checkYourAnswersLabel = None selected
 assessment.checkYourAnswersLabel = Category assessment {0} of {1}
 assessment.change.hidden = Category assessment {0}
 assessment.none = None
-assessment.regulationUrl.text =  If you need more information about the theme and exclusions, you can
+assessment.regulationUrl.text =  If you need more information about the theme and exemptions, you can
 assessment.regulationUrl.linkText = read the EU regulation document (opens in new tab).
 
 ukimsKickOut.title = You need to apply for the UK Internal Market Scheme (UKIMS)
