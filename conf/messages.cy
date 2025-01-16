@@ -374,7 +374,7 @@ singleRecord.unclearReviewReason.linkText = newid disgrifiad y nwyddau
 
 singleRecord.mismatchReviewReason = Nid yw disgrifiad y nwyddau’n cyd-fynd â’r cod nwyddau. Mae angen i chi newid disgrifiad y nwyddau neu’r cod nwyddau cyn bod modd i chi ei ddefnyddio ar Wybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI).
 
-singleRecord.measureReviewReason = Mae’r eithriadau o ran categoreiddio wedi newid ac mae angen i chi {0} i weld a allwch ei ddefnyddio ar Wybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI).
+singleRecord.measureReviewReason = Mae’r eithriadau o ran categoreiddio neu’r uned atodol wedi newid ac mae angen i chi {0} i weld a allwch ei ddefnyddio ar Wybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI).
 singleRecord.measureReviewReason.linkText = gategoreiddio’r cofnod nwyddau hwn
 
 singleRecord.commodityReviewReason = Mae angen i chi {0} ac yna categoreiddio’r cofnod hwn i weld a allwch ei ddefnyddio ar Wybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI).
