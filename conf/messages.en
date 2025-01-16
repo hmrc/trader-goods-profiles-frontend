@@ -503,7 +503,7 @@ singleRecord.adviceParagraph.adviceReceived = HMRC have agreed that the commodit
 singleRecord.inadequateReviewReason = The goods description does not have enough detail to describe the goods. You need to {0} before you can use it on an Internal Market Movement Information (IMMI).
 singleRecord.inadequateReviewReason.linkText = change the goods description
 
-singleRecord.measureReviewReason = The categorisation exclusions have changed and you need to {0} to see if you can use it on an Internal Market Movement Information (IMMI).
+singleRecord.measureReviewReason = The categorisation exemptions or supplementary unit have changed and you need to {0} to see if you can use it on an Internal Market Movement Information (IMMI).
 singleRecord.measureReviewReason.linkText = categorise this goods record
 
 singleRecord.unclearReviewReason = The goods description is not clear. You’ll need to {0} before you can use it on an Internal Market Movement Information (IMMI).
