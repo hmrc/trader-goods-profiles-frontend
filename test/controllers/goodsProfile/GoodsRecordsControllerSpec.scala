@@ -51,6 +51,9 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
   private lazy val goodsRecordsRoute =
     controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(currentPage).url
 
+  private lazy val goodsRecordsSearchRoute =
+    controllers.goodsProfile.routes.GoodsRecordsController.onSearch(currentPage).url
+
   private val records = Seq(
     goodsRecordResponse(
       Instant.parse("2022-11-18T23:20:19Z"),
@@ -507,7 +510,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, goodsRecordsRoute)
+          FakeRequest(POST, goodsRecordsSearchRoute)
             .withFormUrlEncodedBody(("value", "answer"))
 
         val result = route(application, request).value
@@ -540,7 +543,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, goodsRecordsRoute)
+          FakeRequest(POST, goodsRecordsSearchRoute)
             .withFormUrlEncodedBody(("value", "answer"))
 
         val result = route(application, request).value
