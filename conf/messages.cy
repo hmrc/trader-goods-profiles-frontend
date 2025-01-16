@@ -267,7 +267,7 @@ createRecordStart.p4 = Byddwch hefyd yn gallu defnyddio cyfeirnod y masnachwr wr
 createRecordStart.h3 = Categoreiddio
 createRecordStart.p5 = Unwaith y byddwch wedi creu’r cofnod nwyddau, byddwch yn gallu ei gategoreiddio.
 createRecordStart.p6 = Bydd categoreiddio yn rhoi gwybod i chi a yw’ch nwyddau’n gymwys i’w symud gyda’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM).
-createRecordStart.p7 =  I gwblhau’r categoreiddio, efallai y bydd angen i chi wybod beth yw’r amodau y bydd eich nwyddau’n symud o dan.
+createRecordStart.p7 = I gwblhau’r categoreiddio, efallai y bydd angen i chi wybod beth yw’r esemptiadau y bydd eich nwyddau’n symud o dan.
 createRecordStart.p8 =  Bydd angen i chi gwblhau’r categoreiddio cyn y gallwch ddefnyddio’r cofnod nwyddau ar symudiadau.
 
 
