@@ -515,4 +515,14 @@ trait SpecBase
         bind[ProfileAuthenticateAction].to[FakeProfileAuthenticateAction],
         bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userAnswers))
       )
+
+  protected def applicationBuilderAssistant(userAnswers: Option[UserAnswers] = None): GuiceApplicationBuilder =
+    new GuiceApplicationBuilder()
+      .overrides(
+        bind[IdentifierAction].to[FakeAssistantIdentifierAction],
+        bind[DataRetrievalOrCreateAction].to[FakeDataRetrievalOrCreateAction],
+        bind[EoriCheckAction].to[FakeEoriCheckAction],
+        bind[ProfileAuthenticateAction].to[FakeProfileAuthenticateAction],
+        bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userAnswers))
+      )
 }
