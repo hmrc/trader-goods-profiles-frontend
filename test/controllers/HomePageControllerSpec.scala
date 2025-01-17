@@ -21,11 +21,13 @@ import base.TestConstants.testEori
 import connectors.{DownloadDataConnector, GoodsRecordConnector, TraderProfileConnector}
 import models.DownloadDataStatus.{FileInProgress, FileReadySeen, FileReadyUnseen}
 import models.GoodsRecordsPagination.firstPage
+import models.download.DownloadLinkText
 import models.router.responses.GetRecordsResponse
 import models.{DownloadDataSummary, Email, FileInfo, GoodsRecordsPagination, HistoricProfileData}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{atLeastOnce, never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar.mock
+import play.api.i18n.Messages
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -105,10 +107,16 @@ class HomePageControllerSpec extends SpecBase {
 
           val view = application.injector.instanceOf[HomePageView]
 
+          implicit val message: Messages = messages(application)
+
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             downloadReady = true,
-            downloadLinkMessagesKey = "homepage.downloadLinkText.filesRequested",
+            downloadLinkText = DownloadLinkText(
+              downloadDataSummary,
+              doesGoodsRecordExist = true,
+              verifiedEmail = true
+            ),
             ukimsNumberChanged = false,
             doesGoodsRecordExist = true,
             viewUpdateGoodsRecordsLink =
@@ -167,10 +175,16 @@ class HomePageControllerSpec extends SpecBase {
 
           val view = application.injector.instanceOf[HomePageView]
 
+          implicit val message: Messages = messages(application)
+
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             downloadReady = false,
-            downloadLinkMessagesKey = "homepage.downloadLinkText.filesRequested",
+            downloadLinkText = DownloadLinkText(
+              downloadDataSummary,
+              doesGoodsRecordExist = true,
+              verifiedEmail = true
+            ),
             ukimsNumberChanged = false,
             doesGoodsRecordExist = true,
             viewUpdateGoodsRecordsLink =
@@ -218,10 +232,16 @@ class HomePageControllerSpec extends SpecBase {
 
             val view = application.injector.instanceOf[HomePageView]
 
+            implicit val message: Messages = messages(application)
+
             status(result) mustEqual OK
             contentAsString(result) mustEqual view(
               downloadReady = false,
-              downloadLinkMessagesKey = "homepage.downloadLinkText.noFilesRequested",
+              downloadLinkText = DownloadLinkText(
+                Seq.empty,
+                doesGoodsRecordExist = true,
+                verifiedEmail = true
+              ),
               ukimsNumberChanged = false,
               doesGoodsRecordExist = true,
               viewUpdateGoodsRecordsLink =
@@ -279,10 +299,16 @@ class HomePageControllerSpec extends SpecBase {
 
             val view = application.injector.instanceOf[HomePageView]
 
+            implicit val message: Messages = messages(application)
+
             status(result) mustEqual OK
             contentAsString(result) mustEqual view(
               downloadReady = false,
-              downloadLinkMessagesKey = "homepage.downloadLinkText.filesRequested",
+              downloadLinkText = DownloadLinkText(
+                downloadDataSummary,
+                doesGoodsRecordExist = true,
+                verifiedEmail = true
+              ),
               ukimsNumberChanged = false,
               doesGoodsRecordExist = true,
               viewUpdateGoodsRecordsLink =
@@ -340,10 +366,16 @@ class HomePageControllerSpec extends SpecBase {
 
             val view = application.injector.instanceOf[HomePageView]
 
+            implicit val message: Messages = messages(application)
+
             status(result) mustEqual OK
             contentAsString(result) mustEqual view(
               downloadReady = true,
-              downloadLinkMessagesKey = "homepage.downloadLinkText.filesRequested",
+              downloadLinkText = DownloadLinkText(
+                downloadDataSummary,
+                doesGoodsRecordExist = true,
+                verifiedEmail = true
+              ),
               ukimsNumberChanged = false,
               doesGoodsRecordExist = true,
               viewUpdateGoodsRecordsLink =
@@ -397,10 +429,16 @@ class HomePageControllerSpec extends SpecBase {
 
             val view = application.injector.instanceOf[HomePageView]
 
+            implicit val message: Messages = messages(application)
+
             status(result) mustEqual OK
             contentAsString(result) mustEqual view(
               downloadReady = false,
-              downloadLinkMessagesKey = "homepage.downloadLinkText.filesRequested",
+              downloadLinkText = DownloadLinkText(
+                downloadDataSummary,
+                doesGoodsRecordExist = true,
+                verifiedEmail = true
+              ),
               ukimsNumberChanged = false,
               doesGoodsRecordExist = true,
               viewUpdateGoodsRecordsLink =
@@ -416,7 +454,7 @@ class HomePageControllerSpec extends SpecBase {
     }
 
     "when there are not any goods records" - {
-      "must return OK and the correct view for a GET with noGoodsRecords messageKey" in {
+      "must return OK and the correct view for a GET with noRecords messageKey" in {
 
         val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
         when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
@@ -451,10 +489,16 @@ class HomePageControllerSpec extends SpecBase {
 
           val view = application.injector.instanceOf[HomePageView]
 
+          implicit val message: Messages = messages(application)
+
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             downloadReady = false,
-            downloadLinkMessagesKey = "homepage.noRecords",
+            downloadLinkText = DownloadLinkText(
+              Seq.empty,
+              doesGoodsRecordExist = false,
+              verifiedEmail = true
+            ),
             ukimsNumberChanged = false,
             doesGoodsRecordExist = false,
             viewUpdateGoodsRecordsLink =
@@ -504,10 +548,16 @@ class HomePageControllerSpec extends SpecBase {
 
           val view = application.injector.instanceOf[HomePageView]
 
+          implicit val message: Messages = messages(application)
+
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             downloadReady = false,
-            downloadLinkMessagesKey = "homepage.downloadLinkText.unverifiedEmail",
+            downloadLinkText = DownloadLinkText(
+              Seq.empty,
+              doesGoodsRecordExist = false,
+              verifiedEmail = false
+            ),
             ukimsNumberChanged = false,
             doesGoodsRecordExist = false,
             viewUpdateGoodsRecordsLink =
@@ -557,10 +607,16 @@ class HomePageControllerSpec extends SpecBase {
 
           val view = application.injector.instanceOf[HomePageView]
 
+          implicit val message: Messages = messages(application)
+
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             downloadReady = false,
-            downloadLinkMessagesKey = "homepage.noRecords",
+            downloadLinkText = DownloadLinkText(
+              Seq.empty,
+              doesGoodsRecordExist = false,
+              verifiedEmail = true
+            ),
             ukimsNumberChanged = false,
             doesGoodsRecordExist = false,
             viewUpdateGoodsRecordsLink =
@@ -608,10 +664,16 @@ class HomePageControllerSpec extends SpecBase {
 
           val view = application.injector.instanceOf[HomePageView]
 
+          implicit val message: Messages = messages(application)
+
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             downloadReady = false,
-            downloadLinkMessagesKey = "homepage.noRecords",
+            downloadLinkText = DownloadLinkText(
+              Seq.empty,
+              doesGoodsRecordExist = false,
+              verifiedEmail = true
+            ),
             ukimsNumberChanged = true,
             doesGoodsRecordExist = false,
             viewUpdateGoodsRecordsLink =

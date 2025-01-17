@@ -17,15 +17,16 @@
 @import config.FrontendAppConfig
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import models.DownloadDataSummary
+@import models.download.DownloadLinkText
 
 @this(
-        appConfig: FrontendAppConfig,
-        layout: templates.Layout,
-        govukPhaseBanner: GovukPhaseBanner,
-        govukNotificationBanner: GovukNotificationBanner
+appConfig: FrontendAppConfig,
+layout: templates.Layout,
+govukPhaseBanner: GovukPhaseBanner,
+govukNotificationBanner: GovukNotificationBanner
 )
 
-@(downloadReady: Boolean = false, downloadLinkMessagesKey: String, ukimsNumberChanged: Boolean = false, doesGoodsRecordExist: Boolean, viewUpdateGoodsRecordsLink: String)(implicit request: Request[_], messages: Messages)
+@(downloadReady: Boolean = false, downloadLinkText: DownloadLinkText, ukimsNumberChanged: Boolean = false, doesGoodsRecordExist: Boolean, viewUpdateGoodsRecordsLink: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = s"${messages("homepage.title")} - ${messages("site.govuk")}", showBackLink = false, headerShouldHaveServiceLink = false) {
 
@@ -83,11 +84,7 @@
 
     @if(appConfig.downloadFileEnabled) {
         <h2 class="govuk-heading-m">@messages("homepage.h2.3")</h2>
-        @if(downloadLinkMessagesKey == "homepage.downloadLinkText.noGoodsRecords") {
-            <p class="govuk-body">@messages(downloadLinkMessagesKey)</p>
-        } else {
-            <p class="govuk-body"><a href="@controllers.download.routes.FileManagementController.onPageLoad()" class="govuk-link">@messages(downloadLinkMessagesKey)</a></p>
-        }
+        @downloadLinkText.downloadLinkContent
     }
 
     <h2 class="govuk-heading-m">@messages("homepage.h2.4")</h2>
