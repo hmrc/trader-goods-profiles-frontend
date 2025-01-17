@@ -18,6 +18,7 @@ package controllers.download
 
 import base.SpecBase
 import connectors.DownloadDataConnector
+import models.Email
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
@@ -29,6 +30,7 @@ import play.api.test.Helpers._
 import viewmodels.download.FileManagementViewModel
 import views.html.download.FileManagementView
 
+import java.time.Instant
 import scala.concurrent.Future
 
 class FileManagementControllerSpec extends SpecBase with MockitoSugar with BeforeAndAfterEach {
@@ -46,39 +48,60 @@ class FileManagementControllerSpec extends SpecBase with MockitoSugar with Befor
 
   "FileManagementController" - {
 
-    "must return OK and view for a GET if download data feature is enabled" in {
+    "when download data feature is enabled" - {
+      "must return OK and view for a GET and email is verified" in {
 
-      when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(Seq.empty)
-      when(mockDownloadDataConnector.getDownloadData(any())) thenReturn Future.successful(Seq.empty)
+        when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(Seq.empty)
+        when(mockDownloadDataConnector.getDownloadData(any())) thenReturn Future.successful(Seq.empty)
+        when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(
+          Some(Email("address", Instant.now()))
+        )
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector))
-        .build()
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector))
+          .build()
 
-      implicit val messagesImplicit: Messages = messages(application)
+        implicit val messagesImplicit: Messages = messages(application)
 
-      val viewModel = FileManagementViewModel(None, None)
+        val viewModel = FileManagementViewModel(None, None)
 
-      running(application) {
-        val request = FakeRequest(GET, fileManagementRoute)
-        val result  = route(application, request).value
-        val view    = application.injector.instanceOf[FileManagementView]
+        running(application) {
+          val request = FakeRequest(GET, fileManagementRoute)
+          val result  = route(application, request).value
+          val view    = application.injector.instanceOf[FileManagementView]
 
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(viewModel)(
-          request,
-          messages(application)
-        ).toString
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(viewModel)(
+            request,
+            messages(application)
+          ).toString
+        }
+
+        verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())
+        verify(mockDownloadDataConnector, atLeastOnce()).getDownloadData(any())
       }
+      "must return SEE_OTHER and redirect to IndexController if email is unverified" in {
 
-      verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())
-      verify(mockDownloadDataConnector, atLeastOnce()).getDownloadData(any())
+        when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(None)
+
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector))
+          .build()
+
+        running(application) {
+          val request = FakeRequest(GET, fileManagementRoute)
+          val result  = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result) mustBe Some(controllers.routes.IndexController.onPageLoad().url)
+        }
+
+        verify(mockDownloadDataConnector, never()).getDownloadDataSummary(any())
+        verify(mockDownloadDataConnector, never()).getDownloadData(any())
+      }
     }
 
     "must return SEE_OTHER and redirect to journey recovery if download feature is disabled" in {
-
-      when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(Seq.empty)
-      when(mockDownloadDataConnector.getDownloadData(any())) thenReturn Future.successful(Seq.empty)
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .configure("features.download-file-enabled" -> false)

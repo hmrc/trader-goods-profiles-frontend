@@ -89,13 +89,16 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
       .execute[HttpResponse]
       .flatMap { response =>
         response.status match {
-          case OK        => Future.successful(Some(response.json.as[Email]))
-          case NOT_FOUND => Future.successful(None)
+          case OK        =>
+            Future.successful(Some(response.json.as[Email]))
+          case NOT_FOUND =>
+            Future.successful(None)
           case _         => Future.failed(UpstreamErrorResponse(response.body, response.status))
         }
       }
       .recover {
         case x: UpstreamErrorResponse if x.statusCode == NOT_FOUND =>
+          println("\n\n" + "not found" + "\n\n")
           None
       }
 

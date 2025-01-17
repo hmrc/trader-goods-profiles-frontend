@@ -45,11 +45,15 @@ class HomePageController @Inject() (
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getOrCreate).async { implicit request =>
     for {
       downloadDataSummary <- downloadDataConnector.getDownloadDataSummary
+      verifiedEmail       <- downloadDataConnector.getEmail.map {
+                               case Some(_) => true
+                               case None    => false
+                             }
       goodsRecords        <- goodsRecordConnector.getRecords(1, 1)
       doesGoodsRecordExist = goodsRecords.exists(_.goodsItemRecords.nonEmpty)
       historicProfileData <- traderProfileConnector.getHistoricProfileData(request.eori)
     } yield {
-      val downloadLinkMessagesKey     = getDownloadLinkMessagesKey(downloadDataSummary, doesGoodsRecordExist)
+      val downloadLinkMessagesKey     = getDownloadLinkMessagesKey(downloadDataSummary, doesGoodsRecordExist, verifiedEmail)
       val showNewUkimsBanner: Boolean = request.session.get(pageUpdated).contains(newUkimsNumberPage)
       val viewUpdateGoodsRecordsLink  = getViewUpdateRecordsLink(historicProfileData)
 
@@ -73,13 +77,18 @@ class HomePageController @Inject() (
       }
       .getOrElse(false)
 
-  private def getDownloadLinkMessagesKey(
+  private def getDownloadLinkMessagesKey( // TODO MAKE MODEL FOR THIS (change link)
     downloadDataSummaries: Seq[DownloadDataSummary],
-    doesGoodsRecordExist: Boolean
-  ): String = doesGoodsRecordExist match {
-    case true if downloadDataSummaries.nonEmpty => "homepage.downloadLinkText.filesRequested"
-    case true if downloadDataSummaries.isEmpty  => "homepage.downloadLinkText.noFilesRequested"
-    case _                                      => "homepage.noRecords"
+    doesGoodsRecordExist: Boolean,
+    verifiedEmail: Boolean
+  ): String = if (verifiedEmail) {
+    doesGoodsRecordExist match {
+      case true if downloadDataSummaries.nonEmpty => "homepage.downloadLinkText.filesRequested"
+      case true if downloadDataSummaries.isEmpty  => "homepage.downloadLinkText.noFilesRequested"
+      case _                                      => "homepage.noRecords"
+    }
+  } else {
+    "homepage.downloadLinkText.unverifiedEmail"
   }
 
   private def getViewUpdateRecordsLink(historicProfileData: Option[HistoricProfileData]): String =

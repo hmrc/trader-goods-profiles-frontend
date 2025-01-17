@@ -39,7 +39,7 @@ class ProfileAuthenticateActionSpec extends SpecBase with MockitoSugar {
   }
 
   "Profile Authenticate Action" - {
-    "must redirect to profile setup page when profile does not exists" in {
+    "must redirect to index controller which will handle the redirect to the profile setup page when profile does not exists" in {
       val mockTraderProfileConnector = mock[TraderProfileConnector]
 
       when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(false)
@@ -49,7 +49,7 @@ class ProfileAuthenticateActionSpec extends SpecBase with MockitoSugar {
         action
           .callFilter(IdentifierRequest(FakeRequest(), "id", testEori, AffinityGroup.Individual, Some(User)))
           .futureValue
-      result mustBe Some(Redirect("/trader-goods-profiles/create-profile/start"))
+      result mustBe Some(Redirect(controllers.routes.IndexController.onPageLoad()))
     }
 
     "must not redirect when profile does exist" in {
