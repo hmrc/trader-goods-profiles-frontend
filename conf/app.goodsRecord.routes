@@ -37,15 +37,15 @@ POST        /update-record/:recordId/goods-description/check                    
 GET         /create-record/check-your-answers                                                       controllers.goodsRecord.CyaCreateRecordController.onPageLoad()
 POST        /create-record/check-your-answers                                                       controllers.goodsRecord.CyaCreateRecordController.onSubmit()
 
-GET         /create-record/trader-reference                                                         controllers.goodsRecord.TraderReferenceController.onPageLoadCreate(mode: Mode = NormalMode)
-POST        /create-record/trader-reference                                                         controllers.goodsRecord.TraderReferenceController.onSubmitCreate(mode: Mode = NormalMode)
-GET         /create-record/trader-reference/check                                                   controllers.goodsRecord.TraderReferenceController.onPageLoadCreate(mode: Mode = CheckMode)
-POST        /create-record/trader-reference/check                                                   controllers.goodsRecord.TraderReferenceController.onSubmitCreate(mode: Mode = CheckMode)
+GET         /create-record/product-reference                                                         controllers.goodsRecord.TraderReferenceController.onPageLoadCreate(mode: Mode = NormalMode)
+POST        /create-record/product-reference                                                         controllers.goodsRecord.TraderReferenceController.onSubmitCreate(mode: Mode = NormalMode)
+GET         /create-record/product-reference/check                                                   controllers.goodsRecord.TraderReferenceController.onPageLoadCreate(mode: Mode = CheckMode)
+POST        /create-record/product-reference/check                                                   controllers.goodsRecord.TraderReferenceController.onSubmitCreate(mode: Mode = CheckMode)
 
-GET         /update-record/:recordId/trader-reference                                               controllers.goodsRecord.TraderReferenceController.onPageLoadUpdate(mode: Mode = NormalMode, recordId: String)
-POST        /update-record/:recordId/trader-reference                                               controllers.goodsRecord.TraderReferenceController.onSubmitUpdate(mode: Mode = NormalMode, recordId: String)
-GET         /update-record/:recordId/trader-reference/check                                         controllers.goodsRecord.TraderReferenceController.onPageLoadUpdate(mode: Mode = CheckMode, recordId: String)
-POST        /update-record/:recordId/trader-reference/check                                         controllers.goodsRecord.TraderReferenceController.onSubmitUpdate(mode: Mode = CheckMode, recordId: String)
+GET         /update-record/:recordId/product-reference                                               controllers.goodsRecord.TraderReferenceController.onPageLoadUpdate(mode: Mode = NormalMode, recordId: String)
+POST        /update-record/:recordId/product-reference                                               controllers.goodsRecord.TraderReferenceController.onSubmitUpdate(mode: Mode = NormalMode, recordId: String)
+GET         /update-record/:recordId/product-reference/check                                         controllers.goodsRecord.TraderReferenceController.onPageLoadUpdate(mode: Mode = CheckMode, recordId: String)
+POST        /update-record/:recordId/product-reference/check                                         controllers.goodsRecord.TraderReferenceController.onSubmitUpdate(mode: Mode = CheckMode, recordId: String)
 
 GET         /goods-record/:recordId                                                                 controllers.goodsRecord.SingleRecordController.onPageLoad(recordId: String)
 
@@ -68,8 +68,8 @@ GET         /update-record/:recordId/check-your-answers/country-of-origin       
 POST        /update-record/:recordId/check-your-answers/country-of-origin                           controllers.goodsRecord.CyaUpdateRecordController.onSubmitCountryOfOrigin(recordId: String)
 GET         /update-record/:recordId/check-your-answers/goods-description                           controllers.goodsRecord.CyaUpdateRecordController.onPageLoadGoodsDescription(recordId: String)
 POST        /update-record/:recordId/check-your-answers/goods-description                           controllers.goodsRecord.CyaUpdateRecordController.onSubmitGoodsDescription(recordId: String)
-GET         /update-record/:recordId/check-your-answers/trader-reference                            controllers.goodsRecord.CyaUpdateRecordController.onPageLoadTraderReference(recordId: String)
-POST        /update-record/:recordId/check-your-answers/trader-reference                            controllers.goodsRecord.CyaUpdateRecordController.onSubmitTraderReference(recordId: String)
+GET         /update-record/:recordId/check-your-answers/product-reference                            controllers.goodsRecord.CyaUpdateRecordController.onPageLoadTraderReference(recordId: String)
+POST        /update-record/:recordId/check-your-answers/product-reference                            controllers.goodsRecord.CyaUpdateRecordController.onSubmitTraderReference(recordId: String)
 GET         /update-record/:recordId/check-your-answers/commodity-code                              controllers.goodsRecord.CyaUpdateRecordController.onPageLoadCommodityCode(recordId: String)
 POST        /update-record/:recordId/check-your-answers/commodity-code                              controllers.goodsRecord.CyaUpdateRecordController.onSubmitCommodityCode(recordId: String)
 

@@ -184,7 +184,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
             .fill("answer")
             .copy(errors =
               Seq(elems =
-                FormError("value", "This trader reference is already in your TGP. Enter a unique trader reference.")
+                FormError("value", "This product reference is already in your TGP. Enter a unique product reference.")
               )
             )
 
@@ -427,7 +427,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
           redirectLocation(result).value mustEqual onwardRoute.url
 
           session(result).get(dataUpdated) must be(Some("true"))
-          session(result).get(pageUpdated) must be(Some("trader reference"))
+          session(result).get(pageUpdated) must be(Some("product reference"))
 
           verify(mockSessionRepository).set(any())
           verify(mockGoodsRecordConnector).isTraderReferenceUnique(any())(any())
@@ -537,7 +537,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
             .fill("answer")
             .copy(errors =
               Seq(elems =
-                FormError("value", "This trader reference is already in your TGP. Enter a unique trader reference.")
+                FormError("value", "This product reference is already in your TGP. Enter a unique product reference.")
               )
             )
 
