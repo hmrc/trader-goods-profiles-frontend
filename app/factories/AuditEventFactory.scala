@@ -20,7 +20,7 @@ import models.audits._
 import models.helper.{CategorisationUpdate, GoodsDetailsUpdate, Journey, SupplementaryUnitUpdate, UpdateSection}
 import models.ott.CategorisationInfo
 import models.ott.response.OttResponse
-import models.{AdviceRequest, CategoryRecord, GoodsRecord, Scenario, SupplementaryRequest, TraderProfile, UpdateGoodsRecord}
+import models.{AdviceRequest, CategoryRecord, GoodsRecord, Scenario, SearchForm, SupplementaryRequest, TraderProfile, UpdateGoodsRecord}
 import play.api.http.Status.OK
 import play.api.libs.json.Json
 import uk.gov.hmrc.auth.core.AffinityGroup
@@ -278,6 +278,31 @@ case class AuditEventFactory() {
     DataEvent(
       auditSource = auditSource,
       auditType = "AdviceRequestUpdate",
+      tags = hc.toAuditTags(),
+      detail = auditDetails
+    )
+  }
+
+  def createSearchFilterRecordEvent(
+    affinityGroup: AffinityGroup,
+    SearchForm: SearchForm,
+    totalRecords: String,
+    totalPages: String,
+    eori: String
+  )(implicit hc: HeaderCarrier): DataEvent = {
+    val auditDetails = Map(
+      "eori"            -> eori,
+      "affinityGroup"   -> affinityGroup.toString,
+      "searchTerm"      -> SearchForm.searchTerm.orNull,
+      "filterByCountry" -> SearchForm.countryOfOrigin.orNull,
+      "filterByStatus"  -> SearchForm.statusValue.toString(),
+      "recordsReturned" -> totalRecords,
+      "pagesReturned"   -> totalPages
+    )
+
+    DataEvent(
+      auditSource = auditSource,
+      auditType = "SearchGoodsRecords",
       tags = hc.toAuditTags(),
       detail = auditDetails
     )

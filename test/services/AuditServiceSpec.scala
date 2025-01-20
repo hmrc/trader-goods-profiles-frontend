@@ -17,12 +17,12 @@
 package services
 
 import base.SpecBase
-import base.TestConstants.{testEori, testRecordId, withdrawReason}
+import base.TestConstants.{page, testEori, testRecordId, withdrawReason}
 import factories.AuditEventFactory
 import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, OttAuditData}
 import models.helper._
 import models.ott.response._
-import models.{AdviceRequest, Category1Scenario, CategoryRecord, GoodsRecord, SupplementaryRequest, TraderProfile, UpdateGoodsRecord}
+import models.{AdviceRequest, Category1Scenario, CategoryRecord, GoodsRecord, SearchForm, SupplementaryRequest, TraderProfile, UpdateGoodsRecord}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, reset, verify, when}
@@ -1076,6 +1076,101 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       intercept[RuntimeException] {
         val adviceRequest = AdviceRequest(testEori, "Firstname Lastname", "actorId", testRecordId, "test@test.com")
         await(auditService.auditRequestAdvice(AffinityGroup.Individual, adviceRequest))
+      }
+    }
+  }
+
+  "auditFilterSearchRecords" - {
+
+    "return Done when built up an audit event and submitted it" in {
+
+      when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
+
+      val fakeAuditEvent = DataEvent("source", "type")
+      when(mockAuditFactory.createSearchFilterRecordEvent(any(), any(), any(), any(), any())(any()))
+        .thenReturn(fakeAuditEvent)
+
+      val searchFormData = SearchForm(
+        searchTerm = Some("bananas"),
+        statusValue = Seq.empty,
+        countryOfOrigin = Some("AL")
+      )
+      val result         = await(
+        auditService.auditFilterSearchRecords(AffinityGroup.Individual, searchFormData, "10", page.toString, testEori)
+      )
+
+      result mustBe Done
+
+      withClue("Should have supplied the affinity group and Filter Search details to the factory to create the event") {
+        verify(mockAuditFactory)
+          .createSearchFilterRecordEvent(
+            eqTo(AffinityGroup.Individual),
+            eqTo(searchFormData),
+            eqTo("10"),
+            eqTo(page.toString),
+            eqTo(testEori)
+          )(
+            any()
+          )
+      }
+
+      withClue("Should have submitted the created event to the audit connector") {
+        verify(mockAuditConnector).sendEvent(eqTo(fakeAuditEvent))(any(), any())
+      }
+    }
+
+    "return Done when audit return type is failure" in {
+
+      val auditFailure = AuditResult.Failure("Failed audit event creation")
+      when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(auditFailure))
+
+      val fakeAuditEvent = DataEvent("source", "type")
+      when(mockAuditFactory.createSearchFilterRecordEvent(any(), any(), any(), any(), any())(any()))
+        .thenReturn(fakeAuditEvent)
+
+      val searchFormData = SearchForm(
+        searchTerm = Some("bananas"),
+        statusValue = Seq.empty,
+        countryOfOrigin = None
+      )
+      val result         = await(
+        auditService.auditFilterSearchRecords(AffinityGroup.Individual, searchFormData, "10", page.toString, testEori)
+      )
+
+      result mustBe Done
+
+      withClue("Should have supplied the Filter Search details to the factory to create the event") {
+        verify(mockAuditFactory)
+          .createSearchFilterRecordEvent(
+            eqTo(AffinityGroup.Individual),
+            eqTo(searchFormData),
+            eqTo("10"),
+            eqTo(page.toString),
+            eqTo(testEori)
+          )(
+            any()
+          )
+      }
+
+      withClue("Should have submitted the created event to the audit connector") {
+        verify(mockAuditConnector).sendEvent(eqTo(fakeAuditEvent))(any(), any())
+      }
+    }
+
+    "must let the play error handler deal with an future failure" in {
+      when(mockAuditConnector.sendEvent(any())(any(), any()))
+        .thenReturn(Future.failed(new RuntimeException("audit error")))
+
+      intercept[RuntimeException] {
+        val searchFormData = SearchForm(
+          searchTerm = Some("bananas"),
+          statusValue = Seq.empty,
+          countryOfOrigin = None
+        )
+        await(
+          auditService.auditFilterSearchRecords(AffinityGroup.Individual, searchFormData, "10", page.toString, testEori)
+        )
+
       }
     }
   }

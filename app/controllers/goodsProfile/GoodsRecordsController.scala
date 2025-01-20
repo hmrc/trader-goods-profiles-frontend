@@ -31,6 +31,7 @@ import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
+import services.AuditService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
 import views.html.goodsProfile.{GoodsRecordsEmptyView, GoodsRecordsView}
@@ -52,7 +53,8 @@ class GoodsRecordsController @Inject() (
   goodsRecordConnector: GoodsRecordConnector,
   ottConnector: OttConnector,
   navigator: GoodsProfileNavigator,
-  appConfig: FrontendAppConfig
+  appConfig: FrontendAppConfig,
+  auditService: AuditService
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
@@ -188,6 +190,15 @@ class GoodsRecordsController @Inject() (
       )
       .flatMap {
         case Some(searchResponse) =>
+          if (page == 1) {
+            auditService.auditFilterSearchRecords(
+              request.affinityGroup,
+              searchText,
+              searchResponse.pagination.totalRecords.toString,
+              searchResponse.pagination.totalPages.toString,
+              request.eori
+            )
+          }
           renderSearchResults(page, searchResponse, searchText)
         case _                    =>
           Future.successful(

@@ -23,7 +23,7 @@ import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCo
 import models.helper._
 import models.ott.CategorisationInfo
 import models.ott.response.OttResponse
-import models.{AdviceRequest, CategoryRecord, GoodsRecord, SupplementaryRequest, TraderProfile, UpdateGoodsRecord, UserAnswers}
+import models.{AdviceRequest, CategoryRecord, GoodsRecord, SearchForm, SupplementaryRequest, TraderProfile, UpdateGoodsRecord, UserAnswers}
 import org.apache.pekko.Done
 import play.api.Logging
 import uk.gov.hmrc.auth.core.AffinityGroup
@@ -175,6 +175,24 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
       logger.info(s"RequestAdvice audit event status: $auditResult")
       Done
     }
+  }
+
+  def auditFilterSearchRecords(
+    affinityGroup: AffinityGroup,
+    SearchForm: SearchForm,
+    totalRecords: String,
+    totalPages: String,
+    eori: String
+  )(implicit
+    hc: HeaderCarrier
+  ): Future[Done] = {
+    val event =
+      auditEventFactory.createSearchFilterRecordEvent(affinityGroup, SearchForm, totalRecords, totalPages, eori)
+    auditConnector.sendEvent(event).map { auditResult =>
+      logger.info(s"SearchGoodsRecords audit event status: $auditResult")
+      Done
+    }
+
   }
 
   def auditWithdrawAdvice(affinityGroup: AffinityGroup, eori: String, recordId: String, withdrawReason: Option[String])(
