@@ -244,7 +244,7 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
               .url
 
             session(result).get(dataUpdated) must be(Some("true"))
-            session(result).get(pageUpdated) must be(Some("supplementary unit"))
+            session(result).get(pageUpdated) must be(Some("supplementaryUnit"))
 
             withClue("must submit an audit") {
               verify(mockAuditService).auditFinishUpdateSupplementaryUnitGoodsRecord(any(), any(), any())(any())
@@ -302,7 +302,7 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
               .url
 
             session(result).get(dataUpdated) must be(Some("true"))
-            session(result).get(pageUpdated) must be(Some("supplementary unit"))
+            session(result).get(pageUpdated) must be(Some("supplementaryUnit"))
 
             withClue("must submit an audit") {
               verify(mockAuditService).auditFinishUpdateSupplementaryUnitGoodsRecord(any(), any(), any())(any())
@@ -411,7 +411,7 @@ class CyaSupplementaryUnitControllerSpec extends SpecBase with SummaryListFluenc
             .url
 
           session(result).get(dataRemoved) must be(Some("true"))
-          session(result).get(pageUpdated) must be(Some("supplementary unit"))
+          session(result).get(pageUpdated) must be(Some("supplementaryUnit"))
 
           withClue("must submit an audit") {
             verify(mockAuditService, atLeastOnce()).auditFinishUpdateSupplementaryUnitGoodsRecord(any(), any(), any())(

@@ -34,7 +34,7 @@
         @if(dataRemoved) {
             @messages("successBannerRemove.heading", page)
         } else {
-            @messages("successBanner.heading", page)
+            @messages("successBanner.heading", messages(s"$page"))
         }
         </h3>
     }

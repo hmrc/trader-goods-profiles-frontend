@@ -229,6 +229,12 @@ name.error.required = Nodwch eich enw
 name.error.length = Nodwch enw â 70 o gymeriadau neu lai
 name.change.hidden = Enw
 
+productReference = cyfeirnod cynnyrch
+goodsDescription = disgrifiad o’r nwyddau
+countryOfOrigin = gwlad wreiddiol
+commodityCode = cod nwyddau
+supplementaryUnit = unedau atodol
+
 email.title = Beth yw’ch cyfeiriad e-bost?
 email.heading = Beth yw’ch cyfeiriad e-bost?
 email.hint = Byddwn ond yn defnyddio’ch e-bost i gysylltu â chi ynglŷn â’ch cais.
