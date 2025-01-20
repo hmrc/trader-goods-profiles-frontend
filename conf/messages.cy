@@ -329,11 +329,11 @@ createRecordSuccess.p7 = Bydd eich meddyliau a’ch syniadau’n ein helpu i wne
 traderReference.error.required = Nodwch gyfeirnod y cynnyrch
 traderReference.error.traderRefNotUnique = Mae cyfeirnod y cynnyrch hwn eisoes yn eich TGP. Nodwch gyfeirnod cynnyrch unigryw.
 goodsDescription.error.required = Nodwch ddisgrifiad o’r nwyddau
-goodsDescription.error.length = Mae’n rhaid i gyfeirnod y cynnyrch fod yn 512 o gymeriadau neu lai
+goodsDescription.error.length = Mae’n rhaid i ddisgrifiad y nwyddau fod yn 512 o gymeriadau neu lai
 countryOfOrigin.error.required = Nodwch y wlad wreiddiol
 commodityCode.error.invalidFormat = Nodwch god nwyddau yn y fformat cywir
 commodityCode.error.invalid = Nodwch god nwyddau go iawn
-traderReference.error.length = Mae’n rhaid i’r cyfeirnod masnachwr fod yn 512 o gymeriadau neu lai
+traderReference.error.length = Mae’n rhaid i gyfeirnod y cynnyrch fod yn 512 o gymeriadau neu lai
 commodityCode.error.expired = Mae’r cod nwyddau hwn wedi dod i ben. Nodwch god nwyddau dilys
 
 hasCorrectGoods.title = Canlyniadau ar gyfer y cod nwyddau {0}
