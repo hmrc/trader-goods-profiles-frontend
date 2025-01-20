@@ -89,8 +89,10 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
       .execute[HttpResponse]
       .flatMap { response =>
         response.status match {
-          case OK        => Future.successful(Some(response.json.as[Email]))
-          case NOT_FOUND => Future.successful(None)
+          case OK        =>
+            Future.successful(Some(response.json.as[Email]))
+          case NOT_FOUND =>
+            Future.successful(None)
           case _         => Future.failed(UpstreamErrorResponse(response.body, response.status))
         }
       }

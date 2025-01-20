@@ -21,11 +21,13 @@ import base.TestConstants.testEori
 import connectors.{DownloadDataConnector, GoodsRecordConnector, TraderProfileConnector}
 import models.DownloadDataStatus.{FileInProgress, FileReadySeen, FileReadyUnseen}
 import models.GoodsRecordsPagination.firstPage
+import models.download.DownloadLinkText
 import models.router.responses.GetRecordsResponse
-import models.{DownloadDataSummary, FileInfo, GoodsRecordsPagination, HistoricProfileData}
+import models.{DownloadDataSummary, Email, FileInfo, GoodsRecordsPagination, HistoricProfileData}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{atLeastOnce, never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar.mock
+import play.api.i18n.Messages
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -82,6 +84,9 @@ class HomePageControllerSpec extends SpecBase {
         when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(
           downloadDataSummary
         )
+        when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(
+          Some(Email("address", Instant.now()))
+        )
 
         val mockGoodsRecordConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
         when(mockGoodsRecordConnector.getRecords(any(), any())(any())) thenReturn Future
@@ -102,10 +107,16 @@ class HomePageControllerSpec extends SpecBase {
 
           val view = application.injector.instanceOf[HomePageView]
 
+          implicit val message: Messages = messages(application)
+
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             downloadReady = true,
-            downloadLinkMessagesKey = "homepage.downloadLinkText.filesRequested",
+            downloadLinkText = DownloadLinkText(
+              downloadDataSummary,
+              doesGoodsRecordExist = true,
+              verifiedEmail = true
+            ),
             ukimsNumberChanged = false,
             doesGoodsRecordExist = true,
             viewUpdateGoodsRecordsLink =
@@ -141,6 +152,9 @@ class HomePageControllerSpec extends SpecBase {
         when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(
           downloadDataSummary
         )
+        when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(
+          Some(Email("address", Instant.now()))
+        )
 
         val mockGoodsRecordConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
         when(mockGoodsRecordConnector.getRecords(any(), any())(any())) thenReturn Future
@@ -161,10 +175,16 @@ class HomePageControllerSpec extends SpecBase {
 
           val view = application.injector.instanceOf[HomePageView]
 
+          implicit val message: Messages = messages(application)
+
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             downloadReady = false,
-            downloadLinkMessagesKey = "homepage.downloadLinkText.filesRequested",
+            downloadLinkText = DownloadLinkText(
+              downloadDataSummary,
+              doesGoodsRecordExist = true,
+              verifiedEmail = true
+            ),
             ukimsNumberChanged = false,
             doesGoodsRecordExist = true,
             viewUpdateGoodsRecordsLink =
@@ -189,6 +209,9 @@ class HomePageControllerSpec extends SpecBase {
           when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(
             Seq.empty
           )
+          when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(
+            Some(Email("address", Instant.now()))
+          )
 
           val mockGoodsRecordConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
           when(mockGoodsRecordConnector.getRecords(any(), any())(any())) thenReturn Future
@@ -209,10 +232,16 @@ class HomePageControllerSpec extends SpecBase {
 
             val view = application.injector.instanceOf[HomePageView]
 
+            implicit val message: Messages = messages(application)
+
             status(result) mustEqual OK
             contentAsString(result) mustEqual view(
               downloadReady = false,
-              downloadLinkMessagesKey = "homepage.downloadLinkText.noFilesRequested",
+              downloadLinkText = DownloadLinkText(
+                Seq.empty,
+                doesGoodsRecordExist = true,
+                verifiedEmail = true
+              ),
               ukimsNumberChanged = false,
               doesGoodsRecordExist = true,
               viewUpdateGoodsRecordsLink =
@@ -247,6 +276,9 @@ class HomePageControllerSpec extends SpecBase {
           when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(
             downloadDataSummary
           )
+          when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(
+            Some(Email("address", Instant.now()))
+          )
 
           val mockGoodsRecordConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
           when(mockGoodsRecordConnector.getRecords(any(), any())(any())) thenReturn Future
@@ -267,10 +299,16 @@ class HomePageControllerSpec extends SpecBase {
 
             val view = application.injector.instanceOf[HomePageView]
 
+            implicit val message: Messages = messages(application)
+
             status(result) mustEqual OK
             contentAsString(result) mustEqual view(
               downloadReady = false,
-              downloadLinkMessagesKey = "homepage.downloadLinkText.filesRequested",
+              downloadLinkText = DownloadLinkText(
+                downloadDataSummary,
+                doesGoodsRecordExist = true,
+                verifiedEmail = true
+              ),
               ukimsNumberChanged = false,
               doesGoodsRecordExist = true,
               viewUpdateGoodsRecordsLink =
@@ -305,6 +343,9 @@ class HomePageControllerSpec extends SpecBase {
           when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(
             downloadDataSummary
           )
+          when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(
+            Some(Email("address", Instant.now()))
+          )
 
           val mockGoodsRecordConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
           when(mockGoodsRecordConnector.getRecords(any(), any())(any())) thenReturn Future
@@ -325,10 +366,16 @@ class HomePageControllerSpec extends SpecBase {
 
             val view = application.injector.instanceOf[HomePageView]
 
+            implicit val message: Messages = messages(application)
+
             status(result) mustEqual OK
             contentAsString(result) mustEqual view(
               downloadReady = true,
-              downloadLinkMessagesKey = "homepage.downloadLinkText.filesRequested",
+              downloadLinkText = DownloadLinkText(
+                downloadDataSummary,
+                doesGoodsRecordExist = true,
+                verifiedEmail = true
+              ),
               ukimsNumberChanged = false,
               doesGoodsRecordExist = true,
               viewUpdateGoodsRecordsLink =
@@ -359,6 +406,9 @@ class HomePageControllerSpec extends SpecBase {
           when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(
             downloadDataSummary
           )
+          when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(
+            Some(Email("address", Instant.now()))
+          )
 
           val mockGoodsRecordConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
           when(mockGoodsRecordConnector.getRecords(any(), any())(any())) thenReturn Future
@@ -379,10 +429,16 @@ class HomePageControllerSpec extends SpecBase {
 
             val view = application.injector.instanceOf[HomePageView]
 
+            implicit val message: Messages = messages(application)
+
             status(result) mustEqual OK
             contentAsString(result) mustEqual view(
               downloadReady = false,
-              downloadLinkMessagesKey = "homepage.downloadLinkText.filesRequested",
+              downloadLinkText = DownloadLinkText(
+                downloadDataSummary,
+                doesGoodsRecordExist = true,
+                verifiedEmail = true
+              ),
               ukimsNumberChanged = false,
               doesGoodsRecordExist = true,
               viewUpdateGoodsRecordsLink =
@@ -398,7 +454,7 @@ class HomePageControllerSpec extends SpecBase {
     }
 
     "when there are not any goods records" - {
-      "must return OK and the correct view for a GET with noGoodsRecords messageKey" in {
+      "must return OK and the correct view for a GET with noRecords messageKey" in {
 
         val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
         when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
@@ -413,6 +469,9 @@ class HomePageControllerSpec extends SpecBase {
         val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
         when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(
           Seq.empty
+        )
+        when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(
+          Some(Email("address", Instant.now()))
         )
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -430,10 +489,75 @@ class HomePageControllerSpec extends SpecBase {
 
           val view = application.injector.instanceOf[HomePageView]
 
+          implicit val message: Messages = messages(application)
+
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             downloadReady = false,
-            downloadLinkMessagesKey = "homepage.noRecords",
+            downloadLinkText = DownloadLinkText(
+              Seq.empty,
+              doesGoodsRecordExist = false,
+              verifiedEmail = true
+            ),
+            ukimsNumberChanged = false,
+            doesGoodsRecordExist = false,
+            viewUpdateGoodsRecordsLink =
+              controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url
+          )(request, messages(application)).toString
+
+          verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
+          verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any())(any())
+          verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())
+        }
+      }
+    }
+
+    "when email is not verified" - {
+      "must return OK and the correct view for a GET with unverifiedEmail messageKey" in {
+
+        val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+        when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
+        when(mockTraderProfileConnector.getHistoricProfileData(any())(any())) thenReturn Future.successful(
+          None
+        )
+
+        val mockGoodsRecordConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
+        when(mockGoodsRecordConnector.getRecords(any(), any())(any())) thenReturn Future
+          .successful(None)
+
+        val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+        when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(
+          Seq.empty
+        )
+        when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(
+          None
+        )
+
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+            bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+            bind[DownloadDataConnector].toInstance(mockDownloadDataConnector)
+          )
+          .build()
+
+        running(application) {
+          val request = FakeRequest(GET, routes.HomePageController.onPageLoad().url)
+
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[HomePageView]
+
+          implicit val message: Messages = messages(application)
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(
+            downloadReady = false,
+            downloadLinkText = DownloadLinkText(
+              Seq.empty,
+              doesGoodsRecordExist = false,
+              verifiedEmail = false
+            ),
             ukimsNumberChanged = false,
             doesGoodsRecordExist = false,
             viewUpdateGoodsRecordsLink =
@@ -464,6 +588,9 @@ class HomePageControllerSpec extends SpecBase {
         when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(
           Seq.empty
         )
+        when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(
+          Some(Email("address", Instant.now()))
+        )
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
@@ -480,10 +607,16 @@ class HomePageControllerSpec extends SpecBase {
 
           val view = application.injector.instanceOf[HomePageView]
 
+          implicit val message: Messages = messages(application)
+
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             downloadReady = false,
-            downloadLinkMessagesKey = "homepage.noRecords",
+            downloadLinkText = DownloadLinkText(
+              Seq.empty,
+              doesGoodsRecordExist = false,
+              verifiedEmail = true
+            ),
             ukimsNumberChanged = false,
             doesGoodsRecordExist = false,
             viewUpdateGoodsRecordsLink =
@@ -511,6 +644,9 @@ class HomePageControllerSpec extends SpecBase {
         when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(
           Seq.empty
         )
+        when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(
+          Some(Email("address", Instant.now()))
+        )
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
@@ -528,10 +664,16 @@ class HomePageControllerSpec extends SpecBase {
 
           val view = application.injector.instanceOf[HomePageView]
 
+          implicit val message: Messages = messages(application)
+
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             downloadReady = false,
-            downloadLinkMessagesKey = "homepage.noRecords",
+            downloadLinkText = DownloadLinkText(
+              Seq.empty,
+              doesGoodsRecordExist = false,
+              verifiedEmail = true
+            ),
             ukimsNumberChanged = true,
             doesGoodsRecordExist = false,
             viewUpdateGoodsRecordsLink =

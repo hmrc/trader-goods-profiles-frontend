@@ -23,7 +23,7 @@ import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.test.FakeRequest
 import repositories.SessionRepository
-import uk.gov.hmrc.auth.core.AffinityGroup
+import uk.gov.hmrc.auth.core.{AffinityGroup, User}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -45,7 +45,9 @@ class DataRetrievalActionSpec extends SpecBase with MockitoSugar {
         val action            = new Harness(sessionRepository)
 
         val result =
-          action.callTransform(IdentifierRequest(FakeRequest(), "id", testEori, AffinityGroup.Individual)).futureValue
+          action
+            .callTransform(IdentifierRequest(FakeRequest(), "id", testEori, AffinityGroup.Individual, Some(User)))
+            .futureValue
 
         result.userAnswers must not be defined
         result.userId mustBe "id"
@@ -64,7 +66,9 @@ class DataRetrievalActionSpec extends SpecBase with MockitoSugar {
 
         val result =
           action
-            .callTransform(IdentifierRequest(FakeRequest(), userAnswersId, testEori, AffinityGroup.Individual))
+            .callTransform(
+              IdentifierRequest(FakeRequest(), userAnswersId, testEori, AffinityGroup.Individual, Some(User))
+            )
             .futureValue
 
         result.userAnswers mustBe defined

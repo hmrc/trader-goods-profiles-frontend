@@ -21,7 +21,8 @@ import connectors.{DownloadDataConnector, TraderProfileConnector}
 import controllers.actions.IdentifierAction
 import models.TraderProfile
 import models.requests.IdentifierRequest
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import uk.gov.hmrc.auth.core.User
 import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 
 import javax.inject.Inject
@@ -37,13 +38,13 @@ class IndexController @Inject() (
     extends BaseController {
 
   def onPageLoad: Action[AnyContent] = identify.async { implicit request =>
-    def checkProfileAndContinue =
+    def checkProfileAndContinue: Future[Result] =
       traderProfileConnector.checkTraderProfile.flatMap {
         case true  => eoriChanged(request)
         case false => Future.successful(Redirect(controllers.profile.routes.ProfileSetupController.onPageLoad()))
       }
 
-    if (config.downloadFileEnabled) {
+    if (config.downloadFileEnabled && request.credentialRole.contains(User)) {
       downloadDataConnector.getEmail.flatMap {
         case Some(_) =>
           checkProfileAndContinue

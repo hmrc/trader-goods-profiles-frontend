@@ -26,7 +26,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import play.api.mvc.Result
 import play.api.mvc.Results.Redirect
 import play.api.test.FakeRequest
-import uk.gov.hmrc.auth.core.AffinityGroup
+import uk.gov.hmrc.auth.core.{AffinityGroup, User}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -39,15 +39,17 @@ class ProfileAuthenticateActionSpec extends SpecBase with MockitoSugar {
   }
 
   "Profile Authenticate Action" - {
-    "must redirect to profile setup page when profile does not exists" in {
+    "must redirect to index controller which will handle the redirect to the profile setup page when profile does not exists" in {
       val mockTraderProfileConnector = mock[TraderProfileConnector]
 
       when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(false)
 
       val action = new Harness(mockTraderProfileConnector)
       val result =
-        action.callFilter(IdentifierRequest(FakeRequest(), "id", testEori, AffinityGroup.Individual)).futureValue
-      result mustBe Some(Redirect("/trader-goods-profiles/create-profile/start"))
+        action
+          .callFilter(IdentifierRequest(FakeRequest(), "id", testEori, AffinityGroup.Individual, Some(User)))
+          .futureValue
+      result mustBe Some(Redirect(controllers.routes.IndexController.onPageLoad()))
     }
 
     "must not redirect when profile does exist" in {
@@ -57,7 +59,9 @@ class ProfileAuthenticateActionSpec extends SpecBase with MockitoSugar {
 
       val action = new Harness(mockTraderProfileConnector)
       val result =
-        action.callFilter(IdentifierRequest(FakeRequest(), "id", testEori, AffinityGroup.Individual)).futureValue
+        action
+          .callFilter(IdentifierRequest(FakeRequest(), "id", testEori, AffinityGroup.Individual, Some(User)))
+          .futureValue
       result mustBe None
     }
 

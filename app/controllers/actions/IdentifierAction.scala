@@ -54,21 +54,23 @@ class AuthenticatedIdentifierAction @Inject() (
       Enrolment(config.tgpEnrolmentIdentifier.key) and (AffinityGroup.Organisation or AffinityGroup.Individual)
 
     authorised(predicates)
-      .retrieve(Retrievals.internalId and Retrievals.affinityGroup and Retrievals.authorisedEnrolments) {
-        case Some(internalId) ~ Some(affinityGroup) ~ authorisedEnrolments =>
+      .retrieve(
+        Retrievals.internalId and Retrievals.affinityGroup and Retrievals.credentialRole and Retrievals.authorisedEnrolments
+      ) {
+        case Some(internalId) ~ Some(affinityGroup) ~ credentialRole ~ authorisedEnrolments =>
           authorisedEnrolments
             .getEnrolment(config.tgpEnrolmentIdentifier.key)
             .flatMap(_.getIdentifier(config.tgpEnrolmentIdentifier.identifier)) match {
             case Some(enrolment) if !enrolment.value.isBlank =>
               checkUserAllowList(enrolment.value)(hc).flatMap { _ =>
-                block(IdentifierRequest(request, internalId, enrolment.value, affinityGroup))
+                block(IdentifierRequest(request, internalId, enrolment.value, affinityGroup, credentialRole))
               }
             case Some(enrolment) if enrolment.value.isBlank  =>
               throw InternalError("EORI is empty")
             case _                                           =>
               throw InsufficientEnrolments("Unable to retrieve Enrolment")
           }
-        case _                                                             => throw InternalError("Undefined authorisation error")
+        case _                                                                              => throw InternalError("Undefined authorisation error")
       } recover {
       case _: UserNotAllowedException        =>
         logger.info("trader is not on user-allow-list redirecting to UnauthorisedServiceController")

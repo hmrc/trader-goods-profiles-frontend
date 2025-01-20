@@ -45,8 +45,9 @@ class FileManagementController @Inject() (
   def onPageLoad(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData).async {
     implicit request =>
       if (config.downloadFileEnabled) {
-        viewModelProvider(downloadDataConnector).map { viewModel =>
-          Ok(view(viewModel))
+        downloadDataConnector.getEmail.flatMap {
+          case Some(_) => viewModelProvider(downloadDataConnector).map(viewModel => Ok(view(viewModel)))
+          case None    => Future.successful(Redirect(controllers.routes.IndexController.onPageLoad()))
         }
       } else {
         Future.successful(Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad()))
