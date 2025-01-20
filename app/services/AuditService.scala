@@ -188,9 +188,8 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
   ): Future[Done] = {
     val event =
       auditEventFactory.createSearchFilterRecordEvent(affinityGroup, SearchForm, totalRecords, totalPages, eori)
-    println("++++++++++++++++++++++++" + event)
     auditConnector.sendEvent(event).map { auditResult =>
-      logger.info(s"FilterSearchRecords audit event status: $auditResult")
+      logger.info(s"SearchGoodsRecords audit event status: $auditResult")
       Done
     }
 
