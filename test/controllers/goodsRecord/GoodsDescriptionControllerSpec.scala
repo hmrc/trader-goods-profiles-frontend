@@ -374,7 +374,7 @@ class GoodsDescriptionControllerSpec extends SpecBase with MockitoSugar {
           redirectLocation(result).value mustEqual onwardRoute.url
 
           session(result).get(dataUpdated) must be(Some("true"))
-          session(result).get(pageUpdated) must be(Some("goods description"))
+          session(result).get(pageUpdated) must be(Some("goodsDescription"))
         }
       }
 

@@ -278,6 +278,12 @@ hasCorrectGoods.p2.linkText = Search for a commodity code on the Online Tariff T
 hasCorrectGoods.h2 = Are these the correct goods?
 hasCorrectGoods.error.required = Select yes if these are the correct goods
 
+productReference = product reference
+goodsDescription = goods description
+countryOfOrigin = country of origin
+commodityCode = commodity code
+supplementaryUnit = supplementary unit
+
 traderReference.title = Product reference
 traderReference.h1 = Product reference
 traderReference.p1 = A product reference is a custom name you can give a goods record to help you identify the record. You can also use the product reference to add the record information to a movement.

@@ -427,7 +427,7 @@ class TraderReferenceControllerSpec extends SpecBase with MockitoSugar {
           redirectLocation(result).value mustEqual onwardRoute.url
 
           session(result).get(dataUpdated) must be(Some("true"))
-          session(result).get(pageUpdated) must be(Some("product reference"))
+          session(result).get(pageUpdated) must be(Some("productReference"))
 
           verify(mockSessionRepository).set(any())
           verify(mockGoodsRecordConnector).isTraderReferenceUnique(any())(any())

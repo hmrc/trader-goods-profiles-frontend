@@ -16,18 +16,18 @@
 
 package utils
 
-import utils.Constants.{commodityCodeKey, countryOfOriginKey, goodsDescriptionKey, hasNiphlKey, hasNirmsKey, newUkimsNumberKey, niphlNumberKey, nirmsNumberKey, traderReferenceKey, ukimsNumberKey}
+import utils.Constants._
 
 case object SessionData {
   val dataUpdated: String                    = "changesMade"
   val dataRemoved: String                    = "valueRemoved"
   val dataAdded: String                      = "valueAdded"
   val pageUpdated: String                    = "changedPage"
-  val traderReference: String                = "product reference"
-  val goodsDescription: String               = "goods description"
-  val countryOfOrigin: String                = "country of origin"
-  val commodityCode: String                  = "commodity code"
-  val supplementaryUnit: String              = "supplementary unit"
+  val traderReference: String                = "productReference"
+  val goodsDescription: String               = "goodsDescription"
+  val countryOfOrigin: String                = "countryOfOrigin"
+  val commodityCode: String                  = "commodityCode"
+  val supplementaryUnit: String              = "supplementaryUnit"
   val ukimsNumberPage: String                = ukimsNumberKey
   val newUkimsNumberPage: String             = newUkimsNumberKey
   val hasNirmsPage: String                   = hasNirmsKey

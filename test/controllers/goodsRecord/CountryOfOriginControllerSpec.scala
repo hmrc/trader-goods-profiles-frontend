@@ -493,7 +493,7 @@ class CountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
           redirectLocation(result).value mustEqual onwardRoute.url
 
           session(result).get(dataUpdated) must be(Some("true"))
-          session(result).get(pageUpdated) must be(Some("country of origin"))
+          session(result).get(pageUpdated) must be(Some("countryOfOrigin"))
         }
       }
 
