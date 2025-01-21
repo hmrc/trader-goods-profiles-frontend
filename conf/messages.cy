@@ -445,6 +445,7 @@ categoryGuidance.title = Categoreiddio
 categoryGuidance.heading = Categoreiddio
 categoryGuidance.p1 = Mae categoreiddio yn eich galluogi i wybod pa gategori sy’n berthnasol i’ch eich nwyddau, a ph’un a ydynt yn gymwys i ddefnyddio’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM) neu beidio.
 categoryGuidance.p2 = Byddwn yn gofyn cwestiynau ynghylch unrhyw esemptiadau sy’n berthnasol i chi, ac wedyn byddwn yn rhoi gwybod i chi i ba gategori y mae’ch nwyddau’n perthyn iddo. Gallwn ofyn hyd at 10 cwestiwn i chi.
+categoryGuidance.linkText =  Dysgwch sut i wirio a chategoreiddio nwyddau rydych chi’n eu symud o Brydain Fawr i Ogledd Iwerddon er mwyn defnyddio’r broses symlach ar gyfer symudiadau yn y farchnad fewnol (yn agor tab newydd)
 categoryGuidance.subheading = Esemptiadau
 categoryGuidance.p3 = Bydd eich nwyddau yn cael eu rhannu i 1 o 3 chategori:
 categoryGuidance.p3.1 = Categori 1 – nwyddau sydd wedi’u heithrio ar gyfer defnyddio SPIMM

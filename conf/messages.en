@@ -54,8 +54,8 @@ cyaCreateRecord.h1 = Check your answers for creating a record
 cyaCreateRecord.warning = Warning
 cyaCreateRecord.warningText = You are liable for the information on any movements created by you, or on your behalf using your TGP records.
 
-cyaUpdateRecord.title.traderReference =  Check your answers for changing the product reference
-cyaUpdateRecord.h1.traderReference =  Check your answers for changing the product reference
+cyaUpdateRecord.title.productReference =  Check your answers for changing the product reference
+cyaUpdateRecord.h1.productReference =  Check your answers for changing the product reference
 cyaUpdateRecord.title.goodsDescription = Check your answers for changing the goods description
 cyaUpdateRecord.h1.goodsDescription = Check your answers for changing the goods description
 cyaUpdateRecord.title.countryOfOrigin = Check your answers for changing the country of origin
@@ -178,6 +178,7 @@ categoryGuidance.title = Categorisation
 categoryGuidance.heading = Categorisation
 categoryGuidance.p1 = Categorisation allows you to know what category your goods are in and if they are eligible for Simplified Process for Internal Market Movements (SPIMM).
 categoryGuidance.p2 = We’ll ask you questions about exemptions that you hold and then tell you what category your goods are. We could ask you up to 10 questions.
+categoryGuidance.linkText =  Find out how to check and categorise goods you move from Great Britain to Northern Ireland to use the simplified process for internal market movements (opens in a new tab)
 categoryGuidance.subheading = Exemptions
 categoryGuidance.p3 = Your goods will be placed into 1 of 3 categories:
 categoryGuidance.p3.1 = Category 1 – goods that are excluded for using SPIMM
@@ -447,7 +448,7 @@ goodsRecords.pagination.less = Showing {0} goods records sorted by most recently
 goodsRecords.pagination.less.singleRecord = Showing {0} goods record sorted by most recently updated.
 goodsRecords.pagination.searchFilter = Showing {0} goods records.
 goodsRecords.pagination.singleRecord = Showing {0} goods record.
-goodsRecords.tableHeader.traderReference = Product reference
+goodsRecords.tableHeader.productReference = Product reference
 goodsRecords.relatedTo = Related to
 goodsRecords.tableHeader.goodsDescription = Goods description
 goodsRecords.tableHeader.countryOfOrigin = Country of origin
@@ -458,7 +459,7 @@ goodsRecords.tableHeader.actions = Actions
 goodsRecords.skip.record = Skip to goods records
 goodsRecords.skip.main = Skip to main
 
-goodsRecords.li1 = Trader reference
+goodsRecords.li1 = Product reference
 goodsRecords.li2 = Goods description
 
 goodsRecordsEmptyView.p1 = You do not have any records in your goods profile.
