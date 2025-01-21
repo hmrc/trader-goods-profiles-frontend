@@ -35,9 +35,9 @@ import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import utils.Constants.{commodityCodeKey, countryOfOriginKey, goodsDescriptionKey, traderReferenceKey}
+import utils.Constants.{commodityCodeKey, countryOfOriginKey, goodsDescriptionKey, productReferenceKey}
 import utils.SessionData.fromExpiredCommodityCodePage
-import viewmodels.checkAnswers.goodsRecord.{CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, TraderReferenceSummary}
+import viewmodels.checkAnswers.goodsRecord.{CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, ProductReferenceSummary}
 import viewmodels.govuk.summarylist._
 import views.html.goodsRecord.CyaUpdateRecordView
 
@@ -128,18 +128,18 @@ class CyaUpdateRecordController @Inject() (
       }
     }
 
-  def onPageLoadTraderReference(recordId: String): Action[AnyContent] =
+  def onPageLoadproductReference(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
-      UpdateGoodsRecord.validateTraderReference(request.userAnswers, recordId) match {
-        case Right(traderReference) =>
+      UpdateGoodsRecord.validateproductReference(request.userAnswers, recordId) match {
+        case Right(productReference) =>
           val onSubmitAction =
-            controllers.goodsRecord.routes.CyaUpdateRecordController.onSubmitTraderReference(recordId)
+            controllers.goodsRecord.routes.CyaUpdateRecordController.onSubmitproductReference(recordId)
 
           val list = SummaryListViewModel(
-            Seq(TraderReferenceSummary.row(traderReference, recordId, CheckMode, recordLocked = false))
+            Seq(ProductReferenceSummary.row(productReference, recordId, CheckMode, recordLocked = false))
           )
-          Ok(view(list, onSubmitAction, traderReferenceKey))
-        case Left(errors)           =>
+          Ok(view(list, onSubmitAction, productReferenceKey))
+        case Left(errors)            =>
           logErrorsAndContinue(
             errorMessage,
             controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId),
@@ -277,16 +277,17 @@ class CyaUpdateRecordController @Inject() (
       Future.successful(Done)
     }
 
-  def onSubmitTraderReference(recordId: String): Action[AnyContent] =
+  def onSubmitproductReference(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       (for {
-        traderReference   <- handleValidateError(UpdateGoodsRecord.validateTraderReference(request.userAnswers, recordId))
+        productReference  <-
+          handleValidateError(UpdateGoodsRecord.validateproductReference(request.userAnswers, recordId))
         updateGoodsRecord <-
-          Future.successful(UpdateGoodsRecord(request.eori, recordId, traderReference = Some(traderReference)))
+          Future.successful(UpdateGoodsRecord(request.eori, recordId, productReference = Some(productReference)))
         _                  = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
         oldRecord         <- goodsRecordConnector.getRecord(recordId)
-        _                 <- updateGoodsRecordIfValueChanged(traderReference, oldRecord.traderRef, updateGoodsRecord)
-        updatedAnswers    <- Future.fromTry(request.userAnswers.remove(TraderReferenceUpdatePage(recordId)))
+        _                 <- updateGoodsRecordIfValueChanged(productReference, oldRecord.traderRef, updateGoodsRecord)
+        updatedAnswers    <- Future.fromTry(request.userAnswers.remove(ProductReferenceUpdatePage(recordId)))
         _                 <- sessionRepository.set(updatedAnswers)
       } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers))).recover {
         case e: GoodsRecordBuildFailure =>

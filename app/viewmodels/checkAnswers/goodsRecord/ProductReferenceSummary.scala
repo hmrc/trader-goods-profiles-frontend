@@ -17,26 +17,26 @@
 package viewmodels.checkAnswers.goodsRecord
 
 import models.{CheckMode, Mode, UserAnswers}
-import pages.goodsRecord.TraderReferencePage
+import pages.goodsRecord.ProductReferencePage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 
-object TraderReferenceSummary {
+object ProductReferenceSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages): Option[SummaryListRow] =
-    answers.get(TraderReferencePage).map { answer =>
+    answers.get(ProductReferencePage).map { answer =>
       SummaryListRowViewModel(
-        key = "traderReference.checkYourAnswersLabel",
+        key = "productReference.checkYourAnswersLabel",
         value = ValueViewModel(HtmlFormat.escape(answer).toString),
         actions = Seq(
           ActionItemViewModel(
             "site.change",
-            controllers.goodsRecord.routes.TraderReferenceController.onPageLoadCreate(CheckMode).url
+            controllers.goodsRecord.routes.ProductReferenceController.onPageLoadCreate(CheckMode).url
           )
-            .withVisuallyHiddenText(messages("traderReference.change.hidden"))
+            .withVisuallyHiddenText(messages("productReference.change.hidden"))
         )
       )
     }
@@ -45,7 +45,7 @@ object TraderReferenceSummary {
     messages: Messages
   ): SummaryListRow =
     SummaryListRowViewModel(
-      key = "traderReference.checkYourAnswersLabel",
+      key = "productReference.checkYourAnswersLabel",
       value = ValueViewModel(HtmlFormat.escape(value).toString),
       actions = if (recordLocked) {
         Seq.empty
@@ -53,9 +53,9 @@ object TraderReferenceSummary {
         Seq(
           ActionItemViewModel(
             "site.change",
-            controllers.goodsRecord.routes.TraderReferenceController.onPageLoadUpdate(mode, recordId).url
+            controllers.goodsRecord.routes.ProductReferenceController.onPageLoadUpdate(mode, recordId).url
           )
-            .withVisuallyHiddenText(messages("traderReference.change.hidden"))
+            .withVisuallyHiddenText(messages("productReference.change.hidden"))
         )
       }
     )

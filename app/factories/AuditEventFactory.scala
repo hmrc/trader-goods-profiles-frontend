@@ -27,7 +27,7 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.AuditExtensions.auditHeaderCarrier
 import uk.gov.hmrc.play.audit.model.{DataEvent, ExtendedDataEvent}
-import utils.Constants.{commodityCodeKey, countryOfOriginKey, goodsDescriptionKey, traderReferenceKey}
+import utils.Constants.{commodityCodeKey, countryOfOriginKey, goodsDescriptionKey, productReferenceKey}
 import utils.HttpStatusCodeDescriptions.codeDescriptions
 
 import java.time.Instant
@@ -116,11 +116,11 @@ case class AuditEventFactory() {
       "eori"                       -> goodsRecord.eori,
       "affinityGroup"              -> affinityGroup.toString,
       "journey"                    -> journey.toString,
-      "traderReference"            -> goodsRecord.traderRef,
+      "productReference"           -> goodsRecord.traderRef,
       "goodsDescription"           -> goodsRecord.goodsDescription,
       "countryOfOrigin"            -> goodsRecord.countryOfOrigin,
       "commodityCode"              -> goodsRecord.commodity.commodityCode,
-      traderReferenceKey           -> goodsRecord.traderRef,
+      productReferenceKey          -> goodsRecord.traderRef,
       goodsDescriptionKey          -> goodsRecord.goodsDescription,
       countryOfOriginKey           -> goodsRecord.countryOfOrigin,
       commodityCodeKey             -> goodsRecord.commodity.commodityCode,
@@ -219,7 +219,7 @@ case class AuditEventFactory() {
         goodsRecord.commodityCode.map(_.validityEndDate.map(_.toString).getOrElse("null"))
       ) ++
       writeOptional(goodsDescriptionKey, goodsRecord.goodsDescription) ++
-      writeOptional(traderReferenceKey, goodsRecord.traderReference) ++
+      writeOptional(productReferenceKey, goodsRecord.productReference) ++
       writeOptional(countryOfOriginKey, goodsRecord.countryOfOrigin)
 
     createSubmitGoodsRecordEvent(auditDetails)

@@ -29,7 +29,7 @@ import org.mockito.Mockito.{never, reset, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
 import pages._
-import pages.goodsRecord.{CommodityCodePage, CountryOfOriginPage, GoodsDescriptionPage, TraderReferencePage}
+import pages.goodsRecord.{CommodityCodePage, CountryOfOriginPage, GoodsDescriptionPage, ProductReferencePage}
 import play.api.http.Status.OK
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import queries.CommodityQuery
@@ -219,7 +219,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       val expectedGoodsRecord =
         GoodsRecord(
           testEori,
-          "trader reference",
+          "product reference",
           testCommodity,
           "goods description",
           "PF"
@@ -255,7 +255,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
 
       val userAnswers         = generateUserAnswersForFinishCreateGoodsTest
       val expectedGoodsRecord =
-        GoodsRecord(testEori, "trader reference", testCommodity, "goods description", "PF")
+        GoodsRecord(testEori, "product reference", testCommodity, "goods description", "PF")
 
       val result = await(auditService.auditFinishCreateGoodsRecord(testEori, AffinityGroup.Individual, userAnswers))
 
@@ -327,7 +327,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
           testRecordId,
           None,
           None,
-          Some("trader reference"),
+          Some("product reference"),
           Some(testCommodity)
         )
 
@@ -368,7 +368,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
           testRecordId,
           None,
           None,
-          Some("trader reference"),
+          Some("product reference"),
           Some(testCommodity)
         )
 
@@ -1397,7 +1397,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       .set(CommodityQuery, testCommodity)
       .success
       .value
-      .set(TraderReferencePage, "trader reference")
+      .set(ProductReferencePage, "product reference")
       .success
       .value
       .set(GoodsDescriptionPage, "goods description")

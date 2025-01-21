@@ -30,7 +30,7 @@ import org.mockito.Mockito.{times, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.Inspectors.forAll
 import org.scalatestplus.mockito.MockitoSugar
-import pages.goodsRecord.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage, TraderReferenceUpdatePage}
+import pages.goodsRecord.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage, ProductReferenceUpdatePage}
 import play.api.i18n.Messages
 import play.api.inject.bind
 import play.api.test.FakeRequest
@@ -41,7 +41,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import uk.gov.hmrc.http.NotFoundException
 import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
 import viewmodels.checkAnswers._
-import viewmodels.checkAnswers.goodsRecord.{CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, TraderReferenceSummary}
+import viewmodels.checkAnswers.goodsRecord.{CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, ProductReferenceSummary}
 import viewmodels.govuk.summarylist._
 import views.html.goodsRecord.SingleRecordView
 
@@ -82,7 +82,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
     "must return OK and the correct view for a GET and set up userAnswers when record is categorised" in {
 
       val userAnswers = UserAnswers(userAnswersId)
-        .set(TraderReferenceUpdatePage(testRecordId), recordForTestingSummaryRows.traderRef)
+        .set(ProductReferenceUpdatePage(testRecordId), recordForTestingSummaryRows.traderRef)
         .success
         .value
         .set(GoodsDescriptionUpdatePage(testRecordId), recordForTestingSummaryRows.goodsDescription)
@@ -118,7 +118,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
       val detailsList = SummaryListViewModel(
         rows = Seq(
-          TraderReferenceSummary.row(recordForTestingSummaryRows.traderRef, testRecordId, NormalMode, recordIsLocked),
+          ProductReferenceSummary.row(recordForTestingSummaryRows.traderRef, testRecordId, NormalMode, recordIsLocked),
           GoodsDescriptionSummary.rowUpdate(recordForTestingSummaryRows, testRecordId, NormalMode, recordIsLocked),
           CountryOfOriginSummary
             .rowUpdate(recordForTestingSummaryRows, testRecordId, NormalMode, recordIsLocked, countries),
@@ -217,7 +217,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
       val recordIsLocked = true
       val userAnswers    = UserAnswers(userAnswersId)
-        .set(TraderReferenceUpdatePage(lockedRecord.recordId), lockedRecord.traderRef)
+        .set(ProductReferenceUpdatePage(lockedRecord.recordId), lockedRecord.traderRef)
         .success
         .value
         .set(GoodsDescriptionUpdatePage(lockedRecord.recordId), lockedRecord.goodsDescription)
@@ -253,7 +253,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
       val detailsList = SummaryListViewModel(
         rows = Seq(
-          TraderReferenceSummary.row(lockedRecord.traderRef, lockedRecord.recordId, NormalMode, recordIsLocked),
+          ProductReferenceSummary.row(lockedRecord.traderRef, lockedRecord.recordId, NormalMode, recordIsLocked),
           GoodsDescriptionSummary.rowUpdate(lockedRecord, lockedRecord.recordId, NormalMode, recordIsLocked),
           CountryOfOriginSummary
             .rowUpdate(lockedRecord, lockedRecord.recordId, NormalMode, recordIsLocked, countries),
@@ -344,7 +344,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
     "must return OK and the correct view for a GET and set up userAnswers when record is not categorised" in {
 
       val userAnswers = UserAnswers(userAnswersId)
-        .set(TraderReferenceUpdatePage(testRecordId), notCategorisedRecord.traderRef)
+        .set(ProductReferenceUpdatePage(testRecordId), notCategorisedRecord.traderRef)
         .success
         .value
         .set(GoodsDescriptionUpdatePage(testRecordId), notCategorisedRecord.goodsDescription)
@@ -380,7 +380,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
       val detailsList = SummaryListViewModel(
         rows = Seq(
-          TraderReferenceSummary.row(notCategorisedRecord.traderRef, testRecordId, NormalMode, recordIsLocked),
+          ProductReferenceSummary.row(notCategorisedRecord.traderRef, testRecordId, NormalMode, recordIsLocked),
           GoodsDescriptionSummary.rowUpdate(notCategorisedRecord, testRecordId, NormalMode, recordIsLocked),
           CountryOfOriginSummary
             .rowUpdate(
@@ -488,7 +488,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
       val recordIsLocked = true
       val userAnswers    = UserAnswers(userAnswersId)
-        .set(TraderReferenceUpdatePage(notCategorisedLockedRecord.recordId), notCategorisedLockedRecord.traderRef)
+        .set(ProductReferenceUpdatePage(notCategorisedLockedRecord.recordId), notCategorisedLockedRecord.traderRef)
         .success
         .value
         .set(
@@ -527,7 +527,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
       val detailsList = SummaryListViewModel(
         rows = Seq(
-          TraderReferenceSummary
+          ProductReferenceSummary
             .row(notCategorisedLockedRecord.traderRef, notCategorisedLockedRecord.recordId, NormalMode, recordIsLocked),
           GoodsDescriptionSummary
             .rowUpdate(notCategorisedLockedRecord, notCategorisedLockedRecord.recordId, NormalMode, recordIsLocked),
@@ -915,7 +915,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           val toReview = true
 
           val userAnswers = UserAnswers(userAnswersId)
-            .set(TraderReferenceUpdatePage(record.recordId), record.traderRef)
+            .set(ProductReferenceUpdatePage(record.recordId), record.traderRef)
             .success
             .value
             .set(GoodsDescriptionUpdatePage(record.recordId), record.goodsDescription)
@@ -951,7 +951,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
           val detailsList = SummaryListViewModel(
             rows = Seq(
-              TraderReferenceSummary.row(record.traderRef, record.recordId, NormalMode, recordIsLocked),
+              ProductReferenceSummary.row(record.traderRef, record.recordId, NormalMode, recordIsLocked),
               GoodsDescriptionSummary.rowUpdate(record, record.recordId, NormalMode, recordIsLocked),
               CountryOfOriginSummary
                 .rowUpdate(record, record.recordId, NormalMode, recordIsLocked, countries),

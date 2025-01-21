@@ -37,7 +37,7 @@ import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import utils.Constants.{commodityCodeKey, countryOfOriginKey, goodsDescriptionKey, traderReferenceKey}
+import utils.Constants.{commodityCodeKey, countryOfOriginKey, goodsDescriptionKey, productReferenceKey}
 import viewmodels.checkAnswers.goodsRecord.UpdateRecordSummary
 import viewmodels.govuk.SummaryListFluency
 import views.html.goodsRecord.CyaUpdateRecordView
@@ -718,17 +718,17 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
       }
     }
 
-    "for Trader Reference Update" - {
-      val summaryKey      = "traderReference.checkYourAnswersLabel"
-      val summaryHidden   = "traderReference.change.hidden"
+    "for product reference Update" - {
+      val summaryKey      = "productReference.checkYourAnswersLabel"
+      val summaryHidden   = "productReference.change.hidden"
       val summaryUrl      =
-        controllers.goodsRecord.routes.TraderReferenceController.onPageLoadUpdate(CheckMode, testRecordId).url
-      val page            = TraderReferenceUpdatePage(testRecordId)
+        controllers.goodsRecord.routes.ProductReferenceController.onPageLoadUpdate(CheckMode, testRecordId).url
+      val page            = ProductReferenceUpdatePage(testRecordId)
       val answer          = "Test"
-      val expectedPayload = UpdateGoodsRecord(testEori, testRecordId, traderReference = Some(answer))
-      val getUrl          = controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadTraderReference(testRecordId).url
-      val call            = controllers.goodsRecord.routes.CyaUpdateRecordController.onSubmitTraderReference(testRecordId)
-      val postUrl         = controllers.goodsRecord.routes.CyaUpdateRecordController.onSubmitTraderReference(testRecordId).url
+      val expectedPayload = UpdateGoodsRecord(testEori, testRecordId, productReference = Some(answer))
+      val getUrl          = controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadproductReference(testRecordId).url
+      val call            = controllers.goodsRecord.routes.CyaUpdateRecordController.onSubmitproductReference(testRecordId)
+      val postUrl         = controllers.goodsRecord.routes.CyaUpdateRecordController.onSubmitproductReference(testRecordId).url
 
       "for a GET" - {
 
@@ -760,7 +760,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             val list = createChangeList(application)
 
             status(result) mustEqual OK
-            contentAsString(result) mustEqual view(list, call, traderReferenceKey)(
+            contentAsString(result) mustEqual view(list, call, productReferenceKey)(
               request,
               messages(application)
             ).toString
@@ -910,9 +910,9 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             }
           }
 
-          "when trader reference has not been changed must not update the goods record and redirect to the Home Page" in {
+          "when product reference has not been changed must not update the goods record and redirect to the Home Page" in {
             val answer          = record.traderRef
-            val expectedPayload = UpdateGoodsRecord(testEori, testRecordId, traderReference = Some(answer))
+            val expectedPayload = UpdateGoodsRecord(testEori, testRecordId, productReference = Some(answer))
 
             val userAnswers = emptyUserAnswers
               .set(page, answer)

@@ -43,7 +43,7 @@ class JourneySpec extends AnyFreeSpec with Matchers {
   "CreateRecordJourney" - {
     "must have the correct pages" in {
       CreateRecordJourney.pages mustBe Seq(
-        traderReferencePage,
+        productReferencePage,
         goodsDescriptionPage,
         countryOfOriginPage,
         commodityCodePage,

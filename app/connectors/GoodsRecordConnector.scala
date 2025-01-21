@@ -61,10 +61,10 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
   ) = // TODO: This is part of the filtering work and will be replaced with the new filter endpoint as part of TGP-3003
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/filter?$queryParams"
 
-  private def isTraderReferenceUniqueUrl(
-    traderReference: String
+  private def isproductReferenceUniqueUrl(
+    productReference: String
   ) = // TODO: This is part of the filtering work and will be replaced with the new filter endpoint as part of TGP-3003
-    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/records/is-trader-reference-unique/$traderReference"
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/records/is-trader-reference-unique/$productReference"
 
   private def searchRecordsUrl(
     eori: String,
@@ -252,9 +252,9 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
         response.json.as[RecordsSummary]
       }
 
-  def isTraderReferenceUnique(traderReference: String)(implicit hc: HeaderCarrier): Future[Boolean] =
+  def isproductReferenceUnique(productReference: String)(implicit hc: HeaderCarrier): Future[Boolean] =
     httpClient
-      .get(isTraderReferenceUniqueUrl(traderReference))
+      .get(isproductReferenceUniqueUrl(productReference))
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
       .map { response =>

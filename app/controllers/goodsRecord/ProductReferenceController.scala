@@ -19,22 +19,22 @@ package controllers.goodsRecord
 import connectors.GoodsRecordConnector
 import controllers.BaseController
 import controllers.actions._
-import forms.goodsRecord.TraderReferenceFormProvider
+import forms.goodsRecord.ProductReferenceFormProvider
 import models.Mode
 import models.helper.GoodsDetailsUpdate
 import navigation.GoodsRecordNavigator
-import pages.goodsRecord.{TraderReferencePage, TraderReferenceUpdatePage}
+import pages.goodsRecord.{ProductReferencePage, ProductReferenceUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import services.AuditService
 import utils.SessionData._
-import views.html.goodsRecord.TraderReferenceView
+import views.html.goodsRecord.ProductReferenceView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class TraderReferenceController @Inject() (
+class ProductReferenceController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: GoodsRecordNavigator,
@@ -43,9 +43,9 @@ class TraderReferenceController @Inject() (
   requireData: DataRequiredAction,
   profileAuth: ProfileAuthenticateAction,
   auditService: AuditService,
-  formProvider: TraderReferenceFormProvider,
+  formProvider: ProductReferenceFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: TraderReferenceView,
+  view: ProductReferenceView,
   goodsRecordConnector: GoodsRecordConnector
 )(implicit ec: ExecutionContext)
     extends BaseController {
@@ -53,16 +53,16 @@ class TraderReferenceController @Inject() (
   private val form                                     = formProvider()
   def onPageLoadCreate(mode: Mode): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
-      val preparedForm = prepareForm(TraderReferencePage, form)
+      val preparedForm = prepareForm(ProductReferencePage, form)
 
-      val onSubmitAction = controllers.goodsRecord.routes.TraderReferenceController.onSubmitCreate(mode)
+      val onSubmitAction = controllers.goodsRecord.routes.ProductReferenceController.onSubmitCreate(mode)
 
       Ok(view(preparedForm, onSubmitAction))
     }
 
   def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
-      val preparedForm = prepareForm(TraderReferenceUpdatePage(recordId), form)
+      val preparedForm = prepareForm(ProductReferenceUpdatePage(recordId), form)
 
       auditService
         .auditStartUpdateGoodsRecord(
@@ -72,28 +72,28 @@ class TraderReferenceController @Inject() (
           recordId
         )
 
-      val onSubmitAction = controllers.goodsRecord.routes.TraderReferenceController.onSubmitUpdate(mode, recordId)
+      val onSubmitAction = controllers.goodsRecord.routes.ProductReferenceController.onSubmitUpdate(mode, recordId)
       Ok(view(preparedForm, onSubmitAction)).removingFromSession(dataRemoved, dataUpdated, pageUpdated)
     }
 
   def onSubmitCreate(mode: Mode): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val onSubmitAction = controllers.goodsRecord.routes.TraderReferenceController.onSubmitCreate(mode)
+      val onSubmitAction = controllers.goodsRecord.routes.ProductReferenceController.onSubmitCreate(mode)
 
       form
         .bindFromRequest()
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, onSubmitAction))),
           value =>
-            goodsRecordConnector.isTraderReferenceUnique(value).flatMap {
+            goodsRecordConnector.isproductReferenceUnique(value).flatMap {
               case true  =>
                 for {
-                  updatedAnswers <- Future.fromTry(request.userAnswers.set(TraderReferencePage, value))
+                  updatedAnswers <- Future.fromTry(request.userAnswers.set(ProductReferencePage, value))
                   _              <- sessionRepository.set(updatedAnswers)
-                } yield Redirect(navigator.nextPage(TraderReferencePage, mode, updatedAnswers))
+                } yield Redirect(navigator.nextPage(ProductReferencePage, mode, updatedAnswers))
               case false =>
                 val formWithApiErrors =
-                  createFormWithErrors(form, value, "traderReference.error.traderRefNotUnique")
+                  createFormWithErrors(form, value, "productReference.error.traderRefNotUnique")
                 Future.successful(BadRequest(view(formWithApiErrors, onSubmitAction)))
             }
         )
@@ -101,26 +101,26 @@ class TraderReferenceController @Inject() (
 
   def onSubmitUpdate(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val onSubmitAction = controllers.goodsRecord.routes.TraderReferenceController.onSubmitUpdate(mode, recordId)
+      val onSubmitAction = controllers.goodsRecord.routes.ProductReferenceController.onSubmitUpdate(mode, recordId)
       form
         .bindFromRequest()
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, onSubmitAction))),
           value =>
             for {
-              isTraderReferenceUnique <- goodsRecordConnector.isTraderReferenceUnique(value)
-              oldRecord               <- goodsRecordConnector.getRecord(recordId)
-              updatedAnswers          <-
-                Future.fromTry(request.userAnswers.set(TraderReferenceUpdatePage(recordId), value))
+              isproductReferenceUnique <- goodsRecordConnector.isproductReferenceUnique(value)
+              oldRecord                <- goodsRecordConnector.getRecord(recordId)
+              updatedAnswers           <-
+                Future.fromTry(request.userAnswers.set(ProductReferenceUpdatePage(recordId), value))
             } yield
-              if (isTraderReferenceUnique || oldRecord.traderRef == value) {
+              if (isproductReferenceUnique || oldRecord.traderRef == value) {
                 sessionRepository.set(updatedAnswers)
-                Redirect(navigator.nextPage(TraderReferenceUpdatePage(recordId), mode, updatedAnswers))
+                Redirect(navigator.nextPage(ProductReferenceUpdatePage(recordId), mode, updatedAnswers))
                   .addingToSession(dataUpdated -> (oldRecord.traderRef != value).toString)
-                  .addingToSession(pageUpdated -> traderReference)
+                  .addingToSession(pageUpdated -> productReference)
               } else {
                 val formWithApiErrors =
-                  createFormWithErrors(form, value, "traderReference.error.traderRefNotUnique")
+                  createFormWithErrors(form, value, "productReference.error.traderRefNotUnique")
                 BadRequest(view(formWithApiErrors, onSubmitAction))
               }
         )

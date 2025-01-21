@@ -22,7 +22,7 @@ import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{OptionValues, TryValues}
 import pages._
-import pages.goodsRecord.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage, HasCommodityCodeChangePage, HasCountryOfOriginChangePage, TraderReferenceUpdatePage}
+import pages.goodsRecord._
 import queries.CommodityUpdateQuery
 
 import java.time.Instant
@@ -76,17 +76,17 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
 
       }
 
-      "and all trader reference data is present" in {
+      "and all product reference data is present" in {
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(TraderReferenceUpdatePage(testRecordId), "trader reference")
+            .set(ProductReferenceUpdatePage(testRecordId), "product reference")
             .success
             .value
 
-        val result = UpdateGoodsRecord.validateTraderReference(answers, testRecordId)
+        val result = UpdateGoodsRecord.validateproductReference(answers, testRecordId)
 
-        result mustBe Right("trader reference")
+        result mustBe Right("product reference")
       }
 
       "and all commodity code data is present when record is categorised" in {
@@ -208,14 +208,14 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
         }
       }
 
-      "when trader reference is required and is missing" in {
+      "when product reference is required and is missing" in {
 
         val answers = UserAnswers(userAnswersId)
 
-        val result = UpdateGoodsRecord.validateTraderReference(answers, testRecordId)
+        val result = UpdateGoodsRecord.validateproductReference(answers, testRecordId)
 
         inside(result) { case Left(errors) =>
-          errors.toChain.toList must contain only PageMissing(TraderReferenceUpdatePage(testRecordId))
+          errors.toChain.toList must contain only PageMissing(ProductReferenceUpdatePage(testRecordId))
         }
       }
 

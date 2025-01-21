@@ -19,13 +19,13 @@ package forms.goodsRecord
 import forms.behaviours.StringFieldBehaviours
 import play.api.data.FormError
 
-class TraderReferenceFormProviderSpec extends StringFieldBehaviours {
+class ProductReferenceFormProviderSpec extends StringFieldBehaviours {
 
-  val requiredKey = "traderReference.error.required"
-  val lengthKey   = "traderReference.error.length"
+  val requiredKey = "productReference.error.required"
+  val lengthKey   = "productReference.error.length"
   val maxLength   = 512
 
-  val form = new TraderReferenceFormProvider()()
+  val form = new ProductReferenceFormProvider()()
 
   ".value" - {
 

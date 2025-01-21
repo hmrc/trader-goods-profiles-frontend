@@ -21,19 +21,19 @@ import base.TestConstants.testRecordId
 import models.NormalMode
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.Actions
-import viewmodels.checkAnswers.goodsRecord.TraderReferenceSummary
+import viewmodels.checkAnswers.goodsRecord.ProductReferenceSummary
 
-class TraderReferenceSummarySpec extends SpecBase {
+class ProductReferenceSummarySpec extends SpecBase {
   implicit private val messages: Messages = messages(applicationBuilder().build())
 
-  "TraderReferenceSummary.row" - {
+  "ProductReferenceSummary.row" - {
 
     "must return a SummaryListRow without change links when record is locked" in {
 
       val recordLocked = true
 
       val row =
-        TraderReferenceSummary.row(recordForTestingSummaryRows.traderRef, testRecordId, NormalMode, recordLocked)
+        ProductReferenceSummary.row(recordForTestingSummaryRows.traderRef, testRecordId, NormalMode, recordLocked)
 
       row.actions mustBe Some(Actions("", List()))
     }
@@ -43,10 +43,10 @@ class TraderReferenceSummarySpec extends SpecBase {
       val recordLocked = false
 
       val row =
-        TraderReferenceSummary.row(recordForTestingSummaryRows.traderRef, testRecordId, NormalMode, recordLocked)
+        ProductReferenceSummary.row(recordForTestingSummaryRows.traderRef, testRecordId, NormalMode, recordLocked)
 
       row.actions mustBe defined
-      row.actions.value.items.head.href mustEqual controllers.goodsRecord.routes.TraderReferenceController
+      row.actions.value.items.head.href mustEqual controllers.goodsRecord.routes.ProductReferenceController
         .onPageLoadUpdate(NormalMode, testRecordId)
         .url
     }

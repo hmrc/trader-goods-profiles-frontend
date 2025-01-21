@@ -26,7 +26,7 @@ import play.api.http.Status.{NOT_FOUND, OK}
 import play.api.libs.json.Json
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.Constants.{commodityCodeKey, countryOfOriginKey, goodsDescriptionKey, traderReferenceKey}
+import utils.Constants.{commodityCodeKey, countryOfOriginKey, goodsDescriptionKey, productReferenceKey}
 
 import java.time.{Instant, LocalDate}
 
@@ -165,7 +165,7 @@ class AuditEventFactorySpec extends SpecBase {
             CreateRecordJourney,
             GoodsRecord(
               testEori,
-              "trader reference",
+              "product reference",
               commodity,
               "goods description",
               "AG"
@@ -181,7 +181,7 @@ class AuditEventFactorySpec extends SpecBase {
           auditDetails("journey") mustBe "CreateRecord"
           auditDetails("eori") mustBe testEori
           auditDetails("affinityGroup") mustBe "Organisation"
-          auditDetails(traderReferenceKey) mustBe "trader reference"
+          auditDetails(productReferenceKey) mustBe "product reference"
           auditDetails(goodsDescriptionKey) mustBe "goods description"
           auditDetails(countryOfOriginKey) mustBe "AG"
           auditDetails(commodityCodeKey) mustBe "030821"
@@ -210,7 +210,7 @@ class AuditEventFactorySpec extends SpecBase {
             CreateRecordJourney,
             GoodsRecord(
               testEori,
-              "trader reference",
+              "product reference",
               commodity,
               "DESCRIPTION",
               "AG"
@@ -226,7 +226,7 @@ class AuditEventFactorySpec extends SpecBase {
           auditDetails("journey") mustBe "CreateRecord"
           auditDetails("eori") mustBe testEori
           auditDetails("affinityGroup") mustBe "Organisation"
-          auditDetails(traderReferenceKey) mustBe "trader reference"
+          auditDetails(productReferenceKey) mustBe "product reference"
           auditDetails(goodsDescriptionKey) mustBe "DESCRIPTION"
           auditDetails(countryOfOriginKey) mustBe "AG"
           auditDetails(commodityCodeKey) mustBe "030821"
@@ -514,7 +514,7 @@ class AuditEventFactorySpec extends SpecBase {
               testRecordId,
               Some("GB"),
               Some("goods description"),
-              Some("trader reference"),
+              Some("product reference"),
               Some(commodity)
             ),
             testRecordId
@@ -531,7 +531,7 @@ class AuditEventFactorySpec extends SpecBase {
           auditDetails("eori") mustBe testEori
           auditDetails("recordId") mustBe testRecordId
           auditDetails("affinityGroup") mustBe "Organisation"
-          auditDetails(traderReferenceKey) mustBe "trader reference"
+          auditDetails(productReferenceKey) mustBe "product reference"
           auditDetails(goodsDescriptionKey) mustBe "goods description"
           auditDetails(countryOfOriginKey) mustBe "GB"
           auditDetails(commodityCodeKey) mustBe "030821"

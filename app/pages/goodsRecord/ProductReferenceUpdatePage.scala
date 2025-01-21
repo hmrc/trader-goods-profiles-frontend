@@ -18,11 +18,10 @@ package pages.goodsRecord
 
 import pages.QuestionPage
 import play.api.libs.json.JsPath
-import utils.Constants.traderReferenceKey
 
-case object TraderReferencePage extends QuestionPage[String] {
+case class ProductReferenceUpdatePage(recordId: String) extends QuestionPage[String] {
 
-  override def path: JsPath = JsPath \ toString
+  override def path: JsPath = JsPath \ toString \ recordId
 
-  override def toString: String = traderReferenceKey
+  override def toString: String = "productReferenceUpdate"
 }

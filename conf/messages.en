@@ -54,8 +54,8 @@ cyaCreateRecord.h1 = Check your answers for creating a record
 cyaCreateRecord.warning = Warning
 cyaCreateRecord.warningText = You are liable for the information on any movements created by you, or on your behalf using your TGP records.
 
-cyaUpdateRecord.title.traderReference =  Check your answers for changing the product reference
-cyaUpdateRecord.h1.traderReference =  Check your answers for changing the product reference
+cyaUpdateRecord.title.productReference =  Check your answers for changing the product reference
+cyaUpdateRecord.h1.productReference =  Check your answers for changing the product reference
 cyaUpdateRecord.title.goodsDescription = Check your answers for changing the goods description
 cyaUpdateRecord.h1.goodsDescription = Check your answers for changing the goods description
 cyaUpdateRecord.title.countryOfOrigin = Check your answers for changing the country of origin
@@ -284,17 +284,17 @@ countryOfOrigin = country of origin
 commodityCode = commodity code
 supplementaryUnit = supplementary unit
 
-traderReference.title = Product reference
-traderReference.h1 = Product reference
-traderReference.p1 = A product reference is a custom name you can give a goods record to help you identify the record. You can also use the product reference to add the record information to a movement.
-traderReference.p2 = The product reference needs to be unique to your Trader Goods Profile.
-traderReference.p3 = You may want to use the stock keeping unit (SKU).
-traderReference.inputHeading = What is the product reference?
-traderReference.error.required = Enter the product reference
-traderReference.error.length = Product reference must be 512 characters or less
-traderReference.error.traderRefNotUnique = This product reference is already in your TGP. Enter a unique product reference.
-traderReference.checkYourAnswersLabel = Product reference
-traderReference.change.hidden = Product reference
+productReference.title = Product reference
+productReference.h1 = Product reference
+productReference.p1 = A product reference is a custom name you can give a goods record to help you identify the record. You can also use the product reference to add the record information to a movement.
+productReference.p2 = The product reference needs to be unique to your Trader Goods Profile.
+productReference.p3 = You may want to use the stock keeping unit (SKU).
+productReference.inputHeading = What is the product reference?
+productReference.error.required = Enter the product reference
+productReference.error.length = Product reference must be 512 characters or less
+productReference.error.traderRefNotUnique = This product reference is already in your TGP. Enter a unique product reference.
+productReference.checkYourAnswersLabel = Product reference
+productReference.change.hidden = Product reference
 
 assessment.title = Category assessment {0}
 assessment.heading = Category assessment {0}
@@ -447,7 +447,7 @@ goodsRecords.pagination.less = Showing {0} goods records sorted by most recently
 goodsRecords.pagination.less.singleRecord = Showing {0} goods record sorted by most recently updated.
 goodsRecords.pagination.searchFilter = Showing {0} goods records.
 goodsRecords.pagination.singleRecord = Showing {0} goods record.
-goodsRecords.tableHeader.traderReference = Product reference
+goodsRecords.tableHeader.productReference = Product reference
 goodsRecords.relatedTo = Related to
 goodsRecords.tableHeader.goodsDescription = Goods description
 goodsRecords.tableHeader.countryOfOrigin = Country of origin
@@ -458,7 +458,7 @@ goodsRecords.tableHeader.actions = Actions
 goodsRecords.skip.record = Skip to goods records
 goodsRecords.skip.main = Skip to main
 
-goodsRecords.li1 = Trader reference
+goodsRecords.li1 = Product reference
 goodsRecords.li2 = Goods description
 
 goodsRecordsEmptyView.p1 = You do not have any records in your goods profile.

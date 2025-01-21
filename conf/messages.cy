@@ -181,8 +181,8 @@ cyaCreateProfile.li3 = Label iechyd planhigion Gogledd Iwerddon (NIPHL)
 cyaCreateProfile.warning = Rhybudd
 cyaCreateProfile.warningText = Mae angen i chi wneud yn siŵr bod y manylion hyn yn gywir. Ni fydd unrhyw symudiadau y byddwch yn defnyddio manylion o’r TGP i’w creu yn ddilys os byddant yn anghywir.
 
-cyaUpdateRecord.title.traderReference = Gwiriwch eich atebion ar gyfer newid cyfeirnod y cynnyrch
-cyaUpdateRecord.h1.traderReference =  Gwiriwch eich atebion ar gyfer newid cyfeirnod y cynnyrch
+cyaUpdateRecord.title.productReference = Gwiriwch eich atebion ar gyfer newid cyfeirnod y cynnyrch
+cyaUpdateRecord.h1.productReference =  Gwiriwch eich atebion ar gyfer newid cyfeirnod y cynnyrch
 cyaUpdateRecord.title.goodsDescription = Gwiriwch eich atebion ar gyfer newid disgrifiad y nwyddau
 cyaUpdateRecord.h1.goodsDescription = Gwiriwch eich atebion ar gyfer newid disgrifiad y nwyddau
 cyaUpdateRecord.title.countryOfOrigin = Gwiriwch eich atebion ar gyfer y wlad tarddiad
@@ -278,14 +278,14 @@ createRecordStart.p7 = I gwblhau’r categoreiddio, efallai y bydd angen i chi w
 createRecordStart.p8 =  Bydd angen i chi gwblhau’r categoreiddio cyn y gallwch ddefnyddio’r cofnod nwyddau ar symudiadau.
 
 
-traderReference.title = Cyfeirnod y cynnyrch
-traderReference.h1 = Cyfeirnod y cynnyrch
-traderReference.p1 = Mae cyfeirnod cynnyrch yn enw wedi’i deilwra y gallwch ei roi ar gofnod nwyddau i’ch helpu i adnabod y cofnod. Gallwch hefyd ddefnyddio cyfeirnod y cynnyrch i ychwanegu gwybodaeth y cofnod at symudiad.
-traderReference.p2 = Mae angen i gyfeirnod y cynnyrch fod yn unigryw i’ch Proffil Nwyddau Masnachwyr.
-traderReference.p3 = Efallai y byddwch am ddefnyddio’r uned cadw stoc (SKU).
-traderReference.inputHeading = Beth yw cyfeirnod y cynnyrch?
-traderReference.checkYourAnswersLabel = Cyfeirnod y cynnyrch
-traderReference.change.hidden = Cyfeirnod y cynnyrch
+productReference.title = Cyfeirnod y cynnyrch
+productReference.h1 = Cyfeirnod y cynnyrch
+productReference.p1 = Mae cyfeirnod cynnyrch yn enw wedi’i deilwra y gallwch ei roi ar gofnod nwyddau i’ch helpu i adnabod y cofnod. Gallwch hefyd ddefnyddio cyfeirnod y cynnyrch i ychwanegu gwybodaeth y cofnod at symudiad.
+productReference.p2 = Mae angen i gyfeirnod y cynnyrch fod yn unigryw i’ch Proffil Nwyddau Masnachwyr.
+productReference.p3 = Efallai y byddwch am ddefnyddio’r uned cadw stoc (SKU).
+productReference.inputHeading = Beth yw cyfeirnod y cynnyrch?
+productReference.checkYourAnswersLabel = Cyfeirnod y cynnyrch
+productReference.change.hidden = Cyfeirnod y cynnyrch
 
 
 goodsDescription.title = Disgrifiad o’r nwyddau
@@ -326,14 +326,14 @@ createRecordSuccess.p6 = Mae hwn yn wasanaeth newydd ac rydym eisiau gwybod beth
 createRecordSuccess.p7.linkText = Anfonwch eich adborth atom.
 createRecordSuccess.p7 = Bydd eich meddyliau a’ch syniadau’n ein helpu i wneud gwelliannau.
 
-traderReference.error.required = Nodwch gyfeirnod y cynnyrch
-traderReference.error.traderRefNotUnique = Mae cyfeirnod y cynnyrch hwn eisoes yn eich TGP. Nodwch gyfeirnod cynnyrch unigryw.
+productReference.error.required = Nodwch gyfeirnod y cynnyrch
+productReference.error.traderRefNotUnique = Mae cyfeirnod y cynnyrch hwn eisoes yn eich TGP. Nodwch gyfeirnod cynnyrch unigryw.
 goodsDescription.error.required = Nodwch ddisgrifiad o’r nwyddau
 goodsDescription.error.length = Mae’n rhaid i ddisgrifiad y nwyddau fod yn 512 o gymeriadau neu lai
 countryOfOrigin.error.required = Nodwch y wlad wreiddiol
 commodityCode.error.invalidFormat = Nodwch god nwyddau yn y fformat cywir
 commodityCode.error.invalid = Nodwch god nwyddau go iawn
-traderReference.error.length = Mae’n rhaid i gyfeirnod y cynnyrch fod yn 512 o gymeriadau neu lai
+productReference.error.length = Mae’n rhaid i gyfeirnod y cynnyrch fod yn 512 o gymeriadau neu lai
 commodityCode.error.expired = Mae’r cod nwyddau hwn wedi dod i ben. Nodwch god nwyddau dilys
 
 hasCorrectGoods.title = Canlyniadau ar gyfer y cod nwyddau {0}
@@ -563,7 +563,7 @@ goodsRecords.pagination.less = Wrthi’n dangos {0} o gofnodion nwyddau, gan dde
 goodsRecords.pagination.less.singleRecord = Wrthi’n dangos {0} o gofnodion nwyddau, gan ddechrau gyda’r dyddiad diweddaru mwyaf diweddar.
 goodsRecords.pagination.searchFilter = Wrthi’n dangos {0} o gofnodion nwyddau.
 goodsRecords.pagination.singleRecord = Wrthi’n dangos {0} o gofnodion nwyddau.
-goodsRecords.tableHeader.traderReference = Cyfeirnod y cynnyrch
+goodsRecords.tableHeader.productReference = Cyfeirnod y cynnyrch
 goodsRecords.tableHeader.goodsDescription = Disgrifiad o’r nwyddau
 goodsRecords.tableHeader.countryOfOrigin = Gwlad tarddiad
 goodsRecords.tableHeader.commodityCode = Cod nwyddau

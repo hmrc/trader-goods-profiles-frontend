@@ -30,7 +30,7 @@ final case class UpdateGoodsRecord(
   recordId: String,
   countryOfOrigin: Option[String] = None,
   goodsDescription: Option[String] = None,
-  traderReference: Option[String] = None,
+  productReference: Option[String] = None,
   commodityCode: Option[Commodity] = None,
   category: Option[Int] = None,
   commodityCodeStartDate: Option[Instant] = None,
@@ -71,13 +71,13 @@ object UpdateGoodsRecord {
       getCommodityCode(answers, recordId, isCategorised, isCommCodeExpired)
     ).parMapN((_, value) => value)
 
-  def validateTraderReference(
+  def validateproductReference(
     answers: UserAnswers,
     recordId: String
   ): EitherNec[ValidationError, String] =
     (
       Right(recordId),
-      answers.getPageValue(TraderReferenceUpdatePage(recordId))
+      answers.getPageValue(ProductReferenceUpdatePage(recordId))
     ).parMapN((_, value) => value)
 
   private def getCommodityCode(

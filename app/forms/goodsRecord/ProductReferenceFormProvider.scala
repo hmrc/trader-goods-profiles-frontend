@@ -22,11 +22,11 @@ import play.api.data.Form
 
 import javax.inject.Inject
 
-class TraderReferenceFormProvider @Inject() extends Mappings {
+class ProductReferenceFormProvider @Inject() extends Mappings {
 
   def apply(): Form[String] =
     Form(
-      "value" -> adaptedText("traderReference.error.required")(_.removeDoubleSpaces())
-        .verifying(maxLength(512, "traderReference.error.length"))
+      "value" -> adaptedText("productReference.error.required")(_.removeDoubleSpaces())
+        .verifying(maxLength(512, "productReference.error.length"))
     )
 }
