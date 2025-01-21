@@ -26,7 +26,7 @@
 
 @(form: Form[_], action: Call)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("traderReference.title"))) {
+@layout(pageTitle = title(form, messages("productReference.title"))) {
 
     @if(form.errors.nonEmpty) {
         @govukErrorSummary(ErrorSummaryViewModel(form))
@@ -34,15 +34,15 @@
 
     @formHelper(action = action) {
 
-        <h1 class="govuk-heading-l">@messages("traderReference.h1")</h1>
-        <p class="govuk-body">@messages("traderReference.p1")</p>
-        <p class="govuk-body">@messages("traderReference.p2")</p>
-        <p class="govuk-body">@messages("traderReference.p3")</p>
+        <h1 class="govuk-heading-l">@messages("productReference.h1")</h1>
+        <p class="govuk-body">@messages("productReference.p1")</p>
+        <p class="govuk-body">@messages("productReference.p2")</p>
+        <p class="govuk-body">@messages("productReference.p3")</p>
 
         @textArea(
             CharacterCountViewModel(
                 field = form("value"),
-                label = LabelViewModel(messages("traderReference.inputHeading")).asSecondaryHeading()
+                label = LabelViewModel(messages("productReference.inputHeading")).asSecondaryHeading()
             )
             .withRows(10)
             .withMaxLength(512)

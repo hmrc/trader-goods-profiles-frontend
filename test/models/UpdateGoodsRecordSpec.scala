@@ -22,7 +22,7 @@ import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{OptionValues, TryValues}
 import pages._
-import pages.goodsRecord.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage, HasCommodityCodeChangePage, HasCountryOfOriginChangePage, TraderReferenceUpdatePage}
+import pages.goodsRecord._
 import queries.CommodityUpdateQuery
 
 import java.time.Instant
@@ -80,11 +80,11 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(TraderReferenceUpdatePage(testRecordId), "trader reference")
+            .set(ProductReferenceUpdatePage(testRecordId), "trader reference")
             .success
             .value
 
-        val result = UpdateGoodsRecord.validateTraderReference(answers, testRecordId)
+        val result = UpdateGoodsRecord.validateproductReference(answers, testRecordId)
 
         result mustBe Right("trader reference")
       }
@@ -212,10 +212,10 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
 
         val answers = UserAnswers(userAnswersId)
 
-        val result = UpdateGoodsRecord.validateTraderReference(answers, testRecordId)
+        val result = UpdateGoodsRecord.validateproductReference(answers, testRecordId)
 
         inside(result) { case Left(errors) =>
-          errors.toChain.toList must contain only PageMissing(TraderReferenceUpdatePage(testRecordId))
+          errors.toChain.toList must contain only PageMissing(ProductReferenceUpdatePage(testRecordId))
         }
       }
 

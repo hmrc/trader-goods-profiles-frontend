@@ -935,9 +935,9 @@ class GoodsRecordConnectorSpec
     }
   }
 
-  ".isTraderReferenceUnique" - {
-    val traderReference = "traderReference"
-    val url = s"/trader-goods-profiles-data-store/traders/records/is-trader-reference-unique/$traderReference"
+  ".isproductReferenceUnique" - {
+    val productReference = "productReference"
+    val url = s"/trader-goods-profiles-data-store/traders/records/is-trader-reference-unique/$productReference"
 
     "must return true if trader reference is unique" in {
       wireMockServer.stubFor(
@@ -946,7 +946,7 @@ class GoodsRecordConnectorSpec
           .willReturn(ok().withBody(Json.obj("isUnique" -> true).toString))
       )
 
-      connector.isTraderReferenceUnique(traderReference).futureValue mustBe true
+      connector.isproductReferenceUnique(productReference).futureValue mustBe true
     }
 
     "must return false if trader reference is not unique" in {
@@ -956,7 +956,7 @@ class GoodsRecordConnectorSpec
           .willReturn(ok().withBody(Json.obj("isUnique" -> false).toString))
       )
 
-      connector.isTraderReferenceUnique(traderReference).futureValue mustBe false
+      connector.isproductReferenceUnique(productReference).futureValue mustBe false
     }
 
     "must return a failed future when the server returns an error" in {
@@ -966,7 +966,7 @@ class GoodsRecordConnectorSpec
           .willReturn(serverError())
       )
 
-      connector.isTraderReferenceUnique(traderReference).failed.futureValue
+      connector.isproductReferenceUnique(productReference).failed.futureValue
     }
   }
 

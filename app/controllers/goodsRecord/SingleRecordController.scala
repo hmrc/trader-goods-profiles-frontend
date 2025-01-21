@@ -23,7 +23,7 @@ import models.AdviceStatus._
 import models.helper.{CategorisationJourney, RequestAdviceJourney, SupplementaryUnitUpdateJourney, WithdrawAdviceJourney}
 import models.requests.DataRequest
 import models.{AdviceStatusMessage, Country, NormalMode, ReviewReason}
-import pages.goodsRecord.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage, TraderReferenceUpdatePage}
+import pages.goodsRecord.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage, ProductReferenceUpdatePage}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.CountriesQuery
 import repositories.SessionRepository
@@ -31,7 +31,7 @@ import services.DataCleansingService
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.SessionData._
 import viewmodels.checkAnswers._
-import viewmodels.checkAnswers.goodsRecord.{CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, TraderReferenceSummary}
+import viewmodels.checkAnswers.goodsRecord.{CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, ProductReferenceSummary}
 import viewmodels.govuk.summarylist._
 import views.html.goodsRecord.SingleRecordView
 
@@ -66,11 +66,11 @@ class SingleRecordController @Inject() (
                                                 case _ => false
                                               }
         countries                          <- retrieveAndStoreCountries
-        updatedAnswersWithTraderReference  <-
-          Future.fromTry(request.userAnswers.set(TraderReferenceUpdatePage(recordId), record.traderRef))
+        updatedAnswersWithproductReference  <-
+          Future.fromTry(request.userAnswers.set(ProductReferenceUpdatePage(recordId), record.traderRef))
         updatedAnswersWithGoodsDescription <-
           Future.fromTry(
-            updatedAnswersWithTraderReference.set(GoodsDescriptionUpdatePage(recordId), record.goodsDescription)
+            updatedAnswersWithproductReference.set(GoodsDescriptionUpdatePage(recordId), record.goodsDescription)
           )
         updatedAnswersWithCountryOfOrigin  <-
           Future.fromTry(
@@ -92,7 +92,7 @@ class SingleRecordController @Inject() (
 
         val detailsList = SummaryListViewModel(
           rows = Seq(
-            TraderReferenceSummary.row(record.traderRef, recordId, NormalMode, recordIsLocked),
+            ProductReferenceSummary.row(record.traderRef, recordId, NormalMode, recordIsLocked),
             GoodsDescriptionSummary.rowUpdate(record, recordId, NormalMode, recordIsLocked),
             CountryOfOriginSummary.rowUpdate(record, recordId, NormalMode, recordIsLocked, countries),
             CommodityCodeSummary.rowUpdate(

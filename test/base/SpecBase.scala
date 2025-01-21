@@ -31,7 +31,7 @@ import org.scalatest.{OptionValues, TryValues}
 import pages._
 import pages.advice.{EmailPage, NamePage}
 import pages.categorisation.{AssessmentPage, HasSupplementaryUnitUpdatePage}
-import pages.goodsRecord.{CommodityCodePage, CountryOfOriginPage, GoodsDescriptionPage, TraderReferencePage}
+import pages.goodsRecord.{CommodityCodePage, CountryOfOriginPage, GoodsDescriptionPage, ProductReferencePage}
 import pages.profile.niphl.{HasNiphlPage, NiphlNumberPage}
 import pages.profile.nirms.{HasNirmsPage, NirmsNumberPage}
 import pages.profile.ukims.UkimsNumberPage
@@ -104,7 +104,7 @@ trait SpecBase
 
   def fullRecordUserAnswers: UserAnswers =
     UserAnswers(userAnswersId)
-      .set(TraderReferencePage, "123")
+      .set(ProductReferencePage, "123")
       .success
       .value
       .set(CommodityCodePage, testCommodity.commodityCode)
@@ -125,7 +125,7 @@ trait SpecBase
 
   def mandatoryRecordUserAnswers: UserAnswers =
     UserAnswers(userAnswersId)
-      .set(TraderReferencePage, "123")
+      .set(ProductReferencePage, "123")
       .success
       .value
       .set(CommodityCodePage, testCommodity.commodityCode)

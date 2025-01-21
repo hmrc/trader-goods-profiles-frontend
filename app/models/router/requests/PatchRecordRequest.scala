@@ -50,7 +50,7 @@ object PatchRecordRequest {
       goodsRecord.eori,
       goodsRecord.countryOfOrigin,
       goodsRecord.goodsDescription,
-      goodsRecord.traderReference,
+      goodsRecord.productReference,
       goodsRecord.commodityCode.map(_.commodityCode),
       goodsRecord.category,
       goodsRecord.commodityCodeStartDate,

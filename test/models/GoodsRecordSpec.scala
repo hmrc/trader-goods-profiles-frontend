@@ -22,7 +22,7 @@ import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{OptionValues, TryValues}
 import pages._
-import pages.goodsRecord.{CommodityCodePage, CountryOfOriginPage, GoodsDescriptionPage, TraderReferencePage}
+import pages.goodsRecord.{CommodityCodePage, CountryOfOriginPage, GoodsDescriptionPage, ProductReferencePage}
 import queries.CommodityQuery
 
 import java.time.Instant
@@ -40,7 +40,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(TraderReferencePage, "123")
+            .set(ProductReferencePage, "123")
             .success
             .value
             .set(CommodityCodePage, testCommodity.commodityCode)
@@ -61,7 +61,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
 
         val result = GoodsRecord.build(answers, testEori)
 
-        result mustEqual Right(
+        result mustBe Right(
           GoodsRecord(testEori, "123", testCommodity, "2", "1")
         )
       }
@@ -70,7 +70,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(TraderReferencePage, "123")
+            .set(ProductReferencePage, "123")
             .success
             .value
             .set(CommodityCodePage, testCommodity.commodityCode)
@@ -91,7 +91,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
 
         val result = GoodsRecord.build(answers, testEori)
 
-        result mustEqual Right(
+        result mustBe Right(
           GoodsRecord(testEori, "123", testCommodity, "DESCRIPTION", "1")
         )
       }
@@ -100,7 +100,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(TraderReferencePage, "123")
+            .set(ProductReferencePage, "123")
             .success
             .value
             .set(CommodityCodePage, "123456")
@@ -121,7 +121,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
 
         val result = GoodsRecord.build(answers, testEori)
 
-        result mustEqual Right(
+        result mustBe Right(
           GoodsRecord(testEori, "123", shorterCommodity, "DESCRIPTION", "1")
         )
       }
@@ -137,7 +137,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
 
         inside(result) { case Left(errors) =>
           errors.toChain.toList must contain theSameElementsAs Seq(
-            PageMissing(TraderReferencePage),
+            PageMissing(ProductReferencePage),
             PageMissing(CommodityCodePage),
             PageMissing(CountryOfOriginPage),
             PageMissing(GoodsDescriptionPage)
@@ -149,7 +149,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(TraderReferencePage, "123")
+            .set(ProductReferencePage, "123")
             .success
             .value
             .set(CommodityCodePage, testCommodity.commodityCode)
@@ -176,7 +176,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(TraderReferencePage, "123")
+            .set(ProductReferencePage, "123")
             .success
             .value
             .set(CommodityCodePage, testCommodity.commodityCode)
@@ -209,7 +209,7 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(TraderReferencePage, "123")
+            .set(ProductReferencePage, "123")
             .success
             .value
             .set(CommodityCodePage, "test")

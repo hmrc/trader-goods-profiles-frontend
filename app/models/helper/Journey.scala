@@ -38,7 +38,7 @@ case object RemoveRecord extends Journey
 case object CreateRecordJourney extends Journey {
   val pages: Seq[String]        =
     Seq(
-      traderReferencePage,
+      productReferencePage,
       goodsDescriptionPage,
       countryOfOriginPage,
       commodityCodePage,

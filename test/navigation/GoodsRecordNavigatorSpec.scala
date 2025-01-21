@@ -40,20 +40,20 @@ class GoodsRecordNavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
       "in Create Record Journey" - {
 
-        "must go from CreateRecordStartPage to TraderReferencePage" in {
+        "must go from CreateRecordStartPage to ProductReferencePage" in {
 
           navigator.nextPage(
             CreateRecordStartPage,
             NormalMode,
             emptyUserAnswers
-          ) mustBe controllers.goodsRecord.routes.TraderReferenceController
+          ) mustBe controllers.goodsRecord.routes.ProductReferenceController
             .onPageLoadCreate(NormalMode)
         }
 
-        "must go from TraderReferencePage to GoodsDescriptionPage" in {
+        "must go from ProductReferencePage to GoodsDescriptionPage" in {
 
           navigator.nextPage(
-            TraderReferencePage,
+            ProductReferencePage,
             NormalMode,
             emptyUserAnswers
           ) mustBe controllers.goodsRecord.routes.GoodsDescriptionController
@@ -191,12 +191,12 @@ class GoodsRecordNavigatorSpec extends SpecBase with BeforeAndAfterEach {
           ) mustBe controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(testRecordId)
         }
 
-        "must go from TraderReferenceUpdatePage to CyaUpdateRecord" in {
+        "must go from ProductReferenceUpdatePage to CyaUpdateRecord" in {
           navigator.nextPage(
-            TraderReferenceUpdatePage(testRecordId),
+            ProductReferenceUpdatePage(testRecordId),
             NormalMode,
             emptyUserAnswers
-          ) mustBe controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadTraderReference(testRecordId)
+          ) mustBe controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadproductReference(testRecordId)
         }
 
         "must go from GoodsDescriptionUpdatePage to CyaUpdateRecord" in {
@@ -231,10 +231,10 @@ class GoodsRecordNavigatorSpec extends SpecBase with BeforeAndAfterEach {
     "in Check mode" - {
       "in Create Record Journey" - {
 
-        "must go from TraderReferencePage to CyaCreateRecord" in {
+        "must go from ProductReferencePage to CyaCreateRecord" in {
 
           navigator.nextPage(
-            TraderReferencePage,
+            ProductReferencePage,
             CheckMode,
             emptyUserAnswers
           ) mustBe controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad()
@@ -276,12 +276,12 @@ class GoodsRecordNavigatorSpec extends SpecBase with BeforeAndAfterEach {
           ) mustBe controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(testRecordId)
         }
 
-        "must go from TraderReferencePage to CyaUpdateRecord" in {
+        "must go from ProductReferencePage to CyaUpdateRecord" in {
           navigator.nextPage(
-            TraderReferenceUpdatePage(testRecordId),
+            ProductReferenceUpdatePage(testRecordId),
             CheckMode,
             emptyUserAnswers
-          ) mustBe controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadTraderReference(testRecordId)
+          ) mustBe controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadproductReference(testRecordId)
         }
 
         "must go from GoodsDescriptionPage to CyaUpdateRecord" in {

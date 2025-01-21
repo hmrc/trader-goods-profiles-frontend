@@ -35,7 +35,7 @@ import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import viewmodels.checkAnswers.goodsRecord.{CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, TraderReferenceSummary}
+import viewmodels.checkAnswers.goodsRecord.{CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, ProductReferenceSummary}
 import viewmodels.govuk.SummaryListFluency
 import views.html.goodsRecord.CyaCreateRecordView
 
@@ -47,7 +47,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
     def createChangeList(userAnswers: UserAnswers, app: Application): SummaryList = SummaryListViewModel(
       rows = Seq(
-        TraderReferenceSummary.row(userAnswers)(messages(app)),
+        ProductReferenceSummary.row(userAnswers)(messages(app)),
         GoodsDescriptionSummary.row(userAnswers)(messages(app)),
         CountryOfOriginSummary.row(userAnswers, Seq(Country("CN", "China")))(messages(app)),
         CommodityCodeSummary.row(userAnswers)(messages(app))

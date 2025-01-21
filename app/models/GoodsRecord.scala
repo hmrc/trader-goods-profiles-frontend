@@ -19,7 +19,7 @@ package models
 import cats.data.{EitherNec, NonEmptyChain}
 import cats.implicits.catsSyntaxTuple5Parallel
 import pages._
-import pages.goodsRecord.{CommodityCodePage, CountryOfOriginPage, GoodsDescriptionPage, TraderReferencePage}
+import pages.goodsRecord.{CommodityCodePage, CountryOfOriginPage, GoodsDescriptionPage, ProductReferencePage}
 import play.api.libs.json.{Json, OFormat}
 import queries.CommodityQuery
 
@@ -38,14 +38,14 @@ object GoodsRecord {
   def build(answers: UserAnswers, eori: String): EitherNec[ValidationError, GoodsRecord] =
     (
       Right(eori),
-      answers.getPageValue(TraderReferencePage),
+      answers.getPageValue(ProductReferencePage),
       getCommodity(answers),
       answers.getPageValue(CountryOfOriginPage),
       answers.getPageValue(GoodsDescriptionPage)
-    ).parMapN((eori, traderReference, commodity, countryOfOrigin, goodsDescription) =>
+    ).parMapN((eori, productReference, commodity, countryOfOrigin, goodsDescription) =>
       GoodsRecord(
         eori,
-        traderReference,
+        productReference,
         commodity,
         goodsDescription,
         countryOfOrigin

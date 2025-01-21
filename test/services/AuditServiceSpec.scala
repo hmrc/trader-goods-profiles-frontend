@@ -29,7 +29,7 @@ import org.mockito.Mockito.{never, reset, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
 import pages._
-import pages.goodsRecord.{CommodityCodePage, CountryOfOriginPage, GoodsDescriptionPage, TraderReferencePage}
+import pages.goodsRecord.{CommodityCodePage, CountryOfOriginPage, GoodsDescriptionPage, ProductReferencePage}
 import play.api.http.Status.OK
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import queries.CommodityQuery
@@ -1397,7 +1397,7 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       .set(CommodityQuery, testCommodity)
       .success
       .value
-      .set(TraderReferencePage, "trader reference")
+      .set(ProductReferencePage, "trader reference")
       .success
       .value
       .set(GoodsDescriptionPage, "goods description")

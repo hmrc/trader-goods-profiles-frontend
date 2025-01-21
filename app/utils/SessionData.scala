@@ -23,7 +23,7 @@ case object SessionData {
   val dataRemoved: String                    = "valueRemoved"
   val dataAdded: String                      = "valueAdded"
   val pageUpdated: String                    = "changedPage"
-  val traderReference: String                = "productReference"
+  val productReference: String                = "productReference"
   val goodsDescription: String               = "goodsDescription"
   val countryOfOrigin: String                = "countryOfOrigin"
   val commodityCode: String                  = "commodityCode"
@@ -39,7 +39,7 @@ case object SessionData {
   val hasNiphlUpdatePage: String             = "NIPHL"
   val nirmsNumberUpdatePage: String          = "NIRMS"
   val niphlNumberUpdatePage: String          = "NIPHL"
-  val traderReferencePage: String            = traderReferenceKey
+  val productReferencePage: String            = productReferenceKey
   val goodsDescriptionPage: String           = goodsDescriptionKey
   val countryOfOriginPage: String            = countryOfOriginKey
   val commodityCodePage: String              = commodityCodeKey

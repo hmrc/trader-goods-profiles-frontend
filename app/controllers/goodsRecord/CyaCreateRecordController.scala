@@ -29,7 +29,7 @@ import play.api.mvc._
 import queries.CountriesQuery
 import repositories.SessionRepository
 import services.{AuditService, DataCleansingService}
-import viewmodels.checkAnswers.goodsRecord.{CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, TraderReferenceSummary}
+import viewmodels.checkAnswers.goodsRecord.{CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, ProductReferenceSummary}
 import viewmodels.govuk.summarylist._
 import views.html.goodsRecord.CyaCreateRecordView
 
@@ -83,7 +83,7 @@ class CyaCreateRecordController @Inject() (
   private def displayView(userAnswers: UserAnswers, countries: Seq[Country])(implicit request: Request[_]): Result = {
     val list = SummaryListViewModel(
       rows = Seq(
-        TraderReferenceSummary.row(userAnswers),
+        ProductReferenceSummary.row(userAnswers),
         GoodsDescriptionSummary.row(userAnswers),
         CountryOfOriginSummary.row(userAnswers, countries),
         CommodityCodeSummary.row(userAnswers)
