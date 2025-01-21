@@ -32,9 +32,9 @@ class GoodsRecordNavigator @Inject() extends Navigator {
   override val normalRoutes: Page => UserAnswers => Call = {
     case CreateRecordStartPage            =>
       _ => controllers.goodsRecord.routes.ProductReferenceController.onPageLoadCreate(NormalMode)
-    case ProductReferencePage              =>
+    case ProductReferencePage             =>
       _ => controllers.goodsRecord.routes.GoodsDescriptionController.onPageLoadCreate(NormalMode)
-    case p: ProductReferenceUpdatePage     =>
+    case p: ProductReferenceUpdatePage    =>
       _ => controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadproductReference(p.recordId)
     case GoodsDescriptionPage             =>
       _ => controllers.goodsRecord.routes.CountryOfOriginController.onPageLoadCreate(NormalMode)
@@ -56,8 +56,8 @@ class GoodsRecordNavigator @Inject() extends Navigator {
   }
 
   override val checkRoutes: Page => UserAnswers => Call = {
-    case ProductReferencePage           => _ => controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad()
-    case p: ProductReferenceUpdatePage  =>
+    case ProductReferencePage          => _ => controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad()
+    case p: ProductReferenceUpdatePage =>
       _ => controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadproductReference(p.recordId)
     case GoodsDescriptionPage          => _ => controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad()
     case p: GoodsDescriptionUpdatePage =>

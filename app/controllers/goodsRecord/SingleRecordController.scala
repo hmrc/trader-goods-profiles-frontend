@@ -66,7 +66,7 @@ class SingleRecordController @Inject() (
                                                 case _ => false
                                               }
         countries                          <- retrieveAndStoreCountries
-        updatedAnswersWithproductReference  <-
+        updatedAnswersWithproductReference <-
           Future.fromTry(request.userAnswers.set(ProductReferenceUpdatePage(recordId), record.traderRef))
         updatedAnswersWithGoodsDescription <-
           Future.fromTry(

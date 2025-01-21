@@ -109,8 +109,8 @@ class ProductReferenceController @Inject() (
           value =>
             for {
               isproductReferenceUnique <- goodsRecordConnector.isproductReferenceUnique(value)
-              oldRecord               <- goodsRecordConnector.getRecord(recordId)
-              updatedAnswers          <-
+              oldRecord                <- goodsRecordConnector.getRecord(recordId)
+              updatedAnswers           <-
                 Future.fromTry(request.userAnswers.set(ProductReferenceUpdatePage(recordId), value))
             } yield
               if (isproductReferenceUnique || oldRecord.traderRef == value) {

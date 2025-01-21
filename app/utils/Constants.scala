@@ -36,7 +36,7 @@ case object Constants {
   val hasNiphlKey       = "hasNiphl"
   val niphlNumberKey    = "niphlNumber"
 
-  val productReferenceKey  = "productReference"
+  val productReferenceKey = "productReference"
   val goodsDescriptionKey = "goodsDescription"
   val countryOfOriginKey  = "countryOfOrigin"
   val commodityCodeKey    = "commodityCode"

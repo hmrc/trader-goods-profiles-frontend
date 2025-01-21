@@ -139,7 +139,7 @@ class CyaUpdateRecordController @Inject() (
             Seq(ProductReferenceSummary.row(productReference, recordId, CheckMode, recordLocked = false))
           )
           Ok(view(list, onSubmitAction, productReferenceKey))
-        case Left(errors)           =>
+        case Left(errors)            =>
           logErrorsAndContinue(
             errorMessage,
             controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId),
@@ -280,7 +280,8 @@ class CyaUpdateRecordController @Inject() (
   def onSubmitproductReference(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       (for {
-        productReference   <- handleValidateError(UpdateGoodsRecord.validateproductReference(request.userAnswers, recordId))
+        productReference  <-
+          handleValidateError(UpdateGoodsRecord.validateproductReference(request.userAnswers, recordId))
         updateGoodsRecord <-
           Future.successful(UpdateGoodsRecord(request.eori, recordId, productReference = Some(productReference)))
         _                  = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
