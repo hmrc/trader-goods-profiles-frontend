@@ -458,7 +458,7 @@ goodsRecords.tableHeader.actions = Actions
 goodsRecords.skip.record = Skip to goods records
 goodsRecords.skip.main = Skip to main
 
-goodsRecords.li1 = Trader reference
+goodsRecords.li1 = Product reference
 goodsRecords.li2 = Goods description
 
 goodsRecordsEmptyView.p1 = You do not have any records in your goods profile.

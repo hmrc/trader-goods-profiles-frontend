@@ -386,7 +386,7 @@ class ProductReferenceControllerSpec extends SpecBase with MockitoSugar {
         }
       }
 
-      "must set changesMade to true if trader reference is updated " in {
+      "must set changesMade to true if product reference is updated " in {
 
         val mockSessionRepository = mock[SessionRepository]
 
@@ -435,7 +435,7 @@ class ProductReferenceControllerSpec extends SpecBase with MockitoSugar {
         }
       }
 
-      "must set changesMade to false if trader reference is not updated" in {
+      "must set changesMade to false if product reference is not updated" in {
 
         val mockSessionRepository = mock[SessionRepository]
 

@@ -718,7 +718,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
       }
     }
 
-    "for Trader Reference Update" - {
+    "for product reference Update" - {
       val summaryKey      = "productReference.checkYourAnswersLabel"
       val summaryHidden   = "productReference.change.hidden"
       val summaryUrl      =
@@ -910,7 +910,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             }
           }
 
-          "when trader reference has not been changed must not update the goods record and redirect to the Home Page" in {
+          "when product reference has not been changed must not update the goods record and redirect to the Home Page" in {
             val answer          = record.traderRef
             val expectedPayload = UpdateGoodsRecord(testEori, testRecordId, productReference = Some(answer))
 

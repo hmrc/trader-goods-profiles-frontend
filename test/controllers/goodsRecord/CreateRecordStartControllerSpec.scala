@@ -58,7 +58,7 @@ class CreateRecordStartControllerSpec extends SpecBase {
     }
 
     "for a POST" - {
-      "must redirect to the trader reference controller page" in {
+      "must redirect to the product reference controller page" in {
 
         val onwardRoute = Call("", "")
 

@@ -76,17 +76,17 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
 
       }
 
-      "and all trader reference data is present" in {
+      "and all product reference data is present" in {
 
         val answers =
           UserAnswers(userAnswersId)
-            .set(ProductReferenceUpdatePage(testRecordId), "trader reference")
+            .set(ProductReferenceUpdatePage(testRecordId), "product reference")
             .success
             .value
 
         val result = UpdateGoodsRecord.validateproductReference(answers, testRecordId)
 
-        result mustBe Right("trader reference")
+        result mustBe Right("product reference")
       }
 
       "and all commodity code data is present when record is categorised" in {
@@ -208,7 +208,7 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
         }
       }
 
-      "when trader reference is required and is missing" in {
+      "when product reference is required and is missing" in {
 
         val answers = UserAnswers(userAnswersId)
 
