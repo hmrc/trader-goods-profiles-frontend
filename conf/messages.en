@@ -178,6 +178,7 @@ categoryGuidance.title = Categorisation
 categoryGuidance.heading = Categorisation
 categoryGuidance.p1 = Categorisation allows you to know what category your goods are in and if they are eligible for Simplified Process for Internal Market Movements (SPIMM).
 categoryGuidance.p2 = We’ll ask you questions about exemptions that you hold and then tell you what category your goods are. We could ask you up to 10 questions.
+categoryGuidance.linkText =  Find out how to check and categorise goods you move from Great Britain to Northern Ireland to use the simplified process for internal market movements (opens in a new tab)
 categoryGuidance.subheading = Exemptions
 categoryGuidance.p3 = Your goods will be placed into 1 of 3 categories:
 categoryGuidance.p3.1 = Category 1 – goods that are excluded for using SPIMM
