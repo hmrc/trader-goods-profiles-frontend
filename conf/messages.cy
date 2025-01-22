@@ -231,7 +231,7 @@ name.change.hidden = Enw
 
 productReference = cyfeirnod cynnyrch
 goodsDescription = disgrifiad o’r nwyddau
-countryOfOrigin = gwlad wreiddiol
+countryOfOrigin = wlad wreiddiol
 commodityCode = cod nwyddau
 supplementaryUnit = unedau atodol
 
