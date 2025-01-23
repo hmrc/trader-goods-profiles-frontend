@@ -59,19 +59,19 @@ class AuthenticatedIdentifierAction @Inject() (
       ) {
         case Some(internalId) ~ Some(affinityGroup) ~ credentialRole ~ authorisedEnrolments =>
           handleEnrolments(internalId, affinityGroup, credentialRole, authorisedEnrolments, request, block)
-        case _ =>
+        case _                                                                              =>
           throw InternalError("Undefined authorisation error")
       } recover handleAuthorisationFailures
   }
 
   private def handleEnrolments[A](
-                                   internalId: String,
-                                   affinityGroup: AffinityGroup,
-                                   credentialRole: Option[CredentialRole],
-                                   authorisedEnrolments: Enrolments,
-                                   request: Request[A],
-                                   block: IdentifierRequest[A] => Future[Result]
-                                 )(implicit hc: HeaderCarrier): Future[Result] = {
+    internalId: String,
+    affinityGroup: AffinityGroup,
+    credentialRole: Option[CredentialRole],
+    authorisedEnrolments: Enrolments,
+    request: Request[A],
+    block: IdentifierRequest[A] => Future[Result]
+  )(implicit hc: HeaderCarrier): Future[Result] =
     authorisedEnrolments
       .getEnrolment(config.tgpEnrolmentIdentifier.key)
       .flatMap(_.getIdentifier(config.tgpEnrolmentIdentifier.identifier)) match {
@@ -79,22 +79,23 @@ class AuthenticatedIdentifierAction @Inject() (
         checkUserAllowList(enrolment.value).flatMap { _ =>
           block(IdentifierRequest(request, internalId, enrolment.value, affinityGroup, credentialRole))
         }
-      case Some(_) =>
+      case Some(_)                                     =>
         throw InternalError("EORI is empty")
-      case None =>
+      case None                                        =>
         throw InsufficientEnrolments("Unable to retrieve Enrolment")
     }
-  }
 
   private def handleAuthorisationFailures: PartialFunction[Throwable, Result] = {
-    case _: UserNotAllowedException =>
+    case _: UserNotAllowedException        =>
       logger.info("Trader is not on user-allow-list. Redirecting to UnauthorisedServiceController.")
       Redirect(controllers.problem.routes.UnauthorisedServiceUserController.onPageLoad())
-    case _: NoActiveSession =>
+    case _: NoActiveSession                =>
       logger.info(s"No Active Session. Redirecting to ${config.loginContinueUrl}.")
       Redirect(config.loginUrl, Map("continue" -> Seq(config.loginContinueUrl)))
-    case _: InsufficientEnrolments =>
-      logger.info("Authorisation failure: No enrolments found for CDS. Redirecting to UnauthorisedCdsEnrolmentController.")
+    case _: InsufficientEnrolments         =>
+      logger.info(
+        "Authorisation failure: No enrolments found for CDS. Redirecting to UnauthorisedCdsEnrolmentController."
+      )
       Redirect(controllers.problem.routes.UnauthorisedCdsEnrolmentController.onPageLoad())
     case exception: AuthorisationException =>
       logger.info(s"Authorisation failure: ${exception.reason}. Redirecting to UnauthorisedController.")

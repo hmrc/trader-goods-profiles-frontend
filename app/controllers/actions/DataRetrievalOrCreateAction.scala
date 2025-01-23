@@ -30,17 +30,16 @@ class DataRetrievalOrCreateActionImpl @Inject() (
 )(implicit val executionContext: ExecutionContext)
     extends DataRetrievalOrCreateAction {
 
-  override protected def transform[A](request: IdentifierRequest[A]): Future[DataRequest[A]] = {
+  override protected def transform[A](request: IdentifierRequest[A]): Future[DataRequest[A]] =
     sessionRepository.get(request.userId).flatMap {
       case Some(answers) =>
         Future.successful(DataRequest(request.request, request.userId, request.eori, request.affinityGroup, answers))
-      case None =>
+      case None          =>
         val answers = UserAnswers(request.userId)
         sessionRepository.set(answers).map { _ =>
           DataRequest(request.request, request.userId, request.eori, request.affinityGroup, answers)
         }
     }
-  }
 }
 
 trait DataRetrievalOrCreateAction extends ActionTransformer[IdentifierRequest, DataRequest]
