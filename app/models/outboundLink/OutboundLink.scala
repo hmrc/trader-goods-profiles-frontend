@@ -123,7 +123,8 @@ object OutboundLink {
     val link: String            = "https://www.gov.uk/guidance/check-your-goods-meet-the-rules-of-origin"
     val linkTextKey: String     = "countryOfOrigin.p2.linkText"
     val originatingPage: String = recordId match {
-      case Some(recordId) => controllers.goodsRecord.countryOfOrigin.routes.UpdateCountryOfOriginController.onSubmit(mode, recordId).url
+      case Some(recordId) =>
+        controllers.goodsRecord.countryOfOrigin.routes.UpdateCountryOfOriginController.onSubmit(mode, recordId).url
       case _              => controllers.goodsRecord.countryOfOrigin.routes.CreateCountryOfOriginController.onSubmit(mode).url
     }
   }

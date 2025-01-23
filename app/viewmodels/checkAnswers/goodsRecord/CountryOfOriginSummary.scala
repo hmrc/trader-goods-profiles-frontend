@@ -45,7 +45,8 @@ object CountryOfOriginSummary {
     }
 
   def rowUpdateCya(value: String, recordId: String, mode: Mode)(implicit messages: Messages): SummaryListRow = {
-    val changeLink = controllers.goodsRecord.countryOfOrigin.routes.UpdateCountryOfOriginController.onPageLoad(mode, recordId).url
+    val changeLink =
+      controllers.goodsRecord.countryOfOrigin.routes.UpdateCountryOfOriginController.onPageLoad(mode, recordId).url
     SummaryListRowViewModel(
       key = "countryOfOrigin.checkYourAnswersLabel",
       value = ValueViewModel(HtmlContent(s"<div lang='en'>${HtmlFormat.escape(value).toString}</div>")),

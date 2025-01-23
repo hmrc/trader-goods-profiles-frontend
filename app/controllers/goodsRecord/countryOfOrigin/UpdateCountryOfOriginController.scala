@@ -66,17 +66,15 @@ class UpdateCountryOfOriginController @Inject() (
       _                       <- sessionRepository.set(updatedAnswersWithQuery)
     } yield (countries, updatedAnswersWithQuery)
 
-
   private def prepareForm[T](page: QuestionPage[T], form: Form[T], userAnswers: UserAnswers)(implicit
     rds: Reads[T]
   ): Form[T] =
     userAnswers.get(page).map(form.fill).getOrElse(form)
 
-
-
   def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val submitAction = controllers.goodsRecord.countryOfOrigin.routes.UpdateCountryOfOriginController.onSubmit(mode, recordId)
+      val submitAction =
+        controllers.goodsRecord.countryOfOrigin.routes.UpdateCountryOfOriginController.onSubmit(mode, recordId)
 
       request.userAnswers.get(HasCountryOfOriginChangePage(recordId)) match {
         case None =>
@@ -115,7 +113,8 @@ class UpdateCountryOfOriginController @Inject() (
                   BadRequest(
                     view(
                       formWithErrors,
-                      controllers.goodsRecord.countryOfOrigin.routes.UpdateCountryOfOriginController.onSubmit(mode, recordId),
+                      controllers.goodsRecord.countryOfOrigin.routes.UpdateCountryOfOriginController
+                        .onSubmit(mode, recordId),
                       countries,
                       mode,
                       Some(recordId)

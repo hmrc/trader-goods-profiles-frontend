@@ -90,7 +90,9 @@ class GoodsRecordNavigator @Inject() extends Navigator {
       .get(HasCountryOfOriginChangePage(recordId))
       .map {
         case false => controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId)
-        case true  => controllers.goodsRecord.countryOfOrigin.routes.UpdateCountryOfOriginController.onPageLoad(NormalMode, recordId)
+        case true  =>
+          controllers.goodsRecord.countryOfOrigin.routes.UpdateCountryOfOriginController
+            .onPageLoad(NormalMode, recordId)
       }
       .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
