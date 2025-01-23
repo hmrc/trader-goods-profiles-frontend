@@ -73,8 +73,8 @@ class NavigationSpec extends SpecBase with BeforeAndAfterEach {
               HasCorrectGoodsPage,
               NormalMode,
               answers
-            ) mustBe controllers.goodsRecord.routes.CommodityCodeController
-              .onPageLoadCreate(NormalMode)
+            ) mustBe controllers.goodsRecord.routes.CreateCommodityCodeController
+              .onPageLoad(NormalMode)
           }
 
           "to JourneyRecoveryPage when answer is not present" in {
@@ -258,8 +258,8 @@ class NavigationSpec extends SpecBase with BeforeAndAfterEach {
               HasCorrectGoodsCommodityCodeUpdatePage(testRecordId),
               NormalMode,
               answers
-            ) mustBe controllers.goodsRecord.routes.CommodityCodeController
-              .onPageLoadUpdate(NormalMode, testRecordId)
+            ) mustBe controllers.goodsRecord.routes.UpdateCommodityCodeController
+              .onPageLoad(NormalMode, testRecordId)
           }
 
           "to Updated Commodity Code page when answer is not present" in {
@@ -310,8 +310,8 @@ class NavigationSpec extends SpecBase with BeforeAndAfterEach {
                 HasCorrectGoodsPage,
                 CheckMode,
                 answers
-              ) mustBe controllers.goodsRecord.routes.CommodityCodeController
-                .onPageLoadCreate(CheckMode)
+              ) mustBe controllers.goodsRecord.routes.CreateCommodityCodeController
+                .onPageLoad(CheckMode)
             }
 
             "to CyaCreateRecord when CommodityCodePage is answered" in {
@@ -339,7 +339,7 @@ class NavigationSpec extends SpecBase with BeforeAndAfterEach {
               HasCorrectGoodsPage,
               CheckMode,
               answers
-            ) mustBe controllers.goodsRecord.routes.CommodityCodeController.onPageLoadCreate(CheckMode)
+            ) mustBe controllers.goodsRecord.routes.CreateCommodityCodeController.onPageLoad(CheckMode)
           }
 
           "to JourneyRecoveryPage when answer is not present" in {
@@ -368,8 +368,8 @@ class NavigationSpec extends SpecBase with BeforeAndAfterEach {
                 HasCorrectGoodsCommodityCodeUpdatePage(testRecordId),
                 CheckMode,
                 answers
-              ) mustBe controllers.goodsRecord.routes.CommodityCodeController
-                .onPageLoadUpdate(
+              ) mustBe controllers.goodsRecord.routes.UpdateCommodityCodeController
+                .onPageLoad(
                   CheckMode,
                   testRecordId
                 )
@@ -401,7 +401,8 @@ class NavigationSpec extends SpecBase with BeforeAndAfterEach {
               HasCorrectGoodsCommodityCodeUpdatePage(testRecordId),
               CheckMode,
               answers
-            ) mustBe controllers.goodsRecord.routes.CommodityCodeController.onPageLoadUpdate(CheckMode, testRecordId)
+            ) mustBe controllers.goodsRecord.routes.UpdateCommodityCodeController
+              .onPageLoad(CheckMode, testRecordId)
           }
 
           "to JourneyRecoveryPage when answer is not present" in {

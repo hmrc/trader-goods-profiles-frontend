@@ -1,13 +1,13 @@
 
-GET         /create-record/commodity-code                                                           controllers.goodsRecord.CommodityCodeController.onPageLoadCreate(mode: Mode = NormalMode)
-POST        /create-record/commodity-code                                                           controllers.goodsRecord.CommodityCodeController.onSubmitCreate(mode: Mode = NormalMode)
-GET         /create-record/commodity-code/check                                                     controllers.goodsRecord.CommodityCodeController.onPageLoadCreate(mode: Mode = CheckMode)
-POST        /create-record/commodity-code/check                                                     controllers.goodsRecord.CommodityCodeController.onSubmitCreate(mode: Mode = CheckMode)
+GET         /create-record/commodity-code                                                           controllers.goodsRecord.CreateCommodityCodeController.onPageLoad(mode: Mode = NormalMode)
+POST        /create-record/commodity-code                                                           controllers.goodsRecord.CreateCommodityCodeController.onSubmit(mode: Mode = NormalMode)
+GET         /create-record/commodity-code/check                                                     controllers.goodsRecord.CreateCommodityCodeController.onPageLoad(mode: Mode = CheckMode)
+POST        /create-record/commodity-code/check                                                     controllers.goodsRecord.CreateCommodityCodeController.onSubmit(mode: Mode = CheckMode)
 
-GET         /update-record/:recordId/commodity-code                                                 controllers.goodsRecord.CommodityCodeController.onPageLoadUpdate(mode: Mode = NormalMode, recordId: String)
-POST        /update-record/:recordId/commodity-code                                                 controllers.goodsRecord.CommodityCodeController.onSubmitUpdate(mode: Mode = NormalMode, recordId: String)
-GET         /update-record/:recordId/commodity-code/check                                           controllers.goodsRecord.CommodityCodeController.onPageLoadUpdate(mode: Mode = CheckMode, recordId: String)
-POST        /update-record/:recordId/commodity-code/check                                           controllers.goodsRecord.CommodityCodeController.onSubmitUpdate(mode: Mode = CheckMode, recordId: String)
+GET         /update-record/:recordId/commodity-code                                                 controllers.goodsRecord.UpdateCommodityCodeController.onPageLoad(mode: Mode = NormalMode, recordId: String)
+POST        /update-record/:recordId/commodity-code                                                 controllers.goodsRecord.UpdateCommodityCodeController.onSubmit(mode: Mode = NormalMode, recordId: String)
+GET         /update-record/:recordId/commodity-code/check                                           controllers.goodsRecord.UpdateCommodityCodeController.onPageLoad(mode: Mode = CheckMode, recordId: String)
+POST        /update-record/:recordId/commodity-code/check                                           controllers.goodsRecord.UpdateCommodityCodeController.onSubmit(mode: Mode = CheckMode, recordId: String)
 
 GET         /create-record/country-of-origin                                                        controllers.goodsRecord.CountryOfOriginController.onPageLoadCreate(mode: Mode = NormalMode)
 POST        /create-record/country-of-origin                                                        controllers.goodsRecord.CountryOfOriginController.onSubmitCreate(mode: Mode = NormalMode)

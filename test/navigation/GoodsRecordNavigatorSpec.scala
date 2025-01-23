@@ -73,7 +73,7 @@ class GoodsRecordNavigatorSpec extends SpecBase with BeforeAndAfterEach {
             CountryOfOriginPage,
             NormalMode,
             emptyUserAnswers
-          ) mustBe controllers.goodsRecord.routes.CommodityCodeController.onPageLoadCreate(NormalMode)
+          ) mustBe controllers.goodsRecord.routes.CreateCommodityCodeController.onPageLoad(NormalMode)
         }
 
         "must go from CommodityCodePage to HasCorrectGoodsPage" in {
@@ -152,7 +152,8 @@ class GoodsRecordNavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasCommodityCodeChangePage(testRecordId),
               NormalMode,
               emptyUserAnswers.set(HasCommodityCodeChangePage(testRecordId), true).success.value
-            ) mustBe controllers.goodsRecord.routes.CommodityCodeController.onPageLoadUpdate(NormalMode, testRecordId)
+            ) mustBe controllers.goodsRecord.routes.UpdateCommodityCodeController
+              .onPageLoad(NormalMode, testRecordId)
           }
         }
 

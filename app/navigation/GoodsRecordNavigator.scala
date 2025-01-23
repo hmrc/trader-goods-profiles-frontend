@@ -40,7 +40,8 @@ class GoodsRecordNavigator @Inject() extends Navigator {
       _ => controllers.goodsRecord.routes.CountryOfOriginController.onPageLoadCreate(NormalMode)
     case p: GoodsDescriptionUpdatePage    =>
       _ => controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadGoodsDescription(p.recordId)
-    case CountryOfOriginPage              => _ => controllers.goodsRecord.routes.CommodityCodeController.onPageLoadCreate(NormalMode)
+    case CountryOfOriginPage              =>
+      _ => controllers.goodsRecord.routes.CreateCommodityCodeController.onPageLoad(NormalMode)
     case p: CountryOfOriginUpdatePage     =>
       _ => controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(p.recordId)
     case CommodityCodePage                => _ => routes.HasCorrectGoodsController.onPageLoadCreate(NormalMode)
@@ -77,7 +78,7 @@ class GoodsRecordNavigator @Inject() extends Navigator {
       .get(HasCommodityCodeChangePage(recordId))
       .map {
         case false => controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId)
-        case true  => controllers.goodsRecord.routes.CommodityCodeController.onPageLoadUpdate(NormalMode, recordId)
+        case true  => controllers.goodsRecord.routes.UpdateCommodityCodeController.onPageLoad(NormalMode, recordId)
       }
       .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }
