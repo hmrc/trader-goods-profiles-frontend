@@ -78,7 +78,10 @@ class ReviewReasonSpec extends SpecBase {
         "is categorised, and advice status is AdviceReceived" in {
           Commodity.messageKey mustBe "singleRecord.commodityReviewReason"
           Commodity.linkKey mustBe Some("singleRecord.commodityReviewReason.linkText")
-          Commodity.url("recordId").value.url mustBe controllers.goodsRecord.routes.HasCommodityCodeChangeController
+          Commodity
+            .url("recordId")
+            .value
+            .url mustBe controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangeController
             .onPageLoad(NormalMode, "recordId")
             .url
           Commodity.setAdditionalContent(isCategorised = true, AdviceReceived) mustBe Some(
@@ -92,7 +95,10 @@ class ReviewReasonSpec extends SpecBase {
         "is categorised, and advice status is NotRequested" in {
           Commodity.messageKey mustBe "singleRecord.commodityReviewReason"
           Commodity.linkKey mustBe Some("singleRecord.commodityReviewReason.linkText")
-          Commodity.url("recordId").value.url mustBe controllers.goodsRecord.routes.HasCommodityCodeChangeController
+          Commodity
+            .url("recordId")
+            .value
+            .url mustBe controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangeController
             .onPageLoad(NormalMode, "recordId")
             .url
           Commodity.setAdditionalContent(isCategorised = true, NotRequested) mustBe Some(
@@ -103,7 +109,10 @@ class ReviewReasonSpec extends SpecBase {
         "is not categorised, and advice status is AdviceReceived" in {
           Commodity.messageKey mustBe "singleRecord.commodityReviewReason"
           Commodity.linkKey mustBe Some("singleRecord.commodityReviewReason.linkText")
-          Commodity.url("recordId").value.url mustBe controllers.goodsRecord.routes.HasCommodityCodeChangeController
+          Commodity
+            .url("recordId")
+            .value
+            .url mustBe controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangeController
             .onPageLoad(NormalMode, "recordId")
             .url
           Commodity.setAdditionalContent(isCategorised = false, AdviceReceived) mustBe Some(
@@ -114,7 +123,10 @@ class ReviewReasonSpec extends SpecBase {
         "is not categorised, and advice status is not AdviceReceived" in {
           Commodity.messageKey mustBe "singleRecord.commodityReviewReason"
           Commodity.linkKey mustBe Some("singleRecord.commodityReviewReason.linkText")
-          Commodity.url("recordId").value.url mustBe controllers.goodsRecord.routes.HasCommodityCodeChangeController
+          Commodity
+            .url("recordId")
+            .value
+            .url mustBe controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangeController
             .onPageLoad(NormalMode, "recordId")
             .url
           Commodity.setAdditionalContent(isCategorised = false, AdviceRequestWithdrawn) mustBe Some(

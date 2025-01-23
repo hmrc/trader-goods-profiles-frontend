@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.goodsRecord
+package controllers.goodsRecord.commodityCode
 
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
@@ -47,37 +47,25 @@ import views.html.goodsRecord.CommodityCodeView
 import java.time.{Instant, LocalDate, ZoneId}
 import scala.concurrent.Future
 
-class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
+class UpdateCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
   private def onwardRoute = Call("GET", "/foo")
 
   val formProvider = new CommodityCodeFormProvider()
   private val form = formProvider()
 
-  "CommodityCode Controller" - {
+  "UpdateCommodityCodeController" - {
 
-    "For create journey" - {
-      val commodityCodeRoute = controllers.goodsRecord.routes.CommodityCodeController.onPageLoadCreate(NormalMode).url
+    val commodityCodeRoute =
+      controllers.goodsRecord.commodityCode.routes.UpdateCommodityCodeController
+        .onPageLoad(NormalMode, testRecordId)
+        .url
 
-      lazy val onSubmitAction: Call = controllers.goodsRecord.routes.CommodityCodeController.onSubmitCreate(NormalMode)
+    lazy val onSubmitAction: Call =
+      controllers.goodsRecord.commodityCode.routes.UpdateCommodityCodeController.onSubmit(NormalMode, testRecordId)
 
-      val page: QuestionPage[String] = CommodityCodePage
-
-      runCommodityCodeControllerTests(commodityCodeRoute, onSubmitAction, page, None)
-    }
-
-    "For update journey" - {
-      val commodityCodeRoute =
-        controllers.goodsRecord.routes.CommodityCodeController.onPageLoadUpdate(NormalMode, testRecordId).url
-
-      lazy val onSubmitAction: Call =
-        controllers.goodsRecord.routes.CommodityCodeController.onSubmitUpdate(NormalMode, testRecordId)
-
-      val page: QuestionPage[String] = CommodityCodeUpdatePage(testRecordId)
-
-      runCommodityCodeControllerTests(commodityCodeRoute, onSubmitAction, page, Some(testRecordId))
-
-    }
+    val page: QuestionPage[String] = CommodityCodeUpdatePage(testRecordId)
+    runCommodityCodeControllerTests(commodityCodeRoute, onSubmitAction, page, Some(testRecordId))
 
     def runCommodityCodeControllerTests(
       commodityCodeRoute: String,
@@ -478,7 +466,9 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
     "must set changesMade to true if commodity code is updated" in {
 
       val commodityCodeRoute =
-        controllers.goodsRecord.routes.CommodityCodeController.onPageLoadUpdate(NormalMode, testRecordId).url
+        controllers.goodsRecord.commodityCode.routes.UpdateCommodityCodeController
+          .onPageLoad(NormalMode, testRecordId)
+          .url
 
       val mockSessionRepository = mock[SessionRepository]
 
@@ -521,12 +511,12 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
       running(application) {
-        val controller = application.injector.instanceOf[CommodityCodeController]
+        val controller = application.injector.instanceOf[UpdateCommodityCodeController]
         val request    =
           FakeRequest(POST, commodityCodeRoute)
             .withFormUrlEncodedBody(("value", "654322"))
 
-        val result: Future[Result] = controller.onSubmitUpdate(NormalMode, testRecordId)(request)
+        val result: Future[Result] = controller.onSubmit(NormalMode, testRecordId)(request)
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
@@ -542,7 +532,9 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
     "must set changesMade to false if commodity code is not updated" in {
 
       val commodityCodeRoute =
-        controllers.goodsRecord.routes.CommodityCodeController.onPageLoadUpdate(NormalMode, testRecordId).url
+        controllers.goodsRecord.commodityCode.routes.UpdateCommodityCodeController
+          .onPageLoad(NormalMode, testRecordId)
+          .url
 
       val mockSessionRepository = mock[SessionRepository]
 
@@ -582,12 +574,12 @@ class CommodityCodeControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
       running(application) {
-        val controller = application.injector.instanceOf[CommodityCodeController]
+        val controller = application.injector.instanceOf[UpdateCommodityCodeController]
         val request    =
           FakeRequest(POST, commodityCodeRoute)
             .withFormUrlEncodedBody(("value", "654321"))
 
-        val result: Future[Result] = controller.onSubmitUpdate(NormalMode, testRecordId)(request)
+        val result: Future[Result] = controller.onSubmit(NormalMode, testRecordId)(request)
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url

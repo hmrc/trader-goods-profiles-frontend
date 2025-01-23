@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.goodsRecord
+package controllers.goodsRecord.commodityCode
 
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
@@ -49,7 +49,9 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
   private val form = formProvider()
 
   private lazy val hasCommodityCodeChangeRoute =
-    controllers.goodsRecord.routes.HasCommodityCodeChangeController.onPageLoad(NormalMode, testRecordId).url
+    controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangeController
+      .onPageLoad(NormalMode, testRecordId)
+      .url
 
   private val goodsRecord              = goodsRecordResponse()
   private val goodsRecordCatNoAdvice   = goodsRecord.copy(

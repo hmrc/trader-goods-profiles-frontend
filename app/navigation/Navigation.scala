@@ -64,7 +64,7 @@ class Navigation @Inject() (categorisationService: CategorisationService) extend
       .get(HasCorrectGoodsPage)
       .map {
         case true  => controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad()
-        case false => controllers.goodsRecord.routes.CommodityCodeController.onPageLoadCreate(NormalMode)
+        case false => controllers.goodsRecord.commodityCode.routes.CreateCommodityCodeController.onPageLoad(NormalMode)
       }
       .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
 
@@ -76,9 +76,9 @@ class Navigation @Inject() (categorisationService: CategorisationService) extend
           if (answers.isDefined(CommodityCodePage)) {
             controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad()
           } else {
-            controllers.goodsRecord.routes.CommodityCodeController.onPageLoadCreate(CheckMode)
+            controllers.goodsRecord.commodityCode.routes.CreateCommodityCodeController.onPageLoad(CheckMode)
           }
-        case false => controllers.goodsRecord.routes.CommodityCodeController.onPageLoadCreate(CheckMode)
+        case false => controllers.goodsRecord.commodityCode.routes.CreateCommodityCodeController.onPageLoad(CheckMode)
       }
       .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
 
@@ -86,10 +86,11 @@ class Navigation @Inject() (categorisationService: CategorisationService) extend
     answers
       .get(HasCorrectGoodsCommodityCodeUpdatePage(recordId))
       .map {
-        case true  => controllers.goodsRecord.routes.UpdatedCommodityCodeController.onPageLoad(recordId)
-        case false => controllers.goodsRecord.routes.CommodityCodeController.onPageLoadUpdate(NormalMode, recordId)
+        case true  => controllers.goodsRecord.commodityCode.routes.UpdatedCommodityCodeController.onPageLoad(recordId)
+        case false =>
+          controllers.goodsRecord.commodityCode.routes.UpdateCommodityCodeController.onPageLoad(NormalMode, recordId)
       }
-      .getOrElse(controllers.goodsRecord.routes.UpdatedCommodityCodeController.onPageLoad(recordId))
+      .getOrElse(controllers.goodsRecord.commodityCode.routes.UpdatedCommodityCodeController.onPageLoad(recordId))
 
   private def navigateFromHasCorrectGoodsUpdateCheck(answers: UserAnswers, recordId: String): Call =
     answers
@@ -99,9 +100,10 @@ class Navigation @Inject() (categorisationService: CategorisationService) extend
           if (answers.isDefined(CommodityCodeUpdatePage(recordId))) {
             controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadCommodityCode(recordId)
           } else {
-            controllers.goodsRecord.routes.CommodityCodeController.onPageLoadUpdate(CheckMode, recordId)
+            controllers.goodsRecord.commodityCode.routes.UpdateCommodityCodeController.onPageLoad(CheckMode, recordId)
           }
-        case false => controllers.goodsRecord.routes.CommodityCodeController.onPageLoadUpdate(CheckMode, recordId)
+        case false =>
+          controllers.goodsRecord.commodityCode.routes.UpdateCommodityCodeController.onPageLoad(CheckMode, recordId)
       }
       .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
 

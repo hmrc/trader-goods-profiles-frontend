@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.goodsRecord
+package controllers.goodsRecord.commodityCode
 
 import connectors.OttConnector
 import controllers.BaseController
@@ -28,7 +28,7 @@ import pages.goodsRecord._
 import play.api.data.{Form, FormError}
 import play.api.i18n.MessagesApi
 import play.api.mvc._
-import queries.{CommodityQuery, CommodityUpdateQuery}
+import queries.CommodityUpdateQuery
 import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.http.UpstreamErrorResponse
@@ -39,7 +39,7 @@ import java.time.{LocalDate, ZoneId}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class CommodityCodeController @Inject() (
+class UpdateCommodityCodeController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: GoodsRecordNavigator,
@@ -57,16 +57,7 @@ class CommodityCodeController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoadCreate(mode: Mode): Action[AnyContent] =
-    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
-      val preparedForm = prepareForm(CommodityCodePage, form)
-
-      val onSubmitAction: Call = controllers.goodsRecord.routes.CommodityCodeController.onSubmitCreate(mode)
-
-      Ok(view(preparedForm, onSubmitAction, mode, recordId = None))
-    }
-
-  def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] =
+  def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       val preparedForm = prepareForm(CommodityCodeUpdatePage(recordId), form)
 
@@ -82,34 +73,17 @@ class CommodityCodeController @Inject() (
         case _    =>
       }
 
-      val onSubmitAction: Call = controllers.goodsRecord.routes.CommodityCodeController.onSubmitUpdate(mode, recordId)
+      val onSubmitAction: Call =
+        controllers.goodsRecord.commodityCode.routes.UpdateCommodityCodeController.onSubmit(mode, recordId)
 
       Ok(view(preparedForm, onSubmitAction, mode, Some(recordId)))
         .removingFromSession(dataRemoved, dataUpdated, pageUpdated)
     }
 
-  def onSubmitCreate(mode: Mode): Action[AnyContent] =
-    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val onSubmitAction          = controllers.goodsRecord.routes.CommodityCodeController.onSubmitCreate(mode)
-      val countryOfOrigin: String = request.userAnswers.get(CountryOfOriginPage).get
-
-      form
-        .bindFromRequest()
-        .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, onSubmitAction, mode, recordId = None))),
-          value =>
-            (for {
-              commodity <- fetchCommodity(value, countryOfOrigin)
-              result    <- validateAndProcessCommodityCreate(commodity, value, onSubmitAction, mode)
-            } yield result).recover { case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
-              handleFormError(form, "commodityCode.error.invalid", onSubmitAction, mode, recordId = None)
-            }
-        )
-    }
-
-  def onSubmitUpdate(mode: Mode, recordId: String): Action[AnyContent] =
+  def onSubmit(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      val onSubmitAction  = controllers.goodsRecord.routes.CommodityCodeController.onSubmitUpdate(mode, recordId)
+      val onSubmitAction  =
+        controllers.goodsRecord.commodityCode.routes.UpdateCommodityCodeController.onSubmit(mode, recordId)
       val countryOfOrigin = request.userAnswers.get(CountryOfOriginUpdatePage(recordId)).get
       val oldValueOpt     = request.userAnswers.get(CommodityCodeUpdatePage(recordId))
 
@@ -160,29 +134,6 @@ class CommodityCodeController @Inject() (
   ): Result = {
     val formWithApiErrors = form.copy(errors = Seq(FormError("value", getMessage(errorKey))))
     BadRequest(view(formWithApiErrors, onSubmitAction, mode, recordId))
-  }
-
-  private def validateAndProcessCommodityCreate(
-    commodity: Commodity,
-    value: String,
-    onSubmitAction: Call,
-    mode: Mode
-  )(implicit request: DataRequest[AnyContent]): Future[Result] = {
-    val todayInstant = LocalDate.now(ZoneId.of("UTC")).atStartOfDay(ZoneId.of("UTC")).toInstant
-    if (
-      todayInstant.isBefore(commodity.validityStartDate) ||
-      commodity.validityEndDate.exists(todayInstant.isAfter)
-    ) {
-      val formWithErrors = createFormWithErrors(form, value, "commodityCode.error.expired")
-      Future.successful(BadRequest(view(formWithErrors, onSubmitAction, mode, recordId = None)))
-    } else {
-      for {
-        updatedAnswers          <- Future.fromTry(request.userAnswers.set(CommodityCodePage, value))
-        updatedAnswersWithQuery <-
-          Future.fromTry(updatedAnswers.set(CommodityQuery, commodity.copy(commodityCode = value)))
-        _                       <- sessionRepository.set(updatedAnswersWithQuery)
-      } yield Redirect(navigator.nextPage(CommodityCodePage, mode, updatedAnswersWithQuery))
-    }
   }
 
   private def validateAndProcessCommodityUpdate(

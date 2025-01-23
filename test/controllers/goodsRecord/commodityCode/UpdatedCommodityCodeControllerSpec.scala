@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.goodsRecord
+package controllers.goodsRecord.commodityCode
 
 import base.SpecBase
 import base.TestConstants.testRecordId
@@ -32,7 +32,10 @@ class UpdatedCommodityCodeControllerSpec extends SpecBase {
 
       running(application) {
         val request =
-          FakeRequest(GET, controllers.goodsRecord.routes.UpdatedCommodityCodeController.onPageLoad(testRecordId).url)
+          FakeRequest(
+            GET,
+            controllers.goodsRecord.commodityCode.routes.UpdatedCommodityCodeController.onPageLoad(testRecordId).url
+          )
 
         val result = route(application, request).value
 
