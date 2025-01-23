@@ -19,6 +19,7 @@ package forms.goodsRecord
 import forms.mappings.Mappings
 import models.RichString
 import play.api.data.Form
+import utils.Constants.productReferenceMaxLength
 
 import javax.inject.Inject
 
@@ -27,6 +28,6 @@ class ProductReferenceFormProvider @Inject() extends Mappings {
   def apply(): Form[String] =
     Form(
       "value" -> adaptedText("productReference.error.required")(_.removeDoubleSpaces())
-        .verifying(maxLength(512, "productReference.error.length"))
+        .verifying(maxLength(productReferenceMaxLength, "productReference.error.length"))
     )
 }
