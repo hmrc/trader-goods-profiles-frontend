@@ -264,6 +264,17 @@ trait SpecBase
       1
     )
 
+  lazy val categorisationInfoWithEmptyCatAssessThatNeedAnswersWithNoSupplementaryUnit: CategorisationInfo =
+    CategorisationInfo(
+      "123456",
+      "BV",
+      Some(today),
+      Seq(category1, category2, category3),
+      Seq.empty,
+      None,
+      1
+    )
+
   lazy val categorisationInfoWithEmptyMeasurementUnit: CategorisationInfo = CategorisationInfo(
     "1234567890",
     "BV",
@@ -482,7 +493,7 @@ trait SpecBase
       "10410100",
       "10410100",
       "BAN0010011",
-      "1234567",
+      "123456",
       NotRequested,
       "Organic bananas",
       "UK",

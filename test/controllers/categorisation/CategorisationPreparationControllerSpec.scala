@@ -244,6 +244,83 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
       }
 
+      "and not update the record if supplementary unit is null and commodity is less than 10" in {
+
+        when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any())).thenReturn(
+          Future.successful(categorisationInfoWithEmptyCatAssessThatNeedAnswersWithNoSupplementaryUnit)
+        )
+        val recordWithoutSuppUnit = goodsRecordResponseWithOutSupplementaryUnit(
+          Instant.parse("2022-11-18T23:20:19Z"),
+          Instant.parse("2022-11-18T23:20:19Z")
+        )
+
+        when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(recordWithoutSuppUnit))
+
+        val app = application()
+
+        running(app) {
+
+          val request =
+            FakeRequest(
+              GET,
+              controllers.categorisation.routes.CategorisationPreparationController
+                .startCategorisation(testRecordId)
+                .url
+            )
+          val result  = route(app, request).value
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual onwardRoute.url
+
+          verify(mockCategorisationService)
+            .getCategorisationInfo(any(), eqTo("123456"), eqTo("UK"), eqTo(testRecordId), eqTo(false))(any())
+
+          withClue("must update User Answers with Categorisation Info") {
+            val uaArgCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+            verify(mockSessionRepository).set(uaArgCaptor.capture())
+
+            val finalUserAnswers = uaArgCaptor.getValue
+
+            finalUserAnswers
+              .get(CategorisationDetailsQuery(testRecordId))
+              .get mustBe categorisationInfoWithEmptyCatAssessThatNeedAnswersWithNoSupplementaryUnit
+          }
+
+          withClue("must not get category result from categorisation service as not needed") {
+            verify(mockCategorisationService, never())
+              .calculateResult(any(), any(), any())
+          }
+
+          withClue("must not have updated goods record") {
+            verify(mockGoodsRecordConnector, never())
+              .updateCategoryAndComcodeForGoodsRecord(any(), any(), any())(
+                any()
+              )
+          }
+
+          withClue("must call the audit service start categorisation event") {
+            verify(mockAuditService)
+              .auditStartUpdateGoodsRecord(
+                eqTo(testEori),
+                eqTo(AffinityGroup.Individual),
+                eqTo(CategorisationUpdate),
+                eqTo(testRecordId),
+                eqTo(Some(categorisationInfoWithEmptyCatAssessThatNeedAnswersWithNoSupplementaryUnit))
+              )(any())
+          }
+
+          withClue("must not call the audit service finish categorisation event") {
+            verify(mockAuditService, never()).auditFinishCategorisation(
+              any(),
+              any(),
+              any(),
+              any()
+            )(any())
+          }
+
+        }
+
+      }
+
       "and update the record if there are no questions to answer" in {
 
         when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any())).thenReturn(
