@@ -194,26 +194,31 @@ class CategorisationPreparationController @Inject() (
       categorisationInfo.categoryAssessmentsThatNeedAnswers.isEmpty && !categorisationInfo.isCommCodeExpired
       && !isSupplementaryUnitQuestionToBeAnswered(categorisationInfo, updatedUserAnswers, recordId)
     ) {
-      CategoryRecord.build(updatedUserAnswers, eori, recordId, categorisationService) match {
-        case Right(record) =>
-          auditService.auditFinishCategorisation(
-            eori,
-            affinityGroup,
-            recordId,
-            record
-          )
+      if (categorisationInfo.commodityCode.length == 6 && !categorisationInfo.measurementUnit.isDefined) {
+        Future.successful(Done)
+      } else {
+        CategoryRecord.build(updatedUserAnswers, eori, recordId, categorisationService) match {
+          case Right(record) =>
+            auditService.auditFinishCategorisation(
+              eori,
+              affinityGroup,
+              recordId,
+              record
+            )
 
-          val result = for {
-            oldRecord <- goodsRecordsConnector.getRecord(recordId)
-            _         <- goodsRecordsConnector.updateCategoryAndComcodeForGoodsRecord(recordId, record, oldRecord)
-          } yield Done
+            val result = for {
+              oldRecord <- goodsRecordsConnector.getRecord(recordId)
+              _         <- goodsRecordsConnector.updateCategoryAndComcodeForGoodsRecord(recordId, record, oldRecord)
+            } yield Done
 
-          result
+            result
 
-        case Left(errors) =>
-          val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
-          Future.failed(CategoryRecordBuildFailure(errorMessages))
+          case Left(errors) =>
+            val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
+            Future.failed(CategoryRecordBuildFailure(errorMessages))
+        }
       }
+
     } else {
       Future.successful(Done)
     }
