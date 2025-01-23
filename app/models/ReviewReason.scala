@@ -36,7 +36,9 @@ object ReviewReason {
     val linkKey: Option[String] = Some("singleRecord.commodityReviewReason.linkText")
 
     override def url(recordId: String): Option[Call] =
-      Some(controllers.goodsRecord.routes.HasCommodityCodeChangeController.onPageLoad(NormalMode, recordId))
+      Some(
+        controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangeController.onPageLoad(NormalMode, recordId)
+      )
 
     override def setAdditionalContent(isCategorised: Boolean, adviceStatus: AdviceStatus): Option[(String, String)] = {
       val tagText = "singleRecord.commodityReviewReason.tagText"

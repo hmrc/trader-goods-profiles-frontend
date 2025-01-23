@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.goodsRecord
+package controllers.goodsRecord.commodityCode
 
 import connectors.GoodsRecordConnector
 import controllers.BaseController
