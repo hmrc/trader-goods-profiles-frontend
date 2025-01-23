@@ -55,7 +55,7 @@ class CountryOfOriginSummarySpec extends SpecBase {
       )
 
       row.actions mustBe defined
-      row.actions.value.items.head.href mustEqual controllers.goodsRecord.routes.HasCountryOfOriginChangeController
+      row.actions.value.items.head.href mustEqual controllers.goodsRecord.countryOfOrigin.routes.HasCountryOfOriginChangeController
         .onPageLoad(NormalMode, testRecordId)
         .url
     }
@@ -73,8 +73,8 @@ class CountryOfOriginSummarySpec extends SpecBase {
       )
 
       row.actions mustBe defined
-      row.actions.value.items.head.href mustEqual controllers.goodsRecord.routes.CountryOfOriginController
-        .onPageLoadUpdate(NormalMode, testRecordId)
+      row.actions.value.items.head.href mustEqual controllers.goodsRecord.countryOfOrigin.routes.UpdateCountryOfOriginController
+        .onPageLoad(NormalMode, testRecordId)
         .url
     }
 
@@ -91,8 +91,8 @@ class CountryOfOriginSummarySpec extends SpecBase {
       )
       row.value.content.asHtml.toString() must include(testCountryName)
       row.actions mustBe defined
-      row.actions.value.items.head.href mustEqual controllers.goodsRecord.routes.CountryOfOriginController
-        .onPageLoadUpdate(NormalMode, testRecordId)
+      row.actions.value.items.head.href mustEqual controllers.goodsRecord.countryOfOrigin.routes.UpdateCountryOfOriginController
+        .onPageLoad(NormalMode, testRecordId)
         .url
     }
   }

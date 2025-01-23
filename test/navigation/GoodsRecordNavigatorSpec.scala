@@ -65,7 +65,7 @@ class GoodsRecordNavigatorSpec extends SpecBase with BeforeAndAfterEach {
             GoodsDescriptionPage,
             NormalMode,
             emptyUserAnswers
-          ) mustBe controllers.goodsRecord.routes.CountryOfOriginController.onPageLoadCreate(NormalMode)
+          ) mustBe controllers.goodsRecord.countryOfOrigin.routes.CreateCountryOfOriginController.onPageLoad(NormalMode)
         }
 
         "must go from CountryOfOriginPage to CommodityCodePage" in {
@@ -135,7 +135,8 @@ class GoodsRecordNavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasCountryOfOriginChangePage(testRecordId),
               NormalMode,
               emptyUserAnswers.set(HasCountryOfOriginChangePage(testRecordId), true).success.value
-            ) mustBe controllers.goodsRecord.routes.CountryOfOriginController.onPageLoadUpdate(NormalMode, testRecordId)
+            ) mustBe controllers.goodsRecord.countryOfOrigin.routes.UpdateCountryOfOriginController
+              .onPageLoad(NormalMode, testRecordId)
           }
 
           "must go from HasGoodsDescriptionChangePage to GoodsDescriptionUpdatePage" in {

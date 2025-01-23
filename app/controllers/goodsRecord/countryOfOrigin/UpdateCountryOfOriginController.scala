@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.goodsRecord
+package controllers.goodsRecord.countryOfOrigin
 
 import connectors.OttConnector
 import controllers.BaseController
@@ -25,7 +25,7 @@ import models.requests.DataRequest
 import models.{Country, Mode, UserAnswers}
 import navigation.GoodsRecordNavigator
 import pages.QuestionPage
-import pages.goodsRecord.{CountryOfOriginPage, CountryOfOriginUpdatePage, HasCountryOfOriginChangePage}
+import pages.goodsRecord.{CountryOfOriginUpdatePage, HasCountryOfOriginChangePage}
 import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.libs.json.Reads
@@ -40,7 +40,7 @@ import views.html.goodsRecord.CountryOfOriginView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class CountryOfOriginController @Inject() (
+class UpdateCountryOfOriginController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: GoodsRecordNavigator,
@@ -66,71 +66,17 @@ class CountryOfOriginController @Inject() (
       _                       <- sessionRepository.set(updatedAnswersWithQuery)
     } yield (countries, updatedAnswersWithQuery)
 
-  def onPageLoadCreate(mode: Mode): Action[AnyContent] =
-    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val submitAction = controllers.goodsRecord.routes.CountryOfOriginController.onSubmitCreate(mode)
-      request.userAnswers
-        .get(CountriesQuery) match {
-        case Some(countries) => Future.successful(displayViewCreate(countries, submitAction, request.userAnswers, mode))
-        case None            =>
-          retrieveAndStoreCountryData.map(countriesAndQuery =>
-            displayViewCreate(countriesAndQuery._1, submitAction, countriesAndQuery._2, mode)
-          )
-      }
-    }
-
-  private def displayViewCreate(countries: Seq[Country], action: Call, userAnswers: UserAnswers, mode: Mode)(implicit
-    request: Request[_]
-  ): Result = {
-    val form         = formProvider(countries)
-    val preparedForm = prepareForm(CountryOfOriginPage, form, userAnswers)
-    Ok(view(preparedForm, action, countries, mode, recordId = None))
-  }
 
   private def prepareForm[T](page: QuestionPage[T], form: Form[T], userAnswers: UserAnswers)(implicit
     rds: Reads[T]
   ): Form[T] =
     userAnswers.get(page).map(form.fill).getOrElse(form)
 
-  private def submitForm(countries: Seq[Country], mode: Mode, userAnswers: UserAnswers, recordId: Option[String])(
-    implicit request: Request[_]
-  ): Future[Result] = {
-    val form = formProvider(countries)
-    form
-      .bindFromRequest()
-      .fold(
-        formWithErrors =>
-          Future.successful(
-            BadRequest(
-              view(
-                formWithErrors,
-                controllers.goodsRecord.routes.CountryOfOriginController.onSubmitCreate(mode),
-                countries,
-                mode,
-                recordId
-              )
-            )
-          ),
-        value =>
-          for {
-            updatedAnswers <- Future.fromTry(userAnswers.set(CountryOfOriginPage, value))
-            _              <- sessionRepository.set(updatedAnswers)
-          } yield Redirect(navigator.nextPage(CountryOfOriginPage, mode, updatedAnswers))
-      )
-  }
 
-  def onSubmitCreate(mode: Mode): Action[AnyContent] =
-    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      request.userAnswers
-        .get(CountriesQuery) match {
-        case Some(countries) => submitForm(countries, mode, request.userAnswers, recordId = None)
-        case None            => throw new Exception("Countries should have been populated on page load.")
-      }
-    }
 
-  def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] =
+  def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val submitAction = controllers.goodsRecord.routes.CountryOfOriginController.onSubmitUpdate(mode, recordId)
+      val submitAction = controllers.goodsRecord.countryOfOrigin.routes.UpdateCountryOfOriginController.onSubmit(mode, recordId)
 
       request.userAnswers.get(HasCountryOfOriginChangePage(recordId)) match {
         case None =>
@@ -155,7 +101,7 @@ class CountryOfOriginController @Inject() (
       }
     }
 
-  def onSubmitUpdate(mode: Mode, recordId: String): Action[AnyContent] =
+  def onSubmit(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       request.userAnswers
         .get(CountriesQuery) match {
@@ -169,7 +115,7 @@ class CountryOfOriginController @Inject() (
                   BadRequest(
                     view(
                       formWithErrors,
-                      controllers.goodsRecord.routes.CountryOfOriginController.onSubmitUpdate(mode, recordId),
+                      controllers.goodsRecord.countryOfOrigin.routes.UpdateCountryOfOriginController.onSubmit(mode, recordId),
                       countries,
                       mode,
                       Some(recordId)
