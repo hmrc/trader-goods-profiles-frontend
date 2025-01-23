@@ -94,7 +94,7 @@ class CommodityCodeSummarySpec extends SpecBase {
         )
 
       row.actions mustBe defined
-      row.actions.value.items.head.href mustEqual controllers.goodsRecord.routes.UpdateCommodityCodeController
+      row.actions.value.items.head.href mustEqual controllers.goodsRecord.commodityCode.routes.UpdateCommodityCodeController
         .onPageLoad(NormalMode, testRecordId)
         .url
     }

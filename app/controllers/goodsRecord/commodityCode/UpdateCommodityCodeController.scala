@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.goodsRecord
+package controllers.goodsRecord.commodityCode
 
 import connectors.OttConnector
 import controllers.BaseController
@@ -74,7 +74,7 @@ class UpdateCommodityCodeController @Inject() (
       }
 
       val onSubmitAction: Call =
-        controllers.goodsRecord.routes.UpdateCommodityCodeController.onSubmit(mode, recordId)
+        controllers.goodsRecord.commodityCode.routes.UpdateCommodityCodeController.onSubmit(mode, recordId)
 
       Ok(view(preparedForm, onSubmitAction, mode, Some(recordId)))
         .removingFromSession(dataRemoved, dataUpdated, pageUpdated)
@@ -82,7 +82,8 @@ class UpdateCommodityCodeController @Inject() (
 
   def onSubmit(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen getData andThen requireData).async { implicit request =>
-      val onSubmitAction  = controllers.goodsRecord.routes.UpdateCommodityCodeController.onSubmit(mode, recordId)
+      val onSubmitAction  =
+        controllers.goodsRecord.commodityCode.routes.UpdateCommodityCodeController.onSubmit(mode, recordId)
       val countryOfOrigin = request.userAnswers.get(CountryOfOriginUpdatePage(recordId)).get
       val oldValueOpt     = request.userAnswers.get(CommodityCodeUpdatePage(recordId))
 

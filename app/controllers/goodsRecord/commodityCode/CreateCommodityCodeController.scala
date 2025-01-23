@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.goodsRecord
+package controllers.goodsRecord.commodityCode
 
 import connectors.OttConnector
 import controllers.BaseController
@@ -60,14 +60,15 @@ class CreateCommodityCodeController @Inject() (
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       val preparedForm = prepareForm(CommodityCodePage, form)
 
-      val onSubmitAction: Call = controllers.goodsRecord.routes.CreateCommodityCodeController.onSubmit(mode)
+      val onSubmitAction: Call =
+        controllers.goodsRecord.commodityCode.routes.CreateCommodityCodeController.onSubmit(mode)
 
       Ok(view(preparedForm, onSubmitAction, mode, recordId = None))
     }
 
   def onSubmit(mode: Mode): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val onSubmitAction          = controllers.goodsRecord.routes.CreateCommodityCodeController.onSubmit(mode)
+      val onSubmitAction          = controllers.goodsRecord.commodityCode.routes.CreateCommodityCodeController.onSubmit(mode)
       val countryOfOrigin: String = request.userAnswers.get(CountryOfOriginPage).get
 
       form

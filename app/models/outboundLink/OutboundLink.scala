@@ -134,8 +134,8 @@ object OutboundLink {
     val linkTextKey: String     = "commodityCode.p1.linkText"
     val originatingPage: String = recordId match {
       case Some(recordId) =>
-        controllers.goodsRecord.routes.UpdateCommodityCodeController.onSubmit(mode, recordId).url
-      case _              => controllers.goodsRecord.routes.CreateCommodityCodeController.onSubmit(mode).url
+        controllers.goodsRecord.commodityCode.routes.UpdateCommodityCodeController.onSubmit(mode, recordId).url
+      case _              => controllers.goodsRecord.commodityCode.routes.CreateCommodityCodeController.onSubmit(mode).url
     }
   }
 

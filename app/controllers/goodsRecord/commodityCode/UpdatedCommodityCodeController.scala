@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.goodsRecord
+package controllers.goodsRecord.commodityCode
 
 import controllers.actions._
 import play.api.i18n.{I18nSupport, MessagesApi}

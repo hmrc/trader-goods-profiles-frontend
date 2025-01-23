@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.goodsRecord
+package controllers.goodsRecord.commodityCode
 
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
@@ -57,10 +57,10 @@ class CreateCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
   "CommodityCode Controller" - {
 
     val commodityCodeRoute =
-      controllers.goodsRecord.routes.CreateCommodityCodeController.onPageLoad(NormalMode).url
+      controllers.goodsRecord.commodityCode.routes.CreateCommodityCodeController.onPageLoad(NormalMode).url
 
     lazy val onSubmitAction: Call =
-      controllers.goodsRecord.routes.CreateCommodityCodeController.onSubmit(NormalMode)
+      controllers.goodsRecord.commodityCode.routes.CreateCommodityCodeController.onSubmit(NormalMode)
 
     val page: QuestionPage[String] = CommodityCodePage
 
@@ -465,7 +465,9 @@ class CreateCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
     "must set changesMade to true if commodity code is updated" in {
 
       val commodityCodeRoute =
-        controllers.goodsRecord.routes.UpdateCommodityCodeController.onPageLoad(NormalMode, testRecordId).url
+        controllers.goodsRecord.commodityCode.routes.UpdateCommodityCodeController
+          .onPageLoad(NormalMode, testRecordId)
+          .url
 
       val mockSessionRepository = mock[SessionRepository]
 
@@ -529,7 +531,9 @@ class CreateCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
     "must set changesMade to false if commodity code is not updated" in {
 
       val commodityCodeRoute =
-        controllers.goodsRecord.routes.UpdateCommodityCodeController.onPageLoad(NormalMode, testRecordId).url
+        controllers.goodsRecord.commodityCode.routes.UpdateCommodityCodeController
+          .onPageLoad(NormalMode, testRecordId)
+          .url
 
       val mockSessionRepository = mock[SessionRepository]
 
