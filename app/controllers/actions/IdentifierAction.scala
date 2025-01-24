@@ -58,35 +58,48 @@ class AuthenticatedIdentifierAction @Inject() (
         Retrievals.internalId and Retrievals.affinityGroup and Retrievals.credentialRole and Retrievals.authorisedEnrolments
       ) {
         case Some(internalId) ~ Some(affinityGroup) ~ credentialRole ~ authorisedEnrolments =>
-          authorisedEnrolments
-            .getEnrolment(config.tgpEnrolmentIdentifier.key)
-            .flatMap(_.getIdentifier(config.tgpEnrolmentIdentifier.identifier)) match {
-            case Some(enrolment) if !enrolment.value.isBlank =>
-              checkUserAllowList(enrolment.value)(hc).flatMap { _ =>
-                block(IdentifierRequest(request, internalId, enrolment.value, affinityGroup, credentialRole))
-              }
-            case Some(enrolment) if enrolment.value.isBlank  =>
-              throw InternalError("EORI is empty")
-            case _                                           =>
-              throw InsufficientEnrolments("Unable to retrieve Enrolment")
-          }
-        case _                                                                              => throw InternalError("Undefined authorisation error")
-      } recover {
-      case _: UserNotAllowedException        =>
-        logger.info("trader is not on user-allow-list redirecting to UnauthorisedServiceController")
-        Redirect(controllers.problem.routes.UnauthorisedServiceUserController.onPageLoad())
-      case _: NoActiveSession                =>
-        logger.info(s"No Active Session. Redirect to $config.loginContinueUrl")
-        Redirect(config.loginUrl, Map("continue" -> Seq(config.loginContinueUrl)))
-      case _: InsufficientEnrolments         =>
-        logger.info(
-          "Authorisation failure: No enrolments found for CDS. Redirecting to UnauthorisedCdsEnrolmentController"
-        )
-        Redirect(controllers.problem.routes.UnauthorisedCdsEnrolmentController.onPageLoad())
-      case exception: AuthorisationException =>
-        logger.info(f"Authorisation failure: ${exception.reason}. Redirecting to UnauthorisedController")
-        Redirect(controllers.problem.routes.UnauthorisedController.onPageLoad())
+          handleEnrolments(internalId, affinityGroup, credentialRole, authorisedEnrolments, request, block)
+        case _                                                                              =>
+          throw InternalError("Undefined authorisation error")
+      } recover handleAuthorisationFailures
+  }
+
+  private def handleEnrolments[A](
+    internalId: String,
+    affinityGroup: AffinityGroup,
+    credentialRole: Option[CredentialRole],
+    authorisedEnrolments: Enrolments,
+    request: Request[A],
+    block: IdentifierRequest[A] => Future[Result]
+  )(implicit hc: HeaderCarrier): Future[Result] =
+    authorisedEnrolments
+      .getEnrolment(config.tgpEnrolmentIdentifier.key)
+      .flatMap(_.getIdentifier(config.tgpEnrolmentIdentifier.identifier)) match {
+      case Some(enrolment) if enrolment.value.nonEmpty =>
+        checkUserAllowList(enrolment.value).flatMap { _ =>
+          block(IdentifierRequest(request, internalId, enrolment.value, affinityGroup, credentialRole))
+        }
+      case Some(_)                                     =>
+        throw InternalError("EORI is empty")
+      case None                                        =>
+        throw InsufficientEnrolments("Unable to retrieve Enrolment")
     }
+
+  private def handleAuthorisationFailures: PartialFunction[Throwable, Result] = {
+    case _: UserNotAllowedException        =>
+      logger.info("Trader is not on user-allow-list. Redirecting to UnauthorisedServiceController.")
+      Redirect(controllers.problem.routes.UnauthorisedServiceUserController.onPageLoad())
+    case _: NoActiveSession                =>
+      logger.info(s"No Active Session. Redirecting to ${config.loginContinueUrl}.")
+      Redirect(config.loginUrl, Map("continue" -> Seq(config.loginContinueUrl)))
+    case _: InsufficientEnrolments         =>
+      logger.info(
+        "Authorisation failure: No enrolments found for CDS. Redirecting to UnauthorisedCdsEnrolmentController."
+      )
+      Redirect(controllers.problem.routes.UnauthorisedCdsEnrolmentController.onPageLoad())
+    case exception: AuthorisationException =>
+      logger.info(s"Authorisation failure: ${exception.reason}. Redirecting to UnauthorisedController.")
+      Redirect(controllers.problem.routes.UnauthorisedController.onPageLoad())
   }
 
   private def checkUserAllowList(eori: String)(implicit hc: HeaderCarrier): Future[Done] =

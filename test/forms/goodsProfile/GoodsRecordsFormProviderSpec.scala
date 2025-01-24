@@ -18,12 +18,12 @@ package forms.goodsProfile
 
 import forms.behaviours.StringFieldBehaviours
 import play.api.data.FormError
+import utils.Constants.goodsRecordMaxLength
 
 class GoodsRecordsFormProviderSpec extends StringFieldBehaviours {
 
   val requiredKey = "goodsRecords.error.required"
   val lengthKey   = "goodsRecords.error.length"
-  val maxLength   = 100
 
   val form = new GoodsRecordsFormProvider()()
 
@@ -34,14 +34,14 @@ class GoodsRecordsFormProviderSpec extends StringFieldBehaviours {
     behave like fieldThatBindsValidData(
       form,
       fieldName,
-      stringsWithMaxLength(maxLength)
+      stringsWithMaxLength(goodsRecordMaxLength)
     )
 
     behave like fieldWithMaxLength(
       form,
       fieldName,
-      maxLength = maxLength,
-      lengthError = FormError(fieldName, lengthKey, Seq(maxLength))
+      maxLength = goodsRecordMaxLength,
+      lengthError = FormError(fieldName, lengthKey, Seq(goodsRecordMaxLength))
     )
 
     behave like mandatoryField(

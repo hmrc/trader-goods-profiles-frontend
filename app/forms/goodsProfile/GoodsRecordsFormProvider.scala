@@ -18,6 +18,7 @@ package forms.goodsProfile
 
 import forms.mappings.Mappings
 import play.api.data.Form
+import utils.Constants.goodsRecordMaxLength
 
 import javax.inject.Inject
 
@@ -26,6 +27,6 @@ class GoodsRecordsFormProvider @Inject() extends Mappings {
   def apply(): Form[String] =
     Form(
       "value" -> text("goodsRecords.error.required")
-        .verifying(maxLength(100, "goodsRecords.error.length"))
+        .verifying(maxLength(goodsRecordMaxLength, "goodsRecords.error.length"))
     )
 }
