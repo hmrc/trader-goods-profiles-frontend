@@ -42,7 +42,7 @@
         <p class="govuk-body">@messages("hasCommodityCodeChange.advice")</p>
     }
 
-    @formHelper(action = controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangeController.onSubmit(mode, recordId), Symbol("autoComplete") -> "off") {
+    @formHelper(action = controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangedController.onSubmit(mode, recordId), Symbol("autoComplete") -> "off") {
 
         @govukRadios(
             RadiosViewModel.yesNo(

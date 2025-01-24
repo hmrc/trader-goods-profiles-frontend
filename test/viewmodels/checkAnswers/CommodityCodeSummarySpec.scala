@@ -56,7 +56,7 @@ class CommodityCodeSummarySpec extends SpecBase {
         )
 
       row.actions mustBe defined
-      row.actions.value.items.head.href mustEqual controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangeController
+      row.actions.value.items.head.href mustEqual controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangedController
         .onPageLoad(NormalMode, testRecordId)
         .url
     }
@@ -75,7 +75,7 @@ class CommodityCodeSummarySpec extends SpecBase {
         )
 
       row.actions mustBe defined
-      row.actions.value.items.head.href mustEqual controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangeController
+      row.actions.value.items.head.href mustEqual controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangedController
         .onPageLoad(NormalMode, testRecordId)
         .url
     }

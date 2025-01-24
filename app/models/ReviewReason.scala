@@ -37,7 +37,7 @@ object ReviewReason {
 
     override def url(recordId: String): Option[Call] =
       Some(
-        controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangeController.onPageLoad(NormalMode, recordId)
+        controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangedController.onPageLoad(NormalMode, recordId)
       )
 
     override def setAdditionalContent(isCategorised: Boolean, adviceStatus: AdviceStatus): Option[(String, String)] = {

@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.hasCorrectGoods
 
 import cats.data
 import cats.data.EitherNec
 import config.FrontendAppConfig
 import connectors.GoodsRecordConnector
+import controllers.BaseController
 import controllers.actions._
 import forms.HasCorrectGoodsFormProvider
 import models.requests.DataRequest
@@ -42,7 +43,7 @@ import javax.inject.Inject
 import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 
-class HasCorrectGoodsController @Inject() (
+class UpdateController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: Navigation,
@@ -61,92 +62,19 @@ class HasCorrectGoodsController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoadCreate(mode: Mode): Action[AnyContent] =
-    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
-      val preparedForm = prepareForm(HasCorrectGoodsPage, form)
-      val submitAction = routes.HasCorrectGoodsController.onSubmitCreate(mode)
-      request.userAnswers.get(CommodityQuery) match {
-        case Some(commodity) => Ok(view(preparedForm, commodity, submitAction, mode, recordId = None))
-        case None            => navigator.journeyRecovery()
-      }
-    }
-
-  def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] =
+  def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       val preparedForm = prepareForm(HasCorrectGoodsCommodityCodeUpdatePage(recordId), form)
-      val submitAction = routes.HasCorrectGoodsController.onSubmitUpdate(mode, recordId)
+      val submitAction = controllers.hasCorrectGoods.routes.UpdateController.onSubmit(mode, recordId)
       request.userAnswers.get(CommodityUpdateQuery(recordId)) match {
         case Some(commodity) => Ok(view(preparedForm, commodity, submitAction, mode, Some(recordId)))
         case None            => navigator.journeyRecovery()
       }
     }
 
-  def onPageLoadLongerCommodityCode(mode: Mode, recordId: String): Action[AnyContent] =
-    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
-      val preparedForm = prepareForm(HasCorrectGoodsLongerCommodityCodePage(recordId), form)
-      val submitAction =
-        routes.HasCorrectGoodsController.onSubmitLongerCommodityCode(mode, recordId)
-      request.userAnswers.get(LongerCommodityQuery(recordId)) match {
-        case Some(commodity) =>
-          Ok(
-            view(preparedForm, commodity, submitAction, mode, Some(recordId))
-          )
-        case None            => navigator.journeyRecovery()
-      }
-    }
-
-  def onSubmitCreate(mode: Mode): Action[AnyContent] =
+  def onSubmit(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val submitAction = routes.HasCorrectGoodsController.onSubmitCreate(mode)
-      form
-        .bindFromRequest()
-        .fold(
-          formWithErrors =>
-            request.userAnswers.get(CommodityQuery) match {
-              case Some(commodity) =>
-                Future.successful(BadRequest(view(formWithErrors, commodity, submitAction, mode, recordId = None)))
-              case None            => Future.successful(navigator.journeyRecovery())
-            },
-          value =>
-            for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(HasCorrectGoodsPage, value))
-              _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(HasCorrectGoodsPage, mode, updatedAnswers))
-        )
-    }
-
-  def onSubmitLongerCommodityCode(mode: Mode, recordId: String): Action[AnyContent] =
-    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val submitAction =
-        routes.HasCorrectGoodsController.onSubmitLongerCommodityCode(mode, recordId)
-
-      form
-        .bindFromRequest()
-        .fold(
-          formWithErrors =>
-            request.userAnswers.get(LongerCommodityQuery(recordId)) match {
-              case Some(commodity) =>
-                Future.successful(
-                  BadRequest(
-                    view(formWithErrors, commodity, submitAction, mode, Some(recordId))
-                  )
-                )
-              case None            => Future.successful(navigator.journeyRecovery())
-            },
-          value =>
-            for {
-              updatedAnswers <-
-                Future.fromTry(request.userAnswers.set(HasCorrectGoodsLongerCommodityCodePage(recordId), value))
-              _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(
-              navigator.nextPage(HasCorrectGoodsLongerCommodityCodePage(recordId), mode, updatedAnswers)
-            )
-        )
-    }
-
-  def onSubmitUpdate(mode: Mode, recordId: String): Action[AnyContent] =
-    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val submitAction = routes.HasCorrectGoodsController.onSubmitUpdate(mode, recordId)
+      val submitAction = controllers.hasCorrectGoods.routes.UpdateController.onSubmit(mode, recordId)
       form
         .bindFromRequest()
         .fold(

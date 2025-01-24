@@ -41,7 +41,7 @@ import views.html.goodsRecord.HasCommodityCodeChangeView
 
 import scala.concurrent.Future
 
-class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar with BeforeAndAfterEach {
+class HasCommodityCodeChangedControllerSpec extends SpecBase with MockitoSugar with BeforeAndAfterEach {
 
   private def onwardRoute = Call("GET", "/foo")
 
@@ -49,7 +49,7 @@ class HasCommodityCodeChangeControllerSpec extends SpecBase with MockitoSugar wi
   private val form = formProvider()
 
   private lazy val hasCommodityCodeChangeRoute =
-    controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangeController
+    controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangedController
       .onPageLoad(NormalMode, testRecordId)
       .url
 

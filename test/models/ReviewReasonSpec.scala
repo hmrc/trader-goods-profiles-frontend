@@ -81,7 +81,7 @@ class ReviewReasonSpec extends SpecBase {
           Commodity
             .url("recordId")
             .value
-            .url mustBe controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangeController
+            .url mustBe controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangedController
             .onPageLoad(NormalMode, "recordId")
             .url
           Commodity.setAdditionalContent(isCategorised = true, AdviceReceived) mustBe Some(
@@ -98,7 +98,7 @@ class ReviewReasonSpec extends SpecBase {
           Commodity
             .url("recordId")
             .value
-            .url mustBe controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangeController
+            .url mustBe controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangedController
             .onPageLoad(NormalMode, "recordId")
             .url
           Commodity.setAdditionalContent(isCategorised = true, NotRequested) mustBe Some(
@@ -112,7 +112,7 @@ class ReviewReasonSpec extends SpecBase {
           Commodity
             .url("recordId")
             .value
-            .url mustBe controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangeController
+            .url mustBe controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangedController
             .onPageLoad(NormalMode, "recordId")
             .url
           Commodity.setAdditionalContent(isCategorised = false, AdviceReceived) mustBe Some(
@@ -126,7 +126,7 @@ class ReviewReasonSpec extends SpecBase {
           Commodity
             .url("recordId")
             .value
-            .url mustBe controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangeController
+            .url mustBe controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangedController
             .onPageLoad(NormalMode, "recordId")
             .url
           Commodity.setAdditionalContent(isCategorised = false, AdviceRequestWithdrawn) mustBe Some(
