@@ -34,7 +34,7 @@ object ProductReferenceSummary {
         actions = Seq(
           ActionItemViewModel(
             "site.change",
-            controllers.goodsRecord.routes.ProductReferenceController.onPageLoadCreate(CheckMode).url
+            controllers.goodsRecord.productReference.routes.CreateProductReferenceController.onPageLoad(CheckMode).url
           )
             .withVisuallyHiddenText(messages("productReference.change.hidden"))
         )
@@ -53,7 +53,9 @@ object ProductReferenceSummary {
         Seq(
           ActionItemViewModel(
             "site.change",
-            controllers.goodsRecord.routes.ProductReferenceController.onPageLoadUpdate(mode, recordId).url
+            controllers.goodsRecord.productReference.routes.UpdateProductReferenceController
+              .onPageLoad(mode, recordId)
+              .url
           )
             .withVisuallyHiddenText(messages("productReference.change.hidden"))
         )
