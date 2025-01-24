@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.goodsRecord
+package controllers.goodsRecord.countryOfOrigin
 
 import controllers.BaseController
 import controllers.actions._

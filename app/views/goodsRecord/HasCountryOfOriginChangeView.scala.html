@@ -36,7 +36,7 @@
 
     <p class="govuk-body">@messages("hasCountryOfOriginChange.p1")</p>
 
-    @formHelper(action = controllers.goodsRecord.routes.HasCountryOfOriginChangeController.onSubmit(mode, recordId), Symbol("autoComplete") -> "off") {
+    @formHelper(action = controllers.goodsRecord.countryOfOrigin.routes.HasCountryOfOriginChangeController.onSubmit(mode, recordId), Symbol("autoComplete") -> "off") {
 
         @govukRadios(
             RadiosViewModel.yesNo(

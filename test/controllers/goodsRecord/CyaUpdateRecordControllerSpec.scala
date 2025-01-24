@@ -62,7 +62,9 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
       val summaryKey      = "countryOfOrigin.checkYourAnswersLabel"
       val summaryHidden   = "countryOfOrigin.change.hidden"
       val summaryUrl      =
-        controllers.goodsRecord.routes.CountryOfOriginController.onPageLoadUpdate(CheckMode, testRecordId).url
+        controllers.goodsRecord.countryOfOrigin.routes.UpdateCountryOfOriginController
+          .onPageLoad(CheckMode, testRecordId)
+          .url
       val page            = CountryOfOriginUpdatePage(testRecordId)
       val answer          = "CN"
       val expectedPayload =

@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-package controllers.goodsRecord
+package controllers.goodsRecord.countryOfOrigin
 
 import connectors.OttConnector
 import controllers.BaseController
 import controllers.actions._
 import forms.goodsRecord.CountryOfOriginFormProvider
-import models.helper.GoodsDetailsUpdate
 import models.requests.DataRequest
 import models.{Country, Mode, UserAnswers}
 import navigation.GoodsRecordNavigator
 import pages.QuestionPage
-import pages.goodsRecord.{CountryOfOriginPage, CountryOfOriginUpdatePage, HasCountryOfOriginChangePage}
+import pages.goodsRecord.CountryOfOriginPage
 import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.libs.json.Reads
@@ -34,13 +33,12 @@ import queries.CountriesQuery
 import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.SessionData._
 import views.html.goodsRecord.CountryOfOriginView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class CountryOfOriginController @Inject() (
+class CreateCountryOfOriginController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: GoodsRecordNavigator,
@@ -66,9 +64,9 @@ class CountryOfOriginController @Inject() (
       _                       <- sessionRepository.set(updatedAnswersWithQuery)
     } yield (countries, updatedAnswersWithQuery)
 
-  def onPageLoadCreate(mode: Mode): Action[AnyContent] =
+  def onPageLoad(mode: Mode): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val submitAction = controllers.goodsRecord.routes.CountryOfOriginController.onSubmitCreate(mode)
+      val submitAction = controllers.goodsRecord.countryOfOrigin.routes.CreateCountryOfOriginController.onSubmit(mode)
       request.userAnswers
         .get(CountriesQuery) match {
         case Some(countries) => Future.successful(displayViewCreate(countries, submitAction, request.userAnswers, mode))
@@ -104,7 +102,7 @@ class CountryOfOriginController @Inject() (
             BadRequest(
               view(
                 formWithErrors,
-                controllers.goodsRecord.routes.CountryOfOriginController.onSubmitCreate(mode),
+                controllers.goodsRecord.countryOfOrigin.routes.CreateCountryOfOriginController.onSubmit(mode),
                 countries,
                 mode,
                 recordId
@@ -119,7 +117,7 @@ class CountryOfOriginController @Inject() (
       )
   }
 
-  def onSubmitCreate(mode: Mode): Action[AnyContent] =
+  def onSubmit(mode: Mode): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       request.userAnswers
         .get(CountriesQuery) match {
@@ -127,84 +125,5 @@ class CountryOfOriginController @Inject() (
         case None            => throw new Exception("Countries should have been populated on page load.")
       }
     }
-
-  def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] =
-    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val submitAction = controllers.goodsRecord.routes.CountryOfOriginController.onSubmitUpdate(mode, recordId)
-
-      request.userAnswers.get(HasCountryOfOriginChangePage(recordId)) match {
-        case None =>
-          auditService
-            .auditStartUpdateGoodsRecord(
-              request.eori,
-              request.affinityGroup,
-              GoodsDetailsUpdate,
-              recordId
-            )
-        case _    =>
-      }
-
-      request.userAnswers
-        .get(CountriesQuery) match {
-        case Some(countries) =>
-          Future.successful(displayViewUpdate(countries, submitAction, request.userAnswers, recordId, mode))
-        case None            =>
-          retrieveAndStoreCountryData.map(countriesAndQuery =>
-            displayViewUpdate(countriesAndQuery._1, submitAction, countriesAndQuery._2, recordId, mode)
-          )
-      }
-    }
-
-  def onSubmitUpdate(mode: Mode, recordId: String): Action[AnyContent] =
-    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      request.userAnswers
-        .get(CountriesQuery) match {
-        case Some(countries) =>
-          val form = formProvider(countries)
-          form
-            .bindFromRequest()
-            .fold(
-              formWithErrors =>
-                Future.successful(
-                  BadRequest(
-                    view(
-                      formWithErrors,
-                      controllers.goodsRecord.routes.CountryOfOriginController.onSubmitUpdate(mode, recordId),
-                      countries,
-                      mode,
-                      Some(recordId)
-                    )
-                  )
-                ),
-              value => {
-                val oldValueOpt    = request.userAnswers.get(CountryOfOriginUpdatePage(recordId))
-                val isValueChanged = oldValueOpt.exists(_ != value)
-
-                for {
-                  updatedAnswers <- Future.fromTry(request.userAnswers.set(CountryOfOriginUpdatePage(recordId), value))
-                  _              <- sessionRepository.set(updatedAnswers)
-                } yield Redirect(navigator.nextPage(CountryOfOriginUpdatePage(recordId), mode, updatedAnswers))
-                  .addingToSession(dataUpdated -> isValueChanged.toString)
-                  .addingToSession(pageUpdated -> countryOfOrigin)
-              }
-            )
-        case None            => throw new Exception("Countries should have been populated on page load.")
-      }
-    }
-
-  private def displayViewUpdate(
-    countries: Seq[Country],
-    action: Call,
-    userAnswers: UserAnswers,
-    recordId: String,
-    mode: Mode
-  )(implicit
-    request: Request[_]
-  ): Result = {
-    val form         = formProvider(countries)
-    val preparedForm = prepareForm(CountryOfOriginUpdatePage(recordId), form, userAnswers)
-
-    Ok(view(preparedForm, action, countries, mode, Some(recordId)))
-  }
 
 }

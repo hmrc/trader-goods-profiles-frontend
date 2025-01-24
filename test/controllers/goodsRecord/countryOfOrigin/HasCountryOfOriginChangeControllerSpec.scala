@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.goodsRecord
+package controllers.goodsRecord.countryOfOrigin
 
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
@@ -46,7 +46,9 @@ class HasCountryOfOriginChangeControllerSpec extends SpecBase with MockitoSugar 
   private val form = formProvider()
 
   private lazy val hasCountryOfOriginChangeRoute =
-    controllers.goodsRecord.routes.HasCountryOfOriginChangeController.onPageLoad(NormalMode, testRecordId).url
+    controllers.goodsRecord.countryOfOrigin.routes.HasCountryOfOriginChangeController
+      .onPageLoad(NormalMode, testRecordId)
+      .url
 
   "HasCountryOfOriginChange Controller" - {
 
