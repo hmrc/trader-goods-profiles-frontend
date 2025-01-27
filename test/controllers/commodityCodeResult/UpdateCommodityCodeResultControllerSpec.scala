@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.hasCorrectGoods
+package controllers.commodityCodeResult
 
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId}
@@ -44,7 +44,7 @@ import views.html.HasCorrectGoodsView
 import java.time.Instant
 import scala.concurrent.Future
 
-class UpdateControllerSpec extends SpecBase with MockitoSugar {
+class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar {
 
   private def onwardRoute = Call("GET", "/foo")
 
@@ -64,13 +64,15 @@ class UpdateControllerSpec extends SpecBase with MockitoSugar {
   private val expectedPayload =
     UpdateGoodsRecord(testEori, testRecordId, commodityCode = Some(testCommodity))
 
-  "HasCorrectGoodsController" - {
+  "UpdateCommodityCodeController" - {
 
     "For update journey" - {
       lazy val hasCorrectGoodsUpdateRoute =
-        controllers.hasCorrectGoods.routes.UpdateController.onPageLoad(NormalMode, testRecordId).url
+        controllers.commodityCodeResult.routes.UpdateCommodityCodeResultController
+          .onPageLoad(NormalMode, testRecordId)
+          .url
       lazy val onSubmitAction: Call       =
-        controllers.hasCorrectGoods.routes.UpdateController.onSubmit(NormalMode, testRecordId)
+        controllers.commodityCodeResult.routes.UpdateCommodityCodeResultController.onSubmit(NormalMode, testRecordId)
       val page: QuestionPage[Boolean]     = HasCorrectGoodsCommodityCodeUpdatePage(testRecordId)
       val updatePage                      = CommodityCodeUpdatePage(testRecordId)
 

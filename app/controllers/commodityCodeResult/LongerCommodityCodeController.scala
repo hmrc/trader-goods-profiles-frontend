@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.hasCorrectGoods
+package controllers.commodityCodeResult
 
 import controllers.BaseController
 import controllers.actions._
@@ -54,7 +54,7 @@ class LongerCommodityCodeController @Inject() (
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       val preparedForm = prepareForm(HasCorrectGoodsLongerCommodityCodePage(recordId), form)
       val submitAction =
-        controllers.hasCorrectGoods.routes.LongerCommodityCodeController.onSubmit(mode, recordId)
+        controllers.commodityCodeResult.routes.LongerCommodityCodeController.onSubmit(mode, recordId)
       request.userAnswers.get(LongerCommodityQuery(recordId)) match {
         case Some(commodity) =>
           Ok(
@@ -67,7 +67,7 @@ class LongerCommodityCodeController @Inject() (
   def onSubmit(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       val submitAction =
-        controllers.hasCorrectGoods.routes.LongerCommodityCodeController.onSubmit(mode, recordId)
+        controllers.commodityCodeResult.routes.LongerCommodityCodeController.onSubmit(mode, recordId)
 
       form
         .bindFromRequest()

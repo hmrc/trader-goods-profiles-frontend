@@ -53,7 +53,7 @@ class CategorisationNavigator @Inject() (categorisationService: CategorisationSe
     case p: RecategorisationPreparationPage => navigateFromReassessmentPrep(p)
     case p: ReassessmentPage                => navigateFromReassessment(p)
     case p: LongerCommodityCodePage         =>
-      _ => controllers.hasCorrectGoods.routes.LongerCommodityCodeController.onPageLoad(NormalMode, p.recordId)
+      _ => controllers.commodityCodeResult.routes.LongerCommodityCodeController.onPageLoad(NormalMode, p.recordId)
     case p: CategorisationPreparationPage   =>
       answers => navigateFromCategorisationPreparationPage(answers, p.recordId)
 
@@ -70,7 +70,7 @@ class CategorisationNavigator @Inject() (categorisationService: CategorisationSe
     case p: SupplementaryUnitUpdatePage     =>
       _ => controllers.categorisation.routes.CyaSupplementaryUnitController.onPageLoad(p.recordId)
     case p: LongerCommodityCodePage         =>
-      _ => controllers.hasCorrectGoods.routes.LongerCommodityCodeController.onPageLoad(CheckMode, p.recordId)
+      _ => controllers.commodityCodeResult.routes.LongerCommodityCodeController.onPageLoad(CheckMode, p.recordId)
     case p: ReassessmentPage                => navigateFromReassessmentCheck(p)
     case p: RecategorisationPreparationPage => navigateFromReassessmentPrepCheck(p)
 

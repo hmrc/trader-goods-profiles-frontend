@@ -617,7 +617,7 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
 
     "must go from longer commodity code to has correct longer commodity page" in {
       navigator.nextPage(LongerCommodityCodePage(testRecordId), CheckMode, emptyUserAnswers) mustEqual
-        controllers.hasCorrectGoods.routes.LongerCommodityCodeController.onPageLoad(CheckMode, testRecordId)
+        controllers.commodityCodeResult.routes.LongerCommodityCodeController.onPageLoad(CheckMode, testRecordId)
     }
 
     "must go from reassessment preparation" - {

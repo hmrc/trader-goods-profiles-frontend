@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.hasCorrectGoods
+package controllers.commodityCodeResult
 
 import base.SpecBase
 import forms.HasCorrectGoodsFormProvider
@@ -35,20 +35,20 @@ import views.html.HasCorrectGoodsView
 import java.time.Instant
 import scala.concurrent.Future
 
-class CreateControllerSpec extends SpecBase with MockitoSugar {
+class CreateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar {
 
   private def onwardRoute = Call("GET", "/foo")
 
   val formProvider = new HasCorrectGoodsFormProvider()
   private val form = formProvider()
 
-  "HasCorrectGoodsController" - {
+  "CreateCommodityCodeResultController" - {
 
     "For create journey" - {
       lazy val hasCorrectGoodsCreateRoute =
-        controllers.hasCorrectGoods.routes.CreateController.onPageLoad(NormalMode).url
+        controllers.commodityCodeResult.routes.CreateCommodityCodeResultController.onPageLoad(NormalMode).url
       lazy val onSubmitAction: Call       =
-        controllers.hasCorrectGoods.routes.CreateController.onSubmit(NormalMode)
+        controllers.commodityCodeResult.routes.CreateCommodityCodeResultController.onSubmit(NormalMode)
       val page: QuestionPage[Boolean]     = HasCorrectGoodsPage
 
       "must return OK and the correct view for a GET" in {

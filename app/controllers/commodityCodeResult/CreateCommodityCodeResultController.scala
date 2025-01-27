@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.hasCorrectGoods
+package controllers.commodityCodeResult
 
 import controllers.BaseController
 import controllers.actions._
@@ -33,7 +33,7 @@ import javax.inject.Inject
 import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 
-class CreateController @Inject() (
+class CreateCommodityCodeResultController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: Navigation,
@@ -53,7 +53,7 @@ class CreateController @Inject() (
   def onPageLoad(mode: Mode): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       val preparedForm = prepareForm(HasCorrectGoodsPage, form)
-      val submitAction = controllers.hasCorrectGoods.routes.CreateController.onSubmit(mode)
+      val submitAction = controllers.commodityCodeResult.routes.CreateCommodityCodeResultController.onSubmit(mode)
       request.userAnswers.get(CommodityQuery) match {
         case Some(commodity) => Ok(view(preparedForm, commodity, submitAction, mode, recordId = None))
         case None            => navigator.journeyRecovery()
@@ -62,7 +62,7 @@ class CreateController @Inject() (
 
   def onSubmit(mode: Mode): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val submitAction = controllers.hasCorrectGoods.routes.CreateController.onSubmit(mode)
+      val submitAction = controllers.commodityCodeResult.routes.CreateCommodityCodeResultController.onSubmit(mode)
       form
         .bindFromRequest()
         .fold(

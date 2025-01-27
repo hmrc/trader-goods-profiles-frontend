@@ -82,7 +82,7 @@ class GoodsRecordNavigatorSpec extends SpecBase with BeforeAndAfterEach {
             CommodityCodePage,
             NormalMode,
             emptyUserAnswers
-          ) mustBe controllers.hasCorrectGoods.routes.CreateController.onPageLoad(NormalMode)
+          ) mustBe controllers.commodityCodeResult.routes.CreateCommodityCodeResultController.onPageLoad(NormalMode)
         }
 
         "must go from CyaCreateRecord to CreateRecordSuccess" in {
@@ -214,7 +214,8 @@ class GoodsRecordNavigatorSpec extends SpecBase with BeforeAndAfterEach {
             CommodityCodeUpdatePage(testRecordId),
             NormalMode,
             emptyUserAnswers
-          ) mustBe controllers.hasCorrectGoods.routes.UpdateController.onPageLoad(NormalMode, testRecordId)
+          ) mustBe controllers.commodityCodeResult.routes.UpdateCommodityCodeResultController
+            .onPageLoad(NormalMode, testRecordId)
         }
 
         "must go from CyaUpdateRecord to SingleRecordController" in {
@@ -264,7 +265,7 @@ class GoodsRecordNavigatorSpec extends SpecBase with BeforeAndAfterEach {
             CommodityCodePage,
             CheckMode,
             emptyUserAnswers
-          ) mustBe controllers.hasCorrectGoods.routes.CreateController.onPageLoad(CheckMode)
+          ) mustBe controllers.commodityCodeResult.routes.CreateCommodityCodeResultController.onPageLoad(CheckMode)
         }
       }
 
@@ -299,7 +300,8 @@ class GoodsRecordNavigatorSpec extends SpecBase with BeforeAndAfterEach {
             CommodityCodeUpdatePage(testRecordId),
             CheckMode,
             emptyUserAnswers
-          ) mustBe controllers.hasCorrectGoods.routes.UpdateController.onPageLoad(CheckMode, testRecordId)
+          ) mustBe controllers.commodityCodeResult.routes.UpdateCommodityCodeResultController
+            .onPageLoad(CheckMode, testRecordId)
         }
 
       }

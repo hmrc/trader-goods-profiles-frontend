@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.hasCorrectGoods
+package controllers.commodityCodeResult
 
 import base.SpecBase
 import base.TestConstants.testRecordId
@@ -43,16 +43,16 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
   val formProvider = new HasCorrectGoodsFormProvider()
   private val form = formProvider()
 
-  "HasCorrectGoodsController" - {
+  "LongerCommodityCodeController" - {
 
     "for the Longer Commodity Code Journey" - {
 
       lazy val hasCorrectGoodsRoute =
-        controllers.hasCorrectGoods.routes.LongerCommodityCodeController
+        controllers.commodityCodeResult.routes.LongerCommodityCodeController
           .onPageLoad(NormalMode, testRecordId)
           .url
       lazy val onSubmitAction: Call =
-        controllers.hasCorrectGoods.routes.LongerCommodityCodeController.onSubmit(NormalMode, testRecordId)
+        controllers.commodityCodeResult.routes.LongerCommodityCodeController.onSubmit(NormalMode, testRecordId)
 
       "for a GET" - {
 

@@ -36,7 +36,7 @@ class Navigation @Inject() (categorisationService: CategorisationService) extend
 
   val normalRoutes: Page => UserAnswers => Call = {
     case p: LongerCommodityCodePage                =>
-      _ => controllers.hasCorrectGoods.routes.LongerCommodityCodeController.onPageLoad(NormalMode, p.recordId)
+      _ => controllers.commodityCodeResult.routes.LongerCommodityCodeController.onPageLoad(NormalMode, p.recordId)
     case HasCorrectGoodsPage                       => answers => navigateFromHasCorrectGoods(answers)
     case p: HasCorrectGoodsCommodityCodeUpdatePage => answers => navigateFromHasCorrectGoodsUpdate(answers, p.recordId)
     case p: HasCorrectGoodsLongerCommodityCodePage =>
@@ -49,7 +49,7 @@ class Navigation @Inject() (categorisationService: CategorisationService) extend
 
   val checkRoutes: Page => UserAnswers => Call = {
     case p: LongerCommodityCodePage                =>
-      _ => controllers.hasCorrectGoods.routes.LongerCommodityCodeController.onPageLoad(CheckMode, p.recordId)
+      _ => controllers.commodityCodeResult.routes.LongerCommodityCodeController.onPageLoad(CheckMode, p.recordId)
     case HasCorrectGoodsPage                       => answers => navigateFromHasCorrectGoodsCheck(answers)
     case p: HasCorrectGoodsCommodityCodeUpdatePage =>
       answers => navigateFromHasCorrectGoodsUpdateCheck(answers, p.recordId)

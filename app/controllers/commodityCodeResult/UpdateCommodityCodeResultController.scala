@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.hasCorrectGoods
+package controllers.commodityCodeResult
 
 import cats.data
 import cats.data.EitherNec
@@ -43,7 +43,7 @@ import javax.inject.Inject
 import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 
-class UpdateController @Inject() (
+class UpdateCommodityCodeResultController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: Navigation,
@@ -65,7 +65,8 @@ class UpdateController @Inject() (
   def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       val preparedForm = prepareForm(HasCorrectGoodsCommodityCodeUpdatePage(recordId), form)
-      val submitAction = controllers.hasCorrectGoods.routes.UpdateController.onSubmit(mode, recordId)
+      val submitAction =
+        controllers.commodityCodeResult.routes.UpdateCommodityCodeResultController.onSubmit(mode, recordId)
       request.userAnswers.get(CommodityUpdateQuery(recordId)) match {
         case Some(commodity) => Ok(view(preparedForm, commodity, submitAction, mode, Some(recordId)))
         case None            => navigator.journeyRecovery()
@@ -74,7 +75,8 @@ class UpdateController @Inject() (
 
   def onSubmit(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val submitAction = controllers.hasCorrectGoods.routes.UpdateController.onSubmit(mode, recordId)
+      val submitAction =
+        controllers.commodityCodeResult.routes.UpdateCommodityCodeResultController.onSubmit(mode, recordId)
       form
         .bindFromRequest()
         .fold(

@@ -44,9 +44,10 @@ class GoodsRecordNavigator @Inject() extends Navigator {
       _ => controllers.goodsRecord.commodityCode.routes.CreateCommodityCodeController.onPageLoad(NormalMode)
     case p: CountryOfOriginUpdatePage     =>
       _ => controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(p.recordId)
-    case CommodityCodePage                => _ => controllers.hasCorrectGoods.routes.CreateController.onPageLoad(NormalMode)
+    case CommodityCodePage                =>
+      _ => controllers.commodityCodeResult.routes.CreateCommodityCodeResultController.onPageLoad(NormalMode)
     case p: CommodityCodeUpdatePage       =>
-      _ => controllers.hasCorrectGoods.routes.UpdateController.onPageLoad(NormalMode, p.recordId)
+      _ => controllers.commodityCodeResult.routes.UpdateCommodityCodeResultController.onPageLoad(NormalMode, p.recordId)
     case p: HasGoodsDescriptionChangePage => answers => navigateFromHasGoodsDescriptionChangePage(answers, p.recordId)
     case p: HasCountryOfOriginChangePage  => answers => navigateFromHasCountryOfOriginChangePage(answers, p.recordId)
     case p: HasCommodityCodeChangePage    => answers => navigateFromHasCommodityCodeChangePage(answers, p.recordId)
@@ -66,9 +67,10 @@ class GoodsRecordNavigator @Inject() extends Navigator {
     case CountryOfOriginPage           => _ => controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad()
     case p: CountryOfOriginUpdatePage  =>
       _ => controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(p.recordId)
-    case CommodityCodePage             => _ => controllers.hasCorrectGoods.routes.CreateController.onPageLoad(CheckMode)
+    case CommodityCodePage             =>
+      _ => controllers.commodityCodeResult.routes.CreateCommodityCodeResultController.onPageLoad(CheckMode)
     case p: CommodityCodeUpdatePage    =>
-      _ => controllers.hasCorrectGoods.routes.UpdateController.onPageLoad(CheckMode, p.recordId)
+      _ => controllers.commodityCodeResult.routes.UpdateCommodityCodeResultController.onPageLoad(CheckMode, p.recordId)
     case _                             => _ => controllers.problem.routes.JourneyRecoveryController.onPageLoad()
   }
 
