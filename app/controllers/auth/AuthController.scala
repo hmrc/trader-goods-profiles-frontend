@@ -49,7 +49,7 @@ class AuthController @Inject() (
       .map { _ =>
         Redirect(
           config.signOutUrl,
-          Map("continue" -> Seq(config.signOutContinueUrl))
+          Map("continue" -> Seq(config.feedbackFrontend))
         )
       }
   }
