@@ -153,8 +153,9 @@ object OutboundLink {
     val link: String            = "https://www.trade-tariff.service.gov.uk/xi/find_commodity"
     val linkTextKey: String     = "hasCorrectGoods.p2.linkText"
     val originatingPage: String = recordId match {
-      case Some(recordId) => controllers.routes.HasCorrectGoodsController.onSubmitUpdate(mode, recordId).url
-      case _              => controllers.routes.HasCorrectGoodsController.onSubmitCreate(mode).url
+      case Some(recordId) =>
+        controllers.commodityCodeResult.routes.UpdateCommodityCodeResultController.onSubmit(mode, recordId).url
+      case _              => controllers.commodityCodeResult.routes.CreateCommodityCodeResultController.onSubmit(mode).url
     }
   }
 

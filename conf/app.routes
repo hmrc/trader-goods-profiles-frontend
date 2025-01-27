@@ -26,20 +26,20 @@ GET         /signed-out                                                         
 
 GET         /homepage                                                                               controllers.HomePageController.onPageLoad()
 
-GET         /create-record/commodity-code-result                                                    controllers.HasCorrectGoodsController.onPageLoadCreate(mode: Mode = NormalMode)
-POST        /create-record/commodity-code-result                                                    controllers.HasCorrectGoodsController.onSubmitCreate(mode: Mode = NormalMode)
-GET         /create-record/commodity-code-result/check                                              controllers.HasCorrectGoodsController.onPageLoadCreate(mode: Mode = CheckMode)
-POST        /create-record/commodity-code-result/check                                              controllers.HasCorrectGoodsController.onSubmitCreate(mode: Mode = CheckMode)
+GET         /create-record/commodity-code-result                                                    controllers.commodityCodeResult.CreateCommodityCodeResultController.onPageLoad(mode: Mode = NormalMode)
+POST        /create-record/commodity-code-result                                                    controllers.commodityCodeResult.CreateCommodityCodeResultController.onSubmit(mode: Mode = NormalMode)
+GET         /create-record/commodity-code-result/check                                              controllers.commodityCodeResult.CreateCommodityCodeResultController.onPageLoad(mode: Mode = CheckMode)
+POST        /create-record/commodity-code-result/check                                              controllers.commodityCodeResult.CreateCommodityCodeResultController.onSubmit(mode: Mode = CheckMode)
 
-GET         /update-record/:recordId/commodity-code-result                                          controllers.HasCorrectGoodsController.onPageLoadUpdate(mode: Mode = NormalMode, recordId: String)
-POST        /update-record/:recordId/commodity-code-result                                          controllers.HasCorrectGoodsController.onSubmitUpdate(mode: Mode = NormalMode, recordId: String)
-GET         /update-record/:recordId/commodity-code-result/check                                    controllers.HasCorrectGoodsController.onPageLoadUpdate(mode: Mode = CheckMode, recordId: String)
-POST        /update-record/:recordId/commodity-code-result/check                                    controllers.HasCorrectGoodsController.onSubmitUpdate(mode: Mode = CheckMode, recordId: String)
+GET         /update-record/:recordId/commodity-code-result                                          controllers.commodityCodeResult.UpdateCommodityCodeResultController.onPageLoad(mode: Mode = NormalMode, recordId: String)
+POST        /update-record/:recordId/commodity-code-result                                          controllers.commodityCodeResult.UpdateCommodityCodeResultController.onSubmit(mode: Mode = NormalMode, recordId: String)
+GET         /update-record/:recordId/commodity-code-result/check                                    controllers.commodityCodeResult.UpdateCommodityCodeResultController.onPageLoad(mode: Mode = CheckMode, recordId: String)
+POST        /update-record/:recordId/commodity-code-result/check                                    controllers.commodityCodeResult.UpdateCommodityCodeResultController.onSubmit(mode: Mode = CheckMode, recordId: String)
 
-GET         /update-record/:recordId/categorisation/longer-commodity-code-result                    controllers.HasCorrectGoodsController.onPageLoadLongerCommodityCode(mode: Mode = NormalMode,recordId: String)
-POST        /update-record/:recordId/categorisation/longer-commodity-code-result                    controllers.HasCorrectGoodsController.onSubmitLongerCommodityCode(mode: Mode = NormalMode,recordId: String)
-GET         /update-record/:recordId/categorisation/longer-commodity-code-result/check              controllers.HasCorrectGoodsController.onPageLoadLongerCommodityCode(mode: Mode = CheckMode,recordId: String)
-POST        /update-record/:recordId/categorisation/longer-commodity-code-result/check              controllers.HasCorrectGoodsController.onSubmitLongerCommodityCode(mode: Mode = CheckMode,recordId: String)
+GET         /update-record/:recordId/categorisation/longer-commodity-code-result                    controllers.commodityCodeResult.LongerCommodityCodeController.onPageLoad(mode: Mode = NormalMode,recordId: String)
+POST        /update-record/:recordId/categorisation/longer-commodity-code-result                    controllers.commodityCodeResult.LongerCommodityCodeController.onSubmit(mode: Mode = NormalMode,recordId: String)
+GET         /update-record/:recordId/categorisation/longer-commodity-code-result/check              controllers.commodityCodeResult.LongerCommodityCodeController.onPageLoad(mode: Mode = CheckMode,recordId: String)
+POST        /update-record/:recordId/categorisation/longer-commodity-code-result/check              controllers.commodityCodeResult.LongerCommodityCodeController.onSubmit(mode: Mode = CheckMode,recordId: String)
 
 GET         /help-and-support                                                                       controllers.HelpAndSupportController.onPageLoad()
 

@@ -35,7 +35,7 @@ import views.html.goodsRecord.HasCommodityCodeChangeView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class HasCommodityCodeChangeController @Inject() (
+class HasCommodityCodeChangedController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: GoodsRecordNavigator,

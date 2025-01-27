@@ -18,7 +18,6 @@ package navigation.categorisation
 
 import base.SpecBase
 import base.TestConstants.{testRecordId, userAnswersId}
-import controllers.routes
 import models._
 import models.ott.{CategorisationInfo, CategoryAssessment}
 import navigation.CategorisationNavigator
@@ -618,7 +617,7 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
 
     "must go from longer commodity code to has correct longer commodity page" in {
       navigator.nextPage(LongerCommodityCodePage(testRecordId), CheckMode, emptyUserAnswers) mustEqual
-        routes.HasCorrectGoodsController.onPageLoadLongerCommodityCode(CheckMode, testRecordId)
+        controllers.commodityCodeResult.routes.LongerCommodityCodeController.onPageLoad(CheckMode, testRecordId)
     }
 
     "must go from reassessment preparation" - {
