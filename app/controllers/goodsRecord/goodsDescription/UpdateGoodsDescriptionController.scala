@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.goodsRecord
+package controllers.goodsRecord.goodsDescription
 
 import controllers.BaseController
 import controllers.actions._
@@ -22,7 +22,7 @@ import forms.goodsRecord.GoodsDescriptionFormProvider
 import models.Mode
 import models.helper.GoodsDetailsUpdate
 import navigation.GoodsRecordNavigator
-import pages.goodsRecord.{GoodsDescriptionPage, GoodsDescriptionUpdatePage, HasGoodsDescriptionChangePage}
+import pages.goodsRecord.{GoodsDescriptionUpdatePage, HasGoodsDescriptionChangePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -34,7 +34,7 @@ import javax.inject.Inject
 import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 
-class GoodsDescriptionController @Inject() (
+class UpdateGoodsDescriptionController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: GoodsRecordNavigator,
@@ -51,31 +51,7 @@ class GoodsDescriptionController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoadCreate(mode: Mode): Action[AnyContent] =
-    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
-      val preparedForm = prepareForm(GoodsDescriptionPage, form)
-
-      val submitAction = controllers.goodsRecord.routes.GoodsDescriptionController.onSubmitCreate(mode)
-
-      Ok(view(preparedForm, mode, submitAction))
-    }
-
-  def onSubmitCreate(mode: Mode): Action[AnyContent] =
-    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val submitAction = controllers.goodsRecord.routes.GoodsDescriptionController.onSubmitCreate(mode)
-      form
-        .bindFromRequest()
-        .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, submitAction))),
-          value =>
-            for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(GoodsDescriptionPage, value))
-              _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(GoodsDescriptionPage, mode, updatedAnswers))
-        )
-    }
-
-  def onPageLoadUpdate(mode: Mode, recordId: String): Action[AnyContent] =
+  def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       val preparedForm = prepareForm(GoodsDescriptionUpdatePage(recordId), form)
 
@@ -91,14 +67,16 @@ class GoodsDescriptionController @Inject() (
         case _    =>
       }
 
-      val submitAction = controllers.goodsRecord.routes.GoodsDescriptionController.onSubmitUpdate(mode, recordId)
+      val submitAction =
+        controllers.goodsRecord.goodsDescription.routes.UpdateGoodsDescriptionController.onSubmit(mode, recordId)
 
       Ok(view(preparedForm, mode, submitAction)).removingFromSession(dataRemoved, dataUpdated, pageUpdated)
     }
 
-  def onSubmitUpdate(mode: Mode, recordId: String): Action[AnyContent] =
+  def onSubmit(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val submitAction = controllers.goodsRecord.routes.GoodsDescriptionController.onSubmitUpdate(mode, recordId)
+      val submitAction =
+        controllers.goodsRecord.goodsDescription.routes.UpdateGoodsDescriptionController.onSubmit(mode, recordId)
       form
         .bindFromRequest()
         .fold(

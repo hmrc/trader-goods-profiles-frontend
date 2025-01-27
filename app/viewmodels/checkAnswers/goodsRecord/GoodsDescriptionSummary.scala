@@ -36,7 +36,7 @@ object GoodsDescriptionSummary {
         actions = Seq(
           ActionItemViewModel(
             "site.change",
-            controllers.goodsRecord.routes.GoodsDescriptionController.onPageLoadCreate(CheckMode).url
+            controllers.goodsRecord.goodsDescription.routes.CreateGoodsDescriptionController.onPageLoad(CheckMode).url
           )
             .withVisuallyHiddenText(messages("goodsDescription.change.hidden"))
         )
@@ -50,7 +50,9 @@ object GoodsDescriptionSummary {
       actions = Seq(
         ActionItemViewModel(
           "site.change",
-          controllers.goodsRecord.routes.GoodsDescriptionController.onPageLoadUpdate(mode, recordId).url
+          controllers.goodsRecord.goodsDescription.routes.UpdateGoodsDescriptionController
+            .onPageLoad(mode, recordId)
+            .url
         )
           .withVisuallyHiddenText(messages("goodsDescription.change.hidden"))
       )
@@ -60,9 +62,9 @@ object GoodsDescriptionSummary {
     messages: Messages
   ): SummaryListRow = {
     val changeLink = if (record.adviceStatus == AdviceReceived) {
-      controllers.goodsRecord.routes.HasGoodsDescriptionChangeController.onPageLoad(mode, recordId).url
+      controllers.goodsRecord.goodsDescription.routes.HasGoodsDescriptionChangeController.onPageLoad(mode, recordId).url
     } else {
-      controllers.goodsRecord.routes.GoodsDescriptionController.onPageLoadUpdate(mode, recordId).url
+      controllers.goodsRecord.goodsDescription.routes.UpdateGoodsDescriptionController.onPageLoad(mode, recordId).url
     }
 
     SummaryListRowViewModel(

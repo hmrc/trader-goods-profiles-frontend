@@ -138,7 +138,10 @@ class ReviewReasonSpec extends SpecBase {
       "when Inadequate" in {
         Inadequate.messageKey mustBe "singleRecord.inadequateReviewReason"
         Inadequate.linkKey mustBe Some("singleRecord.inadequateReviewReason.linkText")
-        Inadequate.url("recordId").value.url mustBe controllers.goodsRecord.routes.HasGoodsDescriptionChangeController
+        Inadequate
+          .url("recordId")
+          .value
+          .url mustBe controllers.goodsRecord.goodsDescription.routes.HasGoodsDescriptionChangeController
           .onPageLoad(NormalMode, "recordId")
           .url
         Inadequate.setAdditionalContent(isCategorised = false, NotRequested) mustBe None
@@ -147,7 +150,10 @@ class ReviewReasonSpec extends SpecBase {
       "when Unclear" in {
         Unclear.messageKey mustBe "singleRecord.unclearReviewReason"
         Unclear.linkKey mustBe Some("singleRecord.unclearReviewReason.linkText")
-        Unclear.url("recordId").value.url mustBe controllers.goodsRecord.routes.HasGoodsDescriptionChangeController
+        Unclear
+          .url("recordId")
+          .value
+          .url mustBe controllers.goodsRecord.goodsDescription.routes.HasGoodsDescriptionChangeController
           .onPageLoad(NormalMode, "recordId")
           .url
         Unclear.setAdditionalContent(isCategorised = false, NotRequested) mustBe None

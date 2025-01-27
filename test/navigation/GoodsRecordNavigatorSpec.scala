@@ -46,8 +46,8 @@ class GoodsRecordNavigatorSpec extends SpecBase with BeforeAndAfterEach {
             CreateRecordStartPage,
             NormalMode,
             emptyUserAnswers
-          ) mustBe controllers.goodsRecord.routes.ProductReferenceController
-            .onPageLoadCreate(NormalMode)
+          ) mustBe controllers.goodsRecord.productReference.routes.CreateProductReferenceController
+            .onPageLoad(NormalMode)
         }
 
         "must go from ProductReferencePage to GoodsDescriptionPage" in {
@@ -56,8 +56,8 @@ class GoodsRecordNavigatorSpec extends SpecBase with BeforeAndAfterEach {
             ProductReferencePage,
             NormalMode,
             emptyUserAnswers
-          ) mustBe controllers.goodsRecord.routes.GoodsDescriptionController
-            .onPageLoadCreate(NormalMode)
+          ) mustBe controllers.goodsRecord.goodsDescription.routes.CreateGoodsDescriptionController
+            .onPageLoad(NormalMode)
         }
 
         "must go from GoodsDescriptionPage to CountryOfOriginPage" in {
@@ -144,8 +144,8 @@ class GoodsRecordNavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasGoodsDescriptionChangePage(testRecordId),
               NormalMode,
               emptyUserAnswers.set(HasGoodsDescriptionChangePage(testRecordId), true).success.value
-            ) mustBe controllers.goodsRecord.routes.GoodsDescriptionController
-              .onPageLoadUpdate(NormalMode, testRecordId)
+            ) mustBe controllers.goodsRecord.goodsDescription.routes.UpdateGoodsDescriptionController
+              .onPageLoad(NormalMode, testRecordId)
           }
 
           "must go from HasCommodityCodeChangePage to CommodityCodeUpdatePage" in {
