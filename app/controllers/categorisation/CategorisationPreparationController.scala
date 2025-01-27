@@ -194,7 +194,7 @@ class CategorisationPreparationController @Inject() (
       categorisationInfo.categoryAssessmentsThatNeedAnswers.isEmpty && !categorisationInfo.isCommCodeExpired
       && !isSupplementaryUnitQuestionToBeAnswered(categorisationInfo, updatedUserAnswers, recordId)
     ) {
-      if (categorisationInfo.measurementUnit.isEmpty || !categorisationInfo.measurementUnit.isDefined) {
+      if (categorisationInfo.measurementUnit.isEmpty) {
         Future.successful(Done)
       } else {
         CategoryRecord.build(updatedUserAnswers, eori, recordId, categorisationService) match {
