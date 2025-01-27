@@ -20,7 +20,7 @@ GET         /language/:lang                                                     
 GET         /refresh-session                                                                        controllers.KeepAliveController.keepAlive()
 
 GET         /account/sign-out-survey                                                                controllers.auth.AuthController.signOut()
-GET         /account/sign-out                                                                       controllers.auth.AuthController.signOutNoSurvey()
+GET         /account/sign-out                                                                       controllers.auth.AuthController.feedbackOnSignOut()
 GET         /account/sign-out-no-session                                                            controllers.auth.AuthController.signOutNoSession()
 GET         /signed-out                                                                             controllers.auth.SignedOutController.onPageLoad()
 

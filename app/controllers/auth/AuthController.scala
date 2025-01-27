@@ -43,7 +43,7 @@ class AuthController @Inject() (
       }
   }
 
-  def signOutNoSurvey(): Action[AnyContent] = identify.async { implicit request =>
+  def feedbackOnSignOut(): Action[AnyContent] = identify.async { implicit request =>
     sessionRepository
       .clear(request.userId)
       .map { _ =>
