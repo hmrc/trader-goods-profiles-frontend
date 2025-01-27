@@ -31,7 +31,7 @@ class GoodsRecordNavigator @Inject() extends Navigator {
 
   override val normalRoutes: Page => UserAnswers => Call = {
     case CreateRecordStartPage            =>
-      _ => controllers.goodsRecord.routes.ProductReferenceController.onPageLoadCreate(NormalMode)
+      _ => controllers.goodsRecord.productReference.routes.CreateProductReferenceController.onPageLoad(NormalMode)
     case ProductReferencePage             =>
       _ => controllers.goodsRecord.goodsDescription.routes.CreateGoodsDescriptionController.onPageLoad(NormalMode)
     case p: ProductReferenceUpdatePage    =>

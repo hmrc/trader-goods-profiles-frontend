@@ -46,8 +46,8 @@ class GoodsRecordNavigatorSpec extends SpecBase with BeforeAndAfterEach {
             CreateRecordStartPage,
             NormalMode,
             emptyUserAnswers
-          ) mustBe controllers.goodsRecord.routes.ProductReferenceController
-            .onPageLoadCreate(NormalMode)
+          ) mustBe controllers.goodsRecord.productReference.routes.CreateProductReferenceController
+            .onPageLoad(NormalMode)
         }
 
         "must go from ProductReferencePage to GoodsDescriptionPage" in {

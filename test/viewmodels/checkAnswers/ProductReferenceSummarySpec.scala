@@ -46,8 +46,8 @@ class ProductReferenceSummarySpec extends SpecBase {
         ProductReferenceSummary.row(recordForTestingSummaryRows.traderRef, testRecordId, NormalMode, recordLocked)
 
       row.actions mustBe defined
-      row.actions.value.items.head.href mustEqual controllers.goodsRecord.routes.ProductReferenceController
-        .onPageLoadUpdate(NormalMode, testRecordId)
+      row.actions.value.items.head.href mustEqual controllers.goodsRecord.productReference.routes.UpdateProductReferenceController
+        .onPageLoad(NormalMode, testRecordId)
         .url
     }
   }
