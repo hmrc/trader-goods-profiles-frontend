@@ -33,7 +33,7 @@ class GoodsRecordNavigator @Inject() extends Navigator {
     case CreateRecordStartPage            =>
       _ => controllers.goodsRecord.routes.ProductReferenceController.onPageLoadCreate(NormalMode)
     case ProductReferencePage             =>
-      _ => controllers.goodsRecord.routes.GoodsDescriptionController.onPageLoadCreate(NormalMode)
+      _ => controllers.goodsRecord.goodsDescription.routes.CreateGoodsDescriptionController.onPageLoad(NormalMode)
     case p: ProductReferenceUpdatePage    =>
       _ => controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadproductReference(p.recordId)
     case GoodsDescriptionPage             =>
@@ -103,7 +103,9 @@ class GoodsRecordNavigator @Inject() extends Navigator {
       .get(HasGoodsDescriptionChangePage(recordId))
       .map {
         case false => controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId)
-        case true  => controllers.goodsRecord.routes.GoodsDescriptionController.onPageLoadUpdate(NormalMode, recordId)
+        case true  =>
+          controllers.goodsRecord.goodsDescription.routes.UpdateGoodsDescriptionController
+            .onPageLoad(NormalMode, recordId)
       }
       .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)))
   }

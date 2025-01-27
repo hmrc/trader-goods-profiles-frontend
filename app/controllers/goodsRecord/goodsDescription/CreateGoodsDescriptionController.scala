@@ -14,27 +14,25 @@
  * limitations under the License.
  */
 
-package controllers.goodsRecord
+package controllers.goodsRecord.goodsDescription
 
 import controllers.BaseController
 import controllers.actions._
-import forms.goodsRecord.HasGoodsDescriptionChangeFormProvider
+import forms.goodsRecord.GoodsDescriptionFormProvider
 import models.Mode
-import models.helper.GoodsDetailsUpdate
 import navigation.GoodsRecordNavigator
-import pages.goodsRecord.HasGoodsDescriptionChangePage
+import pages.goodsRecord.GoodsDescriptionPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import services.AuditService
-import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
-import views.html.goodsRecord.HasGoodsDescriptionChangeView
+import views.html.goodsRecord.GoodsDescriptionView
 
 import javax.inject.Inject
 import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 
-class HasGoodsDescriptionChangeController @Inject() (
+class CreateGoodsDescriptionController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: GoodsRecordNavigator,
@@ -42,41 +40,37 @@ class HasGoodsDescriptionChangeController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   profileAuth: ProfileAuthenticateAction,
-  auditService: AuditService,
-  formProvider: HasGoodsDescriptionChangeFormProvider,
+  formProvider: GoodsDescriptionFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: HasGoodsDescriptionChangeView
+  view: GoodsDescriptionView,
+  auditService: AuditService
 )(implicit @unused ec: ExecutionContext)
     extends BaseController {
 
   private val form = formProvider()
 
-  def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] =
+  def onPageLoad(mode: Mode): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
-      auditService
-        .auditStartUpdateGoodsRecord(
-          request.eori,
-          request.affinityGroup,
-          GoodsDetailsUpdate,
-          recordId
-        )
+      val preparedForm = prepareForm(GoodsDescriptionPage, form)
 
-      val preparedForm = prepareForm(HasGoodsDescriptionChangePage(recordId), form)
+      val submitAction = controllers.goodsRecord.goodsDescription.routes.CreateGoodsDescriptionController.onSubmit(mode)
 
-      Ok(view(preparedForm, mode, recordId)).removingFromSession(dataRemoved, dataUpdated, pageUpdated)
+      Ok(view(preparedForm, mode, submitAction))
     }
 
-  def onSubmit(mode: Mode, recordId: String): Action[AnyContent] =
+  def onSubmit(mode: Mode): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
+      val submitAction = controllers.goodsRecord.goodsDescription.routes.CreateGoodsDescriptionController.onSubmit(mode)
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, recordId))),
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, submitAction))),
           value =>
             for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(HasGoodsDescriptionChangePage(recordId), value))
+              updatedAnswers <- Future.fromTry(request.userAnswers.set(GoodsDescriptionPage, value))
               _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(HasGoodsDescriptionChangePage(recordId), mode, updatedAnswers))
+            } yield Redirect(navigator.nextPage(GoodsDescriptionPage, mode, updatedAnswers))
         )
     }
+
 }
