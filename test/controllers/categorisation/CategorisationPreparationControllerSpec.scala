@@ -65,7 +65,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
     Some(validityEndDate),
     Seq.empty,
     Seq.empty,
-    None,
+    Some("litres"),
     1
   )
 
