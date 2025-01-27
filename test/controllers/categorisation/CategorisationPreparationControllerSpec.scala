@@ -65,7 +65,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
     Some(validityEndDate),
     Seq.empty,
     Seq.empty,
-    None,
+    Some("litres"),
     1
   )
 
@@ -354,7 +354,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           }
 
           withClue("must get category result from categorisation service") {
-            verify(mockCategorisationService, times(1))
+            verify(mockCategorisationService, times(2))
               .calculateResult(eqTo(categoryInfoNoAssessments), any(), eqTo(testRecordId))
           }
 
@@ -723,7 +723,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           }
 
           withClue("must get category result from categorisation service") {
-            verify(mockCategorisationService, times(1))
+            verify(mockCategorisationService, times(2))
               .calculateResult(any(), any(), any())
           }
 
