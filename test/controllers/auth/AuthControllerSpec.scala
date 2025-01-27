@@ -61,7 +61,7 @@ class AuthControllerSpec extends SpecBase with MockitoSugar {
     }
   }
 
-  "signOutNoSurvey" - {
+  "feedbackOnSignOut" - {
 
     "must clear users answers and redirect to sign out, specifying feedbackFrontend as the continue URL" in {
 
@@ -76,7 +76,7 @@ class AuthControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
 
         val appConfig = application.injector.instanceOf[FrontendAppConfig]
-        val request   = FakeRequest(GET, routes.AuthController.signOutNoSurvey().url)
+        val request   = FakeRequest(GET, routes.AuthController.feedbackOnSignOut().url)
 
         val result = route(application, request).value
 
