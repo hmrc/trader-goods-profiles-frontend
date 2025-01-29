@@ -91,7 +91,8 @@ class CategorisationService @Inject() (
     country: String,
     recordId: String,
     longerCode: Boolean = false
-  )(implicit hc: HeaderCarrier): Future[CategorisationInfo] =
+  )(implicit hc: HeaderCarrier): Future[CategorisationInfo] = {
+    println("+++++getCategorisationInfo commodityCode+++++++"+commodityCode)
     profileConnector.getTraderProfile.flatMap { profile =>
       ottConnector
         .getCategorisationInfo(
@@ -113,6 +114,7 @@ class CategorisationService @Inject() (
           }
         }
     }
+  }
 
   def calculateResult(
     categorisationInfo: CategorisationInfo,

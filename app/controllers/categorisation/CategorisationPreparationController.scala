@@ -75,13 +75,29 @@ class CategorisationPreparationController @Inject() (
         updatedHasLongComCodeQueryUserAnswers <-
           Future.fromTry(updatedUserAnswers.set(HasLongComCodeQuery(recordId), goodsRecord.comcode.length == 10))
         _                                     <- sessionRepository.set(updatedHasLongComCodeQueryUserAnswers)
-        _                                     <- updateCategory(
-                                                   updatedHasLongComCodeQueryUserAnswers,
-                                                   request.eori,
-                                                   request.affinityGroup,
-                                                   recordId,
-                                                   categorisationInfo
-                                                 )
+
+        _                                     <- {
+          if (!categorisationInfo.longerCode && goodsRecord.comcode.length != 6 ) {
+            println("++++++updateCategoryLonger++++++++++++"+categorisationInfo.longerCode)
+            updateCategoryLonger(
+              updatedHasLongComCodeQueryUserAnswers,
+              request.eori,
+              request.affinityGroup,
+              recordId,
+              categorisationInfo
+            )
+          } else {
+            println("++++++updateCategory++++++++++++")
+            updateCategory(
+              updatedHasLongComCodeQueryUserAnswers,
+              request.eori,
+              request.affinityGroup,
+              recordId,
+              categorisationInfo
+            )
+          }
+        }
+
       } yield Redirect(
         navigator.nextPage(
           CategorisationPreparationPage(recordId),
@@ -99,6 +115,7 @@ class CategorisationPreparationController @Inject() (
 
   def startLongerCategorisation(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
+      println("++++++++++++++++++startLongerCategorisation+++++++++++++++++++++++")
       (for {
         goodsRecord               <- goodsRecordsConnector.getRecord(recordId)
         shorterCategorisationInfo <-
@@ -137,13 +154,13 @@ class CategorisationPreparationController @Inject() (
                                           shorterCategorisationInfo
                                         )
 
-        _                    <- updateCategory(
-                                  updatedUAReassessmentAnswers,
-                                  request.eori,
-                                  request.affinityGroup,
-                                  recordId,
-                                  newLongerCategorisationInfo
-                                )
+//        _                    <- updateCategoryLonger(
+//                                  updatedUAReassessmentAnswers,
+//                                  request.eori,
+//                                  request.affinityGroup,
+//                                  recordId,
+//                                  newLongerCategorisationInfo
+//                                )
         reorderedUserAnswers <-
           categorisationService.reorderRecategorisationAnswers(updatedUAReassessmentAnswers, recordId)
       } yield Redirect(
@@ -194,9 +211,15 @@ class CategorisationPreparationController @Inject() (
       categorisationInfo.categoryAssessmentsThatNeedAnswers.isEmpty && !categorisationInfo.isCommCodeExpired
       && !isSupplementaryUnitQuestionToBeAnswered(categorisationInfo, updatedUserAnswers, recordId)
     ) {
-      if (categorisationInfo.measurementUnit.isEmpty) {
-        Future.successful(Done)
-      } else {
+      println("+++++++++++++ inside updateCategory++++++++++++++++"+ categorisationInfo.measurementUnit)
+      println("+++++++++++++ inside updateCategory++++++++++++++++"+ categorisationInfo.longerCode)
+      println("+++++++++++++ inside updateCategory++++++++++++++++"+ categorisationInfo.categoryAssessmentsThatNeedAnswers.isEmpty)
+      println("+++++++++++++ inside updateCategory++++++++++++++++"+ !isSupplementaryUnitQuestionToBeAnswered(categorisationInfo, updatedUserAnswers, recordId))
+      println("inside updateCategory" +  categorisationInfo.categoryAssessments.exists(
+        _.exemptions.isEmpty))
+      //      if (!categorisationInfo.measurementUnit.isEmpty) {
+//        Future.successful(Done)
+//      } else {
         CategoryRecord.build(updatedUserAnswers, eori, recordId, categorisationService) match {
           case Right(record) =>
             auditService.auditFinishCategorisation(
@@ -208,16 +231,67 @@ class CategorisationPreparationController @Inject() (
 
             val result = for {
               oldRecord <- goodsRecordsConnector.getRecord(recordId)
-              _         <- goodsRecordsConnector.updateCategoryAndComcodeForGoodsRecord(recordId, record, oldRecord)
+              _ <- if (!categorisationInfo.categoryAssessments.exists(
+                _.exemptions.isEmpty)) {
+                println("+++++++++++++++++++++ first if")
+                Future.successful(Done)
+              } else {
+                println("+++++++++++++++++++++ second else")
+                goodsRecordsConnector.updateCategoryAndComcodeForGoodsRecord(recordId, record, oldRecord)
+                 // Ensure a valid Future is returned
+              }
             } yield Done
-
             result
 
           case Left(errors) =>
             val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
             Future.failed(CategoryRecordBuildFailure(errorMessages))
         }
+      //}
+
+    } else {
+      Future.successful(Done)
+    }
+
+  private def updateCategoryLonger(
+                              updatedUserAnswers: UserAnswers,
+                              eori: String,
+                              affinityGroup: AffinityGroup,
+                              recordId: String,
+                              categorisationInfo: CategorisationInfo
+                            )(implicit
+                              hc: HeaderCarrier
+                            ): Future[Done] =
+    if (
+      categorisationInfo.categoryAssessmentsThatNeedAnswers.isEmpty && !categorisationInfo.isCommCodeExpired
+        && !isSupplementaryUnitQuestionToBeAnswered(categorisationInfo, updatedUserAnswers, recordId)
+    ) {
+      println("+++++++++++++updateCategoryLonger++++++++++++++++")
+//            if (categorisationInfo.measurementUnit.isEmpty) {
+//
+//              Future.successful(Done)
+//            } else {
+      CategoryRecord.build(updatedUserAnswers, eori, recordId, categorisationService) match {
+        case Right(record) =>
+          auditService.auditFinishCategorisation(
+            eori,
+            affinityGroup,
+            recordId,
+            record
+          )
+
+          val result = for {
+            oldRecord <- goodsRecordsConnector.getRecord(recordId)
+            _         <- goodsRecordsConnector.updateCategoryAndComcodeForGoodsRecord(recordId, record, oldRecord)
+          } yield Done
+
+          result
+
+        case Left(errors) =>
+          val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
+          Future.failed(CategoryRecordBuildFailure(errorMessages))
       }
+      //}
 
     } else {
       Future.successful(Done)

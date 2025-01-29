@@ -53,6 +53,7 @@ class LongerCommodityCodeController @Inject() (
   def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       val preparedForm = prepareForm(HasCorrectGoodsLongerCommodityCodePage(recordId), form)
+      println("+++++++++++++++++++++222222222222")
       val submitAction =
         controllers.commodityCodeResult.routes.LongerCommodityCodeController.onSubmit(mode, recordId)
       request.userAnswers.get(LongerCommodityQuery(recordId)) match {
@@ -86,7 +87,7 @@ class LongerCommodityCodeController @Inject() (
             for {
               updatedAnswers <-
                 Future.fromTry(request.userAnswers.set(HasCorrectGoodsLongerCommodityCodePage(recordId), value))
-              _              <- sessionRepository.set(updatedAnswers)
+              //_              <- sessionRepository.set(updatedAnswers)
             } yield Redirect(
               navigator.nextPage(HasCorrectGoodsLongerCommodityCodePage(recordId), mode, updatedAnswers)
             )

@@ -122,8 +122,11 @@ class Navigation @Inject() (categorisationService: CategorisationService) extend
       ) {
         controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(mode, recordId)
       } else {
+        println("i got here Navigator"+answers.get(HasCorrectGoodsLongerCommodityCodePage(recordId)))
         answers.get(HasCorrectGoodsLongerCommodityCodePage(recordId)) match {
+
           case Some(true)  =>
+            println("i got here")
             controllers.categorisation.routes.CategorisationPreparationController
               .startLongerCategorisation(mode, recordId)
           case Some(false) => controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(mode, recordId)

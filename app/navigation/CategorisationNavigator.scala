@@ -231,6 +231,7 @@ class CategorisationNavigator @Inject() (categorisationService: CategorisationSe
         } else if (shouldGoToSupplementaryUnitFromPrepPage(catInfo, scenario)) {
           controllers.categorisation.routes.HasSupplementaryUnitController.onPageLoad(NormalMode, recordId)
         } else {
+          println("++++++++++++++++++++++++++++here")
           controllers.categorisation.routes.CategorisationResultController.onPageLoad(recordId, scenario)
         }
       }).getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())

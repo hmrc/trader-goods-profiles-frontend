@@ -60,6 +60,7 @@ class LongerCommodityCodeController @Inject() (
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       val shortComcodeOpt = getShortCommodityCodeOpt(recordId, request.userAnswers)
       val preparedForm    = prepareForm(LongerCommodityCodePage(recordId), form)
+      println("+++++++++++++++++++++++onPageLoadlonger")
       shortComcodeOpt match {
         case Some(shortComcode) if shortComcode.length == minimumLengthOfCommodityCode =>
           Ok(view(preparedForm, mode, shortComcode, recordId))
@@ -71,7 +72,7 @@ class LongerCommodityCodeController @Inject() (
   def onSubmit(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       val shortComcodeOpt = getShortCommodityCodeOpt(recordId, request.userAnswers)
-
+      println("+++++++++++++++++++++++longer"+shortComcodeOpt)
       shortComcodeOpt match {
         case Some(shortComcode) if shortComcode.length == minimumLengthOfCommodityCode =>
           form
@@ -106,6 +107,7 @@ class LongerCommodityCodeController @Inject() (
     shortCode: String
   )(implicit request: DataRequest[AnyContent]) = {
     val longerCode   = shortCode + value
+    println("+++++++++++longerCode    ++++++++++"+longerCode)
     val todayInstant = LocalDate.now(ZoneId.of("UTC")).atStartOfDay(ZoneId.of("UTC")).toInstant
     (for {
       record    <- goodsRecordConnector.getRecord(recordId)
