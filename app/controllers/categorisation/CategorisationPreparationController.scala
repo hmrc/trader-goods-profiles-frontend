@@ -22,7 +22,7 @@ import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierA
 import models.Scenario.getResultAsInt
 import models.helper.CategorisationUpdate
 import models.ott.CategorisationInfo
-import models.{CategoryRecord, Mode, NormalMode, UserAnswers}
+import models.{CategoryRecord, Mode, NormalMode, Scenario, UserAnswers}
 import navigation.CategorisationNavigator
 import org.apache.pekko.Done
 import pages.RecategorisationPreparationPage
@@ -34,7 +34,7 @@ import repositories.SessionRepository
 import services.{AuditService, CategorisationService}
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.Constants.Category2AsInt
+import utils.Constants.{Category2AsInt, minimumLengthOfCommodityCode}
 import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
 
 import javax.inject.Inject
@@ -75,13 +75,14 @@ class CategorisationPreparationController @Inject() (
         updatedHasLongComCodeQueryUserAnswers <-
           Future.fromTry(updatedUserAnswers.set(HasLongComCodeQuery(recordId), goodsRecord.comcode.length == 10))
         _                                     <- sessionRepository.set(updatedHasLongComCodeQueryUserAnswers)
-        _                                     <- updateCategory(
-                                                   updatedHasLongComCodeQueryUserAnswers,
-                                                   request.eori,
-                                                   request.affinityGroup,
-                                                   recordId,
-                                                   categorisationInfo
-                                                 )
+
+        _ <- updateCategory(
+               updatedHasLongComCodeQueryUserAnswers,
+               request.eori,
+               request.affinityGroup,
+               recordId,
+               categorisationInfo
+             )
       } yield Redirect(
         navigator.nextPage(
           CategorisationPreparationPage(recordId),
@@ -137,13 +138,6 @@ class CategorisationPreparationController @Inject() (
                                           shorterCategorisationInfo
                                         )
 
-        _                    <- updateCategory(
-                                  updatedUAReassessmentAnswers,
-                                  request.eori,
-                                  request.affinityGroup,
-                                  recordId,
-                                  newLongerCategorisationInfo
-                                )
         reorderedUserAnswers <-
           categorisationService.reorderRecategorisationAnswers(updatedUAReassessmentAnswers, recordId)
       } yield Redirect(
@@ -189,29 +183,29 @@ class CategorisationPreparationController @Inject() (
     categorisationInfo: CategorisationInfo
   )(implicit
     hc: HeaderCarrier
-  ): Future[Done] =
+  ): Future[Done] = {
+
+    val hasLongComCode = updatedUserAnswers.get(HasLongComCodeQuery(recordId)).getOrElse(false)
+
     if (
-      categorisationInfo.categoryAssessmentsThatNeedAnswers.isEmpty && !categorisationInfo.isCommCodeExpired
-      && !isSupplementaryUnitQuestionToBeAnswered(categorisationInfo, updatedUserAnswers, recordId)
+      categorisationInfo.categoryAssessmentsThatNeedAnswers.isEmpty &&
+      !categorisationInfo.isCommCodeExpired &&
+      !isSupplementaryUnitQuestionToBeAnswered(categorisationInfo, updatedUserAnswers, recordId)
     ) {
-      if (categorisationInfo.measurementUnit.isEmpty) {
+
+      val scenario = categorisationService.calculateResult(categorisationInfo, updatedUserAnswers, recordId)
+
+      if (shouldGoToLongerCommodityCodeFromPrepPage(categorisationInfo, scenario, hasLongComCode)) {
         Future.successful(Done)
       } else {
         CategoryRecord.build(updatedUserAnswers, eori, recordId, categorisationService) match {
           case Right(record) =>
-            auditService.auditFinishCategorisation(
-              eori,
-              affinityGroup,
-              recordId,
-              record
-            )
+            auditService.auditFinishCategorisation(eori, affinityGroup, recordId, record)
 
-            val result = for {
+            for {
               oldRecord <- goodsRecordsConnector.getRecord(recordId)
               _         <- goodsRecordsConnector.updateCategoryAndComcodeForGoodsRecord(recordId, record, oldRecord)
             } yield Done
-
-            result
 
           case Left(errors) =>
             val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
@@ -222,6 +216,20 @@ class CategorisationPreparationController @Inject() (
     } else {
       Future.successful(Done)
     }
+  }
+
+  private def shouldGoToLongerCommodityCodeFromPrepPage(
+    catInfo: CategorisationInfo,
+    scenario: Scenario,
+    hasLongComCode: Boolean
+  ): Boolean =
+    couldGoToLongerCommodityCode(catInfo, hasLongComCode) &&
+      getResultAsInt(scenario) == Category2AsInt
+
+  private def couldGoToLongerCommodityCode(catInfo: CategorisationInfo, hasLongComCode: Boolean): Boolean =
+    !hasLongComCode &&
+      catInfo.getMinimalCommodityCode.length == minimumLengthOfCommodityCode &&
+      catInfo.descendantCount != 0
 
   private def isSupplementaryUnitQuestionToBeAnswered(
     catInfo: CategorisationInfo,

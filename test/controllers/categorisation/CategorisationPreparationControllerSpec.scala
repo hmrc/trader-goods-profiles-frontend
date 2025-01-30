@@ -65,7 +65,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
     Some(validityEndDate),
     Seq.empty,
     Seq.empty,
-    Some("litres"),
+    None,
     1
   )
 
@@ -354,7 +354,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           }
 
           withClue("must get category result from categorisation service") {
-            verify(mockCategorisationService, times(2))
+            verify(mockCategorisationService, times(3))
               .calculateResult(eqTo(categoryInfoNoAssessments), any(), eqTo(testRecordId))
           }
 
@@ -723,22 +723,17 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           }
 
           withClue("must get category result from categorisation service") {
-            verify(mockCategorisationService, times(2))
+            verify(mockCategorisationService, never())
               .calculateResult(any(), any(), any())
           }
 
           val categoryRecordArgCaptor: ArgumentCaptor[CategoryRecord] =
             ArgumentCaptor.forClass(classOf[CategoryRecord])
-
-          verify(mockGoodsRecordConnector).updateCategoryAndComcodeForGoodsRecord(
+          verify(mockGoodsRecordConnector, never()).updateCategoryAndComcodeForGoodsRecord(
             eqTo(testRecordId),
             categoryRecordArgCaptor.capture(),
             any()
           )(any())
-
-          val categoryRecord = categoryRecordArgCaptor.getValue
-          categoryRecord.category mustBe StandardGoodsNoAssessmentsScenario
-          categoryRecord.assessmentsAnswered mustBe 0
 
           withClue("must update User Answers with Categorisation Info") {
             val uaArgCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
@@ -750,16 +745,6 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
             finalUserAnswers.get(LongerCategorisationDetailsQuery(testRecordId)).get mustBe longerCode
           }
-
-          withClue("must call the audit service finish categorisation event") {
-            verify(mockAuditService).auditFinishCategorisation(
-              eqTo(testEori),
-              eqTo(AffinityGroup.Individual),
-              eqTo(testRecordId),
-              eqTo(categoryRecord)
-            )(any())
-          }
-
         }
 
       }
@@ -812,13 +797,8 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           redirectLocation(result).value mustEqual onwardRoute.url
 
           withClue("must get category details from categorisation service") {
-            verify(mockCategorisationService)
+            verify(mockCategorisationService, times(1))
               .getCategorisationInfo(any(), eqTo("1234567890"), eqTo("GB"), eqTo(testRecordId), eqTo(true))(any())
-          }
-
-          withClue("must get category result from categorisation service") {
-            verify(mockCategorisationService)
-              .calculateResult(any(), any(), any())
           }
 
           withClue("must not call the audit service finish categorisation event") {
@@ -1310,15 +1290,6 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           val result  = route(app, request).value
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).get mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
-
-          withClue("must call the audit service finish categorisation event even though the update failed") {
-            verify(mockAuditService).auditFinishCategorisation(
-              eqTo(testEori),
-              eqTo(AffinityGroup.Individual),
-              eqTo(testRecordId),
-              any()
-            )(any())
-          }
         }
 
       }
