@@ -138,7 +138,7 @@ class CategorisationPreparationController @Inject() (
                                           shorterCategorisationInfo
                                         )
 
-        reorderedUserAnswers         <-
+        reorderedUserAnswers <-
           categorisationService.reorderRecategorisationAnswers(updatedUAReassessmentAnswers, recordId)
       } yield Redirect(
         navigator.nextPage(
