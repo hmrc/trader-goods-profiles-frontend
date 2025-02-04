@@ -36,7 +36,7 @@ object AssessmentAnswer {
   }
 
   implicit val writes: Writes[AssessmentAnswer] = Writes {
-    case Exemption(values) => JsArray(values.map(JsString))
+    case Exemption(values) => JsArray(values.map(x => JsString(x)))
     case NotAnsweredYet    => JsString("notAnswered")
     case NoExemption       => JsString("none")
   }

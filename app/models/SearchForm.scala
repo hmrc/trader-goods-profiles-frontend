@@ -30,6 +30,7 @@ object SearchForm {
       "searchTerm"      -> optional(text),
       "countryOfOrigin" -> optional(text),
       "statusValue"     -> seq(text)
-    )(SearchForm.apply)(SearchForm.unapply)
+    )(SearchForm.apply)(o => Some(Tuple.fromProductTyped(o)))
+
   )
 }

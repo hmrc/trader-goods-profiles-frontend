@@ -23,7 +23,6 @@ import play.api.libs.json.{JsPath, OWrites, Reads}
 import utils.Constants.{countryOfOriginKey, goodsDescriptionKey}
 
 import java.time.Instant
-import scala.Function.unlift
 
 case class CreateRecordRequest(
   eori: String,
@@ -72,5 +71,5 @@ object CreateRecordRequest {
       (JsPath \ countryOfOriginKey).write[String] and
       (JsPath \ "comcodeEffectiveFromDate").write[Instant] and
       (JsPath \ "comcodeEffectiveToDate").writeNullable[Instant] and
-      (JsPath \ "category").writeNullable[Int])(unlift(CreateRecordRequest.unapply))
+      (JsPath \ "category").writeNullable[Int])(o => Tuple.fromProductTyped(o))
 }

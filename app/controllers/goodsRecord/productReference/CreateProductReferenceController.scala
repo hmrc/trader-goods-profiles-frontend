@@ -26,7 +26,6 @@ import pages.goodsRecord.ProductReferencePage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import services.AuditService
 import views.html.goodsRecord.ProductReferenceView
 
 import javax.inject.Inject
@@ -40,7 +39,6 @@ class CreateProductReferenceController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   profileAuth: ProfileAuthenticateAction,
-  auditService: AuditService,
   formProvider: ProductReferenceFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: ProductReferenceView,

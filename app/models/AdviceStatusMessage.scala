@@ -53,6 +53,5 @@ object AdviceStatusMessage {
     case InProgress             => Some(InProgressParagraph)
     case InformationRequested   => Some(InformationRequestedParagraph)
     case AdviceReceived         => Some(AdviceReceivedParagraph)
-    case _                      => None
   }
 }

@@ -30,6 +30,7 @@ import java.net.{URL, URLEncoder}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import play.api.libs.ws.WSBodyWritables.writeableOf_JsValue
 
 class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpClientV2, appConfig: FrontendAppConfig)(
   implicit ec: ExecutionContext

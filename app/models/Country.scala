@@ -53,7 +53,7 @@ object Country {
     (
       (__ \ "attributes" \ "id").write[String] and
         (__ \ "attributes" \ "description").write[String]
-    )(unlift(Country.unapply))
+    )(o => Tuple.fromProductTyped(o))
   }
 
   implicit val format: OFormat[Country] = OFormat(reads, writes)
