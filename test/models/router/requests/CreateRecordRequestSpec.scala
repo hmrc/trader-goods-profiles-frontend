@@ -39,15 +39,15 @@ class CreateRecordRequestSpec extends SpecBase {
     )
 
   val createRecordRequestJson: JsObject = Json.obj(
-    "eori" -> "eori",
-    "actorId" -> "actorId",
-    "traderRef" -> "traderRef",
-    "comcode" -> "12012000",
-    "goodsDescription" -> "goodsDesc",
-    "countryOfOrigin" -> "GB",
-    "category" -> 1,
+    "eori"                     -> "eori",
+    "actorId"                  -> "actorId",
+    "traderRef"                -> "traderRef",
+    "comcode"                  -> "12012000",
+    "goodsDescription"         -> "goodsDesc",
+    "countryOfOrigin"          -> "GB",
+    "category"                 -> 1,
     "comcodeEffectiveFromDate" -> time.toString,
-    "comcodeEffectiveToDate" -> time.toString
+    "comcodeEffectiveToDate"   -> time.toString
   )
 
   "CreateRecordRequest" - {
