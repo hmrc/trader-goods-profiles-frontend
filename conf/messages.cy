@@ -122,9 +122,9 @@ ukimsNumber.change.hidden = Rhif UKIMS
 
 newUkimsNumber.title = Rhif Cynllun Marchnad Fewnol y DU (UKIMS)
 newUkimsNumber.h1 = Rhif Cynllun Marchnad Fewnol y DU (UKIMS)
-newUkimsNumber.p1 = Mae CThEF yn anfon llythyr gyda rhif awdurdodi UKIMS ar ôl i chi wneud cais. Os nad ydych wedi cofrestru ar gyfer yr UKIMS, ni allwch ddefnyddio''r Proffil Nwyddau Masnachwyr (TGP).
-newUkimsNumber.p2 = Mae rhif UKIMS yn dechrau â GB neu XI, wedi''u dilyn gan UKIM, ac mae''ch rhif EORI heb y GB neu''r XI, ac yna wedi''i ddilyn gan 14 o rifau.
-newUkimsNumber.heading = Beth yw''ch rhif UKIMS?
+newUkimsNumber.p1 = Mae CThEF yn anfon llythyr gyda rhif awdurdodi UKIMS ar ôl i chi wneud cais. Os nad ydych wedi cofrestru ar gyfer yr UKIMS, ni allwch ddefnyddio’r Proffil Nwyddau Masnachwyr (TGP).
+newUkimsNumber.p2 = Mae rhif UKIMS yn dechrau â GB neu XI, wedi’u dilyn gan UKIM, ac mae’ch rhif EORI heb y GB neu’r XI, ac yna wedi’i ddilyn gan 14 o rifau.
+newUkimsNumber.heading = Beth yw’ch rhif UKIMS?
 newUkimsNumber.hint = Er enghraifft, XIUKIM47699357400020231115081800
 newUkimsNumber.linkText = Nid ydwyf wedi fy nghofrestru ar gyfer yr UKIMS
 newUkimsNumber.error.required = Nodwch eich rhif UKIMS
@@ -571,10 +571,10 @@ goodsRecords.tableHeader.commodityCode = Cod nwyddau
 goodsRecords.tableHeader.status = Statws
 goodsRecords.tableHeader.actions = Camau gweithredu
 goodsRecords.skip.record = Neidio i gofnodion nwyddau
-goodsRecords.skip.main = Neidio i'r prif
+goodsRecords.skip.main = Neidio i’r prif
 
-goodsRecords.li1 = 'Cyfeirnod masnachwr'
-goodsRecords.li2 = 'Disgrifiad o’r nwyddau'
+goodsRecords.li1 = ‘Cyfeirnod masnachwr’
+goodsRecords.li2 = ‘Disgrifiad o’r nwyddau’
 
 goodsRecordsEmptyView.p1 = Does gennych chi ddim cofnodion yn eich proffil nwyddau.
 goodsRecordsEmptyView.p2 = Gallwch
@@ -587,7 +587,7 @@ goodsRecordSearchResult.p1 = Roeddech yn chwilio am y term {0}.
 
 goodsRecordSearchResult.p2 =  Wedi dod o hyd i {0} o gofnodion
 goodsRecordSearchResult.p4 = Statws:
-goodsRecordSearchResult.p5 = Term chwilio: ''{0}''
+goodsRecordSearchResult.p5 = Term chwilio: ‘{0}’
 goodsRecordSearchResult.p6 = Gwlad tarddiad: {0}
 
 goodsRecordSearchResultEmptyView.title = Does dim canlyniadau cyfatebol
