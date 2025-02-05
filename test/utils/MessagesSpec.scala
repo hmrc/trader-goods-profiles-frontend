@@ -21,11 +21,12 @@ import base.SpecBase
 import java.nio.file.{Files, Paths}
 import scala.io.Source
 import scala.jdk.CollectionConverters.{CollectionHasAsScala, IteratorHasAsScala}
+import scala.util.Using
 
 class MessagesSpec extends SpecBase {
 
-  lazy val english = loadMessages("en")
-  lazy val welsh   = loadMessages("cy")
+  lazy val english: Map[String, String] = loadMessages("en")
+  lazy val welsh: Map[String, String]   = loadMessages("cy")
 
   // Used to search for instances of keys in files to check for usage
   lazy val appFiles: List[java.nio.file.Path] =
@@ -41,16 +42,17 @@ class MessagesSpec extends SpecBase {
   private def loadMessages(language: String): Map[String, String] = {
     val messagesPath = Paths.get(s"conf/messages.$language")
     if (Files.exists(messagesPath)) {
-      Source
-        .fromFile(messagesPath.toFile, "UTF-8")
-        .getLines()
-        .filterNot(_.trim.startsWith("#"))
-        .filter(_.contains("="))
-        .map { line =>
-          val split = line.split("=", 2)
-          split(0).trim -> split(1).trim
-        }
-        .toMap
+      Using(Source.fromFile(messagesPath.toFile, "UTF-8")) { source =>
+        source
+          .getLines()
+          .filterNot(_.trim.startsWith("#"))
+          .filter(_.contains("="))
+          .map { line =>
+            val split = line.split("=", 2)
+            split(0).trim -> split(1).trim
+          }
+          .toMap
+      }.getOrElse(Map.empty)
     } else {
       Map.empty
     }
@@ -65,7 +67,7 @@ class MessagesSpec extends SpecBase {
     }
 
   // Currently prints instead of failing because further welsh may be added. Can't use log.warn because the logging level of tests is set to OFF.
-  private def failAndShowKeys(message: String, keys: Set[String], translations: Map[String, String]): Unit =
+  private def failAndShowKeys(message: String, keys: Set[String]): Unit =
     if (keys.nonEmpty) {
       val sortedKeys  = keys.toSeq.sortBy(_.charAt(0))
       val warningText = sortedKeys.foldLeft(s"$message (${keys.size}) = ") { (acc, key) =>
@@ -78,12 +80,12 @@ class MessagesSpec extends SpecBase {
 
     "must be used somewhere in the code" in {
       val missingKeys = findUnusedKeys(english.keySet, appFiles)
-      failAndShowKeys("Warning: There are unused English message keys in the codebase", missingKeys, english)
+      failAndShowKeys("Warning: There are unused English message keys in the codebase", missingKeys)
     }
 
     "must have a welsh translation" in {
       val missingWelshKeys = english.keySet.diff(welsh.keySet)
-      failAndShowKeys("Warning: There are English message keys missing Welsh translations", missingWelshKeys, english)
+      failAndShowKeys("Warning: There are English message keys missing Welsh translations", missingWelshKeys)
     }
   }
 
@@ -91,12 +93,12 @@ class MessagesSpec extends SpecBase {
 
     "must be used somewhere in the code" in {
       val missingKeys = findUnusedKeys(welsh.keySet, appFiles)
-      failAndShowKeys("Warning: There are unused Welsh message keys in the codebase", missingKeys, english)
+      failAndShowKeys("Warning: There are unused Welsh message keys in the codebase", missingKeys)
     }
 
     "must have an english translation" in {
       val missingEnglishKeys = welsh.keySet.diff(english.keySet)
-      failAndShowKeys("Warning: There are Welsh message keys missing English translations", missingEnglishKeys, welsh)
+      failAndShowKeys("Warning: There are Welsh message keys missing English translations", missingEnglishKeys)
     }
   }
 

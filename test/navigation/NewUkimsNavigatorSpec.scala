@@ -61,7 +61,7 @@ class NewUkimsNavigatorSpec extends SpecBase with BeforeAndAfterEach {
             NewUkimsNumberPage,
             NormalMode,
             emptyUserAnswers
-          ) mustBe newUkimsRoutes.CyaNewUkimsNumberController.onPageLoad
+          ) mustBe newUkimsRoutes.CyaNewUkimsNumberController.onPageLoad()
         }
 
         "must go from CyaNewUkimsNumberPage to HomePageController" in {
@@ -92,7 +92,7 @@ class NewUkimsNavigatorSpec extends SpecBase with BeforeAndAfterEach {
           NewUkimsNumberPage,
           CheckMode,
           emptyUserAnswers
-        ) mustBe newUkimsRoutes.CyaNewUkimsNumberController.onPageLoad
+        ) mustBe newUkimsRoutes.CyaNewUkimsNumberController.onPageLoad()
       }
     }
 

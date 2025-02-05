@@ -19,15 +19,17 @@ package services
 import base.SpecBase
 import base.TestConstants.{NiphlCode, NirmsCode, testRecordId}
 import connectors.{GoodsRecordConnector, OttConnector, TraderProfileConnector}
-import models.ott.response.{CategoryAssessmentRelationship, ExemptionType => ResponseExemptionType, _}
-import models.ott.{CategoryAssessment, _}
+import generators.Generators
+import models.*
+import models.DeclarableStatus.NotReadyForUse
+import models.ott.response.{CategoryAssessmentRelationship, ExemptionType => ResponseExemptionType, *}
+import models.ott.*
 import models.requests.DataRequest
 import models.router.responses.GetGoodsRecordResponse
-import models.{AssessmentAnswer, Category1NoExemptionsScenario, Category1Scenario, Category2Scenario, ReassessmentAnswer, StandardGoodsNoAssessmentsScenario, StandardGoodsScenario, TraderProfile}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
+import org.scalatest.matchers.should.Matchers.shouldBe
 import org.scalatestplus.mockito.MockitoSugar.mock
 import pages.categorisation.{AssessmentPage, ReassessmentPage}
 import play.api.mvc.AnyContent
@@ -37,8 +39,6 @@ import repositories.SessionRepository
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Constants.{countryOfOriginKey, goodsDescriptionKey}
-import generators.Generators
-import models.DeclarableStatus.NotReadyForUse
 
 import java.time.Instant
 import scala.concurrent.ExecutionContext.Implicits.global

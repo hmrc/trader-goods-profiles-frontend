@@ -20,13 +20,13 @@ import base.SpecBase
 import connectors.{GoodsRecordConnector, OttConnector}
 import generators.Generators
 import models.DeclarableStatus.ImmiReady
-import models.ott.response._
+import models.ott.response.*
 import models.requests.DataRequest
 import models.router.responses.GetGoodsRecordResponse
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
+import org.scalatest.matchers.should.Matchers.shouldBe
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.mvc.AnyContent
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
