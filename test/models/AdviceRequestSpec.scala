@@ -22,10 +22,29 @@ import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{OptionValues, TryValues}
 import pages.advice.{EmailPage, NamePage}
+import play.api.libs.json.{JsObject, JsSuccess, Json}
 
 class AdviceRequestSpec extends AnyFreeSpec with Matchers with TryValues with OptionValues {
 
-  ".build" - {
+  private val adviceRequest: AdviceRequest = AdviceRequest(testEori, "1", testEori, testRecordId, "2")
+  private val adviceRequestJson: JsObject  = Json.obj(
+    "eori"           -> testEori,
+    "requestorName"  -> "1",
+    "actorId"        -> testEori,
+    "recordId"       -> testRecordId,
+    "requestorEmail" -> "2"
+  )
+
+  "AdviceRequest" - {
+    "must deserialize from json" in {
+      Json.fromJson[AdviceRequest](adviceRequestJson) mustBe JsSuccess(adviceRequest)
+    }
+
+    "must serialize to json" in {
+      Json.toJson(adviceRequest) mustBe adviceRequestJson
+    }
+
+    ".build" - {}
 
     "must return a AdviceRequest when all mandatory questions are answered" - {
 

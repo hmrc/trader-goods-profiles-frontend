@@ -14,20 +14,24 @@
  * limitations under the License.
  */
 
-package pages
+package models
 
 import base.SpecBase
+import play.api.libs.json.*
 
-class PageSpec extends SpecBase {
+class MetaDataSpec extends SpecBase {
 
-  "Page" - {
-    "must convert a page to a string" in {
-      object TestPage extends Page {
-        override def toString: String = "TestPage"
-      }
+  private val metaData     = Metadata("metadata", "value")
+  private val metaDataJson = Json.obj("metadata" -> "metadata", "value" -> "value")
 
-      val pageString: String = TestPage
-      pageString mustBe "TestPage"
+  "MetaData" - {
+    "must deserialize from json" in {
+      Json.fromJson[Metadata](metaDataJson) mustBe JsSuccess(metaData)
+    }
+
+    "must serialize to json" in {
+      Json.toJson(metaData) mustBe metaDataJson
     }
   }
+
 }
