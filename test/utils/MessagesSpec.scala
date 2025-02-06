@@ -42,16 +42,17 @@ class MessagesSpec extends SpecBase {
   private def loadMessages(language: String): Map[String, String] = {
     val messagesPath = Paths.get(s"conf/messages.$language")
     if (Files.exists(messagesPath)) {
-      Source
-        .fromFile(messagesPath.toFile, "UTF-8")
-        .getLines()
-        .filterNot(_.trim.startsWith("#"))
-        .filter(_.contains("="))
-        .map { line =>
-          val split = line.split("=", 2)
-          split(0).trim -> split(1).trim
-        }
-        .toMap
+      Using(Source.fromFile(messagesPath.toFile, "UTF-8")) { source =>
+        source
+          .getLines()
+          .filterNot(_.trim.startsWith("#"))
+          .filter(_.contains("="))
+          .map { line =>
+            val split = line.split("=", 2)
+            split(0).trim -> split(1).trim
+          }
+          .toMap
+      }.getOrElse(Map.empty)
     } else {
       Map.empty
     }
