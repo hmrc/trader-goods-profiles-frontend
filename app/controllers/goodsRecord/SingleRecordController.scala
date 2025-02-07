@@ -29,6 +29,7 @@ import queries.CountriesQuery
 import repositories.SessionRepository
 import services.DataCleansingService
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.SessionData._
 import viewmodels.checkAnswers._
 import viewmodels.checkAnswers.goodsRecord.{CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, ProductReferenceSummary}
@@ -55,6 +56,10 @@ class SingleRecordController @Inject() (
 
   def onPageLoad(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
+      val referer  = request.headers.get("Referer")
+      val backLink = referer
+        .filter(_.contains("page"))
+        .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url)
       for {
         record                             <- goodsRecordConnector.getRecord(recordId)
         recordIsLocked                      = record.adviceStatus match {
@@ -143,7 +148,6 @@ class SingleRecordController @Inject() (
         val para: Option[AdviceStatusMessage] = AdviceStatusMessage.fromString(record.adviceStatus)
 
         dataCleansing(request)
-
         Ok(
           view(
             recordId,
@@ -160,9 +164,11 @@ class SingleRecordController @Inject() (
             record.toReview,
             record.category.isDefined,
             record.adviceStatus,
-            record.reviewReason
+            record.reviewReason,
+            backLink
           )
         ).removingFromSession(initialValueOfHasSuppUnit, initialValueOfSuppUnit)
+
       }
     }
 
