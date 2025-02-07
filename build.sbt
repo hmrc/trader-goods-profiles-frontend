@@ -39,7 +39,6 @@ lazy val microservice = (project in file("."))
     ScoverageKeys.coverageHighlighting := true,
     scalacOptions ++= Seq(
       "-feature",
-      baseDirectory.value.getCanonicalPath,
       "-Wconf:src=routes/.*:s",
       "-Wconf:src=html/.*:s",
     ),
