@@ -29,7 +29,6 @@ import queries.CountriesQuery
 import repositories.SessionRepository
 import services.DataCleansingService
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.SessionData._
 import viewmodels.checkAnswers._
 import viewmodels.checkAnswers.goodsRecord.{CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, ProductReferenceSummary}
