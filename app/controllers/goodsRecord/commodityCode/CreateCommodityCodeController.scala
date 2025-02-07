@@ -30,7 +30,6 @@ import play.api.i18n.MessagesApi
 import play.api.mvc._
 import queries.CommodityQuery
 import repositories.SessionRepository
-import services.AuditService
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import views.html.goodsRecord.CommodityCodeView
 
@@ -49,8 +48,7 @@ class CreateCommodityCodeController @Inject() (
   formProvider: CommodityCodeFormProvider,
   ottConnector: OttConnector,
   val controllerComponents: MessagesControllerComponents,
-  view: CommodityCodeView,
-  auditService: AuditService
+  view: CommodityCodeView
 )(implicit ec: ExecutionContext)
     extends BaseController {
 

@@ -26,7 +26,6 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries._
 import repositories.SessionRepository
-import services.AuditService
 import views.html.HasCorrectGoodsView
 
 import javax.inject.Inject
@@ -42,7 +41,6 @@ class CreateCommodityCodeResultController @Inject() (
   requireData: DataRequiredAction,
   profileAuth: ProfileAuthenticateAction,
   formProvider: HasCorrectGoodsFormProvider,
-  auditService: AuditService,
   val controllerComponents: MessagesControllerComponents,
   view: HasCorrectGoodsView
 )(implicit @unused ec: ExecutionContext)

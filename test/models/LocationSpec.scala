@@ -16,20 +16,20 @@
 
 package models
 
-import play.api.data.Form
-import play.api.data.Forms.{mapping, optional, seq, text}
-import play.api.libs.json.{Format, Json}
+import base.SpecBase
 
-case class SearchForm(searchTerm: Option[String], countryOfOrigin: Option[String], statusValue: Seq[String] = Seq())
+class LocationSpec extends SpecBase {
 
-object SearchForm {
-  implicit val format: Format[SearchForm] = Json.format[SearchForm]
+  "LocationSpec" - {
+    "should correctly convert GoodsProfileLocation to string" in {
+      val value = Location.jsLiteral.to(GoodsProfileLocation)
+      value mustBe "GoodsProfileLocation"
+    }
 
-  val form: Form[SearchForm] = Form(
-    mapping(
-      "searchTerm"      -> optional(text),
-      "countryOfOrigin" -> optional(text),
-      "statusValue"     -> seq(text)
-    )(SearchForm.apply)(o => Some(Tuple.fromProductTyped(o)))
-  )
+    "should correctly convert GoodsRecordLocation to string" in {
+      val value = Location.jsLiteral.to(GoodsRecordLocation)
+      value mustBe "GoodsRecordLocation"
+    }
+  }
+
 }

@@ -52,7 +52,7 @@ object DataStoreProfile {
         (__ \ ukimsNumberKey).write[String] and
         (__ \ nirmsNumberKey).writeNullable[String] and
         (__ \ niphlNumberKey).writeNullable[String]
-    )(unlift(DataStoreProfile.unapply))
+    )(o => Tuple.fromProductTyped(o))
   }
 
   implicit val format: OFormat[DataStoreProfile] = OFormat(reads, writes)

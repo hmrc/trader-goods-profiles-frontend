@@ -16,7 +16,6 @@
 
 package models
 
-import play.api.libs.json.OFormat
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
@@ -92,7 +91,7 @@ object Commodity {
         __.write[JsValue].contramap(writeDescriptions) and
         (__ \ "data" \ "attributes" \ "validity_start_date").write[Instant] and
         (__ \ "data" \ "attributes" \ "validity_end_date").writeOptionWithNull[Instant]
-    )(unlift(Commodity.unapply))
+    )(o => Tuple.fromProductTyped(o))
   }
 
   implicit val format: OFormat[Commodity] = OFormat(reads, writes)

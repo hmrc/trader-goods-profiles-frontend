@@ -23,7 +23,6 @@ import play.api.libs.json.{JsPath, OWrites, Reads}
 import utils.Constants.{countryOfOriginKey, goodsDescriptionKey}
 
 import java.time.Instant
-import scala.Function.unlift
 import scala.util.Try
 
 case class PatchRecordRequest(
@@ -107,7 +106,7 @@ object PatchRecordRequest {
       (JsPath \ "comcodeEffectiveFromDate").writeNullable[Instant] and
       (JsPath \ "comcodeEffectiveToDate").writeNullable[Instant] and
       (JsPath \ "supplementaryUnit").writeNullable[BigDecimal] and
-      (JsPath \ "measurementUnit").writeNullable[String])(unlift(PatchRecordRequest.unapply))
+      (JsPath \ "measurementUnit").writeNullable[String])(o => Tuple.fromProductTyped(o))
 
   private def convertToBigDecimal(value: Option[String]): Option[BigDecimal] =
     value.flatMap(v => Try(BigDecimal(v)).toOption)

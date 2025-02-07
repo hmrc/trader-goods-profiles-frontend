@@ -93,7 +93,7 @@ class CyaMaintainProfileController @Inject() (
         oldTraderProfile <- traderProfileConnector.getTraderProfile
         newTraderProfile <- Future.successful(oldTraderProfile.copy(ukimsNumber = ukimsNumber))
         _                 = auditService.auditMaintainProfile(oldTraderProfile, newTraderProfile, request.affinityGroup)
-        _                <- submitTraderProfileIfValueChanged(newTraderProfile, oldTraderProfile, request.eori)
+        _                <- submitTraderProfileIfValueChanged(newTraderProfile, oldTraderProfile)
       } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
         .addingToSession(
           dataUpdated -> (oldTraderProfile != newTraderProfile).toString
@@ -110,7 +110,7 @@ class CyaMaintainProfileController @Inject() (
         oldTraderProfile <- traderProfileConnector.getTraderProfile
         newTraderProfile <- Future.successful(oldTraderProfile.copy(nirmsNumber = nirmsNumber))
         _                 = auditService.auditMaintainProfile(oldTraderProfile, newTraderProfile, request.affinityGroup)
-        _                <- submitTraderProfileIfValueChanged(newTraderProfile, oldTraderProfile, request.eori)
+        _                <- submitTraderProfileIfValueChanged(newTraderProfile, oldTraderProfile)
       } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
         .addingToSession(
           dataUpdated -> (oldTraderProfile != newTraderProfile).toString
@@ -148,7 +148,7 @@ class CyaMaintainProfileController @Inject() (
         oldTraderProfile <- traderProfileConnector.getTraderProfile
         newTraderProfile <- Future.successful(oldTraderProfile.copy(niphlNumber = niphlNumber))
         _                 = auditService.auditMaintainProfile(oldTraderProfile, newTraderProfile, request.affinityGroup)
-        _                <- submitTraderProfileIfValueChanged(newTraderProfile, oldTraderProfile, request.eori)
+        _                <- submitTraderProfileIfValueChanged(newTraderProfile, oldTraderProfile)
       } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
         .addingToSession(
           dataUpdated -> (oldTraderProfile != newTraderProfile).toString
@@ -189,7 +189,7 @@ class CyaMaintainProfileController @Inject() (
         oldTraderProfile <- traderProfileConnector.getTraderProfile
         newTraderProfile <- Future.successful(oldTraderProfile.copy(nirmsNumber = nirmsNumber))
         _                 = auditService.auditMaintainProfile(oldTraderProfile, newTraderProfile, request.affinityGroup)
-        _                <- submitTraderProfileIfValueChanged(newTraderProfile, oldTraderProfile, request.eori)
+        _                <- submitTraderProfileIfValueChanged(newTraderProfile, oldTraderProfile)
       } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
         .addingToSession(
           dataUpdated -> (oldTraderProfile != newTraderProfile).toString
@@ -230,7 +230,7 @@ class CyaMaintainProfileController @Inject() (
         oldTraderProfile <- traderProfileConnector.getTraderProfile
         newTraderProfile <- Future.successful(oldTraderProfile.copy(niphlNumber = niphlNumber))
         _                 = auditService.auditMaintainProfile(oldTraderProfile, newTraderProfile, request.affinityGroup)
-        _                <- submitTraderProfileIfValueChanged(newTraderProfile, oldTraderProfile, request.eori)
+        _                <- submitTraderProfileIfValueChanged(newTraderProfile, oldTraderProfile)
       } yield Redirect(navigator.nextPage(CyaMaintainProfilePage, NormalMode, request.userAnswers))
         .addingToSession(
           dataUpdated -> (oldTraderProfile != newTraderProfile).toString
@@ -245,8 +245,7 @@ class CyaMaintainProfileController @Inject() (
 
   private def submitTraderProfileIfValueChanged(
     newTraderProfile: TraderProfile,
-    oldTraderProfile: TraderProfile,
-    eori: String
+    oldTraderProfile: TraderProfile
   )(implicit hc: HeaderCarrier): Future[Done] =
     if (newTraderProfile != oldTraderProfile) {
       traderProfileConnector.submitTraderProfile(newTraderProfile)

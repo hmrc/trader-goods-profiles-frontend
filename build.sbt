@@ -6,7 +6,7 @@ import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 lazy val appName: String = "trader-goods-profiles-frontend"
 
 ThisBuild / majorVersion := 0
-ThisBuild / scalaVersion := "2.13.12"
+ThisBuild / scalaVersion := "3.3.5"
 
 lazy val microservice = (project in file("."))
   .enablePlugins(PlayScala, SbtDistributablesPlugin)
@@ -32,16 +32,16 @@ lazy val microservice = (project in file("."))
       "viewmodels.govuk.all._"
     ),
     PlayKeys.playDefaultPort := 10905,
-    ScoverageKeys.coverageExcludedFiles := "<empty>;Reverse.*;.*handlers.*;.*components.*;.*Routes.*;",
-    ScoverageKeys.coverageExcludedPackages := "views.*; viewmodels.* ",
+    ScoverageKeys.coverageExcludedFiles := "<empty>;Reverse.*;.*handlers.*;.*components.*;.*Routes.*",
+    ScoverageKeys.coverageExcludedPackages := "viewmodels.*,views.*",
     ScoverageKeys.coverageMinimumStmtTotal := 90,
     ScoverageKeys.coverageFailOnMinimum := true,
     ScoverageKeys.coverageHighlighting := true,
     scalacOptions ++= Seq(
       "-feature",
-      "-rootdir",
       baseDirectory.value.getCanonicalPath,
-      "-Wconf:cat=deprecation:ws,cat=feature:ws,cat=optimizer:ws,src=target/.*:s"
+      "-Wconf:src=routes/.*:s",
+      "-Wconf:src=html/.*:s",
     ),
     libraryDependencies ++= AppDependencies(),
     retrieveManaged := true,
@@ -61,8 +61,7 @@ lazy val microservice = (project in file("."))
 
 lazy val testSettings: Seq[Def.Setting[?]] = Seq(
   fork := true,
-  unmanagedSourceDirectories += baseDirectory.value / "test-utils",
-  scalafmtOnCompile := true
+  unmanagedSourceDirectories += baseDirectory.value / "test-utils"
 )
 
 lazy val it =

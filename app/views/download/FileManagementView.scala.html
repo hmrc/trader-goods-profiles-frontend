@@ -35,7 +35,7 @@ govukTable: GovukTable
     @if(viewModel.isFiles) {
 
         <div style="overflow-x: auto;">
-            @viewModel.availableFilesTable.map { table: FileManagementTable =>
+            @viewModel.availableFilesTable.map { (table: FileManagementTable) =>
                 @govukTable(Table(
                     caption = Some(table.caption),
                     captionClasses = "govuk-visually-hidden",
@@ -47,7 +47,7 @@ govukTable: GovukTable
         </div>
 
         <div style="overflow-x: auto;">
-            @viewModel.pendingFilesTable.map { table: FileManagementTable =>
+            @viewModel.pendingFilesTable.map { (table: FileManagementTable) =>
                     <h2 class="govuk-heading-m">@table.caption</h2>
                     @table.body.map{ body =>
                         <p class="govuk-body">@body</p>

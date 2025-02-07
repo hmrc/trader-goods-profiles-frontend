@@ -44,7 +44,7 @@ trait StringFieldBehaviours extends FieldBehaviours {
   ): Unit =
     "error on invalid data" in {
 
-      forAll(invalidDataGenerator -> "invalidDataItem") { dataItem: String =>
+      forAll(invalidDataGenerator -> "invalidDataItem") { (dataItem: String) =>
         val result = form.bind(Map(fieldName -> dataItem)).apply(fieldName)
         result.errors.size mustBe 1
         result.errors.find(_.message == invalidError) mustBe defined

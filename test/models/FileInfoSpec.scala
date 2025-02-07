@@ -16,20 +16,21 @@
 
 package models
 
-import play.api.data.Form
-import play.api.data.Forms.{mapping, optional, seq, text}
-import play.api.libs.json.{Format, Json}
+import base.SpecBase
+import play.api.libs.json.*
 
-case class SearchForm(searchTerm: Option[String], countryOfOrigin: Option[String], statusValue: Seq[String] = Seq())
+class FileInfoSpec extends SpecBase {
 
-object SearchForm {
-  implicit val format: Format[SearchForm] = Json.format[SearchForm]
+  val json: JsObject = Json.obj("fileName" -> "file.txt", "fileSize" -> 100, "retentionDays" -> "7")
 
-  val form: Form[SearchForm] = Form(
-    mapping(
-      "searchTerm"      -> optional(text),
-      "countryOfOrigin" -> optional(text),
-      "statusValue"     -> seq(text)
-    )(SearchForm.apply)(o => Some(Tuple.fromProductTyped(o)))
-  )
+  "FileInfo" - {
+    "must deserialize from json" in {
+      Json.fromJson[FileInfo](json) mustBe JsSuccess(FileInfo("file.txt", 100, "7"))
+    }
+
+    "must serialize to json" in {
+      Json.toJson(FileInfo("file.txt", 100, "7")) mustBe json
+    }
+  }
+
 }

@@ -20,7 +20,6 @@ import config.FrontendAppConfig
 import connectors.{DownloadDataConnector, TraderProfileConnector}
 import controllers.actions.IdentifierAction
 import models.TraderProfile
-import models.requests.IdentifierRequest
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.auth.core.User
 import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
@@ -40,7 +39,7 @@ class IndexController @Inject() (
   def onPageLoad: Action[AnyContent] = identify.async { implicit request =>
     def checkProfileAndContinue: Future[Result] =
       traderProfileConnector.checkTraderProfile.flatMap {
-        case true  => eoriChanged(request)
+        case true  => eoriChanged
         case false => Future.successful(Redirect(controllers.profile.routes.ProfileSetupController.onPageLoad()))
       }
 
@@ -58,7 +57,7 @@ class IndexController @Inject() (
     }
   }
 
-  private def eoriChanged(request: IdentifierRequest[AnyContent])(implicit hc: HeaderCarrier) =
+  private def eoriChanged(implicit hc: HeaderCarrier) =
     traderProfileConnector.getTraderProfile.map {
       case TraderProfile(_, _, _, _, eoriChanged) if eoriChanged =>
         Redirect(controllers.newUkims.routes.UkimsNumberChangeController.onPageLoad())

@@ -31,7 +31,6 @@ import org.scalatestplus.mockito.MockitoSugar
 import pages._
 import pages.goodsRecord._
 import play.api.data.FormError
-import play.api.http.Status.NOT_FOUND
 import play.api.inject.bind
 import play.api.mvc.{Call, Result}
 import play.api.test.FakeRequest

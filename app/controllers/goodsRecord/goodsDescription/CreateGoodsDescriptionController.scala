@@ -25,7 +25,6 @@ import pages.goodsRecord.GoodsDescriptionPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import services.AuditService
 import views.html.goodsRecord.GoodsDescriptionView
 
 import javax.inject.Inject
@@ -42,8 +41,7 @@ class CreateGoodsDescriptionController @Inject() (
   profileAuth: ProfileAuthenticateAction,
   formProvider: GoodsDescriptionFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: GoodsDescriptionView,
-  auditService: AuditService
+  view: GoodsDescriptionView
 )(implicit @unused ec: ExecutionContext)
     extends BaseController {
 

@@ -31,7 +31,6 @@ import play.api.libs.json.Reads
 import play.api.mvc._
 import queries.CountriesQuery
 import repositories.SessionRepository
-import services.AuditService
 import uk.gov.hmrc.http.HeaderCarrier
 import views.html.goodsRecord.CountryOfOriginView
 
@@ -49,8 +48,7 @@ class CreateCountryOfOriginController @Inject() (
   formProvider: CountryOfOriginFormProvider,
   val controllerComponents: MessagesControllerComponents,
   ottConnector: OttConnector,
-  view: CountryOfOriginView,
-  auditService: AuditService
+  view: CountryOfOriginView
 )(implicit ec: ExecutionContext)
     extends BaseController {
 

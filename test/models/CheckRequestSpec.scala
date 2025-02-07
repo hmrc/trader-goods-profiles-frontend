@@ -16,20 +16,20 @@
 
 package models
 
-import play.api.data.Form
-import play.api.data.Forms.{mapping, optional, seq, text}
-import play.api.libs.json.{Format, Json}
+import base.SpecBase
+import play.api.libs.json.*
 
-case class SearchForm(searchTerm: Option[String], countryOfOrigin: Option[String], statusValue: Seq[String] = Seq())
+class CheckRequestSpec extends SpecBase {
 
-object SearchForm {
-  implicit val format: Format[SearchForm] = Json.format[SearchForm]
+  "CheckRequest" - {
+    "must deserialize from json" in {
+      val json = Json.obj("value" -> "value")
+      Json.fromJson[CheckRequest](json) mustBe JsSuccess(CheckRequest("value"))
+    }
 
-  val form: Form[SearchForm] = Form(
-    mapping(
-      "searchTerm"      -> optional(text),
-      "countryOfOrigin" -> optional(text),
-      "statusValue"     -> seq(text)
-    )(SearchForm.apply)(o => Some(Tuple.fromProductTyped(o)))
-  )
+    "must serialize to json" in {
+      Json.toJson(CheckRequest("value")) mustBe Json.obj("value" -> "value")
+    }
+  }
+
 }
