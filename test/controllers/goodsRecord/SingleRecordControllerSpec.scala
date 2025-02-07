@@ -198,7 +198,11 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           NotReadyForUse,
           toReview = false,
           isCategorised = recordForTestingSummaryRows.category.isDefined,
-          recordForTestingSummaryRows.adviceStatus
+          recordForTestingSummaryRows.adviceStatus,
+          None,
+          request.headers
+            .get("Referer")
+            .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url)
         )(
           request,
           messages(application)
@@ -325,7 +329,11 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           NotReadyForUse,
           toReview = false,
           isCategorised = recordForTestingSummaryRows.category.isDefined,
-          recordForTestingSummaryRows.adviceStatus
+          recordForTestingSummaryRows.adviceStatus,
+          None,
+          request.headers
+            .get("Referer")
+            .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url)
         )(
           request,
           messages(application)
@@ -463,7 +471,11 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           NotReadyForUse,
           toReview = false,
           isCategorised = notCategorisedRecord.category.isDefined,
-          notCategorisedRecord.adviceStatus
+          notCategorisedRecord.adviceStatus,
+          None,
+          request.headers
+            .get("Referer")
+            .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url)
         )(
           request,
           messages(application)
@@ -618,7 +630,11 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           NotReadyForUse,
           toReview = false,
           isCategorised = notCategorisedLockedRecord.category.isDefined,
-          recordForTestingSummaryRows.adviceStatus
+          recordForTestingSummaryRows.adviceStatus,
+          None,
+          request.headers
+            .get("Referer")
+            .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url)
         )(
           request,
           messages(application)
@@ -1022,7 +1038,10 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
               toReview,
               recordForTestingSummaryRows.category.isDefined,
               recordForTestingSummaryRows.adviceStatus,
-              Some(reviewReason)
+              Some(reviewReason),
+              request.headers
+                .get("Referer")
+                .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url)
             )(
               request,
               messages(application)
