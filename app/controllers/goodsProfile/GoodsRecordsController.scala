@@ -161,7 +161,9 @@ class GoodsRecordsController @Inject() (
                             Redirect(controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(1))
                           )
                         } else {
-                          onPageLoadFilter(page)(request)
+        Future.successful(
+          Redirect(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoadFilter(1))
+        )
                         }
     } yield result
 
