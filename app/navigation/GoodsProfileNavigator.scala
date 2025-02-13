@@ -40,17 +40,10 @@ class GoodsProfileNavigator @Inject() (appConfig: FrontendAppConfig) extends Nav
     _ => controllers.problem.routes.JourneyRecoveryController.onPageLoad()
   }
 
-//  private def navigateFromRemoveGoodsRecordPage(answers: UserAnswers): Call =
-//    if (searchFilterIsApplied(answers)) {
-//      controllers.goodsProfile.routes.GoodsRecordsController.onPageLoadFilter(firstPage)
-//    } else {
-//      controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage)
-//    }
-
   private def navigateFromRemoveGoodsRecordPage(answers: UserAnswers): Call =
     if (searchFilterIsApplied(answers) && (appConfig.enhancedSearch)) {
       controllers.goodsProfile.routes.GoodsRecordsController.onPageLoadFilter(firstPage)
-    } else if (searchFilterIsApplied(answers) && (!appConfig.enhancedSearch)) {
+    } else if (searchFilterIsApplied(answers)) {
       controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(firstPage)
     } else {
       controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage)
