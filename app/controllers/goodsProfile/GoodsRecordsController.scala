@@ -115,7 +115,7 @@ class GoodsRecordsController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors => handleFormErrors(page, formWithErrors),
-          searchFormData => processSearchForm(page, searchFormData)
+          searchFormData => processSearchForm(searchFormData)
         )
     }
 
@@ -152,7 +152,7 @@ class GoodsRecordsController @Inject() (
         )
     }
 
-  private def processSearchForm(page: Int, searchFormData: SearchForm)(implicit request: DataRequest[AnyContent]) =
+  private def processSearchForm(searchFormData: SearchForm)(implicit request: DataRequest[AnyContent]) =
     for {
       updatedAnswers <- Future.fromTry(request.userAnswers.set(GoodsRecordsPage, searchFormData))
       _              <- sessionRepository.set(updatedAnswers)
@@ -161,7 +161,9 @@ class GoodsRecordsController @Inject() (
                             Redirect(controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(1))
                           )
                         } else {
-                          onPageLoadFilter(page)(request)
+                          Future.successful(
+                            Redirect(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoadFilter(1))
+                          )
                         }
     } yield result
 
