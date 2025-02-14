@@ -17,26 +17,61 @@
 package navigation
 
 import base.SpecBase
+import base.TestConstants.userAnswersId
+import config.FrontendAppConfig
 import controllers.routes
 import models.GoodsRecordsPagination.firstPage
-import models._
+import models.*
+import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
+import org.scalatestplus.mockito.MockitoSugar.mock
 import pages.Page
-import pages.goodsProfile.{PreviousMovementRecordsPage, RemoveGoodsRecordPage}
+import pages.goodsProfile.{GoodsRecordsPage, PreviousMovementRecordsPage, RemoveGoodsRecordPage}
 
 class GoodsProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
-  private val navigator = new GoodsProfileNavigator()
+  private val mockFrontendAppConfig = mock[FrontendAppConfig]
+  private val navigator             = new GoodsProfileNavigator(mockFrontendAppConfig)
 
-  "CategorisationNavigator" - {
+  "GoodsProfileNavigator" - {
 
-    "must go from RemoveGoodsRecordPage to page 1 of GoodsRecordsController" in {
-      navigator.nextPage(
-        RemoveGoodsRecordPage,
-        NormalMode,
-        emptyUserAnswers
-      ) mustEqual controllers.goodsProfile.routes.GoodsRecordsController
-        .onPageLoad(firstPage)
+    "must go from RemoveGoodsRecordPage" - {
+      val searchFormData = SearchForm(
+        searchTerm = Some("bananas"),
+        statusValue = Seq.empty,
+        countryOfOrigin = None
+      )
+
+      val userAnswers = UserAnswers(userAnswersId).set(GoodsRecordsPage, searchFormData).success.value
+
+      "to page 1 of GoodsRecordsController.onPageLoadFilter when there is a GoodsRecordSearchFilter applied and enhancedSearch is true" in {
+        when(mockFrontendAppConfig.enhancedSearch) thenReturn true
+
+        navigator.nextPage(
+          RemoveGoodsRecordPage,
+          NormalMode,
+          userAnswers
+        ) mustEqual controllers.goodsProfile.routes.GoodsRecordsController.onPageLoadFilter(firstPage)
+      }
+
+      "to page 1 of GoodsRecordsSearchResultController when there is a GoodsRecordSearchFilter applied and enhancedSearch is false" in {
+        when(mockFrontendAppConfig.enhancedSearch) thenReturn false
+
+        navigator.nextPage(
+          RemoveGoodsRecordPage,
+          NormalMode,
+          userAnswers
+        ) mustEqual controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(firstPage)
+      }
+
+      "to page 1 of GoodsRecordsController when there is no GoodsRecordSearchFilter applied" in {
+        navigator.nextPage(
+          RemoveGoodsRecordPage,
+          NormalMode,
+          emptyUserAnswers
+        ) mustEqual controllers.goodsProfile.routes.GoodsRecordsController
+          .onPageLoad(firstPage)
+      }
     }
 
     "must go from PreviousMovementsRecordsPage to page 1 of the GoodsRecordController" in {
