@@ -50,6 +50,7 @@
     scenario match {
         case StandardGoodsScenario => Some(messages("categorisationResult.Standard.p1"))
         case StandardGoodsNoAssessmentsScenario => Some(messages("categorisationResult.StandardNoAssessments.p1"))
+        case Category2NoExemptionsScenario => Some(messages("categorisationResult.Category2.p1") ++ messages("categorisationResult.Category2.p2"))
         case Category2Scenario => Some(messages("categorisationResult.Category2.p1"))
         case _ => None
     }

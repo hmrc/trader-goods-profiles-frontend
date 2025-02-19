@@ -328,6 +328,7 @@ categorisationResult.Category1NoExemptions.p1 = Your goods have been categorised
 categorisationResult.Category2.title = Category 2
 categorisationResult.Category2.heading = Category 2
 categorisationResult.Category2.p1 = Your goods have been categorised and are eligible for Simplified Process for Internal Market Movements (SPIMM).
+categorisationResult.Category2.p2 = There are no available exemptions to change the category.
 categorisationResult.Standard.title = Standard goods
 categorisationResult.Standard.heading = Standard goods
 categorisationResult.Standard.p1 = Your goods have been categorised and are eligible for Simplified Process for Internal Market Movements (SPIMM).

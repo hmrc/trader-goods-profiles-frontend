@@ -19,6 +19,7 @@ GET         /update-record/:recordId/categorisation/result/category-1           
 GET         /update-record/:recordId/categorisation/result/category-2                              controllers.categorisation.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = Category2Scenario)
 GET         /update-record/:recordId/categorisation/result/standard                                controllers.categorisation.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = StandardGoodsScenario)
 GET         /update-record/:recordId/categorisation/result/category-1-no-exemptions                controllers.categorisation.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = Category1NoExemptionsScenario)
+GET         /update-record/:recordId/categorisation/result/category-2-no-exemptions                controllers.categorisation.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = Category2NoExemptionsScenario)
 GET         /update-record/:recordId/categorisation/result/standard-no-assessments                 controllers.categorisation.CategorisationResultController.onPageLoad(recordId: String, scenario: Scenario = StandardGoodsNoAssessmentsScenario)
 
 GET         /update-record/:recordId/categorisation/check-your-answers                             controllers.categorisation.CyaCategorisationController.onPageLoad(recordId:String)

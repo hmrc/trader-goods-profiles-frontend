@@ -119,7 +119,8 @@ class CategorisationService @Inject() (
     userAnswers: UserAnswers,
     recordId: String
   ): Scenario = {
-    val category1Assessments = categorisationInfo.categoryAssessments.filter(ass => ass.isCategory1)
+    val category1Assessments = categorisationInfo.categoryAssessments.filter(_.isCategory1)
+    val category2Assessments = categorisationInfo.categoryAssessments.filter(_.isCategory2)
 
     val listOfAnswers = categorisationInfo.getAnswersForQuestions(userAnswers, recordId)
 
@@ -127,14 +128,22 @@ class CategorisationService @Inject() (
       listOfAnswers.exists(x => x.answer.contains(AssessmentAnswer.NoExemption) && x.question.isCategory1)
 
     val areThereCategory1QuestionsWithNoPossibleAnswers = category1Assessments.exists(_.hasNoAnswers)
+    val areThereCategory2QuestionsWithNoPossibleAnswers = category2Assessments.exists(_.hasNoAnswers)
+
+    val doesAnyCategory2AssessmentHaveExemptions =
+      category2Assessments.exists(_.exemptions.nonEmpty)
 
     if (categorisationInfo.isNiphlAssessment) {
       if (!categorisationInfo.isTraderNiphlAuthorised || areThereCategory1QuestionsWithNoExemption) {
         Category1Scenario
       } else if (areThereCategory1QuestionsWithNoPossibleAnswers) {
         Category1NoExemptionsScenario
-      } else {
+      } else if (areThereCategory2QuestionsWithNoPossibleAnswers) {
+        Category2NoExemptionsScenario
+      } else if (doesAnyCategory2AssessmentHaveExemptions) {
         Category2Scenario
+      } else {
+        Category2NoExemptionsScenario
       }
     } else {
       calculateResultWithNirms(categorisationInfo, userAnswers, recordId, listOfAnswers)
@@ -183,6 +192,17 @@ class CategorisationService @Inject() (
     } else if (categorisationInfo.categoryAssessmentsThatNeedAnswers.isEmpty) {
       if (categorisationInfo.categoryAssessments.exists(_.isCategory1)) {
         Category1NoExemptionsScenario
+      } else if (categorisationInfo.categoryAssessments.exists(_.isCategory2)) {
+        val category2Assessments = categorisationInfo.categoryAssessments.filter(_.isCategory2)
+
+        val allCategory2HaveNoExemptions =
+          category2Assessments.nonEmpty && category2Assessments.forall(_.exemptions.isEmpty)
+
+        if (allCategory2HaveNoExemptions) {
+          Category2NoExemptionsScenario
+        } else {
+          Category2Scenario
+        }
       } else {
         Category2Scenario
       }

@@ -50,7 +50,7 @@ class SessionRepositorySpec
   private val userAnswers = UserAnswers(
     userAnswersId,
     Json.obj(
-      productReferencePage              -> "GB - Reason: unclear - In bottles",
+      productReferencePage             -> "GB - Reason: unclear - In bottles",
       goodsDescriptionPage             -> "In bottles",
       countryOfOriginPage              -> "US",
       commodityCodePage                -> "22030001",
