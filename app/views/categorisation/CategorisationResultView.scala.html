@@ -29,7 +29,7 @@
     val panelTitle = scenario match {
         case StandardGoodsScenario => messages("categorisationResult.Standard.heading")
         case StandardGoodsNoAssessmentsScenario => messages("categorisationResult.Standard.heading")
-        case Category2Scenario => messages("categorisationResult.Category2.heading")
+        case Category2Scenario | Category2NoExemptionsScenario => messages("categorisationResult.Category2.heading")
         case _ => messages("categorisationResult.heading")
     }
 
