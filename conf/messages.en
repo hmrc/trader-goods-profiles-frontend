@@ -704,8 +704,7 @@ requestData.title = Making a request to download your TGP data
 requestData.heading = Making a request to download your TGP data
 requestData.p1 = Once you request the file, we’ll email {0} to let you know when it is ready to download. This is usually ready within five minutes but it could take up to 24 hours.
 requestData.p2 = You’ll also be able to check the progress on the TGP records files page.
-buttonrequestData. = Get TGP records file
-
+requestData.button = Get TGP records file
 
 downloadRequestSuccess.title = We’ve received your request for a file of your TGP data
 downloadRequestSuccess.h1 = We’ve received your request for a file of your TGP data
