@@ -785,7 +785,17 @@ class GoodsRecordConnectorSpec
         )
 
         connector
-          .searchRecords(testEori, Some(searchString), exactMatch = false, Some(""), Some(false), Some(false), Some(false), 1, 3)
+          .searchRecords(
+            testEori,
+            Some(searchString),
+            exactMatch = false,
+            Some(""),
+            Some(false),
+            Some(false),
+            Some(false),
+            1,
+            3
+          )
           .futureValue
           .value mustBe getRecordsResponse.as[GetRecordsResponse]
       }
@@ -798,7 +808,19 @@ class GoodsRecordConnectorSpec
             .willReturn(status(ACCEPTED))
         )
 
-        connector.searchRecords(testEori, Some(searchString), exactMatch = false, Some(""), Some(false), Some(false), Some(false), 1, 3).futureValue mustBe None
+        connector
+          .searchRecords(
+            testEori,
+            Some(searchString),
+            exactMatch = false,
+            Some(""),
+            Some(false),
+            Some(false),
+            Some(false),
+            1,
+            3
+          )
+          .futureValue mustBe None
       }
 
       "must return a failed future when the response is anything but Ok or Accepted" in {
@@ -809,7 +831,20 @@ class GoodsRecordConnectorSpec
             .willReturn(status(errorResponses.sample.value))
         )
 
-        connector.searchRecords(testEori, Some(searchString), exactMatch = false, Some(""), Some(false), Some(false), Some(false), 1, 3).failed.futureValue
+        connector
+          .searchRecords(
+            testEori,
+            Some(searchString),
+            exactMatch = false,
+            Some(""),
+            Some(false),
+            Some(false),
+            Some(false),
+            1,
+            3
+          )
+          .failed
+          .futureValue
       }
 
       "must return a failed future when the server returns an error" in {
@@ -820,7 +855,20 @@ class GoodsRecordConnectorSpec
             .willReturn(serverError())
         )
 
-        connector.searchRecords(testEori, Some(searchString), exactMatch = false, Some(""), Some(false), Some(false), Some(false), 1, 3).failed.futureValue
+        connector
+          .searchRecords(
+            testEori,
+            Some(searchString),
+            exactMatch = false,
+            Some(""),
+            Some(false),
+            Some(false),
+            Some(false),
+            1,
+            3
+          )
+          .failed
+          .futureValue
       }
 
       "must return a failed future when the json does not match the format" in {
@@ -831,7 +879,20 @@ class GoodsRecordConnectorSpec
             .willReturn(ok().withBody("{'eori': '123', 'commodity': '10410100'}"))
         )
 
-        connector.searchRecords(testEori, Some(searchString), exactMatch = false, Some(""), Some(false), Some(false), Some(false), 1, 3).failed.futureValue
+        connector
+          .searchRecords(
+            testEori,
+            Some(searchString),
+            exactMatch = false,
+            Some(""),
+            Some(false),
+            Some(false),
+            Some(false),
+            1,
+            3
+          )
+          .failed
+          .futureValue
       }
     }
     "when enhance search true" - {
@@ -843,7 +904,7 @@ class GoodsRecordConnectorSpec
           .configure("features.enhancedSearch" -> true)
           .build()
 
-      val connector = app.injector.instanceOf[GoodsRecordConnector]
+      val connector                  = app.injector.instanceOf[GoodsRecordConnector]
       val pagedGoodsRecordsSearchUrl =
         s"/trader-goods-profiles-data-store/traders/records/filter?searchTerm=$searchString&IMMIReady=false&notReadyForIMMI=false&actionNeeded=false&pageOpt=1&sizeOpt=3"
 
@@ -856,7 +917,17 @@ class GoodsRecordConnectorSpec
         )
 
         connector
-          .searchRecords(testEori, Some(searchString), exactMatch = false, Some(""), Some(false), Some(false), Some(false), 1, 3)
+          .searchRecords(
+            testEori,
+            Some(searchString),
+            exactMatch = false,
+            Some(""),
+            Some(false),
+            Some(false),
+            Some(false),
+            1,
+            3
+          )
           .futureValue
           .value mustBe getRecordsResponse.as[GetRecordsResponse]
       }
@@ -869,7 +940,19 @@ class GoodsRecordConnectorSpec
             .willReturn(status(ACCEPTED))
         )
 
-        connector.searchRecords(testEori, Some(searchString), exactMatch = false, Some(""), Some(false), Some(false), Some(false), 1, 3).futureValue mustBe None
+        connector
+          .searchRecords(
+            testEori,
+            Some(searchString),
+            exactMatch = false,
+            Some(""),
+            Some(false),
+            Some(false),
+            Some(false),
+            1,
+            3
+          )
+          .futureValue mustBe None
       }
 
       "must return a failed future when the response is anything but Ok or Accepted" in {
@@ -880,7 +963,20 @@ class GoodsRecordConnectorSpec
             .willReturn(status(errorResponses.sample.value))
         )
 
-        connector.searchRecords(testEori, Some(searchString), exactMatch = false, Some(""), Some(false), Some(false), Some(false), 1, 3).failed.futureValue
+        connector
+          .searchRecords(
+            testEori,
+            Some(searchString),
+            exactMatch = false,
+            Some(""),
+            Some(false),
+            Some(false),
+            Some(false),
+            1,
+            3
+          )
+          .failed
+          .futureValue
       }
 
       "must return a failed future when the server returns an error" in {
@@ -891,7 +987,20 @@ class GoodsRecordConnectorSpec
             .willReturn(serverError())
         )
 
-        connector.searchRecords(testEori, Some(searchString), exactMatch = false, Some(""), Some(false), Some(false), Some(false), 1, 3).failed.futureValue
+        connector
+          .searchRecords(
+            testEori,
+            Some(searchString),
+            exactMatch = false,
+            Some(""),
+            Some(false),
+            Some(false),
+            Some(false),
+            1,
+            3
+          )
+          .failed
+          .futureValue
       }
 
       "must return a failed future when the json does not match the format" in {
@@ -902,7 +1011,20 @@ class GoodsRecordConnectorSpec
             .willReturn(ok().withBody("{'eori': '123', 'commodity': '10410100'}"))
         )
 
-        connector.searchRecords(testEori, Some(searchString), exactMatch = false, Some(""), Some(false), Some(false), Some(false), 1, 3).failed.futureValue
+        connector
+          .searchRecords(
+            testEori,
+            Some(searchString),
+            exactMatch = false,
+            Some(""),
+            Some(false),
+            Some(false),
+            Some(false),
+            1,
+            3
+          )
+          .failed
+          .futureValue
       }
     }
 
@@ -937,7 +1059,7 @@ class GoodsRecordConnectorSpec
 
   ".isproductReferenceUnique" - {
     val productReference = "productReference"
-    val url = s"/trader-goods-profiles-data-store/traders/records/is-trader-reference-unique/$productReference"
+    val url              = s"/trader-goods-profiles-data-store/traders/records/is-trader-reference-unique/$productReference"
 
     "must return true if product reference is unique" in {
       wireMockServer.stubFor(

@@ -28,7 +28,7 @@ date.day = Day
 date.month = Month
 date.year = Year
 date.error.day = day
-date.error.month = month
+
 date.error.year = year
 
 timeout.title = You’re about to be signed out
@@ -541,6 +541,12 @@ hasCommodityCodeChange.advice = Changing the commodity code on this goods record
 hasCommodityCodeChange.category = You’ll need to recategorise this goods record if you change the commodity code.
 hasCommodityCodeChange.error.required = Select yes if you want to change the commodity code
 
+invalidCommodityCode.title = The commodity code on this record is not valid
+invalidCommodityCode.heading = The commodity code on this record is not valid
+invalidCommodityCode.paragraph = You can not categorise this record as the commodity code is not valid. You need to change the commodity code to be able to categorise the record.
+invalidCommodityCode.buttonText = Change commodity code
+invalidCommodityCode.linkText = Go back to goods record
+
 hasGoodsDescriptionChange.title = Changing the goods description
 hasGoodsDescriptionChange.h1 = Changing the goods description
 hasGoodsDescriptionChange.p1 = Changing the goods description on this goods record will remove the advice status. If you want to check the commodity code is correct and matches the goods description, you’ll need to ask for advice again.
@@ -700,7 +706,6 @@ requestData.p1 = Once you request the file, we’ll email {0} to let you know wh
 requestData.p2 = You’ll also be able to check the progress on the TGP records files page.
 requestData.button = Get TGP records file
 
-
 downloadRequestSuccess.title = We’ve received your request for a file of your TGP data
 downloadRequestSuccess.h1 = We’ve received your request for a file of your TGP data
 downloadRequestSuccess.h2 = What happens next
@@ -785,3 +790,4 @@ updatedCommodityCode.title = You’ve updated the commodity code
 updatedCommodityCode.heading = You’ve updated the commodity code
 updatedCommodityCode.paragraph1 = The commodity code has changed which means you’ll need to categorise this record before you can use it.
 updatedCommodityCode.paragraph2 = You do not need to categorise this record now. You can review the record from your list of goods records and start categorisation from there.
+

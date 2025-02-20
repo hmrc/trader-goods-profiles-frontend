@@ -32,7 +32,7 @@ import uk.gov.hmrc.http.test.WireMockSupport
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 
 class TraderProfileConnectorSpec
-  extends AnyFreeSpec
+    extends AnyFreeSpec
     with Matchers
     with WireMockSupport
     with ScalaFutures
@@ -78,169 +78,167 @@ class TraderProfileConnectorSpec
 
     }
 
-      "must return a failed future when the server returns an error" in {
+    "must return a failed future when the server returns an error" in {
 
-        val traderProfile = TraderProfile(testEori, "1", Some("2"), None, eoriChanged = false)
+      val traderProfile = TraderProfile(testEori, "1", Some("2"), None, eoriChanged = false)
 
-        wireMockServer.stubFor(
-          put(urlEqualTo(s"/trader-goods-profiles-data-store/traders/profile"))
-            .withRequestBody(equalTo(Json.toJson(traderProfile).toString))
-            .willReturn(serverError())
-        )
+      wireMockServer.stubFor(
+        put(urlEqualTo(s"/trader-goods-profiles-data-store/traders/profile"))
+          .withRequestBody(equalTo(Json.toJson(traderProfile).toString))
+          .willReturn(serverError())
+      )
 
-        connector.submitTraderProfile(traderProfile).failed.futureValue
+      connector.submitTraderProfile(traderProfile).failed.futureValue
+    }
+  }
+
+  "getTraderProfile" - {
+
+    "return a valid TraderProfile when the response status is 200 (OK)" in {
+
+      val traderProfile = TraderProfile("TestName", "TestAddress", Some("TestPostcode"), Some("UK"), eoriChanged = true)
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/trader-goods-profiles-data-store/customs/traders/goods-profiles"))
+          .willReturn(
+            ok(Json.toJson(traderProfile).toString())
+          )
+      )
+
+      whenReady(connector.getTraderProfile) { result =>
+        result mustBe traderProfile
       }
     }
 
-    "getTraderProfile" - {
+    "fail with UpstreamErrorResponse when the response status is 500 (Internal Server Error)" in {
 
-      "return a valid TraderProfile when the response status is 200 (OK)" in {
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/trader-goods-profiles-data-store/customs/traders/goods-profiles"))
+          .willReturn(
+            serverError()
+          )
+      )
 
-        val traderProfile = TraderProfile("TestName", "TestAddress", Some("TestPostcode"), Some("UK"), eoriChanged = true)
-
-        wireMockServer.stubFor(
-          get(urlEqualTo(s"/trader-goods-profiles-data-store/customs/traders/goods-profiles"))
-            .willReturn(
-              ok(Json.toJson(traderProfile).toString())
-            )
-        )
-
-        whenReady(connector.getTraderProfile) { result =>
-          result mustBe traderProfile
-        }
-      }
-
-      "fail with UpstreamErrorResponse when the response status is 500 (Internal Server Error)" in {
-
-        wireMockServer.stubFor(
-          get(urlEqualTo(s"/trader-goods-profiles-data-store/customs/traders/goods-profiles"))
-            .willReturn(
-              serverError()
-            )
-        )
-
-        whenReady(connector.getTraderProfile.failed) { result =>
-          result mustBe an[UpstreamErrorResponse]
-          result.asInstanceOf[UpstreamErrorResponse].statusCode mustBe INTERNAL_SERVER_ERROR
-        }
-      }
-
-      "fail with UpstreamErrorResponse when the response status is 404 (Not Found)" in {
-
-        wireMockServer.stubFor(
-          get(urlEqualTo(s"/trader-goods-profiles-data-store/customs/traders/goods-profiles"))
-            .willReturn(
-              notFound()
-            )
-        )
-
-        whenReady(connector.getTraderProfile.failed) { result =>
-          result mustBe an[UpstreamErrorResponse]
-          result.asInstanceOf[UpstreamErrorResponse].statusCode mustBe NOT_FOUND
-        }
-      }
-
-      "fail with UpstreamErrorResponse when the response status is 400 (Bad Request)" in {
-
-        wireMockServer.stubFor(
-          get(urlEqualTo(s"/trader-goods-profiles-data-store/customs/traders/goods-profiles"))
-            .willReturn(
-              badRequest()
-            )
-        )
-
-        whenReady(connector.getTraderProfile.failed) {
-          result =>
-            result mustBe an[UpstreamErrorResponse]
-            result.asInstanceOf[UpstreamErrorResponse].statusCode mustBe BAD_REQUEST
-        }
+      whenReady(connector.getTraderProfile.failed) { result =>
+        result mustBe an[UpstreamErrorResponse]
+        result.asInstanceOf[UpstreamErrorResponse].statusCode mustBe INTERNAL_SERVER_ERROR
       }
     }
 
+    "fail with UpstreamErrorResponse when the response status is 404 (Not Found)" in {
 
-    "checkTraderProfile" - {
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/trader-goods-profiles-data-store/customs/traders/goods-profiles"))
+          .willReturn(
+            notFound()
+          )
+      )
 
-      "must return true if present" in {
-
-        wireMockServer.stubFor(
-          head(urlEqualTo(s"/trader-goods-profiles-data-store/traders/profile"))
-            .willReturn(ok())
-        )
-
-        connector.checkTraderProfile.futureValue mustBe true
-      }
-
-      "must return false if not present" in {
-
-        wireMockServer.stubFor(
-          head(urlEqualTo(s"/trader-goods-profiles-data-store/traders/profile"))
-            .willReturn(notFound())
-        )
-
-        connector.checkTraderProfile.futureValue mustBe false
-      }
-
-      "must return a failed future when the response status is anything but Ok or Not_Found" in {
-
-        wireMockServer.stubFor(
-          head(urlEqualTo(s"/trader-goods-profiles-data-store/traders/profile"))
-            .willReturn(status(errorResponses.sample.value))
-        )
-
-        connector.checkTraderProfile.failed.futureValue
-      }
-
-      "must return a failed future when the server returns an error" in {
-
-        wireMockServer.stubFor(
-          head(urlEqualTo(s"/trader-goods-profiles-data-store/traders/profile"))
-            .willReturn(serverError())
-        )
-
-        connector.checkTraderProfile.failed.futureValue
+      whenReady(connector.getTraderProfile.failed) { result =>
+        result mustBe an[UpstreamErrorResponse]
+        result.asInstanceOf[UpstreamErrorResponse].statusCode mustBe NOT_FOUND
       }
     }
 
-    "getHistoricProfileData" - {
+    "fail with UpstreamErrorResponse when the response status is 400 (Bad Request)" in {
 
-      lazy val appWithRouterConfig: Application =
-        new GuiceApplicationBuilder()
-          .configure("microservice.services.trader-goods-profiles-router.port" -> wireMockPort)
-          .build()
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/trader-goods-profiles-data-store/customs/traders/goods-profiles"))
+          .willReturn(
+            badRequest()
+          )
+      )
 
-      lazy val connectorWithRouterConfig = appWithRouterConfig.injector.instanceOf[TraderProfileConnector]
-
-      "must return a Some of profile data if the request returns Ok with profile data in the body" in {
-
-        val profileData = HistoricProfileData(testEori, testEori, Some("UkimsNumber"), None, None)
-
-        wireMockServer.stubFor(
-          get(urlEqualTo(s"/trader-goods-profiles-router/customs/traders/goods-profiles/$testEori"))
-            .withHeader("Accept", equalTo("application/vnd.hmrc.1.0+json"))
-            .willReturn(ok().withBody(Json.toJson(profileData).toString))
-        )
-
-        connectorWithRouterConfig.getHistoricProfileData(testEori).futureValue mustBe Some(profileData)
-      }
-
-      "must return None when the error is forbidden" in {
-
-        wireMockServer.stubFor(
-          get(urlEqualTo(s"/trader-goods-profiles-router/customs/traders/goods-profiles/$testEori"))
-            .withHeader("Accept", equalTo("application/vnd.hmrc.1.0+json"))
-            .willReturn(forbidden())
-        )
-
-        connectorWithRouterConfig.getHistoricProfileData(testEori).futureValue mustBe None
-      }
-
-      "must return a failed future when the error isn't forbidden" in {
-        wireMockServer.stubFor(
-          get(urlEqualTo(s"/trader-goods-profiles-router/customs/traders/goods-profiles/$testEori"))
-            .willReturn(serverError())
-        )
-
-        connectorWithRouterConfig.getHistoricProfileData(testEori).failed.futureValue
+      whenReady(connector.getTraderProfile.failed) { result =>
+        result mustBe an[UpstreamErrorResponse]
+        result.asInstanceOf[UpstreamErrorResponse].statusCode mustBe BAD_REQUEST
       }
     }
   }
+
+  "checkTraderProfile" - {
+
+    "must return true if present" in {
+
+      wireMockServer.stubFor(
+        head(urlEqualTo(s"/trader-goods-profiles-data-store/traders/profile"))
+          .willReturn(ok())
+      )
+
+      connector.checkTraderProfile.futureValue mustBe true
+    }
+
+    "must return false if not present" in {
+
+      wireMockServer.stubFor(
+        head(urlEqualTo(s"/trader-goods-profiles-data-store/traders/profile"))
+          .willReturn(notFound())
+      )
+
+      connector.checkTraderProfile.futureValue mustBe false
+    }
+
+    "must return a failed future when the response status is anything but Ok or Not_Found" in {
+
+      wireMockServer.stubFor(
+        head(urlEqualTo(s"/trader-goods-profiles-data-store/traders/profile"))
+          .willReturn(status(errorResponses.sample.value))
+      )
+
+      connector.checkTraderProfile.failed.futureValue
+    }
+
+    "must return a failed future when the server returns an error" in {
+
+      wireMockServer.stubFor(
+        head(urlEqualTo(s"/trader-goods-profiles-data-store/traders/profile"))
+          .willReturn(serverError())
+      )
+
+      connector.checkTraderProfile.failed.futureValue
+    }
+  }
+
+  "getHistoricProfileData" - {
+
+    lazy val appWithRouterConfig: Application =
+      new GuiceApplicationBuilder()
+        .configure("microservice.services.trader-goods-profiles-router.port" -> wireMockPort)
+        .build()
+
+    lazy val connectorWithRouterConfig = appWithRouterConfig.injector.instanceOf[TraderProfileConnector]
+
+    "must return a Some of profile data if the request returns Ok with profile data in the body" in {
+
+      val profileData = HistoricProfileData(testEori, testEori, Some("UkimsNumber"), None, None)
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/trader-goods-profiles-router/customs/traders/goods-profiles/$testEori"))
+          .withHeader("Accept", equalTo("application/vnd.hmrc.1.0+json"))
+          .willReturn(ok().withBody(Json.toJson(profileData).toString))
+      )
+
+      connectorWithRouterConfig.getHistoricProfileData(testEori).futureValue mustBe Some(profileData)
+    }
+
+    "must return None when the error is forbidden" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/trader-goods-profiles-router/customs/traders/goods-profiles/$testEori"))
+          .withHeader("Accept", equalTo("application/vnd.hmrc.1.0+json"))
+          .willReturn(forbidden())
+      )
+
+      connectorWithRouterConfig.getHistoricProfileData(testEori).futureValue mustBe None
+    }
+
+    "must return a failed future when the error isn't forbidden" in {
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/trader-goods-profiles-router/customs/traders/goods-profiles/$testEori"))
+          .willReturn(serverError())
+      )
+
+      connectorWithRouterConfig.getHistoricProfileData(testEori).failed.futureValue
+    }
+  }
+}

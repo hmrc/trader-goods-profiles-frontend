@@ -653,6 +653,12 @@ hasCommodityCodeChange.advice = Bydd newid y cod nwyddau ar y cofnod nwyddau hwn
 hasCommodityCodeChange.category = Bydd angen i chi ail-gategoreiddio’r cofnod nwyddau os byddwch yn newid y cod nwyddau.
 hasCommodityCodeChange.error.required = Dewiswch ‘Iawn’ os ydych am newid y cod nwyddau
 
+invalidCommodityCode.title = Nid yw’r cod nwyddau sydd wedi’i nodi yn y cofnod hwn yn ddilys
+invalidCommodityCode.heading = Nid yw’r cod nwyddau sydd wedi’i nodi yn y cofnod hwn yn ddilys
+invalidCommodityCode.paragraph = Ni allwch gategoreiddio’r cofnod hwn gan nad yw’r cod nwyddau yn ddilys. Mae angen i chi newid y cod nwyddau er mwyn gallu categoreiddio’r cofnod.
+invalidCommodityCode.buttonText = Newidiwch y cod nwyddau
+invalidCommodityCode.linkText = Ewch yn ôl i’r cofnod nwyddau
+
 removeGoodsRecord.title = Tynnu’r cofnod nwyddau
 removeGoodsRecord.heading = Tynnu’r cofnod nwyddau
 removeGoodsRecord.error.required = Dewiswch ‘Iawn’ os ydych am dynnu’r cofnod nwyddau hwn
