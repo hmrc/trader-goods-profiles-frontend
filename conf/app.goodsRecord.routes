@@ -9,6 +9,8 @@ POST        /update-record/:recordId/commodity-code                             
 GET         /update-record/:recordId/commodity-code/check                                           controllers.goodsRecord.commodityCode.UpdateCommodityCodeController.onPageLoad(mode: Mode = CheckMode, recordId: String)
 POST        /update-record/:recordId/commodity-code/check                                           controllers.goodsRecord.commodityCode.UpdateCommodityCodeController.onSubmit(mode: Mode = CheckMode, recordId: String)
 
+GET         /update-record/:recordId/invalid-commodity-code                                         controllers.goodsRecord.commodityCode.InvalidCommodityCodeController.onPageLoad(mode: Mode = NormalMode, recordId: String)
+
 GET         /create-record/country-of-origin                                                        controllers.goodsRecord.countryOfOrigin.CreateCountryOfOriginController.onPageLoad(mode: Mode = NormalMode)
 POST        /create-record/country-of-origin                                                        controllers.goodsRecord.countryOfOrigin.CreateCountryOfOriginController.onSubmit(mode: Mode = NormalMode)
 GET         /create-record/country-of-origin/check                                                  controllers.goodsRecord.countryOfOrigin.CreateCountryOfOriginController.onPageLoad(mode: Mode = CheckMode)
