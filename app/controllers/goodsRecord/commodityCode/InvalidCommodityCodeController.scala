@@ -36,7 +36,7 @@ class InvalidCommodityCodeController @Inject() (
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(mode:Mode, recordId: String): Action[AnyContent] =
+  def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       Ok(view(mode, recordId))
     }
