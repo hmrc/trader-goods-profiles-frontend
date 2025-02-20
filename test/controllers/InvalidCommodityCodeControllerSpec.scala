@@ -18,6 +18,7 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.*
+import models.NormalMode
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import views.html.goodsRecord.InvalidCommodityCodeView
@@ -31,14 +32,17 @@ class InvalidCommodityCodeControllerSpec extends SpecBase {
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, controllers.goodsRecord.commodityCode.routes.InvalidCommodityCodeController.onPageLoad(testRecordId).url)
+        val request = FakeRequest(
+          GET,
+          controllers.goodsRecord.commodityCode.routes.InvalidCommodityCodeController.onPageLoad(testRecordId).url
+        )
 
         val result = route(application, request).value
 
         val view = application.injector.instanceOf[InvalidCommodityCodeView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(testRecordId)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(NormalMode, testRecordId)(request, messages(application)).toString
       }
     }
   }

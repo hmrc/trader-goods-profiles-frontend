@@ -17,6 +17,7 @@
 package controllers.goodsRecord.commodityCode
 
 import controllers.actions.*
+import models.Mode
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -24,18 +25,19 @@ import views.html.goodsRecord.InvalidCommodityCodeView
 
 import javax.inject.Inject
 
-class InvalidCommodityCodeController @Inject()(
-                                       override val messagesApi: MessagesApi,
-                                       identify: IdentifierAction,
-                                       getData: DataRetrievalAction,
-                                       requireData: DataRequiredAction,
-                                       profileAuth: ProfileAuthenticateAction,
-                                       val controllerComponents: MessagesControllerComponents,
-                                       view: InvalidCommodityCodeView
-                                     ) extends FrontendBaseController with I18nSupport {
+class InvalidCommodityCodeController @Inject() (
+  override val messagesApi: MessagesApi,
+  identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
+  profileAuth: ProfileAuthenticateAction,
+  val controllerComponents: MessagesControllerComponents,
+  view: InvalidCommodityCodeView
+) extends FrontendBaseController
+    with I18nSupport {
 
-  def onPageLoad(recordId:String): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
-    implicit request =>
-      Ok(view(recordId))
-  }
+  def onPageLoad(mode:Mode, recordId: String): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
+      Ok(view(mode, recordId))
+    }
 }

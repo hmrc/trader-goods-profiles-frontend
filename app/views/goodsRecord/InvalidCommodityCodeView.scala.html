@@ -19,7 +19,7 @@
         govukButton: GovukButton
 )
 
-@(recordId:String)(implicit request: Request[_], messages: Messages)
+@(mode:Mode, recordId:String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("invalidCommodityCode.title"))) {
 
@@ -28,7 +28,7 @@
 
    <div class="govuk-button-group">
       @govukButton(
-        ButtonViewModel(messages("invalidCommodityCode.buttonText"))
+        ButtonViewModel(messages("invalidCommodityCode.buttonText")).asLink(controllers.goodsRecord.commodityCode.routes.UpdateCommodityCodeController.onPageLoad(mode, recordId).url)
        )
      <a href="@controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId).url" class="govuk-link">@messages("invalidCommodityCode.linkText")</a>
 
