@@ -801,9 +801,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           )
 
           row.actions mustBe defined
-          row.actions.value.items.head.href mustEqual controllers.categorisation.routes.CategorisationPreparationController
-            .startCategorisation(testRecordId)
-            .url
+          row.actions.value.items.head.href mustEqual controllers.routes.ValidateCommodityCodeController.changeCategory(testRecordId).url
         }
       }
     }

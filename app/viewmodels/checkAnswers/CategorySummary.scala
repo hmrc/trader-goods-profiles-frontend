@@ -46,7 +46,7 @@ object CategorySummary {
   }
 
   private def createCategorisationUrl(recordId: String): String =
-    controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(recordId).url
+    controllers.routes.ValidateCommodityCodeController.changeCategory(recordId).url
 
   private def handleCategorisedRow(
     value: String,

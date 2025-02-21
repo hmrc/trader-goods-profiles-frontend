@@ -35,6 +35,11 @@ case object CreateProfileJourney extends Journey {
 
 case object RemoveRecord extends Journey
 
+case object ValidateCommodityCode extends Journey {
+
+  override def toString: String = "ValidateCommodityCode"
+}
+
 case object CreateRecordJourney extends Journey {
   val pages: Seq[String]        =
     Seq(
