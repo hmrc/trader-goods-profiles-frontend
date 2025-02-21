@@ -151,9 +151,9 @@ class CategorisationNavigator @Inject() (categorisationService: CategorisationSe
           controllers.categorisation.routes.HasSupplementaryUnitController.onPageLoad(CheckMode, recordId)
         } else
           scenario match {
-            case StandardGoodsNoAssessmentsScenario | Category1NoExemptionsScenario | Category2NoExemptionsScenario  =>
+            case StandardGoodsNoAssessmentsScenario | Category1NoExemptionsScenario | Category2NoExemptionsScenario =>
               controllers.categorisation.routes.CategorisationResultController.onPageLoad(recordId, scenario)
-            case _                                                                  => controllers.categorisation.routes.CyaCategorisationController.onPageLoad(recordId)
+            case _                                                                                                  => controllers.categorisation.routes.CyaCategorisationController.onPageLoad(recordId)
           }
 
       case None => controllers.problem.routes.JourneyRecoveryController.onPageLoad()
