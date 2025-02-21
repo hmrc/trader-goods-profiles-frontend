@@ -26,6 +26,7 @@ case object Category1Scenario extends Scenario
 case object Category2Scenario extends Scenario
 case object StandardGoodsNoAssessmentsScenario extends Scenario
 case object Category1NoExemptionsScenario extends Scenario
+case object Category2NoExemptionsScenario extends Scenario
 
 object Scenario {
 
@@ -36,6 +37,7 @@ object Scenario {
       case Category1Scenario                  => Category1AsInt
       case Category2Scenario                  => Category2AsInt
       case Category1NoExemptionsScenario      => Category1AsInt
+      case Category2NoExemptionsScenario      => Category2AsInt
     }
 
   implicit val jsLiteral: JavascriptLiteral[Scenario] = {
@@ -44,6 +46,7 @@ object Scenario {
     case Category2Scenario                  => "Category2"
     case StandardGoodsNoAssessmentsScenario => "StandardNoAssessments"
     case Category1NoExemptionsScenario      => "Category1NoExemptions"
+    case Category2NoExemptionsScenario      => "Category2NoExemptions"
   }
 
 }
