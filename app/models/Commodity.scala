@@ -28,8 +28,10 @@ case class Commodity(
   validityEndDate: Option[Instant]
 ) {
   private val todayInstant: Instant = LocalDate.now(ZoneId.of("UTC")).atStartOfDay(ZoneId.of("UTC")).toInstant
-  
-  def isValid: Boolean = validityEndDate.forall(validityEndDate => todayInstant.isAfter(validityStartDate) && todayInstant.isBefore(validityEndDate))
+
+  def isValid: Boolean = validityEndDate.forall(validityEndDate =>
+    todayInstant.isAfter(validityStartDate) && todayInstant.isBefore(validityEndDate)
+  )
 }
 
 object Commodity {

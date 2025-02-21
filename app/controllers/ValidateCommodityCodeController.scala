@@ -36,27 +36,29 @@ class ValidateCommodityCodeController @Inject() (
   profileAuth: ProfileAuthenticateAction,
   ottConnector: OttConnector,
   goodsRecordConnector: GoodsRecordConnector,
-  val controllerComponents: MessagesControllerComponents,
+  val controllerComponents: MessagesControllerComponents
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
-  def changeCategory(recordId: String): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData).async {
-    implicit request => isCommodityCodeValid(recordId).map {
-      case true => Redirect(controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(recordId))
-      case false => Redirect(controllers.goodsRecord.commodityCode.routes.InvalidCommodityCodeController.onPageLoad(recordId))
+  def changeCategory(recordId: String): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
+      isCommodityCodeValid(recordId).map {
+        case true  =>
+          Redirect(controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(recordId))
+        case false =>
+          Redirect(controllers.goodsRecord.commodityCode.routes.InvalidCommodityCodeController.onPageLoad(recordId))
+      }
     }
-  }
 
   private def isCommodityCodeValid(recordId: String)(implicit request: DataRequest[AnyContent]): Future[Boolean] =
     fetchRecordValues(recordId).flatMap { (commodityCode, countryOfOrigin) =>
       fetchCommodity(commodityCode, countryOfOrigin).map(_.isValid)
     }
 
-  private def fetchRecordValues(recordId: String)(implicit request: DataRequest[AnyContent]): Future[(String, String)] = {
-    goodsRecordConnector.getRecord(recordId).map {
-      x => (x.comcode, x.countryOfOrigin)
+  private def fetchRecordValues(recordId: String)(implicit request: DataRequest[AnyContent]): Future[(String, String)] =
+    goodsRecordConnector.getRecord(recordId).map { x =>
+      (x.comcode, x.countryOfOrigin)
     }
-  }
 
   private def fetchCommodity(
     commodityCode: String,

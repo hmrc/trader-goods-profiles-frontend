@@ -36,7 +36,7 @@ import scala.concurrent.Future
 
 class ValidateCommodityCodeControllerSpec extends SpecBase with BeforeAndAfterEach {
 
-  private val mockOttConnector: OttConnector = mock[OttConnector]
+  private val mockOttConnector: OttConnector                  = mock[OttConnector]
   private val mockGoodsRecordsConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
 
   override def beforeEach(): Unit = {
@@ -44,14 +44,15 @@ class ValidateCommodityCodeControllerSpec extends SpecBase with BeforeAndAfterEa
     reset(mockOttConnector, mockGoodsRecordsConnector)
   }
 
-  private val validCommodityCodeStart =     Instant.now().minus(1, java.time.temporal.ChronoUnit.DAYS)
-  private val validCommodityCodeExpiration =     Instant.now().plus(1, java.time.temporal.ChronoUnit.DAYS)
-  private val validCommodityCode = Commodity("comcode", List("desc"), validCommodityCodeStart, Some(validCommodityCodeExpiration))
+  private val validCommodityCodeStart      = Instant.now().minus(1, java.time.temporal.ChronoUnit.DAYS)
+  private val validCommodityCodeExpiration = Instant.now().plus(1, java.time.temporal.ChronoUnit.DAYS)
+  private val validCommodityCode           =
+    Commodity("comcode", List("desc"), validCommodityCodeStart, Some(validCommodityCodeExpiration))
 
-
-  private val invalidCommodityCodeStart =     Instant.now().plus(1, java.time.temporal.ChronoUnit.DAYS)
-  private val invalidCommodityCodeExpiration =     Instant.now().minus(1, java.time.temporal.ChronoUnit.DAYS)
-  private val invalidCommodityCode = Commodity("comcode", List("desc"), invalidCommodityCodeStart, Some(invalidCommodityCodeExpiration))
+  private val invalidCommodityCodeStart      = Instant.now().plus(1, java.time.temporal.ChronoUnit.DAYS)
+  private val invalidCommodityCodeExpiration = Instant.now().minus(1, java.time.temporal.ChronoUnit.DAYS)
+  private val invalidCommodityCode           =
+    Commodity("comcode", List("desc"), invalidCommodityCodeStart, Some(invalidCommodityCodeExpiration))
 
   private val mockGoodsRecordResponse = GetGoodsRecordResponse(
     "recordId",
@@ -80,8 +81,6 @@ class ValidateCommodityCodeControllerSpec extends SpecBase with BeforeAndAfterEa
     Instant.now()
   )
 
-
-
   "ValidateCommodityCodeController" - {
 
     "changeCategory" - {
@@ -101,12 +100,15 @@ class ValidateCommodityCodeControllerSpec extends SpecBase with BeforeAndAfterEa
           .thenReturn(Future.successful(validCommodityCode))
 
         running(application) {
-          val request = FakeRequest(GET, controllers.routes.ValidateCommodityCodeController.changeCategory(testRecordId).url)
+          val request =
+            FakeRequest(GET, controllers.routes.ValidateCommodityCodeController.changeCategory(testRecordId).url)
 
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustBe controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(testRecordId).url
+          redirectLocation(result).value mustBe controllers.categorisation.routes.CategorisationPreparationController
+            .startCategorisation(testRecordId)
+            .url
         }
       }
       "must redirect to InvalidCommodityCodePage when commodity code is invalid" in {
@@ -125,12 +127,17 @@ class ValidateCommodityCodeControllerSpec extends SpecBase with BeforeAndAfterEa
           .thenReturn(Future.successful(invalidCommodityCode))
 
         running(application) {
-          val request = FakeRequest(GET, controllers.routes.ValidateCommodityCodeController.changeCategory(testRecordId).url)
+          val request =
+            FakeRequest(GET, controllers.routes.ValidateCommodityCodeController.changeCategory(testRecordId).url)
 
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustBe controllers.goodsRecord.commodityCode.routes.InvalidCommodityCodeController.onPageLoad(testRecordId).url
+          redirectLocation(
+            result
+          ).value mustBe controllers.goodsRecord.commodityCode.routes.InvalidCommodityCodeController
+            .onPageLoad(testRecordId)
+            .url
         }
       }
 
