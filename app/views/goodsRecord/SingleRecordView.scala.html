@@ -65,7 +65,7 @@
         @paragraphBody(message = messages(declarableStatus.paragraphKey,
             link(
             text = messages("declarableStatus.notReadyForUse.paragraph.linkText"),
-            call = controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(recordId),
+            call = controllers.routes.ValidateCommodityCodeController.changeCategory(recordId),
             id = None
             )
         ))
