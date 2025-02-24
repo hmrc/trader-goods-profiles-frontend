@@ -18,6 +18,8 @@ package models
 
 import play.api.libs.json.*
 import play.api.libs.functional.syntax.*
+import utils.Clock
+import utils.Clock.todayInstant
 
 import java.time.{Instant, LocalDate, ZoneId}
 
@@ -27,11 +29,11 @@ case class Commodity(
   validityStartDate: Instant,
   validityEndDate: Option[Instant]
 ) {
-  private val todayInstant: Instant = LocalDate.now(ZoneId.of("UTC")).atStartOfDay(ZoneId.of("UTC")).toInstant
 
-  def isValid: Boolean = validityEndDate.forall(validityEndDate =>
-    todayInstant.isAfter(validityStartDate) && todayInstant.isBefore(validityEndDate)
-  )
+  def isValid: Boolean =
+    (todayInstant.isAfter(validityStartDate) || todayInstant.equals(validityStartDate)) &&
+      validityEndDate.forall(endDate => todayInstant.isBefore(endDate) || todayInstant.equals(endDate))
+
 }
 
 object Commodity {
