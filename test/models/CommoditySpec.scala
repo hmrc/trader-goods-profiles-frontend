@@ -23,11 +23,10 @@ import java.time.Instant
 
 class CommoditySpec extends SpecBase {
 
-
-  extension (instant: Instant) {
-    private def daysToSeconds(days: Int): Int = days * 24 * 60 * 60
+  extension(instant: Instant) {
+    def daysToSeconds(days: Int): Int = days * 24 * 60 * 60
     def minusDays(days: Int): Instant = instant.minusSeconds(daysToSeconds(days))
-    def plusDays(days: Int): Instant = instant.plusSeconds(daysToSeconds(days))
+    def plusDays(days: Int): Instant  = instant.plusSeconds(daysToSeconds(days))
   }
 
   "Commodity" - {
@@ -43,7 +42,7 @@ class CommoditySpec extends SpecBase {
         }
         "validityEndDate is today and validityStartDate is today" in {
           val exactTodayInstant: Instant = todayInstant
-          val commodity = Commodity("commodityCode", List("description"), exactTodayInstant, Some(exactTodayInstant))
+          val commodity                  = Commodity("commodityCode", List("description"), exactTodayInstant, Some(exactTodayInstant))
           commodity.isValid mustBe true
         }
         "validityEndDate is today and today is after validityStartDate" in {
@@ -55,7 +54,8 @@ class CommoditySpec extends SpecBase {
           commodity.isValid mustBe true
         }
         "validityEndDate is after today and today is after validityStartDate" in {
-          val commodity = Commodity("commodityCode", List("description"), todayInstant.minusDays(1), Some(todayInstant.plusDays(1)))
+          val commodity =
+            Commodity("commodityCode", List("description"), todayInstant.minusDays(1), Some(todayInstant.plusDays(1)))
           commodity.isValid mustBe true
         }
 
@@ -63,7 +63,8 @@ class CommoditySpec extends SpecBase {
 
       "must return false when" - {
         "validityEndDate has past" in {
-          val commodity = Commodity("commodityCode", List("description"), todayInstant.minusDays(1), Some(todayInstant.minusDays(1)))
+          val commodity =
+            Commodity("commodityCode", List("description"), todayInstant.minusDays(1), Some(todayInstant.minusDays(1)))
           commodity.isValid mustBe false
         }
 
