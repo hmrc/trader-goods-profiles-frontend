@@ -16,12 +16,12 @@
 
 package models
 
-import play.api.libs.json.*
 import play.api.libs.functional.syntax.*
+import play.api.libs.json.*
 import utils.Clock
 import utils.Clock.todayInstant
 
-import java.time.{Instant, LocalDate, ZoneId}
+import java.time.Instant
 
 case class Commodity(
   commodityCode: String,

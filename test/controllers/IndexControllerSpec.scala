@@ -32,11 +32,11 @@ import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import java.time.Instant
 import scala.concurrent.Future
 
-class IndexControllerSpec extends SpecBase, BeforeAndAfterEach {
+class IndexControllerSpec extends SpecBase with BeforeAndAfterEach {
 
   private val mockTraderProfileConnector = mock[TraderProfileConnector]
-  private val mockDownloadDataConnector = mock[DownloadDataConnector]
-  private val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+  private val mockDownloadDataConnector  = mock[DownloadDataConnector]
+  private val mockGoodsRecordConnector   = mock[GoodsRecordConnector]
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -65,7 +65,9 @@ class IndexControllerSpec extends SpecBase, BeforeAndAfterEach {
 
             when(mockDownloadDataConnector.getEmail(any())).thenReturn(Future.successful(Some(email)))
 
-            when(mockGoodsRecordConnector.getRecordsSummary(any())).thenReturn(Future.successful(RecordsSummary("eori",Some(RecordsSummary.Update(499, 499)), Instant.now())))
+            when(mockGoodsRecordConnector.getRecordsSummary(any())).thenReturn(
+              Future.successful(RecordsSummary("eori", Some(RecordsSummary.Update(499, 499)), Instant.now()))
+            )
 
             val application =
               applicationBuilder(userAnswers = None)
@@ -97,8 +99,9 @@ class IndexControllerSpec extends SpecBase, BeforeAndAfterEach {
 
             when(mockDownloadDataConnector.getEmail(any())).thenReturn(Future.successful(Some(email)))
 
-            when(mockGoodsRecordConnector.getRecordsSummary(any())).thenReturn(Future.successful(RecordsSummary("eori",Some(RecordsSummary.Update(499, 499)), Instant.now())))
-
+            when(mockGoodsRecordConnector.getRecordsSummary(any())).thenReturn(
+              Future.successful(RecordsSummary("eori", Some(RecordsSummary.Update(499, 499)), Instant.now()))
+            )
 
             val application =
               applicationBuilder(userAnswers = None)
@@ -135,8 +138,9 @@ class IndexControllerSpec extends SpecBase, BeforeAndAfterEach {
 
             when(mockDownloadDataConnector.getEmail(any())).thenReturn(Future.successful(Some(email)))
 
-            when(mockGoodsRecordConnector.getRecordsSummary(any())).thenReturn(Future.successful(RecordsSummary("eori",Some(RecordsSummary.Update(499, 499)), Instant.now())))
-
+            when(mockGoodsRecordConnector.getRecordsSummary(any())).thenReturn(
+              Future.successful(RecordsSummary("eori", Some(RecordsSummary.Update(499, 499)), Instant.now()))
+            )
 
             val application =
               applicationBuilder(userAnswers = None)
@@ -172,7 +176,9 @@ class IndexControllerSpec extends SpecBase, BeforeAndAfterEach {
               )
 
             when(mockDownloadDataConnector.getEmail(any())).thenReturn(Future.successful(Some(email)))
-            when(mockGoodsRecordConnector.getRecordsSummary(any())).thenReturn(Future.successful(RecordsSummary("eori",Some(RecordsSummary.Update(499, 499)), Instant.now())))
+            when(mockGoodsRecordConnector.getRecordsSummary(any())).thenReturn(
+              Future.successful(RecordsSummary("eori", Some(RecordsSummary.Update(499, 499)), Instant.now()))
+            )
 
             val application =
               applicationBuilder(userAnswers = None)
@@ -203,7 +209,8 @@ class IndexControllerSpec extends SpecBase, BeforeAndAfterEach {
         "when email is not present must redirect to custom email frontend" in {
 
           when(mockDownloadDataConnector.getEmail(any())).thenReturn(Future.successful(None))
-          when(mockGoodsRecordConnector.getRecordsSummary(any())).thenReturn(Future.successful(RecordsSummary("eori",Some(RecordsSummary.Update(499, 499)), Instant.now())))
+          when(mockGoodsRecordConnector.getRecordsSummary(any()))
+            .thenReturn(Future.successful(RecordsSummary("eori", Some(RecordsSummary.Update(499, 499)), Instant.now())))
 
           val application =
             applicationBuilder(userAnswers = None)
@@ -237,7 +244,8 @@ class IndexControllerSpec extends SpecBase, BeforeAndAfterEach {
         "must redirect to ProfileSetupController if no profile present" in {
 
           when(mockTraderProfileConnector.checkTraderProfile(any())).thenReturn(Future.successful(false))
-          when(mockGoodsRecordConnector.getRecordsSummary(any())).thenReturn(Future.successful(RecordsSummary("eori",Some(RecordsSummary.Update(499, 499)), Instant.now())))
+          when(mockGoodsRecordConnector.getRecordsSummary(any()))
+            .thenReturn(Future.successful(RecordsSummary("eori", Some(RecordsSummary.Update(499, 499)), Instant.now())))
 
           when(mockDownloadDataConnector.getEmail(any())).thenReturn(Future.successful(Some(email)))
 
@@ -266,7 +274,8 @@ class IndexControllerSpec extends SpecBase, BeforeAndAfterEach {
         "must redirect to HomePageController if no profile present" in {
 
           when(mockTraderProfileConnector.checkTraderProfile(any())).thenReturn(Future.successful(false))
-          when(mockGoodsRecordConnector.getRecordsSummary(any())).thenReturn(Future.successful(RecordsSummary("eori",Some(RecordsSummary.Update(499, 499)), Instant.now())))
+          when(mockGoodsRecordConnector.getRecordsSummary(any()))
+            .thenReturn(Future.successful(RecordsSummary("eori", Some(RecordsSummary.Update(499, 499)), Instant.now())))
           when(mockDownloadDataConnector.getEmail(any())).thenReturn(Future.successful(Some(email)))
 
           val application =
@@ -300,7 +309,8 @@ class IndexControllerSpec extends SpecBase, BeforeAndAfterEach {
                 TraderProfile("name", "address", Some("postcode"), Some("country"), eoriChanged = false)
               )
             )
-          when(mockGoodsRecordConnector.getRecordsSummary(any())).thenReturn(Future.successful(RecordsSummary("eori",Some(RecordsSummary.Update(499, 499)), Instant.now())))
+          when(mockGoodsRecordConnector.getRecordsSummary(any()))
+            .thenReturn(Future.successful(RecordsSummary("eori", Some(RecordsSummary.Update(499, 499)), Instant.now())))
           when(mockDownloadDataConnector.getEmail(any())).thenReturn(Future.successful(Some(email)))
 
           val application =
@@ -333,7 +343,8 @@ class IndexControllerSpec extends SpecBase, BeforeAndAfterEach {
             .thenReturn(
               Future.successful(TraderProfile("name", "address", Some("postcode"), Some("country"), eoriChanged = true))
             )
-          when(mockGoodsRecordConnector.getRecordsSummary(any())).thenReturn(Future.successful(RecordsSummary("eori",Some(RecordsSummary.Update(499, 499)), Instant.now())))
+          when(mockGoodsRecordConnector.getRecordsSummary(any()))
+            .thenReturn(Future.successful(RecordsSummary("eori", Some(RecordsSummary.Update(499, 499)), Instant.now())))
           when(mockDownloadDataConnector.getEmail(any())).thenReturn(Future.successful(Some(email)))
 
           val application =
@@ -373,7 +384,8 @@ class IndexControllerSpec extends SpecBase, BeforeAndAfterEach {
       "must redirect to ProfileSetupController if no profile present" in {
 
         when(mockTraderProfileConnector.checkTraderProfile(any())).thenReturn(Future.successful(false))
-        when(mockGoodsRecordConnector.getRecordsSummary(any())).thenReturn(Future.successful(RecordsSummary("eori",Some(RecordsSummary.Update(499, 499)), Instant.now())))
+        when(mockGoodsRecordConnector.getRecordsSummary(any()))
+          .thenReturn(Future.successful(RecordsSummary("eori", Some(RecordsSummary.Update(499, 499)), Instant.now())))
         when(mockDownloadDataConnector.getEmail(any())).thenReturn(Future.successful(Some(email)))
 
         val application =
@@ -401,7 +413,8 @@ class IndexControllerSpec extends SpecBase, BeforeAndAfterEach {
       "must redirect to HomePageController if no profile present" in {
 
         when(mockTraderProfileConnector.checkTraderProfile(any())).thenReturn(Future.successful(false))
-        when(mockGoodsRecordConnector.getRecordsSummary(any())).thenReturn(Future.successful(RecordsSummary("eori",Some(RecordsSummary.Update(499, 499)), Instant.now())))
+        when(mockGoodsRecordConnector.getRecordsSummary(any()))
+          .thenReturn(Future.successful(RecordsSummary("eori", Some(RecordsSummary.Update(499, 499)), Instant.now())))
         when(mockDownloadDataConnector.getEmail(any())).thenReturn(Future.successful(Some(email)))
 
         val application =
@@ -435,7 +448,8 @@ class IndexControllerSpec extends SpecBase, BeforeAndAfterEach {
               TraderProfile("name", "address", Some("postcode"), Some("country"), eoriChanged = false)
             )
           )
-        when(mockGoodsRecordConnector.getRecordsSummary(any())).thenReturn(Future.successful(RecordsSummary("eori",Some(RecordsSummary.Update(499, 499)), Instant.now())))
+        when(mockGoodsRecordConnector.getRecordsSummary(any()))
+          .thenReturn(Future.successful(RecordsSummary("eori", Some(RecordsSummary.Update(499, 499)), Instant.now())))
 
         val mockDownloadDataConnector = mock[DownloadDataConnector]
         when(mockDownloadDataConnector.getEmail(any())).thenReturn(Future.successful(Some(email)))
@@ -470,7 +484,8 @@ class IndexControllerSpec extends SpecBase, BeforeAndAfterEach {
           .thenReturn(
             Future.successful(TraderProfile("name", "address", Some("postcode"), Some("country"), eoriChanged = true))
           )
-        when(mockGoodsRecordConnector.getRecordsSummary(any())).thenReturn(Future.successful(RecordsSummary("eori",Some(RecordsSummary.Update(499, 499)), Instant.now())))
+        when(mockGoodsRecordConnector.getRecordsSummary(any()))
+          .thenReturn(Future.successful(RecordsSummary("eori", Some(RecordsSummary.Update(499, 499)), Instant.now())))
         when(mockDownloadDataConnector.getEmail(any())).thenReturn(Future.successful(Some(email)))
 
         val application =
@@ -502,7 +517,7 @@ class IndexControllerSpec extends SpecBase, BeforeAndAfterEach {
 
     "when getRecordsSummary returns over 500 updates must redirect to goodsLoading page" in {
 
-      val app = applicationBuilder(userAnswers = None).build()
+      val app           = applicationBuilder(userAnswers = None).build()
       val mockAppConfig = spy(app.injector.instanceOf[FrontendAppConfig])
 
       when(mockTraderProfileConnector.checkTraderProfile(any())).thenReturn(Future.successful(true))
@@ -511,7 +526,8 @@ class IndexControllerSpec extends SpecBase, BeforeAndAfterEach {
           Future.successful(TraderProfile("name", "address", Some("postcode"), Some("country"), eoriChanged = true))
         )
       when(mockDownloadDataConnector.getEmail(any())).thenReturn(Future.successful(Some(email)))
-      when(mockGoodsRecordConnector.getRecordsSummary(any())).thenReturn(Future.successful(RecordsSummary("eori",Some(RecordsSummary.Update(501, 501)), Instant.now())))
+      when(mockGoodsRecordConnector.getRecordsSummary(any()))
+        .thenReturn(Future.successful(RecordsSummary("eori", Some(RecordsSummary.Update(501, 501)), Instant.now())))
 
       val application =
         applicationBuilder(userAnswers = None)
@@ -528,10 +544,12 @@ class IndexControllerSpec extends SpecBase, BeforeAndAfterEach {
 
         status(result) mustEqual SEE_OTHER
 
-        redirectLocation(result).value mustEqual controllers.goodsProfile.routes.GoodsRecordsLoadingController.onPageLoad(Some(RedirectUrl(controllers.routes.IndexController.onPageLoad().url))).url
+        redirectLocation(result).value mustEqual controllers.goodsProfile.routes.GoodsRecordsLoadingController
+          .onPageLoad(Some(RedirectUrl(controllers.routes.IndexController.onPageLoad().url)))
+          .url
 
       }
     }
 
   }
-  }
+}
