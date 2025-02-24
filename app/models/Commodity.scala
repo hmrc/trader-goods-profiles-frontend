@@ -16,17 +16,25 @@
 
 package models
 
-import play.api.libs.json._
-import play.api.libs.functional.syntax._
+import play.api.libs.json.*
+import play.api.libs.functional.syntax.*
+import utils.Clock
+import utils.Clock.todayInstant
 
-import java.time.Instant
+import java.time.{Instant, LocalDate, ZoneId}
 
 case class Commodity(
   commodityCode: String,
   descriptions: List[String],
   validityStartDate: Instant,
   validityEndDate: Option[Instant]
-)
+) {
+
+  def isValid: Boolean =
+    (todayInstant.isAfter(validityStartDate) || todayInstant.equals(validityStartDate)) &&
+      validityEndDate.forall(endDate => todayInstant.isBefore(endDate) || todayInstant.equals(endDate))
+
+}
 
 object Commodity {
 
