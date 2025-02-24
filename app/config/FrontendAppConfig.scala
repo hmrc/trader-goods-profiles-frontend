@@ -69,6 +69,9 @@ class FrontendAppConfig @Inject() (configuration: Configuration) {
   val enhancedSearch: Boolean =
     configuration.get[Boolean]("features.enhancedSearch")
 
+  val redirectLoadThreshold: Int =
+    configuration.get[Int]("goods-records-loading-page.redirect-load-threshold")
+
   def languageMap: Map[String, Lang] = Map(
     "en" -> Lang("en"),
     "cy" -> Lang("cy")

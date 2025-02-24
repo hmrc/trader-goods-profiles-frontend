@@ -17,12 +17,14 @@
 package controllers
 
 import config.FrontendAppConfig
-import connectors.{DownloadDataConnector, TraderProfileConnector}
+import connectors.{DownloadDataConnector, GoodsRecordConnector, TraderProfileConnector}
 import controllers.actions.IdentifierAction
-import models.TraderProfile
+import models.requests.IdentifierRequest
+import models.{RecordsSummary, TraderProfile}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.auth.core.User
 import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,17 +34,37 @@ class IndexController @Inject() (
   identify: IdentifierAction,
   traderProfileConnector: TraderProfileConnector,
   downloadDataConnector: DownloadDataConnector,
+  goodsRecordConnector: GoodsRecordConnector,
   config: FrontendAppConfig
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
   def onPageLoad: Action[AnyContent] = identify.async { implicit request =>
-    def checkProfileAndContinue: Future[Result] =
-      traderProfileConnector.checkTraderProfile.flatMap {
-        case true  => eoriChanged
-        case false => Future.successful(Redirect(controllers.profile.routes.ProfileSetupController.onPageLoad()))
-      }
+    goodsRecordConnector.getRecordsSummary.flatMap(recordsUpdateCheck(_))
+  }
 
+  private def recordsUpdateCheck(
+    recordsSummary: RecordsSummary
+  )(implicit request: IdentifierRequest[AnyContent]): Future[Result] =
+    recordsSummary.currentUpdate.map(_.totalRecords) match {
+      case Some(totalRecords) if totalRecords > config.redirectLoadThreshold =>
+        Future.successful(
+          Redirect(
+            controllers.goodsProfile.routes.GoodsRecordsLoadingController.onPageLoad(
+              Some(RedirectUrl(controllers.routes.IndexController.onPageLoad().url))
+            )
+          )
+        )
+      case _                                                                 => verifiedEmailRedirectCheck
+    }
+
+  private def checkProfileAndContinue(implicit hc: HeaderCarrier): Future[Result] =
+    traderProfileConnector.checkTraderProfile.flatMap {
+      case true  => eoriChanged
+      case false => Future.successful(Redirect(controllers.profile.routes.ProfileSetupController.onPageLoad()))
+    }
+
+  private def verifiedEmailRedirectCheck(implicit request: IdentifierRequest[AnyContent]) =
     if (config.downloadFileEnabled && request.credentialRole.contains(User)) {
       downloadDataConnector.getEmail.flatMap {
         case Some(_) =>
@@ -55,7 +77,6 @@ class IndexController @Inject() (
     } else {
       checkProfileAndContinue
     }
-  }
 
   private def eoriChanged(implicit hc: HeaderCarrier) =
     traderProfileConnector.getTraderProfile.map {
