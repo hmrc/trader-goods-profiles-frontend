@@ -122,9 +122,7 @@ class AuthActionSpec extends SpecBase with MockitoSugar {
           val result     = controller.onPageLoad()(FakeRequest())
 
           status(result) mustBe SEE_OTHER
-          redirectLocation(result).value mustBe controllers.problem.routes.UnauthorisedCdsEnrolmentController
-            .onPageLoad()
-            .url
+          redirectLocation(result).value mustBe appConfig.registerTGPURL
         }
       }
     }
