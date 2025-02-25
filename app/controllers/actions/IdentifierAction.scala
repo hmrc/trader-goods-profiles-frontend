@@ -96,7 +96,7 @@ class AuthenticatedIdentifierAction @Inject() (
       logger.info(
         "Authorisation failure: No enrolments found for CDS. Redirecting to UnauthorisedCdsEnrolmentController."
       )
-      Redirect(controllers.problem.routes.UnauthorisedCdsEnrolmentController.onPageLoad())
+      Redirect(config.registerTGPURL)
     case exception: AuthorisationException =>
       logger.info(s"Authorisation failure: ${exception.reason}. Redirecting to UnauthorisedController.")
       Redirect(controllers.problem.routes.UnauthorisedController.onPageLoad())

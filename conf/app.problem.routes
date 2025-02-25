@@ -2,6 +2,5 @@ GET         /problem/technical-issue                                            
 
 GET         /problem/unauthorised-sign-in                                                           controllers.problem.UnauthorisedController.onPageLoad()
 GET         /problem/unauthorised-service-user                                                      controllers.problem.UnauthorisedServiceUserController.onPageLoad()
-GET         /problem/unauthorised-cds-enrolment                                                     controllers.problem.UnauthorisedCdsEnrolmentController.onPageLoad()
 
 GET         /problem/:recordId/expired-commodity-code                                               controllers.problem.ExpiredCommodityCodeController.onPageLoad(recordId:String)
