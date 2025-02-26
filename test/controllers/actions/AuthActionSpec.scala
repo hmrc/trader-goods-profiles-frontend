@@ -24,10 +24,11 @@ import models.EnrolmentConfig
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.mvc.Results.Redirect
 import play.api.mvc.{Action, AnyContent, BodyParsers, Results}
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import uk.gov.hmrc.auth.core._
+import play.api.test.Helpers.*
+import uk.gov.hmrc.auth.core.*
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -149,7 +150,8 @@ class AuthActionSpec extends SpecBase with MockitoSugar {
           val result     = controller.onPageLoad()(FakeRequest())
 
           status(result) mustBe SEE_OTHER
-          redirectLocation(result).value mustBe controllers.problem.routes.UnauthorisedController.onPageLoad().url
+          redirectLocation(result).value mustBe appConfig.registerTGPURL
+
         }
       }
     }
@@ -176,7 +178,7 @@ class AuthActionSpec extends SpecBase with MockitoSugar {
           val result     = controller.onPageLoad()(FakeRequest())
 
           status(result) mustBe SEE_OTHER
-          redirectLocation(result).value mustBe controllers.problem.routes.UnauthorisedController.onPageLoad().url
+          redirectLocation(result).value mustBe appConfig.registerTGPURL
         }
       }
     }
@@ -203,7 +205,7 @@ class AuthActionSpec extends SpecBase with MockitoSugar {
           val result     = controller.onPageLoad()(FakeRequest())
 
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(controllers.problem.routes.UnauthorisedController.onPageLoad().url)
+          redirectLocation(result).value mustBe appConfig.registerTGPURL
         }
       }
     }
@@ -230,7 +232,7 @@ class AuthActionSpec extends SpecBase with MockitoSugar {
           val result     = controller.onPageLoad()(FakeRequest())
 
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(controllers.problem.routes.UnauthorisedController.onPageLoad().url)
+          redirectLocation(result).value mustBe appConfig.registerTGPURL
         }
       }
     }
@@ -257,7 +259,7 @@ class AuthActionSpec extends SpecBase with MockitoSugar {
           val result     = controller.onPageLoad()(FakeRequest())
 
           status(result) mustBe SEE_OTHER
-          redirectLocation(result).value mustBe controllers.problem.routes.UnauthorisedController.onPageLoad().url
+          redirectLocation(result).value mustBe appConfig.registerTGPURL
         }
       }
     }
