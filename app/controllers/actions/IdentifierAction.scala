@@ -98,8 +98,8 @@ class AuthenticatedIdentifierAction @Inject() (
       )
       Redirect(config.registerTGPURL)
     case exception: AuthorisationException =>
-      logger.info(s"Authorisation failure: ${exception.reason}. Redirecting to UnauthorisedController.")
-      Redirect(controllers.problem.routes.UnauthorisedController.onPageLoad())
+      logger.info(s"Authorisation failure: ${exception.reason}. Redirecting to UnauthorisedCdsEnrolmentController.")
+      Redirect(config.registerTGPURL)
   }
 
   private def checkUserAllowList(eori: String)(implicit hc: HeaderCarrier): Future[Done] =
