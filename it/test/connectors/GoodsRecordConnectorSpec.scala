@@ -1059,7 +1059,7 @@ class GoodsRecordConnectorSpec
 
   ".isproductReferenceUnique" - {
     val productReference = "productReference"
-    val url              = s"/trader-goods-profiles-data-store/traders/records/is-trader-reference-unique/$productReference"
+    val url              = s"/trader-goods-profiles-data-store/traders/records/is-trader-reference-unique?traderReference=$productReference"
 
     "must return true if product reference is unique" in {
       wireMockServer.stubFor(
