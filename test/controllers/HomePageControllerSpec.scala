@@ -22,7 +22,7 @@ import connectors.{DownloadDataConnector, GoodsRecordConnector, TraderProfileCon
 import models.DownloadDataStatus.{FileInProgress, FileReadySeen, FileReadyUnseen}
 import models.GoodsRecordsPagination.firstPage
 import models.download.DownloadLinkText
-import models.router.responses.GetRecordsResponse
+import models.router.responses.{GetGoodsRecordResponse, GetRecordsResponse}
 import models.{DownloadDataSummary, Email, FileInfo, GoodsRecordsPagination, HistoricProfileData}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{atLeastOnce, never, verify, when}
@@ -30,7 +30,8 @@ import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.i18n.Messages
 import play.api.inject.bind
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.SessionData.{newUkimsNumberPage, pageUpdated}
 import views.html.HomePageView
 
@@ -463,8 +464,9 @@ class HomePageControllerSpec extends SpecBase {
         )
 
         val mockGoodsRecordConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
-        when(mockGoodsRecordConnector.getRecords(any(), any())(any())) thenReturn Future
-          .successful(None)
+        when(mockGoodsRecordConnector.getRecords(any(), any())(any())) thenReturn Future.successful(
+          Some(GetRecordsResponse(Seq.empty, GoodsRecordsPagination(0, 1, 1, None, None)))
+        )
 
         val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
         when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(
@@ -512,6 +514,47 @@ class HomePageControllerSpec extends SpecBase {
       }
     }
 
+    "when getRecords returns Accepted/None redirect to goodsLoadingPage" in {
+
+      val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+      when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
+      when(mockTraderProfileConnector.getHistoricProfileData(any())(any())) thenReturn Future.successful(
+        None
+      )
+
+      val mockGoodsRecordConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
+      when(mockGoodsRecordConnector.getRecords(any(), any())(any())) thenReturn Future
+        .successful(None)
+
+      val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+      when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(
+        Seq.empty
+      )
+      when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(
+        Some(Email("address", Instant.now()))
+      )
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+          bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+          bind[DownloadDataConnector].toInstance(mockDownloadDataConnector)
+        )
+        .build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.HomePageController.onPageLoad().url)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.goodsProfile.routes.GoodsRecordsLoadingController
+          .onPageLoad(Some(RedirectUrl(controllers.routes.HomePageController.onPageLoad().url)))
+          .url
+
+      }
+    }
+
     "when email is not verified" - {
       "must return OK and the correct view for a GET with unverifiedEmail messageKey" in {
 
@@ -522,8 +565,9 @@ class HomePageControllerSpec extends SpecBase {
         )
 
         val mockGoodsRecordConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
-        when(mockGoodsRecordConnector.getRecords(any(), any())(any())) thenReturn Future
-          .successful(None)
+        when(mockGoodsRecordConnector.getRecords(any(), any())(any())) thenReturn Future.successful(
+          Some(GetRecordsResponse(Seq.empty, GoodsRecordsPagination(0, 1, 1, None, None)))
+        )
 
         val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
         when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(
@@ -581,8 +625,9 @@ class HomePageControllerSpec extends SpecBase {
         )
 
         val mockGoodsRecordConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
-        when(mockGoodsRecordConnector.getRecords(any(), any())(any())) thenReturn Future
-          .successful(None)
+        when(mockGoodsRecordConnector.getRecords(any(), any())(any())) thenReturn Future.successful(
+          Some(GetRecordsResponse(Seq.empty, GoodsRecordsPagination(0, 1, 1, None, None)))
+        )
 
         val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
         when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(
@@ -637,8 +682,9 @@ class HomePageControllerSpec extends SpecBase {
         )
 
         val mockGoodsRecordConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
-        when(mockGoodsRecordConnector.getRecords(any(), any())(any())) thenReturn Future
-          .successful(None)
+        when(mockGoodsRecordConnector.getRecords(any(), any())(any())) thenReturn Future.successful(
+          Some(GetRecordsResponse(Seq.empty, GoodsRecordsPagination(0, 1, 1, None, None)))
+        )
 
         val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
         when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(
