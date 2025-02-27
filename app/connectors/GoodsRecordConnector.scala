@@ -24,13 +24,13 @@ import org.apache.pekko.Done
 import play.api.Configuration
 import play.api.http.Status.{ACCEPTED, NOT_FOUND, NO_CONTENT, OK}
 import play.api.libs.json.Json
-import uk.gov.hmrc.http._
+import play.api.libs.ws.WSBodyWritables.writeableOf_JsValue
+import uk.gov.hmrc.http.*
 import uk.gov.hmrc.http.client.HttpClientV2
-import java.net.{URL, URLEncoder}
 
+import java.net.{URL, URLEncoder}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import play.api.libs.ws.WSBodyWritables.writeableOf_JsValue
 
 class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpClientV2, appConfig: FrontendAppConfig)(
   implicit ec: ExecutionContext
@@ -62,10 +62,11 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
   ) = // TODO: This is part of the filtering work and will be replaced with the new filter endpoint as part of TGP-3003
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/filter?$queryParams"
 
-  private def isproductReferenceUniqueUrl(
+  private def isProductReferenceUniqueUrl(
     productReference: String
-  ) = // TODO: This is part of the filtering work and will be replaced with the new filter endpoint as part of TGP-3003
-    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/records/is-trader-reference-unique/$productReference"
+  ) =
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/records/is-trader-reference-unique?traderReference=${URLEncoder
+      .encode(productReference, "UTF-8")}"
 
   private def searchRecordsUrl(
     eori: String,
@@ -255,7 +256,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
 
   def isproductReferenceUnique(productReference: String)(implicit hc: HeaderCarrier): Future[Boolean] =
     httpClient
-      .get(isproductReferenceUniqueUrl(productReference))
+      .get(isProductReferenceUniqueUrl(productReference))
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
       .map { response =>
