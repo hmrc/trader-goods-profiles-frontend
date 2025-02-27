@@ -65,7 +65,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
   private def isproductReferenceUniqueUrl(
     productReference: String
   ) = // TODO: This is part of the filtering work and will be replaced with the new filter endpoint as part of TGP-3003
-    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/records/is-trader-reference-unique/$productReference"
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/records/is-trader-reference-unique?traderReference=${URLEncoder.encode(productReference, "UTF-8")}"
 
   private def searchRecordsUrl(
     eori: String,
