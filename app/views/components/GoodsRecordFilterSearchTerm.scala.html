@@ -18,30 +18,33 @@
 @import views.html.components._
 @import models.Country._
 
+    @this(
+       config: FrontendAppConfig
+    )
 
-@this(
-      config: FrontendAppConfig
-)
+    @(form: Form[_], countries: Seq[Country], page: Int, searchForm: SearchForm)(implicit request: Request[_], messages: Messages)
 
-@(form: Form[_], countries: Seq[Country], page: Int, searchForm: SearchForm)(implicit request: Request[_], messages: Messages)
+    @if(searchForm.searchTerm.nonEmpty || searchForm.countryOfOrigin.nonEmpty || searchForm.statusValue.nonEmpty) {
 
-    @if(searchForm.searchTerm.nonEmpty
-        || searchForm.countryOfOrigin.nonEmpty
-        || searchForm.statusValue.nonEmpty){
+    <div class="govuk-!-margin-top-1">
+        <p class="govuk-body">@Html(messages("goodsRecords.relatedTo"))</p>
 
-    <ul class="govuk-list govuk-!-margin-top-1 moj-filter__tag_lock">
-        @Html(messages("goodsRecords.relatedTo"))
+        <ul class="govuk-list moj-filter__tag_lock">
+            @searchForm.searchTerm.map { searchTerm =>
+            <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock">
+                @messages("goodsRecordSearchResult.p5", searchTerm)
+            </li>
+            }
 
-        @searchForm.searchTerm.map{searchTerm => <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock">@messages("goodsRecordSearchResult.p5",searchTerm) </li>}
-
-        @if(!searchForm.statusValue.isEmpty) {
+            @if(searchForm.statusValue.nonEmpty) {
             <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock">
                 @messages("goodsRecordSearchResult.p4")
             </li>
+
             @if(searchForm.statusValue.contains("IMMIReady")) {
-                <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock">
-                    @messages("declarableStatus.immiReady")
-                </li>
+            <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock">
+                @messages("declarableStatus.immiReady")
+            </li>
             }
 
             @if(searchForm.statusValue.contains("notReadyForImmi")) {
@@ -55,16 +58,16 @@
                 @messages("declarableStatus.notReadyForUse")
             </li>
             }
+            }
 
-        }
-        @if(!searchForm.countryOfOrigin.isEmpty) {
-        <li  class="govuk-tag govuk-tag--grey moj-filter__tag_lock" lang="en"> @messages("goodsRecordSearchResult.p6",  {
-            countries
-            .find(_.id == searchForm.countryOfOrigin.getOrElse(""))
-            .map(_.description)
-            .getOrElse("")
-            })
-        </li>
-        }
-    </ul>
+            @if(searchForm.countryOfOrigin.nonEmpty) {
+            <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock" lang="en">
+                @messages("goodsRecordSearchResult.p6", {
+                countries.find(_.id == searchForm.countryOfOrigin.getOrElse("")).map(_.description).getOrElse("")
+                })
+            </li>
+            }
+        </ul>
+    </div>
 }
+
