@@ -61,17 +61,22 @@
     pageTitle = title(form, {
         if (!appConfig.enhancedSearch) {
             pagination.items match {
-                    case Some(items) if items.size > 1 => messages("goodsRecords.title.withPage", page.toString, items.size.toString)
-                    case _ => messages("goodsRecords.title")
-                    }
+                        case Some(items) if items.size > 1 => messages("goodsRecords.title.withPage", page.toString, items.size.toString)
+                        case _ => messages("goodsRecords.title")
+                        }
                 } else {
-              {
-                totalRecords match {
+                if(searchForm.searchTerm.nonEmpty || searchForm.countryOfOrigin.nonEmpty || searchForm.statusValue.nonEmpty) {
+                    totalRecords match {
                     case 0  => messages("goodsRecords.title.noResults")
                     case 1  => messages("goodsRecords.title.singleRecord")
-                    case _  => messages("goodsRecords.title.withPageFilter", totalRecords.toString, page.toString, pagination.items.map(_.size).getOrElse(0).toString)
-                    }
-            }
+                    case _  =>
+                        messages("goodsRecords.title.withPageFilter",totalRecords, page, pagination.items.size)
+                        }
+                }else{
+                    messages("goodsRecords.title")
+
+                }
+
         }
     }),
     isFullWidth = true
