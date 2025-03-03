@@ -58,7 +58,7 @@
 
 
 @layout(
-    pageTitle = {
+    pageTitle = title(form, {
         if (!appConfig.enhancedSearch) {
             pagination.items match {
                     case Some(items) if items.size > 1 => messages("goodsRecords.title.withPage", page.toString, items.size.toString)
@@ -73,7 +73,7 @@
                     }
             }
         }
-    },
+    }),
     isFullWidth = true
 ) {
 
@@ -106,6 +106,39 @@
 
             <div class="govuk-grid-row">
                 @goodsRecordFilterForm(form, countries, page, searchForm)
+                <div class="govuk-grid-column-two-thirds govuk-!-padding-left-20">
+
+                    @if(totalRecords > 0) {
+                        <h2 class="govuk-heading-m">@messages("goodsRecords.h2.1")</h2>
+                    @paragraphBody(messages("goodsRecords.p1"))
+
+                    @paragraphBody(
+                        messages("goodsRecords.p2") +
+                        tag(messages("declarableStatus.immiReady"), "govuk-tag govuk-tag--green govuk-tag-width-override") + "."
+                    )
+
+                    @paragraphBody(
+                        messages("goodsRecords.p2.1") +
+                        tag(messages("declarableStatus.notReadyForImmi"), "govuk-tag govuk-tag--orange govuk-tag-width-override") + ". " +
+                        messages("goodsRecords.p2.2")
+                    )
+
+                    @paragraphBody(
+                        messages("goodsRecords.p2.3") +
+                        tag(messages("declarableStatus.notReadyForUse"), "govuk-tag govuk-tag--orange govuk-tag-width-override") + ". " +
+                        messages("goodsRecords.p2.4"),
+                        )
+                    }
+                    @paragraphBody(
+                        message = messages("goodsRecords.link1.text") +
+                        link(
+                        text = messages("goodsRecords.link1"),
+                        call = controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad(),
+                        id = None
+                        )
+                    )
+
+                </div>
             </div>
         </div>
     }
