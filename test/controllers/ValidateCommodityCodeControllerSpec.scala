@@ -18,11 +18,6 @@ package controllers
 
 import base.SpecBase
 import base.TestConstants.testRecordId
-import connectors.{GoodsRecordConnector, OttConnector}
-import models.AdviceStatus.NotRequested
-import models.Commodity
-import models.DeclarableStatus.ImmiReady
-import models.router.responses.GetGoodsRecordResponse
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
@@ -30,56 +25,18 @@ import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
+import services.CommodityService
 
-import java.time.Instant
 import scala.concurrent.Future
 
 class ValidateCommodityCodeControllerSpec extends SpecBase with BeforeAndAfterEach {
 
-  private val mockOttConnector: OttConnector                  = mock[OttConnector]
-  private val mockGoodsRecordsConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
+  private val mockCommodityService: CommodityService = mock[CommodityService]
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    reset(mockOttConnector, mockGoodsRecordsConnector)
+    reset(mockCommodityService)
   }
-
-  private val validCommodityCodeStart      = Instant.now().minus(1, java.time.temporal.ChronoUnit.DAYS)
-  private val validCommodityCodeExpiration = Instant.now().plus(1, java.time.temporal.ChronoUnit.DAYS)
-  private val validCommodityCode           =
-    Commodity("comcode", List("desc"), validCommodityCodeStart, Some(validCommodityCodeExpiration))
-
-  private val invalidCommodityCodeStart      = Instant.now().plus(1, java.time.temporal.ChronoUnit.DAYS)
-  private val invalidCommodityCodeExpiration = Instant.now().minus(1, java.time.temporal.ChronoUnit.DAYS)
-  private val invalidCommodityCode           =
-    Commodity("comcode", List("desc"), invalidCommodityCodeStart, Some(invalidCommodityCodeExpiration))
-
-  private val mockGoodsRecordResponse = GetGoodsRecordResponse(
-    "recordId",
-    "eori",
-    "actorId",
-    "traderRef",
-    "comcode",
-    NotRequested,
-    "desc",
-    "GB",
-    Some(1),
-    None,
-    None,
-    None,
-    Instant.now(),
-    None,
-    1,
-    active = true,
-    toReview = true,
-    None,
-    ImmiReady,
-    None,
-    None,
-    None,
-    Instant.now(),
-    Instant.now()
-  )
 
   "ValidateCommodityCodeController" - {
 
@@ -88,16 +45,11 @@ class ValidateCommodityCodeControllerSpec extends SpecBase with BeforeAndAfterEa
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
-            bind[OttConnector].toInstance(mockOttConnector),
-            bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector)
+            bind[CommodityService].toInstance(mockCommodityService),
           )
           .build()
 
-        when(mockGoodsRecordsConnector.getRecord(any())(any()))
-          .thenReturn(Future.successful(mockGoodsRecordResponse))
-
-        when(mockOttConnector.getCommodityCode(any(), any(), any(), any(), any(), any())(any()))
-          .thenReturn(Future.successful(validCommodityCode))
+        when(mockCommodityService.isCommodityCodeValid(any())(any(), any())).thenReturn(Future.successful(true))
 
         running(application) {
           val request =
@@ -115,16 +67,11 @@ class ValidateCommodityCodeControllerSpec extends SpecBase with BeforeAndAfterEa
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
-            bind[OttConnector].toInstance(mockOttConnector),
-            bind[GoodsRecordConnector].toInstance(mockGoodsRecordsConnector)
+            bind[CommodityService].toInstance(mockCommodityService)
           )
           .build()
 
-        when(mockGoodsRecordsConnector.getRecord(any())(any()))
-          .thenReturn(Future.successful(mockGoodsRecordResponse))
-
-        when(mockOttConnector.getCommodityCode(any(), any(), any(), any(), any(), any())(any()))
-          .thenReturn(Future.successful(invalidCommodityCode))
+        when(mockCommodityService.isCommodityCodeValid(any())(any(), any())).thenReturn(Future.successful(false))
 
         running(application) {
           val request =

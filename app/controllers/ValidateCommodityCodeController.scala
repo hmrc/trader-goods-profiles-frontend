@@ -16,17 +16,14 @@
 
 package controllers
 
-import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.BaseController
 import controllers.actions.*
-import models.Commodity
-import models.helper.ValidateCommodityCode
-import models.requests.DataRequest
 import play.api.i18n.MessagesApi
 import play.api.mvc.*
+import services.CommodityService
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 class ValidateCommodityCodeController @Inject() (
   override val messagesApi: MessagesApi,
@@ -34,43 +31,18 @@ class ValidateCommodityCodeController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   profileAuth: ProfileAuthenticateAction,
-  ottConnector: OttConnector,
-  goodsRecordConnector: GoodsRecordConnector,
+  commodityService: CommodityService,
   val controllerComponents: MessagesControllerComponents
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
   def changeCategory(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      isCommodityCodeValid(recordId).map {
+      commodityService.isCommodityCodeValid(recordId).map {
         case true  =>
           Redirect(controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(recordId))
         case false =>
           Redirect(controllers.goodsRecord.commodityCode.routes.InvalidCommodityCodeController.onPageLoad(recordId))
       }
     }
-
-  private def isCommodityCodeValid(recordId: String)(implicit request: DataRequest[AnyContent]): Future[Boolean] =
-    fetchRecordValues(recordId).flatMap { (commodityCode, countryOfOrigin) =>
-      fetchCommodity(commodityCode, countryOfOrigin).map(_.isValid)
-    }
-
-  private def fetchRecordValues(recordId: String)(implicit request: DataRequest[AnyContent]): Future[(String, String)] =
-    goodsRecordConnector.getRecord(recordId).map { x =>
-      (x.comcode, x.countryOfOrigin)
-    }
-
-  private def fetchCommodity(
-    commodityCode: String,
-    countryOfOrigin: String
-  )(implicit request: DataRequest[AnyContent]): Future[Commodity] =
-    ottConnector.getCommodityCode(
-      commodityCode,
-      request.eori,
-      request.affinityGroup,
-      ValidateCommodityCode,
-      countryOfOrigin,
-      None
-    )
-
 }

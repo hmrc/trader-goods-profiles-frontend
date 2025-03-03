@@ -21,22 +21,21 @@ import cats.data.EitherNec
 import config.FrontendAppConfig
 import connectors.GoodsRecordConnector
 import controllers.BaseController
-import controllers.actions._
+import controllers.actions.*
 import forms.HasCorrectGoodsFormProvider
 import models.requests.DataRequest
 import models.router.requests.PutRecordRequest
 import models.{Mode, NormalMode, UpdateGoodsRecord, UserAnswers, ValidationError}
 import navigation.Navigation
 import org.apache.pekko.Done
-import pages._
+import pages.*
 import pages.goodsRecord.{CommodityCodeUpdatePage, HasCommodityCodeChangePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import queries._
+import queries.*
 import repositories.SessionRepository
-import services.AuditService
+import services.{AuditService, CommodityService}
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.SessionData.fromExpiredCommodityCodePage
 import views.html.HasCorrectGoodsView
 
 import javax.inject.Inject
@@ -54,6 +53,7 @@ class UpdateCommodityCodeResultController @Inject() (
   formProvider: HasCorrectGoodsFormProvider,
   goodsRecordConnector: GoodsRecordConnector,
   auditService: AuditService,
+  commodityService: CommodityService,
   config: FrontendAppConfig,
   val controllerComponents: MessagesControllerComponents,
   view: HasCorrectGoodsView
@@ -114,6 +114,7 @@ class UpdateCommodityCodeResultController @Inject() (
   ): Future[Result] =
     (for {
       oldRecord                <- goodsRecordConnector.getRecord(recordId)
+      isValidCommodity <- commodityService.isCommodityCodeValid(oldRecord.comcode, oldRecord.countryOfOrigin)(request)
       commodity                <-
         handleValidateError(
           UpdateGoodsRecord
@@ -121,7 +122,7 @@ class UpdateCommodityCodeResultController @Inject() (
               updatedUserAnswers,
               recordId,
               oldRecord.category.isDefined,
-              request.session.get(fromExpiredCommodityCodePage).contains("true")
+              isValidCommodity
             )
         )
       updateGoodsRecord        <-
