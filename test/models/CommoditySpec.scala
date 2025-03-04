@@ -33,29 +33,29 @@ class CommoditySpec extends SpecBase {
     "isValid" - {
       "must return true when" - {
         "validityEndDate is None and today is the same as validityStartDate" in {
-          val commodity = Commodity("commodityCode", List("description"), todayInstant, None)
+          val commodity = Commodity("commodityCode", List("description"), Instant.now, None)
           commodity.isValid mustBe true
         }
         "validityEndDate is None and today is after validityStartDate" in {
-          val commodity = Commodity("commodityCode", List("description"), todayInstant.minusDays(1), None)
+          val commodity = Commodity("commodityCode", List("description"), Instant.now.minusDays(1), None)
           commodity.isValid mustBe true
         }
         "validityEndDate is today and validityStartDate is today" in {
-          val exactTodayInstant: Instant = todayInstant
+          val exactTodayInstant: Instant = Instant.now
           val commodity                  = Commodity("commodityCode", List("description"), exactTodayInstant, Some(exactTodayInstant))
           commodity.isValid mustBe true
         }
         "validityEndDate is today and today is after validityStartDate" in {
-          val commodity = Commodity("commodityCode", List("description"), todayInstant.minusDays(1), Some(todayInstant))
+          val commodity = Commodity("commodityCode", List("description"), Instant.now.minusDays(1), Some(todayInstant))
           commodity.isValid mustBe true
         }
         "validityEndDate is after today and today is the validityStartDate" in {
-          val commodity = Commodity("commodityCode", List("description"), todayInstant, Some(todayInstant.plusDays(1)))
+          val commodity = Commodity("commodityCode", List("description"), Instant.now, Some(Instant.now.plusDays(1)))
           commodity.isValid mustBe true
         }
         "validityEndDate is after today and today is after validityStartDate" in {
           val commodity =
-            Commodity("commodityCode", List("description"), todayInstant.minusDays(1), Some(todayInstant.plusDays(1)))
+            Commodity("commodityCode", List("description"), Instant.now.minusDays(1), Some(Instant.now.plusDays(1)))
           commodity.isValid mustBe true
         }
 
@@ -64,12 +64,12 @@ class CommoditySpec extends SpecBase {
       "must return false when" - {
         "validityEndDate has past" in {
           val commodity =
-            Commodity("commodityCode", List("description"), todayInstant.minusDays(1), Some(todayInstant.minusDays(1)))
+            Commodity("commodityCode", List("description"), Instant.now.minusDays(1), Some(Instant.now.minusDays(1)))
           commodity.isValid mustBe false
         }
 
         "validityStartDate has not been reached" in {
-          val commodity = Commodity("commodityCode", List("description"), todayInstant.plusDays(1), None)
+          val commodity = Commodity("commodityCode", List("description"), Instant.now.plusDays(1), None)
           commodity.isValid mustBe false
         }
       }

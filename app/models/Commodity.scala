@@ -18,10 +18,8 @@ package models
 
 import play.api.libs.functional.syntax.*
 import play.api.libs.json.*
-import utils.Clock
-import utils.Clock.todayInstant
 
-import java.time.Instant
+import java.time.{Instant, ZoneId}
 
 case class Commodity(
   commodityCode: String,
@@ -30,10 +28,18 @@ case class Commodity(
   validityEndDate: Option[Instant]
 ) {
 
-  def isValid: Boolean =
-    (todayInstant.isAfter(validityStartDate) || todayInstant.equals(validityStartDate)) &&
-      validityEndDate.forall(endDate => todayInstant.isBefore(endDate) || todayInstant.equals(endDate))
+  private def truncateToStartOfDay(instant: Instant): Instant =
+    instant.atZone(ZoneId.of("UTC")).toLocalDate.atStartOfDay(ZoneId.of("UTC")).toInstant
 
+  def isValid: Boolean = {
+    val truncatedNow = truncateToStartOfDay(Instant.now())
+    (truncatedNow.isAfter(truncateToStartOfDay(validityStartDate)) || truncatedNow.equals(
+      truncateToStartOfDay(validityStartDate)
+    )) &&
+    validityEndDate.forall(endDate =>
+      truncatedNow.isBefore(truncateToStartOfDay(endDate)) || truncatedNow.equals(truncateToStartOfDay(endDate))
+    )
+  }
 }
 
 object Commodity {

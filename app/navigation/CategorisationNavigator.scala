@@ -220,9 +220,7 @@ class CategorisationNavigator @Inject() (categorisationService: CategorisationSe
       hasLongComCode <- answers.get(HasLongComCodeQuery(recordId))
       catInfo        <- answers.get(CategorisationDetailsQuery(recordId))
     } yield
-      if (catInfo.isCommCodeExpired) {
-        controllers.problem.routes.ExpiredCommodityCodeController.onPageLoad(recordId)
-      } else if (catInfo.categoryAssessmentsThatNeedAnswers.nonEmpty) {
+      if (catInfo.categoryAssessmentsThatNeedAnswers.nonEmpty) {
         controllers.categorisation.routes.CategoryGuidanceController.onPageLoad(recordId)
       } else {
         val scenario = categorisationService.calculateResult(catInfo, answers, recordId)

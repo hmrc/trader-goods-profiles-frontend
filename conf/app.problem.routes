@@ -1,5 +1,3 @@
 GET         /problem/technical-issue                                                                controllers.problem.JourneyRecoveryController.onPageLoad(continueUrl: Option[RedirectUrl] ?= None)
 
 GET         /problem/unauthorised-service-user                                                      controllers.problem.UnauthorisedServiceUserController.onPageLoad()
-
-GET         /problem/:recordId/expired-commodity-code                                               controllers.problem.ExpiredCommodityCodeController.onPageLoad(recordId:String)
