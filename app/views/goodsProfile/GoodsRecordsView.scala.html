@@ -70,13 +70,17 @@
                     case 0  => messages("goodsRecords.title.noResults")
                     case 1  => messages("goodsRecords.title.singleRecord")
                     case _  =>
-                        messages("goodsRecords.title.withPageFilter",totalRecords, page, pagination.items.size)
+                        pagination.items match {
+                            case Some(items) if items.size > 1 => messages("goodsRecords.title.withPageFilter", page.toString,page, items.size.toString)
+                            case _ => messages("goodsRecords.title")
                         }
-                }else{
-                    messages("goodsRecords.title")
-
+                    }
+                } else {
+                        pagination.items match {
+                        case Some(items) if items.size > 1 => messages("goodsRecords.title.withPage", page.toString, items.size.toString)
+                        case _ => messages("goodsRecords.title")
+                        }
                 }
-
         }
     }),
     isFullWidth = true
