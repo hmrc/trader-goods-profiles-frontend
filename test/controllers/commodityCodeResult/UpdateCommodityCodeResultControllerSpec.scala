@@ -26,17 +26,17 @@ import models.{Commodity, NormalMode, UpdateGoodsRecord}
 import navigation.{FakeNavigation, Navigation}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import org.scalatestplus.mockito.MockitoSugar
-import pages._
+import pages.*
 import pages.goodsRecord.{CommodityCodeUpdatePage, HasCommodityCodeChangePage, HasCountryOfOriginChangePage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import queries.CommodityUpdateQuery
 import repositories.SessionRepository
-import services.AuditService
+import services.{AuditService, CommodityService}
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import views.html.HasCorrectGoodsView
@@ -46,7 +46,8 @@ import scala.concurrent.Future
 
 class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar {
 
-  private def onwardRoute = Call("GET", "/foo")
+  private def onwardRoute          = Call("GET", "/foo")
+  private val mockCommodityService = mock[CommodityService]
 
   val formProvider = new HasCorrectGoodsFormProvider()
   private val form = formProvider()
@@ -188,6 +189,9 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
             when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
               .successful(record)
             when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+            when(mockCommodityService.isCommodityCodeValid(any(), any())(any(), any())) thenReturn Future.successful(
+              false
+            )
 
             val application =
               applicationBuilder(userAnswers = Some(userAnswers))
@@ -195,7 +199,8 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
                   bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
                   bind[SessionRepository].toInstance(mockSessionRepository),
                   bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-                  bind[AuditService].toInstance(mockAuditService)
+                  bind[AuditService].toInstance(mockAuditService),
+                  bind[CommodityService].toInstance(mockCommodityService)
                 )
                 .build()
 
@@ -255,6 +260,9 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
               .thenReturn(Future.successful(Done))
             when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
               .successful(record)
+            when(mockCommodityService.isCommodityCodeValid(any(), any())(any(), any())) thenReturn Future.successful(
+              false
+            )
 
             val application =
               applicationBuilder(userAnswers = Some(userAnswers))
@@ -262,7 +270,8 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
                   bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
                   bind[SessionRepository].toInstance(mockSessionRepository),
                   bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-                  bind[AuditService].toInstance(mockAuditService)
+                  bind[AuditService].toInstance(mockAuditService),
+                  bind[CommodityService].toInstance(mockCommodityService)
                 )
                 .build()
 
@@ -324,6 +333,9 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
               .successful(record)
 
             when(mockFrontendAppConfig.useEisPatchMethod) thenReturn false
+            when(mockCommodityService.isCommodityCodeValid(any(), any())(any(), any())) thenReturn Future.successful(
+              false
+            )
 
             val application =
               applicationBuilder(userAnswers = Some(userAnswers))
@@ -332,7 +344,8 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
                   bind[SessionRepository].toInstance(mockSessionRepository),
                   bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
                   bind[AuditService].toInstance(mockAuditService),
-                  bind[FrontendAppConfig].toInstance(mockFrontendAppConfig)
+                  bind[FrontendAppConfig].toInstance(mockFrontendAppConfig),
+                  bind[CommodityService].toInstance(mockCommodityService)
                 )
                 .build()
 
@@ -391,6 +404,9 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
             when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
               .thenReturn(Future.successful(Done))
             when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
+            when(mockCommodityService.isCommodityCodeValid(any(), any())(any(), any())) thenReturn Future.successful(
+              false
+            )
 
             val application =
               applicationBuilder(userAnswers = Some(userAnswers))
@@ -398,7 +414,8 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
                   bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
                   bind[SessionRepository].toInstance(mockSessionRepository),
                   bind[GoodsRecordConnector].toInstance(mockConnector),
-                  bind[AuditService].toInstance(mockAuditService)
+                  bind[AuditService].toInstance(mockAuditService),
+                  bind[CommodityService].toInstance(mockCommodityService)
                 )
                 .build()
 
@@ -437,13 +454,17 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
               when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
                 .successful(record)
               when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
+              when(mockCommodityService.isCommodityCodeValid(any(), any())(any(), any())) thenReturn Future.successful(
+                false
+              )
 
               val application =
                 applicationBuilder(userAnswers = Some(emptyUserAnswers))
                   .overrides(
                     bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
                     bind[SessionRepository].toInstance(mockSessionRepository),
-                    bind[AuditService].toInstance(mockAuditService)
+                    bind[AuditService].toInstance(mockAuditService),
+                    bind[CommodityService].toInstance(mockCommodityService)
                   )
                   .build()
 
@@ -522,12 +543,17 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
               when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
                 .successful(record)
 
+              when(mockCommodityService.isCommodityCodeValid(any(), any())(any(), any())) thenReturn Future.successful(
+                false
+              )
+
               val application =
                 applicationBuilder(userAnswers = Some(userAnswers))
                   .overrides(
                     bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
                     bind[AuditService].toInstance(mockAuditService),
-                    bind[SessionRepository].toInstance(mockSessionRepository)
+                    bind[SessionRepository].toInstance(mockSessionRepository),
+                    bind[CommodityService].toInstance(mockCommodityService)
                   )
                   .build()
 

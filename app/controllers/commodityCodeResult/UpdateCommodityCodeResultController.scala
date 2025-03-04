@@ -114,7 +114,7 @@ class UpdateCommodityCodeResultController @Inject() (
   ): Future[Result] =
     (for {
       oldRecord                <- goodsRecordConnector.getRecord(recordId)
-      isValidCommodity <- commodityService.isCommodityCodeValid(oldRecord.comcode, oldRecord.countryOfOrigin)(request)
+      isValidCommodity         <- commodityService.isCommodityCodeValid(oldRecord.comcode, oldRecord.countryOfOrigin)(request)
       commodity                <-
         handleValidateError(
           UpdateGoodsRecord
@@ -122,7 +122,7 @@ class UpdateCommodityCodeResultController @Inject() (
               updatedUserAnswers,
               recordId,
               oldRecord.category.isDefined,
-              isValidCommodity
+              !isValidCommodity
             )
         )
       updateGoodsRecord        <-

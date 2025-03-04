@@ -33,8 +33,12 @@ case class Commodity(
 
   def isValid: Boolean = {
     val truncatedNow = truncateToStartOfDay(Instant.now())
-    (truncatedNow.isAfter(truncateToStartOfDay(validityStartDate)) || truncatedNow.equals(truncateToStartOfDay(validityStartDate))) &&
-      validityEndDate.forall(endDate => truncatedNow.isBefore(truncateToStartOfDay(endDate)) || truncatedNow.equals(truncateToStartOfDay(endDate)))
+    (truncatedNow.isAfter(truncateToStartOfDay(validityStartDate)) || truncatedNow.equals(
+      truncateToStartOfDay(validityStartDate)
+    )) &&
+    validityEndDate.forall(endDate =>
+      truncatedNow.isBefore(truncateToStartOfDay(endDate)) || truncatedNow.equals(truncateToStartOfDay(endDate))
+    )
   }
 }
 

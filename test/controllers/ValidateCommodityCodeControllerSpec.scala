@@ -45,7 +45,7 @@ class ValidateCommodityCodeControllerSpec extends SpecBase with BeforeAndAfterEa
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
-            bind[CommodityService].toInstance(mockCommodityService),
+            bind[CommodityService].toInstance(mockCommodityService)
           )
           .build()
 

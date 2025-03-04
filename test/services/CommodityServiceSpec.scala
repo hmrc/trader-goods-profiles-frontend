@@ -41,13 +41,14 @@ import scala.concurrent.Future
 
 class CommodityServiceSpec extends SpecBase with BeforeAndAfterEach with Generators {
 
-  private val mockOttConnector = mock[OttConnector]
+  private val mockOttConnector          = mock[OttConnector]
   private val mockGoodsRecordsConnector = mock[GoodsRecordConnector]
-  private val commodityService = new CommodityService(mockOttConnector, mockGoodsRecordsConnector)
+  private val commodityService          = new CommodityService(mockOttConnector, mockGoodsRecordsConnector)
 
-  implicit private lazy val hc: HeaderCarrier = HeaderCarrier()
-  private val validCommodity = Commodity("170200", List("a comcode"),Clock.now, None)
-  private val request: DataRequest[AnyContent] = DataRequest[AnyContent](FakeRequest(), "userId", "eori", AffinityGroup.Organisation, emptyUserAnswers)
+  implicit private lazy val hc: HeaderCarrier  = HeaderCarrier()
+  private val validCommodity                   = Commodity("170200", List("a comcode"), Clock.now, None)
+  private val request: DataRequest[AnyContent] =
+    DataRequest[AnyContent](FakeRequest(), "userId", "eori", AffinityGroup.Organisation, emptyUserAnswers)
 
   private val mockGoodsRecordResponse = GetGoodsRecordResponse(
     "recordId",
@@ -82,17 +83,21 @@ class CommodityServiceSpec extends SpecBase with BeforeAndAfterEach with Generat
   }
 
   "CommodityService" - {
-    
+
     "isCommodityValid" - {
       "must return the correct value when passed country of origin and the commodity code" in {
-        when(mockOttConnector.getCommodityCode(any(), any(), any(), any(), any(), any())(any())).thenReturn(Future.successful(validCommodity))
+        when(mockOttConnector.getCommodityCode(any(), any(), any(), any(), any(), any())(any()))
+          .thenReturn(Future.successful(validCommodity))
 
-        commodityService.isCommodityCodeValid(mockGoodsRecordResponse.comcode, mockGoodsRecordResponse.countryOfOrigin)(request, hc).futureValue mustBe true
+        commodityService
+          .isCommodityCodeValid(mockGoodsRecordResponse.comcode, mockGoodsRecordResponse.countryOfOrigin)(request, hc)
+          .futureValue mustBe true
       }
 
       "must return the correct value when passed a recordId" in {
         when(mockGoodsRecordsConnector.getRecord(any())(any())).thenReturn(Future.successful(mockGoodsRecordResponse))
-        when(mockOttConnector.getCommodityCode(any(), any(), any(), any(), any(), any())(any())).thenReturn(Future.successful(validCommodity))
+        when(mockOttConnector.getCommodityCode(any(), any(), any(), any(), any(), any())(any()))
+          .thenReturn(Future.successful(validCommodity))
 
         commodityService.isCommodityCodeValid(mockGoodsRecordResponse.recordId)(request, hc).futureValue mustBe true
       }
@@ -101,14 +106,17 @@ class CommodityServiceSpec extends SpecBase with BeforeAndAfterEach with Generat
       "must return commodity code and country of origin from a goods record" in {
         when(mockGoodsRecordsConnector.getRecord(any())(any())).thenReturn(Future.successful(mockGoodsRecordResponse))
 
-        commodityService.fetchRecordValues(mockGoodsRecordResponse.recordId)(request, hc).futureValue mustBe (mockGoodsRecordResponse.comcode, mockGoodsRecordResponse.countryOfOrigin)
+        commodityService
+          .fetchRecordValues(mockGoodsRecordResponse.recordId)(request, hc)
+          .futureValue mustBe (mockGoodsRecordResponse.comcode, mockGoodsRecordResponse.countryOfOrigin)
       }
     }
     "fetchCommodity" - {
       "must return commodity information" in {
-        when(mockOttConnector.getCommodityCode(any(),any(),any(),any(),any(),any())(any())).thenReturn(Future.successful(validCommodity))
+        when(mockOttConnector.getCommodityCode(any(), any(), any(), any(), any(), any())(any()))
+          .thenReturn(Future.successful(validCommodity))
 
-        commodityService.fetchCommodity("170200","GB")(request, hc).futureValue mustBe validCommodity
+        commodityService.fetchCommodity("170200", "GB")(request, hc).futureValue mustBe validCommodity
       }
     }
 

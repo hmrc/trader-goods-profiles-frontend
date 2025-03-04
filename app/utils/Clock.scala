@@ -19,7 +19,7 @@ package utils
 import java.time.{Instant, LocalDate, ZoneId}
 
 trait Clock {
-  def now: Instant    = Instant.now()
+  def now: Instant          = Instant.now()
   def todayInstant: Instant = LocalDate.now(ZoneId.of("UTC")).atStartOfDay(ZoneId.of("UTC")).toInstant
 }
 
