@@ -34,7 +34,7 @@ config: FrontendAppConfig
 
     @searchForm.searchTerm.map{searchTerm => <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock">@messages("goodsRecordSearchResult.p5",searchTerm) </li>}
 
-    @if(!searchForm.statusValue.isEmpty) {
+    @if(searchForm.statusValue.nonEmpty) {
         <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock">
             @messages("goodsRecordSearchResult.p4")
         </li>
@@ -55,16 +55,14 @@ config: FrontendAppConfig
             @messages("declarableStatus.notReadyForUse")
         </li>
     }
+}
 
-    }
-    @if(!searchForm.countryOfOrigin.isEmpty) {
-   `     <li  class="govuk-tag govuk-tag--grey moj-filter__tag_lock" lang="en"> @messages("goodsRecordSearchResult.p6",  {
-            countries
-            .find(_.id == searchForm.countryOfOrigin.getOrElse(""))
-            .map(_.description)
-            .getOrElse("")
-            })
+    @if(searchForm.countryOfOrigin.nonEmpty) {
+   `     <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock" lang="en">
+                @messages("goodsRecordSearchResult.p6", {
+                countries.find(_.id == searchForm.countryOfOrigin.getOrElse("")).map(_.description).getOrElse("")
+                })
         </li>`
     }
-</ul>
+</ul></div>
 }

@@ -27,18 +27,17 @@ import models.router.requests.PutRecordRequest
 import models.{CheckMode, Country, NormalMode, UpdateGoodsRecord, UserAnswers, ValidationError}
 import navigation.GoodsRecordNavigator
 import org.apache.pekko.Done
-import pages.goodsRecord._
+import pages.goodsRecord.*
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
 import queries.CountriesQuery
 import repositories.SessionRepository
-import services.AuditService
+import services.{AuditService, CommodityService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants.{commodityCodeKey, countryOfOriginKey, goodsDescriptionKey, productReferenceKey}
-import utils.SessionData.fromExpiredCommodityCodePage
 import viewmodels.checkAnswers.goodsRecord.{CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, ProductReferenceSummary}
-import viewmodels.govuk.summarylist._
+import viewmodels.govuk.summarylist.*
 import views.html.goodsRecord.CyaUpdateRecordView
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -56,7 +55,8 @@ class CyaUpdateRecordController @Inject() (
   ottConnector: OttConnector,
   sessionRepository: SessionRepository,
   navigator: GoodsRecordNavigator,
-  config: FrontendAppConfig
+  config: FrontendAppConfig,
+  commodityService: CommodityService
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
@@ -153,37 +153,40 @@ class CyaUpdateRecordController @Inject() (
       goodsRecordConnector
         .getRecord(recordId)
         .flatMap { recordResponse =>
-          val isCommCodeExpired = request.session.get(fromExpiredCommodityCodePage).contains("true")
-          UpdateGoodsRecord
-            .validateCommodityCode(
-              request.userAnswers,
-              recordId,
-              recordResponse.category.isDefined,
-              isCommCodeExpired
-            ) match {
-            case Right(commodity) =>
-              val onSubmitAction =
-                controllers.goodsRecord.routes.CyaUpdateRecordController.onSubmitCommodityCode(recordId)
+          commodityService.isCommodityCodeValid(recordResponse.comcode, recordResponse.countryOfOrigin)(
+            request
+          ) flatMap { isCommCodeValid =>
+            UpdateGoodsRecord
+              .validateCommodityCode(
+                request.userAnswers,
+                recordId,
+                recordResponse.category.isDefined,
+                !isCommCodeValid
+              ) match {
+              case Right(commodity) =>
+                val onSubmitAction =
+                  controllers.goodsRecord.routes.CyaUpdateRecordController.onSubmitCommodityCode(recordId)
 
-              val list = SummaryListViewModel(
-                Seq(
-                  CommodityCodeSummary
-                    .rowUpdateCya(
-                      commodity.commodityCode,
-                      recordId,
-                      CheckMode
-                    )
+                val list = SummaryListViewModel(
+                  Seq(
+                    CommodityCodeSummary
+                      .rowUpdateCya(
+                        commodity.commodityCode,
+                        recordId,
+                        CheckMode
+                      )
+                  )
                 )
-              )
-              Future.successful(Ok(view(list, onSubmitAction, commodityCodeKey)))
-            case Left(errors)     =>
-              Future.successful(
-                logErrorsAndContinue(
-                  errorMessage,
-                  controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId),
-                  errors
+                Future.successful(Ok(view(list, onSubmitAction, commodityCodeKey)))
+              case Left(errors)     =>
+                Future.successful(
+                  logErrorsAndContinue(
+                    errorMessage,
+                    controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId),
+                    errors
+                  )
                 )
-              )
+            }
           }
         }
         .recoverWith { case e: Exception =>
@@ -358,6 +361,7 @@ class CyaUpdateRecordController @Inject() (
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       (for {
         oldRecord                <- goodsRecordConnector.getRecord(recordId)
+        isCommodityValid         <- commodityService.isCommodityCodeValid(oldRecord.comcode, oldRecord.countryOfOrigin)
         commodity                <-
           handleValidateError(
             UpdateGoodsRecord
@@ -365,7 +369,7 @@ class CyaUpdateRecordController @Inject() (
                 request.userAnswers,
                 recordId,
                 oldRecord.category.isDefined,
-                request.session.get(fromExpiredCommodityCodePage).contains("true")
+                !isCommodityValid
               )
           )
         updateGoodsRecord        <-

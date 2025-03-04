@@ -24,13 +24,14 @@ import models.{CheckMode, Commodity, Country, UpdateGoodsRecord}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{atLeastOnce, never, verify, when}
+import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import pages.HasCorrectGoodsCommodityCodeUpdatePage
-import pages.goodsRecord._
+import pages.goodsRecord.*
 import play.api.Application
 import play.api.inject.bind
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import queries.{CommodityUpdateQuery, CountriesQuery}
 import repositories.SessionRepository
 import services.AuditService
@@ -44,11 +45,19 @@ import views.html.goodsRecord.CyaUpdateRecordView
 
 import java.time.Instant
 import scala.concurrent.Future
+import services.CommodityService
 
-class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency with MockitoSugar {
+class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency with MockitoSugar with BeforeAndAfterEach {
 
   private lazy val journeyRecoveryContinueUrl =
     controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId).url
+
+  private val mockCommodityService = mock[CommodityService]
+
+  override protected def beforeEach(): Unit = {
+    super.beforeEach()
+    when(mockCommodityService.isCommodityCodeValid(any(), any())(any(), any())).thenReturn(Future.successful(true))
+  }
 
   "CyaUpdateRecordController" - {
 
@@ -391,6 +400,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             val application =
               applicationBuilder(userAnswers = Some(emptyUserAnswers))
                 .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
+                .overrides(bind[CommodityService].toInstance(mockCommodityService))
                 .build()
 
             running(application) {
@@ -645,6 +655,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
             val application =
               applicationBuilder(userAnswers = Some(emptyUserAnswers))
+                .overrides(bind[CommodityService].toInstance(mockCommodityService))
                 .build()
 
             running(application) {
@@ -680,7 +691,8 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             applicationBuilder(userAnswers = Some(userAnswers))
               .overrides(
                 bind[GoodsRecordConnector].toInstance(mockConnector),
-                bind[AuditService].toInstance(mockAuditService)
+                bind[AuditService].toInstance(mockAuditService),
+                bind[CommodityService].toInstance(mockCommodityService)
               )
               .build()
 
@@ -972,6 +984,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
             val application =
               applicationBuilder(userAnswers = Some(emptyUserAnswers))
+                .overrides(bind[CommodityService].toInstance(mockCommodityService))
                 .build()
 
             running(application) {
@@ -1105,6 +1118,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           val application      = applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(bind[AuditService].toInstance(mockAuditService))
             .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
+            .overrides(bind[CommodityService].toInstance(mockCommodityService))
             .build()
 
           running(application) {
@@ -1155,6 +1169,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           val application = applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(bind[AuditService].toInstance(mockAuditService))
             .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
+            .overrides(bind[CommodityService].toInstance(mockCommodityService))
             .build()
 
           running(application) {
@@ -1281,6 +1296,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
                   bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
                 )
                 .overrides(bind[AuditService].toInstance(mockAuditService))
+                .overrides(bind[CommodityService].toInstance(mockCommodityService))
                 .build()
 
             running(application) {
@@ -1357,7 +1373,8 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
                 .overrides(
                   bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
                   bind[SessionRepository].toInstance(mockSessionRepository),
-                  bind[AuditService].toInstance(mockAuditService)
+                  bind[AuditService].toInstance(mockAuditService),
+                  bind[CommodityService].toInstance(mockCommodityService)
                 )
                 .build()
 
@@ -1418,7 +1435,8 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               applicationBuilder(userAnswers = Some(userAnswers))
                 .overrides(
                   bind[GoodsRecordConnector].toInstance(mockConnector),
-                  bind[AuditService].toInstance(mockAuditService)
+                  bind[AuditService].toInstance(mockAuditService),
+                  bind[CommodityService].toInstance(mockCommodityService)
                 )
                 .build()
 
@@ -1460,6 +1478,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             val application =
               applicationBuilder(userAnswers = Some(emptyUserAnswers))
                 .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
+                .overrides(bind[CommodityService].toInstance(mockCommodityService))
                 .build()
 
             running(application) {
@@ -1528,6 +1547,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             applicationBuilder(userAnswers = Some(userAnswers))
               .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
               .overrides(bind[AuditService].toInstance(mockAuditService))
+              .overrides(bind[CommodityService].toInstance(mockCommodityService))
               .build()
 
           running(application) {

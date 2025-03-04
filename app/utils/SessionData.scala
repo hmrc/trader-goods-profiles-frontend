@@ -61,7 +61,6 @@ case object SessionData {
   val longerCommodityQuery                   = "longerCommodity"
   val withDrawAdviceStartPage: String        = "withdrawAdviceStart"
   val reasonForWithdrawAdvicePage: String    = "reasonForWithdrawAdvice"
-  val fromExpiredCommodityCodePage: String   = "fromExpiredCommodityCodePage"
   val useExistingUkimsNumberPage: String     = "useExistingUkimsNumberPage"
   val historicProfileDataQuery: String       = "historicProfileData"
   val hasLongComCodeQuery: String            = "hasLongComCode"
