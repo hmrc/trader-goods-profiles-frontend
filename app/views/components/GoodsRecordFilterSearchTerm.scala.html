@@ -58,11 +58,11 @@ config: FrontendAppConfig
 }
 
     @if(searchForm.countryOfOrigin.nonEmpty) {
-   `     <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock" lang="en">
+        <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock" lang="en">
                 @messages("goodsRecordSearchResult.p6", {
                 countries.find(_.id == searchForm.countryOfOrigin.getOrElse("")).map(_.description).getOrElse("")
                 })
-        </li>`
+        </li>
     }
 </ul>
 }
