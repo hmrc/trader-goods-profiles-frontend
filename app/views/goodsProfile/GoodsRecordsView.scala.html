@@ -71,7 +71,7 @@
                     case 1  => messages("goodsRecords.title.singleRecord")
                     case _  =>
                         pagination.items match {
-                            case Some(items) if items.size > 1 => messages("goodsRecords.title.withPageFilter", page.toString,page, items.size.toString)
+                            case Some(items) if items.size > 1 => messages("goodsRecords.title.withPageFilter", totalRecords, page.toString,page, items.size.toString)
                             case _ => messages("goodsRecords.title")
                         }
                     }
