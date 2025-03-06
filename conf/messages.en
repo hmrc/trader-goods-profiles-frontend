@@ -194,10 +194,10 @@ commodityCode.heading = What is the commodity code for your goods?
 commodityCode.hint = The commodity code can be 6, 8 or 10 digits.
 commodityCode.error.required = Enter a commodity code
 commodityCode.error.invalidFormat = Enter a commodity code in the correct format
-commodityCode.error.invalid = Enter a real commodity code
+commodityCode.error.invalid = Enter a valid commodity code
 commodityCode.checkYourAnswersLabel = Commodity code
 commodityCode.change.hidden = Commodity code
-commodityCode.error.expired = This commodity code has expired. Enter a valid commodity code
+commodityCode.error.expired = Enter a valid commodity code
 
 countryOfOrigin.title = Country of origin
 countryOfOrigin.h1 = Country of origin
@@ -407,7 +407,7 @@ longerCommodityCode.linkText = Search for a commodity code on the Online Tariff 
 longerCommodityCode.checkYourAnswersLabel = Longer commodity code
 longerCommodityCode.error.required = Enter 2 or 4 digits
 longerCommodityCode.error.invalidFormat = Enter a commodity code in the correct format
-longerCommodityCode.error.invalid = Enter a real commodity code
+longerCommodityCode.error.invalid = Enter a valid commodity code
 longerCommodityCode.change.hidden = LongerCommodityCode
 
 previousMovementRecords.title = Previous movement records

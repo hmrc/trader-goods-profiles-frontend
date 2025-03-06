@@ -27,15 +27,15 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.*
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
+import play.api.http.Status.NOT_FOUND
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.core.AffinityGroup
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import utils.Clock
 import utils.Constants.{countryOfOriginKey, goodsDescriptionKey}
 
 import java.time.Instant
-import java.time.temporal.ChronoUnit
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -94,12 +94,29 @@ class CommodityServiceSpec extends SpecBase with BeforeAndAfterEach with Generat
           .futureValue mustBe true
       }
 
+      "must return false when passed country of origin and the commodity code and NOT_FOUND is returned" in {
+        when(mockOttConnector.getCommodityCode(any(), any(), any(), any(), any(), any())(any()))
+          .thenReturn(Future.failed(UpstreamErrorResponse("not found", NOT_FOUND)))
+
+        commodityService
+          .isCommodityCodeValid(mockGoodsRecordResponse.comcode, mockGoodsRecordResponse.countryOfOrigin)(request, hc)
+          .futureValue mustBe false
+      }
+
       "must return the correct value when passed a recordId" in {
         when(mockGoodsRecordsConnector.getRecord(any())(any())).thenReturn(Future.successful(mockGoodsRecordResponse))
         when(mockOttConnector.getCommodityCode(any(), any(), any(), any(), any(), any())(any()))
           .thenReturn(Future.successful(validCommodity))
 
         commodityService.isCommodityCodeValid(mockGoodsRecordResponse.recordId)(request, hc).futureValue mustBe true
+      }
+
+      "must return false when passed a recordId and NOT_FOUND is returned" in {
+        when(mockGoodsRecordsConnector.getRecord(any())(any())).thenReturn(Future.successful(mockGoodsRecordResponse))
+        when(mockOttConnector.getCommodityCode(any(), any(), any(), any(), any(), any())(any()))
+          .thenReturn(Future.failed(UpstreamErrorResponse("not found", NOT_FOUND)))
+
+        commodityService.isCommodityCodeValid(mockGoodsRecordResponse.recordId)(request, hc).futureValue mustBe false
       }
     }
     "fetchRecordValues" - {
@@ -112,11 +129,18 @@ class CommodityServiceSpec extends SpecBase with BeforeAndAfterEach with Generat
       }
     }
     "fetchCommodity" - {
-      "must return commodity information" in {
+      "must return commodity information if valid commodity code" in {
         when(mockOttConnector.getCommodityCode(any(), any(), any(), any(), any(), any())(any()))
           .thenReturn(Future.successful(validCommodity))
 
-        commodityService.fetchCommodity("170200", "GB")(request, hc).futureValue mustBe validCommodity
+        commodityService.fetchCommodity("170200", "GB")(request, hc).futureValue mustBe Some(validCommodity)
+      }
+
+      "must return none if a not found upstream error response" in {
+        when(mockOttConnector.getCommodityCode(any(), any(), any(), any(), any(), any())(any()))
+          .thenReturn(Future.failed(UpstreamErrorResponse("not found", NOT_FOUND)))
+
+        commodityService.fetchCommodity("170200", "GB")(request, hc).futureValue mustBe None
       }
     }
 

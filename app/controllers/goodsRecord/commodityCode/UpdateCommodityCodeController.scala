@@ -18,24 +18,23 @@ package controllers.goodsRecord.commodityCode
 
 import connectors.OttConnector
 import controllers.BaseController
-import controllers.actions._
+import controllers.actions.*
 import forms.goodsRecord.CommodityCodeFormProvider
 import models.helper.{CreateRecordJourney, GoodsDetailsUpdate}
 import models.requests.DataRequest
 import models.{Commodity, Mode}
 import navigation.GoodsRecordNavigator
-import pages.goodsRecord._
+import pages.goodsRecord.*
 import play.api.data.{Form, FormError}
 import play.api.i18n.MessagesApi
-import play.api.mvc._
+import play.api.mvc.*
 import queries.CommodityUpdateQuery
 import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.http.UpstreamErrorResponse
-import utils.SessionData._
+import utils.SessionData.*
 import views.html.goodsRecord.CommodityCodeView
 
-import java.time.{LocalDate, ZoneId}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -143,12 +142,8 @@ class UpdateCommodityCodeController @Inject() (
     isValueChanged: Boolean,
     onSubmitAction: Call,
     mode: Mode
-  )(implicit request: DataRequest[AnyContent]): Future[Result] = {
-    val todayInstant = LocalDate.now(ZoneId.of("UTC")).atStartOfDay(ZoneId.of("UTC")).toInstant
-    if (
-      todayInstant.isBefore(commodity.validityStartDate) ||
-      commodity.validityEndDate.exists(todayInstant.isAfter)
-    ) {
+  )(implicit request: DataRequest[AnyContent]): Future[Result] =
+    if (!commodity.isValid) {
       val formWithErrors = createFormWithErrors(form, value, "commodityCode.error.expired")
       Future.successful(BadRequest(view(formWithErrors, onSubmitAction, mode, Some(recordId))))
     } else {
@@ -163,6 +158,5 @@ class UpdateCommodityCodeController @Inject() (
         .addingToSession(dataUpdated -> isValueChanged.toString)
         .addingToSession(pageUpdated -> commodityCode)
     }
-  }
 
 }

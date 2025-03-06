@@ -21,8 +21,9 @@ import models.Commodity
 import models.helper.ValidateCommodityCode
 import models.requests.DataRequest
 import play.api.Logging
+import play.api.http.Status.NOT_FOUND
 import play.api.mvc.AnyContent
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -37,14 +38,20 @@ class CommodityService @Inject() (
     recordId: String
   )(implicit request: DataRequest[AnyContent], hc: HeaderCarrier): Future[Boolean] =
     fetchRecordValues(recordId).flatMap { (commodityCode, countryOfOrigin) =>
-      fetchCommodity(commodityCode, countryOfOrigin).map(_.isValid)
+      fetchCommodity(commodityCode, countryOfOrigin).map {
+        case Some(commodity) => commodity.isValid
+        case _               => false
+      }
     }
 
   def isCommodityCodeValid(commodityCode: String, countryOfOrigin: String)(implicit
     request: DataRequest[AnyContent],
     hc: HeaderCarrier
   ): Future[Boolean] =
-    fetchCommodity(commodityCode, countryOfOrigin).map(_.isValid)
+    fetchCommodity(commodityCode, countryOfOrigin).map {
+      case Some(commodity) => commodity.isValid
+      case _               => false
+    }
 
   def fetchRecordValues(
     recordId: String
@@ -56,14 +63,19 @@ class CommodityService @Inject() (
   def fetchCommodity(
     commodityCode: String,
     countryOfOrigin: String
-  )(implicit request: DataRequest[AnyContent], hc: HeaderCarrier): Future[Commodity] =
-    ottConnector.getCommodityCode(
-      commodityCode,
-      request.eori,
-      request.affinityGroup,
-      ValidateCommodityCode,
-      countryOfOrigin,
-      None
-    )
+  )(implicit request: DataRequest[AnyContent], hc: HeaderCarrier): Future[Option[Commodity]] =
+    ottConnector
+      .getCommodityCode(
+        commodityCode,
+        request.eori,
+        request.affinityGroup,
+        ValidateCommodityCode,
+        countryOfOrigin,
+        None
+      )
+      .map(response => Some(response))
+      .recover { case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
+        None
+      }
 
 }

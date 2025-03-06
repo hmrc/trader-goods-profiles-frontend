@@ -346,7 +346,7 @@ class UpdateCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
             FakeRequest(POST, commodityCodeRoute)
               .withFormUrlEncodedBody(("value", "654321"))
 
-          val boundForm = form.copy(errors = Seq(elems = FormError("value", "Enter a real commodity code")))
+          val boundForm = form.copy(errors = Seq(elems = FormError("value", "Enter a valid commodity code")))
 
           val view = application.injector.instanceOf[CommodityCodeView]
 
@@ -377,7 +377,7 @@ class UpdateCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
             Commodity(
               "654321",
               List("Class level1 desc", "Class level2 desc", "Class level3 desc"),
-              Instant.now,
+              Instant.now.plus(1, java.time.temporal.ChronoUnit.DAYS),
               None
             )
           )
@@ -407,9 +407,7 @@ class UpdateCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
           val boundForm = form
             .fill("654321")
-            .copy(errors =
-              Seq(elems = FormError("value", "This commodity code has expired. Enter a valid commodity code"))
-            )
+            .copy(errors = Seq(elems = FormError("value", "Enter a valid commodity code")))
 
           val view = application.injector.instanceOf[CommodityCodeView]
 
