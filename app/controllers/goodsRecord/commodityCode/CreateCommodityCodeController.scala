@@ -18,22 +18,21 @@ package controllers.goodsRecord.commodityCode
 
 import connectors.OttConnector
 import controllers.BaseController
-import controllers.actions._
+import controllers.actions.*
 import forms.goodsRecord.CommodityCodeFormProvider
 import models.helper.CreateRecordJourney
 import models.requests.DataRequest
 import models.{Commodity, Mode}
 import navigation.GoodsRecordNavigator
-import pages.goodsRecord._
+import pages.goodsRecord.*
 import play.api.data.{Form, FormError}
 import play.api.i18n.MessagesApi
-import play.api.mvc._
+import play.api.mvc.*
 import queries.CommodityQuery
 import repositories.SessionRepository
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import views.html.goodsRecord.CommodityCodeView
 
-import java.time.{LocalDate, ZoneId}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -114,12 +113,8 @@ class CreateCommodityCodeController @Inject() (
     value: String,
     onSubmitAction: Call,
     mode: Mode
-  )(implicit request: DataRequest[AnyContent]): Future[Result] = {
-    val todayInstant = LocalDate.now(ZoneId.of("UTC")).atStartOfDay(ZoneId.of("UTC")).toInstant
-    if (
-      todayInstant.isBefore(commodity.validityStartDate) ||
-      commodity.validityEndDate.exists(todayInstant.isAfter)
-    ) {
+  )(implicit request: DataRequest[AnyContent]): Future[Result] =
+    if (!commodity.isValid) {
       val formWithErrors = createFormWithErrors(form, value, "commodityCode.error.expired")
       Future.successful(BadRequest(view(formWithErrors, onSubmitAction, mode, recordId = None)))
     } else {
@@ -130,6 +125,5 @@ class CreateCommodityCodeController @Inject() (
         _                       <- sessionRepository.set(updatedAnswersWithQuery)
       } yield Redirect(navigator.nextPage(CommodityCodePage, mode, updatedAnswersWithQuery))
     }
-  }
 
 }
