@@ -66,21 +66,22 @@
         if(searchForm.searchTerm.isEmpty
                 && searchForm.countryOfOrigin.isEmpty
                 && searchForm.statusValue.isEmpty) {
-            title(form, messages("goodsRecords.title"))
+            pagination.items match {
+                case Some(items) if (items.size > 1) => title(form, messages("goodsRecords.title.withPage", page, items.size))
+                case _ => title(form, messages("goodsRecords.title"))
+            }
         } else {
             totalRecords match {
                 case 0 => title(form, messages("goodsRecords.title.noResults"))
                 case 1 => title(form, messages("goodsRecords.title.singleRecord"))
-                case _ =>
-                    pagination.items match {
-                        case Some(items) if (items.size > 1) => title(form, messages("goodsRecords.title.withPageFilter", totalRecords, page, items.size))
-                        case _ => title(form, messages("goodsRecords.title.withoutPageFilter", totalRecords))
-                    }
+                case _ => pagination.items match {
+                    case Some(items) if (items.size > 1) => title(form, messages("goodsRecords.title.withPageFilter", totalRecords, page, items.size))
+                    case _ => title(form, messages("goodsRecords.title.withoutPageFilter", totalRecords))
+                }
             }
         }
     }
 }
-
 
 
 @layout(pageTitle = preparedTitle, isFullWidth = true) {
