@@ -795,7 +795,7 @@ longerCommodityCode.linkText = Defnyddiwch yr Offeryn Tariff Ar-lein (yn agor ta
 longerCommodityCode.checkYourAnswersLabel = Cod nwyddau hirach
 longerCommodityCode.error.required = Nodwch 2 neu 4 digid
 longerCommodityCode.error.invalidFormat = Nodwch god nwyddau yn y fformat cywir
-longerCommodityCode.error.invalid = Nodwch god nwyddau go iawn
+longerCommodityCode.error.invalid = Nodwch god nwyddau dilys
 longerCommodityCode.change.hidden = LongerCommodityCode
 
 adviceStatus.notRequested = Heb wneud cais am gyngor
