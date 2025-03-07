@@ -29,10 +29,9 @@
         || searchForm.countryOfOrigin.nonEmpty
         || searchForm.statusValue.nonEmpty) {
 
-  <div>
-      <span>@messages("goodsRecords.relatedTo"))</span>
-      <ul class="govuk-list govuk-!-margin-top-1 moj-filter__tag_lock">
-
+  <div class="govuk-!-margin-top-1">
+      <p class="govuk-body govuk-!-margin-bottom-1">@messages("goodsRecords.relatedTo")</p>
+      <ul class="govuk-list moj-filter__tag_lock">
           @searchForm.searchTerm.map { searchTerm => <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock">@messages("goodsRecordSearchResult.p5", searchTerm) </li> }
 
           @if(searchForm.statusValue.nonEmpty) {
