@@ -34,7 +34,8 @@
     hmrcScripts: HmrcScripts,
     betaBanner: StandardBetaBanner,
     twoThirdsMainContent: TwoThirdsMainContent,
-    fullWidthMainContent: fullWidthMainContent
+    fullWidthMainContent: fullWidthMainContent,
+    govukSkipLink: GovukSkipLink
 )
 
 @(
@@ -48,7 +49,7 @@
     isFullWidth: Boolean = false,
     extraHead: Html = HtmlFormat.empty,
     headerShouldHaveServiceLink: Boolean = true,
-    skipLinkBlock: Option[Html] = None
+    additionalSkipLinks: Option[Html] = None
     )(contentBlock: Html)(implicit request: RequestHeader, messages: Messages)
 
 @head = {
@@ -137,6 +138,11 @@
     }
 }
 
+@skipLinkBlock = {
+    @govukSkipLink(SkipLink(href = "#main-content", content = Text(messages("site.skipToMainContent"))))
+    @additionalSkipLinks
+}
+
 @govukTemplate(
     htmlLang = Some(messages.lang.code),
     pageTitle   = Some(pageTitle),
@@ -145,5 +151,5 @@
     beforeContentBlock = Some(beforeContent),
     footerBlock        = hmrcStandardFooter(),
     bodyEndBlock       = Some(additionalScripts),
-    skipLinkBlock = skipLinkBlock
+    skipLinkBlock = Some(skipLinkBlock)
 )(content)

@@ -84,15 +84,14 @@
     }
 }
 
-@skipLinkBlock = {
-    @govukSkipLink(SkipLink(href = "#main-content", content = Text(messages("site.skipToMainContent"))))
+@additionalSkipLinks = {
     @if(totalRecords > 0) {
         @govukSkipLink(SkipLink(href = "#goodsRecords", content = Text(messages("goodsRecords.skip.record"))))
     }
 }
 
 
-@layout(pageTitle = preparedTitle, isFullWidth = true, skipLinkBlock = Some(skipLinkBlock)) {
+@layout(pageTitle = preparedTitle, isFullWidth = true, additionalSkipLinks = Some(additionalSkipLinks)) {
 
     @if(form.errors.nonEmpty) {
         @govukErrorSummary(ErrorSummaryViewModel(form))
