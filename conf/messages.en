@@ -17,6 +17,7 @@ site.apply = Apply
 site.clear = Clear
 site.goToHomePage = Go to homepage
 site.view = View
+site.skipToMainContent = Skip to main content
 
 site.goBackToGoodsRecord = Go back to goods record
 site.goBackToGoodsProfile = Go back to goods profile
