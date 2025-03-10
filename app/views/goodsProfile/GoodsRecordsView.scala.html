@@ -22,7 +22,7 @@
 
 @this(
         appConfig: FrontendAppConfig,
-        layout: templates.Layout,
+        layout: templates.LayoutWithSkipBlock,
         formHelper: FormWithCSRF,
         govukErrorSummary: GovukErrorSummary,
         govukInput: GovukInput,
@@ -38,7 +38,8 @@
         link: components.link,
         goodsRecordFilterForm: components.GoodsRecordFilterForm,
         goodsRecordSearchFeature: components.GoodsRecordSearchFeature,
-        goodsRecordFilterSearchTerm: components.GoodsRecordFilterSearchTerm
+        goodsRecordFilterSearchTerm: components.GoodsRecordFilterSearchTerm,
+        govukSkipLink: GovukSkipLink
 )
 
 @(
@@ -83,12 +84,15 @@
     }
 }
 
-
-@layout(pageTitle = preparedTitle, isFullWidth = true) {
-
+@skipLinkBlock = {
+    @govukSkipLink(SkipLink(href = "#main-content", content = Text(messages("site.skipToMainContent"))))
     @if(totalRecords > 0) {
-        <a href="#goodsRecords" class="govuk-skip-link" data-module="govuk-skip-link">@messages("goodsRecords.skip.record")</a>
+        @govukSkipLink(SkipLink(href = "#goodsRecords", content = Text(messages("goodsRecords.skip.record"))))
     }
+}
+
+
+@layout(pageTitle = preparedTitle, isFullWidth = true, skipLinkBlock = Some(skipLinkBlock)) {
 
     @if(form.errors.nonEmpty) {
         @govukErrorSummary(ErrorSummaryViewModel(form))

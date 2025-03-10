@@ -22,6 +22,7 @@ site.view = Bwrw golwg
 
 site.apply = Defnyddio
 site.clear = Clirio
+site.skipToMainContent = Ewch yn syth i‘r prif gynnwys
 
 
 date.day = Diwrnod
