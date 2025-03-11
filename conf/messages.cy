@@ -547,7 +547,7 @@ goodsRecords.record.clear = Clirio Opsiynau chwilio a hidlo
 goodsRecords.record.search = Defnyddio Opsiynau chwilio a hidlo
 
 goodsRecords.title.withoutPageFilter = Wedi dod o hyd i {0} o gofnodion - Proffil Nwyddau
-goodsRecords.title.withPageFilter =  Wedi dod o hyd i {0} o gofnodion - Proffil Nwyddau (page {1} of {2})
+goodsRecords.title.withPageFilter =  Wedi dod o hyd i {0} o gofnodion - Proffil Nwyddau - page {1} of {2}
 goodsRecords.relatedTo = Mewn perthynas â’r canlynol
 
 goodsRecords.search.1 = Gallwch ddod o hyd i gofnodion nwyddau penodol drwy ddefnyddio’r nodweddion chwilio a hidlo. Mae pob maes yn ddewisol.
