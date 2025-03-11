@@ -79,7 +79,7 @@ class GoodsRecordsController @Inject() (
                 view(
                   form,
                   goodsRecordsResponse.goodsItemRecords,
-                  goodsRecordsResponse.pagination.totalRecords,
+                  goodsRecordsResponse.pagination,
                   firstRecord,
                   getLastRecordIndex(firstRecord, goodsRecordsResponse.goodsItemRecords.size),
                   countries,
@@ -130,7 +130,7 @@ class GoodsRecordsController @Inject() (
             view(
               formWithErrors,
               goodsRecordsResponse.goodsItemRecords,
-              goodsRecordsResponse.pagination.totalRecords,
+              goodsRecordsResponse.pagination,
               firstRecord,
               getLastRecordIndex(firstRecord, pageSize),
               countries,
@@ -221,7 +221,7 @@ class GoodsRecordsController @Inject() (
         view(
           SearchForm.form.fill(searchText),
           searchResponse.goodsItemRecords,
-          searchResponse.pagination.totalRecords,
+          searchResponse.pagination,
           firstRecord,
           getLastRecordIndex(firstRecord, searchResponse.goodsItemRecords.size),
           countries,
