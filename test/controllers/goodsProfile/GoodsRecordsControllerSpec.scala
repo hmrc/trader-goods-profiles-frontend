@@ -161,7 +161,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
           contentAsString(result) mustEqual view(
             form,
             response.goodsItemRecords,
-            totalRecords,
+            response.pagination,
             firstRecord,
             lastRecord,
             Seq(Country("EC", "Ecuador")),
@@ -211,7 +211,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
           contentAsString(result) mustEqual view(
             form,
             response.goodsItemRecords,
-            totalRecords,
+            response.pagination,
             firstRecord,
             lastRecord,
             Seq(Country("EC", "Ecuador")),
@@ -261,7 +261,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
           contentAsString(result) mustEqual view(
             form,
             response.goodsItemRecords,
-            totalRecords,
+            response.pagination,
             firstRecord,
             lastRecord,
             Seq(Country("EC", "Ecuador")),
@@ -311,7 +311,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
           contentAsString(result) mustEqual view(
             form,
             response.goodsItemRecords,
-            totalRecords,
+            response.pagination,
             firstRecord,
             lastRecord,
             Seq(Country("EC", "Ecuador")),
@@ -434,7 +434,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar {
         contentAsString(result) mustEqual view(
           form,
           response.goodsItemRecords,
-          totalRecords,
+          response.pagination,
           firstRecord,
           lastRecord,
           Seq(Country("EC", "Ecuador")),

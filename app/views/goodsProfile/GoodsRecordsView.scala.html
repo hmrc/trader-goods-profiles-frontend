@@ -45,7 +45,7 @@
 @(
         form: Form[_],
         goodsRecordsItems: Seq[GetGoodsRecordResponse],
-        totalRecords: Int,
+        goodsRecordsPagination: GoodsRecordsPagination,
         firstRecord: Int,
         lastRecord: Int,
         countries: Seq[Country],
@@ -60,7 +60,7 @@
 @preparedTitle = @{
     if(!appConfig.enhancedSearch) {
         pagination.items match {
-            case Some(items) if (items.size > 1) => title(form, messages("goodsRecords.title.withPage", page, items.size))
+            case Some(items) if (items.size > 1) => title(form, messages("goodsRecords.title.withPage", page, goodsRecordsPagination.totalPages))
             case _ => title(form, messages("goodsRecords.title"))
         }
     } else {
@@ -68,16 +68,16 @@
                 && searchForm.countryOfOrigin.isEmpty
                 && searchForm.statusValue.isEmpty) {
             pagination.items match {
-                case Some(items) if (items.size > 1) => title(form, messages("goodsRecords.title.withPage", page, items.size))
+                case Some(items) if (items.size > 1) => title(form, messages("goodsRecords.title.withPage", page, goodsRecordsPagination.totalPages))
                 case _ => title(form, messages("goodsRecords.title"))
             }
         } else {
-            totalRecords match {
+            goodsRecordsPagination.totalRecords match {
                 case 0 => title(form, messages("goodsRecords.title.noResults"))
                 case 1 => title(form, messages("goodsRecords.title.singleRecord"))
                 case _ => pagination.items match {
-                    case Some(items) if (items.size > 1) => title(form, messages("goodsRecords.title.withPageFilter", totalRecords, page, items.size))
-                    case _ => title(form, messages("goodsRecords.title.withoutPageFilter", totalRecords))
+                    case Some(items) if (items.size > 1) => title(form, messages("goodsRecords.title.withPageFilter", goodsRecordsPagination.totalRecords, page, goodsRecordsPagination.totalPages))
+                    case _ => title(form, messages("goodsRecords.title.withoutPageFilter", goodsRecordsPagination.totalRecords))
                 }
             }
         }
@@ -85,7 +85,7 @@
 }
 
 @additionalSkipLinks = {
-    @if(totalRecords > 0) {
+    @if(goodsRecordsPagination.totalRecords > 0) {
         @govukSkipLink(SkipLink(href = "#goodsRecords", content = Text(messages("goodsRecords.skip.record"))))
     }
 }
@@ -106,10 +106,10 @@
                     || searchForm.countryOfOrigin.nonEmpty
                     || searchForm.statusValue.nonEmpty) {
                 <span class="govuk-caption-l">@messages("goodsRecords.title")</span>
-                @if(totalRecords == 1) {
+                @if(goodsRecordsPagination.totalRecords == 1) {
                     <h1 class="govuk-heading-l"> @messages("goodsRecordSearchResult.singleRecord")</h1>
-                } else if(totalRecords > 0) {
-                <h1 class="govuk-heading-l"> @messages("goodsRecordSearchResult.p2", totalRecords.toString())</h1>
+                } else if(goodsRecordsPagination.totalRecords > 0) {
+                <h1 class="govuk-heading-l"> @messages("goodsRecordSearchResult.p2", goodsRecordsPagination.totalRecords.toString())</h1>
                 } else  {
                 <h1 class="govuk-heading-l"> @messages("goodsRecordSearchResult.noRecordsHeading")</h1>
                 <p class="govuk-body"> @messages("goodsRecordSearchResult.noRecordsParagraph")</p>
@@ -122,7 +122,7 @@
 
                 <div class="govuk-grid-column-two-thirds govuk-!-padding-left-20">
 
-                    @if(totalRecords > 0) {
+                    @if(goodsRecordsPagination.totalRecords > 0) {
                         <h2 class="govuk-heading-m">@messages("goodsRecords.h2.1")</h2>
                         @paragraphBody(messages("goodsRecords.p1"))
 
@@ -159,26 +159,26 @@
 
     }
 
-    @if(totalRecords > 0) {
+    @if(goodsRecordsPagination.totalRecords > 0) {
 
         <div class="govuk-grid-column-full govuk-!-margin-top-4">
             <h2 class="govuk-heading-m" id="goodsRecords">@messages("goodsRecords.record.list")</h2>
             @if(!appConfig.enhancedSearch || (searchForm.searchTerm.isEmpty
                     && searchForm.countryOfOrigin.isEmpty
                     && searchForm.statusValue.isEmpty)) {
-                @if(totalRecords > pageSize) {
+                @if(goodsRecordsPagination.totalRecords > pageSize) {
                     <p class="govuk-body">
                     @Html(messages("goodsRecords.pagination", boldWrapper(firstRecord.toString()),
-                        boldWrapper(lastRecord.toString()), boldWrapper(totalRecords.toString())))</p>
+                        boldWrapper(lastRecord.toString()), boldWrapper(goodsRecordsPagination.totalRecords.toString())))</p>
                 } else {
                     <p class="govuk-body">
-                    @Html(messages("goodsRecords.pagination.less", boldWrapper(totalRecords.toString())))</p>
+                    @Html(messages("goodsRecords.pagination.less", boldWrapper(goodsRecordsPagination.totalRecords.toString())))</p>
                 }
             } else {
-                @if(totalRecords == 1) {
-                    <p class="govuk-body">@Html(messages("goodsRecords.pagination.singleRecord", boldWrapper(totalRecords.toString())))</p>
+                @if(goodsRecordsPagination.totalRecords == 1) {
+                    <p class="govuk-body">@Html(messages("goodsRecords.pagination.singleRecord", boldWrapper(goodsRecordsPagination.totalRecords.toString())))</p>
                 } else {
-                    <p class="govuk-body">@Html(messages("goodsRecords.pagination.searchFilter", boldWrapper(totalRecords.toString())))</p>
+                    <p class="govuk-body">@Html(messages("goodsRecords.pagination.searchFilter", boldWrapper(goodsRecordsPagination.totalRecords.toString())))</p>
                 }
             }
 
