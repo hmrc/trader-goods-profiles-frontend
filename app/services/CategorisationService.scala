@@ -161,11 +161,11 @@ class CategorisationService @Inject() (
   ): Scenario = {
 
     val areThereCategory1AnsweredNo   =
-      listOfAnswers.exists(ass => ass.answer.contains(AssessmentAnswer.NoExemption) && ass.question.isCategory1)
+      listOfAnswers.exists(ass => ass.answer.contains(AssessmentAnswer.NoExemption) && ass.question.isCategory1) // Same again for this, there is no category 1s so we are checking an empty list
     val areThereCategory2AnsweredNo   =
       listOfAnswers.exists(ass => ass.answer.contains(AssessmentAnswer.NoExemption) && ass.question.isCategory2)
     val areThereCategory1Unanswerable =
-      categorisationInfo.categoryAssessments.exists(ass => ass.isCategory1 && ass.hasNoAnswers)
+      categorisationInfo.categoryAssessments.exists(ass => ass.isCategory1 && ass.hasNoAnswers) // Would it not class as unanswerable as it does not exist???
     val areThereCategory2Unanswerable =
       categorisationInfo.categoryAssessments.exists(ass => ass.isCategory2 && ass.hasNoAnswers)
 

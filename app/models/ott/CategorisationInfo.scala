@@ -117,7 +117,7 @@ object CategorisationInfo {
         val category1ToAnswer = category1Assessments.filter(ass => !ass.hasNoAnswers).filter(ass => !ass.isNiphlAnswer)
         val category2ToAnswer = category2Assessments.filter(ass => !ass.hasNoAnswers).filter(ass => !ass.isNirmsAnswer)
 
-        val areAllCategory1Answerable = category1ToAnswer.size == category1Assessments.size
+        val areAllCategory1Answerable = false // category1ToAnswer.size == category1Assessments.size // giving true, but Is this potentially faulty logic? 0 assessments and 0 category 1s, but category 1 does not exist so is it answerable?
         val areAllCategory2Answerable = category2ToAnswer.size == category2Assessments.size
 
         val isNiphlAssessment =
