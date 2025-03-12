@@ -103,8 +103,10 @@ class CategorisationService @Inject() (
           LocalDate.now()
         )
         .flatMap { response =>
+          println(s"\n OTT Response: ${response} \n")
           CategorisationInfo.build(response, country, commodityCode, profile, longerCode) match {
             case Some(categorisationInfo) =>
+              println(s"\n CategorisationInfo.build: \n$categorisationInfo \n")
               Future.successful(categorisationInfo)
 
             case None =>

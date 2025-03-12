@@ -104,7 +104,11 @@ object CategorisationInfo {
     longerCode: Boolean = false
   ): Option[CategorisationInfo] =
     ott.categoryAssessmentRelationships
-      .map(x => CategoryAssessment.build(x.id, ott))
+      .map{x =>
+        val y = CategoryAssessment.build(x.id, ott)
+        println(s"\n CategoryAssessment.build: ${y} \n")
+        y
+      }
       .sequence
       .map { assessments =>
         val assessmentsSorted = assessments.sorted
@@ -141,6 +145,20 @@ object CategorisationInfo {
             category1ToAnswer ++ category2ToAnswer
           }
         }
+
+        println(s"" +
+          s"assessmentsSorted: ${assessmentsSorted}\n" +
+          s"category1Assessments: ${category1Assessments}\n" +
+          s"category2Assessments: ${category2Assessments}\n" +
+          s"category1ToAnswer: ${category1ToAnswer}\n" +
+          s"category2ToAnswer: ${category2ToAnswer}\n" +
+          s"areAllCategory1Answerable: ${areAllCategory1Answerable}\n" +
+          s"areAllCategory2Answerable: ${areAllCategory2Answerable}\n" +
+          s"isNiphlAssessment: ${isNiphlAssessment}\n" +
+          s"isNirmsAssessment: ${isNirmsAssessment}\n" +
+          s"isTraderNiphlAuthorised: ${isTraderNiphlAuthorised}\n" +
+          s"isTraderNirmsAuthorised: ${isTraderNirmsAuthorised}"
+        )
 
         CategorisationInfo(
           commodityCodeUserEntered,
