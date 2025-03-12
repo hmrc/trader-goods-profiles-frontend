@@ -104,13 +104,11 @@ object CategorisationInfo {
     longerCode: Boolean = false
   ): Option[CategorisationInfo] =
     ott.categoryAssessmentRelationships
-      .map{x =>
-        val y = CategoryAssessment.build(x.id, ott)
-        println(s"\n CategoryAssessment.build: ${y} \n")
-        y
-      }
+      .map(x => CategoryAssessment.build(x.id, ott))
       .sequence
       .map { assessments =>
+
+        println("\n\n ********** START **********\n\n")
         val assessmentsSorted = assessments.sorted
 
         val category1Assessments = assessmentsSorted.filter(ass => ass.isCategory1)
@@ -160,7 +158,10 @@ object CategorisationInfo {
           s"isTraderNirmsAuthorised: ${isTraderNirmsAuthorised}"
         )
 
-        CategorisationInfo(
+        println(s"\n\n ********** $questionsToAnswer **********\n\n")
+
+
+        val x = CategorisationInfo(
           commodityCodeUserEntered,
           countryOfOrigin,
           ott.goodsNomenclature.validityEndDate,
@@ -172,6 +173,9 @@ object CategorisationInfo {
           isTraderNiphlAuthorised,
           isTraderNirmsAuthorised
         )
+
+        println(s"Category Info: \n\n ${x} \n\n")
+        x
       }
 
   implicit lazy val format: OFormat[CategorisationInfo] = Json.format

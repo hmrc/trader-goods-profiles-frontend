@@ -103,10 +103,11 @@ class CategorisationService @Inject() (
           LocalDate.now()
         )
         .flatMap { response =>
-          println(s"\n OTT Response: ${response} \n")
+//          println(s"\n OTT Response: ${response} \n")
+          println(s"\n OTT relationships: ${response.categoryAssessmentRelationships} \n")
           CategorisationInfo.build(response, country, commodityCode, profile, longerCode) match {
             case Some(categorisationInfo) =>
-              println(s"\n CategorisationInfo.build: \n$categorisationInfo \n")
+//              println(s"\n CategorisationInfo.build: \n$categorisationInfo \n")
               Future.successful(categorisationInfo)
 
             case None =>
@@ -168,14 +169,21 @@ class CategorisationService @Inject() (
     val areThereCategory2Unanswerable =
       categorisationInfo.categoryAssessments.exists(ass => ass.isCategory2 && ass.hasNoAnswers)
 
+    println(s"\n ncalculateResultWithNirms\n " +
+      s"areThereCategory1AnsweredNo: $areThereCategory1AnsweredNo \n " +
+      s"areThereCategory2AnsweredNo: $areThereCategory2AnsweredNo \n " +
+      s"areThereCategory1Unanswerable: $areThereCategory1Unanswerable \n " +
+      s"areThereCategory2Unanswerable: $areThereCategory2Unanswerable")
+
     if (categorisationInfo.isNirmsAssessment && !areThereCategory1Unanswerable) {
 
       if (areThereCategory1AnsweredNo) {
         Category1Scenario
       } else if (
-        !categorisationInfo.isTraderNirmsAuthorised || areThereCategory2AnsweredNo || areThereCategory2Unanswerable
+        !categorisationInfo.isTraderNirmsAuthorised || areThereCategory2AnsweredNo || areThereCategory2Unanswerable // If the trader is not NIRMS authorised, there are no cat 2 answered and category 2 is answered go to category 2?
       ) {
-        Category2Scenario
+        println("\n 1905319900 hitting Category2Scenario of calculateResultWithNirms \n")
+        Category2Scenario // Hitting here for 1905319900
       } else {
         StandardGoodsScenario
       }
