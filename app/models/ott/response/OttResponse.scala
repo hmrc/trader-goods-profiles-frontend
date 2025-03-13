@@ -16,8 +16,8 @@
 
 package models.ott.response
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
+import play.api.libs.functional.syntax.*
+import play.api.libs.json.*
 
 final case class OttResponse(
   goodsNomenclature: GoodsNomenclatureResponse,
@@ -59,10 +59,21 @@ final case class OttResponse(
 
 object OttResponse {
 
+  private val categoryAssessmentReads: Reads[Seq[CategoryAssessmentRelationship]] = {
+    val applicableCategoryAssessments = (__ \ "data" \ "relationships" \ "applicable_category_assessments" \ "data")
+      .read[Seq[CategoryAssessmentRelationship]]
+    val descendantCategoryAssessments = (__ \ "data" \ "relationships" \ "descendant_category_assessments" \ "data")
+      .read[Seq[CategoryAssessmentRelationship]]
+
+    for {
+      applicableCategoryAssessments <- applicableCategoryAssessments
+      descendantCategoryAssessments <- descendantCategoryAssessments
+    } yield applicableCategoryAssessments ++ descendantCategoryAssessments
+  }
+
   implicit lazy val reads: Reads[OttResponse] = (
     __.read[GoodsNomenclatureResponse] and
-      (__ \ "data" \ "relationships" \ "applicable_category_assessments" \ "data")
-        .read[Seq[CategoryAssessmentRelationship]] and
+      categoryAssessmentReads and
       (__ \ "included").read[Seq[IncludedElement]] and
       (__ \ "data" \ "relationships" \ "descendants" \ "data").read[Seq[Descendant]]
   )(OttResponse.apply _)

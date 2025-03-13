@@ -436,6 +436,11 @@ class OttConnectorSpec
                  |          }
                  |        ]
                  |      },
+                 |      "descendant_category_assessments": {
+                 |        "data": [
+                 |
+                 |        ]
+                 |      },
                  |      "descendants": {
                  |        "data": [
                  |          {
