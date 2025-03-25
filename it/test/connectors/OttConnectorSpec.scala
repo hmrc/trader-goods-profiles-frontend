@@ -297,6 +297,115 @@ class OttConnectorSpec
     }
   }
 
+  ".getProductlineSuffix" - {
+
+    "must return productline suffix object" in {
+
+      val body =
+        """
+          |{
+          |  "data": {
+          |    "id": "106662",
+          |    "type": "goods_nomenclature",
+          |    "attributes": {
+          |      "goods_nomenclature_item_id": "2404120000",
+          |      "parent_sid": "106659",
+          |      "description": "Other, containing nicotine",
+          |      "number_indents": 2,
+          |      "productline_suffix": "80",
+          |      "validity_start_date": "2022-01-01T00:00:00.000Z",
+          |      "validity_end_date": null,
+          |      "supplementary_measure_unit": "1000 items (1000 p/st)"
+          |    }
+          |  }
+          | }
+          |""".stripMargin
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/xi/api/v2/green_lanes/goods_nomenclatures/123456?filter%5Bgeographical_area_id%5D=UK"))
+          .willReturn(
+            ok().withBody(body)
+          )
+      )
+
+      val result = connector.getProductlineSuffix("123456", "UK").futureValue
+      result.productlineSuffix mustEqual "80"
+
+    }
+
+    "must return a failed future when the server returns an error" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/xi/api/v2/green_lanes/goods_nomenclatures/123456?filter%5Bgeographical_area_id%5D=UK"))
+          .willReturn(serverError())
+      )
+
+      val connectorFailure = connector.getProductlineSuffix("123456","UK").failed.futureValue
+      connectorFailure.isInstanceOf[UpstreamErrorResponse] mustBe true
+    }
+  }
+
+  ".isCommodityAnEndNode" - {
+
+    "must return true if 200 is returned" in {
+
+      val body =
+        """
+          |{
+          |  "data": {
+          |    "id": "106662",
+          |    "type": "goods_nomenclature",
+          |    "attributes": {
+          |      "goods_nomenclature_item_id": "2404120000",
+          |      "parent_sid": "106659",
+          |      "description": "Other, containing nicotine",
+          |      "number_indents": 2,
+          |      "productline_suffix": "80",
+          |      "validity_start_date": "2022-01-01T00:00:00.000Z",
+          |      "validity_end_date": null,
+          |      "supplementary_measure_unit": "1000 items (1000 p/st)"
+          |    }
+          |  }
+          | }
+          |""".stripMargin
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/xi/api/v2/commodities/123456"))
+          .willReturn(
+            ok().withBody(body)
+          )
+      )
+
+      val result = connector.isCommodityAnEndNode("123456").futureValue
+      result mustEqual true
+
+    }
+
+    "must return false if 404 is returned" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/xi/api/v2/commodities/123456"))
+          .willReturn(
+            notFound()
+          )
+      )
+
+      val result = connector.isCommodityAnEndNode("123456").futureValue
+      result mustEqual false
+    }
+
+    "must return a failed future when the server returns an error other than 404" in {
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(s"/xi/api/v2/commodities/123456"))
+          .willReturn(serverError())
+      )
+
+      val connectorFailure = connector.isCommodityAnEndNode("123456").failed.futureValue
+      connectorFailure.isInstanceOf[UpstreamErrorResponse] mustBe true
+    }
+  }
+
   ".getCategorisationInfo" - {
 
     "must return correct OttResponse object" in {
@@ -404,6 +513,7 @@ class OttConnectorSpec
 
   }
 
+  //scalastyle:off method.length
   private def stubGreenLanes(excludeEndDate: Boolean = false) = {
 
     val validityEndDateField = if (!excludeEndDate) {
@@ -530,4 +640,6 @@ class OttConnectorSpec
         )
     )
   }
+  //scalastyle:on
+
 }

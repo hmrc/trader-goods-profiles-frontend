@@ -18,9 +18,10 @@ package connectors
 
 import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, OttAuditData}
 import models.helper.Journey
-import models.ott.response.{CountriesResponse, OttResponse}
+import models.ott.response.{CountriesResponse, OttResponse, ProductlineSuffix}
 import models.{Commodity, Country, LegacyRawReads}
 import play.api.Configuration
+import play.api.http.Status.{NOT_FOUND, OK}
 import play.api.libs.json.{JsResult, Reads}
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
@@ -52,6 +53,10 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
   private def ottCountriesUrl =
     url"$baseUrl/xi/api/v2/geographical_areas/countries"
 
+  private def ottCommoditiesUrl(commodityCode: String) =
+    url"$baseUrl/xi/api/v2/commodities/$commodityCode"
+
+  //scalastyle:off method.length
   private def getFromOtt[T](
     url: URL,
     auditDetails: Option[OttAuditData]
@@ -110,6 +115,7 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
 
       }
   }
+  //scalastyle:on
 
   def getCommodityCode(
     commodityCode: String,
@@ -179,4 +185,34 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
 
   def getCountries(implicit hc: HeaderCarrier): Future[Seq[Country]] =
     getFromOtt[CountriesResponse](ottCountriesUrl, None).map(_.data.sortWith(_.description < _.description))
+
+  def getProductlineSuffix(commodityCode: String, countryOfOrigin: String)(implicit
+    hc: HeaderCarrier
+  ): Future[ProductlineSuffix] = {
+    val queryParams = Map(
+      "filter[geographical_area_id]" -> countryOfOrigin
+    )
+
+    getFromOtt[ProductlineSuffix](
+      ottGreenLanesUrl(commodityCode, queryParams),
+      None
+    )
+  }
+
+  def isCommodityAnEndNode(commodityCode: String)(implicit hc: HeaderCarrier): Future[Boolean] =
+    httpClient
+      .get(ottCommoditiesUrl(commodityCode))(hc)
+      .execute[HttpResponse]
+      .flatMap { response =>
+        response.status match {
+          case OK        => Future.successful(true)
+          case NOT_FOUND => Future.successful(false)
+          case _         => Future.failed(UpstreamErrorResponse(response.body, response.status))
+        }
+      }
+      .recover {
+        case x: UpstreamErrorResponse if x.statusCode == NOT_FOUND =>
+          false
+      }
+
 }

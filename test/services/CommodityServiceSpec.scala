@@ -21,6 +21,7 @@ import connectors.{GoodsRecordConnector, OttConnector}
 import generators.Generators
 import models.Commodity
 import models.DeclarableStatus.ImmiReady
+import models.ott.response.ProductlineSuffix
 import models.requests.DataRequest
 import models.router.responses.GetGoodsRecordResponse
 import org.mockito.ArgumentMatchers.any
@@ -144,6 +145,38 @@ class CommodityServiceSpec extends SpecBase with BeforeAndAfterEach with Generat
       }
     }
 
-  }
+    "fetchCommodityProductlineSuffix" - {
+      "if a 10 digit commodity code" - {
+        "must return None if the commodity code is an end node" in {
+          when(mockOttConnector.isCommodityAnEndNode(any())(any())).thenReturn(Future.successful(true))
 
+          commodityService.fetchCommodityProductlineSuffix("1702000000", "GB").futureValue mustBe None
+        }
+
+        "must return the productline suffix if the commodity code is not an end node" in {
+          when(mockOttConnector.isCommodityAnEndNode(any())(any())).thenReturn(Future.successful(false))
+          when(mockOttConnector.getProductlineSuffix(any(), any())(any()))
+            .thenReturn(Future.successful(ProductlineSuffix("suffix")))
+
+          commodityService.fetchCommodityProductlineSuffix("1702000000", "GB").futureValue mustBe Some(
+            ProductlineSuffix("suffix")
+          )
+        }
+      }
+
+      "if a 6/8 digit commodity code" - {
+        "must return the productline suffix" in {
+          when(mockOttConnector.getProductlineSuffix(any(), any())(any()))
+            .thenReturn(Future.successful(ProductlineSuffix("suffix")))
+
+          commodityService.fetchCommodityProductlineSuffix("170200", "GB").futureValue mustBe Some(
+            ProductlineSuffix("suffix")
+          )
+          commodityService.fetchCommodityProductlineSuffix("17020000", "GB").futureValue mustBe Some(
+            ProductlineSuffix("suffix")
+          )
+        }
+      }
+    }
+  }
 }

@@ -19,6 +19,7 @@ package services
 import connectors.{GoodsRecordConnector, OttConnector}
 import models.Commodity
 import models.helper.ValidateCommodityCode
+import models.ott.response.ProductlineSuffix
 import models.requests.DataRequest
 import play.api.Logging
 import play.api.http.Status.NOT_FOUND
@@ -78,4 +79,14 @@ class CommodityService @Inject() (
         None
       }
 
+  def fetchCommodityProductlineSuffix(commodityCode: String, countryOfOrigin: String)(implicit
+    hc: HeaderCarrier
+  ): Future[Option[ProductlineSuffix]] = if (commodityCode.length == 10) {
+    ottConnector.isCommodityAnEndNode(commodityCode).flatMap {
+      case true  => Future.successful(None)
+      case false => ottConnector.getProductlineSuffix(commodityCode, countryOfOrigin).map(Some(_))
+    }
+  } else {
+    ottConnector.getProductlineSuffix(commodityCode, countryOfOrigin).map(Some(_))
+  }
 }
