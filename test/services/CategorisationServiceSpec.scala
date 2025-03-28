@@ -331,33 +331,16 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
 
       }
 
-      "if NIPHL is not authorised and has NIPHL assessments" in {
+      "if NIPHL is not authorised and has a NIPHL assessment with other possible exemptions" in {
         val assessment1 = CategoryAssessment(
           "ass1",
           1,
           Seq(
-            Certificate(NiphlCode, "cert1code", "cert1desc")
+            Certificate(NiphlCode, "cert1code", "cert1desc"),
+            AdditionalCode("cert1", "cert1code", "cert1desc")
           ),
           "theme description",
           Some("regulationUrl1")
-        )
-
-        val assessment2 = CategoryAssessment(
-          "ass2",
-          1,
-          Seq(
-            Certificate(NiphlCode, "cert2code", "cert2desc")
-          ),
-          "theme description",
-          Some("regulationUrl2")
-        )
-
-        val assessment3 = CategoryAssessment(
-          "ass3",
-          2,
-          Seq.empty,
-          "theme description",
-          Some("regulationUrl3")
         )
 
         val categorisationInfo = CategorisationInfo(
@@ -365,9 +348,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
           "BV",
           None,
           Seq(
-            assessment1,
-            assessment2,
-            assessment3
+            assessment1
           ),
           Seq.empty,
           None,
@@ -383,7 +364,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
           categorisationInfo,
           userAnswers,
           testRecordId
-        ) mustEqual Category1Scenario
+        ) mustEqual Category1NoExemptionsScenario
       }
 
       "if NIPHL is authorised and has a NIPHL assessments but answer no to another question" in {
@@ -818,7 +799,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
           categorisationInfo,
           userAnswers,
           testRecordId
-        ) mustEqual Category2Scenario
+        ) mustEqual Category2NoExemptionsScenario
 
       }
 
@@ -1031,7 +1012,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
             categorisationInfo,
             userAnswers,
             testRecordId
-          ) mustEqual Category1Scenario
+          ) mustEqual Category1NoExemptionsScenario
         }
         "is authorised but has mixed NIPHL and non-NIPHL assessments" in {
           val assessment1 = CategoryAssessment(
@@ -1071,7 +1052,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
             categorisationInfo,
             userAnswers,
             testRecordId
-          ) mustEqual Category1Scenario
+          ) mustEqual Category1NoExemptionsScenario
         }
 
       }
@@ -1129,7 +1110,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
             categorisationInfo,
             userAnswers,
             testRecordId
-          ) mustEqual Category2Scenario
+          ) mustEqual Category2NoExemptionsScenario
         }
 
         "is authorised and has a NIRMS assessment, no category 1 assessment and category 2 with no exemptions" in {
@@ -1156,7 +1137,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
             categorisationInfo,
             userAnswers,
             testRecordId
-          ) mustEqual Category2Scenario
+          ) mustEqual Category2NoExemptionsScenario
         }
 
         "is not authorised and has a NIRMS assessment, no category 1 assessment and category 2 with no exemptions" in {
@@ -1183,7 +1164,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
             categorisationInfo,
             userAnswers,
             testRecordId
-          ) mustEqual Category2Scenario
+          ) mustEqual Category2NoExemptionsScenario
         }
 
         "is authorised and has a NIRMS assessment, category 1 assessment and category 2 assessments when category 2 assessment answered no" in {
@@ -1318,7 +1299,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
             categorisationInfo,
             userAnswers,
             testRecordId
-          ) mustEqual Category2Scenario
+          ) mustEqual Category2NoExemptionsScenario
         }
       }
 

@@ -133,8 +133,8 @@ class CategorisationService @Inject() (
     val doesAnyCategory2AssessmentHaveExemptions =
       category2Assessments.exists(_.exemptions.nonEmpty)
 
-    if (categorisationInfo.isNiphlAssessment) {
-      if (!categorisationInfo.isTraderNiphlAuthorised || areThereCategory1QuestionsWithNoExemption) {
+    if (categorisationInfo.isNiphlAssessment && categorisationInfo.isTraderNiphlAuthorised) {
+      if (areThereCategory1QuestionsWithNoExemption) {
         Category1Scenario
       } else if (areThereCategory1QuestionsWithNoPossibleAnswers) {
         Category1NoExemptionsScenario
@@ -166,13 +166,13 @@ class CategorisationService @Inject() (
     val areThereCategory2Unanswerable =
       categorisationInfo.categoryAssessments.exists(ass => ass.isCategory2 && ass.hasNoAnswers)
 
-    if (categorisationInfo.isNirmsAssessment && !areThereCategory1Unanswerable) {
+    if (
+      categorisationInfo.isNirmsAssessment && categorisationInfo.isTraderNirmsAuthorised && !areThereCategory1Unanswerable
+    ) {
 
       if (areThereCategory1AnsweredNo) {
         Category1Scenario
-      } else if (
-        !categorisationInfo.isTraderNirmsAuthorised || areThereCategory2AnsweredNo || areThereCategory2Unanswerable
-      ) {
+      } else if (areThereCategory2AnsweredNo || areThereCategory2Unanswerable) {
         Category2Scenario
       } else {
         StandardGoodsScenario
@@ -190,7 +190,10 @@ class CategorisationService @Inject() (
     if (categorisationInfo.categoryAssessments.isEmpty) {
       StandardGoodsNoAssessmentsScenario
     } else if (categorisationInfo.categoryAssessmentsThatNeedAnswers.isEmpty) {
-      if (categorisationInfo.categoryAssessments.exists(_.isCategory1)) {
+      if (
+        categorisationInfo.categoryAssessments
+          .exists(_.isCategory1) || categorisationInfo.categoryAssessments.exists(ass => ass.onlyContainsNiphlAnswer)
+      ) {
         Category1NoExemptionsScenario
       } else if (categorisationInfo.categoryAssessments.exists(_.isCategory2)) {
         val category2Assessments = categorisationInfo.categoryAssessments.filter(_.isCategory2)
@@ -198,7 +201,10 @@ class CategorisationService @Inject() (
         val allCategory2HaveNoExemptions =
           category2Assessments.nonEmpty && category2Assessments.forall(_.exemptions.isEmpty)
 
-        if (allCategory2HaveNoExemptions) {
+        if (
+          allCategory2HaveNoExemptions || categorisationInfo.categoryAssessments
+            .exists(ass => ass.onlyContainsNirmsAnswer)
+        ) {
           Category2NoExemptionsScenario
         } else {
           Category2Scenario
@@ -220,13 +226,23 @@ class CategorisationService @Inject() (
       .getAnswersForQuestions(userAnswers, recordId)
       .find(x => x.answer.contains(AssessmentAnswer.NoExemption))
 
-    val areThereCategory2QuestionsWithNoExemption =
-      categorisationInfo.categoryAssessments.exists(ass => ass.isCategory2 && ass.hasNoAnswers)
+    val areThereCategory1QuestionsWithNoExemption =
+      categorisationInfo.categoryAssessments.exists(ass =>
+        ass.isCategory1 && ass.hasNoAnswers || ass.onlyContainsNiphlAnswer
+      )
 
+    val areThereCategory2QuestionsWithNoExemption =
+      categorisationInfo.categoryAssessments.exists(ass =>
+        ass.isCategory2 && (ass.hasNoAnswers || ass.onlyContainsNirmsAnswer)
+      )
+
+    // TODO if answered and is niphl
     getFirstNo match {
-      case None if areThereCategory2QuestionsWithNoExemption => Category2Scenario
+      case None if areThereCategory1QuestionsWithNoExemption => Category1NoExemptionsScenario
+      case None if areThereCategory2QuestionsWithNoExemption => Category2NoExemptionsScenario
       case None                                              => StandardGoodsScenario
-      case Some(details) if details.question.isCategory2     => Category2Scenario
+      case Some(details) if details.question.isCategory2     =>
+        Category2Scenario
       case _                                                 => Category1Scenario
     }
   }
