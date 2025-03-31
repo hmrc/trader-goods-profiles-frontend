@@ -79,6 +79,15 @@ class CommodityService @Inject() (
         None
       }
 
+  def commodityURL(commodityCode: String, countryOfOrigin: String)(implicit request: DataRequest[AnyContent], hc: HeaderCarrier): Future[String] = {
+    val productlineSuffix: Future[Option[ProductlineSuffix]] = fetchCommodityProductlineSuffix(commodityCode, countryOfOrigin)
+
+    productlineSuffix.map {
+      case Some(suffix) => s"$commodityCode-${suffix.productlineSuffix}"
+      case None         => commodityCode
+    }
+  }
+
   def fetchCommodityProductlineSuffix(commodityCode: String, countryOfOrigin: String)(implicit
     hc: HeaderCarrier
   ): Future[Option[ProductlineSuffix]] = if (commodityCode.length == 10) {
