@@ -124,24 +124,25 @@
                     @if(goodsRecordsPagination.totalRecords > 0) {
                         <h2 class="govuk-heading-m">@messages("goodsRecords.h2.1")</h2>
                         @paragraphBody(messages("goodsRecords.p1"))
-
-                        @paragraphBody(
-                            messages("goodsRecords.p2") +
-                                    tag(messages("declarableStatus.immiReady"), "govuk-tag govuk-tag--green govuk-tag-width-override") + "."
-                        )
-
-                        @paragraphBody(
-                            messages("goodsRecords.p2.1") +
-                                    tag(messages("declarableStatus.notReadyForImmi"), "govuk-tag govuk-tag--orange govuk-tag-width-override") + ". " +
-                                    messages("goodsRecords.p2.2")
-                        )
-
-                        @paragraphBody(
-                            messages("goodsRecords.p2.3") +
-                                    tag(messages("declarableStatus.notReadyForUse"), "govuk-tag govuk-tag--orange govuk-tag-width-override") + ". " +
-                                    messages("goodsRecords.p2.4"),
-                        )
+                        @paragraphBody(messages("goodsRecords.p2"))
+                    <ul class="govuk-list govuk-list--bullet  govuk-list--spaced">
+                        <li>
+                            @tag(messages("declarableStatus.immiReady"), "govuk-tag govuk-tag--green govuk-tag-width-override")
+                            @messages("goodsRecords.bullet.1")
+                        </li>
+                        <li>
+                            @tag(messages("declarableStatus.notReadyForImmi"), "govuk-tag govuk-tag--orange govuk-tag-width-override")
+                            @messages("goodsRecords.bullet.2")
+                        </li>
+                        <li>
+                            @tag(messages("declarableStatus.notReadyForUse"), "govuk-tag govuk-tag--red govuk-tag-width-override")
+                            @messages("goodsRecords.bullet.3")
+                        </li>
+                    </ul>
                     }
+
+                    <h1 class="govuk-heading-m"> @messages("goodsRecord.subHeading")</h1>
+
                     @paragraphBody(
                         message = messages("goodsRecords.link1.text") +
                                 link(
