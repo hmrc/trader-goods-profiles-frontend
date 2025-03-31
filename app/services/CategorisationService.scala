@@ -201,11 +201,11 @@ class CategorisationService @Inject() (
         val category2Assessments = categorisationInfo.categoryAssessments.filter(_.isCategory2)
 
         val allCategory2HaveNoExemptions =
-          category2Assessments.nonEmpty && category2Assessments.forall(_.exemptions.isEmpty)
+          category2Assessments.nonEmpty && category2Assessments.exists(_.exemptions.isEmpty)
 
         if (
           allCategory2HaveNoExemptions || categorisationInfo.categoryAssessments
-            .exists(ass => ass.onlyContainsNirmsAnswer)
+            .exists(ass => ass.onlyContainsNirmsAnswer || ass.onlyContainsNiphlAnswer)
         ) {
           Category2NoExemptionsScenario
         } else {
