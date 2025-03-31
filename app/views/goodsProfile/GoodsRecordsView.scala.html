@@ -105,7 +105,6 @@
             @if(searchForm.searchTerm.nonEmpty
                     || searchForm.countryOfOrigin.nonEmpty
                     || searchForm.statusValue.nonEmpty) {
-                <span class="govuk-caption-l">@messages("goodsRecords.title")</span>
                 @if(goodsRecordsPagination.totalRecords == 1) {
                     <h1 class="govuk-heading-l"> @messages("goodsRecordSearchResult.singleRecord")</h1>
                 } else if(goodsRecordsPagination.totalRecords > 0) {
