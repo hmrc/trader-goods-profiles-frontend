@@ -172,7 +172,9 @@ class CategorisationService @Inject() (
 
       if (areThereCategory1AnsweredNo) {
         Category1Scenario
-      } else if (areThereCategory2AnsweredNo || areThereCategory2Unanswerable) {
+      } else if (areThereCategory2Unanswerable) {
+        Category2NoExemptionsScenario
+      } else if (areThereCategory2AnsweredNo) {
         Category2Scenario
       } else {
         StandardGoodsScenario
@@ -236,7 +238,6 @@ class CategorisationService @Inject() (
         ass.isCategory2 && (ass.hasNoAnswers || ass.onlyContainsNirmsAnswer)
       )
 
-    // TODO if answered and is niphl
     getFirstNo match {
       case None if areThereCategory1QuestionsWithNoExemption => Category1NoExemptionsScenario
       case None if areThereCategory2QuestionsWithNoExemption => Category2NoExemptionsScenario
