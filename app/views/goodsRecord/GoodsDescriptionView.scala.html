@@ -40,7 +40,9 @@
 
         <h1 class="govuk-heading-l">@messages("goodsDescription.h1")</h1>
         <p class="govuk-body">@messages("goodsDescription.p1")</p>
-        <p class="govuk-body">@messages("goodsDescription.p2")</p>
+        <p class="govuk-body">@messages("goodsDescription.p2")
+            <a target="_blank" href="https://taxation-customs.ec.europa.eu/system/files/2021-03/guidance_acceptable_goods_description_en.pdf" class="govuk-link">@messages("goodsDescription.linkText")</a>.
+        </p>
 
     @if(languageUtils.getCurrentLang == Lang("cy")) {
         <p class="govuk-body">@messages("goodsDescription.welshDescription")</p>
