@@ -291,8 +291,9 @@ productReference.change.hidden = Cyfeirnod y cynnyrch
 
 goodsDescription.title = Disgrifiad o’r nwyddau
 goodsDescription.h1 = Disgrifiad o’r nwyddau
-goodsDescription.p1 = Mae disgrifiad o’r nwyddau yn ddisgrifiad o’r nwyddau mewn iaith glir. Dylai awdurdodau allu adnabod eich nwyddau o’r disgrifiad.
-goodsDescription.p2 = Ni allwch ddefnyddio termau cyffredinol i ddisgrifio’r nwyddau.
+goodsDescription.p1 = Mae disgrifiad o’r nwyddau yn ddisgrifiad o’r nwyddau mewn iaith glir sy’n ddigon manwl gywir i wasanaethau tollau i allu adnabod y nwyddau. Ni allwch ddefnyddio termau cyffredinol i ddisgrifio’r nwyddau.
+goodsDescription.p2 = Mae’r Comisiwn Ewropeaidd yn darparu gwybodaeth y gallwch ei
+goodsDescription.linkText = darllen ar delerau derbyniol ac annerbyniol ar gyfer disgrifiad nwyddau (yn agor mewn tab newydd)
 goodsDescription.welshDescription = Mae angen i ddisgrifiad o’r nwyddau fod yn Saesneg, neu’n Gymraeg ac yn Saesneg. Mae hyn yn caniatáu awdurdodau i adnabod eich nwyddau.
 goodsDescription.inputHeading = Beth yw’r disgrifiad o’r nwyddau?
 goodsDescription.hint = Gall hyn fod hyd at 512 o gymeriadau.
