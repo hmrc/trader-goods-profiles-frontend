@@ -18,17 +18,18 @@ package controllers.commodityCodeResult
 
 import base.SpecBase
 import base.TestConstants.testRecordId
+import config.FrontendAppConfig
 import forms.HasCorrectGoodsFormProvider
 import models.{Commodity, NormalMode}
 import navigation.{FakeNavigation, Navigation}
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import org.scalatestplus.mockito.MockitoSugar
-import pages._
+import pages.*
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import queries.LongerCommodityQuery
 import repositories.SessionRepository
 import views.html.HasCorrectGoodsView
@@ -69,6 +70,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
           val application = applicationBuilder(userAnswers = Some(userAnswers))
             .build()
+          val appConfig: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
 
           running(application) {
             val request = FakeRequest(GET, hasCorrectGoodsRoute)
@@ -86,7 +88,8 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
               Some(testRecordId)
             )(
               request,
-              messages(application)
+              messages(application),
+              appConfig
             ).toString
           }
         }
@@ -122,6 +125,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
           running(application) {
             val request = FakeRequest(GET, hasCorrectGoodsRoute)
+            val appConfig: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
 
             val view = application.injector.instanceOf[HasCorrectGoodsView]
 
@@ -136,7 +140,8 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
               Some(testRecordId)
             )(
               request,
-              messages(application)
+              messages(application),
+              appConfig
             ).toString
           }
         }
@@ -238,6 +243,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
                 .withFormUrlEncodedBody(("value", ""))
 
             val boundForm = form.bind(Map("value" -> ""))
+            val appConfig: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
 
             val view = application.injector.instanceOf[HasCorrectGoodsView]
 
@@ -252,7 +258,8 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
               Some(testRecordId)
             )(
               request,
-              messages(application)
+              messages(application),
+              appConfig
             ).toString
           }
         }

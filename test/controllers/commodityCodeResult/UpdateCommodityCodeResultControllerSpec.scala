@@ -89,6 +89,7 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
 
         running(application) {
           val request = FakeRequest(GET, hasCorrectGoodsUpdateRoute)
+          val appConfig: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
 
           val result = route(application, request).value
 
@@ -103,7 +104,8 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
             Some(testRecordId)
           )(
             request,
-            messages(application)
+            messages(application),
+            appConfig
           ).toString
         }
       }
@@ -137,6 +139,7 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
 
         running(application) {
           val request = FakeRequest(GET, hasCorrectGoodsUpdateRoute)
+          val appConfig: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
 
           val view = application.injector.instanceOf[HasCorrectGoodsView]
 
@@ -151,7 +154,8 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
             Some(testRecordId)
           )(
             request,
-            messages(application)
+            messages(application),
+            appConfig
           ).toString
         }
       }
@@ -660,6 +664,7 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
               .withFormUrlEncodedBody(("value", ""))
 
           val boundForm = form.bind(Map("value" -> ""))
+          val appConfig: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
 
           val view = application.injector.instanceOf[HasCorrectGoodsView]
 
@@ -668,7 +673,8 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
           status(result) mustEqual BAD_REQUEST
           contentAsString(result) mustEqual view(boundForm, commodity, onSubmitAction, NormalMode, Some(testRecordId))(
             request,
-            messages(application)
+            messages(application),
+            appConfig
           ).toString
         }
       }

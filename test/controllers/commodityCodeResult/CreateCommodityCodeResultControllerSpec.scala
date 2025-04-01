@@ -17,17 +17,18 @@
 package controllers.commodityCodeResult
 
 import base.SpecBase
+import config.FrontendAppConfig
 import forms.HasCorrectGoodsFormProvider
 import models.{Commodity, NormalMode}
 import navigation.{FakeNavigation, Navigation}
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import org.scalatestplus.mockito.MockitoSugar
-import pages._
+import pages.*
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import queries.CommodityQuery
 import repositories.SessionRepository
 import views.html.HasCorrectGoodsView
@@ -64,6 +65,7 @@ class CreateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
 
         running(application) {
           val request = FakeRequest(GET, hasCorrectGoodsCreateRoute)
+          val appConfig: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
 
           val result = route(application, request).value
 
@@ -78,7 +80,8 @@ class CreateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
             None
           )(
             request,
-            messages(application)
+            messages(application),
+            appConfig
           ).toString
         }
       }
@@ -114,13 +117,15 @@ class CreateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
           val request = FakeRequest(GET, hasCorrectGoodsCreateRoute)
 
           val view = application.injector.instanceOf[HasCorrectGoodsView]
+          val appConfig: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
 
           val result = route(application, request).value
 
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(form.fill(true), commodity, onSubmitAction, NormalMode, None)(
             request,
-            messages(application)
+            messages(application),
+            appConfig
           ).toString
         }
       }
@@ -184,13 +189,15 @@ class CreateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
           val boundForm = form.bind(Map("value" -> ""))
 
           val view = application.injector.instanceOf[HasCorrectGoodsView]
+          val appConfig: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
 
           val result = route(application, request).value
 
           status(result) mustEqual BAD_REQUEST
           contentAsString(result) mustEqual view(boundForm, commodity, onSubmitAction, NormalMode, None)(
             request,
-            messages(application)
+            messages(application),
+            appConfig
           ).toString
         }
       }

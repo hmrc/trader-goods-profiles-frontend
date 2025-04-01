@@ -18,6 +18,7 @@
 @import viewmodels.AssessmentViewModel
 @import models.outboundLink.OutboundLink
 @import uk.gov.hmrc.play.language.LanguageUtils
+@import config.FrontendAppConfig
 
 @this(
         languageUtils: LanguageUtils,
@@ -25,10 +26,10 @@
         formHelper: FormWithCSRF,
         govukErrorSummary: GovukErrorSummary,
         govukButton: GovukButton,
-        govukCheckboxes: GovukCheckboxes,
+        govukCheckboxes: GovukCheckboxes
 )
 
-@(form: Form[_], mode: Mode, recordId: String, number: Int, codesAndDescriptions: Seq[(String, String)], commodityCode: String, onSubmitAction: Call, themeDescription: String, regulationUrl: Option[String] = None, isReassessment: Boolean)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, recordId: String, number: Int, codesAndDescriptions: Seq[(String, String)], commodityCode: String, onSubmitAction: Call, themeDescription: String, regulationUrl: Option[String] = None, isReassessment: Boolean)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @layout(pageTitle = title(form, messages("assessment.title", number))) {
 
@@ -56,8 +57,8 @@
         }
 
         <p class="govuk-body">
-            <a href="@OutboundLink.FindCommodityAssessments(mode, recordId, number, isReassessment).outboundCall"
-               target="_blank" class="govuk-link">@messages(OutboundLink.FindCommodityAssessments(mode, recordId, number, isReassessment).linkTextKey)</a>
+            <a href="@OutboundLink.FindCommodityAssessments(mode, recordId, number, isReassessment, commodityCode).outboundCall"
+               target="_blank" class="govuk-link">@messages(OutboundLink.FindCommodityAssessments(mode, recordId, number, isReassessment, commodityCode).linkTextKey)</a>
         </p>
 
             @govukCheckboxes(

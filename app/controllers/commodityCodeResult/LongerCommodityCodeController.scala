@@ -16,15 +16,16 @@
 
 package controllers.commodityCodeResult
 
+import config.FrontendAppConfig
 import controllers.BaseController
-import controllers.actions._
+import controllers.actions.*
 import forms.HasCorrectGoodsFormProvider
 import models.Mode
 import navigation.Navigation
-import pages._
+import pages.*
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries._
+import queries.*
 import repositories.SessionRepository
 import views.html.HasCorrectGoodsView
 
@@ -43,7 +44,7 @@ class LongerCommodityCodeController @Inject() (
   formProvider: HasCorrectGoodsFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: HasCorrectGoodsView
-)(implicit @unused ec: ExecutionContext)
+)(implicit @unused ec: ExecutionContext, appConfig: FrontendAppConfig)
     extends BaseController {
 
   private val form = formProvider()

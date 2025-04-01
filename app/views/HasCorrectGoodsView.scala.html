@@ -17,6 +17,7 @@
 @import models.Commodity
 @import viewmodels.LegendSize._
 @import models.outboundLink.OutboundLink
+@import config.FrontendAppConfig
 
 @this(
     layout: templates.Layout,
@@ -26,7 +27,7 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_], commodity: Commodity, action: Call, mode: Mode, recordId: Option[String])(implicit request: Request[_], messages: Messages)
+@(form: Form[_], commodity: Commodity, action: Call, mode: Mode, recordId: Option[String])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @layout(pageTitle = title(form, messages("hasCorrectGoods.title", commodity.commodityCode))) {
 
@@ -47,8 +48,8 @@
 
 
     <p class="govuk-body">
-        <a href="@OutboundLink.FindCommodityHasCorrectGoods(mode, recordId).outboundCall"
-           target="_blank" class="govuk-link">@messages(OutboundLink.FindCommodityHasCorrectGoods(mode, recordId).linkTextKey)</a>
+        <a href="@OutboundLink.FindCommodityHasCorrectGoods(mode, recordId, commodity.commodityCode).outboundCall"
+           target="_blank" class="govuk-link">@messages(OutboundLink.FindCommodityHasCorrectGoods(mode, recordId, commodity.commodityCode).linkTextKey)</a>
     </p>
 
     @formHelper(action = action, Symbol("autoComplete") -> "off") {

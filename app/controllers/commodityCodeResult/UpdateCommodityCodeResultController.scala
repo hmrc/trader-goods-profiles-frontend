@@ -57,7 +57,7 @@ class UpdateCommodityCodeResultController @Inject() (
   config: FrontendAppConfig,
   val controllerComponents: MessagesControllerComponents,
   view: HasCorrectGoodsView
-)(implicit @unused ec: ExecutionContext)
+)(implicit @unused ec: ExecutionContext, appConfig: FrontendAppConfig)
     extends BaseController {
 
   private val form = formProvider()

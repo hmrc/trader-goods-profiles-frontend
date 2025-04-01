@@ -16,6 +16,7 @@
 
 package controllers.categorisation
 
+import config.FrontendAppConfig
 import controllers.BaseController
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
 import forms.AssessmentFormProvider
@@ -48,7 +49,7 @@ class AssessmentController @Inject() (
   profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
   view: AssessmentView
-)(implicit ec: ExecutionContext)
+)(implicit ec: ExecutionContext, appConfig: FrontendAppConfig)
     extends BaseController {
 
   private def getIndex(number: Int, userAnswerId: String, recordId: String): Either[Result, Int] =
