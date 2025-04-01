@@ -182,16 +182,13 @@ class CreateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
         val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
         running(application) {
-          val request =
+          val request                      =
             FakeRequest(POST, hasCorrectGoodsCreateRoute)
               .withFormUrlEncodedBody(("value", ""))
-
-          val boundForm = form.bind(Map("value" -> ""))
-
+          val boundForm                    = form.bind(Map("value" -> ""))
           val view                         = application.injector.instanceOf[HasCorrectGoodsView]
           val appConfig: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
-
-          val result = route(application, request).value
+          val result                       = route(application, request).value
 
           status(result) mustEqual BAD_REQUEST
           contentAsString(result) mustEqual view(boundForm, commodity, onSubmitAction, NormalMode, None)(
@@ -205,12 +202,9 @@ class CreateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
       "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
         val application = applicationBuilder(userAnswers = None).build()
-
         running(application) {
           val request = FakeRequest(GET, hasCorrectGoodsCreateRoute)
-
-          val result = route(application, request).value
-
+          val result  = route(application, request).value
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
         }
@@ -219,13 +213,11 @@ class CreateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
       "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
         val application = applicationBuilder(userAnswers = None).build()
-
         running(application) {
           val request =
             FakeRequest(POST, hasCorrectGoodsCreateRoute)
               .withFormUrlEncodedBody(("value", "true"))
-
-          val result = route(application, request).value
+          val result  = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url

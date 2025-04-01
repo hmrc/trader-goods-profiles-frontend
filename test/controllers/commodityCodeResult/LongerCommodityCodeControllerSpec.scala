@@ -74,10 +74,8 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
           running(application) {
             val request = FakeRequest(GET, hasCorrectGoodsRoute)
-
-            val result = route(application, request).value
-
-            val view = application.injector.instanceOf[HasCorrectGoodsView]
+            val result  = route(application, request).value
+            val view    = application.injector.instanceOf[HasCorrectGoodsView]
 
             status(result) mustEqual OK
             contentAsString(result) mustEqual view(
@@ -97,11 +95,9 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         "must redirect to JourneyRecovery Page if user doesn't have commodity answer" in {
 
           val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
-
           running(application) {
             val request = FakeRequest(GET, hasCorrectGoodsRoute)
-
-            val result = route(application, request).value
+            val result  = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
@@ -126,10 +122,8 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
           running(application) {
             val request                      = FakeRequest(GET, hasCorrectGoodsRoute)
             val appConfig: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
-
-            val view = application.injector.instanceOf[HasCorrectGoodsView]
-
-            val result = route(application, request).value
+            val view                         = application.injector.instanceOf[HasCorrectGoodsView]
+            val result                       = route(application, request).value
 
             status(result) mustEqual OK
             contentAsString(result) mustEqual view(
@@ -149,11 +143,9 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         "must redirect to Journey Recovery if no existing data is found" in {
 
           val application = applicationBuilder(userAnswers = None).build()
-
           running(application) {
             val request = FakeRequest(GET, hasCorrectGoodsRoute)
-
-            val result = route(application, request).value
+            val result  = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
@@ -177,10 +169,8 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
               .value
 
           val mockSessionRepository = mock[SessionRepository]
-
           when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-
-          val application =
+          val application           =
             applicationBuilder(userAnswers = Some(userAnswers))
               .overrides(
                 bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
@@ -204,13 +194,11 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         "must redirect to JourneyRecovery Page if user doesn't have commodity answer" in {
 
           val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
-
           running(application) {
             val request =
               FakeRequest(POST, hasCorrectGoodsRoute)
                 .withFormUrlEncodedBody(("value", ""))
-
-            val result = route(application, request).value
+            val result  = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
@@ -221,16 +209,12 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
         "must return a Bad Request and errors when invalid data is submitted" in {
 
-          val commodity = Commodity("654321", List("Description"), Instant.now, None)
-
-          val userAnswers =
+          val commodity             = Commodity("654321", List("Description"), Instant.now, None)
+          val userAnswers           =
             emptyUserAnswers.set(LongerCommodityQuery(testRecordId), commodity).success.value
-
           val mockSessionRepository = mock[SessionRepository]
-
           when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-
-          val application = applicationBuilder(userAnswers = Some(userAnswers))
+          val application           = applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
               bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
               bind[SessionRepository].toInstance(mockSessionRepository)
@@ -244,10 +228,8 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
             val boundForm                    = form.bind(Map("value" -> ""))
             val appConfig: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
-
-            val view = application.injector.instanceOf[HasCorrectGoodsView]
-
-            val result = route(application, request).value
+            val view                         = application.injector.instanceOf[HasCorrectGoodsView]
+            val result                       = route(application, request).value
 
             status(result) mustEqual BAD_REQUEST
             contentAsString(result) mustEqual view(
