@@ -16,9 +16,11 @@
 
 package models.outboundLink
 
-import controllers.profile.niphl.routes._
-import controllers.profile.nirms.routes._
+import config.FrontendAppConfig
+import controllers.profile.niphl.routes.*
+import controllers.profile.nirms.routes.*
 import models.Mode
+import models.ott.OttCommodityUrl
 import play.api.mvc.Call
 
 sealed trait OutboundLink {
@@ -141,16 +143,20 @@ object OutboundLink {
   }
 
   // Longer Commodity Code Page
-  case class FindLongCommodity(mode: Mode, recordId: String) extends OutboundLink {
-    val link: String            = "https://www.trade-tariff.service.gov.uk/xi/find_commodity"
+  case class FindLongCommodity(mode: Mode, recordId: String, commodityCode: String)(implicit
+    appConfig: FrontendAppConfig
+  ) extends OutboundLink {
+    val link: String            = OttCommodityUrl(commodityCode).link
     val linkTextKey: String     = "longerCommodityCode.linkText"
     val originatingPage: String =
       controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(mode, recordId).url
   }
 
   // Has Correct Goods Page
-  case class FindCommodityHasCorrectGoods(mode: Mode, recordId: Option[String]) extends OutboundLink {
-    val link: String            = "https://www.trade-tariff.service.gov.uk/xi/find_commodity"
+  case class FindCommodityHasCorrectGoods(mode: Mode, recordId: Option[String], commodityCode: String)(implicit
+    frontendAppConfig: FrontendAppConfig
+  ) extends OutboundLink {
+    val link: String            = OttCommodityUrl(commodityCode).link
     val linkTextKey: String     = "hasCorrectGoods.p2.linkText"
     val originatingPage: String = recordId match {
       case Some(recordId) =>
@@ -160,9 +166,16 @@ object OutboundLink {
   }
 
   // Assessment Page
-  case class FindCommodityAssessments(mode: Mode, recordId: String, assessmentNumber: Int, isReassessment: Boolean)
+  case class FindCommodityAssessments(
+    mode: Mode,
+    recordId: String,
+    assessmentNumber: Int,
+    isReassessment: Boolean,
+    commodityCode: String
+  )(implicit appConfig: FrontendAppConfig)
       extends AssessmentViewLink {
-    val link: String            = "https://www.trade-tariff.service.gov.uk/xi/find_commodity"
+
+    val link: String            = OttCommodityUrl(commodityCode).link
     val linkTextKey: String     = "assessment.linkText"
     val originatingPage: String = originatingPage(mode, recordId, assessmentNumber, isReassessment)
   }

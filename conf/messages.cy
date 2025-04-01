@@ -458,7 +458,7 @@ categoryGuidance.p4 = Bydd angen i chi wybod rhif tystysgrif neu enw unrhyw esem
 
 assessment.title = Asesiadau categori {0}
 assessment.heading = Asesiadau categori {0}
-assessment.linkText = Defnyddiwch yr Offeryn Tariff Ar-lein (yn agor tab newydd) i chwilio am god nwyddau.
+assessment.linkText = Gallwch wirio’r cod nwyddau hwn ar yr Offeryn Tariff Ar-lein (yn agor tab newydd).
 assessment.question = Pa un o’r esemptiadau hyn sydd gennych ar gyfer {0}?
 assessment.hint = Dewiswch bob un sy’n berthnasol.
 assessment.exemption = {0} – {1}
@@ -792,7 +792,7 @@ longerCommodityCode.p2 = Mae angen i chi roi cod nwyddau sy’n 8 neu 10 digid e
 longerCommodityCode.insetText = Gan eich bod yn rhoi cod nwyddau hirach, mae’n bosibl na fydd rhai o’r asesiadau o ran categori bellach yn berthnasol i’ch nwyddau. Bydd unrhyw atebion gwnaethoch eu rhoi yn flaenorol ar gyfer yr asesiadau o ran categori yn cael eu dileu.
 longerCommodityCode.h2 = Beth yw’r rhifau ychwanegol yn y cod nwyddau?
 longerCommodityCode.hint = Nodwch 2 neu 4 digid
-longerCommodityCode.linkText = Defnyddiwch yr Offeryn Tariff Ar-lein (yn agor tab newydd) i chwilio am god nwyddau.
+longerCommodityCode.linkText = Gallwch wirio’r cod nwyddau hwn ar yr Offeryn Tariff Ar-lein (yn agor tab newydd).
 longerCommodityCode.checkYourAnswersLabel = Cod nwyddau hirach
 longerCommodityCode.error.required = Nodwch 2 neu 4 digid
 longerCommodityCode.error.invalidFormat = Nodwch god nwyddau yn y fformat cywir

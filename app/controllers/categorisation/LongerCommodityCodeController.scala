@@ -16,9 +16,10 @@
 
 package controllers.categorisation
 
+import config.FrontendAppConfig
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.BaseController
-import controllers.actions._
+import controllers.actions.*
 import forms.categorisation.LongerCommodityCodeFormProvider
 import models.helper.UpdateRecordJourney
 import models.requests.DataRequest
@@ -51,7 +52,7 @@ class LongerCommodityCodeController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: LongerCommodityCodeView,
   goodsRecordConnector: GoodsRecordConnector
-)(implicit ec: ExecutionContext)
+)(implicit ec: ExecutionContext, appConfig: FrontendAppConfig)
     extends BaseController {
 
   private val form = formProvider()

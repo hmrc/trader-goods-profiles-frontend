@@ -49,15 +49,12 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
   private def onwardRoute          = Call("GET", "/foo")
   private val mockCommodityService = mock[CommodityService]
 
-  val formProvider = new HasCorrectGoodsFormProvider()
-  private val form = formProvider()
-
-  private lazy val journeyRecoveryContinueUrl =
+  val formProvider                                      = new HasCorrectGoodsFormProvider()
+  private val form                                      = formProvider()
+  private lazy val journeyRecoveryContinueUrl           =
     controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId).url
-
   private val warningPage: HasCountryOfOriginChangePage = HasCountryOfOriginChangePage(testRecordId)
-
-  private val record = goodsRecordResponse(
+  private val record                                    = goodsRecordResponse(
     Instant.parse("2022-11-18T23:20:19Z"),
     Instant.parse("2022-11-18T23:20:19Z")
   ).copy(recordId = testRecordId, eori = testEori)
@@ -88,11 +85,10 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
         val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
         running(application) {
-          val request = FakeRequest(GET, hasCorrectGoodsUpdateRoute)
-
-          val result = route(application, request).value
-
-          val view = application.injector.instanceOf[HasCorrectGoodsView]
+          val request                      = FakeRequest(GET, hasCorrectGoodsUpdateRoute)
+          val appConfig: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
+          val result                       = route(application, request).value
+          val view                         = application.injector.instanceOf[HasCorrectGoodsView]
 
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
@@ -103,7 +99,8 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
             Some(testRecordId)
           )(
             request,
-            messages(application)
+            messages(application),
+            appConfig
           ).toString
         }
       }
@@ -111,11 +108,9 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
       "must redirect on GET to JourneyRecovery Page if user doesn't have commodity answer" in {
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
-
         running(application) {
           val request = FakeRequest(GET, hasCorrectGoodsUpdateRoute)
-
-          val result = route(application, request).value
+          val result  = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
@@ -136,11 +131,10 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
         val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
         running(application) {
-          val request = FakeRequest(GET, hasCorrectGoodsUpdateRoute)
-
-          val view = application.injector.instanceOf[HasCorrectGoodsView]
-
-          val result = route(application, request).value
+          val request                      = FakeRequest(GET, hasCorrectGoodsUpdateRoute)
+          val appConfig: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
+          val view                         = application.injector.instanceOf[HasCorrectGoodsView]
+          val result                       = route(application, request).value
 
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
@@ -151,7 +145,8 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
             Some(testRecordId)
           )(
             request,
-            messages(application)
+            messages(application),
+            appConfig
           ).toString
         }
       }
@@ -208,8 +203,7 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
               val request =
                 FakeRequest(POST, hasCorrectGoodsUpdateRoute)
                   .withFormUrlEncodedBody(("value", "true"))
-
-              val result = route(application, request).value
+              val result  = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual onwardRoute.url
@@ -274,12 +268,10 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
                   bind[CommodityService].toInstance(mockCommodityService)
                 )
                 .build()
-
             running(application) {
               val request = FakeRequest(POST, hasCorrectGoodsUpdateRoute)
                 .withFormUrlEncodedBody(("value", "true"))
-
-              val result = route(application, request).value
+              val result  = route(application, request).value
               status(result) mustEqual SEE_OTHER
 
               redirectLocation(result).value mustEqual onwardRoute.url
@@ -352,8 +344,7 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
             running(application) {
               val request = FakeRequest(POST, hasCorrectGoodsUpdateRoute)
                 .withFormUrlEncodedBody(("value", "true"))
-
-              val result = route(application, request).value
+              val result  = route(application, request).value
               status(result) mustEqual SEE_OTHER
 
               redirectLocation(result).value mustEqual onwardRoute.url
@@ -422,9 +413,7 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
             running(application) {
               val request = FakeRequest(POST, hasCorrectGoodsUpdateRoute)
                 .withFormUrlEncodedBody(("value", "true"))
-
-              val result = route(application, request).value
-
+              val result  = route(application, request).value
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual onwardRoute.url
 
@@ -471,8 +460,7 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
               running(application) {
                 val request = FakeRequest(POST, hasCorrectGoodsUpdateRoute)
                   .withFormUrlEncodedBody(("value", "true"))
-
-                val result = route(application, request).value
+                val result  = route(application, request).value
 
                 status(result) mustEqual SEE_OTHER
                 redirectLocation(result).value mustEqual
@@ -604,7 +592,6 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
               .value
 
             val mockSessionRepository = mock[SessionRepository]
-
             when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
             val application =
@@ -614,13 +601,11 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
                   bind[SessionRepository].toInstance(mockSessionRepository)
                 )
                 .build()
-
             running(application) {
               val request =
                 FakeRequest(POST, hasCorrectGoodsUpdateRoute)
                   .withFormUrlEncodedBody(("value", "false"))
-
-              val result = route(application, request).value
+              val result  = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual onwardRoute.url
@@ -632,13 +617,11 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
       "must redirect on POST to JourneyRecovery Page if user doesn't have commodity answer" in {
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
-
         running(application) {
           val request =
             FakeRequest(POST, hasCorrectGoodsUpdateRoute)
               .withFormUrlEncodedBody(("value", ""))
-
-          val result = route(application, request).value
+          val result  = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
@@ -647,11 +630,9 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
 
       "must return a Bad Request and errors when invalid data is submitted" in {
 
-        val commodity = Commodity("654321", List("Description"), Instant.now, None)
-
+        val commodity   = Commodity("654321", List("Description"), Instant.now, None)
         val userAnswers =
           emptyUserAnswers.set(CommodityUpdateQuery(testRecordId), commodity).success.value
-
         val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
         running(application) {
@@ -659,16 +640,16 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
             FakeRequest(POST, hasCorrectGoodsUpdateRoute)
               .withFormUrlEncodedBody(("value", ""))
 
-          val boundForm = form.bind(Map("value" -> ""))
-
-          val view = application.injector.instanceOf[HasCorrectGoodsView]
-
-          val result = route(application, request).value
+          val boundForm                    = form.bind(Map("value" -> ""))
+          val appConfig: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
+          val view                         = application.injector.instanceOf[HasCorrectGoodsView]
+          val result                       = route(application, request).value
 
           status(result) mustEqual BAD_REQUEST
           contentAsString(result) mustEqual view(boundForm, commodity, onSubmitAction, NormalMode, Some(testRecordId))(
             request,
-            messages(application)
+            messages(application),
+            appConfig
           ).toString
         }
       }
@@ -676,11 +657,9 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
       "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
         val application = applicationBuilder(userAnswers = None).build()
-
         running(application) {
           val request = FakeRequest(GET, hasCorrectGoodsUpdateRoute)
-
-          val result = route(application, request).value
+          val result  = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
@@ -695,8 +674,7 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
           val request =
             FakeRequest(POST, hasCorrectGoodsUpdateRoute)
               .withFormUrlEncodedBody(("value", "true"))
-
-          val result = route(application, request).value
+          val result  = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url

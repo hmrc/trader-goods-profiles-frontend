@@ -18,6 +18,7 @@ package controllers.categorisation
 
 import base.SpecBase
 import base.TestConstants.testRecordId
+import config.FrontendAppConfig
 import connectors.{GoodsRecordConnector, OttConnector}
 import forms.categorisation.LongerCommodityCodeFormProvider
 import models.{Commodity, NormalMode, UserAnswers}
@@ -31,7 +32,7 @@ import play.api.data.FormError
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import queries.{CategorisationDetailsQuery, LongerCommodityQuery}
 import repositories.SessionRepository
 import uk.gov.hmrc.http.UpstreamErrorResponse
@@ -67,14 +68,16 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         running(application) {
           val request = FakeRequest(GET, longerCommodityCodeRoute2)
 
-          val result = route(application, request).value
+          val result                       = route(application, request).value
+          val appConfig: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
 
           val view = application.injector.instanceOf[LongerCommodityCodeView]
 
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(form, NormalMode, shortCommodity, testRecordId)(
             request,
-            messages(application)
+            messages(application),
+            appConfig
           ).toString
         }
       }
@@ -144,14 +147,16 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
         running(application) {
           val request = FakeRequest(GET, longerCommodityCodeRoute2)
 
-          val view = application.injector.instanceOf[LongerCommodityCodeView]
+          val view                         = application.injector.instanceOf[LongerCommodityCodeView]
+          val appConfig: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
 
           val result = route(application, request).value
 
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(form.fill("1234"), NormalMode, shortCommodity, testRecordId)(
             request,
-            messages(application)
+            messages(application),
+            appConfig
           ).toString
         }
       }
@@ -246,14 +251,16 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
             val boundForm = form.bind(Map("value" -> ""))
 
-            val view = application.injector.instanceOf[LongerCommodityCodeView]
+            val view                         = application.injector.instanceOf[LongerCommodityCodeView]
+            val appConfig: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
 
             val result = route(application, request).value
 
             status(result) mustEqual BAD_REQUEST
             contentAsString(result) mustEqual view(boundForm, NormalMode, shortCommodity, testRecordId)(
               request,
-              messages(application)
+              messages(application),
+              appConfig
             ).toString
           }
         }
@@ -290,14 +297,16 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
             val boundForm = form.copy(errors = Seq(elems = FormError("value", "longerCommodityCode.error.invalid")))
 
-            val view = application.injector.instanceOf[LongerCommodityCodeView]
+            val view                         = application.injector.instanceOf[LongerCommodityCodeView]
+            val appConfig: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
 
             val result = route(application, request).value
 
             status(result) mustEqual BAD_REQUEST
             contentAsString(result) mustEqual view(boundForm, NormalMode, shortCommodity, testRecordId)(
               request,
-              messages(application)
+              messages(application),
+              appConfig
             ).toString
 
             verify(mockOttConnector, atLeastOnce()).getCommodityCode(any(), any(), any(), any(), any(), any())(any())
@@ -354,14 +363,16 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
             val boundForm =
               form.fill("12").copy(errors = Seq(elems = FormError("value", "commodityCode.error.expired")))
 
-            val view = application.injector.instanceOf[LongerCommodityCodeView]
+            val view                         = application.injector.instanceOf[LongerCommodityCodeView]
+            val appConfig: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
 
             val result = route(application, request).value
 
             status(result) mustEqual BAD_REQUEST
             contentAsString(result) mustEqual view(boundForm, NormalMode, shortCommodity, testRecordId)(
               request,
-              messages(application)
+              messages(application),
+              appConfig
             ).toString
 
             verify(mockOttConnector, atLeastOnce()).getCommodityCode(any(), any(), any(), any(), any(), any())(any())

@@ -18,6 +18,7 @@ package controllers.categorisation
 
 import base.SpecBase
 import base.TestConstants.testRecordId
+import config.FrontendAppConfig
 import forms.AssessmentFormProvider
 import models.helper.CategorisationJourney
 import models.ott.{CategorisationInfo, CategoryAssessment}
@@ -31,7 +32,7 @@ import pages.categorisation.{AssessmentPage, ReassessmentPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
@@ -78,6 +79,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 controllers.categorisation.routes.AssessmentController
                   .onSubmit(NormalMode, testRecordId, Constants.firstAssessmentNumber)
               val view                         = application.injector.instanceOf[AssessmentView]
+              val appConfig: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
               val form                         = formProvider()
               val expectedCodesAndDescriptions =
                 categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map { exemption =>
@@ -98,7 +100,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 isReassessment = false
               )(
                 request,
-                messages(application)
+                messages(application),
+                appConfig
               ).toString
             }
           }
@@ -127,6 +130,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                   .onSubmit(NormalMode, testRecordId, Constants.firstAssessmentNumber)
               val view                         = application.injector.instanceOf[AssessmentView]
               val form                         = formProvider().fill(AssessmentAnswer.NoExemption)
+              val appConfig: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
+
               val expectedCodesAndDescriptions =
                 categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map { exemption =>
                   (exemption.code, exemption.description)
@@ -146,7 +151,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 isReassessment = false
               )(
                 request,
-                messages(application)
+                messages(application),
+                appConfig
               ).toString
             }
           }
@@ -290,6 +296,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 .onSubmit(NormalMode, testRecordId, Constants.firstAssessmentNumber)
             val view                         = application.injector.instanceOf[AssessmentView]
             val form                         = formProvider().fill(AssessmentAnswer.NoExemption)
+            val appConfig: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
+
             val boundForm                    = form.bind(Map("value" -> ""))
             val expectedCodesAndDescriptions =
               categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map { exemption =>
@@ -310,7 +318,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               isReassessment = false
             )(
               request,
-              messages(application)
+              messages(application),
+              appConfig
             ).toString
           }
         }
@@ -467,6 +476,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               val onSubmitAction               = controllers.categorisation.routes.AssessmentController
                 .onSubmitReassessment(NormalMode, testRecordId, Constants.firstAssessmentNumber)
               val view                         = application.injector.instanceOf[AssessmentView]
+              val appConfig: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
+
               val form                         = formProvider()
               val expectedCodesAndDescriptions =
                 categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map { exemption =>
@@ -487,7 +498,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 isReassessment = true
               )(
                 request,
-                messages(application)
+                messages(application),
+                appConfig
               ).toString
             }
           }
@@ -514,6 +526,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               val result = route(application, request).value
 
               val view                         = application.injector.instanceOf[AssessmentView]
+              val appConfig: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
               val form                         = formProvider().fill(AssessmentAnswer.NoExemption)
               val expectedCodesAndDescriptions =
                 categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map { exemption =>
@@ -534,7 +547,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 isReassessment = true
               )(
                 request,
-                messages(application)
+                messages(application),
+                appConfig
               ).toString
             }
           }
@@ -680,12 +694,15 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
             val result = route(application, request).value
 
-            val onSubmitAction               =
+            val onSubmitAction =
               controllers.categorisation.routes.AssessmentController
                 .onSubmitReassessment(NormalMode, testRecordId, Constants.firstAssessmentNumber)
-            val view                         = application.injector.instanceOf[AssessmentView]
-            val form                         = formProvider().fill(AssessmentAnswer.NoExemption)
+            val view           = application.injector.instanceOf[AssessmentView]
+            val form           = formProvider().fill(AssessmentAnswer.NoExemption)
+
             val boundForm                    = form.bind(Map("value" -> ""))
+            val appConfig: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
+
             val expectedCodesAndDescriptions =
               categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map { exemption =>
                 (exemption.code, exemption.description)
@@ -705,7 +722,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               isReassessment = true
             )(
               request,
-              messages(application)
+              messages(application),
+              appConfig
             ).toString
           }
         }

@@ -42,6 +42,7 @@ class FrontendAppConfig @Inject() (configuration: Configuration) {
   val signOutContinueUrl: String = configuration.get[String]("urls.signOutContinue")
   val feedbackFrontend: String   = configuration.get[String]("urls.feedbackFrontend")
   val registerTGPURL: String     = configuration.get[String]("urls.registerTGPURL")
+  val ottCommodityUrl: String    = configuration.get[String]("urls.ott-commodity")
 
   private val exitSurveyBaseUrl: String = configuration.get[Service]("microservice.services.feedback-frontend").baseUrl
   val exitSurveyUrl: String             = s"$exitSurveyBaseUrl/feedback/trader-goods-profiles-frontend"
