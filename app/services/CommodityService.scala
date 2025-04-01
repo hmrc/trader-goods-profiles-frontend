@@ -82,8 +82,10 @@ class CommodityService @Inject() (
   def commodityURL(commodityCode: String, countryOfOrigin: String)(implicit request: DataRequest[AnyContent], hc: HeaderCarrier): Future[String] = {
     val productlineSuffix: Future[Option[ProductlineSuffix]] = fetchCommodityProductlineSuffix(commodityCode, countryOfOrigin)
 
+    val paddedCommodityCode: String = commodityCode.padTo(10, "0").mkString
+    
     productlineSuffix.map {
-      case Some(suffix) => s"$commodityCode-${suffix.productlineSuffix}"
+      case Some(suffix) => s"$paddedCommodityCode-${suffix.productlineSuffix}"
       case None         => commodityCode
     }
   }

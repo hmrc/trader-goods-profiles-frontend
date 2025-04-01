@@ -190,14 +190,14 @@ class CommodityServiceSpec extends SpecBase with BeforeAndAfterEach with Generat
         commodityService.commodityURL("1702000000", "GB")(request, hc).futureValue mustBe "1702000000"
       }
 
-      "must return commodity code and suffix in correct format when suffix is present" in {
+      "must return commodity code and suffix in correct format, with padding, when suffix is present" in {
         when(mockOttConnector.isCommodityAnEndNode(any())(any()))
           .thenReturn(Future.successful(false))
 
         when(mockOttConnector.getProductlineSuffix(any(), any())(any()))
           .thenReturn(Future.successful(ProductlineSuffix("80")))
 
-        commodityService.commodityURL("170200", "GB")(request, hc).futureValue mustBe "170200-80"
+        commodityService.commodityURL("170200", "GB")(request, hc).futureValue mustBe "1702000000-80"
       }
     }
   }
