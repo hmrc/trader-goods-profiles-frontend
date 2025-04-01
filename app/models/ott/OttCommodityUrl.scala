@@ -18,7 +18,7 @@ package models.ott
 
 import config.FrontendAppConfig
 
-case class OttCommodityUrl (commodityCode: String)(implicit config: FrontendAppConfig) {
+case class OttCommodityUrl(commodityCode: String)(implicit config: FrontendAppConfig) {
   val paddedCommodityCode: String = commodityCode.padTo(10, "0").mkString
-  val link: String = s"${config.ottCommodityUrl}/$paddedCommodityCode"
+  val link: String                = s"${config.ottCommodityUrl}/$paddedCommodityCode"
 }

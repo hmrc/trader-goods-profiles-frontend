@@ -24,7 +24,7 @@ import models.helper.CategorisationJourney
 import models.ott.{CategorisationInfo, CategoryAssessment}
 import models.{AssessmentAnswer, NormalMode, ReassessmentAnswer}
 import navigation.{CategorisationNavigator, FakeCategorisationNavigator}
-import org.mockito.ArgumentMatchers.{any, eq as eqTo}
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
@@ -100,7 +100,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 isReassessment = false
               )(
                 request,
-                messages(application), appConfig
+                messages(application),
+                appConfig
               ).toString
             }
           }
@@ -693,12 +694,12 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
             val result = route(application, request).value
 
-            val onSubmitAction               =
+            val onSubmitAction =
               controllers.categorisation.routes.AssessmentController
                 .onSubmitReassessment(NormalMode, testRecordId, Constants.firstAssessmentNumber)
-            val view                         = application.injector.instanceOf[AssessmentView]
-            val form                         = formProvider().fill(AssessmentAnswer.NoExemption)
-            
+            val view           = application.injector.instanceOf[AssessmentView]
+            val form           = formProvider().fill(AssessmentAnswer.NoExemption)
+
             val boundForm                    = form.bind(Map("value" -> ""))
             val appConfig: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
 

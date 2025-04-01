@@ -88,7 +88,7 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
         val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
         running(application) {
-          val request = FakeRequest(GET, hasCorrectGoodsUpdateRoute)
+          val request                      = FakeRequest(GET, hasCorrectGoodsUpdateRoute)
           val appConfig: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
 
           val result = route(application, request).value
@@ -138,7 +138,7 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
         val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
         running(application) {
-          val request = FakeRequest(GET, hasCorrectGoodsUpdateRoute)
+          val request                      = FakeRequest(GET, hasCorrectGoodsUpdateRoute)
           val appConfig: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
 
           val view = application.injector.instanceOf[HasCorrectGoodsView]
@@ -663,7 +663,7 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
             FakeRequest(POST, hasCorrectGoodsUpdateRoute)
               .withFormUrlEncodedBody(("value", ""))
 
-          val boundForm = form.bind(Map("value" -> ""))
+          val boundForm                    = form.bind(Map("value" -> ""))
           val appConfig: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
 
           val view = application.injector.instanceOf[HasCorrectGoodsView]

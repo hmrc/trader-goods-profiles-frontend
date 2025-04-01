@@ -143,15 +143,19 @@ object OutboundLink {
   }
 
   // Longer Commodity Code Page
-  case class FindLongCommodity(mode: Mode, recordId: String) extends OutboundLink {
-    val link: String            = "https://www.trade-tariff.service.gov.uk/xi/find_commodity"
+  case class FindLongCommodity(mode: Mode, recordId: String, commodityCode: String)(implicit
+    appConfig: FrontendAppConfig
+  ) extends OutboundLink {
+    val link: String            = OttCommodityUrl(commodityCode).link
     val linkTextKey: String     = "longerCommodityCode.linkText"
     val originatingPage: String =
       controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(mode, recordId).url
   }
 
   // Has Correct Goods Page
-  case class FindCommodityHasCorrectGoods(mode: Mode, recordId: Option[String], commodityCode: String)(implicit frontendAppConfig: FrontendAppConfig) extends OutboundLink {
+  case class FindCommodityHasCorrectGoods(mode: Mode, recordId: Option[String], commodityCode: String)(implicit
+    frontendAppConfig: FrontendAppConfig
+  ) extends OutboundLink {
     val link: String            = OttCommodityUrl(commodityCode).link
     val linkTextKey: String     = "hasCorrectGoods.p2.linkText"
     val originatingPage: String = recordId match {
@@ -162,14 +166,19 @@ object OutboundLink {
   }
 
   // Assessment Page
-  case class FindCommodityAssessments(mode: Mode, recordId: String, assessmentNumber: Int, isReassessment: Boolean, commodityCode: String)(implicit appConfig: FrontendAppConfig)
+  case class FindCommodityAssessments(
+    mode: Mode,
+    recordId: String,
+    assessmentNumber: Int,
+    isReassessment: Boolean,
+    commodityCode: String
+  )(implicit appConfig: FrontendAppConfig)
       extends AssessmentViewLink {
 
     val link: String            = OttCommodityUrl(commodityCode).link
     val linkTextKey: String     = "assessment.linkText"
     val originatingPage: String = originatingPage(mode, recordId, assessmentNumber, isReassessment)
   }
-
 
   case class AssessmentDynamicLink(
     link: String,

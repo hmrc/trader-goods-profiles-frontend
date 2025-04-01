@@ -59,9 +59,11 @@ class OttCommodityUrlSpec extends SpecBase {
 
       val appConfig = application.injector.instanceOf[FrontendAppConfig]
 
-      running(application){
+      running(application) {
 
-        OttCommodityUrl("123456")(appConfig).link mustBe "https://www.trade-tariff.service.gov.uk/xi/commodities/1234560000"
+        OttCommodityUrl("123456")(
+          appConfig
+        ).link mustBe "https://www.trade-tariff.service.gov.uk/xi/commodities/1234560000"
       }
 
     }
