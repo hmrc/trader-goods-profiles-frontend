@@ -109,11 +109,15 @@ object CategorisationInfo {
       .map { assessments =>
         val assessmentsSorted = assessments.sorted
 
+        val isTraderNiphlAuthorised = traderProfile.niphlNumber.isDefined
+        val isTraderNirmsAuthorised = traderProfile.nirmsNumber.isDefined
+
         val category1Assessments = assessmentsSorted.filter(ass => ass.isCategory1)
         val category2Assessments = assessmentsSorted.filter(ass => ass.isCategory2)
 
-        val category1ToAnswer = category1Assessments.filter(ass => !ass.hasNoAnswers).filter(ass => !ass.isNiphlAnswer)
-        val category2ToAnswer = category2Assessments.filter(ass => !ass.hasNoAnswers).filter(ass => !ass.isNirmsAnswer)
+        val category1ToAnswer = category1Assessments.category1ToAnswer(isTraderNiphlAuthorised)
+
+        val category2ToAnswer = category2Assessments.category2ToAnswer(isTraderNirmsAuthorised)
 
         val areAllCategory1Answerable = category1ToAnswer.size == category1Assessments.size
         val areAllCategory2Answerable = category2ToAnswer.size == category2Assessments.size
@@ -122,9 +126,6 @@ object CategorisationInfo {
           category1Assessments.exists(ass => ass.isNiphlAnswer) && category2Assessments.exists(ass => ass.hasNoAnswers)
 
         val isNirmsAssessment = category2Assessments.exists(ass => ass.isNirmsAnswer)
-
-        val isTraderNiphlAuthorised = traderProfile.niphlNumber.isDefined
-        val isTraderNirmsAuthorised = traderProfile.nirmsNumber.isDefined
 
         val questionsToAnswer = {
           if (isNiphlAssessment && isTraderNiphlAuthorised) {

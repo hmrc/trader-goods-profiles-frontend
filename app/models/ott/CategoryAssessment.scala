@@ -42,6 +42,9 @@ final case class CategoryAssessment(
   def isNiphlAnswer: Boolean = isCategory1 && exemptions.exists(exemption => exemption.id == NiphlCode)
   def isNirmsAnswer: Boolean = isCategory2 && exemptions.exists(exemption => exemption.id == NirmsCode)
 
+  def onlyContainsNiphlAnswer: Boolean = isNiphlAnswer && exemptions.size == 1
+  def onlyContainsNirmsAnswer: Boolean = isNirmsAnswer && exemptions.size == 1
+
 }
 
 object CategoryAssessment {

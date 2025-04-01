@@ -331,33 +331,16 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
 
       }
 
-      "if NIPHL is not authorised and has NIPHL assessments" in {
+      "if NIPHL is not authorised and has a NIPHL assessment with other possible exemptions" in {
         val assessment1 = CategoryAssessment(
           "ass1",
           1,
           Seq(
-            Certificate(NiphlCode, "cert1code", "cert1desc")
+            Certificate(NiphlCode, "cert1code", "cert1desc"),
+            Certificate("cert2", "cert2code", "cert2desc")
           ),
           "theme description",
           Some("regulationUrl1")
-        )
-
-        val assessment2 = CategoryAssessment(
-          "ass2",
-          1,
-          Seq(
-            Certificate(NiphlCode, "cert2code", "cert2desc")
-          ),
-          "theme description",
-          Some("regulationUrl2")
-        )
-
-        val assessment3 = CategoryAssessment(
-          "ass3",
-          2,
-          Seq.empty,
-          "theme description",
-          Some("regulationUrl3")
         )
 
         val categorisationInfo = CategorisationInfo(
@@ -365,17 +348,18 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
           "BV",
           None,
           Seq(
-            assessment1,
-            assessment2,
-            assessment3
+            assessment1
           ),
-          Seq.empty,
+          Seq(assessment1),
           None,
           1
         )
 
         val userAnswers = emptyUserAnswers
           .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.NoExemption)
           .success
           .value
 
@@ -512,6 +496,41 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
     }
 
     "return Category 1 No Exemptions if a category 1 question has no exemptions" - {
+
+      "if NIPHL is not authorised and has a NIPHL assessment without other possible exemptions" in {
+        val assessment1 = CategoryAssessment(
+          "ass1",
+          1,
+          Seq(
+            Certificate(NiphlCode, "cert1code", "cert1desc")
+          ),
+          "theme description",
+          Some("regulationUrl1")
+        )
+
+        val categorisationInfo = CategorisationInfo(
+          "1234567890",
+          "BV",
+          None,
+          Seq(
+            assessment1
+          ),
+          Seq.empty,
+          None,
+          1
+        )
+
+        val userAnswers = emptyUserAnswers
+          .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+          .success
+          .value
+
+        categorisationService.calculateResult(
+          categorisationInfo,
+          userAnswers,
+          testRecordId
+        ) mustEqual Category1NoExemptionsScenario
+      }
 
       "and not a Niphl assessment" in {
         val categorisationInfo = CategorisationInfo(
@@ -818,6 +837,82 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
           categorisationInfo,
           userAnswers,
           testRecordId
+        ) mustEqual Category2NoExemptionsScenario
+
+      }
+
+      "if all category 1 are answered Yes and there are category 2 with exemptions" in {
+        val assessment1 = CategoryAssessment(
+          "ass1",
+          1,
+          Seq(
+            Certificate("cert1", "cert1code", "cert1desc")
+          ),
+          "theme description",
+          Some("regulationUrl1")
+        )
+
+        val assessment2 = CategoryAssessment(
+          "ass2",
+          1,
+          Seq(
+            Certificate("cert2", "cert2code", "cert2desc")
+          ),
+          "theme description",
+          Some("regulationUrl2")
+        )
+
+        val assessment3 = CategoryAssessment(
+          "ass3",
+          2,
+          Seq(
+            Certificate("cert3", "cert3code", "cert3desc")
+          ),
+          "theme description",
+          Some("regulationUrl3")
+        )
+
+        val assessment4 = CategoryAssessment(
+          "ass4",
+          2,
+          Seq(Certificate("cert4", "cert4code", "cert4desc")),
+          "theme description",
+          Some("regulationUrl4")
+        )
+
+        val categorisationInfo = CategorisationInfo(
+          "1234567890",
+          "BV",
+          Some(validityEndDate),
+          Seq(
+            assessment1,
+            assessment2,
+            assessment4,
+            assessment3
+          ),
+          Seq(assessment1, assessment2, assessment4),
+          None,
+          1
+        )
+
+        val userAnswers = emptyUserAnswers
+          .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("Y903")))
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("Y903")))
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
+          .success
+          .value
+
+        categorisationService.calculateResult(
+          categorisationInfo,
+          userAnswers,
+          testRecordId
         ) mustEqual Category2Scenario
 
       }
@@ -1031,9 +1126,9 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
             categorisationInfo,
             userAnswers,
             testRecordId
-          ) mustEqual Category1Scenario
+          ) mustEqual Category1NoExemptionsScenario
         }
-        "is authorised but has mixed NIPHL and non-NIPHL assessments" in {
+        "is authorised but has mixed NIPHL and non-NIPHL assessments with one having no exemptions" in {
           val assessment1 = CategoryAssessment(
             "ass1",
             1,
@@ -1057,13 +1152,68 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
             "BV",
             None,
             Seq(assessment1, assessment2, assessment3),
-            Seq.empty,
+            Seq(assessment2, assessment3),
             None,
-            1
+            1,
+            isTraderNiphlAuthorised = true
           )
 
           val userAnswers = emptyUserAnswers
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("Y903")))
+            .success
+            .value
+
+          categorisationService.calculateResult(
+            categorisationInfo,
+            userAnswers,
+            testRecordId
+          ) mustEqual Category2NoExemptionsScenario
+        }
+
+        "is authorised but has mixed NIPHL and non-NIPHL assessments with one exemptions" in {
+          val assessment1 = CategoryAssessment(
+            "ass1",
+            1,
+            Seq(Certificate(NiphlCode, "cert1code", "cert1desc")),
+            "theme description",
+            Some("regulationUrl1")
+          )
+
+          val assessment2 = CategoryAssessment(
+            "ass2",
+            1,
+            Seq(Certificate("certX", "certXcode", "certXdesc")),
+            "theme description",
+            Some("regulationUrl2")
+          )
+
+          val assessment3 = CategoryAssessment(
+            "ass3",
+            2,
+            Seq(Certificate("certX", "certXcode", "certXdesc")),
+            "theme description",
+            Some("regulationUrl3")
+          )
+
+          val categorisationInfo = CategorisationInfo(
+            "1234567890",
+            "BV",
+            None,
+            Seq(assessment1, assessment2, assessment3),
+            Seq(assessment2, assessment3),
+            None,
+            1,
+            isTraderNiphlAuthorised = true
+          )
+
+          val userAnswers = emptyUserAnswers
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.NoExemption)
             .success
             .value
 
@@ -1129,10 +1279,20 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
             categorisationInfo,
             userAnswers,
             testRecordId
-          ) mustEqual Category2Scenario
+          ) mustEqual Category2NoExemptionsScenario
         }
 
         "is authorised and has a NIRMS assessment, no category 1 assessment and category 2 with no exemptions" in {
+
+          val category2Exemption = CategoryAssessment(
+            "1azbfb-1-dfsdaf-32",
+            2,
+            Seq.empty,
+            "measure description",
+            Some(
+              "http://eur-lex.europa.eu/search.html?whOJ=NO_OJ%3D42I,YEAR_OJ%3D2022,PAGE_FIRST%3D0077&DB_COLL_OJ=oj-l&type=advanced&lang=en"
+            )
+          )
 
           val categorisationInfo = CategorisationInfo(
             "1234567890",
@@ -1140,15 +1300,57 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
             Some(validityEndDate),
             Seq(
               category2Nirms,
-              category2NoExemptions
+              category2Exemption
             ),
             Seq.empty,
             None,
-            1
+            1,
+            isTraderNirmsAuthorised = true
           )
 
           val userAnswers = emptyUserAnswers
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .success
+            .value
+
+          categorisationService.calculateResult(
+            categorisationInfo,
+            userAnswers,
+            testRecordId
+          ) mustEqual Category2NoExemptionsScenario
+        }
+
+        "is authorised and has a NIRMS assessment, no category 1 assessment and category 2 with exemptions" in {
+
+          val category2Exemption = CategoryAssessment(
+            "1azbfb-1-dfsdaf-32",
+            2,
+            Seq(Certificate("Y123", "Y990", "Nirms description")),
+            "measure description",
+            Some(
+              "http://eur-lex.europa.eu/search.html?whOJ=NO_OJ%3D42I,YEAR_OJ%3D2022,PAGE_FIRST%3D0077&DB_COLL_OJ=oj-l&type=advanced&lang=en"
+            )
+          )
+
+          val categorisationInfo = CategorisationInfo(
+            "1234567890",
+            "BV",
+            Some(validityEndDate),
+            Seq(
+              category2Nirms,
+              category2Exemption
+            ),
+            Seq(category2Exemption),
+            None,
+            1,
+            isTraderNirmsAuthorised = true
+          )
+
+          val userAnswers = emptyUserAnswers
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.NoExemption)
             .success
             .value
 
@@ -1176,6 +1378,48 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
 
           val userAnswers = emptyUserAnswers
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .success
+            .value
+
+          categorisationService.calculateResult(
+            categorisationInfo,
+            userAnswers,
+            testRecordId
+          ) mustEqual Category2NoExemptionsScenario
+        }
+
+        "is not authorised and has a NIRMS assessment, no category 1 assessment and category 2 with possible exemptions" in {
+
+          val category2Exemption = CategoryAssessment(
+            "1azbfb-1-dfsdaf-32",
+            2,
+            Seq(
+              OtherExemption(NirmsCode, "Y990", "Nirms description"),
+              Certificate("Y123", "Y990", "Nirms description")
+            ),
+            "measure description",
+            Some(
+              "http://eur-lex.europa.eu/search.html?whOJ=NO_OJ%3D42I,YEAR_OJ%3D2022,PAGE_FIRST%3D0077&DB_COLL_OJ=oj-l&type=advanced&lang=en"
+            )
+          )
+
+          val categorisationInfo = CategorisationInfo(
+            "1234567890",
+            "BV",
+            Some(validityEndDate),
+            Seq(
+              category2Exemption
+            ),
+            Seq(category2Exemption),
+            None,
+            1
+          )
+
+          val userAnswers = emptyUserAnswers
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.NoExemption)
             .success
             .value
 
@@ -1318,7 +1562,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
             categorisationInfo,
             userAnswers,
             testRecordId
-          ) mustEqual Category2Scenario
+          ) mustEqual Category2NoExemptionsScenario
         }
       }
 

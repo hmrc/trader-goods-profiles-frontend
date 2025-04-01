@@ -916,6 +916,152 @@ class CategorisationInfoSpec extends SpecBase {
         }
       }
 
+      "when there is a" - {
+        "NIPHL assessment with other possible exemptions and trader is not authorised" in {
+          val mockOttResponse = OttResponse(
+            GoodsNomenclatureResponse(
+              "some id",
+              "1234567890",
+              None,
+              Instant.EPOCH,
+              None,
+              List("test")
+            ),
+            categoryAssessmentRelationships = Seq(
+              CategoryAssessmentRelationship("assessmentId1")
+            ),
+            includedElements = Seq(
+              ThemeResponse("themeId1", 1, "theme description"),
+              CertificateResponse("exemptionId1", "code1", "description1"),
+              CategoryAssessmentResponse(
+                "assessmentId1",
+                "themeId1",
+                Seq(
+                  ExemptionResponse(NiphlCode, ExemptionType.Certificate),
+                  ExemptionResponse("exemptionId1", ExemptionType.Certificate)
+                ),
+                "regulationId1"
+              ),
+              CertificateResponse(NiphlCode, "WFE-code", "WFE-description"),
+              CertificateResponse("exemptionId1", "code1", "description1"),
+              LegalActResponse(Some("regulationId1"), Some("regulationUrl1"), Some("description1"))
+            ),
+            descendents = Seq.empty[Descendant]
+          )
+
+          val expectedNiphlAssessment = CategoryAssessment(
+            "assessmentId1",
+            1,
+            Seq(
+              Certificate(NiphlCode, "WFE-code", "WFE-description"),
+              Certificate("exemptionId1", "code1", "description1")
+            ),
+            "theme description",
+            Some("regulationUrl1")
+          )
+
+          val expectedAssessments = Seq(
+            expectedNiphlAssessment
+          )
+
+          val expectedAssessmentsThatNeedAnswers = Seq(expectedNiphlAssessment)
+
+          val expectedResult =
+            CategorisationInfo(
+              "1234567890",
+              "BV",
+              None,
+              expectedAssessments,
+              expectedAssessmentsThatNeedAnswers,
+              None,
+              0
+            )
+
+          val result =
+            CategorisationInfo.build(
+              mockOttResponse,
+              "BV",
+              "1234567890",
+              testTraderProfileResponseWithoutNiphlAndNirms
+            )
+
+          result.value mustEqual expectedResult
+
+        }
+        "NRIMS assessment with other possible exemptions and trader is not authorised" in {
+          val mockOttResponse = OttResponse(
+            GoodsNomenclatureResponse(
+              "some id",
+              "1234567890",
+              None,
+              Instant.EPOCH,
+              None,
+              List("test")
+            ),
+            categoryAssessmentRelationships = Seq(
+              CategoryAssessmentRelationship("assessmentId1")
+            ),
+            includedElements = Seq(
+              ThemeResponse("themeId1", 2, "theme description"),
+              CertificateResponse("exemptionId1", "code1", "description1"),
+              CategoryAssessmentResponse(
+                "assessmentId1",
+                "themeId1",
+                Seq(
+                  ExemptionResponse(NirmsCode, ExemptionType.Certificate),
+                  ExemptionResponse("exemptionId1", ExemptionType.Certificate)
+                ),
+                "regulationId1"
+              ),
+              CertificateResponse(NirmsCode, "WFE-code", "WFE-description"),
+              CertificateResponse("exemptionId1", "code1", "description1"),
+              LegalActResponse(Some("regulationId1"), Some("regulationUrl1"), Some("description1"))
+            ),
+            descendents = Seq.empty[Descendant]
+          )
+
+          val expectedNirmsAssesmentId1 = CategoryAssessment(
+            "assessmentId1",
+            2,
+            Seq(
+              Certificate(NirmsCode, "WFE-code", "WFE-description"),
+              Certificate("exemptionId1", "code1", "description1")
+            ),
+            "theme description",
+            Some("regulationUrl1")
+          )
+
+          val expectedAssessments = Seq(
+            expectedNirmsAssesmentId1
+          )
+
+          val expectedAssessmentsThatNeedAnswers = Seq(expectedNirmsAssesmentId1)
+
+          val expectedResult =
+            CategorisationInfo(
+              "1234567890",
+              "BV",
+              None,
+              expectedAssessments,
+              expectedAssessmentsThatNeedAnswers,
+              None,
+              0
+            )
+
+          val result =
+            CategorisationInfo.build(
+              mockOttResponse,
+              "BV",
+              "1234567890",
+              testTraderProfileResponseWithoutNiphlAndNirms
+            )
+
+          result.value mustEqual expectedResult
+
+        }
+
+      }
+
       "when there is a NIRMS assessment" - {
 
         "and NIRMS not authorised" - {
@@ -1033,7 +1179,9 @@ class CategorisationInfoSpec extends SpecBase {
                 "1234567890",
                 testTraderProfileResponseWithoutNiphlAndNirms
               )
+
             result.value mustEqual expectedResult
+
           }
 
           "with Category 1 assessment and there is a Category 2 assessment with no exemptions" in {
