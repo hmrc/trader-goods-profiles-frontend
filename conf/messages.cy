@@ -343,7 +343,7 @@ hasCorrectGoods.heading = Canlyniadau ar gyfer y cod nwyddau {0}
 hasCorrectGoods.p1 = Dynodiad:
 hasCorrectGoods.h2 = Ai dyma’r nwyddau cywir?
 hasCorrectGoods.error.required = Dewiswch ‘Iawn’ os y rhain yw’r nwyddau cywir
-hasCorrectGoods.p2.linkText = Chwiliwch am god nwyddau ar yr Offeryn Tariff Ar-lein (yn agor tab newydd)
+hasCorrectGoods.p2.linkText = Gallwch wirio’r cod nwyddau hwn ar yr Offeryn Tariff Ar-lein (yn agor tab newydd)
 
 singleRecord.title = Cofnod nwyddau
 singleRecord.h1 = Cofnod nwyddau
