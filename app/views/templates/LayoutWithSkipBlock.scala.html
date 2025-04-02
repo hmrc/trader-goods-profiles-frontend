@@ -150,6 +150,8 @@
     headerBlock = headerBlock,
     beforeContentBlock = Some(beforeContent),
     footerBlock        = hmrcStandardFooter(),
-    bodyEndBlock       = Some(additionalScripts),
+    bodyEndBlock       = Some(hmrcScripts(
+        scriptsBlock = Some(additionalScripts)
+    )),
     skipLinkBlock = Some(skipLinkBlock)
 )(content)
