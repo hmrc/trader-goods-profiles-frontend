@@ -33,7 +33,7 @@ class ProfileAuthenticateActionImpl @Inject() (
 
   def filter[A](request: IdentifierRequest[A]): Future[Option[Result]] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
-    traderProfileConnector.checkTraderProfile.map {
+    traderProfileConnector.checkTraderProfile(hc.authorization).map {
       case false => Some(Redirect(controllers.routes.IndexController.onPageLoad()))
       case true  => None
     }

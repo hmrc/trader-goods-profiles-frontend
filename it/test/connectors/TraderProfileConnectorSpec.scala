@@ -17,7 +17,7 @@
 package connectors
 
 import base.TestConstants.testEori
-import com.github.tomakehurst.wiremock.client.WireMock._
+import com.github.tomakehurst.wiremock.client.WireMock.*
 import generators.StatusCodeGenerators
 import models.{HistoricProfileData, TraderProfile}
 import org.scalatest.OptionValues
@@ -29,7 +29,7 @@ import play.api.http.Status.{BAD_REQUEST, INTERNAL_SERVER_ERROR, NOT_FOUND}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.test.WireMockSupport
-import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{Authorization, HeaderCarrier, UpstreamErrorResponse}
 
 class TraderProfileConnectorSpec
     extends AnyFreeSpec
@@ -158,45 +158,142 @@ class TraderProfileConnectorSpec
 
   "checkTraderProfile" - {
 
-    "must return true if present" in {
+    val authToken = Authorization("some-token")
 
-      wireMockServer.stubFor(
-        head(urlEqualTo(s"/trader-goods-profiles-data-store/traders/profile"))
-          .willReturn(ok())
-      )
+    "must pass authorization header if present" - {
 
-      connector.checkTraderProfile.futureValue mustBe true
+      "must return true if present" in {
+
+        wireMockServer.stubFor(
+          head(urlEqualTo(s"/trader-goods-profiles-data-store/traders/profile"))
+            .willReturn(ok())
+        )
+
+        connector.checkTraderProfile(Some(authToken)).futureValue mustBe true
+
+        wireMockServer.verify(
+          1,
+          headRequestedFor(urlEqualTo(s"/trader-goods-profiles-data-store/traders/profile"))
+            .withHeader("Authorization", equalTo(s"Bearer ${authToken.value}"))
+        )
+      }
+
+      "must return false if not present" in {
+
+        wireMockServer.stubFor(
+          head(urlEqualTo(s"/trader-goods-profiles-data-store/traders/profile"))
+            .willReturn(notFound())
+        )
+
+        connector.checkTraderProfile(Some(authToken)).futureValue mustBe false
+
+        wireMockServer.verify(
+          1,
+          headRequestedFor(urlEqualTo(s"/trader-goods-profiles-data-store/traders/profile"))
+            .withHeader("Authorization", equalTo(s"Bearer ${authToken.value}"))
+        )
+      }
+
+      "must return a failed future when the response status is anything but Ok or Not_Found" in {
+
+        wireMockServer.stubFor(
+          head(urlEqualTo(s"/trader-goods-profiles-data-store/traders/profile"))
+            .willReturn(status(errorResponses.sample.value))
+        )
+
+        connector.checkTraderProfile(Some(authToken)).failed.futureValue
+
+        wireMockServer.verify(
+          1,
+          headRequestedFor(urlEqualTo(s"/trader-goods-profiles-data-store/traders/profile"))
+            .withHeader("Authorization", equalTo(s"Bearer ${authToken.value}"))
+        )
+      }
+
+      "must return a failed future when the server returns an error" in {
+
+        wireMockServer.stubFor(
+          head(urlEqualTo(s"/trader-goods-profiles-data-store/traders/profile"))
+            .willReturn(serverError())
+        )
+
+        connector.checkTraderProfile(Some(authToken)).failed.futureValue
+
+        wireMockServer.verify(
+          1,
+          headRequestedFor(urlEqualTo(s"/trader-goods-profiles-data-store/traders/profile"))
+            .withHeader("Authorization", equalTo(s"Bearer ${authToken.value}"))
+        )
+      }
     }
 
-    "must return false if not present" in {
+    "must not pass authorization header if not present" - {
 
-      wireMockServer.stubFor(
-        head(urlEqualTo(s"/trader-goods-profiles-data-store/traders/profile"))
-          .willReturn(notFound())
-      )
+      "must return true if present" in {
 
-      connector.checkTraderProfile.futureValue mustBe false
+        wireMockServer.stubFor(
+          head(urlEqualTo(s"/trader-goods-profiles-data-store/traders/profile"))
+            .willReturn(ok())
+        )
+
+        connector.checkTraderProfile(None).futureValue mustBe true
+
+        wireMockServer.verify(
+          1,
+          headRequestedFor(urlEqualTo(s"/trader-goods-profiles-data-store/traders/profile"))
+            .withoutHeader("Authorization")
+        )
+      }
+
+      "must return false if not present" in {
+
+        wireMockServer.stubFor(
+          head(urlEqualTo(s"/trader-goods-profiles-data-store/traders/profile"))
+            .willReturn(notFound())
+        )
+
+        connector.checkTraderProfile(None).futureValue mustBe false
+
+        wireMockServer.verify(
+          1,
+          headRequestedFor(urlEqualTo(s"/trader-goods-profiles-data-store/traders/profile"))
+            .withoutHeader("Authorization")
+        )
+      }
+
+      "must return a failed future when the response status is anything but Ok or Not_Found" in {
+
+        wireMockServer.stubFor(
+          head(urlEqualTo(s"/trader-goods-profiles-data-store/traders/profile"))
+            .willReturn(status(errorResponses.sample.value))
+        )
+
+        connector.checkTraderProfile(None).failed.futureValue
+
+        wireMockServer.verify(
+          1,
+          headRequestedFor(urlEqualTo(s"/trader-goods-profiles-data-store/traders/profile"))
+            .withoutHeader("Authorization")
+        )
+      }
+
+      "must return a failed future when the server returns an error" in {
+
+        wireMockServer.stubFor(
+          head(urlEqualTo(s"/trader-goods-profiles-data-store/traders/profile"))
+            .willReturn(serverError())
+        )
+
+        connector.checkTraderProfile(None).failed.futureValue
+
+        wireMockServer.verify(
+          1,
+          headRequestedFor(urlEqualTo(s"/trader-goods-profiles-data-store/traders/profile"))
+            .withoutHeader("Authorization")
+        )
+      }
     }
 
-    "must return a failed future when the response status is anything but Ok or Not_Found" in {
-
-      wireMockServer.stubFor(
-        head(urlEqualTo(s"/trader-goods-profiles-data-store/traders/profile"))
-          .willReturn(status(errorResponses.sample.value))
-      )
-
-      connector.checkTraderProfile.failed.futureValue
-    }
-
-    "must return a failed future when the server returns an error" in {
-
-      wireMockServer.stubFor(
-        head(urlEqualTo(s"/trader-goods-profiles-data-store/traders/profile"))
-          .willReturn(serverError())
-      )
-
-      connector.checkTraderProfile.failed.futureValue
-    }
   }
 
   "getHistoricProfileData" - {

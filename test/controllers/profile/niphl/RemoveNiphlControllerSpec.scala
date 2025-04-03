@@ -47,7 +47,7 @@ class RemoveNiphlControllerSpec extends SpecBase with MockitoSugar {
   private lazy val removeNiphlRoute = RemoveNiphlController.onPageLoad().url
 
   private val mockTraderProfileConnector = mock[TraderProfileConnector]
-  when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
+  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
   "RemoveNiphl Controller" - {
 

@@ -18,16 +18,16 @@ package controllers.profile.nirms
 
 import connectors.TraderProfileConnector
 import controllers.BaseController
-import controllers.actions._
+import controllers.actions.*
+import controllers.profile.nirms.routes.*
+import forms.profile.nirms.NirmsNumberFormProvider
 import models.Mode
 import navigation.ProfileNavigator
+import pages.profile.nirms.{HasNirmsUpdatePage, NirmsNumberPage, NirmsNumberUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import views.html.profile.NirmsNumberView
-import controllers.profile.nirms.routes._
-import forms.profile.nirms.NirmsNumberFormProvider
-import pages.profile.nirms.{HasNirmsUpdatePage, NirmsNumberPage, NirmsNumberUpdatePage}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
