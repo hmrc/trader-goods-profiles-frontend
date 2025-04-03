@@ -158,7 +158,7 @@ class TraderProfileConnectorSpec
 
   "checkTraderProfile" - {
 
-    val authToken = Authorization("some-token")
+    val authToken = Authorization("Bearer some-token")
 
     "must pass authorization header if present" - {
 
@@ -174,7 +174,7 @@ class TraderProfileConnectorSpec
         wireMockServer.verify(
           1,
           headRequestedFor(urlEqualTo(s"/trader-goods-profiles-data-store/traders/profile"))
-            .withHeader("Authorization", equalTo(s"Bearer ${authToken.value}"))
+            .withHeader("Authorization", equalTo(s"${authToken.value}"))
         )
       }
 
@@ -190,7 +190,7 @@ class TraderProfileConnectorSpec
         wireMockServer.verify(
           1,
           headRequestedFor(urlEqualTo(s"/trader-goods-profiles-data-store/traders/profile"))
-            .withHeader("Authorization", equalTo(s"Bearer ${authToken.value}"))
+            .withHeader("Authorization", equalTo(s"${authToken.value}"))
         )
       }
 
@@ -206,7 +206,7 @@ class TraderProfileConnectorSpec
         wireMockServer.verify(
           1,
           headRequestedFor(urlEqualTo(s"/trader-goods-profiles-data-store/traders/profile"))
-            .withHeader("Authorization", equalTo(s"Bearer ${authToken.value}"))
+            .withHeader("Authorization", equalTo(s"${authToken.value}"))
         )
       }
 
@@ -222,7 +222,7 @@ class TraderProfileConnectorSpec
         wireMockServer.verify(
           1,
           headRequestedFor(urlEqualTo(s"/trader-goods-profiles-data-store/traders/profile"))
-            .withHeader("Authorization", equalTo(s"Bearer ${authToken.value}"))
+            .withHeader("Authorization", equalTo(s"${authToken.value}"))
         )
       }
     }

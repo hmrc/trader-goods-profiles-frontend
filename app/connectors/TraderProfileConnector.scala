@@ -55,7 +55,7 @@ class TraderProfileConnector @Inject() (config: Configuration, httpClient: HttpC
   def checkTraderProfile(authorisationToken: Option[Authorization])(implicit hc: HeaderCarrier): Future[Boolean] = {
 
     val http: RequestBuilder = authorisationToken match {
-      case Some(token) => httpClient.head(traderProfileUrl).setHeader(("Authorization", s"Bearer ${token.value}"))
+      case Some(token) => httpClient.head(traderProfileUrl).setHeader(("Authorization", s"${token.value}"))
       case _           => httpClient.head(traderProfileUrl)
     }
 
