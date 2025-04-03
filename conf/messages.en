@@ -277,7 +277,7 @@ goodsDescription.change.hidden = Goods description
 hasCorrectGoods.title = Results for the commodity code {0}
 hasCorrectGoods.heading = Results for the commodity code {0}
 hasCorrectGoods.p1 = Classification:
-hasCorrectGoods.p2.linkText = You can check this commodity code on the Online Tariff Tool (opens in new tab)
+hasCorrectGoods.p2.linkText = You can check this commodity code on the Online Tariff Tool (opens in new tab).
 hasCorrectGoods.h2 = Are these the correct goods?
 hasCorrectGoods.error.required = Select yes if these are the correct goods
 
