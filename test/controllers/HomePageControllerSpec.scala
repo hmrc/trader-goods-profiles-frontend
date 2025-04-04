@@ -76,7 +76,7 @@ class HomePageControllerSpec extends SpecBase {
         )
 
         val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-        when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
         when(mockTraderProfileConnector.getHistoricProfileData(any())(any())) thenReturn Future.successful(
           Some(historicProfileData)
         )
@@ -124,7 +124,7 @@ class HomePageControllerSpec extends SpecBase {
               controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url
           )(request, messages(application)).toString
 
-          verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
+          verify(mockTraderProfileConnector, never()).checkTraderProfile(any())(any())
           verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any())(any())
           verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())
         }
@@ -133,7 +133,7 @@ class HomePageControllerSpec extends SpecBase {
       "must return OK and the correct view for a GET without banner" in {
 
         val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-        when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
         when(mockTraderProfileConnector.getHistoricProfileData(any())(any())) thenReturn Future.successful(
           Some(historicProfileData)
         )
@@ -192,7 +192,7 @@ class HomePageControllerSpec extends SpecBase {
               controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url
           )(request, messages(application)).toString
 
-          verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
+          verify(mockTraderProfileConnector, never()).checkTraderProfile(any())(any())
           verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any())(any())
           verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())
         }
@@ -201,7 +201,7 @@ class HomePageControllerSpec extends SpecBase {
       "must return OK and the correct view for a GET with correct messageKey" - {
         "when downloadDataSummary is None" in {
           val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-          when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
           when(mockTraderProfileConnector.getHistoricProfileData(any())(any())) thenReturn Future.successful(
             Some(historicProfileData)
           )
@@ -249,7 +249,7 @@ class HomePageControllerSpec extends SpecBase {
                 controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url
             )(request, messages(application)).toString
 
-            verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
+            verify(mockTraderProfileConnector, never()).checkTraderProfile(any())(any())
             verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any())(any())
             verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())
           }
@@ -268,7 +268,7 @@ class HomePageControllerSpec extends SpecBase {
           )
 
           val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-          when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
           when(mockTraderProfileConnector.getHistoricProfileData(any())(any())) thenReturn Future.successful(
             Some(historicProfileData)
           )
@@ -316,7 +316,7 @@ class HomePageControllerSpec extends SpecBase {
                 controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url
             )(request, messages(application)).toString
 
-            verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
+            verify(mockTraderProfileConnector, never()).checkTraderProfile(any())(any())
             verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any())(any())
             verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())
           }
@@ -335,7 +335,7 @@ class HomePageControllerSpec extends SpecBase {
           )
 
           val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-          when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
           when(mockTraderProfileConnector.getHistoricProfileData(any())(any())) thenReturn Future.successful(
             Some(historicProfileData)
           )
@@ -398,7 +398,7 @@ class HomePageControllerSpec extends SpecBase {
           )
 
           val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-          when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
+          when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
           when(mockTraderProfileConnector.getHistoricProfileData(any())(any())) thenReturn Future.successful(
             Some(historicProfileData)
           )
@@ -446,7 +446,7 @@ class HomePageControllerSpec extends SpecBase {
                 controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url
             )(request, messages(application)).toString
 
-            verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
+            verify(mockTraderProfileConnector, never()).checkTraderProfile(any())(any())
             verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any())(any())
             verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())
           }
@@ -458,7 +458,7 @@ class HomePageControllerSpec extends SpecBase {
       "must return OK and the correct view for a GET with noRecords messageKey" in {
 
         val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-        when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
         when(mockTraderProfileConnector.getHistoricProfileData(any())(any())) thenReturn Future.successful(
           None
         )
@@ -507,7 +507,7 @@ class HomePageControllerSpec extends SpecBase {
               controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url
           )(request, messages(application)).toString
 
-          verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
+          verify(mockTraderProfileConnector, never()).checkTraderProfile(any())(any())
           verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any())(any())
           verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())
         }
@@ -517,7 +517,7 @@ class HomePageControllerSpec extends SpecBase {
     "when getRecords returns Accepted/None redirect to goodsLoadingPage" in {
 
       val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-      when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
+      when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
       when(mockTraderProfileConnector.getHistoricProfileData(any())(any())) thenReturn Future.successful(
         None
       )
@@ -559,7 +559,7 @@ class HomePageControllerSpec extends SpecBase {
       "must return OK and the correct view for a GET with unverifiedEmail messageKey" in {
 
         val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-        when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
         when(mockTraderProfileConnector.getHistoricProfileData(any())(any())) thenReturn Future.successful(
           None
         )
@@ -608,7 +608,7 @@ class HomePageControllerSpec extends SpecBase {
               controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url
           )(request, messages(application)).toString
 
-          verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
+          verify(mockTraderProfileConnector, never()).checkTraderProfile(any())(any())
           verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any())(any())
           verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())
         }
@@ -619,7 +619,7 @@ class HomePageControllerSpec extends SpecBase {
       "false when pageUpdated does not contain a newUKIMS value" in {
 
         val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-        when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
         when(mockTraderProfileConnector.getHistoricProfileData(any())(any())) thenReturn Future.successful(
           None
         )
@@ -668,7 +668,7 @@ class HomePageControllerSpec extends SpecBase {
               controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url
           )(request, messages(application)).toString
 
-          verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
+          verify(mockTraderProfileConnector, never()).checkTraderProfile(any())(any())
           verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any())(any())
           verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())
         }
@@ -676,7 +676,7 @@ class HomePageControllerSpec extends SpecBase {
       "true when pageUpdated contains a newUKIMS value" in {
 
         val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-        when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
+        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
         when(mockTraderProfileConnector.getHistoricProfileData(any())(any())) thenReturn Future.successful(
           None
         )
@@ -726,7 +726,7 @@ class HomePageControllerSpec extends SpecBase {
               controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url
           )(request, messages(application)).toString
 
-          verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
+          verify(mockTraderProfileConnector, never()).checkTraderProfile(any())(any())
           verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any())(any())
           verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())
         }

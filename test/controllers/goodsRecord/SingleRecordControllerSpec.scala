@@ -73,7 +73,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
+    when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
     when(mockOttConnector.getCountries(any())).thenReturn(Future.successful(countries))
   }
 

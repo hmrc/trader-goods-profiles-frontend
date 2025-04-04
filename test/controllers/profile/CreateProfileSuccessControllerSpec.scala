@@ -35,7 +35,7 @@ class CreateProfileSuccessControllerSpec extends SpecBase {
     "must return OK and the correct view for a GET" in {
 
       val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-      when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
+      when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(inject.bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
@@ -50,7 +50,7 @@ class CreateProfileSuccessControllerSpec extends SpecBase {
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view()(request, messages(application)).toString
-        verify(mockTraderProfileConnector, never()).checkTraderProfile(any())
+        verify(mockTraderProfileConnector, never()).checkTraderProfile(any())(any())
       }
     }
   }

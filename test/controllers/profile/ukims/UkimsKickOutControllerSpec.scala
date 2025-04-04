@@ -37,7 +37,7 @@ class UkimsKickOutControllerSpec extends SpecBase {
 
       val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
 
-      when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(false)
+      when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
           bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
@@ -54,7 +54,7 @@ class UkimsKickOutControllerSpec extends SpecBase {
         status(result) mustEqual OK
         contentAsString(result) mustEqual view()(request, messages(application)).toString
 
-        verify(mockTraderProfileConnector).checkTraderProfile(any())
+        verify(mockTraderProfileConnector).checkTraderProfile(any())(any())
       }
     }
 
@@ -62,7 +62,7 @@ class UkimsKickOutControllerSpec extends SpecBase {
 
       val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
 
-      when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
+      when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
           bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
@@ -76,7 +76,7 @@ class UkimsKickOutControllerSpec extends SpecBase {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.HomePageController.onPageLoad().url
-        verify(mockTraderProfileConnector).checkTraderProfile(any())
+        verify(mockTraderProfileConnector).checkTraderProfile(any())(any())
       }
     }
   }

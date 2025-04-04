@@ -41,7 +41,7 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
   private val mockSessionRepository      = mock[SessionRepository]
   when(mockSessionRepository.set(any())) thenReturn Future
     .successful(true)
-  when(mockTraderProfileConnector.checkTraderProfile(any())) thenReturn Future.successful(true)
+  when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
   "Profile Controller" - {
 
