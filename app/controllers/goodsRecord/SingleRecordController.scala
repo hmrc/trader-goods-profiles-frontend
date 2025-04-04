@@ -19,7 +19,6 @@ package controllers.goodsRecord
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.BaseController
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
-import models.AdviceStatus._
 import models.helper.{CategorisationJourney, RequestAdviceJourney, SupplementaryUnitUpdateJourney, WithdrawAdviceJourney}
 import models.requests.DataRequest
 import models.{AdviceStatusMessage, Country, NormalMode, ReviewReason}
@@ -61,14 +60,7 @@ class SingleRecordController @Inject() (
         .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url)
       for {
         record                             <- goodsRecordConnector.getRecord(recordId)
-        recordIsLocked                      = record.adviceStatus match {
-                                                case status
-                                                    if status == Requested ||
-                                                      status == InProgress ||
-                                                      status == InformationRequested =>
-                                                  true
-                                                case _ => false
-                                              }
+        recordIsLocked                      = record.adviceStatus.isRecordLocked
         countries                          <- retrieveAndStoreCountries
         updatedAnswersWithproductReference <-
           Future.fromTry(request.userAnswers.set(ProductReferenceUpdatePage(recordId), record.traderRef))

@@ -23,6 +23,40 @@ import models.AdviceStatus._
 class AdviceStatusSpec extends SpecBase {
 
   "AdviceStatus" - {
+
+    "isRecordLocked" - {
+      "must return true for" - {
+        "Requested" in {
+          Requested.isRecordLocked mustBe true
+        }
+
+        "In Progress" in {
+          InProgress.isRecordLocked mustBe true
+        }
+
+        "Information Requested" in {
+          InformationRequested.isRecordLocked mustBe true
+        }
+      }
+      "must return false for" - {
+        "Not Requested" in {
+          NotRequested.isRecordLocked mustBe false
+        }
+
+        "Advice Provided" in {
+          AdviceReceived.isRecordLocked mustBe false
+        }
+
+        "Advice not provided" in {
+          AdviceNotProvided.isRecordLocked mustBe false
+        }
+
+        "Advice request withdrawn" in {
+          AdviceRequestWithdrawn.isRecordLocked mustBe false
+        }
+      }
+    }
+
     "must deserialize from json" - {
       "when Not Requested" in {
         Json.fromJson[AdviceStatus](JsString("Not Requested")) mustBe JsSuccess(NotRequested)
