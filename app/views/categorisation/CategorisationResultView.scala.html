@@ -51,10 +51,17 @@
         case StandardGoodsScenario => Some(messages("categorisationResult.Standard.p1"))
         case StandardGoodsNoAssessmentsScenario => Some(messages("categorisationResult.StandardNoAssessments.p1"))
         case Category2NoExemptionsScenario => Some(messages("categorisationResult.Category2NoExemptions.p1"))
-        case Category2Scenario => Some(messages("categorisationResult.Category2.p1"))
+        case Category2Scenario =>
+        for {
+            msg1 <- Some(messages("categorisationResult.Category2.p1"))
+            msg2 <- Some(messages("categorisationResult.Category2.p2"))
+        } yield Html(msg1 + "<br/>" + msg2)
         case _ => None
     }
 }
+
+
+
 
 @title = @{
     scenario match {
@@ -97,8 +104,18 @@
 
     <h2 class="govuk-heading-m">@messages("categorisationResult.h2")</h2>
 
-    <p class="govuk-body">@messages("categorisationResult.h2.paragraph")</p>
+    @scenario match {
 
+    case Category1Scenario | Category1NoExemptionsScenario => {
+        <p class="govuk-body">@messages("categorisationResult.h2.cat1.paragraph")</p>
+        }
+    case Category2Scenario | Category2NoExemptionsScenario => {
+    <p class="govuk-body">@messages("categorisationResult.h2.cat2.paragraph")</p>
+        }
+    case StandardGoodsScenario | StandardGoodsNoAssessmentsScenario => {
+    <p class="govuk-body">@messages("categorisationResult.h2.standard.paragraph")</p>
+        }
+    }
     <p class="govuk-body"><a href="@controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId).url" class="govuk-link" >@messages("site.goBackToGoodsRecord")</a></p>
     <p class="govuk-body"><a href="@controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url" class="govuk-link" >@messages("site.goBackToGoodsProfile")</a></p>
 
