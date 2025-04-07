@@ -75,13 +75,9 @@
         scenario match {
             case Category1Scenario | Category1NoExemptionsScenario => {
                     <h1 class="govuk-heading-l">{messages("categorisationResult.Category1.h1")}</h1>
-                    <p class="govuk-body">
-                    {if(scenario == Category1NoExemptionsScenario) {
-                        messages("categorisationResult.Category1NoExemptions.p1")
-                    } else {
-                        messages("categorisationResult.Category1.p1")
-                    }}
-                    </p>
+                    <p class="govuk-body">{messages("categorisationResult.Category1.p1")}</p>
+                    <p class="govuk-body">{messages("categorisationResult.Category1.p2")}</p>
+
             }
             case _ => panel
         }
@@ -99,7 +95,6 @@
 
     <p class="govuk-body"><a href="@controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId).url" class="govuk-link" >@messages("site.goBackToGoodsRecord")</a></p>
     <p class="govuk-body"><a href="@controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url" class="govuk-link" >@messages("site.goBackToGoodsProfile")</a></p>
-    <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad().url" class="govuk-link" >@messages("site.goBackToHomePage")</a></p>
 
     @feedbackSection()
 
