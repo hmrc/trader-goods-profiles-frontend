@@ -58,7 +58,8 @@
 
 @title = @{
     scenario match {
-        case Category1NoExemptionsScenario | Category1Scenario => titleNoForm(messages("categorisationResult.Category1.title"))
+        case Category1Scenario => titleNoForm(messages("categorisationResult.Category1.title"))
+        case Category1NoExemptionsScenario => titleNoForm(messages("categorisationResult.Category1.noExceptions.title"))
         case StandardGoodsScenario => titleNoForm(messages("categorisationResult.Standard.title"))
         case StandardGoodsNoAssessmentsScenario => titleNoForm(messages("categorisationResult.Standard.title"))
         case Category2Scenario | Category2NoExemptionsScenario=> titleNoForm(messages("categorisationResult.Category2.title"))
@@ -76,7 +77,7 @@
             case Category1Scenario | Category1NoExemptionsScenario => {
 
                     {if(scenario == Category1NoExemptionsScenario) {
-                        <h1 class="govuk-heading-l">{messages("categorisationResult.Category1.h1")}</h1>
+                        <h1 class="govuk-heading-l">{messages("categorisationResult.Category1.noExceptions.h1")}</h1>
                         <p class="govuk-body">{messages("categorisationResult.Category1NoExemptions.p1")}</p>
                    } else {
                         <h1 class="govuk-heading-l">{messages("categorisationResult.Category1.h1")}</h1>
