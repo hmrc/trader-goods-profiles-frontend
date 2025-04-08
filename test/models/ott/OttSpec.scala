@@ -26,7 +26,7 @@ class OttSpec extends AnyFreeSpec with Matchers {
     "category1answer" - {
       "must filter out assessment with no answers" in {
         val categoryAssessments: Seq[CategoryAssessment] = Seq(
-          CategoryAssessment("1", 1, Seq.empty, "description", None),
+          CategoryAssessment("1", 1, Seq.empty, "description", None)
         )
 
         categoryAssessments.category1ToAnswer(isTraderNiphlAuthorised = false) mustBe Seq.empty
@@ -37,7 +37,7 @@ class OttSpec extends AnyFreeSpec with Matchers {
         val exemptions = Seq(OtherExemption(NiphlCode, NiphlCode, "description"))
 
         val categoryAssessments: Seq[CategoryAssessment] = Seq(
-          CategoryAssessment("1", 1, exemptions, "description", None),
+          CategoryAssessment("1", 1, exemptions, "description", None)
         )
 
         categoryAssessments.category1ToAnswer(isTraderNiphlAuthorised = true) mustBe Seq.empty
@@ -48,7 +48,7 @@ class OttSpec extends AnyFreeSpec with Matchers {
         val exemptions = Seq(OtherExemption(NiphlCode, NiphlCode, "description"))
 
         val categoryAssessments: Seq[CategoryAssessment] = Seq(
-          CategoryAssessment("1", 1, exemptions, "description", None),
+          CategoryAssessment("1", 1, exemptions, "description", None)
         )
 
         categoryAssessments.category1ToAnswer(isTraderNiphlAuthorised = false) mustBe Seq.empty
@@ -56,10 +56,11 @@ class OttSpec extends AnyFreeSpec with Matchers {
 
       "must not filter out NIPHL assessment if trader is not authorised and there is other available exemptions" in {
 
-        val exemptions = Seq(OtherExemption(NiphlCode, NiphlCode, "description"), Certificate("Y123", "Y123", "description"))
+        val exemptions =
+          Seq(OtherExemption(NiphlCode, NiphlCode, "description"), Certificate("Y123", "Y123", "description"))
 
         val categoryAssessments: Seq[CategoryAssessment] = Seq(
-          CategoryAssessment("1", 1, exemptions, "description", None),
+          CategoryAssessment("1", 1, exemptions, "description", None)
         )
 
         categoryAssessments.category1ToAnswer(isTraderNiphlAuthorised = false) mustBe categoryAssessments
@@ -69,7 +70,7 @@ class OttSpec extends AnyFreeSpec with Matchers {
     "category2answer" - {
       "must filter out assessment with no answers" in {
         val categoryAssessments: Seq[CategoryAssessment] = Seq(
-          CategoryAssessment("1", 2, Seq.empty, "description", None),
+          CategoryAssessment("1", 2, Seq.empty, "description", None)
         )
 
         categoryAssessments.category2ToAnswer(isTraderNirmsAuthorised = false) mustBe Seq.empty
@@ -80,7 +81,7 @@ class OttSpec extends AnyFreeSpec with Matchers {
         val exemptions = Seq(OtherExemption(NirmsCode, NirmsCode, "description"))
 
         val categoryAssessments: Seq[CategoryAssessment] = Seq(
-          CategoryAssessment("1", 2, exemptions, "description", None),
+          CategoryAssessment("1", 2, exemptions, "description", None)
         )
 
         categoryAssessments.category2ToAnswer(isTraderNirmsAuthorised = true) mustBe Seq.empty
@@ -91,7 +92,7 @@ class OttSpec extends AnyFreeSpec with Matchers {
         val exemptions = Seq(OtherExemption(NirmsCode, NirmsCode, "description"))
 
         val categoryAssessments: Seq[CategoryAssessment] = Seq(
-          CategoryAssessment("1", 2, exemptions, "description", None),
+          CategoryAssessment("1", 2, exemptions, "description", None)
         )
 
         categoryAssessments.category2ToAnswer(isTraderNirmsAuthorised = false) mustBe Seq.empty
@@ -99,10 +100,11 @@ class OttSpec extends AnyFreeSpec with Matchers {
 
       "must not filter out NIRMS assessment if trader is not authorised and there is other available exemptions" in {
 
-        val exemptions = Seq(OtherExemption(NiphlCode, NiphlCode, "description"), Certificate("Y123", "Y123", "description"))
+        val exemptions =
+          Seq(OtherExemption(NiphlCode, NiphlCode, "description"), Certificate("Y123", "Y123", "description"))
 
         val categoryAssessments: Seq[CategoryAssessment] = Seq(
-          CategoryAssessment("1", 2, exemptions, "description", None),
+          CategoryAssessment("1", 2, exemptions, "description", None)
         )
 
         categoryAssessments.category2ToAnswer(isTraderNirmsAuthorised = false) mustBe categoryAssessments

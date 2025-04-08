@@ -38,8 +38,8 @@ final case class CategoryAssessment(
 
   def isCategory1: Boolean   = category == Category1AsInt
   def isCategory2: Boolean   = category == Category2AsInt
-  def hasNoAnswers: Boolean  = exemptions.isEmpty
-  def hasAnswers: Boolean  = exemptions.nonEmpty
+  def hasNoAnswers: Boolean  = exemptions.isEmpty // Refactor to be hasNoExemptions
+  def hasAnswers: Boolean    = exemptions.nonEmpty // Refactor to be hasExemptions
   def isNiphlAnswer: Boolean = isCategory1 && exemptions.exists(exemption => exemption.id == NiphlCode)
   def isNirmsAnswer: Boolean = isCategory2 && exemptions.exists(exemption => exemption.id == NirmsCode)
 
@@ -48,7 +48,7 @@ final case class CategoryAssessment(
 
   def isNiphlAsessmentAndTraderAuthorised(isAuthorised: Boolean): Boolean = isNiphlAnswer && isAuthorised
   def isNirmsAsessmentAndTraderAuthorised(isAuthorised: Boolean): Boolean = isNirmsAnswer && isAuthorised
-  
+
 }
 
 object CategoryAssessment {
