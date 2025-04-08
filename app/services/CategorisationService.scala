@@ -114,77 +114,77 @@ class CategorisationService @Inject() (
         }
     }
 
+//  def calculateResult(
+//    categorisationInfo: CategorisationInfo,
+//    userAnswers: UserAnswers,
+//    recordId: String
+//  ): Scenario = {
+//    val category1Assessments = categorisationInfo.categoryAssessments.filter(_.isCategory1)
+//    val category2Assessments = categorisationInfo.categoryAssessments.filter(_.isCategory2)
+//
+//    val listOfAnswers = categorisationInfo.getAnswersForQuestions(userAnswers, recordId)
+//
+//    val areThereCategory1QuestionsWithNoExemption =
+//      listOfAnswers.exists(x => x.answer.contains(AssessmentAnswer.NoExemption) && x.question.isCategory1)
+//
+//    val areThereCategory1QuestionsWithNoPossibleAnswers = category1Assessments.exists(_.hasNoAnswers)
+//    val areThereCategory2QuestionsWithNoPossibleAnswers = category2Assessments.exists(_.hasNoAnswers)
+//
+//    val doesAnyCategory2AssessmentHaveExemptions =
+//      category2Assessments.exists(_.exemptions.nonEmpty)
+//
+//    if (categorisationInfo.isNiphlAssessment && categorisationInfo.isTraderNiphlAuthorised) {
+//      if (areThereCategory1QuestionsWithNoExemption) {
+//        Category1Scenario
+//      } else if (areThereCategory1QuestionsWithNoPossibleAnswers) {
+//        Category1NoExemptionsScenario
+//      } else if (areThereCategory2QuestionsWithNoPossibleAnswers) {
+//        Category2NoExemptionsScenario
+//      } else if (doesAnyCategory2AssessmentHaveExemptions) {
+//        Category2Scenario
+//      } else {
+//        Category2NoExemptionsScenario
+//      }
+//    } else {
+//      calculateResultWithNirms(categorisationInfo, userAnswers, recordId, listOfAnswers)
+//    }
+//  }
+//
+//  private def calculateResultWithNirms(
+//    categorisationInfo: CategorisationInfo,
+//    userAnswers: UserAnswers,
+//    recordId: String,
+//    listOfAnswers: Seq[AnsweredQuestions]
+//  ): Scenario = {
+//
+//    val areThereCategory1AnsweredNo   =
+//      listOfAnswers.exists(ass => ass.answer.contains(AssessmentAnswer.NoExemption) && ass.question.isCategory1)
+//    val areThereCategory2AnsweredNo   =
+//      listOfAnswers.exists(ass => ass.answer.contains(AssessmentAnswer.NoExemption) && ass.question.isCategory2)
+//    val areThereCategory1Unanswerable =
+//      categorisationInfo.categoryAssessments.exists(ass => ass.isCategory1 && ass.hasNoAnswers)
+//    val areThereCategory2Unanswerable =
+//      categorisationInfo.categoryAssessments.exists(ass => ass.isCategory2 && ass.hasNoAnswers)
+//
+//    if (
+//      categorisationInfo.isNirmsAssessment && categorisationInfo.isTraderNirmsAuthorised && !areThereCategory1Unanswerable
+//    ) {
+//
+//      if (areThereCategory1AnsweredNo) {
+//        Category1Scenario
+//      } else if (areThereCategory2Unanswerable) {
+//        Category2NoExemptionsScenario
+//      } else if (areThereCategory2AnsweredNo) {
+//        Category2Scenario
+//      } else {
+//        StandardGoodsScenario
+//      }
+//    } else {
+//      calculateResultWithoutNiphlAndNirms(categorisationInfo, userAnswers, recordId)
+//    }
+//  }
+
   def calculateResult(
-    categorisationInfo: CategorisationInfo,
-    userAnswers: UserAnswers,
-    recordId: String
-  ): Scenario = {
-    val category1Assessments = categorisationInfo.categoryAssessments.filter(_.isCategory1)
-    val category2Assessments = categorisationInfo.categoryAssessments.filter(_.isCategory2)
-
-    val listOfAnswers = categorisationInfo.getAnswersForQuestions(userAnswers, recordId)
-
-    val areThereCategory1QuestionsWithNoExemption =
-      listOfAnswers.exists(x => x.answer.contains(AssessmentAnswer.NoExemption) && x.question.isCategory1)
-
-    val areThereCategory1QuestionsWithNoPossibleAnswers = category1Assessments.exists(_.hasNoAnswers)
-    val areThereCategory2QuestionsWithNoPossibleAnswers = category2Assessments.exists(_.hasNoAnswers)
-
-    val doesAnyCategory2AssessmentHaveExemptions =
-      category2Assessments.exists(_.exemptions.nonEmpty)
-
-    if (categorisationInfo.isNiphlAssessment && categorisationInfo.isTraderNiphlAuthorised) {
-      if (areThereCategory1QuestionsWithNoExemption) {
-        Category1Scenario
-      } else if (areThereCategory1QuestionsWithNoPossibleAnswers) {
-        Category1NoExemptionsScenario
-      } else if (areThereCategory2QuestionsWithNoPossibleAnswers) {
-        Category2NoExemptionsScenario
-      } else if (doesAnyCategory2AssessmentHaveExemptions) {
-        Category2Scenario
-      } else {
-        Category2NoExemptionsScenario
-      }
-    } else {
-      calculateResultWithNirms(categorisationInfo, userAnswers, recordId, listOfAnswers)
-    }
-  }
-
-  private def calculateResultWithNirms(
-    categorisationInfo: CategorisationInfo,
-    userAnswers: UserAnswers,
-    recordId: String,
-    listOfAnswers: Seq[AnsweredQuestions]
-  ): Scenario = {
-
-    val areThereCategory1AnsweredNo   =
-      listOfAnswers.exists(ass => ass.answer.contains(AssessmentAnswer.NoExemption) && ass.question.isCategory1)
-    val areThereCategory2AnsweredNo   =
-      listOfAnswers.exists(ass => ass.answer.contains(AssessmentAnswer.NoExemption) && ass.question.isCategory2)
-    val areThereCategory1Unanswerable =
-      categorisationInfo.categoryAssessments.exists(ass => ass.isCategory1 && ass.hasNoAnswers)
-    val areThereCategory2Unanswerable =
-      categorisationInfo.categoryAssessments.exists(ass => ass.isCategory2 && ass.hasNoAnswers)
-
-    if (
-      categorisationInfo.isNirmsAssessment && categorisationInfo.isTraderNirmsAuthorised && !areThereCategory1Unanswerable
-    ) {
-
-      if (areThereCategory1AnsweredNo) {
-        Category1Scenario
-      } else if (areThereCategory2Unanswerable) {
-        Category2NoExemptionsScenario
-      } else if (areThereCategory2AnsweredNo) {
-        Category2Scenario
-      } else {
-        StandardGoodsScenario
-      }
-    } else {
-      calculateResultWithoutNiphlAndNirms(categorisationInfo, userAnswers, recordId)
-    }
-  }
-
-  private def calculateResultWithoutNiphlAndNirms(
     categorisationInfo: CategorisationInfo,
     userAnswers: UserAnswers,
     recordId: String
