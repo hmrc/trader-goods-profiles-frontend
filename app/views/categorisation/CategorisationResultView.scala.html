@@ -114,9 +114,12 @@
 
     @scenario match {
 
-    case Category1Scenario | Category1NoExemptionsScenario => {
+    case Category1Scenario => {
         <p class="govuk-body">@messages("categorisationResult.h2.cat1.paragraph")</p>
         }
+    case  Category1NoExemptionsScenario => {
+    <p class="govuk-body">@messages("categorisationResult.h2.cat1.noExemptions.paragraph")</p>
+    }
     case Category2Scenario => {
         <p class="govuk-body">@messages("categorisationResult.h2.cat2.paragraph")</p>
         }
