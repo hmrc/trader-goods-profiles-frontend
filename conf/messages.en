@@ -343,7 +343,7 @@ categorisationResult.StandardNoAssessments.p1 = Your goods have been categorised
 categorisationResult.StandardNoAssessments.p2 = This goods record does not need any exemptions to be standard goods.
 categorisationResult.h2 = What happens next?
 categorisationResult.h2.cat1.paragraph = You cannot use this goods record to help complete an IMMI form as it is category 1. You may be able to move these goods using a different declaration.
-categorisationResult.h2.cat2.paragraph = You can use this goods record to help complete an IMMI form.
+categorisationResult.h2.cat2.paragraph = You can use this goods record to help complete the IMMI form.
 categorisationResult.Category2NoExemptions.p2 = There are no exemptions to change the category.
 categorisationResult.h2.standard.paragraph = You can view the record from your goods profile, create a new record or go to the homepage.
 
