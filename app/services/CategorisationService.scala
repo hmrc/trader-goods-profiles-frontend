@@ -125,13 +125,13 @@ class CategorisationService @Inject() (
       .find(x => x.answer.contains(AssessmentAnswer.NoExemption))
 
     val shouldBeCategory1NoExemption: Boolean = categorisationInfo.categoryAssessments.exists(ass =>
-      ass.isCategory1 && ass.hasNoAnswers
+      ass.isCategory1 && ass.hasNoExemptions
     ) || categorisationInfo.categoryAssessments.exists(ass =>
       ass.onlyContainsNiphlAnswer && !categorisationInfo.isTraderNiphlAuthorised
     )
 
     val shouldBeCategory2NoExemption: Boolean = categorisationInfo.categoryAssessments.exists(ass =>
-      ass.isCategory2 && ass.hasNoAnswers
+      ass.isCategory2 && ass.hasNoExemptions
     ) || categorisationInfo.categoryAssessments.exists(ass =>
       ass.onlyContainsNirmsAnswer && !categorisationInfo.isTraderNirmsAuthorised
     )

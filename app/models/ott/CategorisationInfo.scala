@@ -79,7 +79,7 @@ final case class CategorisationInfo(
     commodityCode.reverse.dropWhile(char => char == '0').reverse.padTo(minimumLengthOfCommodityCode, '0').mkString
 
   def isNiphlAssessment: Boolean = categoryAssessments.exists(ass => ass.isNiphlAnswer) &&
-    categoryAssessments.exists(ass => ass.isCategory2 && ass.hasNoAnswers)
+    categoryAssessments.exists(ass => ass.isCategory2 && ass.hasNoExemptions)
 
   def isNirmsAssessment: Boolean = categoryAssessments.exists(_.isNirmsAnswer)
 

@@ -20,13 +20,13 @@ package object ott {
   implicit class CategoryAssessmentSeqOps(assessments: Seq[CategoryAssessment]) {
     def category1ToAnswer(isTraderNiphlAuthorised: Boolean): Seq[CategoryAssessment] =
       assessments
-        .filter(_.hasAnswers)
+        .filter(_.hasExemptions)
         .filterNot(_.isNiphlAsessmentAndTraderAuthorised(isTraderNiphlAuthorised))
         .filterNot(_.onlyContainsNiphlAnswer)
 
     def category2ToAnswer(isTraderNirmsAuthorised: Boolean): Seq[CategoryAssessment] =
       assessments
-        .filter(_.hasAnswers)
+        .filter(_.hasExemptions)
         .filterNot(_.isNirmsAsessmentAndTraderAuthorised(isTraderNirmsAuthorised))
         .filterNot(_.onlyContainsNirmsAnswer)
   }
