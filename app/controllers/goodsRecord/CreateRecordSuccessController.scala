@@ -17,12 +17,14 @@
 package controllers.goodsRecord
 
 import controllers.BaseController
-import controllers.actions._
+import controllers.actions.*
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.AutoCategoriseService
 import views.html.goodsRecord.CreateRecordSuccessView
 
 import javax.inject.Inject
+import scala.concurrent.ExecutionContext
 
 class CreateRecordSuccessController @Inject() (
   override val messagesApi: MessagesApi,
@@ -31,11 +33,17 @@ class CreateRecordSuccessController @Inject() (
   requireData: DataRequiredAction,
   profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
+  autoCategoriseService: AutoCategoriseService,
   view: CreateRecordSuccessView
-) extends BaseController {
+)(implicit ec: ExecutionContext) extends BaseController {
 
   def onPageLoad(recordId: String): Action[AnyContent] =
-    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
-      Ok(view(recordId))
-    }
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
+      autoCategoriseService.autoCategoriseRecord(recordId, request.userAnswers).map {
+        autoCategorisedScenario =>
+          Ok(view(recordId, autoCategorisedScenario))
+      }
+    } // TODO Probably want to recover on this if autoCategorise future fails, e.g show default content probably just Ok(view(recordId, None))
+    
+    // TODO - Will want to remove the link to categorise a good if we've automatically categorised
 }

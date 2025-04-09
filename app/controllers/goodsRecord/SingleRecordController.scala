@@ -19,20 +19,20 @@ package controllers.goodsRecord
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.BaseController
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
-import models.AdviceStatus._
+import models.AdviceStatus.*
 import models.helper.{CategorisationJourney, RequestAdviceJourney, SupplementaryUnitUpdateJourney, WithdrawAdviceJourney}
 import models.requests.DataRequest
-import models.{AdviceStatusMessage, Country, NormalMode, ReviewReason}
+import models.{AdviceStatusMessage, Country, NormalMode, ReviewReason, Scenario}
 import pages.goodsRecord.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage, ProductReferenceUpdatePage}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.CountriesQuery
 import repositories.SessionRepository
-import services.DataCleansingService
+import services.{AutoCategoriseService, DataCleansingService}
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.SessionData._
-import viewmodels.checkAnswers._
+import utils.SessionData.*
+import viewmodels.checkAnswers.*
 import viewmodels.checkAnswers.goodsRecord.{CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, ProductReferenceSummary}
-import viewmodels.govuk.summarylist._
+import viewmodels.govuk.summarylist.*
 import views.html.goodsRecord.SingleRecordView
 
 import javax.inject.Inject
@@ -43,6 +43,7 @@ class SingleRecordController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   goodsRecordConnector: GoodsRecordConnector,
   sessionRepository: SessionRepository,
+  autoCategoriseService: AutoCategoriseService,
   dataCleansingService: DataCleansingService,
   identify: IdentifierAction,
   profileAuth: ProfileAuthenticateAction,
@@ -85,14 +86,18 @@ class SingleRecordController @Inject() (
             updatedAnswersWithCountryOfOrigin.set(CommodityCodeUpdatePage(recordId), record.comcode)
           )
 
-        _ <- sessionRepository.set(updatedAnswersWithAll)
+        autoCategoriseScenario <- autoCategoriseService.autoCategoriseRecord(record, updatedAnswersWithAll)
 
+        _ <- sessionRepository.set(updatedAnswersWithAll)
+        record                             <- goodsRecordConnector.getRecord(recordId)
       } yield {
         val isCategorised           = record.category.isDefined
         val isReviewReasonCommodity = (record.toReview, record.reviewReason) match {
           case (true, Some(ReviewReason.Commodity)) => true
           case _                                    => false
         }
+
+        val autoCategorisedScenario: Option[Scenario] = autoCategoriseScenario
 
         val detailsList = SummaryListViewModel(
           rows = Seq(
@@ -164,7 +169,8 @@ class SingleRecordController @Inject() (
             record.category.isDefined,
             record.adviceStatus,
             record.reviewReason,
-            backLink
+            backLink,
+            autoCategorisedScenario
           )
         ).removingFromSession(initialValueOfHasSuppUnit, initialValueOfSuppUnit)
 
