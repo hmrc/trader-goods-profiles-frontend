@@ -18,7 +18,7 @@ package services
 
 import connectors.{OttConnector, TraderProfileConnector}
 import logging.Logging
-import models._
+import models.*
 import models.ott.CategorisationInfo
 import models.requests.DataRequest
 import pages.categorisation.{AssessmentPage, ReassessmentPage}
@@ -119,132 +119,33 @@ class CategorisationService @Inject() (
     userAnswers: UserAnswers,
     recordId: String
   ): Scenario = {
-    val category1Assessments = categorisationInfo.categoryAssessments.filter(_.isCategory1)
-    val category2Assessments = categorisationInfo.categoryAssessments.filter(_.isCategory2)
-
-    val listOfAnswers = categorisationInfo.getAnswersForQuestions(userAnswers, recordId)
-
-    val areThereCategory1QuestionsWithNoExemption =
-      listOfAnswers.exists(x => x.answer.contains(AssessmentAnswer.NoExemption) && x.question.isCategory1)
-
-    val areThereCategory1QuestionsWithNoPossibleAnswers = category1Assessments.exists(_.hasNoAnswers)
-    val areThereCategory2QuestionsWithNoPossibleAnswers = category2Assessments.exists(_.hasNoAnswers)
-
-    val doesAnyCategory2AssessmentHaveExemptions =
-      category2Assessments.exists(_.exemptions.nonEmpty)
-
-    if (categorisationInfo.isNiphlAssessment && categorisationInfo.isTraderNiphlAuthorised) {
-      if (areThereCategory1QuestionsWithNoExemption) {
-        Category1Scenario
-      } else if (areThereCategory1QuestionsWithNoPossibleAnswers) {
-        Category1NoExemptionsScenario
-      } else if (areThereCategory2QuestionsWithNoPossibleAnswers) {
-        Category2NoExemptionsScenario
-      } else if (doesAnyCategory2AssessmentHaveExemptions) {
-        Category2Scenario
-      } else {
-        Category2NoExemptionsScenario
-      }
-    } else {
-      calculateResultWithNirms(categorisationInfo, userAnswers, recordId, listOfAnswers)
-    }
-  }
-
-  private def calculateResultWithNirms(
-    categorisationInfo: CategorisationInfo,
-    userAnswers: UserAnswers,
-    recordId: String,
-    listOfAnswers: Seq[AnsweredQuestions]
-  ): Scenario = {
-
-    val areThereCategory1AnsweredNo   =
-      listOfAnswers.exists(ass => ass.answer.contains(AssessmentAnswer.NoExemption) && ass.question.isCategory1)
-    val areThereCategory2AnsweredNo   =
-      listOfAnswers.exists(ass => ass.answer.contains(AssessmentAnswer.NoExemption) && ass.question.isCategory2)
-    val areThereCategory1Unanswerable =
-      categorisationInfo.categoryAssessments.exists(ass => ass.isCategory1 && ass.hasNoAnswers)
-    val areThereCategory2Unanswerable =
-      categorisationInfo.categoryAssessments.exists(ass => ass.isCategory2 && ass.hasNoAnswers)
-
-    if (
-      categorisationInfo.isNirmsAssessment && categorisationInfo.isTraderNirmsAuthorised && !areThereCategory1Unanswerable
-    ) {
-
-      if (areThereCategory1AnsweredNo) {
-        Category1Scenario
-      } else if (areThereCategory2Unanswerable) {
-        Category2NoExemptionsScenario
-      } else if (areThereCategory2AnsweredNo) {
-        Category2Scenario
-      } else {
-        StandardGoodsScenario
-      }
-    } else {
-      calculateResultWithoutNiphlAndNirms(categorisationInfo, userAnswers, recordId)
-    }
-  }
-
-  private def calculateResultWithoutNiphlAndNirms(
-    categorisationInfo: CategorisationInfo,
-    userAnswers: UserAnswers,
-    recordId: String
-  ): Scenario =
-    if (categorisationInfo.categoryAssessments.isEmpty) {
-      StandardGoodsNoAssessmentsScenario
-    } else if (categorisationInfo.categoryAssessmentsThatNeedAnswers.isEmpty) {
-      if (
-        categorisationInfo.categoryAssessments
-          .exists(_.isCategory1) || categorisationInfo.categoryAssessments.exists(ass => ass.onlyContainsNiphlAnswer)
-      ) {
-        Category1NoExemptionsScenario
-      } else if (categorisationInfo.categoryAssessments.exists(_.isCategory2)) {
-        val category2Assessments = categorisationInfo.categoryAssessments.filter(_.isCategory2)
-
-        val allCategory2HaveNoExemptions =
-          category2Assessments.nonEmpty && category2Assessments.exists(_.exemptions.isEmpty)
-
-        if (
-          allCategory2HaveNoExemptions || categorisationInfo.categoryAssessments
-            .exists(ass => ass.onlyContainsNirmsAnswer || ass.onlyContainsNiphlAnswer)
-        ) {
-          Category2NoExemptionsScenario
-        } else {
-          Category2Scenario
-        }
-      } else {
-        Category2Scenario
-      }
-    } else {
-      calculateBasedOnAnswers(categorisationInfo, userAnswers, recordId)
-    }
-
-  private def calculateBasedOnAnswers(
-    categorisationInfo: CategorisationInfo,
-    userAnswers: UserAnswers,
-    recordId: String
-  ): Scenario = {
 
     val getFirstNo = categorisationInfo
       .getAnswersForQuestions(userAnswers, recordId)
       .find(x => x.answer.contains(AssessmentAnswer.NoExemption))
 
-    val areThereCategory1QuestionsWithNoExemption =
-      categorisationInfo.categoryAssessments.exists(ass =>
-        ass.isCategory1 && ass.hasNoAnswers || ass.onlyContainsNiphlAnswer
-      )
+    val shouldBeCategory1NoExemption: Boolean = categorisationInfo.categoryAssessments.exists(ass =>
+      ass.isCategory1 && ass.hasNoExemptions
+    ) || categorisationInfo.categoryAssessments.exists(ass =>
+      ass.onlyContainsNiphlAnswer && !categorisationInfo.isTraderNiphlAuthorised
+    )
 
-    val areThereCategory2QuestionsWithNoExemption =
-      categorisationInfo.categoryAssessments.exists(ass =>
-        ass.isCategory2 && (ass.hasNoAnswers || ass.onlyContainsNirmsAnswer)
-      )
+    val shouldBeCategory2NoExemption: Boolean = categorisationInfo.categoryAssessments.exists(ass =>
+      ass.isCategory2 && ass.hasNoExemptions
+    ) || categorisationInfo.categoryAssessments.exists(ass =>
+      ass.onlyContainsNirmsAnswer && !categorisationInfo.isTraderNirmsAuthorised
+    )
 
-    getFirstNo match {
-      case None if areThereCategory1QuestionsWithNoExemption => Category1NoExemptionsScenario
-      case None if areThereCategory2QuestionsWithNoExemption => Category2NoExemptionsScenario
-      case None                                              => StandardGoodsScenario
-      case Some(details) if details.question.isCategory2     =>
-        Category2Scenario
-      case _                                                 => Category1Scenario
+    if (categorisationInfo.categoryAssessments.isEmpty) {
+      StandardGoodsNoAssessmentsScenario
+    } else {
+      getFirstNo match {
+        case None if shouldBeCategory1NoExemption          => Category1NoExemptionsScenario
+        case None if shouldBeCategory2NoExemption          => Category2NoExemptionsScenario
+        case None                                          => StandardGoodsScenario
+        case Some(details) if details.question.isCategory2 => Category2Scenario
+        case _                                             => Category1Scenario
+      }
     }
   }
 

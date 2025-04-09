@@ -36,14 +36,18 @@ final case class CategoryAssessment(
 
   def getCodesZippedWithDescriptions: Seq[(String, String)] = exemptions.map(_.code).zip(exemptions.map(_.description))
 
-  def isCategory1: Boolean   = category == Category1AsInt
-  def isCategory2: Boolean   = category == Category2AsInt
-  def hasNoAnswers: Boolean  = exemptions.isEmpty
-  def isNiphlAnswer: Boolean = isCategory1 && exemptions.exists(exemption => exemption.id == NiphlCode)
-  def isNirmsAnswer: Boolean = isCategory2 && exemptions.exists(exemption => exemption.id == NirmsCode)
+  def isCategory1: Boolean     = category == Category1AsInt
+  def isCategory2: Boolean     = category == Category2AsInt
+  def hasNoExemptions: Boolean = exemptions.isEmpty
+  def hasExemptions: Boolean   = exemptions.nonEmpty
+  def isNiphlAnswer: Boolean   = isCategory1 && exemptions.exists(exemption => exemption.id == NiphlCode)
+  def isNirmsAnswer: Boolean   = isCategory2 && exemptions.exists(exemption => exemption.id == NirmsCode)
 
   def onlyContainsNiphlAnswer: Boolean = isNiphlAnswer && exemptions.size == 1
   def onlyContainsNirmsAnswer: Boolean = isNirmsAnswer && exemptions.size == 1
+
+  def isNiphlAsessmentAndTraderAuthorised(isAuthorised: Boolean): Boolean = isNiphlAnswer && isAuthorised
+  def isNirmsAsessmentAndTraderAuthorised(isAuthorised: Boolean): Boolean = isNirmsAnswer && isAuthorised
 
 }
 

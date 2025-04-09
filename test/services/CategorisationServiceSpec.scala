@@ -731,33 +731,41 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
         ) mustEqual Category2NoExemptionsScenario
       }
       "if no category 1 assessments and category 2 question has exemptions must return Category2Scenario" in {
+
+        val assessment1 = CategoryAssessment(
+          "ass1",
+          2,
+          Seq(Certificate("cert1", "cert1c", "cert1desc")),
+          "theme description",
+          Some("regulationUrl1")
+        )
+
+        val assessment2 = CategoryAssessment(
+          "ass2",
+          2,
+          Seq(Certificate("cert2", "cert2c", "cert2desc")),
+          "theme description",
+          Some("regulationUrl2")
+        )
+
         val categorisationInfo = CategorisationInfo(
           "1234567890",
           "BV",
           Some(validityEndDate),
-          Seq(
-            CategoryAssessment(
-              "ass1",
-              2,
-              Seq(Certificate("cert1", "cert1c", "cert1desc")),
-              "theme description",
-              Some("regulationUrl1")
-            ),
-            CategoryAssessment(
-              "ass2",
-              2,
-              Seq(Certificate("cert2", "cert2c", "cert2desc")),
-              "theme description",
-              Some("regulationUrl2")
-            )
-          ),
-          Seq.empty,
+          Seq(assessment1, assessment2),
+          Seq(assessment1, assessment2),
           None,
           1
         )
 
         val userAnswers = emptyUserAnswers
           .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.NoExemption)
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.NoExemption)
           .success
           .value
 

@@ -79,7 +79,7 @@ final case class CategorisationInfo(
     commodityCode.reverse.dropWhile(char => char == '0').reverse.padTo(minimumLengthOfCommodityCode, '0').mkString
 
   def isNiphlAssessment: Boolean = categoryAssessments.exists(ass => ass.isNiphlAnswer) &&
-    categoryAssessments.exists(ass => ass.isCategory2 && ass.hasNoAnswers)
+    categoryAssessments.exists(ass => ass.isCategory2 && ass.hasNoExemptions)
 
   def isNirmsAssessment: Boolean = categoryAssessments.exists(_.isNirmsAnswer)
 
@@ -116,31 +116,24 @@ object CategorisationInfo {
         val category2Assessments = assessmentsSorted.filter(ass => ass.isCategory2)
 
         val category1ToAnswer = category1Assessments.category1ToAnswer(isTraderNiphlAuthorised)
-
         val category2ToAnswer = category2Assessments.category2ToAnswer(isTraderNirmsAuthorised)
 
-        val areAllCategory1Answerable = category1ToAnswer.size == category1Assessments.size
-        val areAllCategory2Answerable = category2ToAnswer.size == category2Assessments.size
+        val howManyCategory1HaveAutoExemptions =
+          if (isTraderNiphlAuthorised) category1Assessments.count(_.isNiphlAnswer) else 0
+        val howManyCategory2HaveAutoExemptions =
+          if (isTraderNirmsAuthorised) category2Assessments.count(_.isNirmsAnswer) else 0
 
-        val isNiphlAssessment =
-          category1Assessments.exists(ass => ass.isNiphlAnswer) && category2Assessments.exists(ass => ass.hasNoAnswers)
+        val isAnyCategory1AssessmentUnexemptable =
+          category1ToAnswer.size + howManyCategory1HaveAutoExemptions != category1Assessments.size
+        val isAnyCategory2AssessmentUnexemptable =
+          category2ToAnswer.size + howManyCategory2HaveAutoExemptions != category2Assessments.size
 
-        val isNirmsAssessment = category2Assessments.exists(ass => ass.isNirmsAnswer)
-
-        val questionsToAnswer = {
-          if (isNiphlAssessment && isTraderNiphlAuthorised) {
-            category1ToAnswer
-          } else if (isNiphlAssessment) {
-            Seq.empty
-          } else if (!areAllCategory1Answerable) {
-            Seq.empty
-          } else if (isNirmsAssessment && isTraderNirmsAuthorised) {
-            category1ToAnswer ++ category2ToAnswer
-          } else if (!areAllCategory2Answerable) {
-            category1ToAnswer
-          } else {
-            category1ToAnswer ++ category2ToAnswer
-          }
+        val questionsToAnswer = if (isAnyCategory1AssessmentUnexemptable) {
+          Seq.empty
+        } else if (isAnyCategory2AssessmentUnexemptable) {
+          category1ToAnswer
+        } else {
+          category1ToAnswer ++ category2ToAnswer
         }
 
         CategorisationInfo(
