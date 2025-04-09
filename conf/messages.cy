@@ -441,7 +441,8 @@ categorisationResult.h2.paragraph = Ni allwch ddefnyddio’r cofnod nwyddau hwn 
 categorisationResult.Standard.title = Nwyddau safonol
 categorisationResult.Standard.heading = Nwyddau safonol
 categorisationResult.Standard.p1 = Mae’ch nwyddau wedi’u categoreiddio ac maent yn gymwys ar gyfer y ffurflen Gwybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI).
-categorisationResult.h2.cat1.paragraph = Ni allwch ddefnyddio’r cofnod nwyddau hwn i helpu i lenwi ffurflen IMMI gan ei bod yn gategori 1. Mae’n bosibl y byddwch yn gallu symud y nwyddau hyn gan ddefnyddio datganiad gwahanol.
+categorisationResult.h2.cat1.paragraph = Ni allwch ddefnyddio’r cofnod nwyddau hwn i helpu i lenwi ffurflen IMMI gan ei bod yn gategori 1. Mae’n bosibl y byddwch yn gallu newid y categori neu symud y nwyddau hyn gan ddefnyddio datganiad gwahanol.
+categorisationResult.h2.cat1.noExemptions.paragraph = Ni allwch ddefnyddio’r cofnod nwyddau hwn i helpu i lenwi ffurflen IMMI gan ei bod yn gategori 1. Mae’n bosibl y byddwch yn gallu symud y nwyddau hyn gan ddefnyddio datganiad gwahanol.
 categorisationResult.h2.cat2.paragraph = Gallwch ddefnyddio’r cofnod hwn i helpu i lenwi ffurflen IMMI.
 
 todo.cat = Daw’r wybodaeth am eithriadau o Offeryn Tariff Ar-lein Gogledd Iwerddon. Cytundebau yw’r rhain rhwng y DU a’r UE, ac nid ydynt ar gael yn Gymraeg.
