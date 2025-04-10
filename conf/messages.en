@@ -177,14 +177,14 @@ newUkimsNumber.change.hidden = UKIMS number
 
 categoryGuidance.title = Categorisation
 categoryGuidance.heading = Categorisation
-categoryGuidance.p1 = Categorisation allows you to know what category your goods are in and if they are eligible for Simplified Process for Internal Market Movements (SPIMM).
+categoryGuidance.p1 = Categorisation allows you to know what category your goods are in and if they are eligible for the Internal Market Movement Information (IMMI) form.
 categoryGuidance.p2 = We’ll ask you questions about exemptions that you hold and then tell you what category your goods are. We could ask you up to 10 questions.
 categoryGuidance.linkText =  Find out how to check and categorise goods you move from Great Britain to Northern Ireland to use the simplified process for internal market movements (opens in a new tab)
 categoryGuidance.subheading = Exemptions
 categoryGuidance.p3 = Your goods will be placed into 1 of 3 categories:
-categoryGuidance.p3.1 = Category 1 – goods that are excluded for using SPIMM
-categoryGuidance.p3.2 = Category 2 – goods that are controlled and require additional details to use SPIMM
-categoryGuidance.p3.3 = Standard – goods that can use SPIMM
+categoryGuidance.p3.1 =  Category 1 – goods that you will not be able to use on the IMMI form
+categoryGuidance.p3.2 = Category 2 – goods that are controlled and require additional details to use the IMMI form
+categoryGuidance.p3.3 = Standard – goods that can use the IMMI form
 categoryGuidance.p4 = You’ll need to know the certificate number or name of any exemptions you have for your goods. Example certificate numbers are C644, Y929 or C640. If you get a new exclusion, you’ll be able to change this later.
 
 commodityCode.title = Commodity code
