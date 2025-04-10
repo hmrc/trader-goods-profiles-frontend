@@ -23,6 +23,7 @@ import models.AdviceStatus.Requested
 import models.AdviceStatusMessage.{NotRequestedParagraph, RequestedParagraph}
 import models.DeclarableStatus.NotReadyForUse
 import models.helper.SupplementaryUnitUpdateJourney
+import models.router.responses.GetGoodsRecordResponse
 import models.{Country, NormalMode, ReviewReason, UserAnswers}
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
@@ -34,15 +35,16 @@ import pages.goodsRecord.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, Go
 import play.api.i18n.Messages
 import play.api.inject.bind
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import repositories.SessionRepository
+import services.AutoCategoriseService
 import uk.gov.hmrc.govukfrontend.views.Aliases.Actions
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import uk.gov.hmrc.http.NotFoundException
 import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
-import viewmodels.checkAnswers._
+import viewmodels.checkAnswers.*
 import viewmodels.checkAnswers.goodsRecord.{CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, ProductReferenceSummary}
-import viewmodels.govuk.summarylist._
+import viewmodels.govuk.summarylist.*
 import views.html.goodsRecord.SingleRecordView
 
 import java.time.Instant
@@ -70,10 +72,14 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
   ).copy(recordId = testRecordId).copy(category = Some(2))
 
   val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+  val mockAutoCategoriseService: AutoCategoriseService   = mock[AutoCategoriseService]
 
   override def beforeEach(): Unit = {
     super.beforeEach()
     when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+    when(
+      mockAutoCategoriseService.autoCategoriseRecord(any[GetGoodsRecordResponse](), any())(any(), any())
+    ) thenReturn Future.successful(None)
     when(mockOttConnector.getCountries(any())).thenReturn(Future.successful(countries))
   }
 
@@ -110,7 +116,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
           bind[SessionRepository].toInstance(mockSessionRepository),
           bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-          bind[OttConnector].toInstance(mockOttConnector)
+          bind[OttConnector].toInstance(mockOttConnector),
+          bind[AutoCategoriseService].toInstance(mockAutoCategoriseService)
         )
         .build()
 
@@ -202,7 +209,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           None,
           request.headers
             .get("Referer")
-            .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url)
+            .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url),
+          None
         )(
           request,
           messages(application)
@@ -249,7 +257,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
           bind[SessionRepository].toInstance(mockSessionRepository),
           bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-          bind[OttConnector].toInstance(mockOttConnector)
+          bind[OttConnector].toInstance(mockOttConnector),
+          bind[AutoCategoriseService].toInstance(mockAutoCategoriseService)
         )
         .build()
 
@@ -333,7 +342,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           None,
           request.headers
             .get("Referer")
-            .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url)
+            .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url),
+          None
         )(
           request,
           messages(application)
@@ -380,7 +390,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
           bind[SessionRepository].toInstance(mockSessionRepository),
           bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-          bind[OttConnector].toInstance(mockOttConnector)
+          bind[OttConnector].toInstance(mockOttConnector),
+          bind[AutoCategoriseService].toInstance(mockAutoCategoriseService)
         )
         .build()
 
@@ -475,7 +486,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           None,
           request.headers
             .get("Referer")
-            .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url)
+            .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url),
+          None
         )(
           request,
           messages(application)
@@ -531,7 +543,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
           bind[SessionRepository].toInstance(mockSessionRepository),
           bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-          bind[OttConnector].toInstance(mockOttConnector)
+          bind[OttConnector].toInstance(mockOttConnector),
+          bind[AutoCategoriseService].toInstance(mockAutoCategoriseService)
         )
         .build()
 
@@ -634,7 +647,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           None,
           request.headers
             .get("Referer")
-            .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url)
+            .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url),
+          None
         )(
           request,
           messages(application)
@@ -668,7 +682,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
           bind[SessionRepository].toInstance(mockSessionRepository),
           bind[OttConnector].toInstance(mockOttConnector),
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+          bind[AutoCategoriseService].toInstance(mockAutoCategoriseService)
         )
         .build()
 
@@ -679,7 +694,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           await(route(application, request).value)
         }
 
-        verify(mockGoodsRecordConnector, times(5)).getRecord(any())(any())
+        verify(mockGoodsRecordConnector, times(9)).getRecord(any())(any())
         verify(mockOttConnector, times(5)).getCountries(any())
 
       }
@@ -688,7 +703,10 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
     "must return a SummaryListRow with the correct supplementary unit and measurement unit appended" in {
 
       val application                      = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+        .overrides(
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+          bind[AutoCategoriseService].toInstance(mockAutoCategoriseService)
+        )
         .build()
       implicit val localMessages: Messages = messages(application)
 
@@ -716,9 +734,13 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
     "must show hasSupplementaryUnit when measurement unit is not empty and supplementary unit is No" in {
 
-      val application                      = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+          bind[AutoCategoriseService].toInstance(mockAutoCategoriseService)
+        )
         .build()
+
       implicit val localMessages: Messages = messages(application)
 
       val record = recordWithSupplementaryUnit.copy(supplementaryUnit = None)
@@ -742,7 +764,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
           bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+          bind[AutoCategoriseService].toInstance(mockAutoCategoriseService)
         )
         .build()
 
@@ -758,7 +781,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           await(result)
         }
 
-        verify(mockGoodsRecordConnector, times(6)).getRecord(any())(any())
+        verify(mockGoodsRecordConnector, times(10)).getRecord(any())(any())
       }
     }
 
@@ -959,7 +982,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
               bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
               bind[SessionRepository].toInstance(mockSessionRepository),
               bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-              bind[OttConnector].toInstance(mockOttConnector)
+              bind[OttConnector].toInstance(mockOttConnector),
+              bind[AutoCategoriseService].toInstance(mockAutoCategoriseService)
             )
             .build()
 
@@ -1041,7 +1065,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
               Some(reviewReason),
               request.headers
                 .get("Referer")
-                .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url)
+                .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url),
+              None
             )(
               request,
               messages(application)
