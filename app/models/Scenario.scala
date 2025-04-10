@@ -28,15 +28,15 @@ case object StandardGoodsScenario extends Scenario {
 }
 
 case object Category1Scenario extends Scenario {
-    override def toString: String = "Category 1" // TODO: This would link to message key
+  override def toString: String = "Category 1" // TODO: This would link to message key
 }
 
 case object Category2Scenario extends Scenario {
-    override def toString: String = "Category 2" // TODO: This would link to message key
+  override def toString: String = "Category 2" // TODO: This would link to message key
 }
 
 case object StandardGoodsNoAssessmentsScenario extends Scenario {
-    override def toString: String = "Standard Goods" // TODO: This would link to message key
+  override def toString: String = "Standard Goods" // TODO: This would link to message key
 }
 
 case object Category1NoExemptionsScenario extends Scenario {

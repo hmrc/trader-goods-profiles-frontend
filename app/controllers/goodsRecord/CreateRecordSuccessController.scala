@@ -35,15 +35,15 @@ class CreateRecordSuccessController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   autoCategoriseService: AutoCategoriseService,
   view: CreateRecordSuccessView
-)(implicit ec: ExecutionContext) extends BaseController {
+)(implicit ec: ExecutionContext)
+    extends BaseController {
 
   def onPageLoad(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      autoCategoriseService.autoCategoriseRecord(recordId, request.userAnswers).map {
-        autoCategorisedScenario =>
-          Ok(view(recordId, autoCategorisedScenario))
+      autoCategoriseService.autoCategoriseRecord(recordId, request.userAnswers).map { autoCategorisedScenario =>
+        Ok(view(recordId, autoCategorisedScenario))
       }
     } // TODO Probably want to recover on this if autoCategorise future fails, e.g show default content probably just Ok(view(recordId, None))
-    
-    // TODO - Will want to remove the link to categorise a good if we've automatically categorised
+
+  // TODO - Will want to remove the link to categorise a good if we've automatically categorised
 }

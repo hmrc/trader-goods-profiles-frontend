@@ -17,17 +17,30 @@
 package controllers.goodsRecord
 
 import base.SpecBase
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
+import org.scalatestplus.mockito.MockitoSugar.mock
+import play.api.inject
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
+import services.AutoCategoriseService
 import views.html.goodsRecord.CreateRecordSuccessView
 
+import scala.concurrent.Future
+
 class CreateRecordSuccessControllerSpec extends SpecBase {
+
+  private val mockAutoCategoriseService: AutoCategoriseService = mock[AutoCategoriseService]
 
   "CreateRecordSuccess Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
+      when(mockAutoCategoriseService.autoCategoriseRecord(any[String](), any())(any(), any())) thenReturn Future
+        .successful(None)
+
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(inject.bind[AutoCategoriseService].toInstance(mockAutoCategoriseService))
         .build()
 
       running(application) {
@@ -39,7 +52,7 @@ class CreateRecordSuccessControllerSpec extends SpecBase {
         val view = application.injector.instanceOf[CreateRecordSuccessView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view("test")(request, messages(application)).toString
+        contentAsString(result) mustEqual view("test", None)(request, messages(application)).toString
       }
     }
   }

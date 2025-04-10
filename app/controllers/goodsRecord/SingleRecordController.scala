@@ -88,8 +88,8 @@ class SingleRecordController @Inject() (
 
         autoCategoriseScenario <- autoCategoriseService.autoCategoriseRecord(record, updatedAnswersWithAll)
 
-        _ <- sessionRepository.set(updatedAnswersWithAll)
-        record                             <- goodsRecordConnector.getRecord(recordId)
+        _      <- sessionRepository.set(updatedAnswersWithAll)
+        record <- goodsRecordConnector.getRecord(recordId)
       } yield {
         val isCategorised           = record.category.isDefined
         val isReviewReasonCommodity = (record.toReview, record.reviewReason) match {

@@ -36,17 +36,6 @@ class AutoCategoriseService @Inject() (
 )(implicit ec: ExecutionContext)
     extends Logging {
 
-//  def canAutoCategoriseRecord(
-//    record: GetGoodsRecordResponse
-//  )(implicit request: DataRequest[_], hc: HeaderCarrier): Future[Boolean] =
-//    if (record.category.isEmpty) {
-//      categorisationService
-//        .getCategorisationInfo(request, record.comcode, record.countryOfOrigin, record.recordId, longerCode = false)
-//        .map(_.isAutoCategorisable)
-//    } else {
-//      Future.successful(false)
-//    } TODO - don't think we will need this
-
   def autoCategoriseRecord(
     recordId: String,
     userAnswers: UserAnswers
@@ -61,11 +50,13 @@ class AutoCategoriseService @Inject() (
   )(implicit
     request: DataRequest[_],
     hc: HeaderCarrier
-  ): Future[Option[Scenario]] = // Return a optional Scenario, if None then it was not auto categorised and no content needs to be displayed, if Some - display some content to the user
+  ): Future[Option[Scenario]] =
     categorisationService
       .getCategorisationInfo(request, record.comcode, record.countryOfOrigin, record.recordId)
       .flatMap { categorisationInfo =>
         if (categorisationInfo.isAutoCategorisable && record.category.isEmpty) {
+
+          println("above")
 
           val updatedUserAnswers =
             userAnswers.set(CategorisationDetailsQuery(record.recordId), categorisationInfo) match {
@@ -74,16 +65,19 @@ class AutoCategoriseService @Inject() (
               case Failure(exception)   => Future.failed(UserAnswersSetFailure(exception.getMessage))
             }
 
+          println("below")
+
           updatedUserAnswers.flatMap { updatedUserAnswers =>
             CategoryRecord.build(updatedUserAnswers, record.eori, record.recordId, categorisationService) match {
               case Right(record) =>
                 // TODO - Probably want to have a audit event for auto categorisation for monitoring
 
+                println("Here")
                 for {
                   oldRecord <-
                     goodsRecordsConnector.getRecord(
                       record.recordId
-                    ) // Can probably just use the original record passed in, this might be checking for B&T changes though
+                    )
                   _         <- goodsRecordsConnector.updateCategoryAndComcodeForGoodsRecord(record.recordId, record, oldRecord)
                 } yield Some(record.category)
 
@@ -93,6 +87,8 @@ class AutoCategoriseService @Inject() (
             }
           }
         } else {
+          println("none case")
+
           Future.successful(None)
         }
       }

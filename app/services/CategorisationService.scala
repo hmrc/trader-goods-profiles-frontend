@@ -113,7 +113,7 @@ class CategorisationService @Inject() (
           }
         }
     }
-  
+
   def calculateResult(
     categorisationInfo: CategorisationInfo,
     userAnswers: UserAnswers,
