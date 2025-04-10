@@ -120,6 +120,7 @@ class HomePageControllerSpec extends SpecBase {
             ),
             ukimsNumberChanged = false,
             doesGoodsRecordExist = true,
+            eoriNumber = testEori,
             viewUpdateGoodsRecordsLink =
               controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url
           )(request, messages(application)).toString
@@ -188,6 +189,7 @@ class HomePageControllerSpec extends SpecBase {
             ),
             ukimsNumberChanged = false,
             doesGoodsRecordExist = true,
+            eoriNumber = testEori,
             viewUpdateGoodsRecordsLink =
               controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url
           )(request, messages(application)).toString
@@ -245,6 +247,7 @@ class HomePageControllerSpec extends SpecBase {
               ),
               ukimsNumberChanged = false,
               doesGoodsRecordExist = true,
+              eoriNumber = testEori,
               viewUpdateGoodsRecordsLink =
                 controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url
             )(request, messages(application)).toString
@@ -312,6 +315,7 @@ class HomePageControllerSpec extends SpecBase {
               ),
               ukimsNumberChanged = false,
               doesGoodsRecordExist = true,
+              eoriNumber = testEori,
               viewUpdateGoodsRecordsLink =
                 controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url
             )(request, messages(application)).toString
@@ -379,6 +383,7 @@ class HomePageControllerSpec extends SpecBase {
               ),
               ukimsNumberChanged = false,
               doesGoodsRecordExist = true,
+              eoriNumber = testEori,
               viewUpdateGoodsRecordsLink =
                 controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url
             )(request, messages(application)).toString
@@ -442,6 +447,7 @@ class HomePageControllerSpec extends SpecBase {
               ),
               ukimsNumberChanged = false,
               doesGoodsRecordExist = true,
+              eoriNumber = testEori,
               viewUpdateGoodsRecordsLink =
                 controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url
             )(request, messages(application)).toString
@@ -503,6 +509,7 @@ class HomePageControllerSpec extends SpecBase {
             ),
             ukimsNumberChanged = false,
             doesGoodsRecordExist = false,
+            eoriNumber = testEori,
             viewUpdateGoodsRecordsLink =
               controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url
           )(request, messages(application)).toString
@@ -604,6 +611,7 @@ class HomePageControllerSpec extends SpecBase {
             ),
             ukimsNumberChanged = false,
             doesGoodsRecordExist = false,
+            eoriNumber = testEori,
             viewUpdateGoodsRecordsLink =
               controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url
           )(request, messages(application)).toString
@@ -664,6 +672,7 @@ class HomePageControllerSpec extends SpecBase {
             ),
             ukimsNumberChanged = false,
             doesGoodsRecordExist = false,
+            eoriNumber = testEori,
             viewUpdateGoodsRecordsLink =
               controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url
           )(request, messages(application)).toString
@@ -722,6 +731,7 @@ class HomePageControllerSpec extends SpecBase {
             ),
             ukimsNumberChanged = true,
             doesGoodsRecordExist = false,
+            eoriNumber = testEori,
             viewUpdateGoodsRecordsLink =
               controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url
           )(request, messages(application)).toString
