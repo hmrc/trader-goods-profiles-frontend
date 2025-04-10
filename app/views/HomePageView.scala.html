@@ -26,7 +26,7 @@ govukPhaseBanner: GovukPhaseBanner,
 govukNotificationBanner: GovukNotificationBanner
 )
 
-@(downloadReady: Boolean = false, downloadLinkText: DownloadLinkText, ukimsNumberChanged: Boolean = false, doesGoodsRecordExist: Boolean, viewUpdateGoodsRecordsLink: String)(implicit request: Request[_], messages: Messages)
+@(downloadReady: Boolean = false, downloadLinkText: DownloadLinkText, ukimsNumberChanged: Boolean = false, doesGoodsRecordExist: Boolean, eoriNumber: String, viewUpdateGoodsRecordsLink: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = s"${messages("homepage.title")} - ${messages("site.govuk")}", showBackLink = false, headerShouldHaveServiceLink = false) {
 
@@ -54,7 +54,9 @@ govukNotificationBanner: GovukNotificationBanner
         )
     }
 
-    <h1 class="govuk-heading-l">@messages("homepage.h1")</h1>
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-0">@messages("homepage.h1")</h1>
+    <p class="govuk-body govuk-!-margin-top-0">@messages("homepage.eori", eoriNumber)</p>
+
     <p class="govuk-body">@messages("homepage.p1")</p>
 
     <h2 class="govuk-heading-m">@messages("homepage.h2.1")</h2>
