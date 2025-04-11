@@ -38,7 +38,7 @@ import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import utils.Constants.{commodityCodeKey, countryOfOriginKey, goodsDescriptionKey, productReferenceKey}
+import utils.Constants.{commodityCodeKey, countryOfOriginKey, goodsDescriptionKey, openAccreditationErrorCode, productReferenceKey}
 import viewmodels.checkAnswers.goodsRecord.UpdateRecordSummary
 import viewmodels.govuk.SummaryListFluency
 import views.html.goodsRecord.CyaUpdateRecordView
@@ -46,6 +46,7 @@ import views.html.goodsRecord.CyaUpdateRecordView
 import java.time.Instant
 import scala.concurrent.Future
 import services.CommodityService
+import uk.gov.hmrc.http.UpstreamErrorResponse
 
 class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency with MockitoSugar with BeforeAndAfterEach {
 
@@ -387,6 +388,60 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             }
           }
 
+          "when future fails with openAccreditationError redirect to the record is locked page" in {
+
+            val userAnswers = emptyUserAnswers
+              .set(page, answer)
+              .success
+              .value
+              .set(warningPage, true)
+              .success
+              .value
+
+            val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+            val mockAuditService         = mock[AuditService]
+            val mockSessionRepository    = mock[SessionRepository]
+
+            when(mockGoodsRecordConnector.putGoodsRecord(any(), any())(any()))
+              .thenReturn(Future.failed(UpstreamErrorResponse(openAccreditationErrorCode, BAD_REQUEST)))
+            when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
+              .thenReturn(Future.successful(Done))
+            when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
+
+            when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
+              .successful(record)
+
+            val application =
+              applicationBuilder(userAnswers = Some(userAnswers))
+                .overrides(
+                  bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+                  bind[SessionRepository].toInstance(mockSessionRepository),
+                  bind[AuditService].toInstance(mockAuditService)
+                )
+                .build()
+
+            running(application) {
+              val request = FakeRequest(POST, postUrl)
+
+              val result = route(application, request).value
+              status(result) mustEqual SEE_OTHER
+              redirectLocation(result).value mustEqual controllers.routes.RecordLockedController
+                .onPageLoad(testRecordId)
+                .url
+              verify(mockGoodsRecordConnector).putGoodsRecord(any(), any())(any())
+              withClue("must call the audit connector with the supplied details") {
+                verify(mockAuditService)
+                  .auditFinishUpdateGoodsRecord(
+                    eqTo(testRecordId),
+                    eqTo(AffinityGroup.Individual),
+                    eqTo(expectedPayload)
+                  )(
+                    any()
+                  )
+              }
+            }
+          }
+
         }
 
         "when user answers cannot create an update goods record" - {
@@ -647,6 +702,58 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               }
             }
           }
+
+          "when future fails with openAccreditationError redirect to the record is locked page" in {
+
+            val userAnswers = emptyUserAnswers
+              .set(page, answer)
+              .success
+              .value
+
+            val mockConnector    = mock[GoodsRecordConnector]
+            val mockAuditService = mock[AuditService]
+
+            when(mockConnector.getRecord(any())(any())).thenReturn(Future.successful(record))
+
+            when(mockConnector.patchGoodsRecord(any())(any()))
+              .thenReturn(Future.failed(UpstreamErrorResponse(openAccreditationErrorCode, BAD_REQUEST)))
+            when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
+              .thenReturn(Future.successful(Done))
+
+            val application =
+              applicationBuilder(userAnswers = Some(userAnswers))
+                .overrides(
+                  bind[GoodsRecordConnector].toInstance(mockConnector),
+                  bind[AuditService].toInstance(mockAuditService)
+                )
+                .build()
+
+            running(application) {
+              val request = FakeRequest(POST, postUrl)
+
+              val result = route(application, request).value
+
+              status(result) mustEqual SEE_OTHER
+              redirectLocation(result).value mustEqual controllers.routes.RecordLockedController
+                .onPageLoad(testRecordId)
+                .url
+              verify(mockConnector).patchGoodsRecord(eqTo(expectedPayload))(any())
+
+              withClue("must call the audit connector with the supplied details") {
+                verify(mockAuditService)
+                  .auditFinishUpdateGoodsRecord(
+                    eqTo(testRecordId),
+                    eqTo(AffinityGroup.Individual),
+                    eqTo(expectedPayload)
+                  )(
+                    any()
+                  )
+                verify(mockConnector).getRecord(any())(any())
+                verify(mockConnector).patchGoodsRecord(any())(any())
+              }
+            }
+          }
+
         }
 
         "when user answers cannot create an update goods record" - {
@@ -962,6 +1069,54 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
                 .onPageLoad(testRecordId)
                 .url
               verify(mockConnector, never()).patchGoodsRecord(any())(any())
+              verify(mockConnector, atLeastOnce()).getRecord(eqTo(testRecordId))(any())
+
+              withClue("must call the audit connector with the supplied details") {
+                verify(mockAuditService, atLeastOnce())
+                  .auditFinishUpdateGoodsRecord(
+                    eqTo(testRecordId),
+                    eqTo(AffinityGroup.Individual),
+                    eqTo(expectedPayload)
+                  )(
+                    any()
+                  )
+              }
+            }
+          }
+
+          "when future fails with openAccreditationError redirect to the record is locked page" in {
+            val userAnswers = emptyUserAnswers
+              .set(page, answer)
+              .success
+              .value
+
+            val mockConnector    = mock[GoodsRecordConnector]
+            val mockAuditService = mock[AuditService]
+
+            when(mockConnector.getRecord(any())(any())).thenReturn(Future.successful(record))
+            when(mockConnector.patchGoodsRecord(any())(any()))
+              .thenReturn(Future.failed(UpstreamErrorResponse(openAccreditationErrorCode, BAD_REQUEST)))
+            when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
+              .thenReturn(Future.successful(Done))
+
+            val application =
+              applicationBuilder(userAnswers = Some(userAnswers))
+                .overrides(
+                  bind[GoodsRecordConnector].toInstance(mockConnector),
+                  bind[AuditService].toInstance(mockAuditService)
+                )
+                .build()
+
+            running(application) {
+              val request = FakeRequest(POST, postUrl)
+
+              val result = route(application, request).value
+
+              status(result) mustEqual SEE_OTHER
+              redirectLocation(result).value mustEqual controllers.routes.RecordLockedController
+                .onPageLoad(testRecordId)
+                .url
+              verify(mockConnector, atLeastOnce()).patchGoodsRecord(eqTo(expectedPayload))(any())
               verify(mockConnector, atLeastOnce()).getRecord(eqTo(testRecordId))(any())
 
               withClue("must call the audit connector with the supplied details") {
@@ -1454,6 +1609,68 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
               withClue("must call the audit connector with the supplied details") {
                 verify(mockAuditService, atLeastOnce())
+                  .auditFinishUpdateGoodsRecord(
+                    eqTo(testRecordId),
+                    eqTo(AffinityGroup.Individual),
+                    eqTo(expectedPayload)
+                  )(
+                    any()
+                  )
+              }
+            }
+          }
+
+          "when future fails with openAccreditationError redirect to the record is locked page" in {
+            val userAnswers = emptyUserAnswers
+              .set(page, testCommodity.commodityCode)
+              .success
+              .value
+              .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true)
+              .success
+              .value
+              .set(warningPage, true)
+              .success
+              .value
+              .set(HasCommodityCodeChangePage(testRecordId), true)
+              .success
+              .value
+              .set(CommodityUpdateQuery(testRecordId), testCommodity)
+              .success
+              .value
+
+            val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+            val mockAuditService         = mock[AuditService]
+
+            when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
+              .thenReturn(Future.successful(Done))
+            when(mockGoodsRecordConnector.putGoodsRecord(any(), any())(any()))
+              .thenReturn(Future.failed(UpstreamErrorResponse(openAccreditationErrorCode, BAD_REQUEST)))
+
+            when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
+              .successful(record)
+
+            val application =
+              applicationBuilder(userAnswers = Some(userAnswers))
+                .overrides(
+                  bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
+                )
+                .overrides(bind[AuditService].toInstance(mockAuditService))
+                .overrides(bind[CommodityService].toInstance(mockCommodityService))
+                .build()
+
+            running(application) {
+              val request = FakeRequest(POST, postUrl)
+
+              val result = route(application, request).value
+
+              status(result) mustEqual SEE_OTHER
+              redirectLocation(result).value mustEqual controllers.routes.RecordLockedController
+                .onPageLoad(testRecordId)
+                .url
+              verify(mockGoodsRecordConnector).putGoodsRecord(any(), any())(any())
+
+              withClue("must call the audit connector with the supplied details") {
+                verify(mockAuditService)
                   .auditFinishUpdateGoodsRecord(
                     eqTo(testRecordId),
                     eqTo(AffinityGroup.Individual),
