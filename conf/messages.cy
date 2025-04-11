@@ -663,6 +663,7 @@ hasCommodityCodeChange.h2 = A ydych am newid y cod nwyddau?
 hasCommodityCodeChange.advice = Bydd newid y cod nwyddau ar y cofnod nwyddau hwn yn dileu’r statws cyngor. Os ydych am wirio bod y cod nwyddau yn gywir ac yn cyd-fynd â’r disgrifiad, bydd angen i chi ofyn am gyngor eto.
 hasCommodityCodeChange.category = Bydd angen i chi ail-gategoreiddio’r cofnod nwyddau os byddwch yn newid y cod nwyddau.
 hasCommodityCodeChange.error.required = Dewiswch ‘Iawn’ os ydych am newid y cod nwyddau
+hasCommodityCode.notAvailableInWelsh= Daw’r wybodaeth am godau nwyddau o’r offeryn tariff ar-lein, ac nid yw ar gael yn Gymraeg.
 
 invalidCommodityCode.title = Nid yw’r cod nwyddau sydd wedi’i nodi yn y cofnod hwn yn ddilys
 invalidCommodityCode.heading = Nid yw’r cod nwyddau sydd wedi’i nodi yn y cofnod hwn yn ddilys

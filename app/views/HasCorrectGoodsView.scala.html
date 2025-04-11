@@ -18,8 +18,10 @@
 @import viewmodels.LegendSize._
 @import models.outboundLink.OutboundLink
 @import config.FrontendAppConfig
+@import uk.gov.hmrc.play.language.LanguageUtils
 
 @this(
+    languageUtils: LanguageUtils,
     layout: templates.Layout,
     formHelper: FormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
@@ -37,6 +39,9 @@
 
     <h1 class="govuk-heading-l">@messages("hasCorrectGoods.heading", commodity.commodityCode)</h1>
 
+    @if(languageUtils.getCurrentLang == Lang("cy")) {
+    <p class="govuk-body">@messages("hasCommodityCode.notAvailableInWelsh")</p>
+    }
 
     <p class="govuk-body">@messages("hasCorrectGoods.p1")</p>
 
