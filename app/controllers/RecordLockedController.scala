@@ -23,18 +23,19 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.RecordLockedView
 
-class RecordLockedController @Inject()(
-                                       override val messagesApi: MessagesApi,
-                                       identify: IdentifierAction,
-                                       getData: DataRetrievalAction,
-                                       requireData: DataRequiredAction,
-                                       profileAuth: ProfileAuthenticateAction,
-                                       val controllerComponents: MessagesControllerComponents,
-                                       view: RecordLockedView
-                                     ) extends FrontendBaseController with I18nSupport {
+class RecordLockedController @Inject() (
+  override val messagesApi: MessagesApi,
+  identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
+  profileAuth: ProfileAuthenticateAction,
+  val controllerComponents: MessagesControllerComponents,
+  view: RecordLockedView
+) extends FrontendBaseController
+    with I18nSupport {
 
-  def onPageLoad(recordId: String): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
-    implicit request =>
+  def onPageLoad(recordId: String): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       Ok(view(recordId))
-  }
+    }
 }
