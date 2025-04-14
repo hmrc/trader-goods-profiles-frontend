@@ -831,7 +831,7 @@ updatedCommodityCode.heading = Rydych chi wedi diweddaru’r cod nwyddau
 updatedCommodityCode.paragraph1 = Mae’r cod nwyddau wedi newid sy’n golygu y bydd angen i chi gategoreiddio’r cofnod hwn cyn bydd modd i chi ei ddefnyddio.
 updatedCommodityCode.paragraph2 = Nid oes raid i chi gategoreiddio’r cofnod hwn nawr. Gallwch adolygu’r cofnod o’ch rhestr o gofnodion nwyddau a dechrau categoreiddio oddi yno.
 
-recordLocked.title = recordLocked
+recordLocked.title = Mae problem wedi codi
 recordLocked.heading = 	Mae problem wedi codi
 recordLocked.paragraph = Mae CThEF yn adolygu’r cofnod hwn yn dilyn cais am gyngor. Ni allwch ddiweddaru’r cofnod oni bai eich bod yn tynnu’ch cais am gyngor yn ôl.
 

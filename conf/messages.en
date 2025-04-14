@@ -805,7 +805,7 @@ updatedCommodityCode.heading = You’ve updated the commodity code
 updatedCommodityCode.paragraph1 = The commodity code has changed which means you’ll need to categorise this record before you can use it.
 updatedCommodityCode.paragraph2 = You do not need to categorise this record now. You can review the record from your list of goods records and start categorisation from there.
 
-recordLocked.title = recordLocked
+recordLocked.title = There is a problem
 recordLocked.heading = There is a problem
 recordLocked.paragraph = HMRC are reviewing this record following a request for advice. You cannot update the record unless you withdraw your request for advice.
 
