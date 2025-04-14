@@ -28,10 +28,10 @@ import queries.CountriesQuery
 import repositories.SessionRepository
 import services.DataCleansingService
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
-import utils.SessionData.*
-import viewmodels.checkAnswers.*
+import utils.SessionData._
+import viewmodels.checkAnswers._
 import viewmodels.checkAnswers.goodsRecord.{CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, ProductReferenceSummary}
-import viewmodels.govuk.summarylist.*
+import viewmodels.govuk.summarylist._
 import views.html.goodsRecord.SingleRecordView
 
 import javax.inject.Inject
