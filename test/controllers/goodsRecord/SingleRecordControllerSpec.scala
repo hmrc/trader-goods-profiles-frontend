@@ -25,7 +25,7 @@ import models.DeclarableStatus.NotReadyForUse
 import models.helper.SupplementaryUnitUpdateJourney
 import models.{Country, NormalMode, ReviewReason, UserAnswers}
 import org.mockito.ArgumentCaptor
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.Inspectors.forAll
@@ -34,15 +34,15 @@ import pages.goodsRecord.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, Go
 import play.api.i18n.Messages
 import play.api.inject.bind
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import repositories.SessionRepository
 import uk.gov.hmrc.govukfrontend.views.Aliases.Actions
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
-import uk.gov.hmrc.http.NotFoundException
+import uk.gov.hmrc.http.{NotFoundException, UpstreamErrorResponse}
 import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
-import viewmodels.checkAnswers._
+import viewmodels.checkAnswers.*
 import viewmodels.checkAnswers.goodsRecord.{CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, ProductReferenceSummary}
-import viewmodels.govuk.summarylist._
+import viewmodels.govuk.summarylist.*
 import views.html.goodsRecord.SingleRecordView
 
 import java.time.Instant
@@ -56,6 +56,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
     controllers.goodsRecord.routes.SingleRecordController.onPageLoad(lockedRecord.recordId).url
   private val mockGoodsRecordConnector       = mock[GoodsRecordConnector]
   private val mockOttConnector: OttConnector = mock[OttConnector]
+  private val mockSingleRecordController: SingleRecordController = mock[SingleRecordController]
   private val recordIsLocked                 = false
   private val countries                      = Seq(Country("CN", "China"), Country("US", "United States"))
 
@@ -674,10 +675,10 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
       running(application) {
         val request = FakeRequest(GET, singleRecordRoute)
+        val result = route(application, request).value
 
-        intercept[RuntimeException] {
-          await(route(application, request).value)
-        }
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.problem.routes.JourneyRecoveryController.onPageLoad().url)
 
         verify(mockGoodsRecordConnector, times(5)).getRecord(any())(any())
         verify(mockOttConnector, times(5)).getCountries(any())
@@ -754,9 +755,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
         val result = route(application, request).value
 
-        intercept[Exception] {
-          await(result)
-        }
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.problem.routes.JourneyRecoveryController.onPageLoad().url)
 
         verify(mockGoodsRecordConnector, times(6)).getRecord(any())(any())
       }
@@ -1056,6 +1056,31 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
             }
           }
         }
+      }
+    }
+    "redirect to RecordNotFound page when record does not exist (404)" in {
+      when(mockGoodsRecordConnector.getRecord(eqTo(testRecordId))(any()))
+        .thenReturn(Future.failed(UpstreamErrorResponse("Record not found", NOT_FOUND, NOT_FOUND)))
+
+      val mockSessionRepository = mock[SessionRepository]
+      when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
+      when(mockSessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+          bind[SessionRepository].toInstance(mockSessionRepository),
+          bind[OttConnector].toInstance(mockOttConnector),
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+        )
+        .build()
+
+      running(application) {
+        val request = FakeRequest(GET, singleRecordRoute)
+        val result = route(application, request).value
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.problem.routes.RecordNotFoundController.onPageLoad().url)
       }
     }
   }

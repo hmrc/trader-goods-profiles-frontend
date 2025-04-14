@@ -808,3 +808,7 @@ updatedCommodityCode.paragraph2 = You do not need to categorise this record now.
 recordLocked.title = recordLocked
 recordLocked.heading = There is a problem
 recordLocked.paragraph = HMRC are reviewing this record following a request for advice. You cannot update the record unless you withdraw your request for advice.
+
+recordNotFound.title = Record not found
+recordNotFound.heading = Record not found
+recordNotFound.paragraph = This record has been removed from your TGP.
