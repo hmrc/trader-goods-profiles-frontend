@@ -23,6 +23,7 @@ import config.FrontendAppConfig
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.BaseController
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
+import models.requests.DataRequest
 import models.router.requests.PutRecordRequest
 import models.{CheckMode, Country, NormalMode, UpdateGoodsRecord, UserAnswers, ValidationError}
 import navigation.GoodsRecordNavigator
@@ -36,6 +37,7 @@ import services.{AuditService, CommodityService}
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants.{commodityCodeKey, countryOfOriginKey, goodsDescriptionKey, openAccreditationErrorCode, productReferenceKey}
+import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
 import viewmodels.checkAnswers.goodsRecord.{CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, ProductReferenceSummary}
 import viewmodels.govuk.summarylist.*
 import views.html.goodsRecord.CyaUpdateRecordView
@@ -398,7 +400,9 @@ class CyaUpdateRecordController @Inject() (
         .recover(handleRecover(recordId))
     }
 
-  private def handleRecover(recordId: String): PartialFunction[Throwable, Result] = {
+  private def handleRecover(
+    recordId: String
+  )(implicit request: DataRequest[AnyContent]): PartialFunction[Throwable, Result] = {
     case e: GoodsRecordBuildFailure =>
       logErrorsAndContinue(
         e.getMessage,
@@ -407,5 +411,6 @@ class CyaUpdateRecordController @Inject() (
 
     case e: UpstreamErrorResponse if e.message.contains(openAccreditationErrorCode) =>
       Redirect(controllers.routes.RecordLockedController.onPageLoad(recordId))
+        .removingFromSession(dataRemoved, dataUpdated, pageUpdated)
   }
 }
