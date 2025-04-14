@@ -24,7 +24,7 @@ import views.html.problem.RecordNotFoundView
 
 import javax.inject.Inject
 
-class RecordNotFoundController @Inject()(
+class RecordNotFoundController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
   getData: DataRetrievalAction,

@@ -238,10 +238,10 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .execute[HttpResponse]
       .flatMap { response =>
         response.status match {
-          case OK       => Future.successful(Some(response.json.as[GetRecordsResponse]))
-          case ACCEPTED => Future.successful(None)
+          case OK        => Future.successful(Some(response.json.as[GetRecordsResponse]))
+          case ACCEPTED  => Future.successful(None)
           case NOT_FOUND => Future.successful(None)
-          case _        => Future.failed(UpstreamErrorResponse(response.body, response.status))
+          case _         => Future.failed(UpstreamErrorResponse(response.body, response.status))
         }
       }
   }

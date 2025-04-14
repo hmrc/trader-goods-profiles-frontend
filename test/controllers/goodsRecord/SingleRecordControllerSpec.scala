@@ -50,15 +50,15 @@ import scala.concurrent.Future
 
 class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeAndAfterEach {
 
-  private lazy val singleRecordRoute =
+  private lazy val singleRecordRoute                             =
     controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId).url
-  private lazy val singleRecordRouteLocked =
+  private lazy val singleRecordRouteLocked                       =
     controllers.goodsRecord.routes.SingleRecordController.onPageLoad(lockedRecord.recordId).url
-  private val mockGoodsRecordConnector = mock[GoodsRecordConnector]
-  private val mockOttConnector: OttConnector = mock[OttConnector]
+  private val mockGoodsRecordConnector                           = mock[GoodsRecordConnector]
+  private val mockOttConnector: OttConnector                     = mock[OttConnector]
   private val mockSingleRecordController: SingleRecordController = mock[SingleRecordController]
-  private val recordIsLocked = false
-  private val countries = Seq(Country("CN", "China"), Country("US", "United States"))
+  private val recordIsLocked                                     = false
+  private val countries                                          = Seq(Country("CN", "China"), Country("US", "United States"))
 
   private val notCategorisedRecord = goodsRecordResponse(
     Instant.parse("2022-11-18T23:20:19Z"),
@@ -179,11 +179,11 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
       running(application) {
         val request = FakeRequest(GET, singleRecordRoute)
 
-        val result = route(application, request).value
-        val view = application.injector.instanceOf[SingleRecordView]
-        val changesMade = request.session.get(dataUpdated).contains("true")
-        val changedPage = request.session.get(pageUpdated).getOrElse("")
-        val pageRemoved = request.session.get(dataRemoved).contains("true")
+        val result                                = route(application, request).value
+        val view                                  = application.injector.instanceOf[SingleRecordView]
+        val changesMade                           = request.session.get(dataUpdated).contains("true")
+        val changedPage                           = request.session.get(pageUpdated).getOrElse("")
+        val pageRemoved                           = request.session.get(dataRemoved).contains("true")
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(
           testRecordId,
@@ -221,7 +221,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
     "must return OK and the correct view for a GET and set up userAnswers when record is categorised and is locked" in {
 
       val recordIsLocked = true
-      val userAnswers = UserAnswers(userAnswersId)
+      val userAnswers    = UserAnswers(userAnswersId)
         .set(ProductReferenceUpdatePage(lockedRecord.recordId), lockedRecord.traderRef)
         .success
         .value
@@ -311,10 +311,10 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[SingleRecordView]
-        val changesMade = request.session.get(dataUpdated).contains("true")
-        val changedPage = request.session.get(pageUpdated).getOrElse("")
-        val pageRemoved = request.session.get(dataRemoved).contains("true")
+        val view                                  = application.injector.instanceOf[SingleRecordView]
+        val changesMade                           = request.session.get(dataUpdated).contains("true")
+        val changedPage                           = request.session.get(pageUpdated).getOrElse("")
+        val pageRemoved                           = request.session.get(dataRemoved).contains("true")
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(
           lockedRecord.recordId,
@@ -453,10 +453,10 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[SingleRecordView]
-        val changesMade = request.session.get(dataUpdated).contains("true")
-        val changedPage = request.session.get(pageUpdated).getOrElse("")
-        val pageRemoved = request.session.get(dataRemoved).contains("true")
+        val view                                  = application.injector.instanceOf[SingleRecordView]
+        val changesMade                           = request.session.get(dataUpdated).contains("true")
+        val changedPage                           = request.session.get(pageUpdated).getOrElse("")
+        val pageRemoved                           = request.session.get(dataRemoved).contains("true")
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(
           testRecordId,
@@ -500,7 +500,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
       ).copy(adviceStatus = Requested).copy(category = None)
 
       val recordIsLocked = true
-      val userAnswers = UserAnswers(userAnswersId)
+      val userAnswers    = UserAnswers(userAnswersId)
         .set(ProductReferenceUpdatePage(notCategorisedLockedRecord.recordId), notCategorisedLockedRecord.traderRef)
         .success
         .value
@@ -612,10 +612,10 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[SingleRecordView]
-        val changesMade = request.session.get(dataUpdated).contains("true")
-        val changedPage = request.session.get(pageUpdated).getOrElse("")
-        val pageRemoved = request.session.get(dataRemoved).contains("true")
+        val view                                  = application.injector.instanceOf[SingleRecordView]
+        val changesMade                           = request.session.get(dataUpdated).contains("true")
+        val changedPage                           = request.session.get(pageUpdated).getOrElse("")
+        val pageRemoved                           = request.session.get(dataRemoved).contains("true")
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(
           notCategorisedLockedRecord.recordId,
@@ -675,7 +675,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
       running(application) {
         val request = FakeRequest(GET, singleRecordRoute)
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.problem.routes.JourneyRecoveryController.onPageLoad().url)
@@ -688,7 +688,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
     "must return a SummaryListRow with the correct supplementary unit and measurement unit appended" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+      val application                      = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
         .build()
       implicit val localMessages: Messages = messages(application)
@@ -706,7 +706,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
         val supplementaryValue = row.value.content match {
           case Text(innerContent) => innerContent
-          case _ => ""
+          case _                  => ""
         }
 
         supplementaryValue must equal("1234567890.123456 grams")
@@ -717,7 +717,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
     "must show hasSupplementaryUnit when measurement unit is not empty and supplementary unit is No" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+      val application                      = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
         .build()
       implicit val localMessages: Messages = messages(application)
@@ -725,12 +725,12 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
       val record = recordWithSupplementaryUnit.copy(supplementaryUnit = None)
 
       running(application) {
-        val row = HasSupplementaryUnitSummary
+        val row                  = HasSupplementaryUnitSummary
           .row(record, testRecordId, recordIsLocked)
           .value
         val hasSupplementaryUnit = row.value.content match {
           case Text(innerContent) => innerContent
-          case _ => ""
+          case _                  => ""
         }
 
         hasSupplementaryUnit contains "Do you want to add the supplementary unit?"
@@ -768,7 +768,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
         val recordLocked = true
 
-        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        val application                      = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .build()
         implicit val localMessages: Messages = messages(application)
         running(application) {
@@ -788,7 +788,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
         val recordLocked = false
 
-        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        val application                      = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .build()
         implicit val localMessages: Messages = messages(application)
         running(application) {
@@ -814,7 +814,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
         val recordLocked = true
 
-        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        val application                      = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .build()
         implicit val localMessages: Messages = messages(application)
         running(application) {
@@ -834,7 +834,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
         val recordLocked = false
 
-        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        val application                      = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .build()
         implicit val localMessages: Messages = messages(application)
         running(application) {
@@ -860,7 +860,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
         val recordLocked = true
 
-        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        val application                      = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .build()
         implicit val localMessages: Messages = messages(application)
         running(application) {
@@ -882,7 +882,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
         val recordLocked = false
 
-        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        val application                      = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .build()
         implicit val localMessages: Messages = messages(application)
         running(application) {
@@ -904,7 +904,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
         val recordLocked = false
 
-        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        val application                      = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .build()
         implicit val localMessages: Messages = messages(application)
         running(application) {
@@ -927,7 +927,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
           val isReviewReasonCommodity = reviewReason == ReviewReason.Commodity
 
-          val record = goodsRecordResponseWithReviewReason(reviewReason = reviewReason)
+          val record   = goodsRecordResponseWithReviewReason(reviewReason = reviewReason)
           val toReview = true
 
           val userAnswers = UserAnswers(userAnswersId)
@@ -1017,11 +1017,11 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           running(application) {
             val request = FakeRequest(GET, singleRecordRoute)
 
-            val result = route(application, request).value
-            val view = application.injector.instanceOf[SingleRecordView]
-            val changesMade = request.session.get(dataUpdated).contains("true")
-            val changedPage = request.session.get(pageUpdated).getOrElse("")
-            val pageRemoved = request.session.get(dataRemoved).contains("true")
+            val result                                = route(application, request).value
+            val view                                  = application.injector.instanceOf[SingleRecordView]
+            val changesMade                           = request.session.get(dataUpdated).contains("true")
+            val changedPage                           = request.session.get(pageUpdated).getOrElse("")
+            val pageRemoved                           = request.session.get(dataRemoved).contains("true")
             status(result) mustEqual OK
             contentAsString(result) mustEqual view(
               record.recordId,
@@ -1077,7 +1077,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
       running(application) {
         val request = FakeRequest(GET, singleRecordRoute)
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.problem.routes.RecordNotFoundController.onPageLoad().url)
