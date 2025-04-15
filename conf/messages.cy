@@ -834,3 +834,7 @@ updatedCommodityCode.paragraph2 = Nid oes raid i chi gategoreiddio’r cofnod hw
 recordLocked.title = Mae problem wedi codi
 recordLocked.heading = 	Mae problem wedi codi
 recordLocked.paragraph = Mae CThEF yn adolygu’r cofnod hwn yn dilyn cais am gyngor. Ni allwch ddiweddaru’r cofnod oni bai eich bod yn tynnu’ch cais am gyngor yn ôl.
+
+recordNotFound.title = Heb ddod o hyd i’r cofnod
+recordNotFound.heading = Heb ddod o hyd i’r cofnod
+recordNotFound.paragraph = Mae’r cofnod hwn wedi cael ei ddileu o’ch Proffil Nwyddau Masnachwyr (TGP).
