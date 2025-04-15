@@ -162,8 +162,8 @@ class ReviewReasonSpec extends SpecBase {
       "when Measure" in {
         Measure.messageKey mustBe "singleRecord.measureReviewReason"
         Measure.linkKey mustBe Some("singleRecord.measureReviewReason.linkText")
-        Measure.url("recordId").value.url mustBe controllers.categorisation.routes.CategorisationPreparationController
-          .startCategorisation("recordId")
+        Measure.url("recordId").value.url mustBe controllers.routes.ValidateCommodityCodeController
+          .changeCategory("recordId")
           .url
         Measure.setAdditionalContent(isCategorised = false, NotRequested) mustBe None
       }
