@@ -23,19 +23,21 @@ import config.FrontendAppConfig
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.BaseController
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
+import models.requests.DataRequest
 import models.router.requests.PutRecordRequest
 import models.{CheckMode, Country, NormalMode, UpdateGoodsRecord, UserAnswers, ValidationError}
 import navigation.GoodsRecordNavigator
 import org.apache.pekko.Done
 import pages.goodsRecord.*
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
 import queries.CountriesQuery
 import repositories.SessionRepository
 import services.{AuditService, CommodityService}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import utils.Constants.{commodityCodeKey, countryOfOriginKey, goodsDescriptionKey, productReferenceKey}
+import utils.Constants.{commodityCodeKey, countryOfOriginKey, goodsDescriptionKey, openAccreditationErrorCode, productReferenceKey}
+import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
 import viewmodels.checkAnswers.goodsRecord.{CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, ProductReferenceSummary}
 import viewmodels.govuk.summarylist.*
 import views.html.goodsRecord.CyaUpdateRecordView
@@ -292,10 +294,8 @@ class CyaUpdateRecordController @Inject() (
         _                 <- updateGoodsRecordIfValueChanged(productReference, oldRecord.traderRef, updateGoodsRecord)
         updatedAnswers    <- Future.fromTry(request.userAnswers.remove(ProductReferenceUpdatePage(recordId)))
         _                 <- sessionRepository.set(updatedAnswers)
-      } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers))).recover {
-        case e: GoodsRecordBuildFailure =>
-          logErrorsAndContinue(e.getMessage, controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
-      }
+      } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers)))
+        .recover(handleRecover(recordId))
     }
 
   def onSubmitCountryOfOrigin(recordId: String): Action[AnyContent] =
@@ -333,10 +333,8 @@ class CyaUpdateRecordController @Inject() (
         updatedAnswersWithChange <- Future.fromTry(request.userAnswers.remove(HasCountryOfOriginChangePage(recordId)))
         updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CountryOfOriginUpdatePage(recordId)))
         _                        <- sessionRepository.set(updatedAnswers)
-      } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers))).recover {
-        case e: GoodsRecordBuildFailure =>
-          logErrorsAndContinue(e.getMessage, controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
-      }
+      } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers)))
+        .recover(handleRecover(recordId))
     }
 
   def onSubmitGoodsDescription(recordId: String): Action[AnyContent] =
@@ -351,10 +349,8 @@ class CyaUpdateRecordController @Inject() (
         _                 <- updateGoodsRecordIfValueChanged(goodsDescription, oldRecord.goodsDescription, updateGoodsRecord)
         updatedAnswers    <- Future.fromTry(request.userAnswers.remove(GoodsDescriptionUpdatePage(recordId)))
         _                 <- sessionRepository.set(updatedAnswers)
-      } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers))).recover {
-        case e: GoodsRecordBuildFailure =>
-          logErrorsAndContinue(e.getMessage, controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
-      }
+      } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers)))
+        .recover(handleRecover(recordId))
     }
 
   def onSubmitCommodityCode(recordId: String): Action[AnyContent] =
@@ -400,9 +396,21 @@ class CyaUpdateRecordController @Inject() (
           Future.fromTry(request.userAnswers.remove(HasCommodityCodeChangePage(recordId)))
         updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CommodityCodeUpdatePage(recordId)))
         _                        <- sessionRepository.set(updatedAnswers)
-      } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers))).recover {
-        case e: GoodsRecordBuildFailure =>
-          logErrorsAndContinue(e.getMessage, controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
-      }
+      } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers)))
+        .recover(handleRecover(recordId))
     }
+
+  private def handleRecover(
+    recordId: String
+  )(implicit request: DataRequest[AnyContent]): PartialFunction[Throwable, Result] = {
+    case e: GoodsRecordBuildFailure =>
+      logErrorsAndContinue(
+        e.getMessage,
+        controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId)
+      )
+
+    case e: UpstreamErrorResponse if e.message.contains(openAccreditationErrorCode) =>
+      Redirect(controllers.routes.RecordLockedController.onPageLoad(recordId))
+        .removingFromSession(dataRemoved, dataUpdated, pageUpdated)
+  }
 }

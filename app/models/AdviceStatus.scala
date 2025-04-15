@@ -18,8 +18,13 @@ package models
 
 import play.api.libs.json.{JsError, JsString, JsSuccess, Reads, Writes}
 
-sealed trait AdviceStatus {
+trait AdviceStatus {
   val messageKey: String
+
+  def isRecordLocked: Boolean = this match {
+    case AdviceStatus.Requested | AdviceStatus.InProgress | AdviceStatus.InformationRequested => true
+    case _                                                                                    => false
+  }
 }
 
 object AdviceStatus {

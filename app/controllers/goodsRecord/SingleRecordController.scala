@@ -62,14 +62,7 @@ class SingleRecordController @Inject() (
         .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url)
       for {
         record                             <- goodsRecordConnector.getRecord(recordId)
-        recordIsLocked                      = record.adviceStatus match {
-                                                case status
-                                                    if status == Requested ||
-                                                      status == InProgress ||
-                                                      status == InformationRequested =>
-                                                  true
-                                                case _ => false
-                                              }
+        recordIsLocked                      = record.adviceStatus.isRecordLocked
         countries                          <- retrieveAndStoreCountries
         updatedAnswersWithproductReference <-
           Future.fromTry(request.userAnswers.set(ProductReferenceUpdatePage(recordId), record.traderRef))

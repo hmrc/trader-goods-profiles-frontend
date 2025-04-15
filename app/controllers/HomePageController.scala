@@ -71,6 +71,7 @@ class HomePageController @Inject() (
             downloadLinkText,
             showNewUkimsBanner,
             doesGoodsRecordExist,
+            eoriNumber = request.eori,
             viewUpdateGoodsRecordsLink
           )
         )

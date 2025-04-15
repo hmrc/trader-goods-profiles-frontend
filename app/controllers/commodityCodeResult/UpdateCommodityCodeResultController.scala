@@ -35,7 +35,9 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import queries.*
 import repositories.SessionRepository
 import services.{AuditService, CommodityService}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
+import utils.Constants.openAccreditationErrorCode
+import utils.SessionData.{commodityCode, dataRemoved, dataUpdated, pageUpdated}
 import views.html.HasCorrectGoodsView
 
 import javax.inject.Inject
@@ -95,7 +97,12 @@ class UpdateCommodityCodeResultController @Inject() (
 
             futureUpdatedAnswers.flatMap { updatedAnswers =>
               if (value) {
-                updateCommodityCode(recordId, request, updatedAnswers)
+                updateCommodityCode(recordId, request, updatedAnswers).recover {
+                  case e: UpstreamErrorResponse if e.message.contains(openAccreditationErrorCode) =>
+                    Redirect(controllers.routes.RecordLockedController.onPageLoad(recordId))
+                      .removingFromSession(dataRemoved, dataUpdated, pageUpdated)
+                }
+
               } else {
                 Future.successful(
                   Redirect(

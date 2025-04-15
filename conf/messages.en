@@ -177,14 +177,14 @@ newUkimsNumber.change.hidden = UKIMS number
 
 categoryGuidance.title = Categorisation
 categoryGuidance.heading = Categorisation
-categoryGuidance.p1 = Categorisation allows you to know what category your goods are in and if they are eligible for Simplified Process for Internal Market Movements (SPIMM).
+categoryGuidance.p1 = Categorisation allows you to know what category your goods are in and if they are eligible for the Internal Market Movement Information (IMMI) form.
 categoryGuidance.p2 = We’ll ask you questions about exemptions that you hold and then tell you what category your goods are. We could ask you up to 10 questions.
 categoryGuidance.linkText =  Find out how to check and categorise goods you move from Great Britain to Northern Ireland to use the simplified process for internal market movements (opens in a new tab)
 categoryGuidance.subheading = Exemptions
 categoryGuidance.p3 = Your goods will be placed into 1 of 3 categories:
-categoryGuidance.p3.1 = Category 1 – goods that are excluded for using SPIMM
-categoryGuidance.p3.2 = Category 2 – goods that are controlled and require additional details to use SPIMM
-categoryGuidance.p3.3 = Standard – goods that can use SPIMM
+categoryGuidance.p3.1 =  Category 1 – goods that you will not be able to use on the IMMI form
+categoryGuidance.p3.2 = Category 2 – goods that are controlled and require additional details to use the IMMI form
+categoryGuidance.p3.3 = Standard – goods that can use the IMMI form
 categoryGuidance.p4 = You’ll need to know the certificate number or name of any exemptions you have for your goods. Example certificate numbers are C644, Y929 or C640. If you get a new exclusion, you’ll be able to change this later.
 
 commodityCode.title = Commodity code
@@ -212,6 +212,7 @@ countryOfOrigin.change.hidden = Country of origin
 
 homepage.title = Trader Goods Profile (TGP) homepage
 homepage.h1 = Trader Goods Profile (TGP) homepage
+homepage.eori = EORI number: {0}
 homepage.p1 = You can manage your goods records, ask HMRC for an opinion on a goods record or update your profile details.
 homepage.h2.1 = Goods records
 homepage.p2.linkText = View or update your goods records
@@ -339,10 +340,12 @@ categorisationResult.Category2NoExemptions.p2 = There are no exemptions to chang
 categorisationResult.Standard.title = Standard goods
 categorisationResult.Standard.heading = Standard goods
 categorisationResult.Standard.p1 = Your goods have been categorised and are eligible for the Internal Market Movement Information (IMMI) form.
-categorisationResult.StandardNoAssessments.p1 = Your goods have been categorised and are eligible for Simplified Process for Internal Market Movements (SPIMM). There are no category assessments needed.
+categorisationResult.StandardNoAssessments.p1 = Your goods have been categorised and are eligible for the Internal Market Movement Information (IMMI) form.
+categorisationResult.StandardNoAssessments.p2 = This goods record does not need any exemptions to be standard goods.
 categorisationResult.h2 = What happens next?
 categorisationResult.h2.cat1.paragraph = You cannot use this goods record to help complete an IMMI form as it is category 1. You may be able to change the category or move these goods using a different declaration.
-categorisationResult.h2.cat2.paragraph = You can use the this goods record to help complete an IMMI form.
+categorisationResult.h2.cat1.noExemptions.paragraph = You cannot use this goods record to help complete an IMMI form as it is category 1. You may be able to move these goods using a different declaration.
+categorisationResult.h2.cat2.paragraph = You can use this goods record to help complete the IMMI form.
 categorisationResult.Category2NoExemptions.p2 = There are no exemptions to change the category.
 categorisationResult.h2.standard.paragraph = You can view the record from your goods profile, create a new record or go to the homepage.
 
@@ -802,3 +805,6 @@ updatedCommodityCode.heading = You’ve updated the commodity code
 updatedCommodityCode.paragraph1 = The commodity code has changed which means you’ll need to categorise this record before you can use it.
 updatedCommodityCode.paragraph2 = You do not need to categorise this record now. You can review the record from your list of goods records and start categorisation from there.
 
+recordLocked.title = There is a problem
+recordLocked.heading = There is a problem
+recordLocked.paragraph = HMRC are reviewing this record following a request for advice. You cannot update the record unless you withdraw your request for advice.

@@ -47,5 +47,8 @@ GET         /help-and-support                                                   
 
 GET         /outboundRedirect                                                                       controllers.OutboundController.redirect(link: String, messageKey: String, page: String)
 
+GET        /record-locked/:recordId                                                                  controllers.RecordLockedController.onPageLoad(recordId:String)
+
 # this url must be the last url on this page so it becomes the default if no other urls match
 GET         /*path                                                                                  controllers.PageNotFoundController.onPageLoad(path: String)
+
