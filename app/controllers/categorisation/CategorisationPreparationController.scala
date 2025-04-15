@@ -22,7 +22,7 @@ import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierA
 import models.Scenario.getResultAsInt
 import models.helper.CategorisationUpdate
 import models.ott.CategorisationInfo
-import models.{CategoryRecord, Mode, NormalMode, Scenario, UserAnswers}
+import models.{CategoryRecord, CategoryRecordBuildFailure, Mode, NormalMode, Scenario, UserAnswers}
 import navigation.CategorisationNavigator
 import org.apache.pekko.Done
 import pages.RecategorisationPreparationPage
@@ -169,10 +169,6 @@ class CategorisationPreparationController @Inject() (
     } else {
       Success(userAnswers)
     }
-  }
-
-  private case class CategoryRecordBuildFailure(error: String) extends Exception {
-    override def getMessage: String = s"Failed to build category record: $error"
   }
 
   private def updateCategory(
