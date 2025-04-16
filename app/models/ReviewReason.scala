@@ -92,7 +92,7 @@ object ReviewReason {
 
     override def url(recordId: String): Option[Call]                                                                =
       Some(
-        controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(recordId)
+        controllers.routes.ValidateCommodityCodeController.changeCategory(recordId)
       )
     override def setAdditionalContent(isCategorised: Boolean, adviceStatus: AdviceStatus): Option[(String, String)] =
       None
