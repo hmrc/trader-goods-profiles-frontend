@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package controllers.goodsRecord.goodsDecription
+package controllers.goodsRecord.goodsDescription
 
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
-import controllers.goodsRecord.goodsDescription.UpdateGoodsDescriptionController
 import forms.goodsRecord.GoodsDescriptionFormProvider
 import models.helper.GoodsDetailsUpdate
 import models.{NormalMode, UserAnswers}
