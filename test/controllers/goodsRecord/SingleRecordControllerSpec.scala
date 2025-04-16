@@ -50,15 +50,14 @@ import scala.concurrent.Future
 
 class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeAndAfterEach {
 
-  private lazy val singleRecordRoute                             =
+  private lazy val singleRecordRoute         =
     controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId).url
-  private lazy val singleRecordRouteLocked                       =
+  private lazy val singleRecordRouteLocked   =
     controllers.goodsRecord.routes.SingleRecordController.onPageLoad(lockedRecord.recordId).url
-  private val mockGoodsRecordConnector                           = mock[GoodsRecordConnector]
-  private val mockOttConnector: OttConnector                     = mock[OttConnector]
-  private val mockSingleRecordController: SingleRecordController = mock[SingleRecordController]
-  private val recordIsLocked                                     = false
-  private val countries                                          = Seq(Country("CN", "China"), Country("US", "United States"))
+  private val mockGoodsRecordConnector       = mock[GoodsRecordConnector]
+  private val mockOttConnector: OttConnector = mock[OttConnector]
+  private val recordIsLocked                 = false
+  private val countries                      = Seq(Country("CN", "China"), Country("US", "United States"))
 
   private val notCategorisedRecord = goodsRecordResponse(
     Instant.parse("2022-11-18T23:20:19Z"),

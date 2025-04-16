@@ -37,7 +37,7 @@ import repositories.SessionRepository
 import services.{AuditService, CommodityService}
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import utils.Constants.openAccreditationErrorCode
-import utils.SessionData.{commodityCode, dataRemoved, dataUpdated, pageUpdated}
+import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
 import views.html.HasCorrectGoodsView
 
 import javax.inject.Inject
