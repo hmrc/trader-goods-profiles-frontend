@@ -902,7 +902,7 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
         "with ContinueUrl if one supplied" in {
           val redirectUrl = Some(RedirectUrl("/redirectUrl"))
-          val result = navigator.journeyRecovery(redirectUrl)
+          val result      = navigator.journeyRecovery(redirectUrl)
           result.header.status mustEqual SEE_OTHER
           result.header.headers("Location") mustEqual controllers.problem.routes.JourneyRecoveryController
             .onPageLoad(redirectUrl)
