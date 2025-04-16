@@ -39,7 +39,8 @@ class ValidateCommodityCodeController @Inject() (
 
   def changeCategory(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequest(request)
+      implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
+
       commodityService.isCommodityCodeValid(recordId).map {
         case true  =>
           Redirect(controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(recordId))
