@@ -18,21 +18,21 @@ package navigation
 
 import base.SpecBase
 import base.TestConstants.userAnswersId
+import controllers.profile.niphl.routes.*
+import controllers.profile.nirms.routes.*
+import controllers.profile.routes.*
+import controllers.profile.ukims.routes.*
 import controllers.routes
-import models._
+import models.*
 import org.scalatest.BeforeAndAfterEach
-import pages._
-import pages.profile._
+import pages.*
+import pages.profile.*
+import pages.profile.niphl.*
+import pages.profile.nirms.*
+import pages.profile.ukims.{UkimsNumberPage, UkimsNumberUpdatePage, UseExistingUkimsNumberPage}
 import play.api.http.Status.SEE_OTHER
-import queries._
+import queries.*
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import controllers.profile.routes._
-import controllers.profile.ukims.routes._
-import controllers.profile.niphl.routes._
-import controllers.profile.nirms.routes._
-import pages.profile.niphl.{HasNiphlPage, HasNiphlUpdatePage, NiphlNumberPage, NiphlNumberUpdatePage, RemoveNiphlPage}
-import pages.profile.nirms.{HasNirmsPage, HasNirmsUpdatePage, NirmsNumberPage, NirmsNumberUpdatePage, RemoveNirmsPage}
-import pages.profile.ukims.{CyaNewUkimsNumberPage, UkimsNumberPage, UkimsNumberUpdatePage, UseExistingUkimsNumberPage}
 
 class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
@@ -492,18 +492,6 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
       }
 
-      "within the new UKIMS number update journey" - {
-
-        "must go from CyaNewUkimsNumberPage to ???" in {
-
-          // TODO Needs to be updated according to navigation TGP-2700
-          navigator.nextPage(
-            CyaNewUkimsNumberPage,
-            NormalMode,
-            emptyUserAnswers
-          ) mustBe routes.IndexController.onPageLoad()
-        }
-      }
     }
 
     "when in Check mode" - {
@@ -914,7 +902,7 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
         "with ContinueUrl if one supplied" in {
           val redirectUrl = Some(RedirectUrl("/redirectUrl"))
-          val result      = navigator.journeyRecovery(redirectUrl)
+          val result = navigator.journeyRecovery(redirectUrl)
           result.header.status mustEqual SEE_OTHER
           result.header.headers("Location") mustEqual controllers.problem.routes.JourneyRecoveryController
             .onPageLoad(redirectUrl)
