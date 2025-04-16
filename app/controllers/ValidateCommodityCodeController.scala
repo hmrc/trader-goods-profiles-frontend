@@ -42,7 +42,7 @@ class ValidateCommodityCodeController @Inject() (
       implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
       commodityService.isCommodityCodeValid(recordId).map {
-        case true =>
+        case true  =>
           Redirect(controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(recordId))
         case false =>
           Redirect(controllers.goodsRecord.commodityCode.routes.InvalidCommodityCodeController.onPageLoad(recordId))
