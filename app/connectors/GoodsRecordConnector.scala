@@ -59,7 +59,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
   private def filterRecordsUrl(
     eori: String,
     queryParams: Map[String, String]
-  ) = // TODO: This is part of the filtering work and will be replaced with the new filter endpoint as part of TGP-3003
+  ) =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/filter?$queryParams"
 
   private def isProductReferenceUniqueUrl(
@@ -263,7 +263,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
         (response.json \ "isUnique").as[Boolean]
       }
 
-  def filterRecordsByField( // TODO: This is part of the filtering work and will be replaced with the new filter endpoint as part of TGP-3003
+  def filterRecordsByField(
     eori: String,
     searchTerm: String,
     field: String
@@ -289,7 +289,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       }
   }
 
-  def searchRecords( // TODO: add more parameter when we pick TGP:3003 and change the condition in the else.
+  def searchRecords(
     eori: String,
     searchTerm: Option[String] = None,
     exactMatch: Boolean,
