@@ -23,7 +23,7 @@ import controllers.profile.nirms.routes.*
 import forms.profile.nirms.NirmsNumberFormProvider
 import models.Mode
 import navigation.ProfileNavigator
-import pages.profile.nirms.{HasNirmsUpdatePage, NirmsNumberPage, NirmsNumberUpdatePage}
+import pages.profile.nirms.{HasNirmsUpdatePage, NirmsNumberUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -32,7 +32,7 @@ import views.html.profile.NirmsNumberView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class NirmsNumberController @Inject() (
+class UpdateNirmsNumberController @Inject()(
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: ProfileNavigator,
@@ -41,7 +41,6 @@ class NirmsNumberController @Inject() (
   requireData: DataRequiredAction,
   formProvider: NirmsNumberFormProvider,
   traderProfileConnector: TraderProfileConnector,
-  checkProfile: ProfileCheckAction,
   profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
   view: NirmsNumberView
@@ -50,30 +49,7 @@ class NirmsNumberController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoadCreate(mode: Mode): Action[AnyContent] =
-    (identify andThen checkProfile andThen getData andThen requireData) { implicit request =>
-      val preparedForm = prepareForm(NirmsNumberPage, form)
-      Ok(view(preparedForm, NirmsNumberController.onSubmitCreate(mode)))
-    }
-
-  def onSubmitCreate(mode: Mode): Action[AnyContent] =
-    (identify andThen checkProfile andThen getData andThen requireData).async { implicit request =>
-      form
-        .bindFromRequest()
-        .fold(
-          formWithErrors =>
-            Future.successful(
-              BadRequest(view(formWithErrors, NirmsNumberController.onSubmitCreate(mode)))
-            ),
-          value =>
-            for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(NirmsNumberPage, value))
-              _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(NirmsNumberPage, mode, updatedAnswers))
-        )
-    }
-
-  def onPageLoadUpdate(mode: Mode): Action[AnyContent] =
+  def onPageLoad(mode: Mode): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       traderProfileConnector.getTraderProfile.flatMap { traderProfile =>
         val previousAnswerOpt = request.userAnswers.get(NirmsNumberUpdatePage)
@@ -85,7 +61,7 @@ class NirmsNumberController @Inject() (
 
         val futureOkResult =
           Future
-            .successful(Ok(view(preparedForm, NirmsNumberController.onSubmitUpdate(mode))))
+            .successful(Ok(view(preparedForm, UpdateNirmsNumberController.onSubmit(mode))))
 
         request.userAnswers.getPageValue(HasNirmsUpdatePage) match {
           case Right(true)                                    => futureOkResult
@@ -109,14 +85,14 @@ class NirmsNumberController @Inject() (
       }
     }
 
-  def onSubmitUpdate(mode: Mode): Action[AnyContent] =
+  def onSubmit(mode: Mode): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(
           formWithErrors =>
             Future.successful(
-              BadRequest(view(formWithErrors, NirmsNumberController.onSubmitUpdate(mode)))
+              BadRequest(view(formWithErrors, UpdateNirmsNumberController.onSubmit(mode)))
             ),
           value =>
             for {

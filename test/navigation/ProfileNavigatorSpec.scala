@@ -141,7 +141,7 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNirmsPage,
               NormalMode,
               answers
-            ) mustBe NirmsNumberController.onPageLoadCreate(
+            ) mustBe CreateNirmsNumberController.onPageLoad(
               NormalMode
             )
           }
@@ -252,7 +252,7 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNirmsUpdatePage,
               NormalMode,
               answers
-            ) mustBe NirmsNumberController.onPageLoadUpdate(NormalMode)
+            ) mustBe UpdateNirmsNumberController.onPageLoad(NormalMode)
           }
 
           "to RemoveNirmsPage when answer is No and Nirms number is associated to profile" in {
@@ -527,7 +527,7 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 HasNirmsPage,
                 CheckMode,
                 answers
-              ) mustBe NirmsNumberController.onPageLoadCreate(
+              ) mustBe CreateNirmsNumberController.onPageLoad(
                 CheckMode
               )
             }
@@ -715,7 +715,7 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNirmsUpdatePage,
               CheckMode,
               answers
-            ) mustBe NirmsNumberController.onPageLoadUpdate(CheckMode)
+            ) mustBe UpdateNirmsNumberController.onPageLoad(CheckMode)
           }
 
           "to RemoveNirmsPage when answer is No and Nirms number is associated to profile" in {

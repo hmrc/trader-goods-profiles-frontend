@@ -92,7 +92,7 @@ class ProfileNavigator @Inject() extends Navigator {
     answers
       .get(HasNirmsPage)
       .map {
-        case true  => NirmsNumberController.onPageLoadCreate(NormalMode)
+        case true  => CreateNirmsNumberController.onPageLoad(NormalMode)
         case false => CreateIsNiphlRegisteredController.onPageLoad(NormalMode)
       }
       .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
@@ -120,7 +120,7 @@ class ProfileNavigator @Inject() extends Navigator {
     answers
       .get(HasNirmsUpdatePage)
       .map {
-        case true  => NirmsNumberController.onPageLoadUpdate(mode)
+        case true  => UpdateNirmsNumberController.onPageLoad(mode)
         case false =>
           answers
             .get(TraderProfileQuery)
@@ -174,7 +174,7 @@ class ProfileNavigator @Inject() extends Navigator {
           if (answers.isDefined(NirmsNumberPage)) {
             controllers.profile.routes.CyaCreateProfileController.onPageLoad()
           } else {
-            NirmsNumberController.onPageLoadCreate(CheckMode)
+            CreateNirmsNumberController.onPageLoad(CheckMode)
           }
         case false => controllers.profile.routes.CyaCreateProfileController.onPageLoad()
       }

@@ -42,10 +42,10 @@ POST        /update-profile/nirms-question                             controlle
 GET         /update-profile/nirms-question/check                       controllers.profile.nirms.UpdateIsNirmsRegisteredController.onPageLoad(mode: Mode = CheckMode)
 POST        /update-profile/nirms-question/check                       controllers.profile.nirms.UpdateIsNirmsRegisteredController.onSubmit(mode: Mode = CheckMode)
 
-GET         /update-profile/nirms-number                               controllers.profile.nirms.NirmsNumberController.onPageLoadUpdate(mode: Mode = NormalMode)
-POST        /update-profile/nirms-number                               controllers.profile.nirms.NirmsNumberController.onSubmitUpdate(mode: Mode = NormalMode)
-GET         /update-profile/nirms-number/check                         controllers.profile.nirms.NirmsNumberController.onPageLoadUpdate(mode: Mode = CheckMode)
-POST        /update-profile/nirms-number/check                         controllers.profile.nirms.NirmsNumberController.onSubmitUpdate(mode: Mode = CheckMode)
+GET         /update-profile/nirms-number                               controllers.profile.nirms.UpdateNirmsNumberController.onPageLoad(mode: Mode = NormalMode)
+POST        /update-profile/nirms-number                               controllers.profile.nirms.UpdateNirmsNumberController.onSubmit(mode: Mode = NormalMode)
+GET         /update-profile/nirms-number/check                         controllers.profile.nirms.UpdateNirmsNumberController.onPageLoad(mode: Mode = CheckMode)
+POST        /update-profile/nirms-number/check                         controllers.profile.nirms.UpdateNirmsNumberController.onSubmit(mode: Mode = CheckMode)
 
 GET         /create-profile/niphl-number                               controllers.profile.niphl.CreateNiphlNumberController.onPageLoad(mode: Mode = NormalMode)
 POST        /create-profile/niphl-number                               controllers.profile.niphl.CreateNiphlNumberController.onSubmit(mode: Mode = NormalMode)
@@ -57,10 +57,10 @@ POST        /update-profile/niphl-number                               controlle
 GET         /update-profile/niphl-number/check                         controllers.profile.niphl.UpdateNiphlNumberController.onPageLoad(mode: Mode = CheckMode)
 POST        /update-profile/niphl-number/check                         controllers.profile.niphl.UpdateNiphlNumberController.onSubmit(mode: Mode = CheckMode)
 
-GET         /create-profile/nirms-number                               controllers.profile.nirms.NirmsNumberController.onPageLoadCreate(mode: Mode = NormalMode)
-POST        /create-profile/nirms-number                               controllers.profile.nirms.NirmsNumberController.onSubmitCreate(mode: Mode = NormalMode)
-GET         /create-profile/nirms-number/check                         controllers.profile.nirms.NirmsNumberController.onPageLoadCreate(mode: Mode = CheckMode)
-POST        /create-profile/nirms-number/check                         controllers.profile.nirms.NirmsNumberController.onSubmitCreate(mode: Mode = CheckMode)
+GET         /create-profile/nirms-number                               controllers.profile.nirms.CreateNirmsNumberController.onPageLoad(mode: Mode = NormalMode)
+POST        /create-profile/nirms-number                               controllers.profile.nirms.CreateNirmsNumberController.onSubmit(mode: Mode = NormalMode)
+GET         /create-profile/nirms-number/check                         controllers.profile.nirms.CreateNirmsNumberController.onPageLoad(mode: Mode = CheckMode)
+POST        /create-profile/nirms-number/check                         controllers.profile.nirms.CreateNirmsNumberController.onSubmit(mode: Mode = CheckMode)
 
 GET         /update-profile/removing-nirms-number                      controllers.profile.nirms.RemoveNirmsController.onPageLoad()
 POST        /update-profile/removing-nirms-number                      controllers.profile.nirms.RemoveNirmsController.onSubmit()

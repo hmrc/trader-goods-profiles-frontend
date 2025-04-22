@@ -56,7 +56,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
     ".create" - {
 
-      val nirmsNumberRoute = NirmsNumberController.onPageLoadCreate(NormalMode).url
+      val nirmsNumberRoute = CreateNirmsNumberController.onPageLoad(NormalMode).url
 
       "must return OK and the correct view for a GET" in {
 
@@ -79,7 +79,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             form,
-            NirmsNumberController.onSubmitCreate(NormalMode)
+            CreateNirmsNumberController.onSubmit(NormalMode)
           )(
             request,
             messages(application)
@@ -110,7 +110,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             form.fill("answer"),
-            NirmsNumberController.onSubmitCreate(NormalMode)
+            CreateNirmsNumberController.onSubmit(NormalMode)
           )(request, messages(application)).toString
         }
       }
@@ -168,7 +168,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual BAD_REQUEST
           contentAsString(result) mustEqual view(
             boundForm,
-            NirmsNumberController.onSubmitCreate(NormalMode)
+            CreateNirmsNumberController.onSubmit(NormalMode)
           )(
             request,
             messages(application)
@@ -244,7 +244,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
     ".update" - {
 
-      val nirmsNumberRoute = NirmsNumberController.onPageLoadUpdate(NormalMode).url
+      val nirmsNumberRoute = UpdateNirmsNumberController.onPageLoad(NormalMode).url
 
       "must return OK and the correct view for a GET when HasNirms hasn't been answered when there is a nirms number" in {
 
@@ -277,7 +277,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             form.fill("2"),
-            NirmsNumberController.onSubmitUpdate(NormalMode)
+            UpdateNirmsNumberController.onSubmit(NormalMode)
           )(
             request,
             messages(application)
@@ -322,7 +322,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             form.fill("2"),
-            NirmsNumberController.onSubmitUpdate(NormalMode)
+            UpdateNirmsNumberController.onSubmit(NormalMode)
           )(
             request,
             messages(application)
@@ -367,7 +367,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             form,
-            NirmsNumberController.onSubmitUpdate(NormalMode)
+            UpdateNirmsNumberController.onSubmit(NormalMode)
           )(
             request,
             messages(application)
@@ -438,7 +438,7 @@ class NirmsNumberControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual BAD_REQUEST
           contentAsString(result) mustEqual view(
             boundForm,
-            NirmsNumberController.onSubmitUpdate(NormalMode)
+            UpdateNirmsNumberController.onSubmit(NormalMode)
           )(
             request,
             messages(application)
