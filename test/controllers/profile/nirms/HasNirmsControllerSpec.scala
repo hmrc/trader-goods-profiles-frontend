@@ -54,7 +54,7 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
 
     ".create" - {
 
-      val hasNirmsRoute = HasNirmsController.onPageLoadCreate(NormalMode).url
+      val hasNirmsRoute = CreateIsNirmsRegisteredController.onPageLoad(NormalMode).url
 
       "must return OK and the correct view for a GET" in {
 
@@ -77,7 +77,7 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             form,
-            HasNirmsController.onSubmitCreate(NormalMode),
+            CreateIsNirmsRegisteredController.onSubmit(NormalMode),
             NormalMode,
             isCreateJourney = true
           )(
@@ -110,7 +110,7 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             form.fill(true),
-            HasNirmsController.onSubmitCreate(NormalMode),
+            CreateIsNirmsRegisteredController.onSubmit(NormalMode),
             NormalMode,
             isCreateJourney = true
           )(
@@ -171,7 +171,7 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual BAD_REQUEST
           contentAsString(result) mustEqual view(
             boundForm,
-            HasNirmsController.onSubmitCreate(NormalMode),
+            CreateIsNirmsRegisteredController.onSubmit(NormalMode),
             NormalMode,
             isCreateJourney = true
           )(
@@ -250,7 +250,7 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
 
     ".update" - {
 
-      val hasNirmsRoute = HasNirmsController.onPageLoadUpdate(NormalMode).url
+      val hasNirmsRoute = UpdateIsNirmsRegisteredController.onPageLoad(NormalMode).url
 
       "must return OK and the correct view for a GET with saved answers" in {
 
@@ -281,7 +281,7 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             form.fill(true),
-            HasNirmsController.onSubmitUpdate(NormalMode),
+            UpdateIsNirmsRegisteredController.onSubmit(NormalMode),
             NormalMode,
             isCreateJourney = false
           )(
@@ -312,7 +312,7 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             form.fill(true),
-            HasNirmsController.onSubmitUpdate(NormalMode),
+            UpdateIsNirmsRegisteredController.onSubmit(NormalMode),
             NormalMode,
             isCreateJourney = false
           )(
@@ -401,7 +401,7 @@ class HasNirmsControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual BAD_REQUEST
           contentAsString(result) mustEqual view(
             boundForm,
-            HasNirmsController.onSubmitUpdate(NormalMode),
+            UpdateIsNirmsRegisteredController.onSubmit(NormalMode),
             NormalMode,
             isCreateJourney = false
           )(

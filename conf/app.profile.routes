@@ -32,15 +32,15 @@ POST        /update-profile/niphl-question                             controlle
 GET         /update-profile/niphl-question/check                       controllers.profile.niphl.UpdateIsNiphlRegisteredController.onPageLoad(mode: Mode = CheckMode)
 POST        /update-profile/niphl-question/check                       controllers.profile.niphl.UpdateIsNiphlRegisteredController.onSubmit(mode: Mode = CheckMode)
 
-GET         /create-profile/nirms-question                             controllers.profile.nirms.HasNirmsController.onPageLoadCreate(mode: Mode = NormalMode)
-POST        /create-profile/nirms-question                             controllers.profile.nirms.HasNirmsController.onSubmitCreate(mode: Mode = NormalMode)
-GET         /create-profile/nirms-question/check                       controllers.profile.nirms.HasNirmsController.onPageLoadCreate(mode: Mode = CheckMode)
-POST        /create-profile/nirms-question/check                       controllers.profile.nirms.HasNirmsController.onSubmitCreate(mode: Mode = CheckMode)
+GET         /create-profile/nirms-question                             controllers.profile.nirms.CreateIsNirmsRegisteredController.onPageLoad(mode: Mode = NormalMode)
+POST        /create-profile/nirms-question                             controllers.profile.nirms.CreateIsNirmsRegisteredController.onSubmit(mode: Mode = NormalMode)
+GET         /create-profile/nirms-question/check                       controllers.profile.nirms.CreateIsNirmsRegisteredController.onPageLoad(mode: Mode = CheckMode)
+POST        /create-profile/nirms-question/check                       controllers.profile.nirms.CreateIsNirmsRegisteredController.onSubmit(mode: Mode = CheckMode)
 
-GET         /update-profile/nirms-question                             controllers.profile.nirms.HasNirmsController.onPageLoadUpdate(mode: Mode = NormalMode)
-POST        /update-profile/nirms-question                             controllers.profile.nirms.HasNirmsController.onSubmitUpdate(mode: Mode = NormalMode)
-GET         /update-profile/nirms-question/check                       controllers.profile.nirms.HasNirmsController.onPageLoadUpdate(mode: Mode = CheckMode)
-POST        /update-profile/nirms-question/check                       controllers.profile.nirms.HasNirmsController.onSubmitUpdate(mode: Mode = CheckMode)
+GET         /update-profile/nirms-question                             controllers.profile.nirms.UpdateIsNirmsRegisteredController.onPageLoad(mode: Mode = NormalMode)
+POST        /update-profile/nirms-question                             controllers.profile.nirms.UpdateIsNirmsRegisteredController.onSubmit(mode: Mode = NormalMode)
+GET         /update-profile/nirms-question/check                       controllers.profile.nirms.UpdateIsNirmsRegisteredController.onPageLoad(mode: Mode = CheckMode)
+POST        /update-profile/nirms-question/check                       controllers.profile.nirms.UpdateIsNirmsRegisteredController.onSubmit(mode: Mode = CheckMode)
 
 GET         /update-profile/nirms-number                               controllers.profile.nirms.NirmsNumberController.onPageLoadUpdate(mode: Mode = NormalMode)
 POST        /update-profile/nirms-number                               controllers.profile.nirms.NirmsNumberController.onSubmitUpdate(mode: Mode = NormalMode)

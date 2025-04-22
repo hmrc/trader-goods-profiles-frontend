@@ -38,7 +38,7 @@ class ProfileNavigator @Inject() extends Navigator {
   val normalRoutes: Page => UserAnswers => Call = {
     case ProfileSetupPage           => navigateFromProfileSetUp
     case UseExistingUkimsNumberPage => navigateFromUseExistingUkimsNumber
-    case UkimsNumberPage            => _ => HasNirmsController.onPageLoadCreate(NormalMode)
+    case UkimsNumberPage            => _ => CreateIsNirmsRegisteredController.onPageLoad(NormalMode)
     case HasNirmsPage               => navigateFromHasNirms
     case NirmsNumberPage            => _ => CreateIsNiphlRegisteredController.onPageLoad(NormalMode)
     case HasNiphlPage               => navigateFromHasNiphl
@@ -83,7 +83,7 @@ class ProfileNavigator @Inject() extends Navigator {
     answers
       .get(UseExistingUkimsNumberPage)
       .map {
-        case true  => HasNirmsController.onPageLoadCreate(NormalMode)
+        case true  => CreateIsNirmsRegisteredController.onPageLoad(NormalMode)
         case false => UkimsNumberController.onPageLoadCreate(NormalMode)
       }
       .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())

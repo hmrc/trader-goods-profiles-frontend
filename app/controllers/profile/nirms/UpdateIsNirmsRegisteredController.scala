@@ -18,29 +18,28 @@ package controllers.profile.nirms
 
 import connectors.TraderProfileConnector
 import controllers.BaseController
-import controllers.actions._
+import controllers.actions.*
+import controllers.profile.nirms.routes.*
+import forms.profile.nirms.HasNirmsFormProvider
 import models.Mode
 import navigation.ProfileNavigator
+import pages.profile.nirms.HasNirmsUpdatePage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.TraderProfileQuery
 import repositories.SessionRepository
 import views.html.profile.HasNirmsView
-import controllers.profile.nirms.routes._
-import forms.profile.nirms.HasNirmsFormProvider
-import pages.profile.nirms.{HasNirmsPage, HasNirmsUpdatePage}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class HasNirmsController @Inject() (
+class UpdateIsNirmsRegisteredController @Inject()(
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: ProfileNavigator,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
-  checkProfile: ProfileCheckAction,
   profileAuth: ProfileAuthenticateAction,
   traderProfileConnector: TraderProfileConnector,
   formProvider: HasNirmsFormProvider,
@@ -51,44 +50,7 @@ class HasNirmsController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoadCreate(mode: Mode): Action[AnyContent] =
-    (identify andThen checkProfile andThen getData andThen requireData) { implicit request =>
-      val preparedForm = prepareForm(HasNirmsPage, form)
-      Ok(
-        view(
-          preparedForm,
-          HasNirmsController.onSubmitCreate(mode),
-          mode,
-          isCreateJourney = true
-        )
-      )
-    }
-
-  def onSubmitCreate(mode: Mode): Action[AnyContent] =
-    (identify andThen checkProfile andThen getData andThen requireData).async { implicit request =>
-      form
-        .bindFromRequest()
-        .fold(
-          formWithErrors =>
-            Future.successful(
-              BadRequest(
-                view(
-                  formWithErrors,
-                  HasNirmsController.onSubmitCreate(mode),
-                  mode,
-                  isCreateJourney = true
-                )
-              )
-            ),
-          value =>
-            for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(HasNirmsPage, value))
-              _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(HasNirmsPage, mode, updatedAnswers))
-        )
-    }
-
-  def onPageLoadUpdate(mode: Mode): Action[AnyContent] =
+   def onPageLoad(mode: Mode): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       request.userAnswers.get(HasNirmsUpdatePage) match {
         case None        =>
@@ -100,7 +62,7 @@ class HasNirmsController @Inject() (
           } yield Ok(
             view(
               form.fill(traderProfile.nirmsNumber.isDefined),
-              HasNirmsController.onSubmitUpdate(mode),
+              UpdateIsNirmsRegisteredController.onSubmit(mode),
               mode,
               isCreateJourney = false
             )
@@ -110,7 +72,7 @@ class HasNirmsController @Inject() (
             Ok(
               view(
                 form.fill(value),
-                HasNirmsController.onSubmitUpdate(mode),
+                UpdateIsNirmsRegisteredController.onSubmit(mode),
                 mode,
                 isCreateJourney = false
               )
@@ -119,7 +81,7 @@ class HasNirmsController @Inject() (
       }
     }
 
-  def onSubmitUpdate(mode: Mode): Action[AnyContent] =
+  def onSubmit(mode: Mode): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       form
         .bindFromRequest()
@@ -129,7 +91,7 @@ class HasNirmsController @Inject() (
               BadRequest(
                 view(
                   formWithErrors,
-                  HasNirmsController.onSubmitUpdate(mode),
+                  UpdateIsNirmsRegisteredController.onSubmit(mode),
                   mode,
                   isCreateJourney = false
                 )

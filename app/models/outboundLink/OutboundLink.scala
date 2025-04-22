@@ -197,9 +197,9 @@ object OutboundLink {
       "https://www.gov.uk/government/publications/retail-movement-scheme-how-the-scheme-will-work/retail-movement-scheme-how-the-scheme-will-work#product-eligibility"
     val linkTextKey: String     = "hasNirms.p2.linkText"
     val originatingPage: String = if (isCreateJourney) {
-      HasNirmsController.onPageLoadCreate(mode).url
+      CreateIsNiphlRegisteredController.onPageLoad(mode).url
     } else {
-      HasNirmsController.onSubmitUpdate(mode).url
+      UpdateIsNiphlRegisteredController.onSubmit(mode).url
     }
   }
 
