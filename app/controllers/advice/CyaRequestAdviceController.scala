@@ -16,19 +16,21 @@
 
 package controllers.advice
 
+import cats.data.NonEmptyChain
 import com.google.inject.Inject
 import connectors.AccreditationConnector
 import controllers.BaseController
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
 import models.helper.RequestAdviceJourney
-import models.{AdviceRequest, NormalMode}
+import models.requests.OptionalDataRequest
+import models.{AdviceRequest, NormalMode, ValidationError}
 import navigation.AdviceNavigator
 import pages.advice.CyaRequestAdvicePage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{AuditService, DataCleansingService}
 import viewmodels.checkAnswers.{EmailSummary, NameSummary}
-import viewmodels.govuk.summarylist._
+import viewmodels.govuk.summarylist.*
 import views.html.advice.CyaRequestAdviceView
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -45,7 +47,7 @@ class CyaRequestAdviceController @Inject() (
   dataCleansingService: DataCleansingService,
   accreditationConnector: AccreditationConnector,
   navigator: AdviceNavigator
-)(implicit ec: ExecutionContext)
+)(using ec: ExecutionContext)
     extends BaseController {
 
   private val errorMessage: String = "Unable to create Request Advice."
@@ -63,13 +65,17 @@ class CyaRequestAdviceController @Inject() (
           Ok(view(list, recordId))
         case Left(errors) =>
           dataCleansingService.deleteMongoData(request.userAnswers.id, RequestAdviceJourney)
-          logErrorsAndContinue(
-            errorMessage,
-            controllers.advice.routes.AdviceStartController.onPageLoad(recordId),
-            errors
-          )
+          handleError(recordId, errors)
       }
     }
+
+  private def handleError(recordId: String, errors: NonEmptyChain[ValidationError]) = {
+    logErrorsAndContinue(
+      errorMessage,
+      controllers.advice.routes.AdviceStartController.onPageLoad(recordId),
+      errors
+    )
+  }
 
   def onSubmit(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
@@ -85,12 +91,9 @@ class CyaRequestAdviceController @Inject() (
         case Left(errors) =>
           dataCleansingService.deleteMongoData(request.userAnswers.id, RequestAdviceJourney)
           Future.successful(
-            logErrorsAndContinue(
-              errorMessage,
-              controllers.advice.routes.AdviceStartController.onPageLoad(recordId),
-              errors
-            )
+            handleError(recordId, errors)
           )
       }
     }
 }
+
