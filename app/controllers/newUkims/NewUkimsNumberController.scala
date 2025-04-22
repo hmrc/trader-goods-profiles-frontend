@@ -65,10 +65,9 @@ class NewUkimsNumberController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors =>
-            Future
-              .successful(
-                BadRequest(view(formWithErrors, controllers.newUkims.routes.NewUkimsNumberController.onSubmit(mode)))
-              ),
+            Future.successful(
+              BadRequest(view(formWithErrors, controllers.newUkims.routes.NewUkimsNumberController.onSubmit(mode)))
+            ),
           value =>
             for {
               profile        <- traderProfileConnector.getTraderProfile

@@ -37,7 +37,7 @@ import views.html.profile.HasNiphlView
 
 import scala.concurrent.Future
 
-class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
+class IsNiphlRegisteredControllerSpec extends SpecBase with MockitoSugar {
 
   private def onwardRoute = Call("GET", "/foo")
 
@@ -50,9 +50,9 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
 
   when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
 
-  private lazy val hasNiphlRouteCreate = HasNiphlController.onPageLoadCreate(NormalMode).url
+  private lazy val hasNiphlRouteCreate = CreateIsNiphlRegisteredController.onPageLoad(NormalMode).url
 
-  private lazy val hasNiphlRouteUpdate = HasNiphlController.onPageLoadUpdate(NormalMode).url
+  private lazy val hasNiphlRouteUpdate = UpdateIsNiphlRegisteredController.onPageLoad(NormalMode).url
 
   "HasNiphlController" - {
 
@@ -76,7 +76,7 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             form,
-            HasNiphlController.onSubmitCreate(NormalMode),
+            CreateIsNiphlRegisteredController.onSubmit(NormalMode),
             NormalMode,
             isCreateJourney = true
           )(
@@ -106,7 +106,7 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             form.fill(true),
-            HasNiphlController.onSubmitCreate(NormalMode),
+            CreateIsNiphlRegisteredController.onSubmit(NormalMode),
             NormalMode,
             isCreateJourney = true
           )(
@@ -163,7 +163,7 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual BAD_REQUEST
           contentAsString(result) mustEqual view(
             boundForm,
-            HasNiphlController.onSubmitCreate(NormalMode),
+            CreateIsNiphlRegisteredController.onSubmit(NormalMode),
             NormalMode,
             isCreateJourney = true
           )(
@@ -266,7 +266,7 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             form.fill(true),
-            HasNiphlController.onSubmitUpdate(NormalMode),
+            UpdateIsNiphlRegisteredController.onSubmit(NormalMode),
             NormalMode,
             isCreateJourney = false
           )(
@@ -297,7 +297,7 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
             form.fill(true),
-            HasNiphlController.onSubmitUpdate(NormalMode),
+            UpdateIsNiphlRegisteredController.onSubmit(NormalMode),
             NormalMode,
             isCreateJourney = false
           )(
@@ -386,7 +386,7 @@ class HasNiphlControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual BAD_REQUEST
           contentAsString(result) mustEqual view(
             boundForm,
-            HasNiphlController.onSubmitUpdate(NormalMode),
+            UpdateIsNiphlRegisteredController.onSubmit(NormalMode),
             NormalMode,
             isCreateJourney = false
           )(

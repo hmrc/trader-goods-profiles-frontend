@@ -208,9 +208,9 @@ object OutboundLink {
     val link: String            = "https://www.gov.uk/guidance/moving-plants-from-great-britain-to-northern-ireland"
     val linkTextKey: String     = "hasNiphl.p2.linkText"
     val originatingPage: String = if (isCreateJourney) {
-      HasNiphlController.onPageLoadCreate(mode).url
+      CreateIsNiphlRegisteredController.onPageLoad(mode).url
     } else {
-      HasNiphlController.onSubmitUpdate(mode).url
+      UpdateIsNiphlRegisteredController.onSubmit(mode).url
     }
   }
 

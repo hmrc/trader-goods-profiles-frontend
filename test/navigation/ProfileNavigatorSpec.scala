@@ -149,8 +149,8 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
           "to HasNiphlPage when answer is No" in {
 
             val answers = UserAnswers(userAnswersId).set(HasNirmsPage, false).success.value
-            navigator.nextPage(HasNirmsPage, NormalMode, answers) mustBe HasNiphlController
-              .onPageLoadCreate(
+            navigator.nextPage(HasNirmsPage, NormalMode, answers) mustBe CreateIsNiphlRegisteredController
+              .onPageLoad(
                 NormalMode
               )
           }
@@ -172,8 +172,8 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
             NirmsNumberPage,
             NormalMode,
             emptyUserAnswers
-          ) mustBe HasNiphlController
-            .onPageLoadCreate(
+          ) mustBe CreateIsNiphlRegisteredController
+            .onPageLoad(
               NormalMode
             )
         }
@@ -187,7 +187,7 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNiphlPage,
               NormalMode,
               answers
-            ) mustBe NiphlNumberController.onPageLoadCreate(
+            ) mustBe CreateNiphlNumberController.onPageLoad(
               NormalMode
             )
           }
@@ -382,7 +382,7 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNiphlUpdatePage,
               NormalMode,
               answers
-            ) mustBe NiphlNumberController.onPageLoadUpdate(NormalMode)
+            ) mustBe UpdateNiphlNumberController.onPageLoad(NormalMode)
           }
 
           "to RemoveNiphlPage when answer is No and Niphl number is associated to profile" in {
@@ -590,7 +590,7 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 HasNiphlPage,
                 CheckMode,
                 answers
-              ) mustBe NiphlNumberController.onPageLoadCreate(
+              ) mustBe CreateNiphlNumberController.onPageLoad(
                 CheckMode
               )
             }
@@ -801,7 +801,7 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNiphlUpdatePage,
               CheckMode,
               answers
-            ) mustBe NiphlNumberController.onPageLoadUpdate(CheckMode)
+            ) mustBe UpdateNiphlNumberController.onPageLoad(CheckMode)
           }
 
           "to RemoveNiphlPage when answer is No and Niphl number is associated to profile" in {
