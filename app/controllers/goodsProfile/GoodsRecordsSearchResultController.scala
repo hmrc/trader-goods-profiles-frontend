@@ -17,8 +17,8 @@
 package controllers.goodsProfile
 
 import connectors.{GoodsRecordConnector, OttConnector}
-import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
 import controllers.BaseController
+import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
 import models.GoodsRecordsPagination.{getFirstRecordIndex, getLastRecordIndex, getSearchPagination}
 import navigation.GoodsProfileNavigator
 import pages.goodsProfile.GoodsRecordsPage
@@ -31,19 +31,19 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class GoodsRecordsSearchResultController @Inject() (
-  override val messagesApi: MessagesApi,
-  goodsRecordConnector: GoodsRecordConnector,
-  ottConnector: OttConnector,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
-  identify: IdentifierAction,
-  profileAuth: ProfileAuthenticateAction,
-  val controllerComponents: MessagesControllerComponents,
-  view: GoodsRecordsSearchResultView,
-  emptyView: GoodsRecordsSearchResultEmptyView,
-  navigator: GoodsProfileNavigator
-)(implicit ec: ExecutionContext)
-    extends BaseController {
+                                                     override val messagesApi: MessagesApi,
+                                                     goodsRecordConnector: GoodsRecordConnector,
+                                                     ottConnector: OttConnector,
+                                                     getData: DataRetrievalAction,
+                                                     requireData: DataRequiredAction,
+                                                     identify: IdentifierAction,
+                                                     profileAuth: ProfileAuthenticateAction,
+                                                     val controllerComponents: MessagesControllerComponents,
+                                                     view: GoodsRecordsSearchResultView,
+                                                     emptyView: GoodsRecordsSearchResultEmptyView,
+                                                     navigator: GoodsProfileNavigator
+                                                   )(implicit ec: ExecutionContext)
+  extends BaseController {
 
   private val pageSize = 10
 
@@ -75,7 +75,7 @@ class GoodsRecordsSearchResultController @Inject() (
                         view(
                           searchResponse.goodsItemRecords,
                           searchResponse.pagination.totalRecords,
-                          getFirstRecordIndex(searchResponse.pagination, pageSize),
+                          firstRecord,
                           getLastRecordIndex(firstRecord, searchResponse.goodsItemRecords.size),
                           countries,
                           getSearchPagination(
@@ -89,12 +89,9 @@ class GoodsRecordsSearchResultController @Inject() (
                       )
                     }
                   } else {
-                    request.userAnswers.get(GoodsRecordsPage) match {
-                      case Some(searchText) => Future.successful(Ok(emptyView(searchText.searchTerm)))
-                      case None             => Future.successful(navigator.journeyRecovery())
-                    }
+                    Future.successful(Ok(emptyView(searchText.searchTerm)))
                   }
-                case None                 =>
+                case None =>
                   Future.successful(
                     Redirect(
                       controllers.goodsProfile.routes.GoodsRecordsLoadingController
@@ -107,11 +104,11 @@ class GoodsRecordsSearchResultController @Inject() (
                         )
                     )
                   )
-
               }
           }
-        case None             => Future(navigator.journeyRecovery())
+        case None => Future.successful(navigator.journeyRecovery())
       }
     }
 
 }
+
