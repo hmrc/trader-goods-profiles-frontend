@@ -76,7 +76,7 @@ class ProfileNavigator @Inject() extends Navigator {
       .get(HistoricProfileDataQuery) match {
       case Some(_) =>
         UseExistingUkimsNumberController.onPageLoad()
-      case None    => UkimsNumberController.onPageLoadCreate(NormalMode)
+      case None    => CreateUkimsNumberController.onPageLoad(NormalMode)
     }
 
   private def navigateFromUseExistingUkimsNumber(answers: UserAnswers): Call =
@@ -84,7 +84,7 @@ class ProfileNavigator @Inject() extends Navigator {
       .get(UseExistingUkimsNumberPage)
       .map {
         case true  => CreateIsNirmsRegisteredController.onPageLoad(NormalMode)
-        case false => UkimsNumberController.onPageLoadCreate(NormalMode)
+        case false => CreateUkimsNumberController.onPageLoad(NormalMode)
       }
       .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
 

@@ -14,26 +14,25 @@
  * limitations under the License.
  */
 
-package controllers.profile.nirms
+package controllers.profile.ukims
 
 import connectors.TraderProfileConnector
 import controllers.BaseController
 import controllers.actions.*
-import controllers.profile.nirms.routes.*
-import forms.profile.nirms.HasNirmsFormProvider
+import controllers.profile.ukims.routes.*
+import forms.profile.ukims.UkimsNumberFormProvider
 import models.Mode
 import navigation.ProfileNavigator
-import pages.profile.nirms.HasNirmsUpdatePage
+import pages.profile.ukims.UkimsNumberUpdatePage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import queries.TraderProfileQuery
 import repositories.SessionRepository
-import views.html.profile.HasNirmsView
+import views.html.profile.UkimsNumberView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class UpdateIsNirmsRegisteredController @Inject() (
+class UpdateUkimsNumberController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: ProfileNavigator,
@@ -41,10 +40,10 @@ class UpdateIsNirmsRegisteredController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   profileAuth: ProfileAuthenticateAction,
+  formProvider: UkimsNumberFormProvider,
   traderProfileConnector: TraderProfileConnector,
-  formProvider: HasNirmsFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: HasNirmsView
+  view: UkimsNumberView
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
@@ -52,31 +51,22 @@ class UpdateIsNirmsRegisteredController @Inject() (
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      request.userAnswers.get(HasNirmsUpdatePage) match {
+      request.userAnswers.get(UkimsNumberUpdatePage) match {
         case None        =>
           for {
             traderProfile  <- traderProfileConnector.getTraderProfile
             updatedAnswers <-
-              Future.fromTry(request.userAnswers.set(HasNirmsUpdatePage, traderProfile.nirmsNumber.isDefined))
+              Future.fromTry(request.userAnswers.set(UkimsNumberUpdatePage, traderProfile.ukimsNumber))
             _              <- sessionRepository.set(updatedAnswers)
           } yield Ok(
             view(
-              form.fill(traderProfile.nirmsNumber.isDefined),
-              UpdateIsNirmsRegisteredController.onSubmit(mode),
-              mode,
-              isCreateJourney = false
+              form.fill(traderProfile.ukimsNumber),
+              UpdateUkimsNumberController.onSubmit(mode: Mode)
             )
           )
         case Some(value) =>
           Future.successful(
-            Ok(
-              view(
-                form.fill(value),
-                UpdateIsNirmsRegisteredController.onSubmit(mode),
-                mode,
-                isCreateJourney = false
-              )
-            )
+            Ok(view(form.fill(value), UpdateUkimsNumberController.onSubmit(mode: Mode)))
           )
       }
     }
@@ -87,26 +77,17 @@ class UpdateIsNirmsRegisteredController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors =>
-            Future.successful(
-              BadRequest(
-                view(
-                  formWithErrors,
-                  UpdateIsNirmsRegisteredController.onSubmit(mode),
-                  mode,
-                  isCreateJourney = false
+            Future
+              .successful(
+                BadRequest(
+                  view(formWithErrors, UpdateUkimsNumberController.onSubmit(mode: Mode))
                 )
-              )
-            ),
+              ),
           value =>
-            traderProfileConnector.getTraderProfile.flatMap { traderProfile =>
-              for {
-                updatedAnswers                  <- Future.fromTry(request.userAnswers.set(HasNirmsUpdatePage, value))
-                updatedAnswersWithTraderProfile <-
-                  Future.fromTry(updatedAnswers.set(TraderProfileQuery, traderProfile))
-                _                               <- sessionRepository.set(updatedAnswersWithTraderProfile)
-              } yield Redirect(navigator.nextPage(HasNirmsUpdatePage, mode, updatedAnswersWithTraderProfile))
-
-            }
+            for {
+              updatedAnswers <- Future.fromTry(request.userAnswers.set(UkimsNumberUpdatePage, value))
+              _              <- sessionRepository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(UkimsNumberUpdatePage, mode, updatedAnswers))
         )
     }
 }

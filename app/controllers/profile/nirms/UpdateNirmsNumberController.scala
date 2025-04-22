@@ -32,7 +32,7 @@ import views.html.profile.NirmsNumberView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class UpdateNirmsNumberController @Inject()(
+class UpdateNirmsNumberController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: ProfileNavigator,

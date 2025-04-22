@@ -4,11 +4,11 @@ POST        /create-profile/start                                      controlle
 GET         /create-profile/check-your-answers                         controllers.profile.CyaCreateProfileController.onPageLoad()
 POST        /create-profile/check-your-answers                         controllers.profile.CyaCreateProfileController.onSubmit()
 
-GET         /create-profile/ukims-number                               controllers.profile.ukims.UkimsNumberController.onPageLoadCreate(mode: Mode = NormalMode)
-POST        /create-profile/ukims-number                               controllers.profile.ukims.UkimsNumberController.onSubmitCreate(mode: Mode = NormalMode)
+GET         /create-profile/ukims-number                               controllers.profile.ukims.CreateUkimsNumberController.onPageLoad(mode: Mode = NormalMode)
+POST        /create-profile/ukims-number                               controllers.profile.ukims.CreateUkimsNumberController.onSubmit(mode: Mode = NormalMode)
 
-GET         /update-profile/ukims-number                               controllers.profile.ukims.UkimsNumberController.onPageLoadUpdate(mode: Mode = NormalMode)
-POST        /update-profile/ukims-number                               controllers.profile.ukims.UkimsNumberController.onSubmitUpdate(mode: Mode = NormalMode)
+GET         /update-profile/ukims-number                               controllers.profile.ukims.UpdateUkimsNumberController.onPageLoad(mode: Mode = NormalMode)
+POST        /update-profile/ukims-number                               controllers.profile.ukims.UpdateUkimsNumberController.onSubmit(mode: Mode = NormalMode)
 
 
 GET         /create-profile/existing-ukims-number                      controllers.profile.ukims.UseExistingUkimsNumberController.onPageLoad()
@@ -16,11 +16,11 @@ POST        /create-profile/existing-ukims-number                      controlle
 
 GET         /create-profile/ukims-kickout                              controllers.profile.ukims.UkimsKickOutController.onPageLoad()
 
-GET         /create-profile/ukims-number/check                         controllers.profile.ukims.UkimsNumberController.onPageLoadCreate(mode: Mode = CheckMode)
-POST        /create-profile/ukims-number/check                         controllers.profile.ukims.UkimsNumberController.onSubmitCreate(mode: Mode = CheckMode)
+GET         /create-profile/ukims-number/check                         controllers.profile.ukims.CreateUkimsNumberController.onPageLoad(mode: Mode = CheckMode)
+POST        /create-profile/ukims-number/check                         controllers.profile.ukims.CreateUkimsNumberController.onSubmit(mode: Mode = CheckMode)
 
-GET         /update-profile/ukims-number/check                         controllers.profile.ukims.UkimsNumberController.onPageLoadUpdate(mode: Mode = CheckMode)
-POST        /update-profile/ukims-number/check                         controllers.profile.ukims.UkimsNumberController.onSubmitUpdate(mode: Mode = CheckMode)
+GET         /update-profile/ukims-number/check                         controllers.profile.ukims.UpdateUkimsNumberController.onPageLoad(mode: Mode = CheckMode)
+POST        /update-profile/ukims-number/check                         controllers.profile.ukims.UpdateUkimsNumberController.onSubmit(mode: Mode = CheckMode)
 
 GET         /create-profile/niphl-question                             controllers.profile.niphl.CreateIsNiphlRegisteredController.onPageLoad(mode: Mode = NormalMode)
 POST        /create-profile/niphl-question                             controllers.profile.niphl.CreateIsNiphlRegisteredController.onSubmit(mode: Mode = NormalMode)

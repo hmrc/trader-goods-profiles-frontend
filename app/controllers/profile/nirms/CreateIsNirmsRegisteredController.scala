@@ -31,14 +31,14 @@ import views.html.profile.HasNirmsView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class CreateIsNirmsRegisteredController @Inject()(
+class CreateIsNirmsRegisteredController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: ProfileNavigator,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
-  checkProfile: ProfileCheckAction, 
+  checkProfile: ProfileCheckAction,
   formProvider: HasNirmsFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: HasNirmsView
@@ -83,6 +83,5 @@ class CreateIsNirmsRegisteredController @Inject()(
             } yield Redirect(navigator.nextPage(HasNirmsPage, mode, updatedAnswers))
         )
     }
-
 
 }

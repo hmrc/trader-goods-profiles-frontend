@@ -31,7 +31,7 @@ import views.html.profile.NirmsNumberView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class CreateNirmsNumberController @Inject()(
+class CreateNirmsNumberController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: ProfileNavigator,
@@ -69,6 +69,5 @@ class CreateNirmsNumberController @Inject()(
             } yield Redirect(navigator.nextPage(NirmsNumberPage, mode, updatedAnswers))
         )
     }
-
 
 }

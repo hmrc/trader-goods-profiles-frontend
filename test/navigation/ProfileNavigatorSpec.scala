@@ -76,8 +76,8 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
               ProfileSetupPage,
               NormalMode,
               emptyUserAnswers
-            ) mustBe UkimsNumberController
-              .onPageLoadCreate(NormalMode)
+            ) mustBe CreateUkimsNumberController
+              .onPageLoad(NormalMode)
           }
         }
 
@@ -115,8 +115,8 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
               UseExistingUkimsNumberPage,
               NormalMode,
               answers
-            ) mustBe UkimsNumberController
-              .onPageLoadCreate(
+            ) mustBe CreateUkimsNumberController
+              .onPageLoad(
                 NormalMode
               )
           }
