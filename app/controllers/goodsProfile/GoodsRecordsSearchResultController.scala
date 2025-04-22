@@ -31,19 +31,19 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class GoodsRecordsSearchResultController @Inject() (
-                                                     override val messagesApi: MessagesApi,
-                                                     goodsRecordConnector: GoodsRecordConnector,
-                                                     ottConnector: OttConnector,
-                                                     getData: DataRetrievalAction,
-                                                     requireData: DataRequiredAction,
-                                                     identify: IdentifierAction,
-                                                     profileAuth: ProfileAuthenticateAction,
-                                                     val controllerComponents: MessagesControllerComponents,
-                                                     view: GoodsRecordsSearchResultView,
-                                                     emptyView: GoodsRecordsSearchResultEmptyView,
-                                                     navigator: GoodsProfileNavigator
-                                                   )(implicit ec: ExecutionContext)
-  extends BaseController {
+  override val messagesApi: MessagesApi,
+  goodsRecordConnector: GoodsRecordConnector,
+  ottConnector: OttConnector,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
+  identify: IdentifierAction,
+  profileAuth: ProfileAuthenticateAction,
+  val controllerComponents: MessagesControllerComponents,
+  view: GoodsRecordsSearchResultView,
+  emptyView: GoodsRecordsSearchResultEmptyView,
+  navigator: GoodsProfileNavigator
+)(implicit ec: ExecutionContext)
+    extends BaseController {
 
   private val pageSize = 10
 
@@ -91,7 +91,7 @@ class GoodsRecordsSearchResultController @Inject() (
                   } else {
                     Future.successful(Ok(emptyView(searchText.searchTerm)))
                   }
-                case None =>
+                case None                 =>
                   Future.successful(
                     Redirect(
                       controllers.goodsProfile.routes.GoodsRecordsLoadingController
@@ -106,9 +106,8 @@ class GoodsRecordsSearchResultController @Inject() (
                   )
               }
           }
-        case None => Future.successful(navigator.journeyRecovery())
+        case None             => Future.successful(navigator.journeyRecovery())
       }
     }
 
 }
-

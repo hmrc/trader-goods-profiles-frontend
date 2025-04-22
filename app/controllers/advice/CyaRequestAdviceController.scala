@@ -22,7 +22,6 @@ import connectors.AccreditationConnector
 import controllers.BaseController
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
 import models.helper.RequestAdviceJourney
-import models.requests.OptionalDataRequest
 import models.{AdviceRequest, NormalMode, ValidationError}
 import navigation.AdviceNavigator
 import pages.advice.CyaRequestAdvicePage
@@ -47,7 +46,7 @@ class CyaRequestAdviceController @Inject() (
   dataCleansingService: DataCleansingService,
   accreditationConnector: AccreditationConnector,
   navigator: AdviceNavigator
-)(using ec: ExecutionContext)
+)(implicit ec: ExecutionContext)
     extends BaseController {
 
   private val errorMessage: String = "Unable to create Request Advice."
@@ -69,13 +68,12 @@ class CyaRequestAdviceController @Inject() (
       }
     }
 
-  private def handleError(recordId: String, errors: NonEmptyChain[ValidationError]) = {
+  private def handleError(recordId: String, errors: NonEmptyChain[ValidationError]) =
     logErrorsAndContinue(
       errorMessage,
       controllers.advice.routes.AdviceStartController.onPageLoad(recordId),
       errors
     )
-  }
 
   def onSubmit(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
@@ -96,4 +94,3 @@ class CyaRequestAdviceController @Inject() (
       }
     }
 }
-
