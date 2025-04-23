@@ -18,12 +18,12 @@ package controllers.profile.niphl
 
 import connectors.TraderProfileConnector
 import controllers.BaseController
-import controllers.actions._
-import controllers.profile.niphl.routes._
+import controllers.actions.*
+import controllers.profile.niphl.routes.*
 import forms.profile.niphl.HasNiphlFormProvider
 import models.Mode
 import navigation.ProfileNavigator
-import pages.profile.niphl.{HasNiphlPage, HasNiphlUpdatePage}
+import pages.profile.niphl.HasNiphlUpdatePage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.TraderProfileQuery
@@ -33,14 +33,13 @@ import views.html.profile.HasNiphlView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class HasNiphlController @Inject() (
+class UpdateIsNiphlRegisteredController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: ProfileNavigator,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
-  checkProfile: ProfileCheckAction,
   profileAuth: ProfileAuthenticateAction,
   formProvider: HasNiphlFormProvider,
   traderProfileConnector: TraderProfileConnector,
@@ -51,44 +50,7 @@ class HasNiphlController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoadCreate(mode: Mode): Action[AnyContent] =
-    (identify andThen checkProfile andThen getData andThen requireData) { implicit request =>
-      val preparedForm = prepareForm(HasNiphlPage, form)
-      Ok(
-        view(
-          preparedForm,
-          controllers.profile.niphl.routes.HasNiphlController.onSubmitCreate(mode),
-          mode,
-          isCreateJourney = true
-        )
-      )
-    }
-
-  def onSubmitCreate(mode: Mode): Action[AnyContent] =
-    (identify andThen checkProfile andThen getData andThen requireData).async { implicit request =>
-      form
-        .bindFromRequest()
-        .fold(
-          formWithErrors =>
-            Future.successful(
-              BadRequest(
-                view(
-                  formWithErrors,
-                  HasNiphlController.onSubmitCreate(mode),
-                  mode,
-                  isCreateJourney = true
-                )
-              )
-            ),
-          value =>
-            for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(HasNiphlPage, value))
-              _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(HasNiphlPage, mode, updatedAnswers))
-        )
-    }
-
-  def onPageLoadUpdate(mode: Mode): Action[AnyContent] =
+  def onPageLoad(mode: Mode): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       request.userAnswers.get(HasNiphlUpdatePage) match {
         case None        =>
@@ -100,7 +62,7 @@ class HasNiphlController @Inject() (
           } yield Ok(
             view(
               form.fill(traderProfile.niphlNumber.isDefined),
-              HasNiphlController.onSubmitUpdate(mode),
+              UpdateIsNiphlRegisteredController.onSubmit(mode),
               mode,
               isCreateJourney = false
             )
@@ -110,7 +72,7 @@ class HasNiphlController @Inject() (
             Ok(
               view(
                 form.fill(value),
-                HasNiphlController.onSubmitUpdate(mode),
+                UpdateIsNiphlRegisteredController.onSubmit(mode),
                 mode,
                 isCreateJourney = false
               )
@@ -119,7 +81,7 @@ class HasNiphlController @Inject() (
       }
     }
 
-  def onSubmitUpdate(mode: Mode): Action[AnyContent] =
+  def onSubmit(mode: Mode): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       form
         .bindFromRequest()
@@ -129,7 +91,7 @@ class HasNiphlController @Inject() (
               BadRequest(
                 view(
                   formWithErrors,
-                  HasNiphlController.onSubmitUpdate(mode),
+                  UpdateIsNiphlRegisteredController.onSubmit(mode),
                   mode,
                   isCreateJourney = false
                 )

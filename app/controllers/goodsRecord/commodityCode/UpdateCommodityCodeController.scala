@@ -143,10 +143,7 @@ class UpdateCommodityCodeController @Inject() (
     onSubmitAction: Call,
     mode: Mode
   )(implicit request: DataRequest[AnyContent]): Future[Result] =
-    if (!commodity.isValid) {
-      val formWithErrors = createFormWithErrors(form, value, "commodityCode.error.expired")
-      Future.successful(BadRequest(view(formWithErrors, onSubmitAction, mode, Some(recordId))))
-    } else {
+    if (commodity.isValid) {
       for {
         updatedAnswers          <- Future.fromTry(request.userAnswers.set(CommodityCodeUpdatePage(recordId), value))
         updatedAnswersWithQuery <-
@@ -157,6 +154,8 @@ class UpdateCommodityCodeController @Inject() (
       } yield Redirect(navigator.nextPage(CommodityCodeUpdatePage(recordId), mode, updatedAnswersWithQuery))
         .addingToSession(dataUpdated -> isValueChanged.toString)
         .addingToSession(pageUpdated -> commodityCode)
+    } else {
+      val formWithErrors = createFormWithErrors(form, value, "commodityCode.error.expired")
+      Future.successful(BadRequest(view(formWithErrors, onSubmitAction, mode, Some(recordId))))
     }
-
 }

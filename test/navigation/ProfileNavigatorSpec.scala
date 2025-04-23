@@ -76,8 +76,8 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
               ProfileSetupPage,
               NormalMode,
               emptyUserAnswers
-            ) mustBe UkimsNumberController
-              .onPageLoadCreate(NormalMode)
+            ) mustBe CreateUkimsNumberController
+              .onPageLoad(NormalMode)
           }
         }
 
@@ -87,8 +87,8 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
             UkimsNumberPage,
             NormalMode,
             emptyUserAnswers
-          ) mustBe HasNirmsController
-            .onPageLoadCreate(
+          ) mustBe CreateIsNirmsRegisteredController
+            .onPageLoad(
               NormalMode
             )
         }
@@ -102,8 +102,8 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
               UseExistingUkimsNumberPage,
               NormalMode,
               answers
-            ) mustBe HasNirmsController
-              .onPageLoadCreate(
+            ) mustBe CreateIsNirmsRegisteredController
+              .onPageLoad(
                 NormalMode
               )
           }
@@ -115,8 +115,8 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
               UseExistingUkimsNumberPage,
               NormalMode,
               answers
-            ) mustBe UkimsNumberController
-              .onPageLoadCreate(
+            ) mustBe CreateUkimsNumberController
+              .onPageLoad(
                 NormalMode
               )
           }
@@ -141,7 +141,7 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNirmsPage,
               NormalMode,
               answers
-            ) mustBe NirmsNumberController.onPageLoadCreate(
+            ) mustBe CreateNirmsNumberController.onPageLoad(
               NormalMode
             )
           }
@@ -149,8 +149,8 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
           "to HasNiphlPage when answer is No" in {
 
             val answers = UserAnswers(userAnswersId).set(HasNirmsPage, false).success.value
-            navigator.nextPage(HasNirmsPage, NormalMode, answers) mustBe HasNiphlController
-              .onPageLoadCreate(
+            navigator.nextPage(HasNirmsPage, NormalMode, answers) mustBe CreateIsNiphlRegisteredController
+              .onPageLoad(
                 NormalMode
               )
           }
@@ -172,8 +172,8 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
             NirmsNumberPage,
             NormalMode,
             emptyUserAnswers
-          ) mustBe HasNiphlController
-            .onPageLoadCreate(
+          ) mustBe CreateIsNiphlRegisteredController
+            .onPageLoad(
               NormalMode
             )
         }
@@ -187,7 +187,7 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNiphlPage,
               NormalMode,
               answers
-            ) mustBe NiphlNumberController.onPageLoadCreate(
+            ) mustBe CreateNiphlNumberController.onPageLoad(
               NormalMode
             )
           }
@@ -252,7 +252,7 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNirmsUpdatePage,
               NormalMode,
               answers
-            ) mustBe NirmsNumberController.onPageLoadUpdate(NormalMode)
+            ) mustBe UpdateNirmsNumberController.onPageLoad(NormalMode)
           }
 
           "to RemoveNirmsPage when answer is No and Nirms number is associated to profile" in {
@@ -382,7 +382,7 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNiphlUpdatePage,
               NormalMode,
               answers
-            ) mustBe NiphlNumberController.onPageLoadUpdate(NormalMode)
+            ) mustBe UpdateNiphlNumberController.onPageLoad(NormalMode)
           }
 
           "to RemoveNiphlPage when answer is No and Niphl number is associated to profile" in {
@@ -527,7 +527,7 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 HasNirmsPage,
                 CheckMode,
                 answers
-              ) mustBe NirmsNumberController.onPageLoadCreate(
+              ) mustBe CreateNirmsNumberController.onPageLoad(
                 CheckMode
               )
             }
@@ -590,7 +590,7 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
                 HasNiphlPage,
                 CheckMode,
                 answers
-              ) mustBe NiphlNumberController.onPageLoadCreate(
+              ) mustBe CreateNiphlNumberController.onPageLoad(
                 CheckMode
               )
             }
@@ -715,7 +715,7 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNirmsUpdatePage,
               CheckMode,
               answers
-            ) mustBe NirmsNumberController.onPageLoadUpdate(CheckMode)
+            ) mustBe UpdateNirmsNumberController.onPageLoad(CheckMode)
           }
 
           "to RemoveNirmsPage when answer is No and Nirms number is associated to profile" in {
@@ -801,7 +801,7 @@ class ProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasNiphlUpdatePage,
               CheckMode,
               answers
-            ) mustBe NiphlNumberController.onPageLoadUpdate(CheckMode)
+            ) mustBe UpdateNiphlNumberController.onPageLoad(CheckMode)
           }
 
           "to RemoveNiphlPage when answer is No and Niphl number is associated to profile" in {

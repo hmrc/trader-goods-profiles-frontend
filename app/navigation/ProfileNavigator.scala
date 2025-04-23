@@ -38,9 +38,9 @@ class ProfileNavigator @Inject() extends Navigator {
   val normalRoutes: Page => UserAnswers => Call = {
     case ProfileSetupPage           => navigateFromProfileSetUp
     case UseExistingUkimsNumberPage => navigateFromUseExistingUkimsNumber
-    case UkimsNumberPage            => _ => HasNirmsController.onPageLoadCreate(NormalMode)
+    case UkimsNumberPage            => _ => CreateIsNirmsRegisteredController.onPageLoad(NormalMode)
     case HasNirmsPage               => navigateFromHasNirms
-    case NirmsNumberPage            => _ => HasNiphlController.onPageLoadCreate(NormalMode)
+    case NirmsNumberPage            => _ => CreateIsNiphlRegisteredController.onPageLoad(NormalMode)
     case HasNiphlPage               => navigateFromHasNiphl
     case NiphlNumberPage            => _ => controllers.profile.routes.CyaCreateProfileController.onPageLoad()
     case UkimsNumberUpdatePage      => _ => controllers.profile.routes.CyaMaintainProfileController.onPageLoadUkimsNumber()
@@ -76,15 +76,15 @@ class ProfileNavigator @Inject() extends Navigator {
       .get(HistoricProfileDataQuery) match {
       case Some(_) =>
         UseExistingUkimsNumberController.onPageLoad()
-      case None    => UkimsNumberController.onPageLoadCreate(NormalMode)
+      case None    => CreateUkimsNumberController.onPageLoad(NormalMode)
     }
 
   private def navigateFromUseExistingUkimsNumber(answers: UserAnswers): Call =
     answers
       .get(UseExistingUkimsNumberPage)
       .map {
-        case true  => HasNirmsController.onPageLoadCreate(NormalMode)
-        case false => UkimsNumberController.onPageLoadCreate(NormalMode)
+        case true  => CreateIsNirmsRegisteredController.onPageLoad(NormalMode)
+        case false => CreateUkimsNumberController.onPageLoad(NormalMode)
       }
       .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
 
@@ -92,8 +92,8 @@ class ProfileNavigator @Inject() extends Navigator {
     answers
       .get(HasNirmsPage)
       .map {
-        case true  => NirmsNumberController.onPageLoadCreate(NormalMode)
-        case false => HasNiphlController.onPageLoadCreate(NormalMode)
+        case true  => CreateNirmsNumberController.onPageLoad(NormalMode)
+        case false => CreateIsNiphlRegisteredController.onPageLoad(NormalMode)
       }
       .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
 
@@ -120,7 +120,7 @@ class ProfileNavigator @Inject() extends Navigator {
     answers
       .get(HasNirmsUpdatePage)
       .map {
-        case true  => NirmsNumberController.onPageLoadUpdate(mode)
+        case true  => UpdateNirmsNumberController.onPageLoad(mode)
         case false =>
           answers
             .get(TraderProfileQuery)
@@ -140,7 +140,7 @@ class ProfileNavigator @Inject() extends Navigator {
     answers
       .get(HasNiphlPage)
       .map {
-        case true  => NiphlNumberController.onPageLoadCreate(NormalMode)
+        case true  => CreateNiphlNumberController.onPageLoad(NormalMode)
         case false => controllers.profile.routes.CyaCreateProfileController.onPageLoad()
       }
       .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
@@ -150,7 +150,7 @@ class ProfileNavigator @Inject() extends Navigator {
     answers
       .get(HasNiphlUpdatePage)
       .map {
-        case true  => NiphlNumberController.onPageLoadUpdate(mode)
+        case true  => UpdateNiphlNumberController.onPageLoad(mode)
         case false =>
           answers
             .get(TraderProfileQuery)
@@ -174,7 +174,7 @@ class ProfileNavigator @Inject() extends Navigator {
           if (answers.isDefined(NirmsNumberPage)) {
             controllers.profile.routes.CyaCreateProfileController.onPageLoad()
           } else {
-            NirmsNumberController.onPageLoadCreate(CheckMode)
+            CreateNirmsNumberController.onPageLoad(CheckMode)
           }
         case false => controllers.profile.routes.CyaCreateProfileController.onPageLoad()
       }
@@ -188,7 +188,7 @@ class ProfileNavigator @Inject() extends Navigator {
           if (answers.isDefined(NiphlNumberPage)) {
             controllers.profile.routes.CyaCreateProfileController.onPageLoad()
           } else {
-            NiphlNumberController.onPageLoadCreate(CheckMode)
+            CreateNiphlNumberController.onPageLoad(CheckMode)
           }
         case false => controllers.profile.routes.CyaCreateProfileController.onPageLoad()
       }

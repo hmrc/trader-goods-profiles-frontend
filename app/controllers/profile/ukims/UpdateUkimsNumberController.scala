@@ -14,73 +14,80 @@
  * limitations under the License.
  */
 
-package controllers.newUkims
+package controllers.profile.ukims
 
 import connectors.TraderProfileConnector
 import controllers.BaseController
-import controllers.actions._
+import controllers.actions.*
+import controllers.profile.ukims.routes.*
 import forms.profile.ukims.UkimsNumberFormProvider
 import models.Mode
-import navigation.NewUkimsNavigator
-import pages.newUkims.NewUkimsNumberPage
+import navigation.ProfileNavigator
+import pages.profile.ukims.UkimsNumberUpdatePage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import views.html.newUkims.NewUkimsNumberView
+import views.html.profile.UkimsNumberView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class NewUkimsNumberController @Inject() (
+class UpdateUkimsNumberController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
-  navigator: NewUkimsNavigator,
+  navigator: ProfileNavigator,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  profileAuth: ProfileAuthenticateAction,
   formProvider: UkimsNumberFormProvider,
   traderProfileConnector: TraderProfileConnector,
   val controllerComponents: MessagesControllerComponents,
-  profileAuth: ProfileAuthenticateAction,
-  checkEori: EoriCheckAction,
-  view: NewUkimsNumberView
+  view: UkimsNumberView
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
   private val form = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
-    (identify andThen profileAuth andThen checkEori andThen getData andThen requireData) { implicit request =>
-      val preparedForm = request.userAnswers.get(NewUkimsNumberPage) match {
-        case None        => form
-        case Some(value) => form.fill(value)
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
+      request.userAnswers.get(UkimsNumberUpdatePage) match {
+        case None        =>
+          for {
+            traderProfile  <- traderProfileConnector.getTraderProfile
+            updatedAnswers <-
+              Future.fromTry(request.userAnswers.set(UkimsNumberUpdatePage, traderProfile.ukimsNumber))
+            _              <- sessionRepository.set(updatedAnswers)
+          } yield Ok(
+            view(
+              form.fill(traderProfile.ukimsNumber),
+              UpdateUkimsNumberController.onSubmit(mode: Mode)
+            )
+          )
+        case Some(value) =>
+          Future.successful(
+            Ok(view(form.fill(value), UpdateUkimsNumberController.onSubmit(mode: Mode)))
+          )
       }
-
-      Ok(view(preparedForm, controllers.newUkims.routes.NewUkimsNumberController.onSubmit(mode)))
     }
 
   def onSubmit(mode: Mode): Action[AnyContent] =
-    (identify andThen profileAuth andThen checkEori andThen getData andThen requireData).async { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(
           formWithErrors =>
-            Future.successful(
-              BadRequest(view(formWithErrors, controllers.newUkims.routes.NewUkimsNumberController.onSubmit(mode)))
-            ),
+            Future
+              .successful(
+                BadRequest(
+                  view(formWithErrors, UpdateUkimsNumberController.onSubmit(mode: Mode))
+                )
+              ),
           value =>
             for {
-              profile        <- traderProfileConnector.getTraderProfile
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(NewUkimsNumberPage, value))
+              updatedAnswers <- Future.fromTry(request.userAnswers.set(UkimsNumberUpdatePage, value))
               _              <- sessionRepository.set(updatedAnswers)
-            } yield
-              if (value == profile.ukimsNumber) {
-                val formWithApiErrors =
-                  createFormWithErrors(form, value, "ukimsNumberChangeController.duplicateUkimsNumber")
-                BadRequest(view(formWithApiErrors, controllers.newUkims.routes.NewUkimsNumberController.onSubmit(mode)))
-              } else {
-                Redirect(navigator.nextPage(NewUkimsNumberPage, mode, updatedAnswers))
-              }
+            } yield Redirect(navigator.nextPage(UkimsNumberUpdatePage, mode, updatedAnswers))
         )
     }
 }

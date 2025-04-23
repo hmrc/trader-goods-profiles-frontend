@@ -18,28 +18,27 @@ package controllers.profile.niphl
 
 import connectors.TraderProfileConnector
 import controllers.BaseController
-import controllers.actions._
+import controllers.actions.*
+import controllers.profile.niphl.routes.*
+import forms.profile.niphl.NiphlNumberFormProvider
 import models.Mode
 import navigation.ProfileNavigator
+import pages.profile.niphl.{HasNiphlUpdatePage, NiphlNumberUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import views.html.profile.NiphlNumberView
-import controllers.profile.niphl.routes._
-import forms.profile.niphl.NiphlNumberFormProvider
-import pages.profile.niphl.{HasNiphlUpdatePage, NiphlNumberPage, NiphlNumberUpdatePage}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class NiphlNumberController @Inject() (
+class UpdateNiphlNumberController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: ProfileNavigator,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
-  checkProfile: ProfileCheckAction,
   profileAuth: ProfileAuthenticateAction,
   formProvider: NiphlNumberFormProvider,
   traderProfileConnector: TraderProfileConnector,
@@ -50,44 +49,21 @@ class NiphlNumberController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoadCreate(mode: Mode): Action[AnyContent] =
-    (identify andThen checkProfile andThen getData andThen requireData) { implicit request =>
-      val preparedForm = prepareForm(NiphlNumberPage, form)
-      Ok(view(preparedForm, NiphlNumberController.onSubmitCreate(mode)))
-    }
-
-  def onSubmitCreate(mode: Mode): Action[AnyContent] =
-    (identify andThen checkProfile andThen getData andThen requireData).async { implicit request =>
-      form
-        .bindFromRequest()
-        .fold(
-          formWithErrors =>
-            Future.successful(
-              BadRequest(view(formWithErrors, NiphlNumberController.onSubmitCreate(mode)))
-            ),
-          value =>
-            for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(NiphlNumberPage, value))
-              _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(NiphlNumberPage, mode, updatedAnswers))
-        )
-    }
-
-  def onPageLoadUpdate(mode: Mode): Action[AnyContent] =
+  def onPageLoad(mode: Mode): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       traderProfileConnector.getTraderProfile.flatMap { traderProfile =>
         request.userAnswers.get(HasNiphlUpdatePage) match {
           case Some(_) =>
             traderProfile.niphlNumber match {
               case None       =>
-                Future.successful(Ok(view(form, NiphlNumberController.onSubmitUpdate(mode))))
+                Future.successful(Ok(view(form, UpdateNiphlNumberController.onSubmit(mode))))
               case Some(data) =>
                 for {
                   updatedAnswers <-
                     Future.fromTry(request.userAnswers.set(NiphlNumberUpdatePage, data))
                   _              <- sessionRepository.set(updatedAnswers)
                 } yield Ok(
-                  view(form.fill(data), NiphlNumberController.onSubmitUpdate(mode))
+                  view(form.fill(data), UpdateNiphlNumberController.onSubmit(mode))
                 )
             }
           case None    =>
@@ -98,7 +74,7 @@ class NiphlNumberController @Inject() (
                     Future.fromTry(request.userAnswers.set(HasNiphlUpdatePage, false))
                   _              <- sessionRepository.set(updatedAnswers)
                 } yield Ok(
-                  view(form, NiphlNumberController.onSubmitUpdate(mode))
+                  view(form, UpdateNiphlNumberController.onSubmit(mode))
                 )
               case Some(data) =>
                 for {
@@ -108,21 +84,21 @@ class NiphlNumberController @Inject() (
                     Future.fromTry(updatedAnswersWithHasNiphl.set(NiphlNumberUpdatePage, data))
                   _                          <- sessionRepository.set(updatedAnswers)
                 } yield Ok(
-                  view(form.fill(data), NiphlNumberController.onSubmitUpdate(mode))
+                  view(form.fill(data), UpdateNiphlNumberController.onSubmit(mode))
                 )
             }
         }
       }
     }
 
-  def onSubmitUpdate(mode: Mode): Action[AnyContent] =
+  def onSubmit(mode: Mode): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(
           formWithErrors =>
             Future.successful(
-              BadRequest(view(formWithErrors, NiphlNumberController.onSubmitUpdate(mode)))
+              BadRequest(view(formWithErrors, UpdateNiphlNumberController.onSubmit(mode)))
             ),
           value =>
             for {

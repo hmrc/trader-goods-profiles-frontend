@@ -16,23 +16,22 @@
 
 package controllers.profile.ukims
 
-import connectors.TraderProfileConnector
 import controllers.BaseController
-import controllers.actions._
+import controllers.actions.*
+import controllers.profile.ukims.routes.*
+import forms.profile.ukims.UkimsNumberFormProvider
 import models.Mode
 import navigation.ProfileNavigator
+import pages.profile.ukims.UkimsNumberPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import views.html.profile.UkimsNumberView
-import controllers.profile.ukims.routes._
-import forms.profile.ukims.UkimsNumberFormProvider
-import pages.profile.ukims.{UkimsNumberPage, UkimsNumberUpdatePage}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class UkimsNumberController @Inject() (
+class CreateUkimsNumberController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: ProfileNavigator,
@@ -40,9 +39,7 @@ class UkimsNumberController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   checkProfile: ProfileCheckAction,
-  profileAuth: ProfileAuthenticateAction,
   formProvider: UkimsNumberFormProvider,
-  traderProfileConnector: TraderProfileConnector,
   val controllerComponents: MessagesControllerComponents,
   view: UkimsNumberView
 )(implicit ec: ExecutionContext)
@@ -50,7 +47,7 @@ class UkimsNumberController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoadCreate(mode: Mode): Action[AnyContent] =
+  def onPageLoad(mode: Mode): Action[AnyContent] =
     (identify andThen checkProfile andThen getData andThen requireData) { implicit request =>
       val preparedForm = request.userAnswers.get(UkimsNumberPage) match {
         case None        => form
@@ -60,20 +57,20 @@ class UkimsNumberController @Inject() (
       Ok(
         view(
           preparedForm,
-          UkimsNumberController.onSubmitCreate(mode),
+          CreateUkimsNumberController.onSubmit(mode),
           isCreateJourney = true
         )
       )
     }
 
-  def onSubmitCreate(mode: Mode): Action[AnyContent] =
+  def onSubmit(mode: Mode): Action[AnyContent] =
     (identify andThen checkProfile andThen getData andThen requireData).async { implicit request =>
       form
         .bindFromRequest()
         .fold(
           formWithErrors =>
             Future.successful(
-              BadRequest(view(formWithErrors, UkimsNumberController.onSubmitCreate(mode)))
+              BadRequest(view(formWithErrors, CreateUkimsNumberController.onSubmit(mode)))
             ),
           value =>
             for {
@@ -83,45 +80,4 @@ class UkimsNumberController @Inject() (
         )
     }
 
-  def onPageLoadUpdate(mode: Mode): Action[AnyContent] =
-    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      request.userAnswers.get(UkimsNumberUpdatePage) match {
-        case None        =>
-          for {
-            traderProfile  <- traderProfileConnector.getTraderProfile
-            updatedAnswers <-
-              Future.fromTry(request.userAnswers.set(UkimsNumberUpdatePage, traderProfile.ukimsNumber))
-            _              <- sessionRepository.set(updatedAnswers)
-          } yield Ok(
-            view(
-              form.fill(traderProfile.ukimsNumber),
-              UkimsNumberController.onSubmitUpdate(mode: Mode)
-            )
-          )
-        case Some(value) =>
-          Future.successful(
-            Ok(view(form.fill(value), UkimsNumberController.onSubmitUpdate(mode: Mode)))
-          )
-      }
-    }
-
-  def onSubmitUpdate(mode: Mode): Action[AnyContent] =
-    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      form
-        .bindFromRequest()
-        .fold(
-          formWithErrors =>
-            Future
-              .successful(
-                BadRequest(
-                  view(formWithErrors, UkimsNumberController.onSubmitUpdate(mode: Mode))
-                )
-              ),
-          value =>
-            for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(UkimsNumberUpdatePage, value))
-              _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(UkimsNumberUpdatePage, mode, updatedAnswers))
-        )
-    }
 }

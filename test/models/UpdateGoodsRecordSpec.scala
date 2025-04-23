@@ -169,6 +169,39 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
 
     "must return errors" - {
 
+      "when commodity code prefix does not match commodity in CommodityUpdateQuery" in {
+        val effectiveFrom = Instant.now
+        val effectiveTo   = effectiveFrom.plusSeconds(99)
+        val commodity     = Commodity(
+          "9999999999",
+          List("Invalid commodity"),
+          effectiveFrom,
+          Some(effectiveTo)
+        )
+
+        val answers = UserAnswers(userAnswersId)
+          .set(CommodityCodeUpdatePage(testRecordId), "170490")
+          .success
+          .value
+          .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true)
+          .success
+          .value
+          .set(CommodityUpdateQuery(testRecordId), commodity)
+          .success
+          .value
+
+        val result = UpdateGoodsRecord.validateCommodityCode(
+          answers,
+          testRecordId,
+          isCategorised = false,
+          isCommCodeExpired = false
+        )
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain only MismatchedPage(CommodityCodeUpdatePage(testRecordId))
+        }
+      }
+
       "when country of origin is required and is missing" in {
 
         val answers = UserAnswers(userAnswersId)

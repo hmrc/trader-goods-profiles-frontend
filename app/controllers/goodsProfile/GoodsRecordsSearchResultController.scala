@@ -17,8 +17,8 @@
 package controllers.goodsProfile
 
 import connectors.{GoodsRecordConnector, OttConnector}
-import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
 import controllers.BaseController
+import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
 import models.GoodsRecordsPagination.{getFirstRecordIndex, getLastRecordIndex, getSearchPagination}
 import navigation.GoodsProfileNavigator
 import pages.goodsProfile.GoodsRecordsPage
@@ -75,7 +75,7 @@ class GoodsRecordsSearchResultController @Inject() (
                         view(
                           searchResponse.goodsItemRecords,
                           searchResponse.pagination.totalRecords,
-                          getFirstRecordIndex(searchResponse.pagination, pageSize),
+                          firstRecord,
                           getLastRecordIndex(firstRecord, searchResponse.goodsItemRecords.size),
                           countries,
                           getSearchPagination(
@@ -89,10 +89,7 @@ class GoodsRecordsSearchResultController @Inject() (
                       )
                     }
                   } else {
-                    request.userAnswers.get(GoodsRecordsPage) match {
-                      case Some(searchText) => Future.successful(Ok(emptyView(searchText.searchTerm)))
-                      case None             => Future.successful(navigator.journeyRecovery())
-                    }
+                    Future.successful(Ok(emptyView(searchText.searchTerm)))
                   }
                 case None                 =>
                   Future.successful(
@@ -107,10 +104,9 @@ class GoodsRecordsSearchResultController @Inject() (
                         )
                     )
                   )
-
               }
           }
-        case None             => Future(navigator.journeyRecovery())
+        case None             => Future.successful(navigator.journeyRecovery())
       }
     }
 

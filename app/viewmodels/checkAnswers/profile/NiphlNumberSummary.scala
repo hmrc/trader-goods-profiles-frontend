@@ -35,7 +35,7 @@ object NiphlNumberSummary {
         actions = Seq(
           ActionItemViewModel(
             "site.change",
-            NiphlNumberController.onPageLoadCreate(CheckMode).url
+            CreateNiphlNumberController.onPageLoad(CheckMode).url
           )
             .withVisuallyHiddenText(messages("niphlNumber.change.hidden"))
         )
@@ -50,7 +50,7 @@ object NiphlNumberSummary {
         actions = Seq(
           ActionItemViewModel(
             "site.change",
-            NiphlNumberController.onPageLoadUpdate(mode).url
+            UpdateNiphlNumberController.onPageLoad(mode).url
           )
             .withVisuallyHiddenText(messages("niphlNumber.change.hidden"))
         )
@@ -65,7 +65,7 @@ object NiphlNumberSummary {
         actions = Seq(
           ActionItemViewModel(
             "site.change",
-            NiphlNumberController.onPageLoadUpdate(CheckMode).url
+            UpdateNiphlNumberController.onPageLoad(CheckMode).url
           )
             .withVisuallyHiddenText(messages("niphlNumber.change.hidden"))
         )
