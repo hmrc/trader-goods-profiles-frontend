@@ -61,7 +61,7 @@ class GoodsDescriptionSummarySpec extends SpecBase {
 
         row.actions mustBe defined
         row.actions.value.items.head.href mustEqual
-          controllers.goodsRecord.goodsDescription.routes.UpdateGoodsDescriptionController
+          controllers.goodsRecord.goodsDescription.routes.HasGoodsDescriptionChangeController
             .onPageLoad(NormalMode, testRecordId)
             .url
 
