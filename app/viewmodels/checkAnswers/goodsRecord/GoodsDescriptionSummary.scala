@@ -16,9 +16,9 @@
 
 package viewmodels.checkAnswers.goodsRecord
 
-import models.AdviceStatus.NotRequested
+import models.AdviceStatus.{AdviceNotProvided, AdviceRequestWithdrawn, NotRequested}
 import models.router.responses.GetGoodsRecordResponse
-import models.{CheckMode, Mode, UserAnswers}
+import models.{AdviceStatus, CheckMode, Mode, UserAnswers}
 import pages.goodsRecord.GoodsDescriptionPage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
@@ -61,11 +61,16 @@ object GoodsDescriptionSummary {
   def rowUpdate(record: GetGoodsRecordResponse, recordId: String, mode: Mode, recordLocked: Boolean)(implicit
     messages: Messages
   ): SummaryListRow = {
-    val changeLink = if (record.declarable != NotRequested) {
-      controllers.goodsRecord.goodsDescription.routes.UpdateGoodsDescriptionController.onPageLoad(mode, recordId).url
-    } else {
-      controllers.goodsRecord.goodsDescription.routes.HasGoodsDescriptionChangeController.onPageLoad(mode, recordId).url
-    }
+    val changeLink =
+      if (
+        record.declarable == NotRequested || record.declarable == AdviceNotProvided || record.declarable == AdviceRequestWithdrawn
+      ) {
+        controllers.goodsRecord.goodsDescription.routes.UpdateGoodsDescriptionController.onPageLoad(mode, recordId).url
+      } else {
+        controllers.goodsRecord.goodsDescription.routes.HasGoodsDescriptionChangeController
+          .onPageLoad(mode, recordId)
+          .url
+      }
 
     SummaryListRowViewModel(
       key = "goodsDescription.checkYourAnswersLabel",
