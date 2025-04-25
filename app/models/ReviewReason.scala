@@ -85,7 +85,7 @@ object ReviewReason {
 
     override def url(recordId: String, adviceStatus: AdviceStatus): Option[Call] =
       Some {
-        if (adviceStatus != AdviceStatus.NotRequested) {
+        if (adviceStatus == AdviceStatus.NotRequested) {
           controllers.goodsRecord.goodsDescription.routes.UpdateGoodsDescriptionController
             .onPageLoad(NormalMode, recordId)
         } else {
