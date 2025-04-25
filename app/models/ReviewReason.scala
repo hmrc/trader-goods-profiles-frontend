@@ -84,10 +84,15 @@ object ReviewReason {
     val linkKey: Option[String] = Some("singleRecord.unclearReviewReason.linkText")
 
     override def url(recordId: String, adviceStatus: AdviceStatus): Option[Call] =
-      Some(
-        controllers.goodsRecord.goodsDescription.routes.HasGoodsDescriptionChangeController
-          .onPageLoad(NormalMode, recordId)
-      )
+      Some {
+        if (adviceStatus != AdviceStatus.NotRequested) {
+          controllers.goodsRecord.goodsDescription.routes.UpdateGoodsDescriptionController
+            .onPageLoad(NormalMode, recordId)
+        } else {
+          controllers.goodsRecord.goodsDescription.routes.HasGoodsDescriptionChangeController
+            .onPageLoad(NormalMode, recordId)
+        }
+      }
 
     override def setAdditionalContent(isCategorised: Boolean, adviceStatus: AdviceStatus): Option[(String, String)] =
       None
