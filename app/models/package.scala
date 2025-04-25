@@ -36,8 +36,8 @@ package object models {
 
   implicit class RichString(string: String) {
 
-    def removeDoubleSpaces(): String =
-      string.trim.replaceAll("\n", "")
+    def removeExtraWhiteChars(): String =
+      string.trim.replaceAll("[\\r\\n]+", "")
   }
 
   implicit class RichJsValue(jsValue: JsValue) {
