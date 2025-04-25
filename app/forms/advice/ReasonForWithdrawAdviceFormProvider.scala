@@ -28,7 +28,7 @@ class ReasonForWithdrawAdviceFormProvider @Inject() extends Mappings {
   def apply(): Form[String] =
     Form(
       "value" -> optional(text("reasonForWithdrawAdvice.error.required"))
-        .verifying("reasonForWithdrawAdvice.error.length", _.forall(_.removeDoubleSpaces().length <= 512))
+        .verifying("reasonForWithdrawAdvice.error.length", _.forall(_.removeExtraWhiteChars().length <= 512))
         .transform[String](_.getOrElse(""), Some(_))
     )
 }
