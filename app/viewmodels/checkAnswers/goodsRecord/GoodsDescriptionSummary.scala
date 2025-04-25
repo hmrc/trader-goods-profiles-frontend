@@ -16,15 +16,15 @@
 
 package viewmodels.checkAnswers.goodsRecord
 
-import models.AdviceStatus.AdviceReceived
+import models.AdviceStatus.NotRequested
 import models.router.responses.GetGoodsRecordResponse
 import models.{CheckMode, Mode, UserAnswers}
 import pages.goodsRecord.GoodsDescriptionPage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
-import viewmodels.govuk.summarylist._
-import viewmodels.implicits._
+import viewmodels.govuk.summarylist.*
+import viewmodels.implicits.*
 
 object GoodsDescriptionSummary {
 
@@ -61,10 +61,10 @@ object GoodsDescriptionSummary {
   def rowUpdate(record: GetGoodsRecordResponse, recordId: String, mode: Mode, recordLocked: Boolean)(implicit
     messages: Messages
   ): SummaryListRow = {
-    val changeLink = if (record.adviceStatus == AdviceReceived) {
-      controllers.goodsRecord.goodsDescription.routes.HasGoodsDescriptionChangeController.onPageLoad(mode, recordId).url
-    } else {
+    val changeLink = if (record.declarable != NotRequested) {
       controllers.goodsRecord.goodsDescription.routes.UpdateGoodsDescriptionController.onPageLoad(mode, recordId).url
+    } else {
+      controllers.goodsRecord.goodsDescription.routes.HasGoodsDescriptionChangeController.onPageLoad(mode, recordId).url
     }
 
     SummaryListRowViewModel(

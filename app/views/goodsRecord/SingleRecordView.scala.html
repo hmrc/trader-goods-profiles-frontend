@@ -82,7 +82,7 @@
 
     @if(toReview && !recordLocked) {
         @reviewReason.map { reviewReason =>
-            @(reviewReason.linkKey, reviewReason.url(recordId)) match {
+            @(reviewReason.linkKey, reviewReason.url(recordId, adviceStatus)) match {
                 case (Some(linkKey), Some(url)) => {
 
                     @{
