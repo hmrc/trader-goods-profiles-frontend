@@ -141,7 +141,7 @@ class ReviewReasonSpec extends SpecBase {
         Inadequate
           .url("recordId", NotRequested)
           .value
-          .url mustBe controllers.goodsRecord.goodsDescription.routes.HasGoodsDescriptionChangeController
+          .url mustBe controllers.goodsRecord.goodsDescription.routes.UpdateGoodsDescriptionController
           .onPageLoad(NormalMode, "recordId")
           .url
         Inadequate.setAdditionalContent(isCategorised = false, NotRequested) mustBe None
@@ -153,7 +153,7 @@ class ReviewReasonSpec extends SpecBase {
         Unclear
           .url("recordId", NotRequested)
           .value
-          .url mustBe controllers.goodsRecord.goodsDescription.routes.HasGoodsDescriptionChangeController
+          .url mustBe controllers.goodsRecord.goodsDescription.routes.UpdateGoodsDescriptionController
           .onPageLoad(NormalMode, "recordId")
           .url
         Unclear.setAdditionalContent(isCategorised = false, NotRequested) mustBe None

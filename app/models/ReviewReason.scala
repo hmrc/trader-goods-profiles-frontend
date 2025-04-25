@@ -16,6 +16,7 @@
 
 package models
 
+import models.AdviceStatus.{AdviceNotProvided, AdviceRequestWithdrawn}
 import play.api.libs.json.*
 import play.api.mvc.Call
 
@@ -66,7 +67,9 @@ object ReviewReason {
 
     override def url(recordId: String, adviceStatus: AdviceStatus): Option[Call] =
       Some {
-        if (adviceStatus != AdviceStatus.NotRequested) {
+        if (
+          adviceStatus == AdviceStatus.NotRequested || adviceStatus == AdviceRequestWithdrawn || adviceStatus == AdviceNotProvided
+        ) {
           controllers.goodsRecord.goodsDescription.routes.UpdateGoodsDescriptionController
             .onPageLoad(NormalMode, recordId)
         } else {
@@ -85,7 +88,9 @@ object ReviewReason {
 
     override def url(recordId: String, adviceStatus: AdviceStatus): Option[Call] =
       Some {
-        if (adviceStatus != AdviceStatus.NotRequested) {
+        if (
+          adviceStatus == AdviceStatus.NotRequested || adviceStatus == AdviceNotProvided || adviceStatus == AdviceRequestWithdrawn
+        ) {
           controllers.goodsRecord.goodsDescription.routes.UpdateGoodsDescriptionController
             .onPageLoad(NormalMode, recordId)
         } else {
