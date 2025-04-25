@@ -47,7 +47,7 @@ class GoodsDescriptionSummarySpec extends SpecBase {
           GoodsDescriptionSummary.rowUpdate(recordForTestingSummaryRows, testRecordId, NormalMode, recordLocked = false)
 
         row.actions mustBe defined
-        row.actions.value.items.head.href mustEqual controllers.goodsRecord.goodsDescription.routes.HasGoodsDescriptionChangeController
+        row.actions.value.items.head.href mustEqual controllers.goodsRecord.goodsDescription.routes.UpdateGoodsDescriptionController
           .onPageLoad(NormalMode, testRecordId)
           .url
       }
@@ -61,7 +61,7 @@ class GoodsDescriptionSummarySpec extends SpecBase {
 
         row.actions mustBe defined
         row.actions.value.items.head.href mustEqual
-          controllers.goodsRecord.goodsDescription.routes.HasGoodsDescriptionChangeController
+          controllers.goodsRecord.goodsDescription.routes.UpdateGoodsDescriptionController
             .onPageLoad(NormalMode, testRecordId)
             .url
 

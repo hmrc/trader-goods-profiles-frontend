@@ -63,7 +63,7 @@ object GoodsDescriptionSummary {
   ): SummaryListRow = {
     val changeLink =
       if (
-        record.declarable == NotRequested || record.declarable == AdviceNotProvided || record.declarable == AdviceRequestWithdrawn
+        record.declarable != NotRequested &&  record.declarable != AdviceNotProvided && record.declarable != AdviceRequestWithdrawn
       ) {
         controllers.goodsRecord.goodsDescription.routes.UpdateGoodsDescriptionController.onPageLoad(mode, recordId).url
       } else {
