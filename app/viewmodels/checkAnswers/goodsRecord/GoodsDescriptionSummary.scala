@@ -16,7 +16,7 @@
 
 package viewmodels.checkAnswers.goodsRecord
 
-import models.AdviceStatus.{AdviceNotProvided, AdviceRequestWithdrawn, NotRequested}
+import models.AdviceStatus.{AdviceNotProvided, AdviceRequestWithdrawn}
 import models.router.responses.GetGoodsRecordResponse
 import models.{AdviceStatus, CheckMode, Mode, UserAnswers}
 import pages.goodsRecord.GoodsDescriptionPage
@@ -63,7 +63,7 @@ object GoodsDescriptionSummary {
   ): SummaryListRow = {
     val changeLink =
       if (
-        record.declarable == NotRequested || record.declarable == AdviceNotProvided || record.declarable == AdviceRequestWithdrawn
+        record.adviceStatus == AdviceStatus.NotRequested || record.adviceStatus == AdviceRequestWithdrawn || record.adviceStatus == AdviceNotProvided
       ) {
         controllers.goodsRecord.goodsDescription.routes.UpdateGoodsDescriptionController.onPageLoad(mode, recordId).url
       } else {
