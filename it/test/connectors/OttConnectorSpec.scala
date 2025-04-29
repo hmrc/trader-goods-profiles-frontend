@@ -17,8 +17,8 @@
 package connectors
 
 import base.TestConstants.{testEori, testRecordId}
-import com.github.tomakehurst.wiremock.client.WireMock._
-import models.Commodity
+import com.github.tomakehurst.wiremock.client.WireMock.*
+import models.{Commodity, Country}
 import models.helper.CreateRecordJourney
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.any
@@ -31,10 +31,12 @@ import play.api.Application
 import play.api.http.Status.IM_A_TEAPOT
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.libs.json.Json
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.test.WireMockSupport
 import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, UpstreamErrorResponse}
+import repositories.CountryRepository
 
 import java.time.{Instant, LocalDate}
 import scala.concurrent.Future
@@ -47,11 +49,15 @@ class OttConnectorSpec
     with IntegrationPatience {
 
   private val auditService = mock[AuditService]
+  private val mockCacheRepository = mock[CountryRepository]
 
   private lazy val app: Application =
     new GuiceApplicationBuilder()
       .configure("microservice.services.online-trade-tariff-api.url" -> wireMockUrl)
-      .overrides(bind[AuditService].toInstance(auditService))
+      .overrides(
+        bind[AuditService].toInstance(auditService),
+        bind[CountryRepository].toInstance(mockCacheRepository)
+      )
       .build()
 
   private lazy val connector = app.injector.instanceOf[OttConnector]
@@ -239,6 +245,33 @@ class OttConnectorSpec
   }
 
   ".getCountries" - {
+
+    "when cache is available" - {
+      "must return cached countries without calling the API" in {
+        val cachedCountries = Seq(Country("CN", "China"), Country("UK", "United Kingdom"))
+        when(mockCacheRepository.get()).thenReturn(Future.successful(Some(CountryCodeCache("ott_country_codes", cachedCountries, Instant.now()))))
+
+        val result = connector.getCountries.futureValue
+
+        result mustBe cachedCountries.sortWith(_.description < _.description)
+        verifyZeroInteractions(wireMockServer)
+      }
+    }
+
+    "when cache is not available" - {
+      "must call the API and cache the response" in {
+        val apiResponse = Seq(Country("CN", "China"), Country("UK", "United Kingdom"))
+        stubCountriesApi(apiResponse)
+        when(mockCacheRepository.get()).thenReturn(Future.successful(None))
+        when(mockCacheRepository.set(any())).thenReturn(Future.successful(()))
+        )
+
+        val result = connector.getCountries.futureValue
+
+        result mustBe apiResponse.sortWith(_.description < _.description)
+        verify(mockCacheRepository).set(apiResponse)
+      }
+    }
 
     "must return countries object" in {
 
@@ -528,6 +561,14 @@ class OttConnectorSpec
                  |}""".stripMargin
           )
         )
+    )
+  }
+
+  private def stubCountriesApi(countries: Seq[Country]) = {
+    val body = Json.toJson(CountriesResponse(countries)).toString()
+    wireMockServer.stubFor(
+      get(urlEqualTo("/xi/api/v2/geographical_areas/countries"))
+        .willReturn(ok().withBody(body))
     )
   }
 }

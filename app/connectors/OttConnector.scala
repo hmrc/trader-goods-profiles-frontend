@@ -22,6 +22,7 @@ import models.ott.response.{CountriesResponse, OttResponse}
 import models.{Commodity, Country, LegacyRawReads}
 import play.api.Configuration
 import play.api.libs.json.{JsResult, Reads}
+import repositories.CountryRepository
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.client.HttpClientV2
@@ -32,18 +33,21 @@ import java.time.{Instant, LocalDate}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, auditService: AuditService)(implicit
-  ec: ExecutionContext
-) extends LegacyRawReads {
+class OttConnector @Inject() (
+                               config: Configuration,
+                               httpClient: HttpClientV2,
+                               auditService: AuditService,
+                               cacheRepository: CountryRepository
+                             )(implicit ec: ExecutionContext) extends LegacyRawReads {
 
   private val useAPIKeyFeature: Boolean = config.get[Boolean]("features.online-trade-tariff-useApiKey")
 
-  private val baseUrl: String   = config.get[String]("microservice.services.online-trade-tariff-api.url")
+  private val baseUrl: String = config.get[String]("microservice.services.online-trade-tariff-api.url")
   private val authToken: String = config.get[String]("microservice.services.online-trade-tariff-api.bearerToken")
-  private val apiKey: String    = config.get[String]("microservice.services.online-trade-tariff-api.apiKey")
+  private val apiKey: String = config.get[String]("microservice.services.online-trade-tariff-api.apiKey")
   private val useProxy: Boolean = config.get[Boolean]("microservice.services.online-trade-tariff-api.useProxy")
 
-  val headers: (String, String)                                                         =
+  val headers: (String, String) =
     if (useAPIKeyFeature) "x-api-key" -> s"$apiKey" else HeaderNames.authorisation -> s"Token $authToken"
 
   private def ottGreenLanesUrl(commodityCode: String, queryParams: Map[String, String]) =
@@ -52,13 +56,12 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
   private def ottCountriesUrl =
     url"$baseUrl/xi/api/v2/geographical_areas/countries"
 
+  private val cacheKey = "ott_country_codes"
+
   private def getFromOtt[T](
-    url: URL,
-    auditDetails: Option[OttAuditData]
-  )(implicit
-    hc: HeaderCarrier,
-    reads: Reads[T]
-  ): Future[T] = {
+                             url: URL,
+                             auditDetails: Option[OttAuditData]
+                           )(implicit hc: HeaderCarrier, reads: Reads[T]): Future[T] = {
     val requestStartTime = Instant.now
 
     val request = httpClient
@@ -112,13 +115,13 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
   }
 
   def getCommodityCode(
-    commodityCode: String,
-    eori: String,
-    affinityGroup: AffinityGroup,
-    journey: Journey,
-    countryOfOrigin: String,
-    recordId: Option[String]
-  )(implicit hc: HeaderCarrier): Future[Commodity] = {
+                        commodityCode: String,
+                        eori: String,
+                        affinityGroup: AffinityGroup,
+                        journey: Journey,
+                        countryOfOrigin: String,
+                        recordId: Option[String]
+                      )(implicit hc: HeaderCarrier): Future[Commodity] = {
 
     val auditDetails = OttAuditData(
       AuditValidateCommodityCode,
@@ -136,9 +139,9 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
 
     for {
       ottResponse <- getFromOtt[OttResponse](
-                       ottGreenLanesUrl(commodityCode, queryParams),
-                       Some(auditDetails)
-                     )
+        ottGreenLanesUrl(commodityCode, queryParams),
+        Some(auditDetails)
+      )
     } yield Commodity(
       commodityCode = ottResponse.goodsNomenclature.commodityCode,
       descriptions = ottResponse.goodsNomenclature.descriptions,
@@ -149,13 +152,13 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
   }
 
   def getCategorisationInfo(
-    commodityCode: String,
-    eori: String,
-    affinityGroup: AffinityGroup,
-    recordId: Option[String],
-    countryOfOrigin: String,
-    dateOfTrade: LocalDate
-  )(implicit hc: HeaderCarrier): Future[OttResponse] = {
+                             commodityCode: String,
+                             eori: String,
+                             affinityGroup: AffinityGroup,
+                             recordId: Option[String],
+                             countryOfOrigin: String,
+                             dateOfTrade: LocalDate
+                           )(implicit hc: HeaderCarrier): Future[OttResponse] = {
     val auditDetails = OttAuditData(
       AuditGetCategorisationAssessment,
       eori,
@@ -177,6 +180,46 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
     )
   }
 
-  def getCountries(implicit hc: HeaderCarrier): Future[Seq[Country]] =
+  def getCountriesApiCall(implicit hc: HeaderCarrier): Future[Seq[Country]] =
     getFromOtt[CountriesResponse](ottCountriesUrl, None).map(_.data.sortWith(_.description < _.description))
+
+  def getCountries(implicit hc: HeaderCarrier): Future[Seq[Country]] = {
+    val requestDateTime = Instant.now()
+    cacheRepository.get().flatMap {
+      case Some(cache) =>
+        auditService.auditOttCall(
+          auditDetails = None,
+          requestDateTime = requestDateTime,
+          responseDateTime = Instant.now(),
+          responseStatus = 200,
+          errorMessage = Some("Retrieved from cache"),
+          response = Some(cache.data)
+        ).map(_ => cache.data.sortWith(_.description < _.description))
+      case None =>
+        getCountriesApiCall(hc).flatMap { countries =>
+          cacheRepository.set(countries).flatMap { _ =>
+            auditService.auditOttCall(
+              auditDetails = None,
+              requestDateTime = requestDateTime,
+              responseDateTime = Instant.now(),
+              responseStatus = 200,
+              errorMessage = None,
+              response = Some(countries)
+            ).map(_ => countries)
+          }
+        }.recover {
+          case e: Throwable =>
+            auditService.auditOttCall(
+              auditDetails = None,
+              requestDateTime = requestDateTime,
+              responseDateTime = Instant.now(),
+              responseStatus = 500,
+              errorMessage = Some(s"API unavailable and no cache: ${e.getMessage}"),
+              response = None
+            )
+            println(s"API error: ${e.getMessage}")
+            Seq.empty[Country]
+        }
+    }
+  }
 }
