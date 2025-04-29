@@ -20,10 +20,10 @@ import play.api.libs.json.{Format, Json}
 import java.time.Instant
 
 case class CountryCodeCache(
-                             key: String,
-                             data: Seq[Country],
-                             lastUpdated: Instant
-                           )
+  key: String,
+  data: Seq[Country],
+  lastUpdated: Instant
+)
 
 object CountryCodeCache {
   implicit val format: Format[CountryCodeCache] = Json.format[CountryCodeCache]

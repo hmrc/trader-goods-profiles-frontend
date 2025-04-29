@@ -33,7 +33,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class CountryRepository @Inject()(
+class CountryRepository @Inject() (
   mongoComponent: MongoComponent,
   appConfig: FrontendAppConfig,
   clock: Clock
@@ -54,23 +54,23 @@ class CountryRepository @Inject()(
           IndexOptions().name("keyIdx")
         )
       ),
-        replaceIndexes = true
+      replaceIndexes = true
     ) {
 
-        private val cacheKey = "ott_country_codes"
+  private val cacheKey = "ott_country_codes"
 
-        def get(): Future[Option[CountryCodeCache]] =
-          collection.find(Filters.equal("key", cacheKey)).headOption()
+  def get(): Future[Option[CountryCodeCache]] =
+    collection.find(Filters.equal("key", cacheKey)).headOption()
 
-        def set(countries: Seq[Country]): Future[Unit] = {
-          val cache = CountryCodeCache(cacheKey, countries, Instant.now())
-          collection
-            .replaceOne(
-              filter = Filters.equal("key", cacheKey),
-              replacement = cache,
-              options = ReplaceOptions().upsert(true)
-            )
-            .toFuture()
-            .map(_ => ())
-        }
-      }
+  def set(countries: Seq[Country]): Future[Unit] = {
+    val cache = CountryCodeCache(cacheKey, countries, Instant.now())
+    collection
+      .replaceOne(
+        filter = Filters.equal("key", cacheKey),
+        replacement = cache,
+        options = ReplaceOptions().upsert(true)
+      )
+      .toFuture()
+      .map(_ => ())
+  }
+}
