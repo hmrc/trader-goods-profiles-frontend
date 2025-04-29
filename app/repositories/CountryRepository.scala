@@ -18,25 +18,21 @@ package repositories
 
 import config.FrontendAppConfig
 import models.{Country, CountryCodeCache}
-import models.helper.*
 import org.mongodb.scala.SingleObservableFuture
-import org.mongodb.scala.bson.conversions.Bson
 import org.mongodb.scala.model.*
 import play.api.libs.json.Format
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
-import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 
-import java.time.{Clock, Instant}
+import java.time.Instant
 import java.util.concurrent.TimeUnit
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class CountryRepository @Inject() (
-  mongoComponent: MongoComponent,
   appConfig: FrontendAppConfig,
-  clock: Clock
+  mongoComponent: MongoComponent
 )(implicit ec: ExecutionContext)
     extends PlayMongoRepository[CountryCodeCache](
       collectionName = "country-code-cache",
@@ -57,7 +53,7 @@ class CountryRepository @Inject() (
       replaceIndexes = true
     ) {
 
-  private val cacheKey = "ott_country_codes"
+  val cacheKey = appConfig.countryCacheKey
 
   def get(): Future[Option[CountryCodeCache]] =
     collection.find(Filters.equal("key", cacheKey)).headOption()

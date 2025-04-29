@@ -80,7 +80,8 @@ class FrontendAppConfig @Inject() (configuration: Configuration) {
   val countdown: Int = configuration.get[Int]("timeout-dialog.countdown")
 
   val cacheTtl: Long = configuration.get[Int]("mongodb.timeToLiveInSeconds")
-
+  val countryCacheKey = "ott_country_codes"
+  
   val tgpEnrolmentIdentifier: EnrolmentConfig = configuration.get[EnrolmentConfig]("enrolment-config")
 
   val googleTagId: String = configuration.get[String]("gaTrackingId")

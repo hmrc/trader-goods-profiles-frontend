@@ -18,12 +18,12 @@ package connectors
 
 import base.TestConstants.{testEori, testRecordId}
 import com.github.tomakehurst.wiremock.client.WireMock.*
-import models.{Commodity, Country}
+import models.{Commodity, Country, CountryCodeCache}
 import models.helper.CreateRecordJourney
 import models.ott.response.CountriesResponse
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{reset, verify, when}
+import org.mockito.Mockito.{reset, verify, when, verifyNoInteractions}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -249,10 +249,10 @@ class OttConnectorSpec
     "when cache is available" - {
       "must return cached countries without calling the API" in {
         val cachedCountries = Seq(Country("CN", "China"), Country("UK", "United Kingdom"))
-        when(mockCacheRepository.get()).thenReturn(Future.successful(Some(CountryCache("ott_country_codes", cachedCountries, Instant.now()))))
+        when(mockCacheRepository.get()).thenReturn(Future.successful(Some(CountryCodeCache("ott_country_codes", cachedCountries, Instant.now()))))
         val result = connector.getCountries.futureValue
         result mustBe cachedCountries.sortWith(_.description < _.description)
-        verifyZeroInteractions(wireMockServer)
+        verifyNoInteractions(wireMockServer)
         withClue("must have audited the request") {
           verify(auditService).auditOttCall(any(), any(), any(), any(), any(), any())(any())
         }
