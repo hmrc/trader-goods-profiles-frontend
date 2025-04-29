@@ -56,7 +56,7 @@ class OttConnector @Inject() (
 
   private def ottCountriesUrl =
     url"$baseUrl/xi/api/v2/geographical_areas/countries"
-  
+
   private def getFromOtt[T](
     url: URL,
     auditDetails: Option[OttAuditData]
