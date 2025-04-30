@@ -272,7 +272,7 @@ class OttConnectorSpec
             .willReturn(ok().withBody(jsonResponse))
         )
         when(mockCacheRepository.get()).thenReturn(Future.successful(None))
-        when(mockCacheRepository.set(any())).thenReturn(Future.successful(true))
+        when(mockCacheRepository.set(any())).thenReturn(Future.successful(()))
         val result = connector.getCountries.futureValue
         result mustBe apiCountries.sortWith(_.description < _.description)
         verify(mockCacheRepository).set(apiCountries)
@@ -303,7 +303,7 @@ class OttConnectorSpec
           .willReturn(ok().withBody(jsonResponse))
       )
       when(mockCacheRepository.get()).thenReturn(Future.successful(None))
-      when(mockCacheRepository.set(any())).thenReturn(Future.successful(true))
+      when(mockCacheRepository.set(any())).thenReturn(Future.successful(()))
       val result = connector.getCountries.futureValue
       result mustBe Seq(Country("CN", "China"), Country("UK", "United Kingdom"))
     }
