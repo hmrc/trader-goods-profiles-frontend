@@ -196,24 +196,23 @@ class OttConnector @Inject() (
             response = Some(cache.data)
           )
           .map(_ => cache.data.sortWith(_.description < _.description))
-      case None        =>
-        getCountriesApiCall(hc)
-          .flatMap { countries =>
-            cacheRepository.set(countries).flatMap { _ =>
-              auditService
-                .auditOttCall(
-                  auditDetails = None,
-                  requestDateTime = requestDateTime,
-                  responseDateTime = Instant.now(),
-                  responseStatus = 200,
-                  errorMessage = None,
-                  response = Some(countries)
-                )
-                .map(_ => countries)
-            }
+      case None =>
+        getCountriesApiCall(hc).flatMap { countries =>
+          cacheRepository.set(countries).flatMap { _ =>
+            auditService
+              .auditOttCall(
+                auditDetails = None,
+                requestDateTime = requestDateTime,
+                responseDateTime = Instant.now(),
+                responseStatus = 200,
+                errorMessage = None,
+                response = Some(countries)
+              )
+              .map(_ => countries.sortWith(_.description < _.description))
           }
-          .recover { case e: Throwable =>
-            auditService.auditOttCall(
+        }.recoverWith { case e: Throwable =>
+          auditService
+            .auditOttCall(
               auditDetails = None,
               requestDateTime = requestDateTime,
               responseDateTime = Instant.now(),
@@ -221,9 +220,8 @@ class OttConnector @Inject() (
               errorMessage = Some(s"API unavailable and no cache: ${e.getMessage}"),
               response = None
             )
-            println(s"API error: ${e.getMessage}")
-            Seq.empty[Country]
-          }
+            .flatMap(_ => Future.failed(e))
+        }
     }
   }
 }

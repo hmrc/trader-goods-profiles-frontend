@@ -253,80 +253,72 @@ class OttConnectorSpec
         when(mockCacheRepository.get()).thenReturn(Future.successful(Some(CountryCodeCache("ott_country_codes", cachedCountries, Instant.now()))))
         val result = connector.getCountries.futureValue
         result mustBe cachedCountries.sortWith(_.description < _.description)
-
+        wireMockServer.verify(0, getRequestedFor(urlEqualTo("/xi/api/v2/geographical_areas/countries")))
       }
     }
 
     "when cache is not available" - {
       "must call the API and cache the response" in {
-        val apiResponse = Seq(Country("CN", "China"), Country("UK", "United Kingdom"))
-        stubCountriesApi(apiResponse)
+        val apiCountries = Seq(Country("CN", "China"), Country("UK", "United Kingdom"))
+        val jsonResponse = Json.obj(
+          "data" -> Json.arr(
+            Json.obj("attributes" -> Json.obj("id" -> "CN", "description" -> "China")),
+            Json.obj("attributes" -> Json.obj("id" -> "UK", "description" -> "United Kingdom"))
+          )
+        ).toString()
+
+        wireMockServer.stubFor(
+          get(urlEqualTo("/xi/api/v2/geographical_areas/countries"))
+            .willReturn(ok().withBody(jsonResponse))
+        )
         when(mockCacheRepository.get()).thenReturn(Future.successful(None))
         when(mockCacheRepository.set(any())).thenReturn(Future.successful(true))
         val result = connector.getCountries.futureValue
-        result mustBe apiResponse.sortWith(_.description < _.description)
-
-        }
+        result mustBe apiCountries.sortWith(_.description < _.description)
+        verify(mockCacheRepository).set(apiCountries)
       }
-    }
 
-    "must return countries object" in {
-      val body =
-        """{
-          |  "data": [
-          |  {
-          |    "attributes": {
-          |      "id": "CN",
-          |      "description": "China"
-          |     }
-          |   },
-          |   {
-          |     "attributes": {
-          |      "id": "UK",
-          |      "description": "United Kingdom"
-          |     }
-          |    }
-          |  ]
-          |}""".stripMargin
-
-      wireMockServer.stubFor(
-        get(urlEqualTo(s"/xi/api/v2/geographical_areas/countries"))
-          .willReturn(
-            ok().withBody(body)
-          )
-      )
-
-      val countries = connector.getCountries.futureValue
-      countries.size mustEqual 2
-      countries.head.id mustEqual "CN"
-      countries.head.description mustEqual "China"
-      countries(1).id mustEqual "UK"
-      countries(1).description mustEqual "United Kingdom"
-    }
-
-    "must return a failed future when the server returns an error" in {
-      wireMockServer.stubFor(
-        get(urlEqualTo(s"/xi/api/v2/geographical_areas/countries"))
-          .willReturn(serverError())
-      )
-      connector.getCountries.failed.futureValue
-      withClue("must have audited the request") {
+      "must return a failed future when the API returns an error" in {
+        wireMockServer.stubFor(
+          get(urlEqualTo("/xi/api/v2/geographical_areas/countries"))
+            .willReturn(serverError())
+        )
+        when(mockCacheRepository.get()).thenReturn(Future.successful(None))
+        val result = connector.getCountries.failed.futureValue
+        result mustBe a[UpstreamErrorResponse]
         verify(auditService).auditOttCall(any(), any(), any(), any(), any(), any())(any())
       }
+    }
+
+    "must correctly parse and sort countries from the API" in {
+      val jsonResponse = Json.obj(
+        "data" -> Json.arr(
+          Json.obj("attributes" -> Json.obj("id" -> "UK", "description" -> "United Kingdom")),
+          Json.obj("attributes" -> Json.obj("id" -> "CN", "description" -> "China"))
+        )
+      ).toString()
+
+      wireMockServer.stubFor(
+        get(urlEqualTo("/xi/api/v2/geographical_areas/countries"))
+          .willReturn(ok().withBody(jsonResponse))
+      )
+      when(mockCacheRepository.get()).thenReturn(Future.successful(None))
+      when(mockCacheRepository.set(any())).thenReturn(Future.successful(true))
+      val result = connector.getCountries.futureValue
+      result mustBe Seq(Country("CN", "China"), Country("UK", "United Kingdom"))
     }
 
     "must return a server error future when ott returns a 5xx status" in {
       wireMockServer.stubFor(
-        get(urlEqualTo(s"/xi/api/v2/geographical_areas/countries"))
+        get(urlEqualTo("/xi/api/v2/geographical_areas/countries"))
           .willReturn(serverError())
       )
+      when(mockCacheRepository.get()).thenReturn(Future.successful(None))
       val connectorFailure = connector.getCountries.failed.futureValue
       connectorFailure.isInstanceOf[UpstreamErrorResponse] mustBe true
-      withClue("must have audited the request") {
-        verify(auditService).auditOttCall(any(), any(), any(), any(), any(), any())(any())
-      }
+      verify(auditService).auditOttCall(any(), any(), any(), any(), any(), any())(any())
     }
-  
+  }
 
   ".getCategorisationInfo" - {
     "must return correct OttResponse object" in {
