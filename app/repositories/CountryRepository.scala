@@ -53,7 +53,7 @@ class CountryRepository @Inject() (
       replaceIndexes = true
     ) {
 
-  val cacheKey = appConfig.countryCacheKey
+  private val cacheKey = appConfig.countryCacheKey
 
   def get(): Future[Option[CountryCodeCache]] =
     collection.find(Filters.equal("key", cacheKey)).headOption()
