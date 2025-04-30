@@ -43,12 +43,12 @@ class OttConnector @Inject() (
 
   private val useAPIKeyFeature: Boolean = config.get[Boolean]("features.online-trade-tariff-useApiKey")
 
-  private val baseUrl: String = config.get[String]("microservice.services.online-trade-tariff-api.url")
+  private val baseUrl: String   = config.get[String]("microservice.services.online-trade-tariff-api.url")
   private val authToken: String = config.get[String]("microservice.services.online-trade-tariff-api.bearerToken")
-  private val apiKey: String = config.get[String]("microservice.services.online-trade-tariff-api.apiKey")
+  private val apiKey: String    = config.get[String]("microservice.services.online-trade-tariff-api.apiKey")
   private val useProxy: Boolean = config.get[Boolean]("microservice.services.online-trade-tariff-api.useProxy")
 
-  val headers: (String, String) =
+  val headers: (String, String)                                                         =
     if (useAPIKeyFeature) "x-api-key" -> s"$apiKey" else HeaderNames.authorisation -> s"Token $authToken"
 
   private def ottGreenLanesUrl(commodityCode: String, queryParams: Map[String, String]) =
@@ -58,9 +58,9 @@ class OttConnector @Inject() (
     url"$baseUrl/xi/api/v2/geographical_areas/countries"
 
   private def getFromOtt[T](
-                             url: URL,
-                             auditDetails: Option[OttAuditData]
-                           )(implicit hc: HeaderCarrier, reads: Reads[T]): Future[T] = {
+    url: URL,
+    auditDetails: Option[OttAuditData]
+  )(implicit hc: HeaderCarrier, reads: Reads[T]): Future[T] = {
     val requestStartTime = Instant.now
 
     val request = httpClient
@@ -114,13 +114,13 @@ class OttConnector @Inject() (
   }
 
   def getCommodityCode(
-                        commodityCode: String,
-                        eori: String,
-                        affinityGroup: AffinityGroup,
-                        journey: Journey,
-                        countryOfOrigin: String,
-                        recordId: Option[String]
-                      )(implicit hc: HeaderCarrier): Future[Commodity] = {
+    commodityCode: String,
+    eori: String,
+    affinityGroup: AffinityGroup,
+    journey: Journey,
+    countryOfOrigin: String,
+    recordId: Option[String]
+  )(implicit hc: HeaderCarrier): Future[Commodity] = {
 
     val auditDetails = OttAuditData(
       AuditValidateCommodityCode,
@@ -138,9 +138,9 @@ class OttConnector @Inject() (
 
     for {
       ottResponse <- getFromOtt[OttResponse](
-        ottGreenLanesUrl(commodityCode, queryParams),
-        Some(auditDetails)
-      )
+                       ottGreenLanesUrl(commodityCode, queryParams),
+                       Some(auditDetails)
+                     )
     } yield Commodity(
       commodityCode = ottResponse.goodsNomenclature.commodityCode,
       descriptions = ottResponse.goodsNomenclature.descriptions,
@@ -151,13 +151,13 @@ class OttConnector @Inject() (
   }
 
   def getCategorisationInfo(
-                             commodityCode: String,
-                             eori: String,
-                             affinityGroup: AffinityGroup,
-                             recordId: Option[String],
-                             countryOfOrigin: String,
-                             dateOfTrade: LocalDate
-                           )(implicit hc: HeaderCarrier): Future[OttResponse] = {
+    commodityCode: String,
+    eori: String,
+    affinityGroup: AffinityGroup,
+    recordId: Option[String],
+    countryOfOrigin: String,
+    dateOfTrade: LocalDate
+  )(implicit hc: HeaderCarrier): Future[OttResponse] = {
     val auditDetails = OttAuditData(
       AuditGetCategorisationAssessment,
       eori,
@@ -196,7 +196,7 @@ class OttConnector @Inject() (
             response = Some(cache.data)
           )
           .map(_ => cache.data.sortWith(_.description < _.description))
-      case None =>
+      case None        =>
         getCountriesApiCall(hc).flatMap { countries =>
           cacheRepository.set(countries).flatMap { _ =>
             auditService
