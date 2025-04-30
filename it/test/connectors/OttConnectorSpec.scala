@@ -326,7 +326,7 @@ class OttConnectorSpec
         verify(auditService).auditOttCall(any(), any(), any(), any(), any(), any())(any())
       }
     }
-  }
+  
 
   ".getCategorisationInfo" - {
     "must return correct OttResponse object" in {
