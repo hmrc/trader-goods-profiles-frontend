@@ -453,11 +453,11 @@ case class AuditEventFactory() {
     page: String
   )(implicit hc: HeaderCarrier): DataEvent = {
     val auditDetails = Map(
-      "eori"             -> eori,
-      "affinityGroup"    -> affinityGroup.toString,
-      "outboundLink"     -> link,
-      "outboundLinkText" -> linkText,
-      "page"             -> page
+      "eori"              -> eori,
+      "affinityGroup"     -> affinityGroup.toString,
+      "outboundLink"      -> link,
+      "outboundLinkText"  -> linkText,
+      "outboundClickPage" -> page
     )
 
     DataEvent(
