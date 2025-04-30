@@ -196,32 +196,34 @@ class OttConnector @Inject() (
             response = Some(cache.data)
           )
           .map(_ => cache.data.sortWith(_.description < _.description))
-      case None =>
-        getCountriesApiCall(hc).flatMap { countries =>
-          cacheRepository.set(countries).flatMap { _ =>
+      case None        =>
+        getCountriesApiCall(hc)
+          .flatMap { countries =>
+            cacheRepository.set(countries).flatMap { _ =>
+              auditService
+                .auditOttCall(
+                  auditDetails = None,
+                  requestDateTime = requestDateTime,
+                  responseDateTime = Instant.now(),
+                  responseStatus = 200,
+                  errorMessage = None,
+                  response = Some(countries)
+                )
+                .map(_ => countries.sortWith(_.description < _.description))
+            }
+          }
+          .recoverWith { case e: Throwable =>
             auditService
               .auditOttCall(
                 auditDetails = None,
                 requestDateTime = requestDateTime,
                 responseDateTime = Instant.now(),
-                responseStatus = 200,
-                errorMessage = None,
-                response = Some(countries)
+                responseStatus = 500,
+                errorMessage = Some(s"API unavailable and no cache: ${e.getMessage}"),
+                response = None
               )
-              .map(_ => countries.sortWith(_.description < _.description))
+              .flatMap(_ => Future.failed(e))
           }
-        }.recoverWith { case e: Throwable =>
-          auditService
-            .auditOttCall(
-              auditDetails = None,
-              requestDateTime = requestDateTime,
-              responseDateTime = Instant.now(),
-              responseStatus = 500,
-              errorMessage = Some(s"API unavailable and no cache: ${e.getMessage}"),
-              response = None
-            )
-            .flatMap(_ => Future.failed(e))
-        }
     }
   }
 }
