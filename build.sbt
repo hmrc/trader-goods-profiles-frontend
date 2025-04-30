@@ -42,6 +42,7 @@ lazy val microservice = (project in file("."))
       "-Wconf:src=routes/.*:s",
       "-Wconf:src=html/.*:s",
     ),
+    Test / scalacOptions := scalacOptions.value,
     libraryDependencies ++= AppDependencies(),
     retrieveManaged := true,
     resolvers ++= Seq(Resolver.jcenterRepo),
