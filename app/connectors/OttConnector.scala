@@ -22,6 +22,7 @@ import models.ott.response.{CountriesResponse, OttResponse}
 import models.{Commodity, Country, LegacyRawReads}
 import play.api.Configuration
 import play.api.libs.json.{JsResult, Reads}
+import repositories.CountryRepository
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.client.HttpClientV2
@@ -32,9 +33,13 @@ import java.time.{Instant, LocalDate}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, auditService: AuditService)(implicit
-  ec: ExecutionContext
-) extends LegacyRawReads {
+class OttConnector @Inject() (
+  config: Configuration,
+  httpClient: HttpClientV2,
+  auditService: AuditService,
+  cacheRepository: CountryRepository
+)(implicit ec: ExecutionContext)
+    extends LegacyRawReads {
 
   private val useAPIKeyFeature: Boolean = config.get[Boolean]("features.online-trade-tariff-useApiKey")
 
@@ -55,10 +60,7 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
   private def getFromOtt[T](
     url: URL,
     auditDetails: Option[OttAuditData]
-  )(implicit
-    hc: HeaderCarrier,
-    reads: Reads[T]
-  ): Future[T] = {
+  )(implicit hc: HeaderCarrier, reads: Reads[T]): Future[T] = {
     val requestStartTime = Instant.now
 
     val request = httpClient
@@ -177,6 +179,38 @@ class OttConnector @Inject() (config: Configuration, httpClient: HttpClientV2, a
     )
   }
 
-  def getCountries(implicit hc: HeaderCarrier): Future[Seq[Country]] =
+  private def getCountriesApiCall(implicit hc: HeaderCarrier): Future[Seq[Country]] =
     getFromOtt[CountriesResponse](ottCountriesUrl, None).map(_.data.sortWith(_.description < _.description))
+
+  def getCountries(implicit hc: HeaderCarrier): Future[Seq[Country]] = {
+    val requestDateTime = Instant.now()
+    cacheRepository.get().flatMap {
+      case Some(cache) =>
+        auditService
+          .auditOttCall(
+            auditDetails = None,
+            requestDateTime = requestDateTime,
+            responseDateTime = Instant.now(),
+            responseStatus = 200,
+            errorMessage = Some("Retrieved from cache"),
+            response = Some(cache.data)
+          )
+          .map(_ => cache.data.sortWith(_.description < _.description))
+      case None        =>
+        getCountriesApiCall(hc).flatMap { countries =>
+          cacheRepository.set(countries).flatMap { _ =>
+            auditService
+              .auditOttCall(
+                auditDetails = None,
+                requestDateTime = requestDateTime,
+                responseDateTime = Instant.now(),
+                responseStatus = 200,
+                errorMessage = None,
+                response = Some(countries)
+              )
+              .map(_ => countries.sortWith(_.description < _.description))
+          }
+        }
+    }
+  }
 }
