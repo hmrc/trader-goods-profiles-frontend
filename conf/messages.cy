@@ -273,12 +273,6 @@ createRecordStart.p2.4 = cod nwyddau
 createRecordStart.h2 = Cyfeirnod y cynnyrch
 createRecordStart.p3 = Mae cyfeirnod cynnyrch yn enw personol y gallwch ei roi ar gofnod nwyddau i’ch helpu i’w adnabod a dod o hyd iddo.
 createRecordStart.p4 = Byddwch hefyd yn gallu defnyddio cyfeirnod cynnyrch wrth greu ffurflen Gwybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI). Bydd hyn yn ychwanegu’r wybodaeth o’ch cofnod nwyddau at y ffurflen.
-createRecordStart.h3 = Categoreiddio
-createRecordStart.p5 = Unwaith y byddwch wedi creu’r cofnod nwyddau, byddwch yn gallu ei gategoreiddio.
-createRecordStart.p6 = Bydd categoreiddio yn rhoi gwybod i chi a yw’ch nwyddau’n gymwys i’w symud gyda’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM).
-createRecordStart.p7 = I gwblhau’r categoreiddio, efallai y bydd angen i chi wybod beth yw’r esemptiadau y bydd eich nwyddau’n symud o dan.
-createRecordStart.p8 =  Bydd angen i chi gwblhau’r categoreiddio cyn y gallwch ddefnyddio’r cofnod nwyddau ar symudiadau.
-
 
 productReference.title = Cyfeirnod y cynnyrch
 productReference.h1 = Cyfeirnod y cynnyrch
@@ -288,8 +282,6 @@ productReference.p3 = Efallai y byddwch am ddefnyddio’r uned cadw stoc (SKU).
 productReference.inputHeading = Beth yw cyfeirnod y cynnyrch?
 productReference.checkYourAnswersLabel = Cyfeirnod y cynnyrch
 productReference.change.hidden = Cyfeirnod y cynnyrch
-
-
 goodsDescription.title = Disgrifiad o’r nwyddau
 goodsDescription.h1 = Disgrifiad o’r nwyddau
 goodsDescription.p1 = Mae disgrifiad o’r nwyddau yn ddisgrifiad o’r nwyddau mewn iaith glir sy’n ddigon manwl gywir i wasanaethau tollau i allu adnabod y nwyddau. Ni allwch ddefnyddio termau cyffredinol i ddisgrifio’r nwyddau.
