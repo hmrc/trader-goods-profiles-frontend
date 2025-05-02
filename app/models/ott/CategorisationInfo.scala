@@ -91,14 +91,13 @@ final case class CategorisationInfo(
 
     }
   }
-  
-  def isAutoCategorisable: Boolean = {
+
+  def isAutoCategorisable: Boolean =
     if (categoryAssessmentsThatNeedAnswers.isEmpty) true else false
-  }
 }
 
 object CategorisationInfo {
-  
+
   def build(
     ott: OttResponse,
     countryOfOrigin: String,

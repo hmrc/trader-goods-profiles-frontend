@@ -98,33 +98,38 @@ class CyaCreateRecordController @Inject() (
 
             //condition if isAutoCategorisable condition is met
             _ <- categorisationService
-              .getCategorisationInfo(request, model.commodity.commodityCode, model.countryOfOrigin, recordId)
-              .flatMap { categorisationInfo =>
-                if (categorisationInfo.isAutoCategorisable) {
-                  val scenario = categorisationService.performAutoCategorisation(categorisationInfo, request.userAnswers, recordId)
-                  logger.info(s"Auto-categorization performed for record $recordId: $scenario")
-                  CategoryRecord.build(request.userAnswers, request.eori, recordId, categorisationService) match {
-                    case Right(categoryRecord) =>
-                      for {
-                        oldRecord <- goodsRecordConnector.getRecord(recordId)
-                        _ <- goodsRecordConnector.updateCategoryAndComcodeForGoodsRecord(recordId, categoryRecord, oldRecord)
-                      } yield Done
-                    case Left(errors) =>
-                      val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
-                      logger.error(s"Failed to build CategoryRecord for record $recordId: $errorMessages")
-                      Future.successful(Done)
-                  }
-                } else {
-                  logger.info(s"Auto-categorization skipped for record $recordId: not auto-categorizable")
-                  Future.successful(Done)
-                }
-              }
-              .recover {
-                case e: Exception =>
-                  logger.error(s"Failed to perform auto-categorization for record $recordId: ${e.getMessage}")
-                  Done
-              }
-            _        <- dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
+                   .getCategorisationInfo(request, model.commodity.commodityCode, model.countryOfOrigin, recordId)
+                   .flatMap { categorisationInfo =>
+                     if (categorisationInfo.isAutoCategorisable) {
+                       val scenario = categorisationService.performAutoCategorisation(
+                         categorisationInfo,
+                         request.userAnswers,
+                         recordId
+                       )
+                       logger.info(s"Auto-categorization performed for record $recordId: $scenario")
+                       CategoryRecord.build(request.userAnswers, request.eori, recordId, categorisationService) match {
+                         case Right(categoryRecord) =>
+                           for {
+                             oldRecord <- goodsRecordConnector.getRecord(recordId)
+                             _         <-
+                               goodsRecordConnector
+                                 .updateCategoryAndComcodeForGoodsRecord(recordId, categoryRecord, oldRecord)
+                           } yield Done
+                         case Left(errors)          =>
+                           val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
+                           logger.error(s"Failed to build CategoryRecord for record $recordId: $errorMessages")
+                           Future.successful(Done)
+                       }
+                     } else {
+                       logger.info(s"Auto-categorization skipped for record $recordId: not auto-categorizable")
+                       Future.successful(Done)
+                     }
+                   }
+                   .recover { case e: Exception =>
+                     logger.error(s"Failed to perform auto-categorization for record $recordId: ${e.getMessage}")
+                     Done
+                   }
+            _ <- dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
           } yield Redirect(navigator.nextPage(CyaCreateRecordPage(recordId), NormalMode, request.userAnswers))
         case Left(errors) =>
           handleBuildErrors(request, errors)
