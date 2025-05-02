@@ -90,7 +90,10 @@ final case class CategorisationInfo(
       effectiveDate.isEqual(today)
 
     }
-
+  }
+  
+  def isAutoCategorisable: Boolean = {
+    if (categoryAssessmentsThatNeedAnswers.isEmpty) true else false
   }
 }
 
