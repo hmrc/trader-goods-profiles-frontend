@@ -182,6 +182,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           val mockAuditService  = mock[AuditService]
           when(mockAuditService.auditFinishCreateGoodsRecord(any(), any(), any())(any()))
             .thenReturn(Future.successful(Done))
+
           val sessionRepository = mock[SessionRepository]
           when(sessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
 
@@ -220,6 +221,11 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             }
           }
         }
+
+//       "must submit the goods record, auto-categorise as Standard Goods, redirect to the CreateRecordSuccessController and cleanse userAnswers" in {
+//
+//       }
+        
       }
 
       "when user answers cannot create a goods record" - {

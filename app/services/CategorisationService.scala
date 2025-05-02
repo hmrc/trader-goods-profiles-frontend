@@ -197,4 +197,9 @@ class CategorisationService @Inject() (
         }
     }
   }
+  
+  def performAutoCategorisation(categorisationInfo: CategorisationInfo, userAnswers: UserAnswers, recordId: String): Scenario = {
+    if (categorisationInfo.isAutoCategorisable) calculateResult(categorisationInfo, userAnswers, recordId) else ManualCategorisationRequired
+  }
+
 }

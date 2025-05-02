@@ -55,7 +55,7 @@ object SupplementaryUnitSummary {
       supplementaryUnit <- answers.get(SupplementaryUnitUpdatePage(recordId))
       measurementUnit   <- answers.get(MeasurementQuery(recordId))
     } yield {
-      val value = if (!measurementUnit.isEmpty) s"$supplementaryUnit $measurementUnit" else supplementaryUnit
+      val value = if (measurementUnit.nonEmpty) s"$supplementaryUnit $measurementUnit" else supplementaryUnit
       SummaryListRowViewModel(
         key = "supplementaryUnit.checkYourAnswersLabel",
         value = ValueViewModel(value),

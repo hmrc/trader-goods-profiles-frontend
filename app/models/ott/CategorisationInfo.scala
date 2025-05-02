@@ -98,7 +98,7 @@ final case class CategorisationInfo(
 }
 
 object CategorisationInfo {
-
+  
   def build(
     ott: OttResponse,
     countryOfOrigin: String,

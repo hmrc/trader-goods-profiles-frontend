@@ -22,7 +22,9 @@ case object Constants {
 
   val Category1AsInt: Int     = 1
   val Category2AsInt: Int     = 2
-  val StandardGoodsAsInt: Int = 3
+  val StandardGoodsAsInt: Int = 404
+  
+  val ManualCategorisationRequiredAsInt: Int = 9
 
   val NiphlCode: String = "WFE012"
   val NirmsCode: String = "WFE013"
