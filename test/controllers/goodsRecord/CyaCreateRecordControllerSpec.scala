@@ -222,10 +222,6 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           }
         }
 
-//       "must submit the goods record, auto-categorise as Standard Goods, redirect to the CreateRecordSuccessController and cleanse userAnswers" in {
-//
-//       }
-        
       }
 
       "when user answers cannot create a goods record" - {
