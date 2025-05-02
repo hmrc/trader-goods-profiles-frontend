@@ -25,6 +25,7 @@ GET         /create-record/start                                                
 POST        /create-record/start                                                                    controllers.goodsRecord.CreateRecordStartController.onSubmit()
 
 GET         /create-record/:recordId/success                                                        controllers.goodsRecord.CreateRecordSuccessController.onPageLoad(recordId: String)
+GET         /create-record/:recordId/auto-categorisation-success                                    controllers.goodsRecord.CreateRecordAutoCategorisationSuccessController.onPageLoad(recordId: String)
 
 GET         /create-record/goods-description                                                        controllers.goodsRecord.goodsDescription.CreateGoodsDescriptionController.onPageLoad(mode: Mode = NormalMode)
 POST        /create-record/goods-description                                                        controllers.goodsRecord.goodsDescription.CreateGoodsDescriptionController.onSubmit(mode: Mode = NormalMode)
