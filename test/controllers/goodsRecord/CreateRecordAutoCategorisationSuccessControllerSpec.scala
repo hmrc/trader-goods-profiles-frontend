@@ -18,168 +18,52 @@ package controllers.goodsRecord
 
 import base.SpecBase
 import base.TestConstants.testRecordId
-import connectors.GoodsRecordConnector
-import models.router.responses.{GetGoodsRecordResponse, GetRecordsResponse}
-import models.{AdviceStatus, DeclarableStatus, GoodsRecordsPagination}
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.*
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import views.html.goodsRecord.CreateRecordAutoCategorisationSuccessView
-
-import java.time.Instant
-import scala.concurrent.Future
 
 class CreateRecordAutoCategorisationSuccessControllerSpec extends SpecBase with MockitoSugar {
 
   "CreateRecordAutoCategorisationSuccessController" - {
 
-    "CreateRecordAutoCategorisationSuccessController" - {
+    "onPageLoad" - {
+      "must return OK and correct view when isImmiReady is true" in {
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
-      "for a GET" - {
-        "must return OK and the correct view when record is IMMIReady" in {
-
-          val mockConnector = mock[GoodsRecordConnector]
-
-          val mockRecord = GetGoodsRecordResponse(
-            recordId = testRecordId,
-            eori = "testEori",
-            actorId = "actor",
-            traderRef = "trader",
-            comcode = "12345678",
-            adviceStatus = AdviceStatus.AdviceReceived,
-            goodsDescription = "desc",
-            countryOfOrigin = "GB",
-            category = None,
-            measurementUnit = None,
-            comcodeEffectiveFromDate = Instant.now,
-            version = 1,
-            active = true,
-            toReview = false,
-            reviewReason = None,
-            declarable = DeclarableStatus.ImmiReady,
-            createdDateTime = Instant.now,
-            updatedDateTime = Instant.now
+        running(application) {
+          val request = FakeRequest(
+            GET,
+            controllers.goodsRecord.routes.CreateRecordAutoCategorisationSuccessController
+              .onPageLoad(testRecordId, true)
+              .url
           )
 
-          val mockResponse = Some(
-            GetRecordsResponse(Seq(mockRecord), GoodsRecordsPagination(1, 1, 1, None, None))
-          )
+          val result = route(application, request).value
+          val view   = application.injector.instanceOf[CreateRecordAutoCategorisationSuccessView]
 
-          when(
-            mockConnector.searchRecords(
-              any(),
-              any(),
-              any(),
-              any(),
-              eqTo(Some(true)),
-              any(),
-              any(),
-              any(),
-              any()
-            )(any())
-          ).thenReturn(Future.successful(mockResponse))
-
-          val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-            .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
-            .build()
-
-          running(application) {
-            val request = FakeRequest(
-              GET,
-              controllers.goodsRecord.routes.CreateRecordAutoCategorisationSuccessController
-                .onPageLoad(testRecordId, true)
-                .url
-            )
-
-            val result = route(application, request).value
-
-            val view = application.injector.instanceOf[CreateRecordAutoCategorisationSuccessView]
-
-            status(result) mustEqual OK
-            contentAsString(result) mustEqual view(testRecordId, true)(request, messages(application)).toString
-          }
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(testRecordId, true)(request, messages(application)).toString
         }
+      }
 
-        "must return OK and the correct view when record is not IMMIReady but found with notReadyForIMMI" in {
+      "must return OK and correct view when isImmiReady is false" in {
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
-          val mockConnector = mock[GoodsRecordConnector]
-
-          val mockRecord = GetGoodsRecordResponse(
-            recordId = testRecordId,
-            eori = "testEori",
-            actorId = "actor",
-            traderRef = "trader",
-            comcode = "12345678",
-            adviceStatus = AdviceStatus.AdviceReceived,
-            goodsDescription = "desc",
-            countryOfOrigin = "GB",
-            category = None,
-            measurementUnit = None,
-            comcodeEffectiveFromDate = Instant.now,
-            version = 1,
-            active = true,
-            toReview = false,
-            reviewReason = None,
-            declarable = DeclarableStatus.NotReadyForImmi,
-            createdDateTime = Instant.now,
-            updatedDateTime = Instant.now
+        running(application) {
+          val request = FakeRequest(
+            GET,
+            controllers.goodsRecord.routes.CreateRecordAutoCategorisationSuccessController
+              .onPageLoad(testRecordId, false)
+              .url
           )
 
-          val emptyResponse    = Some(GetRecordsResponse(Seq.empty, GoodsRecordsPagination(1, 0, 0, None, None)))
-          val notReadyResponse = Some(GetRecordsResponse(Seq(mockRecord), GoodsRecordsPagination(1, 1, 1, None, None)))
+          val result = route(application, request).value
+          val view   = application.injector.instanceOf[CreateRecordAutoCategorisationSuccessView]
 
-          when(
-            mockConnector.searchRecords(
-              any(),
-              any(),
-              any(),
-              any(),
-              eqTo(Some(true)),
-              any(),
-              any(),
-              any(),
-              any()
-            )(any())
-          ).thenReturn(Future.successful(emptyResponse))
-
-          when(
-            mockConnector.searchRecords(
-              any(),
-              any(),
-              any(),
-              any(),
-              eqTo(None),
-              eqTo(Some(true)),
-              any(),
-              any(),
-              any()
-            )(any())
-          ).thenReturn(Future.successful(notReadyResponse))
-
-          val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-            .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
-            .build()
-
-          running(application) {
-            val request = FakeRequest(
-              GET,
-              controllers.goodsRecord.routes.CreateRecordAutoCategorisationSuccessController
-                .onPageLoad(testRecordId, false)
-                .url
-            )
-
-            val result = route(application, request).value
-
-            val view = application.injector.instanceOf[CreateRecordAutoCategorisationSuccessView]
-
-            status(result) mustEqual OK
-            contentAsString(result) mustEqual view(testRecordId, false)(request, messages(application)).toString
-          }
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(testRecordId, false)(request, messages(application)).toString
         }
-
       }
     }
   }
