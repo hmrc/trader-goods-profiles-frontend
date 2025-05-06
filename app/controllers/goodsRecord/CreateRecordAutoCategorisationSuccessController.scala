@@ -40,6 +40,7 @@ class CreateRecordAutoCategorisationSuccessController @Inject() (
 
   def onPageLoad(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
+      //todo is this logic required here or do we pass IMMIReady Boolean in the onPageload from when when auto-categorisation is done??
       goodsRecordConnector
         .searchRecords(
           eori = request.eori,
