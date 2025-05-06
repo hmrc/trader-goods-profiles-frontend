@@ -25,8 +25,8 @@ GET         /create-record/start                                                
 POST        /create-record/start                                                                    controllers.goodsRecord.CreateRecordStartController.onSubmit()
 
 GET         /create-record/:recordId/success                                                        controllers.goodsRecord.CreateRecordSuccessController.onPageLoad(recordId: String)
-GET         /create-record/:recordId/create-record-success-not-immi-ready                           controllers.goodsRecord.CreateRecordAutoCategorisationSuccessController.onPageLoad(recordId: String, isImmiReady: Boolean = false)
-GET         /create-record/:recordId/create-record-success-ready-for-immi                           controllers.goodsRecord.CreateRecordAutoCategorisationSuccessController.onPageLoad(recordId: String, isImmiReady: Boolean = true)
+GET         /create-record/:recordId/success-not-immi-ready                                         controllers.goodsRecord.CreateRecordAutoCategorisationSuccessController.onPageLoad(recordId: String, isImmiReady: Boolean = false)
+GET         /create-record/:recordId/success-ready-for-immi                                         controllers.goodsRecord.CreateRecordAutoCategorisationSuccessController.onPageLoad(recordId: String, isImmiReady: Boolean = true)
 
 GET         /create-record/goods-description                                                        controllers.goodsRecord.goodsDescription.CreateGoodsDescriptionController.onPageLoad(mode: Mode = NormalMode)
 POST        /create-record/goods-description                                                        controllers.goodsRecord.goodsDescription.CreateGoodsDescriptionController.onSubmit(mode: Mode = NormalMode)

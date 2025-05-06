@@ -9,6 +9,7 @@ site.signIn = Mewngofnodi
 site.save.continue = Cadw ac yn eich blaen
 site.back = Yn ôl
 site.goBackToGoodsRecord = Ewch yn ôl i’r cofnod nwyddau
+site.goToGoodsRecord = 	Ewch i’r cofnod nwyddau
 site.goBackToHomePage = Ewch yn ôl i’r hafan
 site.goBackToGoodsProfile = Ewch yn ôl i’r proffil nwyddau
 site.remove = Tynnu
