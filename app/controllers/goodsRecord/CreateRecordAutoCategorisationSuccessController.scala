@@ -16,6 +16,7 @@
 
 package controllers.goodsRecord
 
+import connectors.GoodsRecordConnector
 import controllers.BaseController
 import controllers.actions.*
 import play.api.i18n.MessagesApi
@@ -23,20 +24,49 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import views.html.goodsRecord.CreateRecordAutoCategorisationSuccessView
 
 import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class CreateRecordAutoCategorisationSuccessController @Inject()(
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  goodsRecordConnector: GoodsRecordConnector,
   profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
   view: CreateRecordAutoCategorisationSuccessView
-) extends BaseController {
+)(implicit ec: ExecutionContext) extends BaseController {
 
   def onPageLoad(recordId: String): Action[AnyContent] =
-    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
-     val immiReady = false //TODO NEED THE AUTO CATEGORISATION LOGIC IN TO BE ABLE TO SHOW THE DYNAMIC CONTENT
-      Ok(view(recordId, immiReady))
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
+
+      goodsRecordConnector.searchRecords(
+        eori = request.eori,
+        exactMatch = false,
+        countryOfOrigin = None,
+        IMMIReady = Some(true),
+        notReadyForIMMI = None,
+        actionNeeded = None,
+        page = 1,
+        size = 1
+      ).flatMap {
+        case Some(response) if response.goodsItemRecords.exists(_.recordId == recordId) =>
+          Future.successful(Ok(view(recordId, true)))
+
+        case _ =>
+          goodsRecordConnector.searchRecords(
+            eori = request.eori,
+            exactMatch = false,
+            countryOfOrigin = None,
+            IMMIReady = None,
+            notReadyForIMMI = Some(true),
+            actionNeeded = None,
+            page = 1,
+            size = 1
+          ).map {
+            case Some(response) if response.goodsItemRecords.exists(_.recordId == recordId) =>
+              Ok(view(recordId, false))              }
+          }
+      }
     }
-}
+
