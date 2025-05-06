@@ -29,7 +29,7 @@ import org.apache.pekko.Done
 import pages.goodsRecord.CyaCreateRecordPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.*
-import queries.CountriesQuery
+import queries.{CategorisationDetailsQuery, CountriesQuery}
 import repositories.SessionRepository
 import services.{AuditService, CategorisationService, DataCleansingService}
 import viewmodels.checkAnswers.goodsRecord.{CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, ProductReferenceSummary}
@@ -94,45 +94,55 @@ class CyaCreateRecordController @Inject() (
         case Right(model) =>
           auditService.auditFinishCreateGoodsRecord(request.eori, request.affinityGroup, request.userAnswers)
           for {
-            recordId <- goodsRecordConnector.submitGoodsRecord(model)
-
+            recordId           <- goodsRecordConnector.submitGoodsRecord(model)
+            categorisationInfo <- categorisationService.getCategorisationInfo(
+                                    request,
+                                    model.commodity.commodityCode,
+                                    model.countryOfOrigin,
+                                    recordId
+                                  )
             //condition if isAutoCategorisable condition is met
-            _ <- categorisationService
-                   .getCategorisationInfo(request, model.commodity.commodityCode, model.countryOfOrigin, recordId)
-                   .flatMap { categorisationInfo =>
-                     if (categorisationInfo.isAutoCategorisable) {
-                       val scenario = categorisationService.performAutoCategorisation(
-                         categorisationInfo,
-                         request.userAnswers,
-                         recordId
-                       )
-                       logger.info(s"Auto-categorization performed for record $recordId: $scenario")
-                       CategoryRecord.build(request.userAnswers, request.eori, recordId, categorisationService) match {
-                         case Right(categoryRecord) =>
-                           for {
-                             oldRecord <- goodsRecordConnector.getRecord(recordId)
-                             _         <-
-                               goodsRecordConnector
-                                 .updateCategoryAndComcodeForGoodsRecord(recordId, categoryRecord, oldRecord)
-                           } yield Done
-                         case Left(errors)          =>
-                           val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
-                           logger.error(s"Failed to build CategoryRecord for record $recordId: $errorMessages")
-                           Future.successful(Done)
-                       }
-                     } else {
-                       logger.info(s"Auto-categorization skipped for record $recordId: not auto-categorizable")
-                       Future.successful(Done)
-                     }
-                   }
-                   .recover { case e: Exception =>
-                     logger.error(s"Failed to perform auto-categorization for record $recordId: ${e.getMessage}")
-                     Done
-                   }
-            _ <- dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
+            updatedAnswers     <-
+              Future.fromTry(request.userAnswers.set(CategorisationDetailsQuery(recordId), categorisationInfo))
+            _                  <- sessionRepository.set(updatedAnswers)
+            _                  <- categorisationService
+                                    .getCategorisationInfo(request, model.commodity.commodityCode, model.countryOfOrigin, recordId)
+                                    .flatMap { categorisationInfo =>
+                                      if (categorisationInfo.isAutoCategorisable) {
+                                        val scenario = categorisationService.performAutoCategorisation(
+                                          categorisationInfo,
+                                          updatedAnswers,
+                                          recordId
+                                        )
+                                        logger.info(s"Auto-categorization triggered for record $recordId: $scenario")
+                                        CategoryRecord.build(updatedAnswers, request.eori, recordId, categorisationService) match {
+                                          case Right(categoryRecord) =>
+                                            for {
+                                              oldRecord <- goodsRecordConnector.getRecord(recordId)
+                                              _         <-
+                                                goodsRecordConnector
+                                                  .updateCategoryAndComcodeForGoodsRecord(recordId, categoryRecord, oldRecord)
+                                              _          = logger.info(
+                                                             s"Category and commodity code updated for record $recordId with scenario: $scenario"
+                                                           )
+                                            } yield Done
+                                          case Left(errors)          =>
+                                            val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
+                                            logger.error(s"Failed to build CategoryRecord for record $recordId: $errorMessages")
+                                            Future.successful(Done)
+                                        }
+                                      } else {
+                                        logger.info(s"Auto-categorization skipped for record $recordId: not auto-categorizable")
+                                        Future.successful(Done)
+                                      }
+                                    }
+                                    .recover { case e: Exception =>
+                                      logger.error(s"Failed to perform auto-categorization for record $recordId: ${e.getMessage}")
+                                      Done
+                                    }
+            _                  <- dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
           } yield Redirect(navigator.nextPage(CyaCreateRecordPage(recordId), NormalMode, request.userAnswers))
-        case Left(errors) =>
-          handleBuildErrors(request, errors)
+        case Left(errors) => handleBuildErrors(request, errors)
       }
   }
 

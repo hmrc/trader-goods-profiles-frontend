@@ -203,7 +203,10 @@ class CategorisationService @Inject() (
     userAnswers: UserAnswers,
     recordId: String
   ): Scenario =
-    if (categorisationInfo.isAutoCategorisable) calculateResult(categorisationInfo, userAnswers, recordId)
-    else ManualCategorisationRequired
+    if (categorisationInfo.isAutoCategorisable) {
+      calculateResult(categorisationInfo, userAnswers, recordId)
+    } else {
+      ManualCategorisationRequired
+    }
 
 }

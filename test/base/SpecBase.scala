@@ -87,6 +87,8 @@ trait SpecBase
   def validityEndDate: Instant = Instant.parse("2008-12-03T10:15:30.00Z")
 
   def testCommodity: Commodity = Commodity("1234567890", List("test"), validityStartDate, None)
+  
+  def testAutoCommodity: Commodity = Commodity("62113210", List("test"), validityStartDate, None)
 
   def testShorterCommodityQuery: Commodity = Commodity("1742900000", List("test"), validityStartDate, None)
 
@@ -141,6 +143,27 @@ trait SpecBase
       .success
       .value
       .set(CommodityQuery, testCommodity)
+      .success
+      .value
+
+  def mandatoryAutoCatRecordUserAnswers: UserAnswers =
+    UserAnswers(userAnswersId)
+      .set(ProductReferencePage, "123")
+      .success
+      .value
+      .set(CommodityCodePage, testAutoCommodity.commodityCode)
+      .success
+      .value
+      .set(CountryOfOriginPage, "1")
+      .success
+      .value
+      .set(GoodsDescriptionPage, "DESCRIPTION")
+      .success
+      .value
+      .set(HasCorrectGoodsPage, true)
+      .success
+      .value
+      .set(CommodityQuery, testAutoCommodity)
       .success
       .value
 
