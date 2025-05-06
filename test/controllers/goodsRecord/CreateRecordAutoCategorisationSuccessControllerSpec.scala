@@ -21,7 +21,7 @@ import base.TestConstants.testRecordId
 import connectors.GoodsRecordConnector
 import models.router.responses.{GetGoodsRecordResponse, GetRecordsResponse}
 import models.{AdviceStatus, DeclarableStatus, GoodsRecordsPagination}
-import org.mockito.ArgumentMatchers.{any, eq as eqTo}
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.*
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.bind
@@ -68,16 +68,31 @@ class CreateRecordAutoCategorisationSuccessControllerSpec extends SpecBase with 
             GetRecordsResponse(Seq(mockRecord), GoodsRecordsPagination(1, 1, 1, None, None))
           )
 
-          when(mockConnector.searchRecords(
-            any(), any(), any(), any(), eqTo(Some(true)), any(), any(), any(), any()
-          )(any())).thenReturn(Future.successful(mockResponse))
+          when(
+            mockConnector.searchRecords(
+              any(),
+              any(),
+              any(),
+              any(),
+              eqTo(Some(true)),
+              any(),
+              any(),
+              any(),
+              any()
+            )(any())
+          ).thenReturn(Future.successful(mockResponse))
 
           val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
             .build()
 
           running(application) {
-            val request = FakeRequest(GET, controllers.goodsRecord.routes.CreateRecordAutoCategorisationSuccessController.onPageLoad(testRecordId).url)
+            val request = FakeRequest(
+              GET,
+              controllers.goodsRecord.routes.CreateRecordAutoCategorisationSuccessController
+                .onPageLoad(testRecordId)
+                .url
+            )
 
             val result = route(application, request).value
 
@@ -113,23 +128,48 @@ class CreateRecordAutoCategorisationSuccessControllerSpec extends SpecBase with 
             updatedDateTime = Instant.now
           )
 
-          val emptyResponse = Some(GetRecordsResponse(Seq.empty, GoodsRecordsPagination(1, 0, 0, None, None)))
+          val emptyResponse    = Some(GetRecordsResponse(Seq.empty, GoodsRecordsPagination(1, 0, 0, None, None)))
           val notReadyResponse = Some(GetRecordsResponse(Seq(mockRecord), GoodsRecordsPagination(1, 1, 1, None, None)))
 
-          when(mockConnector.searchRecords(
-            any(), any(), any(), any(), eqTo(Some(true)), any(), any(), any(), any()
-          )(any())).thenReturn(Future.successful(emptyResponse))
+          when(
+            mockConnector.searchRecords(
+              any(),
+              any(),
+              any(),
+              any(),
+              eqTo(Some(true)),
+              any(),
+              any(),
+              any(),
+              any()
+            )(any())
+          ).thenReturn(Future.successful(emptyResponse))
 
-          when(mockConnector.searchRecords(
-            any(), any(), any(), any(), eqTo(None), eqTo(Some(true)), any(), any(), any()
-          )(any())).thenReturn(Future.successful(notReadyResponse))
+          when(
+            mockConnector.searchRecords(
+              any(),
+              any(),
+              any(),
+              any(),
+              eqTo(None),
+              eqTo(Some(true)),
+              any(),
+              any(),
+              any()
+            )(any())
+          ).thenReturn(Future.successful(notReadyResponse))
 
           val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
             .build()
 
           running(application) {
-            val request = FakeRequest(GET, controllers.goodsRecord.routes.CreateRecordAutoCategorisationSuccessController.onPageLoad(testRecordId).url)
+            val request = FakeRequest(
+              GET,
+              controllers.goodsRecord.routes.CreateRecordAutoCategorisationSuccessController
+                .onPageLoad(testRecordId)
+                .url
+            )
 
             val result = route(application, request).value
 
@@ -139,7 +179,6 @@ class CreateRecordAutoCategorisationSuccessControllerSpec extends SpecBase with 
             contentAsString(result) mustEqual view(testRecordId, false)(request, messages(application)).toString
           }
         }
-
 
       }
     }

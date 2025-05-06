@@ -26,7 +26,7 @@ import views.html.goodsRecord.CreateRecordAutoCategorisationSuccessView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class CreateRecordAutoCategorisationSuccessController @Inject()(
+class CreateRecordAutoCategorisationSuccessController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
@@ -35,38 +35,29 @@ class CreateRecordAutoCategorisationSuccessController @Inject()(
   profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
   view: CreateRecordAutoCategorisationSuccessView
-)(implicit ec: ExecutionContext) extends BaseController {
+)(implicit ec: ExecutionContext)
+    extends BaseController {
 
   def onPageLoad(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
+      goodsRecordConnector
+        .searchRecords(
+          eori = request.eori,
+          exactMatch = false,
+          countryOfOrigin = None,
+          IMMIReady = Some(true),
+          notReadyForIMMI = None,
+          actionNeeded = None,
+          page = 1,
+          size = 1
+        )
+        .flatMap {
+          case Some(response) if response.goodsItemRecords.exists(_.recordId == recordId) =>
+            Future.successful(Ok(view(recordId, true)))
 
-      goodsRecordConnector.searchRecords(
-        eori = request.eori,
-        exactMatch = false,
-        countryOfOrigin = None,
-        IMMIReady = Some(true),
-        notReadyForIMMI = None,
-        actionNeeded = None,
-        page = 1,
-        size = 1
-      ).flatMap {
-        case Some(response) if response.goodsItemRecords.exists(_.recordId == recordId) =>
-          Future.successful(Ok(view(recordId, true)))
+          case _ =>
+            Future.successful(Ok(view(recordId, false)))
 
-        case _ =>
-          goodsRecordConnector.searchRecords(
-            eori = request.eori,
-            exactMatch = false,
-            countryOfOrigin = None,
-            IMMIReady = None,
-            notReadyForIMMI = Some(true),
-            actionNeeded = None,
-            page = 1,
-            size = 1
-          ).map {
-            case Some(response) if response.goodsItemRecords.exists(_.recordId == recordId) =>
-              Ok(view(recordId, false))              }
-          }
-      }
+        }
     }
-
+}
