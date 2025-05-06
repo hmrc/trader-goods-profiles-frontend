@@ -90,7 +90,7 @@ class CreateRecordAutoCategorisationSuccessControllerSpec extends SpecBase with 
             val request = FakeRequest(
               GET,
               controllers.goodsRecord.routes.CreateRecordAutoCategorisationSuccessController
-                .onPageLoad(testRecordId)
+                .onPageLoad(testRecordId, true)
                 .url
             )
 
@@ -167,7 +167,7 @@ class CreateRecordAutoCategorisationSuccessControllerSpec extends SpecBase with 
             val request = FakeRequest(
               GET,
               controllers.goodsRecord.routes.CreateRecordAutoCategorisationSuccessController
-                .onPageLoad(testRecordId)
+                .onPageLoad(testRecordId, false)
                 .url
             )
 

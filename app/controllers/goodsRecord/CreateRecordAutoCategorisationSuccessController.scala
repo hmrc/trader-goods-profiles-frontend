@@ -16,7 +16,6 @@
 
 package controllers.goodsRecord
 
-import connectors.GoodsRecordConnector
 import controllers.BaseController
 import controllers.actions.*
 import play.api.i18n.MessagesApi
@@ -24,41 +23,24 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import views.html.goodsRecord.CreateRecordAutoCategorisationSuccessView
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class CreateRecordAutoCategorisationSuccessController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
-  goodsRecordConnector: GoodsRecordConnector,
   profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
   view: CreateRecordAutoCategorisationSuccessView
-)(implicit ec: ExecutionContext)
-    extends BaseController {
+) extends BaseController {
 
-  def onPageLoad(recordId: String): Action[AnyContent] =
+  def onPageLoad(recordId: String, isImmiReady: Boolean): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      //todo is this logic required here or do we pass IMMIReady Boolean in the onPageload from when when auto-categorisation is done??
-      goodsRecordConnector
-        .searchRecords(
-          eori = request.eori,
-          exactMatch = false,
-          countryOfOrigin = None,
-          IMMIReady = Some(true),
-          notReadyForIMMI = None,
-          actionNeeded = None,
-          page = 1,
-          size = 1
-        )
-        .flatMap {
-          case Some(response) if response.goodsItemRecords.exists(_.recordId == recordId) =>
-            Future.successful(Ok(view(recordId, true)))
-
-          case _ =>
-            Future.successful(Ok(view(recordId, false)))
-
-        }
+      if (isImmiReady) {
+        Future.successful(Ok(view(recordId, true)))
+      } else {
+        Future.successful(Ok(view(recordId, false)))
+      }
     }
 }
