@@ -321,8 +321,10 @@ createRecordSuccess.h2.1 = Rhowch eich barn
 createRecordSuccess.p6 = Mae hwn yn wasanaeth newydd ac rydym eisiau gwybod beth yw’ch barn amdano.
 createRecordSuccess.p7.linkText = Anfonwch eich adborth atom.
 createRecordSuccess.p7 = Bydd eich meddyliau a’ch syniadau’n ein helpu i wneud gwelliannau.
-createRecordAutoCategorisationSuccess.p1 =  Rydym wedi categoreiddio’r nwyddau’n awtomatig oherwydd nad oes esemptiadau ar gael ac oherwydd {0}.
+createRecordAutoCategorisationSuccess.p1 = Rydym wedi categoreiddio’r nwyddau’n awtomatig oherwydd nad oes esemptiadau ar gael ac oherwydd{0}.
+createRecordAutoCategorisationSuccess.immiReady = Gallwch ddefnyddio’r cofnod nwyddau hwn i helpu i lenwi ffurflen IMMI.
 createRecordAutoCategorisationSuccess.notReadyForImmi = Ni allwch ddefnyddio’r cofnod nwyddau hwn i helpu i lenwi ffurflen IMMI gan ei bod yn gategori 1.
+
 productReference.error.required = Nodwch gyfeirnod y cynnyrch
 productReference.error.traderRefNotUnique = Mae cyfeirnod y cynnyrch hwn eisoes yn eich TGP. Nodwch gyfeirnod cynnyrch unigryw.
 goodsDescription.error.required = Nodwch ddisgrifiad o’r nwyddau
