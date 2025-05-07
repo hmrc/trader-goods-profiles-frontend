@@ -34,23 +34,21 @@
 
     @if(isImmiReady) {
         <p class="govuk-body">
-            @Html(messages(
-            "createRecordAutoCategorisationSuccess.p1",
-            tag(messages("declarableStatus.immiReady"), "govuk-tag govuk-tag--green govuk-tag-width-override")
-            ))
+            @Html(
+            messages("createRecordAutoCategorisationSuccess.p1", "")
+            .replace("{0}", tag(messages("declarableStatus.immiReady"), "govuk-tag govuk-tag--green govuk-tag-width-override").toString)
+            )
         </p>
+
 
     } else {
         <p class="govuk-body">
-            @Html(messages(
-            "createRecordAutoCategorisationSuccess.p1",
-            tag(messages("declarableStatus.notReadyForImmi"), "govuk-tag govuk-tag--red govuk-tag-width-override")
-            ))
+            @Html(
+            messages("createRecordAutoCategorisationSuccess.p1", "")
+            .replace("{0}", tag(messages("declarableStatus.notReadyForImmi"), "govuk-tag govuk-tag--red govuk-tag-width-override").toString)
+            )
         </p>
-
-
-}
-
+    }
 
     <h2 class="govuk-heading-m">@messages("categorisationResult.h2")</h2>
 
