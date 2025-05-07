@@ -1,0 +1,73 @@
+@*
+ * Copyright 2024 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import views.html.components._
+
+@this(
+        layout: templates.Layout,
+        govukPanel : GovukPanel,
+        feedbackSection: components.feedback_section,
+        tag: components.Tag
+        )
+
+@(recordId: String, isImmiReady: Boolean)(implicit request: Request[_], messages: Messages)
+
+@layout(pageTitle = titleNoForm(messages("createRecordSuccess.title")),showBackLink = false) {
+
+    @govukPanel(Panel(
+          title = messages("createRecordSuccess.h1")
+         )
+    )
+
+    @if(isImmiReady) {
+        <p class="govuk-body">
+            @Html(messages(
+            "createRecordAutoCategorisationSuccess.p1",
+            tag(messages("declarableStatus.immiReady"), "govuk-tag govuk-tag--green govuk-tag-width-override")
+            ))
+        </p>
+
+    } else {
+        <p class="govuk-body">
+            @Html(messages(
+            "createRecordAutoCategorisationSuccess.p1",
+            tag(messages("declarableStatus.notReadyForImmi"), "govuk-tag govuk-tag--red govuk-tag-width-override")
+            ))
+        </p>
+
+
+}
+
+
+    <h2 class="govuk-heading-m">@messages("categorisationResult.h2")</h2>
+
+    @{
+        val categorisationMessage = if (isImmiReady) {
+            messages("createRecordAutoCategorisationSuccess.immiReady")
+        } else {
+            messages("createRecordAutoCategorisationSuccess.notReadyForImmi")
+        }
+        <p class="govuk-body">{categorisationMessage}</p>
+        }
+
+    <p class="govuk-body"><a href="@controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId).url" class="govuk-link" >@messages("site.goToGoodsRecord")</a></p>
+    <p class="govuk-body"><a href="@controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url" class="govuk-link" >@messages("site.goBackToGoodsProfile")</a></p>
+
+
+    @feedbackSection()
+
+
+}
