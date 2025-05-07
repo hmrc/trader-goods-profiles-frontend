@@ -88,6 +88,7 @@ class CyaCreateRecordController @Inject() (
     Ok(view(list))
   }
 
+  //TODO - routing to relevant pages needs to be implemented in nav ticket
   def onSubmit(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData).async {
     implicit request =>
       GoodsRecord.build(request.userAnswers, request.eori) match {
@@ -145,6 +146,7 @@ class CyaCreateRecordController @Inject() (
         case Left(errors) => handleBuildErrors(request, errors)
       }
   }
+//TODO - remove loggers once navigation is implemented and tests are complete
 
   private def handleBuildErrors(request: DataRequest[AnyContent], errors: NonEmptyChain[ValidationError]) = {
     dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
@@ -156,5 +158,4 @@ class CyaCreateRecordController @Inject() (
       )
     )
   }
-
 }
