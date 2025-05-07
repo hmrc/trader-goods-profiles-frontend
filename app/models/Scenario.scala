@@ -17,7 +17,9 @@
 package models
 
 import play.api.mvc.JavascriptLiteral
-import utils.Constants._
+import play.api.Logger
+
+import utils.Constants.*
 
 sealed trait Scenario
 
@@ -27,6 +29,10 @@ case object Category2Scenario extends Scenario
 case object StandardGoodsNoAssessmentsScenario extends Scenario
 case object Category1NoExemptionsScenario extends Scenario
 case object Category2NoExemptionsScenario extends Scenario
+case object ManualCategorisationRequired extends Scenario {
+  private val logger = Logger(this.getClass)
+  logger.info("AutoCategorisation failed, goods record requires manual categorisation")
+}
 
 object Scenario {
 
@@ -38,6 +44,7 @@ object Scenario {
       case Category2Scenario                  => Category2AsInt
       case Category1NoExemptionsScenario      => Category1AsInt
       case Category2NoExemptionsScenario      => Category2AsInt
+      case ManualCategorisationRequired       => ManualCategorisationRequiredAsInt
     }
 
   implicit val jsLiteral: JavascriptLiteral[Scenario] = {
@@ -47,6 +54,7 @@ object Scenario {
     case StandardGoodsNoAssessmentsScenario => "StandardNoAssessments"
     case Category1NoExemptionsScenario      => "Category1NoExemptions"
     case Category2NoExemptionsScenario      => "Category2NoExemptions"
+    case ManualCategorisationRequired       => "ManualCategorisationRequired"
   }
 
 }

@@ -48,7 +48,6 @@ final case class CategoryAssessment(
 
   def isNiphlAsessmentAndTraderAuthorised(isAuthorised: Boolean): Boolean = isNiphlAnswer && isAuthorised
   def isNirmsAsessmentAndTraderAuthorised(isAuthorised: Boolean): Boolean = isNirmsAnswer && isAuthorised
-
 }
 
 object CategoryAssessment {

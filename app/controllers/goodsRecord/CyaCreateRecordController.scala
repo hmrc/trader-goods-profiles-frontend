@@ -23,19 +23,19 @@ import controllers.BaseController
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
 import models.helper.CreateRecordJourney
 import models.requests.DataRequest
-import models.{Country, GoodsRecord, NormalMode, UserAnswers, ValidationError}
+import models.{CategoryRecord, Country, GoodsRecord, NormalMode, UserAnswers, ValidationError}
 import navigation.GoodsRecordNavigator
+import org.apache.pekko.Done
 import pages.goodsRecord.CyaCreateRecordPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.*
-import queries.CountriesQuery
+import queries.{CategorisationDetailsQuery, CountriesQuery}
 import repositories.SessionRepository
-import services.{AuditService, DataCleansingService}
+import services.{AuditService, CategorisationService, DataCleansingService}
 import viewmodels.checkAnswers.goodsRecord.{CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, ProductReferenceSummary}
 import viewmodels.govuk.summarylist.*
 import views.html.goodsRecord.CyaCreateRecordView
 
-import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 
 class CyaCreateRecordController @Inject() (
@@ -51,8 +51,9 @@ class CyaCreateRecordController @Inject() (
   dataCleansingService: DataCleansingService,
   sessionRepository: SessionRepository,
   auditService: AuditService,
+  categorisationService: CategorisationService,
   navigator: GoodsRecordNavigator
-)(implicit @unused ec: ExecutionContext)
+)(implicit ec: ExecutionContext)
     extends BaseController {
 
   private val errorMessage: String = "Unable to create Goods Record."
@@ -87,19 +88,65 @@ class CyaCreateRecordController @Inject() (
     Ok(view(list))
   }
 
+  //TODO - routing to relevant pages needs to be implemented in nav ticket
   def onSubmit(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData).async {
     implicit request =>
       GoodsRecord.build(request.userAnswers, request.eori) match {
         case Right(model) =>
           auditService.auditFinishCreateGoodsRecord(request.eori, request.affinityGroup, request.userAnswers)
           for {
-            recordId <- goodsRecordConnector.submitGoodsRecord(model)
-            _        <- dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
+            recordId           <- goodsRecordConnector.submitGoodsRecord(model)
+            categorisationInfo <- categorisationService.getCategorisationInfo(
+                                    request,
+                                    model.commodity.commodityCode,
+                                    model.countryOfOrigin,
+                                    recordId
+                                  )
+            //condition if isAutoCategorisable condition is met
+            updatedAnswers     <-
+              Future.fromTry(request.userAnswers.set(CategorisationDetailsQuery(recordId), categorisationInfo))
+            _                  <- sessionRepository.set(updatedAnswers)
+            _                  <- categorisationService
+                                    .getCategorisationInfo(request, model.commodity.commodityCode, model.countryOfOrigin, recordId)
+                                    .flatMap { categorisationInfo =>
+                                      if (categorisationInfo.isAutoCategorisable) {
+                                        val scenario = categorisationService.performAutoCategorisation(
+                                          categorisationInfo,
+                                          updatedAnswers,
+                                          recordId
+                                        )
+                                        logger.info(s"Auto-categorization triggered for record $recordId: $scenario")
+                                        CategoryRecord.build(updatedAnswers, request.eori, recordId, categorisationService) match {
+                                          case Right(categoryRecord) =>
+                                            for {
+                                              oldRecord <- goodsRecordConnector.getRecord(recordId)
+                                              _         <-
+                                                goodsRecordConnector
+                                                  .updateCategoryAndComcodeForGoodsRecord(recordId, categoryRecord, oldRecord)
+                                              _          = logger.info(
+                                                             s"Category and commodity code updated for record $recordId with scenario: $scenario"
+                                                           )
+                                            } yield Done
+                                          case Left(errors)          =>
+                                            val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
+                                            logger.error(s"Failed to build CategoryRecord for record $recordId: $errorMessages")
+                                            Future.successful(Done)
+                                        }
+                                      } else {
+                                        logger.info(s"Auto-categorization skipped for record $recordId: not auto-categorizable")
+                                        Future.successful(Done)
+                                      }
+                                    }
+                                    .recover { case e: Exception =>
+                                      logger.error(s"Failed to perform auto-categorization for record $recordId: ${e.getMessage}")
+                                      Done
+                                    }
+            _                  <- dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
           } yield Redirect(navigator.nextPage(CyaCreateRecordPage(recordId), NormalMode, request.userAnswers))
-        case Left(errors) =>
-          handleBuildErrors(request, errors)
+        case Left(errors) => handleBuildErrors(request, errors)
       }
   }
+//TODO - remove loggers once navigation is implemented and tests are complete
 
   private def handleBuildErrors(request: DataRequest[AnyContent], errors: NonEmptyChain[ValidationError]) = {
     dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
@@ -111,5 +158,4 @@ class CyaCreateRecordController @Inject() (
       )
     )
   }
-
 }
