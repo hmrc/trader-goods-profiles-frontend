@@ -43,7 +43,10 @@ class CreateRecordAutoCategorisationSuccessControllerSpec extends SpecBase with 
           val view   = application.injector.instanceOf[CreateRecordAutoCategorisationSuccessView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(testRecordId, true, "testString")(request, messages(application)).toString
+          contentAsString(result) mustEqual view(testRecordId, true, "testString")(
+            request,
+            messages(application)
+          ).toString
         }
       }
 
@@ -62,7 +65,10 @@ class CreateRecordAutoCategorisationSuccessControllerSpec extends SpecBase with 
           val view   = application.injector.instanceOf[CreateRecordAutoCategorisationSuccessView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(testRecordId, false, "testString")(request, messages(application)).toString
+          contentAsString(result) mustEqual view(testRecordId, false, "testString")(
+            request,
+            messages(application)
+          ).toString
         }
       }
     }
