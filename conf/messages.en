@@ -259,7 +259,7 @@ createRecordSuccess.p6 = This is a new service and we want to know what you thin
 createRecordSuccess.p7.linkText = Send us your feedback
 createRecordSuccess.p7 = Your thoughts and ideas will help us to make improvements.
 
-createRecordAutoCategorisationSuccess.p1 = We've automatically categorised the goods as there are no available exemptions and they are {0}.
+createRecordAutoCategorisationSuccess.p1 = We've automatically categorised the goods as there are no available exemptions and they are
 createRecordAutoCategorisationSuccess.immiReady = You can use this goods record to help complete the IMMI form.
 createRecordAutoCategorisationSuccess.notReadyForImmi = You cannot use this goods record to help complete an IMMI form as it is category 1.
 
