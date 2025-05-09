@@ -17,40 +17,36 @@
 @import views.html.components._
 
 @this(
-        layout: templates.Layout,
-        govukPanel : GovukPanel,
-        feedbackSection: components.feedback_section,
-        tag: components.Tag
-        )
+    layout: templates.Layout,
+    govukPanel : GovukPanel,
+    feedbackSection: components.feedback_section,
+    tag: components.Tag
+    )
 
-@(recordId: String, isImmiReady: Boolean)(implicit request: Request[_], messages: Messages)
+    @(recordId: String, isImmiReady: Boolean, tagText: String)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = titleNoForm(messages("createRecordSuccess.title")),showBackLink = false) {
+    @layout(pageTitle = titleNoForm(messages("createRecordSuccess.title")),showBackLink = false) {
 
     @govukPanel(Panel(
-          title = messages("createRecordSuccess.h1")
-         )
+         title = messages("createRecordSuccess.h1")
+        )
     )
 
     @if(isImmiReady) {
         <p class="govuk-body">
-            @Html(messages(
-            "createRecordAutoCategorisationSuccess.p1",
-            tag(messages("declarableStatus.immiReady"), "govuk-tag govuk-tag--green govuk-tag-width-override")
-            ))
+            @Html(
+                messages("createRecordAutoCategorisationSuccess.p1", "") + " " +
+                tag(messages("declarableStatus.immiReady"), "govuk-tag govuk-tag--green govuk-tag-width-override").toString
+            ).
         </p>
-
     } else {
         <p class="govuk-body">
-            @Html(messages(
-            "createRecordAutoCategorisationSuccess.p1",
-            tag(messages("declarableStatus.notReadyForImmi"), "govuk-tag govuk-tag--red govuk-tag-width-override")
-            ))
+            @Html(
+                messages("createRecordAutoCategorisationSuccess.p1", "") + " " +
+                tag(messages("declarableStatus.notReadyForImmi"), "govuk-tag govuk-tag--red govuk-tag-width-override").toString
+            ).
         </p>
-
-
-}
-
+    }
 
     <h2 class="govuk-heading-m">@messages("categorisationResult.h2")</h2>
 
@@ -60,14 +56,12 @@
         } else {
             messages("createRecordAutoCategorisationSuccess.notReadyForImmi")
         }
-        <p class="govuk-body">{categorisationMessage}</p>
-        }
+            <p class="govuk-body">{categorisationMessage}</p>
+    }
 
     <p class="govuk-body"><a href="@controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId).url" class="govuk-link" >@messages("site.goToGoodsRecord")</a></p>
     <p class="govuk-body"><a href="@controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url" class="govuk-link" >@messages("site.goBackToGoodsProfile")</a></p>
 
-
     @feedbackSection()
-
 
 }
