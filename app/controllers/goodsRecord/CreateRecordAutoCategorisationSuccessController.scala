@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,13 @@
 package controllers.goodsRecord
 
 import controllers.BaseController
-import controllers.actions.*
-import play.api.i18n.MessagesApi
+import controllers.actions._
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import views.html.goodsRecord.CreateRecordAutoCategorisationSuccessView
 
 import javax.inject.Inject
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class CreateRecordAutoCategorisationSuccessController @Inject() (
   override val messagesApi: MessagesApi,
@@ -33,14 +33,21 @@ class CreateRecordAutoCategorisationSuccessController @Inject() (
   profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
   view: CreateRecordAutoCategorisationSuccessView
-) extends BaseController {
+)(implicit ec: ExecutionContext)
+    extends BaseController {
 
   def onPageLoad(recordId: String, isImmiReady: Boolean): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      if (isImmiReady) {
-        Future.successful(Ok(view(recordId, true)))
+      if (recordId.isEmpty) {
+        Future.successful(BadRequest("Invalid record ID"))
       } else {
-        Future.successful(Ok(view(recordId, false)))
+        val tagText: String = if (isImmiReady) {
+          Messages("declarableStatus.immiReady")
+        } else {
+          Messages("declarableStatus.notReadyForImmi")
+        }
+
+        Future.successful(Ok(view(recordId, isImmiReady, tagText)))
       }
     }
 }
