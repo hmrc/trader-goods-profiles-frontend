@@ -289,6 +289,9 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       }
   }
 
+  private def normalizeSearchTerm(termOpt: Option[String]): Option[String] =
+    termOpt.map(_.replaceAll("\\s+", "").toLowerCase)
+
   def searchRecords(
     eori: String,
     searchTerm: Option[String] = None,
@@ -308,7 +311,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
         "size" -> size.toString
       )
       httpClient
-        .get(searchRecordsUrl(eori, searchTerm, exactMatch, queryParams))
+        .get(searchRecordsUrl(eori, normalizeSearchTerm(searchTerm), exactMatch, queryParams))
         .setHeader(clientIdHeader)
         .execute[HttpResponse]
         .flatMap { response =>

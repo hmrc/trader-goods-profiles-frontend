@@ -23,11 +23,15 @@ import play.api.libs.json.{Format, Json}
 case class SearchForm(searchTerm: Option[String], countryOfOrigin: Option[String], statusValue: Seq[String] = Seq())
 
 object SearchForm {
+
   implicit val format: Format[SearchForm] = Json.format[SearchForm]
+
+  private def normalizeSearchTerm(termOpt: Option[String]): Option[String] =
+    termOpt.map(_.toLowerCase.trim.replaceAll("\\s+", " "))
 
   val form: Form[SearchForm] = Form(
     mapping(
-      "searchTerm"      -> optional(text),
+      "searchTerm"      -> optional(text).transform[Option[String]](normalizeSearchTerm, identity),
       "countryOfOrigin" -> optional(text),
       "statusValue"     -> seq(text)
     )(SearchForm.apply)(o => Some(Tuple.fromProductTyped(o)))

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -177,11 +177,26 @@ class GoodsRecordsController @Inject() (
       }
     }
 
-  private def executeSearch(page: Int, searchText: SearchForm)(implicit request: DataRequest[AnyContent]) =
+  def normalizeString(str: String): String =
+    str.replaceAll("\\s+", "").toLowerCase
+
+  def matchesSearchTerms(record: String, searchTerms: List[String]): Boolean = {
+    val normalizedRecord = normalizeString(record)
+
+    searchTerms.forall(term => normalizedRecord.contains(term))
+  }
+
+  private def executeSearch(page: Int, searchText: SearchForm)(implicit request: DataRequest[AnyContent]) = {
+    val searchTerms = searchText.searchTerm
+      .map(_.split("\\s+").map(normalizeString).toList)
+      .getOrElse(List())
+
+    val searchTermOption = if (searchTerms.isEmpty) None else Some(searchTerms.mkString(" "))
+
     goodsRecordConnector
       .searchRecords(
         request.eori,
-        searchText.searchTerm,
+        searchTermOption,
         exactMatch = false,
         countryOfOrigin = searchText.countryOfOrigin,
         IMMIReady = Some(searchText.statusValue.contains("IMMIReady")),
@@ -192,17 +207,23 @@ class GoodsRecordsController @Inject() (
       )
       .flatMap {
         case Some(searchResponse) =>
-          if (page == 1) {
-            auditService.auditFilterSearchRecords(
-              request.affinityGroup,
-              searchText,
-              searchResponse.pagination.totalRecords.toString,
-              searchResponse.pagination.totalPages.toString,
-              request.eori
+          val filteredRecords = searchResponse.goodsItemRecords.filter { record =>
+            matchesSearchTerms(record.goodsDescription, searchTerms) // Match description against search terms
+          }
+
+          if (filteredRecords.nonEmpty) {
+            renderSearchResults(page, searchResponse.copy(goodsItemRecords = filteredRecords), searchText)
+          } else {
+            Future.successful(
+              Redirect(
+                controllers.goodsProfile.routes.GoodsRecordsLoadingController.onPageLoad(
+                  Some(RedirectUrl(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoadFilter(page).url))
+                )
+              )
             )
           }
-          renderSearchResults(page, searchResponse, searchText)
-        case _                    =>
+
+        case _ =>
           Future.successful(
             Redirect(
               controllers.goodsProfile.routes.GoodsRecordsLoadingController.onPageLoad(
@@ -211,6 +232,7 @@ class GoodsRecordsController @Inject() (
             )
           )
       }
+  }
 
   private def renderSearchResults(page: Int, searchResponse: GetRecordsResponse, searchText: SearchForm)(implicit
     request: DataRequest[AnyContent]
