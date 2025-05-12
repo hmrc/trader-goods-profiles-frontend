@@ -595,7 +595,7 @@ goodsRecordSearchResult.p1 = Roeddech yn chwilio am y term {0}.
 goodsRecordSearchResult.p2 =  Wedi dod o hyd i {0} o gofnodion
 goodsRecordSearchResult.p4 = Statws:
 goodsRecordSearchResult.p5 = Term chwilio: ‘{0}’
-goodsRecordSearchResult.p6 = Gwlad tarddiad: {0}
+goodsRecordSearchResult.p6 = Gwlad tarddiad:
 
 goodsRecordSearchResultEmptyView.title = Does dim canlyniadau cyfatebol
 goodsRecordSearchResultEmptyView.h1 = Does dim canlyniadau cyfatebol

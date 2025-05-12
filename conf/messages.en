@@ -631,7 +631,7 @@ goodsRecordSearchResult.p2 = {0} records found
 goodsRecordSearchResult.singleRecord = 1 record found
 goodsRecordSearchResult.p4 = Status:
 goodsRecordSearchResult.p5 = Search term: ‘{0}’
-goodsRecordSearchResult.p6 = Country: {0}
+goodsRecordSearchResult.p6 = Country:
 
 
 goodsRecordSearchResultEmptyView.title = There are no matching results

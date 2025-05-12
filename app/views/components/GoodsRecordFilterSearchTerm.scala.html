@@ -58,12 +58,8 @@
 
           }
           @if(searchForm.countryOfOrigin.isDefined) {
-              <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock" lang="en"> @messages("goodsRecordSearchResult.p6", {
-                  countries
-                  .find(_.id == searchForm.countryOfOrigin.getOrElse(""))
-                  .map(_.description)
-                  .getOrElse("")
-              })
+              <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock">@messages("goodsRecordSearchResult.p6")
+                  <span lang="en"> @countries.find(_.id == searchForm.countryOfOrigin.getOrElse("")).map(_.description).getOrElse("")</span>
               </li>
           }
       </ul>
