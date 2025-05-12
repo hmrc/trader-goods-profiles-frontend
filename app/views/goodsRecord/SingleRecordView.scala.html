@@ -27,7 +27,23 @@
     tag: components.Tag
 )
 
-@(recordId: String, detailsList: SummaryList, categorisationList: SummaryList, supplementaryUnitList: SummaryList, adviceStatusList: SummaryList, changesMade: Boolean, changedPage: String,dataRemoved: Boolean,recordLocked:Boolean, adviceStatusMessage:Option[AdviceStatusMessage], declarableStatus: DeclarableStatus,  toReview: Boolean = false, isCategorised: Boolean, adviceStatus: AdviceStatus, reviewReason: Option[ReviewReason] = None, previousUrl: String)(implicit request: Request[_], messages: Messages)
+@(
+    recordId: String,
+    detailsList: SummaryList,
+    categorisationList: SummaryList,
+    supplementaryUnitList: SummaryList,
+    adviceStatusList: SummaryList,
+    changesMade: Boolean,
+    changedPage: String,
+    dataRemoved: Boolean,recordLocked:Boolean,
+    adviceStatusMessage:Option[AdviceStatusMessage],
+    declarableStatus: DeclarableStatus,
+    toReview: Boolean = false,
+    isCategorised: Boolean,
+    adviceStatus: AdviceStatus,
+    reviewReason: Option[ReviewReason] = None,
+    previousUrl: String
+)(implicit request: Request[_], messages: Messages)
 
     @bannerContentForUpdate(page: String, dataRemoved:Boolean) = {
         <h3 class="govuk-notification-banner__heading">
@@ -133,7 +149,7 @@
         </strong>
     </div>
 
-    <p class="govuk-body"><a href=@previousUrl class="govuk-link" >@messages("site.goBackToGoodsProfile")</a></p>
+    <p class="govuk-body"><a href="@previousUrl" class="govuk-link" >@messages("site.goBackToGoodsProfile")</a></p>
     @if(!recordLocked){
         <p class="govuk-body"><a href="@controllers.goodsProfile.routes.RemoveGoodsRecordController.onPageLoad(recordId, GoodsRecordLocation).url" class="govuk-link" >@messages("site.removeThisGoodsRecord")</a></p>
     }
