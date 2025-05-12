@@ -20,7 +20,11 @@ import play.api.data.Form
 import play.api.data.Forms.{mapping, optional, seq, text}
 import play.api.libs.json.{Format, Json}
 
-case class SearchForm(searchTerm: Option[String], countryOfOrigin: Option[String], statusValue: Seq[String] = Seq())
+case class SearchForm(searchTerm: Option[String], countryOfOrigin: Option[String], statusValue: Seq[String] = Seq()) {
+
+  // A method to trim the search term if it exists
+  def trimmedSearchTerm: Option[String] = searchTerm.map(_.trim).filter(_.nonEmpty)
+}
 
 object SearchForm {
   implicit val format: Format[SearchForm] = Json.format[SearchForm]

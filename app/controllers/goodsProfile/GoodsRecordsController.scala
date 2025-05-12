@@ -181,7 +181,7 @@ class GoodsRecordsController @Inject() (
     goodsRecordConnector
       .searchRecords(
         request.eori,
-        searchText.searchTerm,
+        searchText.trimmedSearchTerm, // Use the trimmed search term
         exactMatch = false,
         countryOfOrigin = searchText.countryOfOrigin,
         IMMIReady = Some(searchText.statusValue.contains("IMMIReady")),
