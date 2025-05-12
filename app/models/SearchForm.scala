@@ -25,14 +25,11 @@ case class SearchForm(searchTerm: Option[String], countryOfOrigin: Option[String
 object SearchForm {
   implicit val format: Format[SearchForm] = Json.format[SearchForm]
 
-  def unapply(form: SearchForm): Option[(Option[String], Option[String], Seq[String])] =
-    Some((form.searchTerm, form.countryOfOrigin, form.statusValue))
-
   val form: Form[SearchForm] = Form(
     mapping(
       "searchTerm"      -> optional(text).transform[Option[String]](_.map(_.trim), identity),
       "countryOfOrigin" -> optional(text),
       "statusValue"     -> seq(text)
-    )(SearchForm.apply)(SearchForm.unapply)
+    )(SearchForm.apply)(o => Some(Tuple.fromProductTyped(o)))
   )
 }
