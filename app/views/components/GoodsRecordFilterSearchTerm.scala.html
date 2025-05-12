@@ -35,18 +35,15 @@
           @searchForm.searchTerm.map { searchTerm => <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock">@messages("goodsRecordSearchResult.p5", searchTerm) </li> }
 
           @if(searchForm.statusValue.nonEmpty) {
-              <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock">
-              @messages("goodsRecordSearchResult.p4")
-              </li>
               @if(searchForm.statusValue.contains("IMMIReady")) {
                   <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock">
-                  @messages("declarableStatus.immiReady")
+                  @messages("declarableStatus.statusImmiReady")
                   </li>
               }
 
               @if(searchForm.statusValue.contains("notReadyForImmi")) {
                   <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock">
-                  @messages("declarableStatus.notReadyForImmi")
+                  @messages("declarableStatus.statusNotReadyForImmi")
                   </li>
               }
 
