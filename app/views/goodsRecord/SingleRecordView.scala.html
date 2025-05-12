@@ -149,7 +149,7 @@
         </strong>
     </div>
 
-    <p class="govuk-body"><a href=@previousUrl class="govuk-link" >@messages("site.goBackToGoodsProfile")</a></p>
+    <p class="govuk-body"><a href="@previousUrl" class="govuk-link" >@messages("site.goBackToGoodsProfile")</a></p>
     @if(!recordLocked){
         <p class="govuk-body"><a href="@controllers.goodsProfile.routes.RemoveGoodsRecordController.onPageLoad(recordId, GoodsRecordLocation).url" class="govuk-link" >@messages("site.removeThisGoodsRecord")</a></p>
     }

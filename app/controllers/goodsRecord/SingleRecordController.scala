@@ -58,7 +58,9 @@ class SingleRecordController @Inject() (
         .getRecord(recordId)
         .flatMap { record =>
           val referer  = request.headers.get("Referer")
-          val backLink = referer.filter(_.contains("page")).getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url)
+          val backLink = referer
+            .filter(_.contains("page"))
+            .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url)
           for {
             recordIsLocked                     <- Future.successful(record.adviceStatus.isRecordLocked)
             countries                          <- retrieveAndStoreCountries
