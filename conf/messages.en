@@ -788,8 +788,10 @@ adviceStatus.adviceReceived = Advice received
 adviceStatus.adviceNotProvided = Advice not provided
 adviceStatus.adviceRequestWithdrawn = Advice request withdrawn
 
+declarableStatus.status = Status
 declarableStatus.immiReady = IMMI ready
 declarableStatus.notReadyForImmi = Not ready for IMMI
+declarableStatus.statusImmiReady = Status: IMMI ready
 declarableStatus.notReadyForUse = Action needed
 
 declarableStatus.immiReady.paragraph = You can use this record to complete the Internal market Movement Information (IMMI).

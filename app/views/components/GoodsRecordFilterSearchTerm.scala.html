@@ -34,29 +34,21 @@
       <ul class="govuk-list moj-filter__tag_lock">
           @searchForm.searchTerm.map { searchTerm => <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock">@messages("goodsRecordSearchResult.p5", searchTerm) </li> }
 
-          @if(searchForm.statusValue.nonEmpty) {
-              <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock">
-              @messages("goodsRecordSearchResult.p4")
-              </li>
-              @if(searchForm.statusValue.contains("IMMIReady")) {
-                  <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock">
-                  @messages("declarableStatus.immiReady")
-                  </li>
-              }
-
-              @if(searchForm.statusValue.contains("notReadyForImmi")) {
-                  <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock">
-                  @messages("declarableStatus.notReadyForImmi")
-                  </li>
-              }
-
-              @if(searchForm.statusValue.contains("actionNeeded")) {
-                  <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock">
-                  @messages("declarableStatus.notReadyForUse")
-                  </li>
-              }
-
+          @{
+          val statusLabels: Seq[String] = searchForm.statusValue.map(_.trim).flatMap {
+          case "IMMIReady"        => Some(messages("declarableStatus.statusImmiReady"))
+          case "notReadyForImmi"  => Some(messages("declarableStatus.notReadyForImmi"))
+          case "actionNeeded"     => Some(messages("declarableStatus.notReadyForUse"))
+          case _                  => None
           }
+          val statusText = statusLabels.mkString(", ")
+          val label = messages("declarableStatus.status") + ": " + statusText
+
+          <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock">
+              {label}
+          </li>
+          }
+
           @if(searchForm.countryOfOrigin.isDefined) {
               <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock">@messages("goodsRecordSearchResult.p6")
                   <span lang="en"> @countries.find(_.id == searchForm.countryOfOrigin.getOrElse("")).map(_.description).getOrElse("")</span>
