@@ -36,7 +36,7 @@
 
           @{
           val statusLabels: Seq[String] = searchForm.statusValue.map(_.trim).flatMap {
-          case "IMMIReady"        => Some(messages("declarableStatus.statusImmiReady"))
+          case "IMMIReady"        => Some(messages("declarableStatus.immiReady"))
           case "notReadyForImmi"  => Some(messages("declarableStatus.notReadyForImmi"))
           case "actionNeeded"     => Some(messages("declarableStatus.notReadyForUse"))
           case _                  => None
