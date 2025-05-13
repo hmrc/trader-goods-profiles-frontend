@@ -42,8 +42,10 @@
           case _                  => None
           }
           val statusText = statusLabels.mkString(", ")
+          val label = messages("declarableStatus.status") + ": " + statusText
+
           <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock">
-              {statusLabels.mkString(", ")}
+              {label}
           </li>
           }
 
