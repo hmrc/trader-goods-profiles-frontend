@@ -37,7 +37,7 @@
           @{
           val statusLabels: Seq[String] = searchForm.statusValue.map(_.trim).flatMap {
           case "IMMIReady"        => Some(messages("declarableStatus.statusImmiReady"))
-          case "notReadyForImmi"  => Some(messages("declarableStatus.statusNotReadyForImmi"))
+          case "notReadyForImmi"  => Some(messages("declarableStatus.notReadyForImmi"))
           case "actionNeeded"     => Some(messages("declarableStatus.notReadyForUse"))
           case _                  => None
           }
@@ -46,9 +46,6 @@
               {statusLabels.mkString(", ")}
           </li>
           }
-
-
-
 
           @if(searchForm.countryOfOrigin.isDefined) {
               <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock" lang="en"> @messages("goodsRecordSearchResult.p6", {
