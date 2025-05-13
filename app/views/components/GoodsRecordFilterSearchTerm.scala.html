@@ -34,26 +34,22 @@
       <ul class="govuk-list moj-filter__tag_lock">
           @searchForm.searchTerm.map { searchTerm => <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock">@messages("goodsRecordSearchResult.p5", searchTerm) </li> }
 
-          @if(searchForm.statusValue.nonEmpty) {
-              @if(searchForm.statusValue.contains("IMMIReady")) {
-                  <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock">
-                  @messages("declarableStatus.statusImmiReady")
-                  </li>
-              }
-
-              @if(searchForm.statusValue.contains("notReadyForImmi")) {
-                  <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock">
-                  @messages("declarableStatus.statusNotReadyForImmi")
-                  </li>
-              }
-
-              @if(searchForm.statusValue.contains("actionNeeded")) {
-                  <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock">
-                  @messages("declarableStatus.notReadyForUse")
-                  </li>
-              }
-
+          @{
+          val statusLabels: Seq[String] = searchForm.statusValue.map(_.trim).flatMap {
+          case "IMMIReady"        => Some(messages("declarableStatus.statusImmiReady"))
+          case "notReadyForImmi"  => Some(messages("declarableStatus.statusNotReadyForImmi"))
+          case "actionNeeded"     => Some(messages("declarableStatus.notReadyForUse"))
+          case _                  => None
           }
+          val statusText = statusLabels.mkString(", ")
+          <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock">
+              {statusLabels.mkString(", ")}
+          </li>
+          }
+
+
+
+
           @if(searchForm.countryOfOrigin.isDefined) {
               <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock" lang="en"> @messages("goodsRecordSearchResult.p6", {
                   countries
