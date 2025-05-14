@@ -57,7 +57,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
   private lazy val singleRecordRouteLocked   =
     controllers.goodsRecord.routes.SingleRecordController.onPageLoad(lockedRecord.recordId).url
   private val mockGoodsRecordConnector       = mock[GoodsRecordConnector]
-  private val mockSessionRepository = mock[SessionRepository]
+  private val mockSessionRepository          = mock[SessionRepository]
   private val mockOttConnector: OttConnector = mock[OttConnector]
   private val recordIsLocked                 = false
   private val countries                      = Seq(Country("CN", "China"), Country("US", "United States"))
@@ -77,7 +77,13 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    reset(mockGoodsRecordConnector, mockOttConnector, mockSessionRepository, mockTraderProfileConnector, mockAutoCategoriseService)
+    reset(
+      mockGoodsRecordConnector,
+      mockOttConnector,
+      mockSessionRepository,
+      mockTraderProfileConnector,
+      mockAutoCategoriseService
+    )
     when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
     when(
       mockAutoCategoriseService.autoCategoriseRecord(any[GetGoodsRecordResponse](), any())(any(), any())
