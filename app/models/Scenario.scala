@@ -21,31 +21,28 @@ import utils.Constants._
 
 sealed trait Scenario
 
-// TODO: Make a trait for category 1, 2 and standard goods which has a def toString that takes an implicit messages and uses the right message key for
-
-case object StandardGoodsScenario extends Scenario {
-  override def toString: String = "Standard Goods" // TODO: This would link to message key
+case object StandardGoodsScenario extends Scenario with ScenarioCategorised {
+  override def messageKey: String = "singleRecord.standardGoods"
 }
 
-case object Category1Scenario extends Scenario {
-  override def toString: String = "Category 1" // TODO: This would link to message key
+case object Category1Scenario extends Scenario with ScenarioCategorised {
+  override def messageKey: String = "singleRecord.cat1"
 }
 
-case object Category2Scenario extends Scenario {
-  override def toString: String = "Category 2" // TODO: This would link to message key
+case object Category2Scenario extends Scenario with ScenarioCategorised {
+  override def messageKey: String = "singleRecord.cat2"
 }
 
-case object StandardGoodsNoAssessmentsScenario extends Scenario {
-  override def toString: String = "Standard Goods" // TODO: This would link to message key
+case object StandardGoodsNoAssessmentsScenario extends Scenario with ScenarioCategorised {
+  override def messageKey: String = "singleRecord.standardGoods"
 }
 
-case object Category1NoExemptionsScenario extends Scenario {
-  override def toString: String = "Category 1" // TODO: This would link to message key
-
+case object Category1NoExemptionsScenario extends Scenario with ScenarioCategorised {
+  override def messageKey: String = "singleRecord.cat1"
 }
 
-case object Category2NoExemptionsScenario extends Scenario {
-  override def toString: String = "Category 2" // TODO: This would link to message key
+case object Category2NoExemptionsScenario extends Scenario with ScenarioCategorised {
+  override def messageKey: String = "singleRecord.cat2"
 }
 
 object Scenario {
