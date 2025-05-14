@@ -56,8 +56,6 @@ class AutoCategoriseService @Inject() (
       .flatMap { categorisationInfo =>
         if (categorisationInfo.isAutoCategorisable && record.category.isEmpty) {
 
-          println("above")
-
           val updatedUserAnswers =
             userAnswers.set(CategorisationDetailsQuery(record.recordId), categorisationInfo) match {
               case Success(userAnswers) =>
@@ -65,14 +63,11 @@ class AutoCategoriseService @Inject() (
               case Failure(exception)   => Future.failed(UserAnswersSetFailure(exception.getMessage))
             }
 
-          println("below")
-
           updatedUserAnswers.flatMap { updatedUserAnswers =>
             CategoryRecord.build(updatedUserAnswers, record.eori, record.recordId, categorisationService) match {
               case Right(record) =>
                 // TODO - Probably want to have a audit event for auto categorisation for monitoring
 
-                println("Here")
                 for {
                   oldRecord <-
                     goodsRecordsConnector.getRecord(
@@ -87,8 +82,6 @@ class AutoCategoriseService @Inject() (
             }
           }
         } else {
-          println("none case")
-
           Future.successful(None)
         }
       }
