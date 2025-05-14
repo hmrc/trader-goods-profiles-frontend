@@ -14,77 +14,94 @@
  * limitations under the License.
  */
 
-package controllers.goodsRecord.goodsDecription
+package controllers.goodsRecord.goodsDescription
 
 import base.SpecBase
-import base.TestConstants.userAnswersId
-import forms.goodsRecord.GoodsDescriptionFormProvider
+import base.TestConstants.{testEori, testRecordId, userAnswersId}
+import forms.goodsRecord.HasGoodsDescriptionChangeFormProvider
+import models.helper.GoodsDetailsUpdate
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeGoodsRecordNavigator, GoodsRecordNavigator}
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
-import org.scalacheck.Gen
+import org.apache.pekko.Done
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.Mockito.{atLeastOnce, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.goodsRecord.GoodsDescriptionPage
+import pages.goodsRecord.HasGoodsDescriptionChangePage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
-import views.html.goodsRecord.GoodsDescriptionView
+import services.AuditService
+import uk.gov.hmrc.auth.core.AffinityGroup
+import views.html.goodsRecord.HasGoodsDescriptionChangeView
 
 import scala.concurrent.Future
 
-class CreateGoodsDescriptionControllerSpec extends SpecBase with MockitoSugar {
+class HasGoodsDescriptionChangeControllerSpec extends SpecBase with MockitoSugar {
 
   private def onwardRoute = Call("GET", "/foo")
 
-  val formProvider = new GoodsDescriptionFormProvider()
+  val formProvider = new HasGoodsDescriptionChangeFormProvider()
   private val form = formProvider()
 
-  "CreateGoodsDescriptionController" - {
+  private lazy val hasGoodsDescriptionChangeRoute =
+    controllers.goodsRecord.goodsDescription.routes.HasGoodsDescriptionChangeController
+      .onPageLoad(NormalMode, testRecordId)
+      .url
 
-    lazy val goodsDescriptionCreateRoute =
-      controllers.goodsRecord.goodsDescription.routes.CreateGoodsDescriptionController.onPageLoad(NormalMode).url
-    lazy val onSubmitAction: Call        =
-      controllers.goodsRecord.goodsDescription.routes.CreateGoodsDescriptionController.onSubmit(NormalMode)
+  "HasGoodsDescriptionChange Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
+      val mockAuditService = mock[AuditService]
+
+      when(mockAuditService.auditStartUpdateGoodsRecord(any(), any(), any(), any(), any())(any()))
+        .thenReturn(Future.successful(Done))
+
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(bind[AuditService].toInstance(mockAuditService))
         .build()
 
       running(application) {
-        val request = FakeRequest(GET, goodsDescriptionCreateRoute)
+        val request = FakeRequest(GET, hasGoodsDescriptionChangeRoute)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[GoodsDescriptionView]
+        val view = application.injector.instanceOf[HasGoodsDescriptionChangeView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, onSubmitAction)(
-          request,
-          messages(application)
-        ).toString
+        contentAsString(result) mustEqual view(form, NormalMode, testRecordId)(request, messages(application)).toString
+
+        withClue("must call the audit service with the correct details") {
+          verify(mockAuditService, atLeastOnce())
+            .auditStartUpdateGoodsRecord(
+              eqTo(testEori),
+              eqTo(AffinityGroup.Individual),
+              eqTo(GoodsDetailsUpdate),
+              eqTo(testRecordId),
+              any()
+            )(any())
+        }
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(GoodsDescriptionPage, "answer").success.value
+      val userAnswers = UserAnswers(userAnswersId).set(HasGoodsDescriptionChangePage(testRecordId), true).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers))
         .build()
 
       running(application) {
-        val request = FakeRequest(GET, goodsDescriptionCreateRoute)
+        val request = FakeRequest(GET, hasGoodsDescriptionChangeRoute)
 
-        val view = application.injector.instanceOf[GoodsDescriptionView]
+        val view = application.injector.instanceOf[HasGoodsDescriptionChangeView]
 
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill("answer"), NormalMode, onSubmitAction)(
+        contentAsString(result) mustEqual view(form.fill(true), NormalMode, testRecordId)(
           request,
           messages(application)
         ).toString
@@ -94,7 +111,6 @@ class CreateGoodsDescriptionControllerSpec extends SpecBase with MockitoSugar {
     "must redirect to the next page when valid data is submitted" in {
 
       val mockSessionRepository = mock[SessionRepository]
-
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application =
@@ -105,13 +121,10 @@ class CreateGoodsDescriptionControllerSpec extends SpecBase with MockitoSugar {
           )
           .build()
 
-      val length              = 512
-      val description: String = Gen.listOfN(length, Gen.alphaNumChar).map(_.mkString).sample.value
-
       running(application) {
         val request =
-          FakeRequest(POST, goodsDescriptionCreateRoute)
-            .withFormUrlEncodedBody(("value", description))
+          FakeRequest(POST, hasGoodsDescriptionChangeRoute)
+            .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 
@@ -120,51 +133,24 @@ class CreateGoodsDescriptionControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must return a Bad Request and errors when no description is submitted" in {
+    "must return a Bad Request and errors when invalid data is submitted" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .build()
 
       running(application) {
         val request =
-          FakeRequest(POST, goodsDescriptionCreateRoute)
+          FakeRequest(POST, hasGoodsDescriptionChangeRoute)
             .withFormUrlEncodedBody(("value", ""))
 
         val boundForm = form.bind(Map("value" -> ""))
 
-        val view = application.injector.instanceOf[GoodsDescriptionView]
+        val view = application.injector.instanceOf[HasGoodsDescriptionChangeView]
 
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, onSubmitAction)(
-          request,
-          messages(application)
-        ).toString
-      }
-    }
-
-    "must return a Bad Request and errors when user submits a description longer than 512 characters" in {
-
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .build()
-
-      val invalidLength              = 513
-      val invalidDescription: String = Gen.listOfN(invalidLength, Gen.alphaNumChar).map(_.mkString).sample.value
-
-      running(application) {
-        val request =
-          FakeRequest(POST, goodsDescriptionCreateRoute)
-            .withFormUrlEncodedBody(("value", invalidDescription))
-
-        val boundForm = form.bind(Map("value" -> invalidDescription))
-
-        val view = application.injector.instanceOf[GoodsDescriptionView]
-
-        val result = route(application, request).value
-
-        status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, onSubmitAction)(
+        contentAsString(result) mustEqual view(boundForm, NormalMode, testRecordId)(
           request,
           messages(application)
         ).toString
@@ -177,7 +163,7 @@ class CreateGoodsDescriptionControllerSpec extends SpecBase with MockitoSugar {
         .build()
 
       running(application) {
-        val request = FakeRequest(GET, goodsDescriptionCreateRoute)
+        val request = FakeRequest(GET, hasGoodsDescriptionChangeRoute)
 
         val result = route(application, request).value
 
@@ -193,8 +179,8 @@ class CreateGoodsDescriptionControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, goodsDescriptionCreateRoute)
-            .withFormUrlEncodedBody(("value", "answer"))
+          FakeRequest(POST, hasGoodsDescriptionChangeRoute)
+            .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 
@@ -202,6 +188,5 @@ class CreateGoodsDescriptionControllerSpec extends SpecBase with MockitoSugar {
         redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
       }
     }
-
   }
 }

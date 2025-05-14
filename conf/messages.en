@@ -20,6 +20,7 @@ site.view = View
 site.skipToMainContent = Skip to main content
 
 site.goBackToGoodsRecord = Go back to goods record
+site.goToGoodsRecord = Go to goods record
 site.goBackToGoodsProfile = Go back to goods profile
 site.goBackToTGPRecords = Go to TGP records files
 site.goBackToHomePage = Go back to homepage
@@ -246,11 +247,6 @@ createRecordStart.p2.4 = commodity code
 createRecordStart.h2 = Product reference
 createRecordStart.p3 = A product reference is a personalised name you can give a goods record to help you identify and find it.
 createRecordStart.p4 = You’ll also be able to use the product reference when creating an Internal Market Movement Information (IMMI) form. This will add the information from your goods record to the form.
-createRecordStart.h3 = Categorisation
-createRecordStart.p5 = Once you’ve created the goods record, you’ll be able to categorise it.
-createRecordStart.p6 = Categorisation will let you know if your goods are eligible to move with the Simplified Process for Internal Market Movements (SPIMM).
-createRecordStart.p7 = To complete categorisation, you may need to know the exemptions your goods move under.
-createRecordStart.p8 = You’ll need to complete categorisation before you can use the goods record on movements.
 
 createRecordSuccess.title = You’ve created a goods record
 createRecordSuccess.h1 = You’ve created a goods record
@@ -262,6 +258,10 @@ createRecordSuccess.h2.1 = Tell us what you think
 createRecordSuccess.p6 = This is a new service and we want to know what you think of it.
 createRecordSuccess.p7.linkText = Send us your feedback
 createRecordSuccess.p7 = Your thoughts and ideas will help us to make improvements.
+
+createRecordAutoCategorisationSuccess.p1 = We've automatically categorised the goods as there are no available exemptions and they are
+createRecordAutoCategorisationSuccess.immiReady = You can use this goods record to help complete the IMMI form.
+createRecordAutoCategorisationSuccess.notReadyForImmi = You cannot use this goods record to help complete an IMMI form as it is category 1.
 
 goodsDescription.title = Goods description
 goodsDescription.h1 = Goods description
@@ -480,9 +480,6 @@ goodsRecordsEmptyView.p1 = You do not have any records in your goods profile.
 goodsRecordsEmptyView.p2 = You can
 goodsRecordsEmptyView.p2.link = create a new goods record
 
-
-
-
 removeGoodsRecord.title = Removing goods record
 removeGoodsRecord.heading = Removing goods record
 removeGoodsRecord.error.required = Select yes if you want to remove this goods record
@@ -634,7 +631,7 @@ goodsRecordSearchResult.p2 = {0} records found
 goodsRecordSearchResult.singleRecord = 1 record found
 goodsRecordSearchResult.p4 = Status:
 goodsRecordSearchResult.p5 = Search term: ‘{0}’
-goodsRecordSearchResult.p6 = Country: {0}
+goodsRecordSearchResult.p6 = Country:
 
 
 goodsRecordSearchResultEmptyView.title = There are no matching results
@@ -791,6 +788,7 @@ adviceStatus.adviceReceived = Advice received
 adviceStatus.adviceNotProvided = Advice not provided
 adviceStatus.adviceRequestWithdrawn = Advice request withdrawn
 
+declarableStatus.status = Status
 declarableStatus.immiReady = IMMI ready
 declarableStatus.notReadyForImmi = Not ready for IMMI
 declarableStatus.notReadyForUse = Action needed
@@ -808,3 +806,7 @@ updatedCommodityCode.paragraph2 = You do not need to categorise this record now.
 recordLocked.title = There is a problem
 recordLocked.heading = There is a problem
 recordLocked.paragraph = HMRC are reviewing this record following a request for advice. You cannot update the record unless you withdraw your request for advice.
+
+recordNotFound.title = Record not found
+recordNotFound.heading = Record not found
+recordNotFound.paragraph = This record has been removed from your TGP.

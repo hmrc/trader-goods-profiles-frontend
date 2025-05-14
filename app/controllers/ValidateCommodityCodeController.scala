@@ -16,11 +16,12 @@
 
 package controllers
 
-import controllers.BaseController
 import controllers.actions.*
 import play.api.i18n.MessagesApi
 import play.api.mvc.*
 import services.CommodityService
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
@@ -38,6 +39,8 @@ class ValidateCommodityCodeController @Inject() (
 
   def changeCategory(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
+      implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
+
       commodityService.isCommodityCodeValid(recordId).map {
         case true  =>
           Redirect(controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(recordId))

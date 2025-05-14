@@ -27,7 +27,7 @@ class ProductReferenceFormProvider @Inject() extends Mappings {
 
   def apply(): Form[String] =
     Form(
-      "value" -> adaptedText("productReference.error.required")(_.removeDoubleSpaces())
+      "value" -> adaptedText("productReference.error.required")(_.removeExtraWhiteChars())
         .verifying(maxLength(productReferenceMaxLength, "productReference.error.length"))
     )
 }

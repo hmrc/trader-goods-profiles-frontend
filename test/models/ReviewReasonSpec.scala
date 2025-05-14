@@ -79,7 +79,7 @@ class ReviewReasonSpec extends SpecBase {
           Commodity.messageKey mustBe "singleRecord.commodityReviewReason"
           Commodity.linkKey mustBe Some("singleRecord.commodityReviewReason.linkText")
           Commodity
-            .url("recordId")
+            .url("recordId", NotRequested)
             .value
             .url mustBe controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangedController
             .onPageLoad(NormalMode, "recordId")
@@ -96,7 +96,7 @@ class ReviewReasonSpec extends SpecBase {
           Commodity.messageKey mustBe "singleRecord.commodityReviewReason"
           Commodity.linkKey mustBe Some("singleRecord.commodityReviewReason.linkText")
           Commodity
-            .url("recordId")
+            .url("recordId", NotRequested)
             .value
             .url mustBe controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangedController
             .onPageLoad(NormalMode, "recordId")
@@ -110,7 +110,7 @@ class ReviewReasonSpec extends SpecBase {
           Commodity.messageKey mustBe "singleRecord.commodityReviewReason"
           Commodity.linkKey mustBe Some("singleRecord.commodityReviewReason.linkText")
           Commodity
-            .url("recordId")
+            .url("recordId", NotRequested)
             .value
             .url mustBe controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangedController
             .onPageLoad(NormalMode, "recordId")
@@ -124,7 +124,7 @@ class ReviewReasonSpec extends SpecBase {
           Commodity.messageKey mustBe "singleRecord.commodityReviewReason"
           Commodity.linkKey mustBe Some("singleRecord.commodityReviewReason.linkText")
           Commodity
-            .url("recordId")
+            .url("recordId", NotRequested)
             .value
             .url mustBe controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangedController
             .onPageLoad(NormalMode, "recordId")
@@ -139,9 +139,9 @@ class ReviewReasonSpec extends SpecBase {
         Inadequate.messageKey mustBe "singleRecord.inadequateReviewReason"
         Inadequate.linkKey mustBe Some("singleRecord.inadequateReviewReason.linkText")
         Inadequate
-          .url("recordId")
+          .url("recordId", NotRequested)
           .value
-          .url mustBe controllers.goodsRecord.goodsDescription.routes.HasGoodsDescriptionChangeController
+          .url mustBe controllers.goodsRecord.goodsDescription.routes.UpdateGoodsDescriptionController
           .onPageLoad(NormalMode, "recordId")
           .url
         Inadequate.setAdditionalContent(isCategorised = false, NotRequested) mustBe None
@@ -151,9 +151,9 @@ class ReviewReasonSpec extends SpecBase {
         Unclear.messageKey mustBe "singleRecord.unclearReviewReason"
         Unclear.linkKey mustBe Some("singleRecord.unclearReviewReason.linkText")
         Unclear
-          .url("recordId")
+          .url("recordId", NotRequested)
           .value
-          .url mustBe controllers.goodsRecord.goodsDescription.routes.HasGoodsDescriptionChangeController
+          .url mustBe controllers.goodsRecord.goodsDescription.routes.UpdateGoodsDescriptionController
           .onPageLoad(NormalMode, "recordId")
           .url
         Unclear.setAdditionalContent(isCategorised = false, NotRequested) mustBe None
@@ -162,8 +162,8 @@ class ReviewReasonSpec extends SpecBase {
       "when Measure" in {
         Measure.messageKey mustBe "singleRecord.measureReviewReason"
         Measure.linkKey mustBe Some("singleRecord.measureReviewReason.linkText")
-        Measure.url("recordId").value.url mustBe controllers.categorisation.routes.CategorisationPreparationController
-          .startCategorisation("recordId")
+        Measure.url("recordId", NotRequested).value.url mustBe controllers.routes.ValidateCommodityCodeController
+          .changeCategory("recordId")
           .url
         Measure.setAdditionalContent(isCategorised = false, NotRequested) mustBe None
       }
@@ -171,7 +171,7 @@ class ReviewReasonSpec extends SpecBase {
       "when Mismatch" in {
         Mismatch.messageKey mustBe "singleRecord.mismatchReviewReason"
         Mismatch.linkKey mustBe None
-        Mismatch.url("recordId") mustBe None
+        Mismatch.url("recordId", NotRequested) mustBe None
         Mismatch.setAdditionalContent(isCategorised = false, NotRequested) mustBe None
       }
     }

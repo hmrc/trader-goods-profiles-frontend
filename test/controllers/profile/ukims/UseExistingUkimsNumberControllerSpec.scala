@@ -19,7 +19,7 @@ package controllers.profile.ukims
 import base.SpecBase
 import base.TestConstants.userAnswersId
 import connectors.TraderProfileConnector
-import controllers.profile.ukims.routes._
+import controllers.profile.ukims.routes.*
 import forms.profile.ukims.UseExistingUkimsNumberFormProvider
 import models.UserAnswers
 import navigation.{FakeProfileNavigator, ProfileNavigator}
@@ -30,7 +30,7 @@ import pages.profile.ukims.UkimsNumberPage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import repositories.SessionRepository
 import views.html.profile.UseExistingUkimsNumberView
 

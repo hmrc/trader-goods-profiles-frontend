@@ -42,6 +42,7 @@ lazy val microservice = (project in file("."))
       "-Wconf:src=routes/.*:s",
       "-Wconf:src=html/.*:s",
     ),
+    Test / scalacOptions := scalacOptions.value,
     libraryDependencies ++= AppDependencies(),
     retrieveManaged := true,
     resolvers ++= Seq(Resolver.jcenterRepo),
@@ -72,3 +73,9 @@ lazy val it =
 addCommandAlias("testAndCoverage", ";clean;coverage;test;it/test;coverageReport")
 addCommandAlias("prePR", ";scalafmt;test:scalafmt;testAndCoverage")
 addCommandAlias("preMerge", ";scalafmtCheckAll;testAndCoverage")
+inConfig(Compile)(scalacSettings)
+inConfig(Test)(scalacSettings)
+
+def scalacSettings = Seq(
+  scalacOptions := scalacOptions.value.distinct
+)

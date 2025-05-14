@@ -100,22 +100,23 @@
     @if(!appConfig.enhancedSearch) {
         @goodsRecordSearchFeature(form, page)
     } else {
-        <div class="govuk-width-container">
+        <div class="govuk-grid-column-full govuk-!-margin-top-4">
 
             @if(searchForm.searchTerm.nonEmpty
                     || searchForm.countryOfOrigin.nonEmpty
                     || searchForm.statusValue.nonEmpty) {
                 @if(goodsRecordsPagination.totalRecords == 1) {
-                    <h1 class="govuk-heading-l"> @messages("goodsRecordSearchResult.singleRecord")</h1>
-                } else if(goodsRecordsPagination.totalRecords > 0) {
-                <h1 class="govuk-heading-l"> @messages("goodsRecordSearchResult.p2", goodsRecordsPagination.totalRecords.toString())</h1>
-                } else  {
-                <h1 class="govuk-heading-l"> @messages("goodsRecordSearchResult.noRecordsHeading")</h1>
-                <p class="govuk-body"> @messages("goodsRecordSearchResult.noRecordsParagraph")</p>
+                        <h1 class="govuk-heading-l"> @messages("goodsRecordSearchResult.singleRecord")</h1>
+                    } else if(goodsRecordsPagination.totalRecords > 0) {
+                        <h1 class="govuk-heading-l"> @messages("goodsRecordSearchResult.p2", goodsRecordsPagination.totalRecords.toString())</h1>
+                    } else  {
+                        <h1 class="govuk-heading-l"> @messages("goodsRecordSearchResult.noRecordsHeading")</h1>
+                        <p class="govuk-body"> @messages("goodsRecordSearchResult.noRecordsParagraph")</p>
                 }
             } else {
                 <h1 class="govuk-heading-l"> @messages("goodsRecords.title")</h1>
             }
+
             <div class="govuk-grid-row">
                 @goodsRecordFilterForm(form, countries, page, searchForm)
 
@@ -155,13 +156,11 @@
                 </div>
             </div>
 
-        </div>
 
     }
 
     @if(goodsRecordsPagination.totalRecords > 0) {
 
-        <div class="govuk-grid-column-full govuk-!-margin-top-4">
             <h2 class="govuk-heading-m" id="goodsRecords">@messages("goodsRecords.record.list")</h2>
             @if(!appConfig.enhancedSearch || (searchForm.searchTerm.isEmpty
                     && searchForm.countryOfOrigin.isEmpty
@@ -184,97 +183,97 @@
 
             @goodsRecordFilterSearchTerm(form, countries, page, searchForm)
 
-            <div style="overflow-x: auto;">
+            <div style="overflow-x: auto;" tabindex="0" role="region" aria-label="goodsProfile">
+                @govukTable(
+                    Table(
+                        caption = Some(messages("goodsRecords.title")),
+                        captionClasses = "govuk-visually-hidden",
+                        head = Some(Seq(
+                            HeadCell(
+                                content = Text(messages("goodsRecords.tableHeader.productReference"))
+                            ),
+                            HeadCell(
+                                content = Text(messages("goodsRecords.tableHeader.goodsDescription"))
+                            ),
+                            HeadCell(
+                                content = Text(messages("goodsRecords.tableHeader.countryOfOrigin"))
+                            ),
+                            HeadCell(
+                                content = Text(messages("goodsRecords.tableHeader.commodityCode"))
+                            ),
+                            HeadCell(
+                                content = Text(messages("goodsRecords.tableHeader.status"))
+                            ),
+                            HeadCell(
+                                content = Text(messages("goodsRecords.tableHeader.actions"))
+                            )
+                        )),
+                        rows = goodsRecordsItems.map {
+                            goodsRecord =>
+                                Seq(
+                                    TableRow(
+                                        content = Text(goodsRecord.traderRef),
+                                        attributes = Map("style" -> "word-break: break-word")
+                                    ),
+                                    TableRow(
+                                        content = Text(goodsRecord.goodsDescription),
+                                        attributes = Map("style" -> "word-break: break-word")
+                                    ),
+                                    TableRow(
+                                        content = HtmlContent(
+                                            s"""<div lang="en">${
+                                                countries
+                                                .find(_.id == goodsRecord.countryOfOrigin)
+                                                .map(_.description)
+                                                .getOrElse(goodsRecord.countryOfOrigin)
+                                            }</div>"""
+                                        )
+                                    ),
+                                    TableRow(
+                                        content = Text(goodsRecord.comcode)
+                                    ),
 
-            @govukTable(
-                Table(
-                    caption = Some(messages("goodsRecords.title")),
-                    captionClasses = "govuk-visually-hidden",
-                    head = Some(Seq(
-                        HeadCell(
-                            content = Text(messages("goodsRecords.tableHeader.productReference"))
-                        ),
-                        HeadCell(
-                            content = Text(messages("goodsRecords.tableHeader.goodsDescription"))
-                        ),
-                        HeadCell(
-                            content = Text(messages("goodsRecords.tableHeader.countryOfOrigin"))
-                        ),
-                        HeadCell(
-                            content = Text(messages("goodsRecords.tableHeader.commodityCode"))
-                        ),
-                        HeadCell(
-                            content = Text(messages("goodsRecords.tableHeader.status"))
-                        ),
-                        HeadCell(
-                            content = Text(messages("goodsRecords.tableHeader.actions"))
-                        )
-                    )),
-                    rows = goodsRecordsItems.map {
-                        goodsRecord =>
-                            Seq(
-                                TableRow(
-                                    content = Text(goodsRecord.traderRef),
-                                    attributes = Map("style" -> "word-break: break-word")
-                                ),
-                                TableRow(
-                                    content = Text(goodsRecord.goodsDescription),
-                                    attributes = Map("style" -> "word-break: break-word")
-                                ),
-                                TableRow(
-                                    content = HtmlContent(
-                                        s"""<div lang="en">${
-                                            countries
-                                            .find(_.id == goodsRecord.countryOfOrigin)
-                                            .map(_.description)
-                                            .getOrElse(goodsRecord.countryOfOrigin)
-                                        }</div>"""
-                                    )
-                                ),
-                                TableRow(
-                                    content = Text(goodsRecord.comcode)
-                                ),
+                                    TableRow(
+                                        content = {
+                                            if(!appConfig.enhancedSearch) {
+                                                HtmlContent(
+                                                    messages(goodsRecord.declarable.messageKey)
 
-                                TableRow(
-                                    content = {
-                                        if(!appConfig.enhancedSearch) {
-                                            HtmlContent(
-                                                messages(goodsRecord.declarable.messageKey)
-
-                                            )
-                                        } else {
-                                            HtmlContent(
-                                                tag(messages(goodsRecord.declarable.messageKey), goodsRecord.declarable.paragraphTagColour)
-                                            )
+                                                )
+                                            } else {
+                                                HtmlContent(
+                                                    tag(messages(goodsRecord.declarable.messageKey), goodsRecord.declarable.paragraphTagColour)
+                                                )
+                                            }
                                         }
-                                    }
-                                ),
+                                    ),
 
-                                TableRow(
-                                    content = HtmlContent(
-                                        tableRowActionList(
-                                            text1 = messages("site.view"),
-                                            text2 = messages("site.remove"),
-                                            visuallyHiddenContent1 = goodsRecord.traderRef,
-                                            visuallyHiddenContent2 = goodsRecord.traderRef,
-                                            href1 = controllers.goodsRecord.routes.SingleRecordController.onPageLoad(goodsRecord.recordId).url,
-                                            href2 = controllers.goodsProfile.routes.RemoveGoodsRecordController.onPageLoad(goodsRecord.recordId, GoodsProfileLocation).url,
-                                            adviceStatus = goodsRecord.adviceStatus
+                                    TableRow(
+                                        content = HtmlContent(
+                                            tableRowActionList(
+                                                text1 = messages("site.view"),
+                                                text2 = messages("site.remove"),
+                                                visuallyHiddenContent1 = goodsRecord.traderRef,
+                                                visuallyHiddenContent2 = goodsRecord.traderRef,
+                                                href1 = controllers.goodsRecord.routes.SingleRecordController.onPageLoad(goodsRecord.recordId).url,
+                                                href2 = controllers.goodsProfile.routes.RemoveGoodsRecordController.onPageLoad(goodsRecord.recordId, GoodsProfileLocation).url,
+                                                adviceStatus = goodsRecord.adviceStatus
+                                            )
                                         )
                                     )
                                 )
-                            )
-                    }
+                        }
+                    )
                 )
-            )
-
             </div>
-            @govukPagination(pagination)
+
+            @if(goodsRecordsPagination.totalPages > 1) {
+                @govukPagination(pagination)
+            }
 
             <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad().url" class="govuk-link">@messages("site.goBackToHomePage")</a></p>
-            } else {
-        <p class="govuk-body govuk-!-margin-top-4"><a href="@routes.HomePageController.onPageLoad().url" class="govuk-link">@messages("site.goBackToHomePage")</a></p>
-    }
-
-</div>
+                } else {
+                <p class="govuk-body govuk-!-margin-top-4"><a href="@routes.HomePageController.onPageLoad().url" class="govuk-link">@messages("site.goBackToHomePage")</a></p>
+                }
+        </div>
 }

@@ -19,7 +19,7 @@ package controllers.profile.nirms
 import base.SpecBase
 import base.TestConstants.{testEori, userAnswersId}
 import connectors.TraderProfileConnector
-import controllers.profile.nirms.routes._
+import controllers.profile.nirms.routes.*
 import forms.profile.nirms.RemoveNirmsFormProvider
 import models.{TraderProfile, UserAnswers}
 import navigation.{FakeProfileNavigator, ProfileNavigator}
@@ -31,7 +31,7 @@ import pages.profile.nirms.{HasNirmsUpdatePage, NirmsNumberUpdatePage, RemoveNir
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import repositories.SessionRepository
 import views.html.profile.RemoveNirmsView
 

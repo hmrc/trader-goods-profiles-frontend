@@ -18,14 +18,14 @@ package controllers.profile.ukims
 
 import base.SpecBase
 import connectors.TraderProfileConnector
-import controllers.profile.ukims.routes._
+import controllers.profile.ukims.routes.*
 import controllers.routes
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{verify, when}
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject.bind
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import views.html.profile.UkimsKickOutView
 
 import scala.concurrent.Future

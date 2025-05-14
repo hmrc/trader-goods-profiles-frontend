@@ -19,7 +19,8 @@ package viewmodels.checkAnswers
 import base.SpecBase
 import base.TestConstants.testRecordId
 import models.AdviceStatus.AdviceReceived
-import models.NormalMode
+import models.{CheckMode, NormalMode, UserAnswers}
+import pages.goodsRecord.GoodsDescriptionPage
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.Actions
 import viewmodels.checkAnswers.goodsRecord.GoodsDescriptionSummary
@@ -59,10 +60,52 @@ class GoodsDescriptionSummarySpec extends SpecBase {
           GoodsDescriptionSummary.rowUpdate(recordWithAdviceProvided, testRecordId, NormalMode, recordLocked = false)
 
         row.actions mustBe defined
-        row.actions.value.items.head.href mustEqual controllers.goodsRecord.goodsDescription.routes.HasGoodsDescriptionChangeController
-          .onPageLoad(NormalMode, testRecordId)
-          .url
+        row.actions.value.items.head.href mustEqual
+          controllers.goodsRecord.goodsDescription.routes.HasGoodsDescriptionChangeController
+            .onPageLoad(NormalMode, testRecordId)
+            .url
+
       }
     }
   }
+
+  ".row" - {
+
+    "must return a SummaryListRow when GoodsDescriptionPage is defined" in {
+      val ua = UserAnswers("id").set(GoodsDescriptionPage, "Test").success.value
+
+      val result = GoodsDescriptionSummary.row(ua)
+
+      result mustBe defined
+      result.value.key.content.toString   must include(messages("goodsDescription.checkYourAnswersLabel"))
+      result.value.value.content.toString must include("Test")
+      result.value.actions.value.items.head.href mustEqual
+        controllers.goodsRecord.goodsDescription.routes.CreateGoodsDescriptionController
+          .onPageLoad(CheckMode)
+          .url
+    }
+
+    "must return None when GoodsDescriptionPage is undefined" in {
+      val ua = UserAnswers("id")
+
+      val result = GoodsDescriptionSummary.row(ua)
+
+      result mustBe None
+    }
+  }
+
+  ".rowUpdateCya" - {
+
+    "must return a SummaryListRow with correct value and link" in {
+      val result = GoodsDescriptionSummary.rowUpdateCya("Updated goods", testRecordId, NormalMode)
+
+      result.key.content.toString   must include(messages("goodsDescription.checkYourAnswersLabel"))
+      result.value.content.toString must include("Updated goods")
+      result.actions.value.items.head.href mustEqual
+        controllers.goodsRecord.goodsDescription.routes.UpdateGoodsDescriptionController
+          .onPageLoad(NormalMode, testRecordId)
+          .url
+    }
+  }
+
 }

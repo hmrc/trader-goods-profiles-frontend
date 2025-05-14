@@ -16,21 +16,23 @@
 
 package controllers.goodsRecord
 
+import cats.data.NonEmptyChain
 import com.google.inject.Inject
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.BaseController
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
 import models.helper.CreateRecordJourney
-import models.{Country, GoodsRecord, NormalMode, UserAnswers}
+import models.requests.DataRequest
+import models.{Country, GoodsRecord, NormalMode, UserAnswers, ValidationError}
 import navigation.GoodsRecordNavigator
 import pages.goodsRecord.CyaCreateRecordPage
 import play.api.i18n.MessagesApi
-import play.api.mvc._
+import play.api.mvc.*
 import queries.CountriesQuery
 import repositories.SessionRepository
 import services.{AuditService, DataCleansingService}
 import viewmodels.checkAnswers.goodsRecord.{CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, ProductReferenceSummary}
-import viewmodels.govuk.summarylist._
+import viewmodels.govuk.summarylist.*
 import views.html.goodsRecord.CyaCreateRecordView
 
 import scala.annotation.unused
@@ -69,14 +71,7 @@ class CyaCreateRecordController @Inject() (
               } yield displayView(updatedAnswersWithQuery, countries)
           }
         case Left(errors) =>
-          dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
-          Future.successful(
-            logErrorsAndContinue(
-              errorMessage,
-              controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad(),
-              errors
-            )
-          )
+          handleBuildErrors(request, errors)
       }
   }
 
@@ -102,15 +97,19 @@ class CyaCreateRecordController @Inject() (
             _        <- dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
           } yield Redirect(navigator.nextPage(CyaCreateRecordPage(recordId), NormalMode, request.userAnswers))
         case Left(errors) =>
-          dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
-          Future.successful(
-            logErrorsAndContinue(
-              errorMessage,
-              controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad(),
-              errors
-            )
-          )
+          handleBuildErrors(request, errors)
       }
+  }
+
+  private def handleBuildErrors(request: DataRequest[AnyContent], errors: NonEmptyChain[ValidationError]) = {
+    dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
+    Future.successful(
+      logErrorsAndContinue(
+        errorMessage,
+        controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad(),
+        errors
+      )
+    )
   }
 
 }

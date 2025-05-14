@@ -35,7 +35,7 @@ object NirmsNumberSummary {
         actions = Seq(
           ActionItemViewModel(
             "site.change",
-            NirmsNumberController.onPageLoadCreate(CheckMode).url
+            CreateNirmsNumberController.onPageLoad(CheckMode).url
           )
             .withVisuallyHiddenText(messages("nirmsNumber.change.hidden"))
         )
@@ -50,7 +50,7 @@ object NirmsNumberSummary {
         actions = Seq(
           ActionItemViewModel(
             "site.change",
-            NirmsNumberController.onPageLoadUpdate(NormalMode).url
+            UpdateNirmsNumberController.onPageLoad(NormalMode).url
           )
             .withVisuallyHiddenText(messages("nirmsNumber.change.hidden"))
         )
@@ -65,7 +65,7 @@ object NirmsNumberSummary {
         actions = Seq(
           ActionItemViewModel(
             "site.change",
-            NirmsNumberController.onPageLoadUpdate(CheckMode).url
+            UpdateNirmsNumberController.onPageLoad(CheckMode).url
           )
             .withVisuallyHiddenText(messages("nirmsNumber.change.hidden"))
         )

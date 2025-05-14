@@ -16,14 +16,15 @@
 
 package models
 
-import play.api.libs.json._
+import models.AdviceStatus.{AdviceNotProvided, AdviceRequestWithdrawn}
+import play.api.libs.json.*
 import play.api.mvc.Call
 
 sealed trait ReviewReason {
   val messageKey: String
   val linkKey: Option[String]
 
-  def url(recordId: String): Option[Call]
+  def url(recordId: String, adviceStatus: AdviceStatus): Option[Call]
   def setAdditionalContent(isCategorised: Boolean, adviceStatus: AdviceStatus): Option[(String, String)]
 }
 
@@ -35,7 +36,7 @@ object ReviewReason {
     val messageKey: String      = "singleRecord.commodityReviewReason"
     val linkKey: Option[String] = Some("singleRecord.commodityReviewReason.linkText")
 
-    override def url(recordId: String): Option[Call] =
+    override def url(recordId: String, adviceStatus: AdviceStatus): Option[Call] =
       Some(
         controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangedController.onPageLoad(NormalMode, recordId)
       )
@@ -64,11 +65,19 @@ object ReviewReason {
     val messageKey: String      = "singleRecord.inadequateReviewReason"
     val linkKey: Option[String] = Some("singleRecord.inadequateReviewReason.linkText")
 
-    override def url(recordId: String): Option[Call]                                                                =
-      Some(
-        controllers.goodsRecord.goodsDescription.routes.HasGoodsDescriptionChangeController
-          .onPageLoad(NormalMode, recordId)
-      )
+    override def url(recordId: String, adviceStatus: AdviceStatus): Option[Call] =
+      Some {
+        if (
+          adviceStatus == AdviceStatus.NotRequested || adviceStatus == AdviceRequestWithdrawn || adviceStatus == AdviceNotProvided
+        ) {
+          controllers.goodsRecord.goodsDescription.routes.UpdateGoodsDescriptionController
+            .onPageLoad(NormalMode, recordId)
+        } else {
+          controllers.goodsRecord.goodsDescription.routes.HasGoodsDescriptionChangeController
+            .onPageLoad(NormalMode, recordId)
+        }
+      }
+
     override def setAdditionalContent(isCategorised: Boolean, adviceStatus: AdviceStatus): Option[(String, String)] =
       None
   }
@@ -77,11 +86,19 @@ object ReviewReason {
     val messageKey: String      = "singleRecord.unclearReviewReason"
     val linkKey: Option[String] = Some("singleRecord.unclearReviewReason.linkText")
 
-    override def url(recordId: String): Option[Call]                                                                =
-      Some(
-        controllers.goodsRecord.goodsDescription.routes.HasGoodsDescriptionChangeController
-          .onPageLoad(NormalMode, recordId)
-      )
+    override def url(recordId: String, adviceStatus: AdviceStatus): Option[Call] =
+      Some {
+        if (
+          adviceStatus == AdviceStatus.NotRequested || adviceStatus == AdviceNotProvided || adviceStatus == AdviceRequestWithdrawn
+        ) {
+          controllers.goodsRecord.goodsDescription.routes.UpdateGoodsDescriptionController
+            .onPageLoad(NormalMode, recordId)
+        } else {
+          controllers.goodsRecord.goodsDescription.routes.HasGoodsDescriptionChangeController
+            .onPageLoad(NormalMode, recordId)
+        }
+      }
+
     override def setAdditionalContent(isCategorised: Boolean, adviceStatus: AdviceStatus): Option[(String, String)] =
       None
   }
@@ -90,10 +107,11 @@ object ReviewReason {
     val messageKey: String      = "singleRecord.measureReviewReason"
     val linkKey: Option[String] = Some("singleRecord.measureReviewReason.linkText")
 
-    override def url(recordId: String): Option[Call]                                                                =
+    override def url(recordId: String, adviceStatus: AdviceStatus): Option[Call] =
       Some(
-        controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(recordId)
+        controllers.routes.ValidateCommodityCodeController.changeCategory(recordId)
       )
+
     override def setAdditionalContent(isCategorised: Boolean, adviceStatus: AdviceStatus): Option[(String, String)] =
       None
   }
@@ -102,7 +120,8 @@ object ReviewReason {
     val messageKey: String      = "singleRecord.mismatchReviewReason"
     val linkKey: Option[String] = None
 
-    override def url(recordId: String): Option[Call]                                                                = None
+    override def url(recordId: String, adviceStatus: AdviceStatus): Option[Call] = None
+
     override def setAdditionalContent(isCategorised: Boolean, adviceStatus: AdviceStatus): Option[(String, String)] =
       None
   }

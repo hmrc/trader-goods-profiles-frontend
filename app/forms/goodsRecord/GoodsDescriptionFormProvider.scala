@@ -27,7 +27,7 @@ class GoodsDescriptionFormProvider @Inject() extends Mappings {
 
   def apply(): Form[String] =
     Form(
-      "value" -> adaptedText("goodsDescription.error.required")(_.removeDoubleSpaces())
+      "value" -> adaptedText("goodsDescription.error.required")(_.removeExtraWhiteChars())
         .verifying(maxLength(goodsDescriptionMaxLength, "goodsDescription.error.length"))
     )
 }

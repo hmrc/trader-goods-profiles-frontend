@@ -35,7 +35,7 @@ object UkimsNumberSummary {
         actions = Seq(
           ActionItemViewModel(
             "site.change",
-            UkimsNumberController.onPageLoadCreate(CheckMode).url
+            CreateUkimsNumberController.onPageLoad(CheckMode).url
           )
             .withVisuallyHiddenText(messages("ukimsNumber.change.hidden"))
         )
@@ -49,7 +49,7 @@ object UkimsNumberSummary {
       actions = Seq(
         ActionItemViewModel(
           "site.change",
-          UkimsNumberController.onPageLoadUpdate(NormalMode).url
+          UpdateUkimsNumberController.onPageLoad(NormalMode).url
         )
           .withVisuallyHiddenText(messages("ukimsNumber.change.hidden"))
       )
@@ -63,7 +63,7 @@ object UkimsNumberSummary {
         actions = Seq(
           ActionItemViewModel(
             "site.change",
-            UkimsNumberController.onPageLoadUpdate(CheckMode).url
+            UpdateUkimsNumberController.onPageLoad(CheckMode).url
           )
             .withVisuallyHiddenText(messages("ukimsNumber.change.hidden"))
         )

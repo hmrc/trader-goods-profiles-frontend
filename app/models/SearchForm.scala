@@ -27,7 +27,7 @@ object SearchForm {
 
   val form: Form[SearchForm] = Form(
     mapping(
-      "searchTerm"      -> optional(text),
+      "searchTerm"      -> optional(text).transform[Option[String]](_.map(_.trim), identity),
       "countryOfOrigin" -> optional(text),
       "statusValue"     -> seq(text)
     )(SearchForm.apply)(o => Some(Tuple.fromProductTyped(o)))

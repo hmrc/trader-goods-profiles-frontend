@@ -9,6 +9,7 @@ site.signIn = Mewngofnodi
 site.save.continue = Cadw ac yn eich blaen
 site.back = Yn ôl
 site.goBackToGoodsRecord = Ewch yn ôl i’r cofnod nwyddau
+site.goToGoodsRecord = 	Ewch i’r cofnod nwyddau
 site.goBackToHomePage = Ewch yn ôl i’r hafan
 site.goBackToGoodsProfile = Ewch yn ôl i’r proffil nwyddau
 site.remove = Tynnu
@@ -273,12 +274,6 @@ createRecordStart.p2.4 = cod nwyddau
 createRecordStart.h2 = Cyfeirnod y cynnyrch
 createRecordStart.p3 = Mae cyfeirnod cynnyrch yn enw personol y gallwch ei roi ar gofnod nwyddau i’ch helpu i’w adnabod a dod o hyd iddo.
 createRecordStart.p4 = Byddwch hefyd yn gallu defnyddio cyfeirnod cynnyrch wrth greu ffurflen Gwybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI). Bydd hyn yn ychwanegu’r wybodaeth o’ch cofnod nwyddau at y ffurflen.
-createRecordStart.h3 = Categoreiddio
-createRecordStart.p5 = Unwaith y byddwch wedi creu’r cofnod nwyddau, byddwch yn gallu ei gategoreiddio.
-createRecordStart.p6 = Bydd categoreiddio yn rhoi gwybod i chi a yw’ch nwyddau’n gymwys i’w symud gyda’r Broses Syml ar gyfer Symudiadau’r Farchnad Fewnol (SPIMM).
-createRecordStart.p7 = I gwblhau’r categoreiddio, efallai y bydd angen i chi wybod beth yw’r esemptiadau y bydd eich nwyddau’n symud o dan.
-createRecordStart.p8 =  Bydd angen i chi gwblhau’r categoreiddio cyn y gallwch ddefnyddio’r cofnod nwyddau ar symudiadau.
-
 
 productReference.title = Cyfeirnod y cynnyrch
 productReference.h1 = Cyfeirnod y cynnyrch
@@ -288,8 +283,6 @@ productReference.p3 = Efallai y byddwch am ddefnyddio’r uned cadw stoc (SKU).
 productReference.inputHeading = Beth yw cyfeirnod y cynnyrch?
 productReference.checkYourAnswersLabel = Cyfeirnod y cynnyrch
 productReference.change.hidden = Cyfeirnod y cynnyrch
-
-
 goodsDescription.title = Disgrifiad o’r nwyddau
 goodsDescription.h1 = Disgrifiad o’r nwyddau
 goodsDescription.p1 = Mae disgrifiad o’r nwyddau yn ddisgrifiad o’r nwyddau mewn iaith glir sy’n ddigon manwl gywir i wasanaethau tollau i allu adnabod y nwyddau. Ni allwch ddefnyddio termau cyffredinol i ddisgrifio’r nwyddau.
@@ -328,6 +321,9 @@ createRecordSuccess.h2.1 = Rhowch eich barn
 createRecordSuccess.p6 = Mae hwn yn wasanaeth newydd ac rydym eisiau gwybod beth yw’ch barn amdano.
 createRecordSuccess.p7.linkText = Anfonwch eich adborth atom.
 createRecordSuccess.p7 = Bydd eich meddyliau a’ch syniadau’n ein helpu i wneud gwelliannau.
+createRecordAutoCategorisationSuccess.p1 = Rydym wedi categoreiddio’r nwyddau’n awtomatig oherwydd nad oes esemptiadau ar gael ac oherwydd {0}
+createRecordAutoCategorisationSuccess.immiReady = Gallwch ddefnyddio’r cofnod nwyddau hwn i helpu i lenwi ffurflen IMMI.
+createRecordAutoCategorisationSuccess.notReadyForImmi = Ni allwch ddefnyddio’r cofnod nwyddau hwn i helpu i lenwi ffurflen IMMI gan ei bod yn gategori 1.
 
 productReference.error.required = Nodwch gyfeirnod y cynnyrch
 productReference.error.traderRefNotUnique = Mae cyfeirnod y cynnyrch hwn eisoes yn eich TGP. Nodwch gyfeirnod cynnyrch unigryw.
@@ -599,7 +595,7 @@ goodsRecordSearchResult.p1 = Roeddech yn chwilio am y term {0}.
 goodsRecordSearchResult.p2 =  Wedi dod o hyd i {0} o gofnodion
 goodsRecordSearchResult.p4 = Statws:
 goodsRecordSearchResult.p5 = Term chwilio: ‘{0}’
-goodsRecordSearchResult.p6 = Gwlad tarddiad: {0}
+goodsRecordSearchResult.p6 = Gwlad tarddiad:
 
 goodsRecordSearchResultEmptyView.title = Does dim canlyniadau cyfatebol
 goodsRecordSearchResultEmptyView.h1 = Does dim canlyniadau cyfatebol
@@ -817,6 +813,7 @@ adviceStatus.adviceReceived = Cyngor wedi dod i law
 adviceStatus.adviceNotProvided = Cyngor heb ei ddarparu
 adviceStatus.adviceRequestWithdrawn = Cais am gyngor wedi’i dynnu yn ôl
 
+declarableStatus.status = Statws
 declarableStatus.immiReady = Yn barod ar gyfer IMMI
 declarableStatus.notReadyForImmi = Ddim yn barod ar gyfer IMMI
 declarableStatus.notReadyForUse = Angen cymryd camau
@@ -834,3 +831,7 @@ updatedCommodityCode.paragraph2 = Nid oes raid i chi gategoreiddio’r cofnod hw
 recordLocked.title = Mae problem wedi codi
 recordLocked.heading = 	Mae problem wedi codi
 recordLocked.paragraph = Mae CThEF yn adolygu’r cofnod hwn yn dilyn cais am gyngor. Ni allwch ddiweddaru’r cofnod oni bai eich bod yn tynnu’ch cais am gyngor yn ôl.
+
+recordNotFound.title = Heb ddod o hyd i’r cofnod
+recordNotFound.heading = Heb ddod o hyd i’r cofnod
+recordNotFound.paragraph = Mae’r cofnod hwn wedi cael ei ddileu o’ch Proffil Nwyddau Masnachwyr (TGP).

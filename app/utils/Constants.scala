@@ -48,5 +48,5 @@ case object Constants {
 
   val maxNameLength: Int = 70
 
-  val openAccreditationErrorCode = "027"
+  val openAccreditationErrorCode = "27"
 }
