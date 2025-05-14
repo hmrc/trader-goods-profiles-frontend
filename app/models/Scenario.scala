@@ -21,12 +21,29 @@ import utils.Constants._
 
 sealed trait Scenario
 
-case object StandardGoodsScenario extends Scenario
-case object Category1Scenario extends Scenario
-case object Category2Scenario extends Scenario
-case object StandardGoodsNoAssessmentsScenario extends Scenario
-case object Category1NoExemptionsScenario extends Scenario
-case object Category2NoExemptionsScenario extends Scenario
+case object StandardGoodsScenario extends Scenario with ScenarioCategorised {
+  override def messageKey: String = "singleRecord.standardGoods"
+}
+
+case object Category1Scenario extends Scenario with ScenarioCategorised {
+  override def messageKey: String = "singleRecord.cat1"
+}
+
+case object Category2Scenario extends Scenario with ScenarioCategorised {
+  override def messageKey: String = "singleRecord.cat2"
+}
+
+case object StandardGoodsNoAssessmentsScenario extends Scenario with ScenarioCategorised {
+  override def messageKey: String = "singleRecord.standardGoods"
+}
+
+case object Category1NoExemptionsScenario extends Scenario with ScenarioCategorised {
+  override def messageKey: String = "singleRecord.cat1"
+}
+
+case object Category2NoExemptionsScenario extends Scenario with ScenarioCategorised {
+  override def messageKey: String = "singleRecord.cat2"
+}
 
 object Scenario {
 

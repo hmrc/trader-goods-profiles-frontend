@@ -27,23 +27,7 @@
     tag: components.Tag
 )
 
-@(
-    recordId: String,
-    detailsList: SummaryList,
-    categorisationList: SummaryList,
-    supplementaryUnitList: SummaryList,
-    adviceStatusList: SummaryList,
-    changesMade: Boolean,
-    changedPage: String,
-    dataRemoved: Boolean,recordLocked:Boolean,
-    adviceStatusMessage:Option[AdviceStatusMessage],
-    declarableStatus: DeclarableStatus,
-    toReview: Boolean = false,
-    isCategorised: Boolean,
-    adviceStatus: AdviceStatus,
-    reviewReason: Option[ReviewReason] = None,
-    previousUrl: String
-)(implicit request: Request[_], messages: Messages)
+@(recordId: String, detailsList: SummaryList, categorisationList: SummaryList, supplementaryUnitList: SummaryList, adviceStatusList: SummaryList, changesMade: Boolean, changedPage: String,dataRemoved: Boolean,recordLocked:Boolean, adviceStatusMessage:Option[AdviceStatusMessage], declarableStatus: DeclarableStatus,  toReview: Boolean = false, isCategorised: Boolean, adviceStatus: AdviceStatus, reviewReason: Option[ReviewReason] = None, previousUrl: String, autoCategoriseScenario: Option[Scenario])(implicit request: Request[_], messages: Messages)
 
     @bannerContentForUpdate(page: String, dataRemoved:Boolean) = {
         <h3 class="govuk-notification-banner__heading">
@@ -55,6 +39,12 @@
         </h3>
     }
 
+    @autoCategorisedBannerContent(scenario: Scenario) = {
+        <h3 class="govuk-notification-banner__heading">
+            Your goods have been automatically categorised to @scenario
+        </h3>
+        }
+
 @layout(backLinkUrl = previousUrl, backLinkMessageKey = "singleRecord.back", pageTitle = titleNoForm(messages("singleRecord.title"))) {
 
     @if(changesMade) {
@@ -62,6 +52,15 @@
             title = Text(messages("successBanner.title")),
             content = HtmlContent(bannerContentForUpdate(changedPage, dataRemoved)),
             bannerType = Some("success"),
+            role=Some("alert"))
+        )
+    }
+
+    @autoCategoriseScenario.map { scenario =>
+        @govukNotificationBanner(NotificationBanner(
+            title = Text("Important"),
+            content = HtmlContent(autoCategorisedBannerContent(scenario)),
+            bannerType = Some("information"),
             role=Some("alert"))
         )
     }
