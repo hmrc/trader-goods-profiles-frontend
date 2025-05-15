@@ -34,15 +34,10 @@
     <p class="govuk-body">@messages("createRecordSuccess.p2")</p>
     <p class="govuk-body">@messages("createRecordSuccess.p3")</p>
 
-    @autoCategorisedScenario.map { scenario =>
-        <p class="govuk-body">Your goods have been automatically categorised to @scenario</p>
-    }
-
     <p class="govuk-body"><a href="@controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(recordId).url" class="govuk-link" >@messages("createRecordSuccess.p4.linkText")</a></p>
     <p class="govuk-body"><a href="@controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url" class="govuk-link" >@messages("site.goBackToGoodsProfile")</a></p>
     <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad().url" class="govuk-link" >@messages("site.goBackToHomePage")</a></p>
 
     @feedbackSection()
-
 
 }

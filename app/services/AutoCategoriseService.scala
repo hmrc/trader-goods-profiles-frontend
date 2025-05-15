@@ -66,7 +66,7 @@ class AutoCategoriseService @Inject() (
           updatedUserAnswers.flatMap { updatedUserAnswers =>
             CategoryRecord.build(updatedUserAnswers, record.eori, record.recordId, categorisationService) match {
               case Right(record) =>
-                // TODO - Probably want to have a audit event for auto categorisation for monitoring
+                // TODO - Probably want to have a  audit event for auto categorisation for monitoring
 
                 for {
                   oldRecord <-
