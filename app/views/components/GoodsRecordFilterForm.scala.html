@@ -85,9 +85,10 @@
 
                    @govukSelect(
                         SelectViewModel(
-                        field = form("countryOfOrigin"),
-                        items = selectItems(countries),
-                        label = LabelViewModel(messages("goodsRecords.tableHeader.countryOfOrigin")).withSize(Small)
+                            field = form("countryOfOrigin"),
+                            items = Seq(SelectItem(Some(""), messages("countryOfOrigin.placeholder"))) ++
+                            selectItems(countries).filterNot(item => item.value.isEmpty),
+                            label = LabelViewModel(messages("goodsRecords.tableHeader.countryOfOrigin")).withSize(Small)
                         )
                         .withCssClass("autocomplete")
                         .withAttribute(("lang", "en"))

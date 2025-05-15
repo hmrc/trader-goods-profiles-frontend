@@ -53,11 +53,11 @@
         @govukSelect(
             SelectViewModel(
                 field = form("value"),
-                items = selectItems(countries),
+                items = Seq(SelectItem(Some(""), messages("countryOfOrigin.placeholder"))) ++
+                selectItems(countries).filterNot(item => item.value.isEmpty),
                 label = LabelViewModel(messages("countryOfOrigin.heading")).withSize(Medium)
-            )
-            .withCssClass("autocomplete")
-            .withAttribute(("lang", "en"))
+            ).withCssClass("autocomplete")
+        .withAttribute(("lang", "en"))
         )
 
         @govukButton(
