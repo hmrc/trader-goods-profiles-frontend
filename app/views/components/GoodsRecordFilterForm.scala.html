@@ -83,17 +83,18 @@
                         )
                         ))
 
-                   @govukSelect(
-                        SelectViewModel(
-                        field = form("countryOfOrigin"),
-                        items = selectItems(countries),
-                        label = LabelViewModel(messages("goodsRecords.tableHeader.countryOfOrigin")).withSize(Small)
-                        )
-                        .withCssClass("autocomplete")
-                        .withAttribute(("lang", "en"))
-                   )
+         @govukSelect(
+             SelectViewModel(
+                 field = form("countryOfOrigin"),
+                 items = Seq(SelectItem(value = Some(""), text = messages("countryOfOrigin.placeholder"))) ++ selectItems(countries),
+                 label = LabelViewModel(messages("goodsRecords.tableHeader.countryOfOrigin")).withSize(Small)
+             )
+             .withCssClass("autocomplete")
+             .withAttribute(("lang", "en"))
+         )
 
-            <div class="govuk-button-group">
+
+         <div class="govuk-button-group">
 
                    @govukButton(
                           ButtonViewModel(
