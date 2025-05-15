@@ -16,15 +16,18 @@
 
 package controllers.goodsRecord
 
+import connectors.GoodsRecordConnector
 import controllers.BaseController
 import controllers.actions.*
-import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import models.{DeclarableStatus, Scenario}
+import models.router.responses.GetGoodsRecordResponse
+import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
 import services.AutoCategoriseService
-import views.html.goodsRecord.CreateRecordSuccessView
+import views.html.goodsRecord.{CreateRecordAutoCategorisationSuccessView, CreateRecordSuccessView}
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class CreateRecordSuccessController @Inject() (
   override val messagesApi: MessagesApi,
@@ -34,16 +37,40 @@ class CreateRecordSuccessController @Inject() (
   profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
   autoCategoriseService: AutoCategoriseService,
-  view: CreateRecordSuccessView
+  goodsRecordConnector: GoodsRecordConnector,
+  defaultView: CreateRecordSuccessView,
+  autoCategorisationView: CreateRecordAutoCategorisationSuccessView
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
   def onPageLoad(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      autoCategoriseService.autoCategoriseRecord(recordId, request.userAnswers).map { autoCategorisedScenario =>
-        Ok(view(recordId, autoCategorisedScenario))
+      if (recordId.isEmpty) {
+        Future.successful(BadRequest("Invalid record ID"))
+      } else {
+        autoCategoriseService.autoCategoriseRecord(recordId, request.userAnswers).flatMap { autoCategorisedScenario =>
+          goodsRecordConnector.getRecord(recordId).map { record =>
+            renderView(recordId, autoCategorisedScenario, record)
+          }
+        }
       }
-    } // TODO Probably want to recover on this if autoCategorise future fails, e.g show default content probably just Ok(view(recordId, None))
+    }
 
-  // TODO - Will want to remove the link to categorise a good if we've automatically categorised
+  private def renderView(recordId: String, scenario: Option[Scenario], record: GetGoodsRecordResponse)(implicit
+    request: Request[_],
+    messages: Messages
+  ): Result =
+    scenario match {
+      case Some(_) =>
+        record.declarable match {
+          case DeclarableStatus.ImmiReady | DeclarableStatus.NotReadyForImmi =>
+            val tagText = messages(record.declarable.messageKey)
+            Ok(autoCategorisationView(recordId, record.declarable == DeclarableStatus.ImmiReady, tagText))
+          case DeclarableStatus.NotReadyForUse                               =>
+            Ok(defaultView(recordId, scenario))
+        }
+      case None    =>
+        Ok(defaultView(recordId, None))
+    }
 }
+// TODO Probably want to recover on this if autoCategorise future fails, e.g show default content probably just Ok(view(recordId, None))
