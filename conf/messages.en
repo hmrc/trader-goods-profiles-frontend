@@ -264,6 +264,9 @@ createRecordAutoCategorisationSuccess.p1 = We've automatically categorised the g
 createRecordAutoCategorisationSuccess.immiReady = You can use this goods record to help complete the IMMI form.
 createRecordAutoCategorisationSuccess.notReadyForImmi = You cannot use this goods record to help complete an IMMI form as it is category 1.
 
+autocomplete.noResults = No results found
+autocomplete.assistiveHint = When autocomplete results are available use up and down arrows to review and enter to select. Touch device users, explore by touch or with swipe gestures.
+
 goodsDescription.title = Goods description
 goodsDescription.h1 = Goods description
 goodsDescription.p1 = The goods description is a plain language description that is precise enough for customs services to be able to identify the goods. You can not use general terms to describe the goods.
