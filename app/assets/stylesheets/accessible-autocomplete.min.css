@@ -29,9 +29,9 @@
 }
 
 .autocomplete__input--focused {
-  outline: 3px solid #fd0;
-  outline-offset: 0;
-  box-shadow: inset 0 0 0 1px #fd0;
+  border: 3px solid #0b0c0c;
+  box-shadow: 0 0 0 2px #fd0;
+  outline: none;
 }
 
 .autocomplete__input:focus-visible {
