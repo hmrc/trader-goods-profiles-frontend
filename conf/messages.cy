@@ -403,7 +403,7 @@ countryOfOrigin.error.required = Ewch i mewn i’r wlad tarddiad
 countryOfOrigin.error.invalid = Rhowch wlad wreiddiol wreiddiol
 countryOfOrigin.checkYourAnswersLabel = Gwlad tarddiad
 countryOfOrigin.change.hidden = Gwlad tarddiad
-countryOfOrigin.change.placeholder = Ewch i mewn i’r wlad tarddiad
+countryOfOrigin.placeholder = Ewch i mewn i’r wlad tarddiad
 
 feedback.header = Cyn i chi fynd
 feedback.line.1 = Mae’ch adborth yn ein helpu i wella ein gwasanaeth.
