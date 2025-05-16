@@ -19,6 +19,7 @@
 @import models.router.responses.GetGoodsRecordResponse
 @import uk.gov.hmrc.govukfrontend.views.html.components.*
 @import viewmodels.LabelSize.*
+@import uk.gov.hmrc.play.language.LanguageUtils
 
 @this(
         appConfig: FrontendAppConfig,
@@ -55,6 +56,13 @@
         searchForm: SearchForm,
         totalPages: Option[Int]
 )(implicit request: Request[_], messages: Messages)
+
+    <script>
+        window.APP_I18N = {
+          noResults: "@messages("autocomplete.noResults")",
+          assistiveHint: "@messages("autocomplete.assistiveHint")"
+        };
+    </script>
 
 
 @preparedTitle = @{

@@ -32,49 +32,45 @@ govukButton: GovukButton
 
 @layout(pageTitle = title(form, messages("countryOfOrigin.title"))) {
 
-<script>
-    window.APP_I18N = {
-      noResults: "@messages("autocomplete.noResults")",
-      assistiveHint: "@messages("autocomplete.assistiveHint")",
-      statusQueryTooShort: "@messages("autocomplete.statusQueryTooShort")",
-      statusNoResults: "@messages("autocomplete.statusNoResults")",
-      statusSelectedOption: "@messages("autocomplete.statusSelectedOption")",
-      statusResults: "@messages("autocomplete.statusResults")"
-    };
-</script>
+    <script>
+        window.APP_I18N = {
+          noResults: "@messages("autocomplete.noResults")",
+          assistiveHint: "@messages("autocomplete.assistiveHint")"
+        };
+    </script>
 
-@if(form.errors.nonEmpty) {
-@govukErrorSummary(ErrorSummaryViewModel(form))
-}
+    @if(form.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummaryViewModel(form))
+    }
 
-<h1 class="govuk-heading-l">@messages("countryOfOrigin.h1")</h1>
-<p class="govuk-body">@messages("countryOfOrigin.p1")</p>
+    <h1 class="govuk-heading-l">@messages("countryOfOrigin.h1")</h1>
+    <p class="govuk-body">@messages("countryOfOrigin.p1")</p>
 
-@if(languageUtils.getCurrentLang == Lang("cy")) {
-<p class="govuk-body">@messages("countryOfOrigin.welshDescription")</p>
-}
+    @if(languageUtils.getCurrentLang == Lang("cy")) {
+        <p class="govuk-body">@messages("countryOfOrigin.welshDescription")</p>
+    }
 
-<p class="govuk-body">
-    <a class="govuk-link" target="_blank"
-       href="@OutboundLink.CountryOfOrigin(mode, recordId).outboundCall">
-        @messages(OutboundLink.CountryOfOrigin(mode, recordId).linkTextKey)
-    </a>.
-</p>
+    <p class="govuk-body">
+        <a class="govuk-link" target="_blank"
+           href="@OutboundLink.CountryOfOrigin(mode, recordId).outboundCall">
+            @messages(OutboundLink.CountryOfOrigin(mode, recordId).linkTextKey)
+        </a>.
+    </p>
 
-@formHelper(action = action) {
+    @formHelper(action = action) {
 
-@govukSelect(
-SelectViewModel(
-field = form("value"),
-items = Seq(SelectItem(Some(""), messages("countryOfOrigin.placeholder"))) ++
-selectItems(countries).filterNot(item => item.value.isEmpty),
-label = LabelViewModel(messages("countryOfOrigin.heading")).withSize(Medium)
-).withCssClass("autocomplete")
-.withAttribute(("lang", "en"))
-)
+    @govukSelect(
+        SelectViewModel(
+            field = form("value"),
+            items = Seq(SelectItem(Some(""), messages("countryOfOrigin.placeholder"))) ++
+            selectItems(countries).filterNot(item => item.value.isEmpty),
+            label = LabelViewModel(messages("countryOfOrigin.heading")).withSize(Medium)
+        ).withCssClass("autocomplete")
+        .withAttribute(("lang", "en"))
+    )
 
-@govukButton(
-ButtonViewModel(messages("site.continue"))
-)
-}
+    @govukButton(
+            ButtonViewModel(messages("site.continue"))
+            )
+        }
 }
