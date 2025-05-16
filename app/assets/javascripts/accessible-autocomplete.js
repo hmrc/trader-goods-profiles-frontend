@@ -2822,31 +2822,52 @@
                 if (!t.source) throw new Error("source is not defined");
                 Array.isArray(t.source) && (t.source = $(t.source)), L(u(K, t), t.element)
             }
-            K.defaultProps = {
-                autoselect: !1,
-                cssNamespace: "autocomplete",
-                defaultValue: "",
-                displayMenu: "inline",
-                minLength: 0,
-                name: "input-autocomplete",
-                placeholder: "",
-                onConfirm: function() {},
-                confirmOnBlur: !0,
-                showNoOptionsFound: !0,
-                showAllValues: !1,
-                required: !1,
-                tNoResults: function() {
-                    return "No results found"
-                },
-                tAssistiveHint: function() {
-                    return "When autocomplete results are available use up and down arrows to review and enter to select.  Touch device users, explore by touch or with swipe gestures."
-                },
-                dropdownArrow: F,
-                menuAttributes: {},
-                inputClasses: null,
-                hintClasses: null,
-                menuClasses: null
-            };
+           K.defaultProps = {
+             autoselect: false,
+             cssNamespace: "autocomplete",
+             defaultValue: "",
+             displayMenu: "inline",
+             minLength: 0,
+             name: "input-autocomplete",
+             placeholder: "",
+             onConfirm: function() {},
+             confirmOnBlur: true,
+             showNoOptionsFound: true,
+             showAllValues: false,
+             required: false,
+
+             tNoResults: () => window.APP_I18N?.noResults || "No results found",
+
+             tAssistiveHint: () => window.APP_I18N?.assistiveHint || "",
+
+             tStatusQueryTooShort: (minLength) =>
+               (window.APP_I18N?.statusQueryTooShort || "Type in {0} or more characters for results").replace("{0}", minLength),
+
+             tStatusNoResults: () => window.APP_I18N?.statusNoResults || "",
+
+             tStatusSelectedOption: (selectedOption, length, index) =>
+               (window.APP_I18N?.statusSelectedOption || "{0} {1} of {2} is highlighted")
+                 .replace("{0}", selectedOption)
+                 .replace("{1}", index + 1)
+                 .replace("{2}", length),
+
+             tStatusResults: (length, contentSelectedOption) => {
+               const word = length === 1 ? "result" : "results";
+               const is = length === 1 ? "is" : "are";
+               return (window.APP_I18N?.statusResults || "{0} {1} {2} available. {3}")
+                 .replace("{0}", length)
+                 .replace("{1}", word)
+                 .replace("{2}", is)
+                 .replace("{3}", contentSelectedOption);
+             },
+
+             dropdownArrow: F,
+             menuAttributes: {},
+             inputClasses: null,
+             hintClasses: null,
+             menuClasses: null
+           };
+
             var $ = function(t) {
                 return function(e, n) {
                     n(t.filter((function(t) {
