@@ -17,7 +17,6 @@
 package controllers.goodsRecord
 
 import base.{SpecBase, TestConstants}
-import base.TestConstants.testRecordId
 import connectors.GoodsRecordConnector
 import models.requests.DataRequest
 import org.mockito.ArgumentMatchers.any

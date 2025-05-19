@@ -73,4 +73,3 @@ class CreateRecordSuccessController @Inject() (
         Ok(defaultView(recordId, None))
     }
 }
-// TODO Probably want to recover on this if autoCategorise future fails, e.g show default content probably just Ok(view(recordId, None))
