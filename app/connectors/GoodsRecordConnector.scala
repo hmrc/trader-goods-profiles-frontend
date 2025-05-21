@@ -63,11 +63,10 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
   ) =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/filter?$queryParams"
 
-  private def isProductReferenceUniqueUrl(
-    productReference: String
-  ) =
-    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/records/is-trader-reference-unique?traderReference=${URLEncoder
-      .encode(productReference, "UTF-8")}"
+  private def isProductReferenceUniqueUrl(productReference: String) = {
+    val encodedRef = URLEncoder.encode(productReference, "UTF-8").replace("+", "%20")
+    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/records/is-trader-reference-unique?traderReference=$encodedRef"
+  }
 
   private def searchRecordsUrl(
     eori: String,
