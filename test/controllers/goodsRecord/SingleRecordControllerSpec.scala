@@ -692,7 +692,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.problem.routes.JourneyRecoveryController.onPageLoad().url)
 
-        verify(mockGoodsRecordConnector, times(2)).getRecord(any())(any())
+        verify(mockGoodsRecordConnector, times(1)).getRecord(any())(any())
         verify(mockOttConnector, times(1)).getCountries(any())
 
       }
