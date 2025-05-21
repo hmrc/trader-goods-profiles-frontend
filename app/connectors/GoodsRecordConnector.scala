@@ -261,7 +261,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .execute[HttpResponse]
       .map { response =>
         (response.json \ "isUnique").asOpt[Boolean].getOrElse {
-          logger.warn("Missing or invalid 'isUnique' field in response, assuming true")
+          logger.warn("Missing or invalid 'isUnique' field in response, assuming false")
           false
         }
       }
