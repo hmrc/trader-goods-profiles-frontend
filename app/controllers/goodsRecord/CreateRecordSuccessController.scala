@@ -16,13 +16,18 @@
 
 package controllers.goodsRecord
 
+import connectors.GoodsRecordConnector
 import controllers.BaseController
-import controllers.actions._
-import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import views.html.goodsRecord.CreateRecordSuccessView
+import controllers.actions.*
+import models.{DeclarableStatus, Scenario}
+import models.router.responses.GetGoodsRecordResponse
+import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
+import services.AutoCategoriseService
+import views.html.goodsRecord.{CreateRecordAutoCategorisationSuccessView, CreateRecordSuccessView}
 
 import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class CreateRecordSuccessController @Inject() (
   override val messagesApi: MessagesApi,
@@ -31,11 +36,40 @@ class CreateRecordSuccessController @Inject() (
   requireData: DataRequiredAction,
   profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
-  view: CreateRecordSuccessView
-) extends BaseController {
+  autoCategoriseService: AutoCategoriseService,
+  goodsRecordConnector: GoodsRecordConnector,
+  defaultView: CreateRecordSuccessView,
+  autoCategorisationView: CreateRecordAutoCategorisationSuccessView
+)(implicit ec: ExecutionContext)
+    extends BaseController {
 
   def onPageLoad(recordId: String): Action[AnyContent] =
-    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
-      Ok(view(recordId))
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
+      if (recordId.isEmpty) {
+        Future.successful(BadRequest("Invalid record ID"))
+      } else {
+        autoCategoriseService.autoCategoriseRecord(recordId, request.userAnswers).flatMap { autoCategorisedScenario =>
+          goodsRecordConnector.getRecord(recordId).map { record =>
+            renderView(recordId, autoCategorisedScenario, record)
+          }
+        }
+      }
+    }
+
+  private def renderView(recordId: String, scenario: Option[Scenario], record: GetGoodsRecordResponse)(implicit
+    request: Request[_],
+    messages: Messages
+  ): Result =
+    scenario match {
+      case Some(_) =>
+        record.declarable match {
+          case DeclarableStatus.ImmiReady | DeclarableStatus.NotReadyForImmi =>
+            val tagText = messages(record.declarable.messageKey)
+            Ok(autoCategorisationView(recordId, record.declarable == DeclarableStatus.ImmiReady, tagText))
+          case DeclarableStatus.NotReadyForUse                               =>
+            Ok(defaultView(recordId, scenario))
+        }
+      case None    =>
+        Ok(defaultView(recordId, None))
     }
 }

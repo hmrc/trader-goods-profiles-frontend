@@ -23,10 +23,11 @@ import models.AdviceStatus.Requested
 import models.AdviceStatusMessage.{NotRequestedParagraph, RequestedParagraph}
 import models.DeclarableStatus.NotReadyForUse
 import models.helper.SupplementaryUnitUpdateJourney
+import models.router.responses.GetGoodsRecordResponse
 import models.{Country, NormalMode, ReviewReason, UserAnswers}
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{times, verify, when}
+import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.Inspectors.forAll
 import org.scalatestplus.mockito.MockitoSugar
@@ -34,15 +35,16 @@ import pages.goodsRecord.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, Go
 import play.api.i18n.Messages
 import play.api.inject.bind
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import repositories.SessionRepository
+import services.AutoCategoriseService
 import uk.gov.hmrc.govukfrontend.views.Aliases.Actions
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import uk.gov.hmrc.http.{NotFoundException, UpstreamErrorResponse}
 import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
-import viewmodels.checkAnswers._
+import viewmodels.checkAnswers.*
 import viewmodels.checkAnswers.goodsRecord.{CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, ProductReferenceSummary}
-import viewmodels.govuk.summarylist._
+import viewmodels.govuk.summarylist.*
 import views.html.goodsRecord.SingleRecordView
 
 import java.time.Instant
@@ -55,6 +57,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
   private lazy val singleRecordRouteLocked   =
     controllers.goodsRecord.routes.SingleRecordController.onPageLoad(lockedRecord.recordId).url
   private val mockGoodsRecordConnector       = mock[GoodsRecordConnector]
+  private val mockSessionRepository          = mock[SessionRepository]
   private val mockOttConnector: OttConnector = mock[OttConnector]
   private val recordIsLocked                 = false
   private val countries                      = Seq(Country("CN", "China"), Country("US", "United States"))
@@ -70,10 +73,21 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
   ).copy(recordId = testRecordId).copy(category = Some(2))
 
   val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
+  val mockAutoCategoriseService: AutoCategoriseService   = mock[AutoCategoriseService]
 
   override def beforeEach(): Unit = {
     super.beforeEach()
+    reset(
+      mockGoodsRecordConnector,
+      mockOttConnector,
+      mockSessionRepository,
+      mockTraderProfileConnector,
+      mockAutoCategoriseService
+    )
     when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
+    when(
+      mockAutoCategoriseService.autoCategoriseRecord(any[GetGoodsRecordResponse](), any())(any(), any())
+    ) thenReturn Future.successful(None)
     when(mockOttConnector.getCountries(any())).thenReturn(Future.successful(countries))
   }
 
@@ -98,8 +112,6 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
       when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
         .successful(recordForTestingSummaryRows)
 
-      val mockSessionRepository = mock[SessionRepository]
-
       when(mockSessionRepository.set(any())) thenReturn Future
         .successful(true)
 
@@ -110,7 +122,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
           bind[SessionRepository].toInstance(mockSessionRepository),
           bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-          bind[OttConnector].toInstance(mockOttConnector)
+          bind[OttConnector].toInstance(mockOttConnector),
+          bind[AutoCategoriseService].toInstance(mockAutoCategoriseService)
         )
         .build()
 
@@ -202,7 +215,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           None,
           request.headers
             .get("Referer")
-            .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url)
+            .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url),
+          None
         )(
           request,
           messages(application)
@@ -237,8 +251,6 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
       when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
         .successful(lockedRecord)
 
-      val mockSessionRepository = mock[SessionRepository]
-
       when(mockSessionRepository.set(any())) thenReturn Future
         .successful(true)
 
@@ -249,7 +261,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
           bind[SessionRepository].toInstance(mockSessionRepository),
           bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-          bind[OttConnector].toInstance(mockOttConnector)
+          bind[OttConnector].toInstance(mockOttConnector),
+          bind[AutoCategoriseService].toInstance(mockAutoCategoriseService)
         )
         .build()
 
@@ -333,7 +346,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           None,
           request.headers
             .get("Referer")
-            .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url)
+            .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url),
+          None
         )(
           request,
           messages(application)
@@ -365,8 +379,6 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
         .success
         .value
 
-      val mockSessionRepository = mock[SessionRepository]
-
       when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
         .successful(notCategorisedRecord)
 
@@ -380,7 +392,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
           bind[SessionRepository].toInstance(mockSessionRepository),
           bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-          bind[OttConnector].toInstance(mockOttConnector)
+          bind[OttConnector].toInstance(mockOttConnector),
+          bind[AutoCategoriseService].toInstance(mockAutoCategoriseService)
         )
         .build()
 
@@ -475,7 +488,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           None,
           request.headers
             .get("Referer")
-            .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url)
+            .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url),
+          None
         )(
           request,
           messages(application)
@@ -519,8 +533,6 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
       when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
         .successful(notCategorisedLockedRecord)
 
-      val mockSessionRepository = mock[SessionRepository]
-
       when(mockSessionRepository.set(any())) thenReturn Future
         .successful(true)
 
@@ -531,7 +543,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
           bind[SessionRepository].toInstance(mockSessionRepository),
           bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-          bind[OttConnector].toInstance(mockOttConnector)
+          bind[OttConnector].toInstance(mockOttConnector),
+          bind[AutoCategoriseService].toInstance(mockAutoCategoriseService)
         )
         .build()
 
@@ -634,7 +647,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           None,
           request.headers
             .get("Referer")
-            .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url)
+            .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url),
+          None
         )(
           request,
           messages(application)
@@ -652,8 +666,6 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
     "must redirect to journey recovery for a GET when ott connectors fails" in {
 
-      val mockSessionRepository = mock[SessionRepository]
-
       when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
         .successful(notCategorisedRecord)
 
@@ -668,7 +680,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
           bind[SessionRepository].toInstance(mockSessionRepository),
           bind[OttConnector].toInstance(mockOttConnector),
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+          bind[AutoCategoriseService].toInstance(mockAutoCategoriseService)
         )
         .build()
 
@@ -679,8 +692,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.problem.routes.JourneyRecoveryController.onPageLoad().url)
 
-        verify(mockGoodsRecordConnector, times(5)).getRecord(any())(any())
-        verify(mockOttConnector, times(5)).getCountries(any())
+        verify(mockGoodsRecordConnector, times(1)).getRecord(any())(any())
+        verify(mockOttConnector, times(1)).getCountries(any())
 
       }
     }
@@ -688,7 +701,10 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
     "must return a SummaryListRow with the correct supplementary unit and measurement unit appended" in {
 
       val application                      = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+        .overrides(
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+          bind[AutoCategoriseService].toInstance(mockAutoCategoriseService)
+        )
         .build()
       implicit val localMessages: Messages = messages(application)
 
@@ -716,9 +732,13 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
     "must show hasSupplementaryUnit when measurement unit is not empty and supplementary unit is No" in {
 
-      val application                      = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+          bind[AutoCategoriseService].toInstance(mockAutoCategoriseService)
+        )
         .build()
+
       implicit val localMessages: Messages = messages(application)
 
       val record = recordWithSupplementaryUnit.copy(supplementaryUnit = None)
@@ -742,7 +762,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
           bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+          bind[AutoCategoriseService].toInstance(mockAutoCategoriseService)
         )
         .build()
 
@@ -757,7 +778,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.problem.routes.JourneyRecoveryController.onPageLoad().url)
 
-        verify(mockGoodsRecordConnector, times(6)).getRecord(any())(any())
+        verify(mockGoodsRecordConnector, times(1)).getRecord(any())(any())
       }
     }
 
@@ -946,8 +967,6 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
             .successful(record)
 
-          val mockSessionRepository = mock[SessionRepository]
-
           when(mockSessionRepository.set(any())) thenReturn Future
             .successful(true)
 
@@ -958,7 +977,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
               bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
               bind[SessionRepository].toInstance(mockSessionRepository),
               bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-              bind[OttConnector].toInstance(mockOttConnector)
+              bind[OttConnector].toInstance(mockOttConnector),
+              bind[AutoCategoriseService].toInstance(mockAutoCategoriseService)
             )
             .build()
 
@@ -1040,7 +1060,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
               Some(reviewReason),
               request.headers
                 .get("Referer")
-                .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url)
+                .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url),
+              None
             )(
               request,
               messages(application)
@@ -1061,7 +1082,6 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
       when(mockGoodsRecordConnector.getRecord(eqTo(testRecordId))(any()))
         .thenReturn(Future.failed(UpstreamErrorResponse("Record not found", NOT_FOUND, NOT_FOUND)))
 
-      val mockSessionRepository = mock[SessionRepository]
       when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
       when(mockSessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
 

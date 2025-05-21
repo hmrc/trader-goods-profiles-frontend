@@ -22,7 +22,7 @@
         feedbackSection: components.feedback_section
 )
 
-@(recordId: String)(implicit request: Request[_], messages: Messages)
+@(recordId: String, autoCategorisedScenario: Option[Scenario])(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("createRecordSuccess.title")),showBackLink = false) {
 
@@ -39,6 +39,5 @@
     <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad().url" class="govuk-link" >@messages("site.goBackToHomePage")</a></p>
 
     @feedbackSection()
-
 
 }
