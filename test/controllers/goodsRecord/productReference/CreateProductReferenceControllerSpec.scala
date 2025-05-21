@@ -99,7 +99,7 @@ class CreateProductReferenceControllerSpec extends SpecBase with MockitoSugar {
 
         val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
-        when(mockGoodsRecordConnector.isproductReferenceUnique(any())(any())) thenReturn Future
+        when(mockGoodsRecordConnector.isProductReferenceUnique(any())(any())) thenReturn Future
           .successful(
             true
           )
@@ -124,7 +124,7 @@ class CreateProductReferenceControllerSpec extends SpecBase with MockitoSugar {
           redirectLocation(result).value mustEqual onwardRoute.url
 
           verify(mockSessionRepository).set(any())
-          verify(mockGoodsRecordConnector).isproductReferenceUnique(any())(any())
+          verify(mockGoodsRecordConnector).isProductReferenceUnique(any())(any())
         }
       }
 
@@ -153,7 +153,7 @@ class CreateProductReferenceControllerSpec extends SpecBase with MockitoSugar {
 
         val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
-        when(mockGoodsRecordConnector.isproductReferenceUnique(any())(any())) thenReturn Future
+        when(mockGoodsRecordConnector.isProductReferenceUnique(any())(any())) thenReturn Future
           .successful(
             false
           )
@@ -185,7 +185,7 @@ class CreateProductReferenceControllerSpec extends SpecBase with MockitoSugar {
 
           status(result) mustEqual BAD_REQUEST
           contentAsString(result) mustEqual view(boundForm, onSubmitAction)(request, messages(application)).toString
-          verify(mockGoodsRecordConnector).isproductReferenceUnique(any())(any())
+          verify(mockGoodsRecordConnector).isProductReferenceUnique(any())(any())
         }
       }
 

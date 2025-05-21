@@ -23,6 +23,7 @@ import models.{CategoryRecord, GoodsRecord, LegacyRawReads, RecordsSummary, Supp
 import org.apache.pekko.Done
 import play.api.Configuration
 import play.api.http.Status.{ACCEPTED, NOT_FOUND, NO_CONTENT, OK}
+import play.api.i18n.Lang.logger
 import play.api.libs.json.Json
 import play.api.libs.ws.WSBodyWritables.writeableOf_JsValue
 import uk.gov.hmrc.http.*
@@ -254,13 +255,20 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
         response.json.as[RecordsSummary]
       }
 
-  def isproductReferenceUnique(productReference: String)(implicit hc: HeaderCarrier): Future[Boolean] =
+  def isProductReferenceUnique(productReference: String)(implicit hc: HeaderCarrier): Future[Boolean] =
     httpClient
       .get(isProductReferenceUniqueUrl(productReference))
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
       .map { response =>
-        (response.json \ "isUnique").as[Boolean]
+        (response.json \ "isUnique").asOpt[Boolean].getOrElse {
+          logger.warn("Missing or invalid 'isUnique' field in response, assuming true")
+          true
+        }
+      }
+      .recover { case ex =>
+        logger.warn(s"Call to check product reference uniqueness failed: ${ex.getMessage}")
+        true
       }
 
   def filterRecordsByField(

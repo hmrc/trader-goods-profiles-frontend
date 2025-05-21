@@ -79,12 +79,12 @@ class UpdateProductReferenceController @Inject() (
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, onSubmitAction))),
           value =>
             for {
-              isproductReferenceUnique <- goodsRecordConnector.isproductReferenceUnique(value)
+              isProductReferenceUnique <- goodsRecordConnector.isProductReferenceUnique(value)
               oldRecord                <- goodsRecordConnector.getRecord(recordId)
               updatedAnswers           <-
                 Future.fromTry(request.userAnswers.set(ProductReferenceUpdatePage(recordId), value))
             } yield
-              if (isproductReferenceUnique || oldRecord.traderRef == value) {
+              if (isProductReferenceUnique || oldRecord.traderRef == value) {
                 sessionRepository.set(updatedAnswers)
                 Redirect(navigator.nextPage(ProductReferenceUpdatePage(recordId), mode, updatedAnswers))
                   .addingToSession(dataUpdated -> (oldRecord.traderRef != value).toString)
