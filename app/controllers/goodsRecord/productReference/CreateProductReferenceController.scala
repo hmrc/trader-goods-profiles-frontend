@@ -68,17 +68,19 @@ class CreateProductReferenceController @Inject() (
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, onSubmitAction))),
           value =>
-            goodsRecordConnector.isproductReferenceUnique(value).flatMap {
-              case true  =>
-                for {
-                  updatedAnswers <- Future.fromTry(request.userAnswers.set(ProductReferencePage, value))
-                  _              <- sessionRepository.set(updatedAnswers)
-                } yield Redirect(navigator.nextPage(ProductReferencePage, mode, updatedAnswers))
-              case false =>
-                val formWithApiErrors =
-                  createFormWithErrors(form, value, "productReference.error.traderRefNotUnique")
-                Future.successful(BadRequest(view(formWithApiErrors, onSubmitAction)))
-            }
+            goodsRecordConnector
+              .isProductReferenceUnique(value)
+              .flatMap {
+                case true  =>
+                  for {
+                    updatedAnswers <- Future.fromTry(request.userAnswers.set(ProductReferencePage, value))
+                    _              <- sessionRepository.set(updatedAnswers)
+                  } yield Redirect(navigator.nextPage(ProductReferencePage, mode, updatedAnswers))
+                case false =>
+                  val formWithApiErrors =
+                    createFormWithErrors(form, value, "productReference.error.traderRefNotUnique")
+                  Future.successful(BadRequest(view(formWithApiErrors, onSubmitAction)))
+              }
         )
     }
 

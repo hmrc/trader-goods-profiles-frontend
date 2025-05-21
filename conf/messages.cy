@@ -404,9 +404,8 @@ countryOfOrigin.error.invalid = Rhowch wlad wreiddiol wreiddiol
 countryOfOrigin.checkYourAnswersLabel = Gwlad tarddiad
 countryOfOrigin.change.hidden = Gwlad tarddiad
 countryOfOrigin.placeholder = Ewch i mewn i’r wlad tarddiad
-#todo awaiting translation for below 2 messages Ticket: TGP_3425
-autocomplete.noResults = Heb ganfod canlyniadau
-autocomplete.assistiveHint = Pan fydd canlyniadau awtolenwi ar gael defnyddiwch saethau i fyny ac i lawr i adolygu a mynd i mewn i ddewis. Defnyddwyr dyfeisiau cyffwrdd, archwilio trwy gyffwrdd neu gydag ystumiau swipe.
+autocomplete.noResults = Dim canlyniadau wedi’u darganfod
+autocomplete.assistiveHint = Pan fydd canlyniadau awtogwblhau ar gael, defnyddiwch y saethau i fyny ac i lawr i’w hadolygu a phwyswch y bysell ’enter’ i’w dewis. Gall defnyddwyr dyfeisiau cyffwrdd, archwilio drwy gyffwrdd â'r sgrin neu drwy dileu nhw.
 
 feedback.header = Cyn i chi fynd
 feedback.line.1 = Mae’ch adborth yn ein helpu i wella ein gwasanaeth.
