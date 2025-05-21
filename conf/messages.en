@@ -210,6 +210,7 @@ countryOfOrigin.error.required = Enter the country of origin
 countryOfOrigin.error.invalid = Enter a valid country of origin
 countryOfOrigin.checkYourAnswersLabel = Country of origin
 countryOfOrigin.change.hidden = Country of origin
+countryOfOrigin.placeholder= Enter the country of origin
 
 homepage.title = Trader Goods Profile (TGP) homepage
 homepage.h1 = Trader Goods Profile (TGP) homepage
@@ -262,6 +263,9 @@ createRecordSuccess.p7 = Your thoughts and ideas will help us to make improvemen
 createRecordAutoCategorisationSuccess.p1 = We've automatically categorised the goods as there are no available exemptions and they are
 createRecordAutoCategorisationSuccess.immiReady = You can use this goods record to help complete the IMMI form.
 createRecordAutoCategorisationSuccess.notReadyForImmi = You cannot use this goods record to help complete an IMMI form as it is category 1.
+
+autocomplete.noResults = No results found
+autocomplete.assistiveHint = When autocomplete results are available use up and down arrows to review and enter to select. Touch device users, explore by touch or with swipe gestures.
 
 goodsDescription.title = Goods description
 goodsDescription.h1 = Goods description

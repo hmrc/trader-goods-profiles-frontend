@@ -20,17 +20,24 @@
 @import uk.gov.hmrc.play.language.LanguageUtils
 
 @this(
-        languageUtils: LanguageUtils,
-        layout: templates.Layout,
-        formHelper: FormWithCSRF,
-        govukErrorSummary: GovukErrorSummary,
-        govukSelect: GovukSelect,
-        govukButton: GovukButton
+languageUtils: LanguageUtils,
+layout: templates.Layout,
+formHelper: FormWithCSRF,
+govukErrorSummary: GovukErrorSummary,
+govukSelect: GovukSelect,
+govukButton: GovukButton
 )
 
 @(form: Form[_], action: Call, countries: Seq[Country], mode: Mode, recordId: Option[String])(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("countryOfOrigin.title"))) {
+
+    <script>
+        window.APP_I18N = {
+          noResults: "@messages("autocomplete.noResults")",
+          assistiveHint: "@messages("autocomplete.assistiveHint")"
+        };
+    </script>
 
     @if(form.errors.nonEmpty) {
         @govukErrorSummary(ErrorSummaryViewModel(form))
@@ -44,24 +51,26 @@
     }
 
     <p class="govuk-body">
-            <a class="govuk-link" target="_blank"
-           href="@OutboundLink.CountryOfOrigin(mode, recordId).outboundCall">@messages(OutboundLink.CountryOfOrigin(mode, recordId).linkTextKey)</a>.
+        <a class="govuk-link" target="_blank"
+           href="@OutboundLink.CountryOfOrigin(mode, recordId).outboundCall">
+            @messages(OutboundLink.CountryOfOrigin(mode, recordId).linkTextKey)
+        </a>.
     </p>
 
     @formHelper(action = action) {
 
-        @govukSelect(
-            SelectViewModel(
-                field = form("value"),
-                items = selectItems(countries),
-                label = LabelViewModel(messages("countryOfOrigin.heading")).withSize(Medium)
-            )
-            .withCssClass("autocomplete")
-            .withAttribute(("lang", "en"))
-        )
+    @govukSelect(
+        SelectViewModel(
+            field = form("value"),
+            items = Seq(SelectItem(Some(""), messages("countryOfOrigin.placeholder"))) ++
+            selectItems(countries).filterNot(item => item.value.isEmpty),
+            label = LabelViewModel(messages("countryOfOrigin.heading")).withSize(Medium)
+        ).withCssClass("autocomplete")
+        .withAttribute(("lang", "en"))
+    )
 
-        @govukButton(
+    @govukButton(
             ButtonViewModel(messages("site.continue"))
-        )
-    }
+            )
+        }
 }
