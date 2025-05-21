@@ -1081,14 +1081,14 @@ class GoodsRecordConnectorSpec
       connector.isProductReferenceUnique(productReference).futureValue mustBe false
     }
 
-    "must return true when the server returns an error" in {
+    "must return false when the server returns an error" in {
       wireMockServer.stubFor(
         get(urlEqualTo(url))
           .withHeader(xClientIdName, equalTo(xClientId))
           .willReturn(serverError())
       )
 
-      connector.isProductReferenceUnique(productReference).futureValue mustBe true
+      connector.isProductReferenceUnique(productReference).futureValue mustBe false
     }
 
   }

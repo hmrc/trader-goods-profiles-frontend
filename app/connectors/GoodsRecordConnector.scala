@@ -263,12 +263,12 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .map { response =>
         (response.json \ "isUnique").asOpt[Boolean].getOrElse {
           logger.warn("Missing or invalid 'isUnique' field in response, assuming true")
-          true
+          false
         }
       }
       .recover { case ex =>
         logger.warn(s"Call to check product reference uniqueness failed: ${ex.getMessage}")
-        true
+        false
       }
 
   def filterRecordsByField(
