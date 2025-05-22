@@ -405,7 +405,7 @@ countryOfOrigin.checkYourAnswersLabel = Gwlad tarddiad
 countryOfOrigin.change.hidden = Gwlad tarddiad
 countryOfOrigin.placeholder = Ewch i mewn i’r wlad tarddiad
 autocomplete.noResults = Dim canlyniadau wedi’u darganfod
-autocomplete.assistiveHint = Pan fydd canlyniadau awtogwblhau ar gael, defnyddiwch y saethau i fyny ac i lawr i’w hadolygu a phwyswch y bysell ’enter’ i’w dewis. Gall defnyddwyr dyfeisiau cyffwrdd, archwilio drwy gyffwrdd â'r sgrin neu drwy dileu nhw.
+autocomplete.assistiveHint = Pan fydd canlyniadau awtogwblhau ar gael, defnyddiwch y saethau i fyny ac i lawr i’w hadolygu a phwyswch y bysell ’enter’ i’w dewis. Gall defnyddwyr dyfeisiau cyffwrdd, archwilio drwy gyffwrdd â’r sgrin neu drwy dileu nhw.
 
 feedback.header = Cyn i chi fynd
 feedback.line.1 = Mae’ch adborth yn ein helpu i wella ein gwasanaeth.
