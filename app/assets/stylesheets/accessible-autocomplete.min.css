@@ -87,6 +87,7 @@
 }
 
 .autocomplete__menu--visible {
+  margin-top: 14px;
   display: block;
 }
 
