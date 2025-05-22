@@ -260,7 +260,7 @@ createRecordSuccess.p6 = This is a new service and we want to know what you thin
 createRecordSuccess.p7.linkText = Send us your feedback
 createRecordSuccess.p7 = Your thoughts and ideas will help us to make improvements.
 
-createRecordAutoCategorisationSuccess.p1 = We''ve automatically categorised the goods as there are no available exemptions and they are
+createRecordAutoCategorisationSuccess.p1 = We’ve automatically categorised the goods as there are no available exemptions and they are
 createRecordAutoCategorisationSuccess.immiReady = You can use this goods record to help complete the IMMI form.
 createRecordAutoCategorisationSuccess.notReadyForImmi = You cannot use this goods record to help complete an IMMI form as it is category 1.
 
@@ -448,7 +448,7 @@ goodsRecords.p1 = TGP will show if a record is ready to use on an Internal Marke
 goodsRecords.p2 = The status are:
 goodsRecords.bullet.1 = - you can use these records on the IMMI
 goodsRecords.bullet.2 = - you cannot use these records on an IMMI. You may be able to update the information or category of the record to change the status
-goodsRecords.bullet.3 = - these records have missing, expired or invalid information. You''ll need to complete the record to see if it is ready for IMMI.
+goodsRecords.bullet.3 = - these records have missing, expired or invalid information. You’ll need to complete the record to see if it is ready for IMMI.
 goodsRecord.subHeading = Creating a goods record
 goodsRecords.search = Search and filter options
 goodsRecords.search.1 =You can use search and filters to find specific goods records. All fields are optional.
