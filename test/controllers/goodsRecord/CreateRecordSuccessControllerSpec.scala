@@ -34,6 +34,7 @@ import java.time.Instant
 import org.mockito.ArgumentMatchers.{eq => eqTo}
 import org.scalatest.BeforeAndAfterEach
 import uk.gov.hmrc.http.HeaderCarrier
+import utils.Constants.StandardGoodsAsInt
 
 import scala.concurrent.Future
 
@@ -114,7 +115,7 @@ class CreateRecordSuccessControllerSpec extends SpecBase with BeforeAndAfterEach
         adviceStatus = AdviceStatus.NotRequested,
         goodsDescription = "Test Goods",
         countryOfOrigin = "GB",
-        category = Some(0),
+        category = Some(StandardGoodsAsInt),
         assessments = None,
         supplementaryUnit = None,
         measurementUnit = None,
@@ -181,7 +182,7 @@ class CreateRecordSuccessControllerSpec extends SpecBase with BeforeAndAfterEach
         adviceStatus = AdviceStatus.NotRequested,
         goodsDescription = "Test Goods",
         countryOfOrigin = "GB",
-        category = Some(0),
+        category = Some(StandardGoodsAsInt),
         assessments = None,
         supplementaryUnit = None,
         measurementUnit = None,
@@ -236,5 +237,6 @@ class CreateRecordSuccessControllerSpec extends SpecBase with BeforeAndAfterEach
         ).toString
       }
     }
+
   }
 }
