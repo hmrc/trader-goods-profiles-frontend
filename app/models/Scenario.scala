@@ -57,6 +57,14 @@ object Scenario {
       case Category2NoExemptionsScenario      => Category2AsInt
     }
 
+  def fromInt(optInt: Option[Int]): Option[Scenario] =
+    optInt.flatMap {
+      case StandardGoodsAsInt => Some(StandardGoodsScenario)
+      case Category1AsInt     => Some(Category1Scenario)
+      case Category2AsInt     => Some(Category2Scenario)
+      case _                  => None
+    }
+
   implicit val jsLiteral: JavascriptLiteral[Scenario] = {
     case StandardGoodsScenario              => "Standard"
     case Category1Scenario                  => "Category1"
@@ -65,5 +73,4 @@ object Scenario {
     case Category1NoExemptionsScenario      => "Category1NoExemptions"
     case Category2NoExemptionsScenario      => "Category2NoExemptions"
   }
-
 }

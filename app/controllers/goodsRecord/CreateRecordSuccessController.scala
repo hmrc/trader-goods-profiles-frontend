@@ -48,9 +48,10 @@ class CreateRecordSuccessController @Inject() (
       if (recordId.isEmpty) {
         Future.successful(BadRequest("Invalid record ID"))
       } else {
-        autoCategoriseService.autoCategoriseRecord(recordId, request.userAnswers).flatMap { autoCategorisedScenario =>
+        autoCategoriseService.autoCategoriseRecord(recordId, request.userAnswers).flatMap { _ =>
           goodsRecordConnector.getRecord(recordId).map { record =>
-            renderView(recordId, autoCategorisedScenario, record)
+            val scenario = Scenario.fromInt(record.category)
+            renderView(recordId, scenario, record)
           }
         }
       }
