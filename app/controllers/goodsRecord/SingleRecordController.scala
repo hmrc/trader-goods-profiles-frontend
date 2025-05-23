@@ -21,21 +21,18 @@ import controllers.BaseController
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
 import models.helper.{CategorisationJourney, RequestAdviceJourney, SupplementaryUnitUpdateJourney, WithdrawAdviceJourney}
 import models.requests.DataRequest
-import models.{AdviceStatusMessage, Country, NormalMode, ReviewReason, Scenario}
+import models.router.responses.GetGoodsRecordResponse
+import models.{AdviceStatusMessage, Country, NormalMode, ReviewReason, Scenario, UserAnswers}
 import pages.goodsRecord.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage, ProductReferenceUpdatePage}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import queries.CountriesQuery
 import repositories.SessionRepository
-import services.AutoCategoriseService
-import services.DataCleansingService
+import services.{AutoCategoriseService, DataCleansingService}
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
-import utils.SessionData._
-import viewmodels.checkAnswers._
+import utils.SessionData.*
+import viewmodels.checkAnswers.*
 import viewmodels.checkAnswers.goodsRecord.{CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, ProductReferenceSummary}
 import viewmodels.govuk.summarylist.*
-import models.{CategoryRecord, CategoryRecordBuildFailure, Scenario, UserAnswers, UserAnswersSetFailure}
-import play.api.mvc.Result
-import models.router.responses.GetGoodsRecordResponse
 import views.html.goodsRecord.SingleRecordView
 
 import javax.inject.Inject
