@@ -41,7 +41,7 @@
 
     @autoCategorisedBannerContent(scenario: Scenario) = {
         <h3 class="govuk-notification-banner__heading">
-            Your goods have been automatically categorised to @scenario
+            @messages("singleRecord.autoCategorised", messages(s"singleRecord.${scenario.toString}"))
         </h3>
         }
 
