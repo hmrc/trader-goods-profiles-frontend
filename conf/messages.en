@@ -513,9 +513,6 @@ singleRecord.categoriseThisGood = Categorise this good
 singleRecord.categoriseThisRecord = Categorise this record
 singleRecord.cat1 = Category 1
 singleRecord.cat2 = Category 2
-singleRecord.autoCategorised = Your goods have been automatically categorised to {0}
-singleRecord.Category1NoExemptionsScenario = Category 1
-singleRecord.Category2NoExemptionsScenario = Category 2
 singleRecord.standardGoods = Standard goods
 singleRecord.back = Back to goods profile
 singleRecord.adviceParagraph.notRequested = You can ask HMRC for advice to see if the goods description matches the commodity code
@@ -545,6 +542,7 @@ singleRecord.commodityReviewReason.adviceReceived = The commodity code has expir
 singleRecord.commodityReviewReason.notCategorised.noAdvice = The commodity code has expired which means the commodity code is shown as: {0}
 singleRecord.commodityReviewReason.tagText = No longer valid
 singleRecord.category.row.commodityReviewReason.notCategorised = You will not be able to categorise this record until you update the commodity code
+singleRecord.autoCategorisation.completed = Your goods have been automatically categorised to
 
 hasCountryOfOriginChange.title = Changing the country of origin
 hasCountryOfOriginChange.h1 = Changing the country of origin
@@ -717,6 +715,8 @@ pageNotFound.p3.1 = if you need to speak to someone about your Trader Goods Prof
 
 singleRecord.recordLocked = This record is locked as you’ve asked HMRC for advice if it is correct. You cannot make any changes, or remove  this record until HMRC have made a decision, or you withdraw your request.
 singleRecord.notCategorised.recordLocked = This record is locked as you’ve asked HMRC for advice. You will not be able to categorise this good until HMRC make a decision or you withdraw your request.
+successBanner.para1 = You`ve updated the commodity code. We`ve categorised the record and there are no available exemptions.
+successBanner.para2 = This goods records is
 
 requestData.title = Making a request to download your TGP data
 requestData.heading = Making a request to download your TGP data

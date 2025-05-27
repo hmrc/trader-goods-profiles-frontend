@@ -90,7 +90,7 @@ class Navigation @Inject() (categorisationService: CategorisationService) extend
         case false =>
           controllers.goodsRecord.commodityCode.routes.UpdateCommodityCodeController.onPageLoad(NormalMode, recordId)
       }
-      .getOrElse(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
+      .getOrElse(controllers.goodsRecord.commodityCode.routes.UpdatedCommodityCodeController.onPageLoad(recordId))
 
   private def navigateFromHasCorrectGoodsUpdateCheck(answers: UserAnswers, recordId: String): Call =
     answers

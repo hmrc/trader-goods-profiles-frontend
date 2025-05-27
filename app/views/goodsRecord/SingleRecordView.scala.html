@@ -30,18 +30,27 @@
 @(recordId: String, detailsList: SummaryList, categorisationList: SummaryList, supplementaryUnitList: SummaryList, adviceStatusList: SummaryList, changesMade: Boolean, changedPage: String,dataRemoved: Boolean,recordLocked:Boolean, adviceStatusMessage:Option[AdviceStatusMessage], declarableStatus: DeclarableStatus,  toReview: Boolean = false, isCategorised: Boolean, adviceStatus: AdviceStatus, reviewReason: Option[ReviewReason] = None, previousUrl: String, autoCategoriseScenario: Option[Scenario])(implicit request: Request[_], messages: Messages)
 
     @bannerContentForUpdate(page: String, dataRemoved:Boolean) = {
+    @if(dataRemoved) {
         <h3 class="govuk-notification-banner__heading">
-        @if(dataRemoved) {
-            @messages("successBannerRemove.heading", page)
-        } else {
-            @messages("successBanner.heading", messages(s"$page"))
-        }
+                    @messages("successBannerRemove.heading", page)
         </h3>
+    } else {
+        <p class="govuk-body">
+            @messages("successBanner.para1")
+        </p>
+        <p class="govuk-body">
+            @messages("successBanner.para2")
+            <strong class="govuk-tag govuk-!-display-inline @declarableStatus.paragraphTagColour">
+                @messages(declarableStatus.messageKey)
+            </strong>
+        </p>
+        }
+
     }
 
     @autoCategorisedBannerContent(scenario: Scenario) = {
         <h3 class="govuk-notification-banner__heading">
-            @messages("singleRecord.autoCategorised", messages(s"singleRecord.${scenario.toString}"))
+            @messages("autoCategorisation.completed") @scenario
         </h3>
         }
 
