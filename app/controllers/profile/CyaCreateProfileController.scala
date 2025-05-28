@@ -74,11 +74,18 @@ class CyaCreateProfileController @Inject() (
     implicit request =>
       TraderProfile.build(request.userAnswers, request.eori) match {
         case Right(model) =>
-          auditService.auditProfileSetUp(model, request.affinityGroup)
-          traderProfileConnector.submitTraderProfile(model).map { _ =>
-            dataCleansingService.deleteMongoData(request.userAnswers.id, CreateProfileJourney)
-            Redirect(navigator.nextPage(CyaCreateProfilePage, NormalMode, request.userAnswers))
-          }
+          traderProfileConnector
+            .submitTraderProfile(model)
+            .flatMap { _ =>
+              auditService.auditProfileSetUp(model, request.affinityGroup).map { _ =>
+                dataCleansingService.deleteMongoData(request.userAnswers.id, CreateProfileJourney)
+                Redirect(navigator.nextPage(CyaCreateProfilePage, NormalMode, request.userAnswers))
+              }
+            }
+            .recover { case ex: Exception =>
+              logger.error(s"Failed to submit trader profile: ${ex.getMessage}")
+              Redirect(controllers.profile.routes.ProfileSetupController.onPageLoad())
+            }
 
         case Left(errors) =>
           dataCleansingService.deleteMongoData(request.userAnswers.id, CreateProfileJourney)
