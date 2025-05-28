@@ -391,6 +391,9 @@ singleRecord.commodityReviewReason.adviceReceived = Mae’r cod nwyddau wedi dod
 singleRecord.commodityReviewReason.notCategorised.noAdvice = Mae’r cod nwyddau wedi dod i ben, sy’n golygu bod y cod nwyddau’n dangos fel a ganlyn: {0}
 singleRecord.commodityReviewReason.tagText = Nid yw’n ddilys mwyach
 singleRecord.category.row.commodityReviewReason.notCategorised = Ni fyddwch yn gallu categoreiddio’r cofnod hwn nes i chi ddiweddaru’r cod nwyddau.
+singleRecord.autoCategorisation.completed = Mae eich nwyddau wedi'u categoreiddio'n awtomatig i
+successBanner.para1 = Rydych chi wedi diweddaru`r cod nwyddau. Rydym wedi categoreiddio`r cofnod gan nad oes esemptiadau ar gael.
+successBanner.para2 = Mae`r cofnod nwyddau hwn yn
 
 countryOfOrigin.title = Gwlad tarddiad
 countryOfOrigin.h1 = Gwlad tarddiad

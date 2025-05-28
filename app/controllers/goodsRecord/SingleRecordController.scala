@@ -103,12 +103,11 @@ class SingleRecordController @Inject() (
     )
 
   private def dataCleansing(request: DataRequest[AnyContent]) = {
-    //at this point we should delete all journey data as the user might comeback using backlink & click change link again
     dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
     dataCleansingService.deleteMongoData(request.userAnswers.id, RequestAdviceJourney)
     dataCleansingService.deleteMongoData(request.userAnswers.id, WithdrawAdviceJourney)
     dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
-  }
+    }
 
   private def retrieveAndStoreCountries(implicit hc: HeaderCarrier, request: DataRequest[_]): Future[Seq[Country]] =
     request.userAnswers.get(CountriesQuery) match {

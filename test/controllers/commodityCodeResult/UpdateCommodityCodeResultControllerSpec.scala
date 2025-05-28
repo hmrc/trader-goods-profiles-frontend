@@ -22,7 +22,8 @@ import config.FrontendAppConfig
 import connectors.GoodsRecordConnector
 import forms.HasCorrectGoodsFormProvider
 import models.router.requests.PutRecordRequest
-import models.{Commodity, NormalMode, UpdateGoodsRecord}
+import models.router.responses.GetGoodsRecordResponse
+import models.{Commodity, NormalMode, UpdateGoodsRecord, UserAnswers}
 import navigation.{FakeNavigation, Navigation}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
@@ -36,7 +37,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import queries.CommodityUpdateQuery
 import repositories.SessionRepository
-import services.{AuditService, CommodityService}
+import services.{AuditService, AutoCategoriseService, CommodityService}
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import views.html.HasCorrectGoodsView
@@ -174,19 +175,27 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
               .success
               .value
 
-            val mockGoodsRecordConnector = mock[GoodsRecordConnector]
-            val mockAuditService         = mock[AuditService]
-            val mockSessionRepository    = mock[SessionRepository]
+            val mockGoodsRecordConnector  = mock[GoodsRecordConnector]
+            val mockAuditService          = mock[AuditService]
+            val mockSessionRepository     = mock[SessionRepository]
+            val mockAutoCategoriseService = mock[AutoCategoriseService]
 
             when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
               .thenReturn(Future.successful(Done))
-            when(mockGoodsRecordConnector.putGoodsRecord(any(), any())(any())).thenReturn(Future.successful(Done))
-            when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
-              .successful(record)
-            when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-            when(mockCommodityService.isCommodityCodeValid(any(), any())(any(), any())) thenReturn Future.successful(
-              false
-            )
+            when(mockGoodsRecordConnector.putGoodsRecord(any(), any())(any()))
+              .thenReturn(Future.successful(Done))
+            when(mockGoodsRecordConnector.getRecord(any())(any()))
+              .thenReturn(Future.successful(record))
+            when(mockSessionRepository.set(any()))
+              .thenReturn(Future.successful(true))
+            when(mockCommodityService.isCommodityCodeValid(any(), any())(any(), any()))
+              .thenReturn(Future.successful(false))
+            when(
+              mockAutoCategoriseService.autoCategoriseRecord(
+                any[GetGoodsRecordResponse],
+                any[UserAnswers]
+              )(any(), any())
+            ).thenReturn(Future.successful(None))
 
             val application =
               applicationBuilder(userAnswers = Some(userAnswers))
@@ -195,18 +204,23 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
                   bind[SessionRepository].toInstance(mockSessionRepository),
                   bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
                   bind[AuditService].toInstance(mockAuditService),
-                  bind[CommodityService].toInstance(mockCommodityService)
+                  bind[CommodityService].toInstance(mockCommodityService),
+                  bind[AutoCategoriseService].toInstance(mockAutoCategoriseService)
                 )
                 .build()
 
             running(application) {
-              val request =
-                FakeRequest(POST, hasCorrectGoodsUpdateRoute)
-                  .withFormUrlEncodedBody(("value", "true"))
-              val result  = route(application, request).value
+              val request = FakeRequest(POST, hasCorrectGoodsUpdateRoute)
+                .withFormUrlEncodedBody(("value", "true"))
+
+              val result = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual onwardRoute.url
+              redirectLocation(
+                result
+              ).value mustEqual controllers.goodsRecord.commodityCode.routes.UpdatedCommodityCodeController
+                .onPageLoad(testRecordId)
+                .url
             }
           }
 
@@ -243,9 +257,10 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
               comcodeEffectiveToDate = record.comcodeEffectiveToDate
             )
 
-            val mockGoodsRecordConnector = mock[GoodsRecordConnector]
-            val mockAuditService         = mock[AuditService]
-            val mockSessionRepository    = mock[SessionRepository]
+            val mockGoodsRecordConnector  = mock[GoodsRecordConnector]
+            val mockAuditService          = mock[AuditService]
+            val mockSessionRepository     = mock[SessionRepository]
+            val mockAutoCategoriseService = mock[AutoCategoriseService]
 
             when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
 
@@ -257,7 +272,12 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
             when(mockCommodityService.isCommodityCodeValid(any(), any())(any(), any())) thenReturn Future.successful(
               false
             )
-
+            when(
+              mockAutoCategoriseService.autoCategoriseRecord(
+                any[GetGoodsRecordResponse],
+                any[UserAnswers]
+              )(any(), any())
+            ).thenReturn(Future.successful(None))
             val application =
               applicationBuilder(userAnswers = Some(userAnswers))
                 .overrides(
@@ -265,7 +285,8 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
                   bind[SessionRepository].toInstance(mockSessionRepository),
                   bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
                   bind[AuditService].toInstance(mockAuditService),
-                  bind[CommodityService].toInstance(mockCommodityService)
+                  bind[CommodityService].toInstance(mockCommodityService),
+                  bind[AutoCategoriseService].toInstance(mockAutoCategoriseService)
                 )
                 .build()
             running(application) {
@@ -274,7 +295,11 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
               val result  = route(application, request).value
               status(result) mustEqual SEE_OTHER
 
-              redirectLocation(result).value mustEqual onwardRoute.url
+              redirectLocation(
+                result
+              ).value mustBe controllers.goodsRecord.commodityCode.routes.UpdatedCommodityCodeController
+                .onPageLoad(testRecordId)
+                .url
 
               verify(mockGoodsRecordConnector).putGoodsRecord(eqTo(newRecord), eqTo(testRecordId))(any())
               verify(mockSessionRepository, times(2)).set(any())
@@ -311,10 +336,11 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
               .success
               .value
 
-            val mockGoodsRecordConnector = mock[GoodsRecordConnector]
-            val mockAuditService         = mock[AuditService]
-            val mockSessionRepository    = mock[SessionRepository]
-            val mockFrontendAppConfig    = mock[FrontendAppConfig]
+            val mockGoodsRecordConnector  = mock[GoodsRecordConnector]
+            val mockAuditService          = mock[AuditService]
+            val mockSessionRepository     = mock[SessionRepository]
+            val mockFrontendAppConfig     = mock[FrontendAppConfig]
+            val mockAutoCategoriseService = mock[AutoCategoriseService]
 
             when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
 
@@ -323,6 +349,12 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
               .thenReturn(Future.successful(Done))
             when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
               .successful(record)
+            when(
+              mockAutoCategoriseService.autoCategoriseRecord(
+                any[GetGoodsRecordResponse],
+                any[UserAnswers]
+              )(any(), any())
+            ).thenReturn(Future.successful(None))
 
             when(mockFrontendAppConfig.useEisPatchMethod) thenReturn false
             when(mockCommodityService.isCommodityCodeValid(any(), any())(any(), any())) thenReturn Future.successful(
@@ -337,7 +369,8 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
                   bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
                   bind[AuditService].toInstance(mockAuditService),
                   bind[FrontendAppConfig].toInstance(mockFrontendAppConfig),
-                  bind[CommodityService].toInstance(mockCommodityService)
+                  bind[CommodityService].toInstance(mockCommodityService),
+                  bind[AutoCategoriseService].toInstance(mockAutoCategoriseService)
                 )
                 .build()
 
@@ -347,7 +380,11 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
               val result  = route(application, request).value
               status(result) mustEqual SEE_OTHER
 
-              redirectLocation(result).value mustEqual onwardRoute.url
+              redirectLocation(
+                result
+              ).value mustEqual controllers.goodsRecord.commodityCode.routes.UpdatedCommodityCodeController
+                .onPageLoad(testRecordId)
+                .url
 
               verify(mockGoodsRecordConnector).updateGoodsRecord(any())(any())
               verify(mockSessionRepository, times(2)).set(any())
@@ -387,38 +424,56 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
               .success
               .value
 
-            val mockConnector         = mock[GoodsRecordConnector]
-            val mockAuditService      = mock[AuditService]
-            val mockSessionRepository = mock[SessionRepository]
+            val mockConnector             = mock[GoodsRecordConnector]
+            val mockAuditService          = mock[AuditService]
+            val mockSessionRepository     = mock[SessionRepository]
+            val mockAutoCategoriseService = mock[AutoCategoriseService]
+            val mockCommodityService      = mock[CommodityService]
 
-            when(mockConnector.getRecord(any())(any())).thenReturn(Future.successful(record))
-            when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
+            when(mockConnector.getRecord(eqTo(testRecordId))(any()))
+              .thenReturn(Future.successful(record))
+
+            when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any()))
               .thenReturn(Future.successful(Done))
-            when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
-            when(mockCommodityService.isCommodityCodeValid(any(), any())(any(), any())) thenReturn Future.successful(
-              false
-            )
 
-            val application =
-              applicationBuilder(userAnswers = Some(userAnswers))
-                .overrides(
-                  bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
-                  bind[SessionRepository].toInstance(mockSessionRepository),
-                  bind[GoodsRecordConnector].toInstance(mockConnector),
-                  bind[AuditService].toInstance(mockAuditService),
-                  bind[CommodityService].toInstance(mockCommodityService)
-                )
-                .build()
+            when(mockSessionRepository.set(any()))
+              .thenReturn(Future.successful(true))
+
+            when(mockCommodityService.isCommodityCodeValid(any(), any())(any(), any()))
+              .thenReturn(Future.successful(false))
+
+            when(
+              mockAutoCategoriseService.autoCategoriseRecord(
+                any[GetGoodsRecordResponse],
+                any[UserAnswers]
+              )(any(), any())
+            ).thenReturn(Future.successful(None))
+
+            val application = applicationBuilder(userAnswers = Some(userAnswers))
+              .overrides(
+                bind[Navigation].toInstance(new FakeNavigation(onwardRoute)),
+                bind[SessionRepository].toInstance(mockSessionRepository),
+                bind[GoodsRecordConnector].toInstance(mockConnector),
+                bind[AuditService].toInstance(mockAuditService),
+                bind[CommodityService].toInstance(mockCommodityService),
+                bind[AutoCategoriseService].toInstance(mockAutoCategoriseService)
+              )
+              .build()
 
             running(application) {
               val request = FakeRequest(POST, hasCorrectGoodsUpdateRoute)
                 .withFormUrlEncodedBody(("value", "true"))
-              val result  = route(application, request).value
-              status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual onwardRoute.url
 
-              verify(mockConnector, never()).patchGoodsRecord(any())(any())
-              verify(mockConnector).getRecord(eqTo(testRecordId))(any())
+              val result = route(application, request).value
+
+              status(result) mustEqual SEE_OTHER
+              redirectLocation(
+                result
+              ).value mustEqual controllers.goodsRecord.commodityCode.routes.UpdatedCommodityCodeController
+                .onPageLoad(testRecordId)
+                .url
+
+              verify(mockConnector, atLeastOnce()).getRecord(eqTo(testRecordId))(any())
 
               withClue("must call the audit connector with the supplied details") {
                 verify(mockAuditService, atLeastOnce())
