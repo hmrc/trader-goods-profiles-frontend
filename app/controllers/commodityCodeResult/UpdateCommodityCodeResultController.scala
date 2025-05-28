@@ -34,7 +34,7 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import queries.*
 import repositories.SessionRepository
-import services.{AuditService, CommodityService}
+import services.{AuditService, AutoCategoriseService, CommodityService}
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import utils.Constants.openAccreditationErrorCode
 import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
@@ -56,6 +56,7 @@ class UpdateCommodityCodeResultController @Inject() (
   goodsRecordConnector: GoodsRecordConnector,
   auditService: AuditService,
   commodityService: CommodityService,
+  autoCategoriseService: AutoCategoriseService,
   config: FrontendAppConfig,
   val controllerComponents: MessagesControllerComponents,
   view: HasCorrectGoodsView
@@ -102,7 +103,6 @@ class UpdateCommodityCodeResultController @Inject() (
                     Redirect(controllers.routes.RecordLockedController.onPageLoad(recordId))
                       .removingFromSession(dataRemoved, dataUpdated, pageUpdated)
                 }
-
               } else {
                 Future.successful(
                   Redirect(
@@ -122,32 +122,27 @@ class UpdateCommodityCodeResultController @Inject() (
     (for {
       oldRecord                <- goodsRecordConnector.getRecord(recordId)
       isValidCommodity         <- commodityService.isCommodityCodeValid(oldRecord.comcode, oldRecord.countryOfOrigin)(request)
-      commodity                <-
-        handleValidateError(
-          UpdateGoodsRecord
-            .validateCommodityCode(
-              updatedUserAnswers,
-              recordId,
-              oldRecord.category.isDefined,
-              !isValidCommodity
-            )
-        )
-      updateGoodsRecord        <-
-        Future.successful(UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity)))
-      putGoodsRecord           <- Future.successful(
-                                    PutRecordRequest(
-                                      actorId = oldRecord.eori,
-                                      traderRef = oldRecord.traderRef,
-                                      comcode = commodity.commodityCode,
-                                      goodsDescription = oldRecord.goodsDescription,
-                                      countryOfOrigin = oldRecord.countryOfOrigin,
-                                      category = None,
-                                      assessments = oldRecord.assessments,
-                                      supplementaryUnit = oldRecord.supplementaryUnit,
-                                      measurementUnit = oldRecord.measurementUnit,
-                                      comcodeEffectiveFromDate = oldRecord.comcodeEffectiveFromDate,
-                                      comcodeEffectiveToDate = oldRecord.comcodeEffectiveToDate
+      commodity                <- handleValidateError(
+                                    UpdateGoodsRecord.validateCommodityCode(
+                                      updatedUserAnswers,
+                                      recordId,
+                                      oldRecord.category.isDefined,
+                                      !isValidCommodity
                                     )
+                                  )
+      updateGoodsRecord         = UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity))
+      putGoodsRecord            = PutRecordRequest(
+                                    actorId = oldRecord.eori,
+                                    traderRef = oldRecord.traderRef,
+                                    comcode = commodity.commodityCode,
+                                    goodsDescription = oldRecord.goodsDescription,
+                                    countryOfOrigin = oldRecord.countryOfOrigin,
+                                    category = None,
+                                    assessments = oldRecord.assessments,
+                                    supplementaryUnit = oldRecord.supplementaryUnit,
+                                    measurementUnit = oldRecord.measurementUnit,
+                                    comcodeEffectiveFromDate = oldRecord.comcodeEffectiveFromDate,
+                                    comcodeEffectiveToDate = oldRecord.comcodeEffectiveToDate
                                   )
       _                         = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
       _                        <- updateGoodsRecordIfPutValueChanged(
@@ -156,13 +151,17 @@ class UpdateCommodityCodeResultController @Inject() (
                                     updateGoodsRecord,
                                     putGoodsRecord
                                   )
-      updatedAnswersWithChange <-
-        Future.fromTry(request.userAnswers.remove(HasCommodityCodeChangePage(recordId)))
+      updatedRecord            <- goodsRecordConnector.getRecord(recordId)
+      autoCategoriseScenario   <- autoCategoriseService.autoCategoriseRecord(updatedRecord, updatedUserAnswers)(request)
+      updatedAnswersWithChange <- Future.fromTry(request.userAnswers.remove(HasCommodityCodeChangePage(recordId)))
       updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CommodityCodeUpdatePage(recordId)))
       _                        <- sessionRepository.set(updatedAnswers)
-    } yield Redirect(
-      navigator.nextPage(HasCorrectGoodsCommodityCodeUpdatePage(recordId), NormalMode, updatedAnswers)
-    )).recover { case e: GoodsRecordBuildFailure =>
+    } yield
+      if (autoCategoriseScenario.isDefined) {
+        Redirect(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
+      } else {
+        Redirect(controllers.goodsRecord.commodityCode.routes.UpdatedCommodityCodeController.onPageLoad(recordId))
+      }).recover { case e: GoodsRecordBuildFailure =>
       logErrorsAndContinue(
         e.getMessage,
         controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId)
@@ -189,7 +188,6 @@ class UpdateCommodityCodeResultController @Inject() (
     putRecordRequest: PutRecordRequest
   )(implicit hc: HeaderCarrier): Future[Done] =
     if (newValue != oldValue) {
-
       if (config.useEisPatchMethod) {
         goodsRecordConnector.putGoodsRecord(
           putRecordRequest,
@@ -200,7 +198,6 @@ class UpdateCommodityCodeResultController @Inject() (
           newUpdateGoodsRecord
         )
       }
-
     } else {
       Future.successful(Done)
     }

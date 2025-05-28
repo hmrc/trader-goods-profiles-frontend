@@ -19,23 +19,21 @@ package controllers.goodsRecord
 import base.{SpecBase, TestConstants}
 import connectors.GoodsRecordConnector
 import models.requests.DataRequest
-import org.mockito.ArgumentMatchers.any
+import models.router.responses.GetGoodsRecordResponse
+import models.{AdviceStatus, DeclarableStatus, StandardGoodsScenario, UserAnswers}
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{reset, when}
+import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.AutoCategoriseService
-import views.html.goodsRecord.{CreateRecordAutoCategorisationSuccessView, CreateRecordSuccessView}
-import models.router.responses.GetGoodsRecordResponse
-import models.{AdviceStatus, DeclarableStatus, StandardGoodsScenario, UserAnswers}
-
-import java.time.Instant
-import org.mockito.ArgumentMatchers.{eq => eqTo}
-import org.scalatest.BeforeAndAfterEach
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Constants.StandardGoodsAsInt
+import views.html.goodsRecord.{CreateRecordAutoCategorisationSuccessView, CreateRecordSuccessView}
 
+import java.time.Instant
 import scala.concurrent.Future
 
 class CreateRecordSuccessControllerSpec extends SpecBase with BeforeAndAfterEach {

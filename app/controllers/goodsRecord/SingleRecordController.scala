@@ -103,7 +103,6 @@ class SingleRecordController @Inject() (
     )
 
   private def dataCleansing(request: DataRequest[AnyContent]) = {
-    //at this point we should delete all journey data as the user might comeback using backlink & click change link again
     dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
     dataCleansingService.deleteMongoData(request.userAnswers.id, RequestAdviceJourney)
     dataCleansingService.deleteMongoData(request.userAnswers.id, WithdrawAdviceJourney)
