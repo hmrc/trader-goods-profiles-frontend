@@ -717,8 +717,10 @@ pageNotFound.p3.1 = if you need to speak to someone about your Trader Goods Prof
 
 singleRecord.recordLocked = This record is locked as you’ve asked HMRC for advice if it is correct. You cannot make any changes, or remove  this record until HMRC have made a decision, or you withdraw your request.
 singleRecord.notCategorised.recordLocked = This record is locked as you’ve asked HMRC for advice. You will not be able to categorise this good until HMRC make a decision or you withdraw your request.
-successBanner.para1 = You`ve updated the commodity code. We`ve categorised the record as there are no available exemptions.
+successBanner.para1 = You`ve updated the {0}. We`ve categorised the record as there are no available exemptions.
 successBanner.para2 = This goods records is
+singleRecord.countryOfOrigin = country of origin
+singleRecord.commodityCode = commodity code
 
 requestData.title = Making a request to download your TGP data
 requestData.heading = Making a request to download your TGP data
