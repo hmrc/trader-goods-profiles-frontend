@@ -46,14 +46,15 @@
      autoCategoriseScenario: Option[Scenario]
      )(implicit request: Request[_], messages: Messages)
 
-    @bannerContentForUpdate(page: String, dataRemoved:Boolean) = {
+@bannerContentForUpdate(page: String, dataRemoved: Boolean) = {
     @if(dataRemoved) {
         <h3 class="govuk-notification-banner__heading">
-                    @messages("successBannerRemove.heading", page)
+            @messages("successBannerRemove.heading", page)
         </h3>
-    } else {
+        } else {
+        @defining(messages(s"singleRecord.$page")) { fieldName =>
         <p class="govuk-body">
-            @messages("successBanner.para1")
+            @messages("successBanner.para1", fieldName)
         </p>
         <p class="govuk-body">
             @messages("successBanner.para2")
@@ -62,10 +63,11 @@
             </strong>
         </p>
         }
-
     }
+}
 
-    @autoCategorisedBannerContent(scenario: Scenario) = {
+
+@autoCategorisedBannerContent(scenario: Scenario) = {
         <h3 class="govuk-notification-banner__heading">
             @messages("autoCategorisation.completed") @scenario
         </h3>
@@ -82,9 +84,9 @@
         )
     }
 
-    @autoCategoriseScenario.map { scenario =>
+    @autoCategoriseScenario.filter(_ => changedPage == "commodity code").map { scenario =>
         @govukNotificationBanner(NotificationBanner(
-            title = Text("Important"),
+            title = Text(messages("homepage.downloadBanner.important")),
             content = HtmlContent(autoCategorisedBannerContent(scenario)),
             bannerType = Some("information"),
             role=Some("alert"))
