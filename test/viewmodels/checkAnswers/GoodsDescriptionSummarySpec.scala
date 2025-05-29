@@ -19,6 +19,8 @@ package viewmodels.checkAnswers
 import base.SpecBase
 import base.TestConstants.testRecordId
 import models.AdviceStatus.AdviceReceived
+import models.DeclarableStatus.{ImmiReady, NotReadyForUse}
+import models.ReviewReason.{Inadequate, Mismatch, Unclear}
 import models.{CheckMode, NormalMode, UserAnswers}
 import pages.goodsRecord.GoodsDescriptionPage
 import play.api.i18n.Messages
@@ -66,6 +68,48 @@ class GoodsDescriptionSummarySpec extends SpecBase {
             .url
 
       }
+
+      "must render a 'Does not match' tag when reviewReason is Mismatch and declarable is NotReadyForUse" in {
+        val record = recordForTestingSummaryRows.copy(
+          reviewReason = Some(Mismatch),
+          declarable = NotReadyForUse
+        )
+
+        val row =
+          GoodsDescriptionSummary.rowUpdate(record, testRecordId, NormalMode, recordLocked = false)
+
+        row.value.content.toString must include("""<strong class="govuk-tag govuk-tag--grey">""")
+        row.value.content.toString must include(messages("goodsDescription.doesNotMatch"))
+        row.value.content.toString must include(record.goodsDescription)
+      }
+
+      "must render a 'Not clear' tag when reviewReason is Unclear and declarable is NotReadyForUse" in {
+        val record = recordForTestingSummaryRows.copy(
+          reviewReason = Some(Unclear),
+          declarable = NotReadyForUse
+        )
+
+        val row =
+          GoodsDescriptionSummary.rowUpdate(record, testRecordId, NormalMode, recordLocked = false)
+
+        row.value.content.toString must include("""<strong class="govuk-tag govuk-tag--grey">""")
+        row.value.content.toString must include(messages("goodsDescription.unclear"))
+        row.value.content.toString must include(record.goodsDescription)
+      }
+
+      "must not render a tag if declarable is ImmiReady, even if reviewReason is present" in {
+        val record = recordForTestingSummaryRows.copy(
+          reviewReason = Some(Inadequate),
+          declarable = ImmiReady
+        )
+
+        val row =
+          GoodsDescriptionSummary.rowUpdate(record, testRecordId, NormalMode, recordLocked = false)
+
+        row.value.content.toString must not include "govuk-tag govuk-tag--grey"
+        row.value.content.toString must include(record.goodsDescription)
+      }
+
     }
   }
 

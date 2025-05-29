@@ -278,6 +278,8 @@ goodsDescription.checkYourAnswersLabel = Goods description
 goodsDescription.error.required = Enter the goods description
 goodsDescription.error.length = The goods description must be 512 characters or less
 goodsDescription.change.hidden = Goods description
+goodsDescription.doesNotMatch = Does not match
+goodsDescription.unclear = Not clear
 
 hasCorrectGoods.title = Results for the commodity code {0}
 hasCorrectGoods.heading = Results for the commodity code {0}
