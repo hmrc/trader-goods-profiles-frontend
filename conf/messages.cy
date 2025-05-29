@@ -293,6 +293,8 @@ goodsDescription.inputHeading = Beth yw’r disgrifiad o’r nwyddau?
 goodsDescription.hint = Gall hyn fod hyd at 512 o gymeriadau.
 goodsDescription.checkYourAnswersLabel = Disgrifiad o’r nwyddau
 goodsDescription.change.hidden = Disgrifiad o’r nwyddau
+goodsDescription.doesNotMatch = Nid yw’n cyd-fynd
+goodsDescription.unclear = Nid yw’n glir
 
 commodityCode.title = Cod nwyddau
 commodityCode.h1 = Cod nwyddau
@@ -391,6 +393,9 @@ singleRecord.commodityReviewReason.adviceReceived = Mae’r cod nwyddau wedi dod
 singleRecord.commodityReviewReason.notCategorised.noAdvice = Mae’r cod nwyddau wedi dod i ben, sy’n golygu bod y cod nwyddau’n dangos fel a ganlyn: {0}
 singleRecord.commodityReviewReason.tagText = Nid yw’n ddilys mwyach
 singleRecord.category.row.commodityReviewReason.notCategorised = Ni fyddwch yn gallu categoreiddio’r cofnod hwn nes i chi ddiweddaru’r cod nwyddau.
+singleRecord.autoCategorisation.completed = Mae eich nwyddau wedi'u categoreiddio'n awtomatig i
+successBanner.para1 = Rydych chi wedi diweddaru`r cod nwyddau. Rydym wedi categoreiddio`r cofnod gan nad oes esemptiadau ar gael.
+successBanner.para2 = Mae`r cofnod nwyddau hwn yn
 
 countryOfOrigin.title = Gwlad tarddiad
 countryOfOrigin.h1 = Gwlad tarddiad

@@ -260,8 +260,7 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
         }
       }
 
-      "must let the play error handler deal with connector failure" in {
-
+      "must allow play error handling to deal with connector failure gracefully" in {
         val userAnswers = mandatoryProfileUserAnswers
 
         val mockTraderProfileConnector = mock[TraderProfileConnector]
@@ -284,12 +283,13 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
 
         running(application) {
           val request = FakeRequest(POST, routes.CyaCreateProfileController.onSubmit().url)
-          intercept[RuntimeException] {
-            await(route(application, request).value)
-          }
+          val result  = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual controllers.profile.routes.ProfileSetupController.onPageLoad().url
+
           withClue("must call the audit connector with the supplied details") {
-            verify(mockAuditService)
-              .auditProfileSetUp(any(), any())(any())
+            verify(mockAuditService, never()).auditProfileSetUp(any(), any())(any())
           }
           withClue("must not cleanse the user answers data when connector fails") {
             verify(sessionRepository, never()).clearData(eqTo(userAnswers.id), eqTo(CreateProfileJourney))

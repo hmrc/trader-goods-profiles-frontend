@@ -17,11 +17,14 @@
 package viewmodels.checkAnswers.goodsRecord
 
 import models.AdviceStatus.{AdviceNotProvided, AdviceRequestWithdrawn}
+import models.DeclarableStatus.NotReadyForUse
+import models.ReviewReason.{Inadequate, Mismatch, Unclear}
 import models.router.responses.GetGoodsRecordResponse
 import models.{AdviceStatus, CheckMode, Mode, UserAnswers}
 import pages.goodsRecord.GoodsDescriptionPage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist.*
 import viewmodels.implicits.*
@@ -74,7 +77,20 @@ object GoodsDescriptionSummary {
 
     SummaryListRowViewModel(
       key = "goodsDescription.checkYourAnswersLabel",
-      value = ValueViewModel(HtmlFormat.escape(record.goodsDescription).toString),
+      value = {
+        val tagTextOpt: Option[String] = record.reviewReason match {
+          case Some(Mismatch) if record.declarable == NotReadyForUse             => Some(messages("goodsDescription.doesNotMatch"))
+          case Some(Unclear | Inadequate) if record.declarable == NotReadyForUse =>
+            Some(messages("goodsDescription.unclear"))
+          case _                                                                 => None
+        }
+
+        val tagHtml: String =
+          tagTextOpt.map(text => s"""<strong class="govuk-tag govuk-tag--grey">$text</strong> """).getOrElse("")
+        val description     = HtmlFormat.escape(record.goodsDescription).toString
+
+        ValueViewModel(HtmlContent(HtmlFormat.raw(tagHtml + description)))
+      },
       actions = if (recordLocked) {
         Seq.empty
       } else {

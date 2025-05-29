@@ -278,6 +278,8 @@ goodsDescription.checkYourAnswersLabel = Goods description
 goodsDescription.error.required = Enter the goods description
 goodsDescription.error.length = The goods description must be 512 characters or less
 goodsDescription.change.hidden = Goods description
+goodsDescription.doesNotMatch = Does not match
+goodsDescription.unclear = Not clear
 
 hasCorrectGoods.title = Results for the commodity code {0}
 hasCorrectGoods.heading = Results for the commodity code {0}
@@ -542,6 +544,7 @@ singleRecord.commodityReviewReason.adviceReceived = The commodity code has expir
 singleRecord.commodityReviewReason.notCategorised.noAdvice = The commodity code has expired which means the commodity code is shown as: {0}
 singleRecord.commodityReviewReason.tagText = No longer valid
 singleRecord.category.row.commodityReviewReason.notCategorised = You will not be able to categorise this record until you update the commodity code
+singleRecord.autoCategorisation.completed = Your goods have been automatically categorised to
 
 hasCountryOfOriginChange.title = Changing the country of origin
 hasCountryOfOriginChange.h1 = Changing the country of origin
@@ -714,6 +717,8 @@ pageNotFound.p3.1 = if you need to speak to someone about your Trader Goods Prof
 
 singleRecord.recordLocked = This record is locked as you’ve asked HMRC for advice if it is correct. You cannot make any changes, or remove  this record until HMRC have made a decision, or you withdraw your request.
 singleRecord.notCategorised.recordLocked = This record is locked as you’ve asked HMRC for advice. You will not be able to categorise this good until HMRC make a decision or you withdraw your request.
+successBanner.para1 = You`ve updated the commodity code. We`ve categorised the record as there are no available exemptions.
+successBanner.para2 = This goods records is
 
 requestData.title = Making a request to download your TGP data
 requestData.heading = Making a request to download your TGP data
