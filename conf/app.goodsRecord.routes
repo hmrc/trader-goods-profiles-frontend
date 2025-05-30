@@ -77,3 +77,4 @@ GET         /update-record/:recordId/check-your-answers/commodity-code          
 POST        /update-record/:recordId/check-your-answers/commodity-code                              controllers.goodsRecord.CyaUpdateRecordController.onSubmitCommodityCode(recordId: String)
 
 GET         /update-record/:recordId/change-record-warning/updated-commodity-code                                         controllers.goodsRecord.commodityCode.UpdatedCommodityCodeController.onPageLoad(recordId: String)
+GET         /update-record/:recordId/change-record-warning/updated-country-of-origin                                      controllers.goodsRecord.countryOfOrigin.UpdatedCountryOfOriginController.onPageLoad(recordId: String)
