@@ -395,7 +395,7 @@ singleRecord.commodityReviewReason.tagText = Nid yw’n ddilys mwyach
 singleRecord.category.row.commodityReviewReason.notCategorised = Ni fyddwch yn gallu categoreiddio’r cofnod hwn nes i chi ddiweddaru’r cod nwyddau.
 singleRecord.autoCategorisation.completed = Mae eich nwyddau wedi'u categoreiddio'n awtomatig i
 successBanner.para1 = Rydych chi wedi diweddaru’r {0}. Rydym wedi categoreiddio’r cofnod gan nad oes esemptiadau ar gael.
-successBanner.para2 = Mae`r cofnod nwyddau hwn yn
+successBanner.para2 = Mae’r cofnod nwyddau hwn yn
 singleRecord.countryOfOrigin = gwlad tarddiad
 singleRecord.commodityCode = cod nwyddau
 
