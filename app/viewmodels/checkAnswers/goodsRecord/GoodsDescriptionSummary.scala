@@ -18,7 +18,7 @@ package viewmodels.checkAnswers.goodsRecord
 
 import models.AdviceStatus.{AdviceNotProvided, AdviceRequestWithdrawn}
 import models.DeclarableStatus.NotReadyForUse
-import models.ReviewReason.{Inadequate, Mismatch, Unclear}
+import models.ReviewReason.{Inadequate, Unclear}
 import models.router.responses.GetGoodsRecordResponse
 import models.{AdviceStatus, CheckMode, Mode, UserAnswers}
 import pages.goodsRecord.GoodsDescriptionPage
@@ -79,7 +79,6 @@ object GoodsDescriptionSummary {
       key = "goodsDescription.checkYourAnswersLabel",
       value = {
         val tagTextOpt: Option[String] = record.reviewReason match {
-          case Some(Mismatch) if record.declarable == NotReadyForUse             => Some(messages("goodsDescription.doesNotMatch"))
           case Some(Unclear | Inadequate) if record.declarable == NotReadyForUse =>
             Some(messages("goodsDescription.unclear"))
           case _                                                                 => None

@@ -17,15 +17,18 @@
 package viewmodels.checkAnswers.goodsRecord
 
 import models.AdviceStatus.AdviceReceived
+import models.DeclarableStatus.NotReadyForUse
+import models.ReviewReason.Mismatch
 import models.router.responses.GetGoodsRecordResponse
 import models.{CheckMode, Mode, UserAnswers}
 import pages.goodsRecord.CommodityCodePage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.Aliases.HtmlContent
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
-import viewmodels.govuk.summarylist._
-import viewmodels.implicits._
+import viewmodels.govuk.summarylist.*
+import viewmodels.implicits.*
 
 object CommodityCodeSummary {
 
@@ -86,7 +89,17 @@ object CommodityCodeSummary {
 
     SummaryListRowViewModel(
       key = "commodityCode.checkYourAnswersLabel",
-      value = viewModel,
+      value = {
+        val tagTextOpt: Option[String] = record.reviewReason match {
+          case Some(Mismatch) if record.declarable == NotReadyForUse => Some(messages("commodityCode.mismatch"))
+          case _                                                     => None
+        }
+        val tagHtml: String            =
+          tagTextOpt.map(text => s"""<strong class="govuk-tag govuk-tag--grey">$text</strong> """).getOrElse("")
+        val description                = HtmlFormat.escape(record.comcode).toString
+
+        ValueViewModel(HtmlContent(HtmlFormat.raw(tagHtml + description)))
+      },
       actions = if (recordLocked) {
         Seq.empty
       } else {
