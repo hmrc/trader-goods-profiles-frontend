@@ -200,6 +200,7 @@ commodityCode.error.invalid = Enter a valid commodity code
 commodityCode.checkYourAnswersLabel = Commodity code
 commodityCode.change.hidden = Commodity code
 commodityCode.error.expired = Enter a valid commodity code
+commodityCode.mismatch = Does not match
 
 countryOfOrigin.title = Country of origin
 countryOfOrigin.h1 = Country of origin

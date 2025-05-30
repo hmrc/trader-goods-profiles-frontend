@@ -336,6 +336,7 @@ commodityCode.error.invalidFormat = Nodwch god nwyddau yn y fformat cywir
 commodityCode.error.invalid = Nodwch god nwyddau dilys
 productReference.error.length = Mae’n rhaid i gyfeirnod y cynnyrch fod yn 512 o gymeriadau neu lai
 commodityCode.error.expired = Nodwch god nwyddau dilys
+commodityCode.mismatch= Nid yw’n cyd-fynd
 
 hasCorrectGoods.title = Canlyniadau ar gyfer y cod nwyddau {0}
 hasCorrectGoods.heading = Canlyniadau ar gyfer y cod nwyddau {0}
