@@ -334,8 +334,10 @@ class CyaUpdateRecordController @Inject() (
         updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CountryOfOriginUpdatePage(recordId)))
         _                        <- sessionRepository.set(updatedAnswers)
       } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers)))
-        .recover(handleRecover(recordId))
+      .recover(handleRecover(recordId))
     }
+
+  //    } yield Redirect(controllers.goodsRecord.countryOfOrigin.routes.UpdatedCountryOfOriginController.onPageLoad(recordId)))
 
   def onSubmitGoodsDescription(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>

@@ -32,7 +32,7 @@ import play.api.libs.json.Reads
 import play.api.mvc._
 import queries.CountriesQuery
 import repositories.SessionRepository
-import services.AuditService
+import services.{AuditService, AutoCategoriseService}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.SessionData._
 import views.html.goodsRecord.CountryOfOriginView
@@ -51,6 +51,7 @@ class UpdateCountryOfOriginController @Inject() (
   formProvider: CountryOfOriginFormProvider,
   val controllerComponents: MessagesControllerComponents,
   ottConnector: OttConnector,
+  autoCategoriseService: AutoCategoriseService,
   view: CountryOfOriginView,
   auditService: AuditService
 )(implicit ec: ExecutionContext)
@@ -128,12 +129,18 @@ class UpdateCountryOfOriginController @Inject() (
                 for {
                   updatedAnswers <- Future.fromTry(request.userAnswers.set(CountryOfOriginUpdatePage(recordId), value))
                   _              <- sessionRepository.set(updatedAnswers)
-                } yield Redirect(navigator.nextPage(CountryOfOriginUpdatePage(recordId), mode, updatedAnswers))
-                  .addingToSession(dataUpdated -> isValueChanged.toString)
+                  autoCategoriseScenario  <- autoCategoriseService.autoCategoriseRecord(recordId, updatedAnswers)
+                } yield {
+                  if (autoCategoriseScenario.isDefined) {
+                    Redirect(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
+                  } else {
+                    Redirect(controllers.goodsRecord.countryOfOrigin.routes.UpdatedCountryOfOriginController.onPageLoad(recordId))
+                  }
+                }.addingToSession(dataUpdated -> isValueChanged.toString)
                   .addingToSession(pageUpdated -> countryOfOrigin)
               }
             )
-        case None            => throw new Exception("Countries should have been populated on page load.")
+        case None => throw new Exception("Countries should have been populated on page load.")
       }
     }
 
