@@ -33,7 +33,7 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
 import queries.CountriesQuery
 import repositories.SessionRepository
-import services.{AuditService, CommodityService}
+import services.{AuditService, AutoCategoriseService, CommodityService}
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants.{commodityCodeKey, countryOfOriginKey, goodsDescriptionKey, openAccreditationErrorCode, productReferenceKey}
@@ -58,6 +58,7 @@ class CyaUpdateRecordController @Inject() (
   sessionRepository: SessionRepository,
   navigator: GoodsRecordNavigator,
   config: FrontendAppConfig,
+  autoCategoriseService: AutoCategoriseService,
   commodityService: CommodityService
 )(implicit ec: ExecutionContext)
     extends BaseController {
@@ -300,44 +301,49 @@ class CyaUpdateRecordController @Inject() (
 
   def onSubmitCountryOfOrigin(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      (for {
-        oldRecord                <- goodsRecordConnector.getRecord(recordId)
-        countryOfOrigin          <-
+
+      for {
+        oldRecord <- goodsRecordConnector.getRecord(recordId)
+        countryOfOrigin <-
           handleValidateError(
             UpdateGoodsRecord.validateCountryOfOrigin(request.userAnswers, recordId, oldRecord.category.isDefined)
           )
-        updateGoodsRecord        <-
+        updateGoodsRecord <-
           Future.successful(UpdateGoodsRecord(request.eori, recordId, countryOfOrigin = Some(countryOfOrigin)))
-        putGoodsRecord           <- Future.successful(
-                                      PutRecordRequest(
-                                        actorId = oldRecord.eori,
-                                        traderRef = oldRecord.traderRef,
-                                        comcode = oldRecord.comcode,
-                                        goodsDescription = oldRecord.goodsDescription,
-                                        countryOfOrigin = countryOfOrigin,
-                                        category = None,
-                                        assessments = oldRecord.assessments,
-                                        supplementaryUnit = oldRecord.supplementaryUnit,
-                                        measurementUnit = oldRecord.measurementUnit,
-                                        comcodeEffectiveFromDate = oldRecord.comcodeEffectiveFromDate,
-                                        comcodeEffectiveToDate = oldRecord.comcodeEffectiveToDate
-                                      )
-                                    )
-        _                         = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
-        _                        <- updateGoodsRecordIfPutValueChanged(
-                                      countryOfOrigin,
-                                      oldRecord.countryOfOrigin,
-                                      updateGoodsRecord,
-                                      putGoodsRecord
-                                    )
+        putGoodsRecord <- Future.successful(
+          PutRecordRequest(
+            actorId = oldRecord.eori,
+            traderRef = oldRecord.traderRef,
+            comcode = oldRecord.comcode,
+            goodsDescription = oldRecord.goodsDescription,
+            countryOfOrigin = countryOfOrigin,
+            category = None,
+            assessments = oldRecord.assessments,
+            supplementaryUnit = oldRecord.supplementaryUnit,
+            measurementUnit = oldRecord.measurementUnit,
+            comcodeEffectiveFromDate = oldRecord.comcodeEffectiveFromDate,
+            comcodeEffectiveToDate = oldRecord.comcodeEffectiveToDate
+          )
+        )
+        _ = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
+        _ <- updateGoodsRecordIfPutValueChanged(
+          countryOfOrigin,
+          oldRecord.countryOfOrigin,
+          updateGoodsRecord,
+          putGoodsRecord
+        )
         updatedAnswersWithChange <- Future.fromTry(request.userAnswers.remove(HasCountryOfOriginChangePage(recordId)))
-        updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CountryOfOriginUpdatePage(recordId)))
-        _                        <- sessionRepository.set(updatedAnswers)
-      } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers)))
-      .recover(handleRecover(recordId))
+        updatedAnswers <- Future.fromTry(updatedAnswersWithChange.remove(CountryOfOriginUpdatePage(recordId)))
+        autoCategoriseScenario <- autoCategoriseService.autoCategoriseRecord(recordId, updatedAnswers)
+        _ <- sessionRepository.set(updatedAnswers)
+      } yield if (autoCategoriseScenario.isDefined) {
+          Redirect(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
+        } else {
+          Redirect(controllers.goodsRecord.countryOfOrigin.routes.UpdatedCountryOfOriginController.onPageLoad(recordId))
+        }.addingToSession(pageUpdated -> countryOfOrigin)
     }
 
-  //    } yield Redirect(controllers.goodsRecord.countryOfOrigin.routes.UpdatedCountryOfOriginController.onPageLoad(recordId)))
+// .recover(handleRecover(recordId))
 
   def onSubmitGoodsDescription(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
