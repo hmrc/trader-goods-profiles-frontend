@@ -19,7 +19,9 @@ package viewmodels.checkAnswers
 import base.SpecBase
 import base.TestConstants.testRecordId
 import models.AdviceStatus.AdviceReceived
+import models.DeclarableStatus.NotReadyForUse
 import models.NormalMode
+import models.ReviewReason.Mismatch
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.Actions
 import viewmodels.checkAnswers.goodsRecord.CommodityCodeSummary
@@ -97,6 +99,20 @@ class CommodityCodeSummarySpec extends SpecBase {
       row.actions.value.items.head.href mustEqual controllers.goodsRecord.commodityCode.routes.UpdateCommodityCodeController
         .onPageLoad(NormalMode, testRecordId)
         .url
+    }
+
+    "must render a 'Does not match' tag when reviewReason is Mismatch and declarable is NotReadyForUse" in {
+      val record = recordForTestingSummaryRows.copy(
+        reviewReason = Some(Mismatch),
+        declarable = NotReadyForUse
+      )
+
+      val row =
+        CommodityCodeSummary.rowUpdate(record, testRecordId, NormalMode, recordLocked = false, false)
+
+      row.value.content.toString must include("""<strong class="govuk-tag govuk-tag--grey">""")
+      row.value.content.toString must include(messages("commodityCode.mismatch"))
+      row.value.content.toString must include(record.comcode)
     }
   }
 
