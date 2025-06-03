@@ -343,7 +343,7 @@ hasCorrectGoods.heading = Canlyniadau ar gyfer y cod nwyddau {0}
 hasCorrectGoods.p1 = Dynodiad:
 hasCorrectGoods.h2 = Ai dyma’r nwyddau cywir?
 hasCorrectGoods.error.required = Dewiswch ‘Iawn’ os y rhain yw’r nwyddau cywir
-hasCorrectGoods.p2.linkText = Gallwch wirio’r cod nwyddau hwn ar yr Offeryn Tariff Ar-lein (yn agor tab newydd)
+hasCorrectGoods.p2.linkText = Gallwch wirio’r cod nwyddau hwn ar yr Offeryn Tariff Ar-lein (yn agor tab newydd).
 
 singleRecord.title = Cofnod nwyddau
 singleRecord.h1 = Cofnod nwyddau
@@ -398,7 +398,7 @@ singleRecord.category.row.commodityReviewReason.notCategorised = Ni fyddwch yn g
 singleRecord.autoCategorisation.completed = Mae eich nwyddau wedi'u categoreiddio'n awtomatig i
 successBanner.commodityCode = Rydych chi wedi diweddaru’r cod nwyddau. Rydym wedi categoreiddio’r cofnod gan nad oes esemptiadau ar gael
 successBanner.countryOfOrigin = Rydych wedi diweddaru’r wlad tarddiad. Rydym wedi categoreiddio’r cofnod gan nad oes esemptiadau ar gael.
-successBanner.para2 = Mae’r cofnod nwyddau hwn yn
+successBanner.para2 = Mae’r cofnod nwyddau hwn yn.
 singleRecord.countryOfOrigin = wlad tarddiad
 singleRecord.commodityCode = cod nwyddau
 
@@ -465,7 +465,7 @@ cyaCategorisation.assessmentKey = Esemptiadau ar gyfer asesiad o ran categori {0
 categoryGuidance.title = Categoreiddio
 categoryGuidance.heading = Categoreiddio
 categoryGuidance.p1 = Mae categoreiddio yn eich galluogi i wybod ym mha gategori y mae’ch nwyddau ynddo ac a ydynt yn gymwys ar gyfer y ffurflen Gwybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI).
-categoryGuidance.p2 = Byddwn yn gofyn cwestiynau ynghylch unrhyw esemptiadau sy’n berthnasol i chi, ac wedyn byddwn yn rhoi gwybod i chi i pa gategori y mae’ch nwyddau’n perthyn iddo. Gallwn ofyn hyd at 10 cwestiwn i chi.
+categoryGuidance.p2 = Byddwn yn gofyn cwestiynau ynghylch unrhyw esemptiadau sy’n berthnasol i chi, ac wedyn byddwn yn rhoi gwybod i chi pa gategori y mae’ch nwyddau’n perthyn iddo. Gallwn ofyn hyd at 10 cwestiwn i chi.
 categoryGuidance.linkText =  Dysgwch sut i wirio a chategoreiddio nwyddau rydych chi’n eu symud o Brydain Fawr i Ogledd Iwerddon er mwyn defnyddio’r broses symlach ar gyfer symudiadau yn y farchnad fewnol (yn agor tab newydd)
 categoryGuidance.subheading = Esemptiadau
 categoryGuidance.p3 = Bydd eich nwyddau yn cael eu rhannu i 1 o 3 chategori:
