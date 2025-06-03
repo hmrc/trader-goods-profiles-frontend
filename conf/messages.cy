@@ -398,7 +398,7 @@ singleRecord.category.row.commodityReviewReason.notCategorised = Ni fyddwch yn g
 singleRecord.autoCategorisation.completed = Mae eich nwyddau wedi'u categoreiddio'n awtomatig i
 successBanner.commodityCode = Rydych chi wedi diweddaru’r cod nwyddau. Rydym wedi categoreiddio’r cofnod gan nad oes esemptiadau ar gael
 successBanner.countryOfOrigin = Rydych wedi diweddaru’r wlad tarddiad. Rydym wedi categoreiddio’r cofnod gan nad oes esemptiadau ar gael.
-successBanner.para2 = Mae’r cofnod nwyddau hwn yn.
+successBanner.para2 = Mae’r cofnod nwyddau hwn yn
 singleRecord.countryOfOrigin = wlad tarddiad
 singleRecord.commodityCode = cod nwyddau
 
