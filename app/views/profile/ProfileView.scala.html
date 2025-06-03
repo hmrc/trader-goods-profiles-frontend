@@ -39,7 +39,7 @@
 
 @layout(backLinkUrl = controllers.routes.HomePageController.onPageLoad().url, backLinkMessageKey = "profile.back", pageTitle = titleNoForm(messages("profile.title"))) {
 
-    @if(changesMade) {
+    @if(changesMade && changedPage != "") {
         @govukNotificationBanner(NotificationBanner(
             title = Text(messages("successBanner.title")),
             content = HtmlContent(bannerContentForUpdate(changedPage, dataRemoved, dataAdded)),
