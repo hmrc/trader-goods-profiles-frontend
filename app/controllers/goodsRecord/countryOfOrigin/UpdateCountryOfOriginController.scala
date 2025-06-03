@@ -122,19 +122,18 @@ class UpdateCountryOfOriginController @Inject() (
                   )
                 ),
               value => {
-                val oldValueOpt = request.userAnswers.get(CountryOfOriginUpdatePage(recordId))
+                val oldValueOpt    = request.userAnswers.get(CountryOfOriginUpdatePage(recordId))
                 val isValueChanged = oldValueOpt.exists(_ != value)
 
                 for {
                   updatedAnswers <- Future.fromTry(request.userAnswers.set(CountryOfOriginUpdatePage(recordId), value))
-                  _ <- sessionRepository.set(updatedAnswers)
-                } yield
-                  Redirect(navigator.nextPage(CountryOfOriginUpdatePage(recordId), mode, updatedAnswers))
-                    .addingToSession(dataUpdated -> isValueChanged.toString)
-                    .addingToSession(pageUpdated -> countryOfOrigin)
+                  _              <- sessionRepository.set(updatedAnswers)
+                } yield Redirect(navigator.nextPage(CountryOfOriginUpdatePage(recordId), mode, updatedAnswers))
+                  .addingToSession(dataUpdated -> isValueChanged.toString)
+                  .addingToSession(pageUpdated -> countryOfOrigin)
               }
             )
-        case None => throw new Exception("Countries should have been populated on page load.")
+        case None            => throw new Exception("Countries should have been populated on page load.")
       }
     }
 

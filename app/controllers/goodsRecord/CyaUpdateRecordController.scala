@@ -88,7 +88,7 @@ class CyaUpdateRecordController @Inject() (
                     )
                   )
                   Ok(view(list, onSubmitAction, countryOfOriginKey))
-                case _ => Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad().url)
+                case _            => Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad().url)
               }
 
             case Left(errors) =>
@@ -122,7 +122,7 @@ class CyaUpdateRecordController @Inject() (
             Seq(GoodsDescriptionSummary.rowUpdateCya(goodsDescription, recordId, CheckMode))
           )
           Ok(view(list, onSubmitAction, goodsDescriptionKey))
-        case Left(errors) =>
+        case Left(errors)            =>
           logErrorsAndContinue(
             errorMessage,
             controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId),
@@ -142,7 +142,7 @@ class CyaUpdateRecordController @Inject() (
             Seq(ProductReferenceSummary.row(productReference, recordId, CheckMode, recordLocked = false))
           )
           Ok(view(list, onSubmitAction, productReferenceKey))
-        case Left(errors) =>
+        case Left(errors)            =>
           logErrorsAndContinue(
             errorMessage,
             controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId),
@@ -181,7 +181,7 @@ class CyaUpdateRecordController @Inject() (
                   )
                 )
                 Future.successful(Ok(view(list, onSubmitAction, commodityCodeKey)))
-              case Left(errors) =>
+              case Left(errors)     =>
                 Future.successful(
                   logErrorsAndContinue(
                     errorMessage,
@@ -203,18 +203,18 @@ class CyaUpdateRecordController @Inject() (
     }
 
   private def getCountryOfOriginAnswer(userAnswers: UserAnswers, recordId: String)(implicit
-                                                                                   request: Request[_]
+    request: Request[_]
   ): Future[Option[String]] =
     userAnswers.get(CountryOfOriginUpdatePage(recordId)) match {
       case Some(answer) =>
         userAnswers.get(CountriesQuery) match {
           case Some(countries) => Future.successful(Some(findCountryName(countries, answer)))
-          case None =>
+          case None            =>
             getCountries(userAnswers).map { countries =>
               Some(findCountryName(countries, answer))
             }
         }
-      case _ => Future.successful(None)
+      case _            => Future.successful(None)
     }
 
   private def findCountryName(countries: Seq[Country], answer: String): String =
@@ -222,9 +222,9 @@ class CyaUpdateRecordController @Inject() (
 
   def getCountries(userAnswers: UserAnswers)(implicit request: Request[_]): Future[Seq[Country]] =
     for {
-      countries <- ottConnector.getCountries
+      countries               <- ottConnector.getCountries
       updatedAnswersWithQuery <- Future.fromTry(userAnswers.set(CountriesQuery, countries))
-      _ <- sessionRepository.set(updatedAnswersWithQuery)
+      _                       <- sessionRepository.set(updatedAnswersWithQuery)
     } yield countries
 
   private def handleValidateError[T](result: EitherNec[ValidationError, T]): Future[T] =
@@ -240,10 +240,10 @@ class CyaUpdateRecordController @Inject() (
   }
 
   private def updateGoodsRecordIfValueChanged(
-                                               newValue: String,
-                                               oldValue: String,
-                                               newUpdateGoodsRecord: UpdateGoodsRecord
-                                             )(implicit hc: HeaderCarrier): Future[Done] =
+    newValue: String,
+    oldValue: String,
+    newUpdateGoodsRecord: UpdateGoodsRecord
+  )(implicit hc: HeaderCarrier): Future[Done] =
     if (newValue != oldValue) {
       // TODO: remove this flag when EIS has implemented the PATCH method - TGP-2417 and keep the call to patchGoodsRecord as default
       if (config.useEisPatchMethod) {
@@ -260,11 +260,11 @@ class CyaUpdateRecordController @Inject() (
     }
 
   private def updateGoodsRecordIfPutValueChanged(
-                                                  newValue: String,
-                                                  oldValue: String,
-                                                  newUpdateGoodsRecord: UpdateGoodsRecord,
-                                                  putRecordRequest: PutRecordRequest
-                                                )(implicit hc: HeaderCarrier): Future[Done] =
+    newValue: String,
+    oldValue: String,
+    newUpdateGoodsRecord: UpdateGoodsRecord,
+    putRecordRequest: PutRecordRequest
+  )(implicit hc: HeaderCarrier): Future[Done] =
     if (newValue != oldValue) {
 
       // TODO: remove this flag when EIS has implemented the PATCH method - TGP-2417 and keep the call to putGoodsRecord as default
@@ -286,64 +286,64 @@ class CyaUpdateRecordController @Inject() (
   def onSubmitproductReference(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       (for {
-        productReference <-
+        productReference  <-
           handleValidateError(UpdateGoodsRecord.validateproductReference(request.userAnswers, recordId))
         updateGoodsRecord <-
           Future.successful(UpdateGoodsRecord(request.eori, recordId, productReference = Some(productReference)))
-        _ = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
-        oldRecord <- goodsRecordConnector.getRecord(recordId)
-        _ <- updateGoodsRecordIfValueChanged(productReference, oldRecord.traderRef, updateGoodsRecord)
-        updatedAnswers <- Future.fromTry(request.userAnswers.remove(ProductReferenceUpdatePage(recordId)))
-        _ <- sessionRepository.set(updatedAnswers)
+        _                  = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
+        oldRecord         <- goodsRecordConnector.getRecord(recordId)
+        _                 <- updateGoodsRecordIfValueChanged(productReference, oldRecord.traderRef, updateGoodsRecord)
+        updatedAnswers    <- Future.fromTry(request.userAnswers.remove(ProductReferenceUpdatePage(recordId)))
+        _                 <- sessionRepository.set(updatedAnswers)
       } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers)))
         .recover(handleRecover(recordId))
     }
 
   def onSubmitCountryOfOrigin(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-
       val resultFuture = for {
-        oldRecord <- goodsRecordConnector.getRecord(recordId)
-        countryOfOrigin <- handleValidateError(
-          UpdateGoodsRecord.validateCountryOfOrigin(request.userAnswers, recordId, oldRecord.category.isDefined)
-        )
-        updateGoodsRecord <- Future.successful(UpdateGoodsRecord(request.eori, recordId, countryOfOrigin = Some(countryOfOrigin)))
-        putGoodsRecord <- Future.successful(
-          PutRecordRequest(
-            actorId = oldRecord.eori,
-            traderRef = oldRecord.traderRef,
-            comcode = oldRecord.comcode,
-            goodsDescription = oldRecord.goodsDescription,
-            countryOfOrigin = countryOfOrigin,
-            category = None,
-            assessments = oldRecord.assessments,
-            supplementaryUnit = oldRecord.supplementaryUnit,
-            measurementUnit = oldRecord.measurementUnit,
-            comcodeEffectiveFromDate = oldRecord.comcodeEffectiveFromDate,
-            comcodeEffectiveToDate = oldRecord.comcodeEffectiveToDate
+        oldRecord                <- goodsRecordConnector.getRecord(recordId)
+        countryOfOrigin          <-
+          handleValidateError(
+            UpdateGoodsRecord.validateCountryOfOrigin(request.userAnswers, recordId, oldRecord.category.isDefined)
           )
-        )
-        _ = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
-        _ <- updateGoodsRecordIfPutValueChanged(
-          countryOfOrigin,
-          oldRecord.countryOfOrigin,
-          updateGoodsRecord,
-          putGoodsRecord
-        )
+        updateGoodsRecord        <-
+          Future.successful(UpdateGoodsRecord(request.eori, recordId, countryOfOrigin = Some(countryOfOrigin)))
+        putGoodsRecord           <- Future.successful(
+                                      PutRecordRequest(
+                                        actorId = oldRecord.eori,
+                                        traderRef = oldRecord.traderRef,
+                                        comcode = oldRecord.comcode,
+                                        goodsDescription = oldRecord.goodsDescription,
+                                        countryOfOrigin = countryOfOrigin,
+                                        category = None,
+                                        assessments = oldRecord.assessments,
+                                        supplementaryUnit = oldRecord.supplementaryUnit,
+                                        measurementUnit = oldRecord.measurementUnit,
+                                        comcodeEffectiveFromDate = oldRecord.comcodeEffectiveFromDate,
+                                        comcodeEffectiveToDate = oldRecord.comcodeEffectiveToDate
+                                      )
+                                    )
+        _                         = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
+        _                        <- updateGoodsRecordIfPutValueChanged(
+                                      countryOfOrigin,
+                                      oldRecord.countryOfOrigin,
+                                      updateGoodsRecord,
+                                      putGoodsRecord
+                                    )
         updatedAnswersWithChange <- Future.fromTry(request.userAnswers.remove(HasCountryOfOriginChangePage(recordId)))
-        updatedAnswers <- Future.fromTry(updatedAnswersWithChange.remove(CountryOfOriginUpdatePage(recordId)))
-        autoCategoriseScenario <- autoCategoriseService.autoCategoriseRecord(recordId, updatedAnswers)
-        _ <- sessionRepository.set(updatedAnswers)
-      } yield {
+        updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CountryOfOriginUpdatePage(recordId)))
+        autoCategoriseScenario   <- autoCategoriseService.autoCategoriseRecord(recordId, updatedAnswers)
+        _                        <- sessionRepository.set(updatedAnswers)
+      } yield
         if (autoCategoriseScenario.isDefined) {
           Redirect(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
-        } else {
+        } else
           Redirect(controllers.goodsRecord.countryOfOrigin.routes.UpdatedCountryOfOriginController.onPageLoad(recordId))
-        }.addingToSession(pageUpdated -> countryOfOrigin)
-      }
+            .addingToSession(pageUpdated -> countryOfOrigin)
       resultFuture.recover(handleRecover(recordId))
     }
-  
+
   def onSubmitGoodsDescription(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       (for {
