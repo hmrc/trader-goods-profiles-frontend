@@ -100,7 +100,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
         "must return OK and the correct view with valid mandatory data getting countries from connector" in {
           val userAnswers = emptyUserAnswers
-            .set(warningPage, true).success.value
+            .set(page, answer).success.value
             .set(warningPage, true).success.value
 
           when(mockOttConnector.getCountries(any())) thenReturn Future.successful(Seq(Country("CN", "China")))
