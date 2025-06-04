@@ -68,18 +68,6 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
     when(mockCommodityService.isCommodityCodeValid(any(), any())(any(), any())).thenReturn(Future.successful(true))
   }
 
-  private lazy val baseApplication: Application = {
-    applicationBuilder()
-      .overrides(
-      bind[OttConnector].toInstance(mockOttConnector),
-      bind[AuditService].toInstance(mockAuditService),
-      bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-      bind[CommodityService].toInstance(mockCommodityService),
-      bind[SessionRepository].toInstance(mockSessionRepository)
-    )
-    .build()
-  }
-
 //  override protected def afterEach(): Unit = {
 //    super.afterEach()
 //    reset(mockAuditService)
@@ -118,13 +106,12 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           when(mockOttConnector.getCountries(any())) thenReturn Future.successful(Seq(Country("CN", "China")))
           when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
 
-          val application = baseApplication
-//          val application = applicationBuilder(userAnswers = Some(userAnswers))
-//            .overrides(bind[OttConnector].toInstance(mockOttConnector))
-//            .overrides(bind[AuditService].toInstance(mockAuditService))
-//            .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)).build()
+          val application = applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(bind[OttConnector].toInstance(mockOttConnector))
+            .overrides(bind[AuditService].toInstance(mockAuditService))
+            .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)).build()
 
-          running(baseApplication) {
+          running(application) {
             val request = FakeRequest(GET, getUrl)
             val result = route(application, request).value
             val view = application.injector.instanceOf[CyaUpdateRecordView]
@@ -147,10 +134,9 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
           when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
 
-          val application = fakeApplication(Some(userAnswers))
-//          val application = applicationBuilder(userAnswers = Some(userAnswers))
-//            .overrides(bind[AuditService].toInstance(mockAuditService))
-//            .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)).build()
+          val application = applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(bind[AuditService].toInstance(mockAuditService))
+            .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)).build()
 
           running(application) {
             val request = FakeRequest(GET, getUrl)
@@ -168,15 +154,11 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         }
 
         "must redirect to Journey Recovery if no answers are found" in {
-          val userAnswers = emptyUserAnswers.set(page, answer).success.value
-
           when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
 
-//          val application = applicationBuilder(Some(emptyUserAnswers))
-//            .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)).build()
-
-          val application = fakeApplication(Some(userAnswers))
-
+          val application = applicationBuilder(Some(emptyUserAnswers))
+            .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)).build()
+          
           running(application) {
             val request = FakeRequest(GET, getUrl)
             val result = route(application, request).value
@@ -190,16 +172,12 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         }
 
         "must redirect to Journey Recovery if no record is found" in {
-          val userAnswers = emptyUserAnswers.set(page, answer).success.value
-
           when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.failed(
             new RuntimeException("Something went very wrong"))
 
-//          val application = applicationBuilder(Some(emptyUserAnswers))
-//            .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)).build()
-
-          val application = fakeApplication(Some(userAnswers))
-
+          val application = applicationBuilder(Some(emptyUserAnswers))
+            .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)).build()
+          
           running(application) {
             val request = FakeRequest(GET, getUrl)
             val result = route(application, request).value
@@ -216,11 +194,9 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
           when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
 
-//          val application = applicationBuilder(userAnswers = Some(userAnswers))
-//            .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)).build()
-
-          val application = fakeApplication(Some(userAnswers))
-
+          val application = applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)).build()
+          
           running(application) {
             val request = FakeRequest(GET, getUrl)
             val result = route(application, request).value
@@ -233,11 +209,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         }
 
         "must redirect to Journey Recovery if no existing data is found" in {
-          val userAnswers = emptyUserAnswers.set(page, answer).success.value
-
-//          val application = applicationBuilder(userAnswers = None).build()
-
-          val application = fakeApplication(Some(userAnswers))
+          val application = applicationBuilder(userAnswers = None).build()
 
           running(application) {
             val request = FakeRequest(GET, getUrl)
@@ -260,14 +232,12 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
             when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
 
-            val application = fakeApplication(Some(userAnswers))
-
-//            val application =
-//              applicationBuilder(userAnswers = Some(userAnswers))
-//                .overrides(
-//                  bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-//                  bind[SessionRepository].toInstance(mockSessionRepository),
-//                  bind[AuditService].toInstance(mockAuditService)).build()
+            val application =
+              applicationBuilder(userAnswers = Some(userAnswers))
+                .overrides(
+                  bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+                  bind[SessionRepository].toInstance(mockSessionRepository),
+                  bind[AuditService].toInstance(mockAuditService)).build()
 
             running(application) {
               val request = FakeRequest(POST, postUrl)
@@ -297,14 +267,12 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
             when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
 
-//            val application =
-//              applicationBuilder(userAnswers = Some(userAnswers))
-//                .overrides(
-//                  bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-//                  bind[SessionRepository].toInstance(mockSessionRepository),
-//                  bind[AuditService].toInstance(mockAuditService)).build()
-
-            val application = fakeApplication(Some(userAnswers))
+            val application =
+              applicationBuilder(userAnswers = Some(userAnswers))
+                .overrides(
+                  bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+                  bind[SessionRepository].toInstance(mockSessionRepository),
+                  bind[AuditService].toInstance(mockAuditService)).build()
 
             running(application) {
               val request = FakeRequest(POST, postUrl)
@@ -336,14 +304,12 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
             when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
 
-//            val application =
-//              applicationBuilder(userAnswers = Some(userAnswers))
-//                .overrides(
-//                  bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-//                  bind[SessionRepository].toInstance(mockSessionRepository),
-//                  bind[AuditService].toInstance(mockAuditService)).build()
-
-            val application = fakeApplication(Some(userAnswers))
+            val application =
+              applicationBuilder(userAnswers = Some(userAnswers))
+                .overrides(
+                  bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+                  bind[SessionRepository].toInstance(mockSessionRepository),
+                  bind[AuditService].toInstance(mockAuditService)).build()
 
             running(application) {
               val request = FakeRequest(POST, postUrl)
@@ -364,15 +330,11 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
         "when user answers cannot create an update goods record" - {
           "must not submit anything, and redirect to Journey Recovery" in {
-            val userAnswers = emptyUserAnswers.set(page, answer).success.value
-
             when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
 
-//            val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-//                .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
-//                .overrides(bind[CommodityService].toInstance(mockCommodityService)).build()
-
-            val application = fakeApplication(Some(userAnswers))
+            val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+                .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
+                .overrides(bind[CommodityService].toInstance(mockCommodityService)).build()
 
             running(application) {
               val request = FakeRequest(POST, postUrl)
@@ -390,12 +352,9 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
               .failed(new RuntimeException("Something went very wrong"))
 
-//            val application =
-//              applicationBuilder(userAnswers = Some(emptyUserAnswers))
-//                .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)).build()
-
-            val userAnswers = emptyUserAnswers
-            val application = fakeApplication(Some(userAnswers))
+            val application =
+              applicationBuilder(userAnswers = Some(emptyUserAnswers))
+                .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)).build()
 
             running(application) {
               val request = FakeRequest(POST, postUrl)
@@ -415,12 +374,10 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any)).thenReturn(Future.successful(Done))
           when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
 
-//          val application = applicationBuilder(userAnswers = Some(userAnswers))
-//              .overrides(
-//                bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-//                bind[AuditService].toInstance(mockAuditService)).build()
-
-          val application = fakeApplication(Some(userAnswers))
+          val application = applicationBuilder(userAnswers = Some(userAnswers))
+              .overrides(
+                bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+                bind[AuditService].toInstance(mockAuditService)).build()
 
           running(application) {
             val request = FakeRequest(POST, postUrl)
@@ -440,10 +397,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         }
 
         "must redirect to Journey Recovery if no existing data is found" in {
-          val userAnswers = emptyUserAnswers.set(page, answer).success.value
-
-//          val application = applicationBuilder(userAnswers = None).build()
-          val application = fakeApplication(Some(userAnswers))
+          val application = applicationBuilder(userAnswers = None).build()
 
           running(application) {
             val request = FakeRequest(POST, postUrl)
@@ -476,10 +430,9 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
         "must return OK and the correct view with valid mandatory data" in {
           val userAnswers = emptyUserAnswers.set(page, answer).success.value
-//          val application = applicationBuilder(userAnswers = Some(userAnswers))
-//          .overrides(bind[AuditService].toInstance(mockAuditService)).build()
 
-          val application = fakeApplication(Some(userAnswers))
+          val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(bind[AuditService].toInstance(mockAuditService)).build()
 
           running(application) {
             val request = FakeRequest(GET, getUrl)
@@ -497,11 +450,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         }
 
         "must redirect to Journey Recovery if no answers are found" in {
-          val userAnswers = emptyUserAnswers.set(page, answer).success.value
-
-//          val application = applicationBuilder(Some(emptyUserAnswers)).build()
-
-          val application = fakeApplication(Some(userAnswers))
+          val application = applicationBuilder(Some(emptyUserAnswers)).build()
 
           running(application) {
             val request = FakeRequest(GET, getUrl)
@@ -514,11 +463,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         }
 
         "must redirect to Journey Recovery if no existing data is found" in {
-          val userAnswers = emptyUserAnswers.set(page, answer).success.value
-
-//          val application = applicationBuilder(userAnswers = None).build()
-
-          val application = fakeApplication(Some(userAnswers))
+          val application = applicationBuilder(userAnswers = None).build()
 
           running(application) {
             val request = FakeRequest(GET, getUrl)
@@ -539,13 +484,11 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             when(mockGoodsRecordConnector.patchGoodsRecord(any())(any())).thenReturn(Future.successful(Done))
             when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any)).thenReturn(Future.successful(Done))
 
-//            val application =
-//              applicationBuilder(userAnswers = Some(userAnswers))
-//                .overrides(
-//                  bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-//                  bind[AuditService].toInstance(mockAuditService)).build()
-
-            val application = fakeApplication(Some(userAnswers))
+            val application =
+              applicationBuilder(userAnswers = Some(userAnswers))
+                .overrides(
+                  bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+                  bind[AuditService].toInstance(mockAuditService)).build()
 
             running(application) {
               val request = FakeRequest(POST, postUrl)
@@ -575,13 +518,11 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               .thenReturn(Future.failed(UpstreamErrorResponse(openAccreditationErrorCode, BAD_REQUEST)))
             when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any)).thenReturn(Future.successful(Done))
 
-//            val application =
-//              applicationBuilder(userAnswers = Some(userAnswers))
-//                .overrides(
-//                  bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-//                  bind[AuditService].toInstance(mockAuditService)).build()
-
-            val application = fakeApplication(Some(userAnswers))
+            val application =
+              applicationBuilder(userAnswers = Some(userAnswers))
+                .overrides(
+                  bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+                  bind[AuditService].toInstance(mockAuditService)).build()
 
             running(application) {
               val request = FakeRequest(POST, postUrl)
@@ -606,12 +547,8 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
         "when user answers cannot create an update goods record" - {
           "must not submit anything, and redirect to Journey Recovery" in {
-            val userAnswers = emptyUserAnswers.set(page, answer).success.value
-
-//            val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-//                .overrides(bind[CommodityService].toInstance(mockCommodityService)).build()
-
-            val application = fakeApplication(Some(userAnswers))
+            val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+                .overrides(bind[CommodityService].toInstance(mockCommodityService)).build()
 
             running(application) {
               val request = FakeRequest(POST, postUrl)
@@ -630,13 +567,11 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           when(mockGoodsRecordConnector.patchGoodsRecord(any())(any())).thenReturn(Future.failed(new RuntimeException("Connector failed")))
           when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any)).thenReturn(Future.successful(Done))
 
-//          val application = applicationBuilder(userAnswers = Some(userAnswers))
-//              .overrides(
-//                bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-//                bind[AuditService].toInstance(mockAuditService),
-//                bind[CommodityService].toInstance(mockCommodityService)).build()
-
-          val application = fakeApplication(Some(userAnswers))
+          val application = applicationBuilder(userAnswers = Some(userAnswers))
+              .overrides(
+                bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+                bind[AuditService].toInstance(mockAuditService),
+                bind[CommodityService].toInstance(mockCommodityService)).build()
 
           running(application) {
             val request = FakeRequest(POST, postUrl)
@@ -656,11 +591,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         }
 
         "must redirect to Journey Recovery if no existing data is found" in {
-          val userAnswers = emptyUserAnswers.set(page, answer).success.value
-
-//          val application = applicationBuilder(userAnswers = None).build()
-
-          val application = fakeApplication(Some(userAnswers))
+          val application = applicationBuilder(userAnswers = None).build()
 
           running(application) {
             val request = FakeRequest(POST, postUrl)
@@ -694,9 +625,8 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         "must return OK and the correct view with valid mandatory data" in {
           val userAnswers = emptyUserAnswers.set(page, answer).success.value
 
-          val application = fakeApplication(Some(userAnswers))
-//          val application = applicationBuilder(userAnswers = Some(userAnswers))
-//            .overrides(bind[AuditService].toInstance(mockAuditService)).build()
+          val application = applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(bind[AuditService].toInstance(mockAuditService)).build()
 
           running(application) {
             val request = FakeRequest(GET, getUrl)
@@ -714,11 +644,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         }
 
         "must redirect to Journey Recovery if no answers are found" in {
-          val userAnswers = emptyUserAnswers.set(page, answer).success.value
-
-//          val application = applicationBuilder(Some(emptyUserAnswers)).build()
-
-          val application = fakeApplication(Some(userAnswers))
+          val application = applicationBuilder(Some(emptyUserAnswers)).build()
 
           running(application) {
             val request = FakeRequest(GET, getUrl)
@@ -731,11 +657,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         }
 
         "must redirect to Journey Recovery if no existing data is found" in {
-          val userAnswers = emptyUserAnswers.set(page, answer).success.value
-
-//          val application = applicationBuilder(userAnswers = None).build()
-
-          val application = fakeApplication(Some(userAnswers))
+          val application = applicationBuilder(userAnswers = None).build()
 
           running(application) {
             val request = FakeRequest(GET, getUrl)
@@ -756,12 +678,10 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             when(mockGoodsRecordConnector.patchGoodsRecord(any())(any())).thenReturn(Future.successful(Done))
             when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any)).thenReturn(Future.successful(Done))
 
-//            val application = applicationBuilder(userAnswers = Some(userAnswers))
-//                .overrides(
-//                  bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-//                  bind[AuditService].toInstance(mockAuditService)).build()
-
-            val application = fakeApplication(Some(userAnswers))
+            val application = applicationBuilder(userAnswers = Some(userAnswers))
+                .overrides(
+                  bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+                  bind[AuditService].toInstance(mockAuditService)).build()
 
             running(application) {
               val request = FakeRequest(POST, postUrl)
@@ -791,13 +711,11 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
             when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
 
-//            val application = applicationBuilder(userAnswers = Some(userAnswers))
-//                .overrides(
-//                  bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-//                  bind[SessionRepository].toInstance(mockSessionRepository),
-//                  bind[AuditService].toInstance(mockAuditService)).build()
-
-            val application = fakeApplication(Some(userAnswers))
+            val application = applicationBuilder(userAnswers = Some(userAnswers))
+                .overrides(
+                  bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+                  bind[SessionRepository].toInstance(mockSessionRepository),
+                  bind[AuditService].toInstance(mockAuditService)).build()
 
             running(application) {
               val request = FakeRequest(POST, postUrl)
@@ -826,12 +744,10 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(record))
             when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any)).thenReturn(Future.successful(Done))
 
-//            val application = applicationBuilder(userAnswers = Some(userAnswers))
-//                .overrides(
-//                  bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-//                  bind[AuditService].toInstance(mockAuditService)).build()
-
-            val application = fakeApplication(Some(userAnswers))
+            val application = applicationBuilder(userAnswers = Some(userAnswers))
+                .overrides(
+                  bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+                  bind[AuditService].toInstance(mockAuditService)).build()
 
             running(application) {
               val request = FakeRequest(POST, postUrl)
@@ -861,12 +777,10 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               .thenReturn(Future.failed(UpstreamErrorResponse(openAccreditationErrorCode, BAD_REQUEST)))
             when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any)).thenReturn(Future.successful(Done))
 
-//            val application = applicationBuilder(userAnswers = Some(userAnswers))
-//                .overrides(
-//                  bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-//                  bind[AuditService].toInstance(mockAuditService)).build()
-
-            val application = fakeApplication(Some(userAnswers))
+            val application = applicationBuilder(userAnswers = Some(userAnswers))
+                .overrides(
+                  bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+                  bind[AuditService].toInstance(mockAuditService)).build()
 
             running(application) {
               val request = FakeRequest(POST, postUrl)
@@ -891,12 +805,8 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
         "when user answers cannot create an update goods record" - {
           "must not submit anything, and redirect to Journey Recovery" in {
-            val userAnswers = emptyUserAnswers.set(page, answer).success.value
-
-//            val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-//                .overrides(bind[CommodityService].toInstance(mockCommodityService)).build()
-
-            val application = fakeApplication(Some(userAnswers))
+            val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+                .overrides(bind[CommodityService].toInstance(mockCommodityService)).build()
 
             running(application) {
               val request = FakeRequest(POST, postUrl)
@@ -915,11 +825,9 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           when(mockGoodsRecordConnector.patchGoodsRecord(any())(any())).thenReturn(Future.failed(new RuntimeException("Connector failed")))
           when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any)).thenReturn(Future.successful(Done))
 
-          val application = fakeApplication(Some(userAnswers))
-
-//          val application = applicationBuilder(userAnswers = Some(userAnswers))
-//              .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-//                bind[AuditService].toInstance(mockAuditService)).build()
+          val application = applicationBuilder(userAnswers = Some(userAnswers))
+              .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+                bind[AuditService].toInstance(mockAuditService)).build()
 
           running(application) {
             val request = FakeRequest(POST, postUrl)
@@ -938,11 +846,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         }
 
         "must redirect to Journey Recovery if no existing data is found" in {
-          val userAnswers = emptyUserAnswers.set(page, answer).success.value
-
-//          val application = applicationBuilder(userAnswers = None).build()
-
-          val application = fakeApplication(Some(userAnswers))
+          val application = applicationBuilder(userAnswers = None).build()
 
           running(application) {
             val request = FakeRequest(POST, postUrl)
@@ -985,12 +889,10 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
           when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
 
-//          val application = applicationBuilder(userAnswers = Some(userAnswers))
-//            .overrides(bind[AuditService].toInstance(mockAuditService))
-//            .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
-//            .overrides(bind[CommodityService].toInstance(mockCommodityService)).build()
-
-          val application = fakeApplication(Some(userAnswers))
+          val application = applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(bind[AuditService].toInstance(mockAuditService))
+            .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
+            .overrides(bind[CommodityService].toInstance(mockCommodityService)).build()
 
           running(application) {
             val request = FakeRequest(GET, getUrl)
@@ -1016,12 +918,10 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
           when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
 
-//          val application = applicationBuilder(userAnswers = Some(userAnswers))
-//            .overrides(bind[AuditService].toInstance(mockAuditService))
-//            .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
-//            .overrides(bind[CommodityService].toInstance(mockCommodityService)).build()
-
-          val application = fakeApplication(Some(userAnswers))
+          val application = applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(bind[AuditService].toInstance(mockAuditService))
+            .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
+            .overrides(bind[CommodityService].toInstance(mockCommodityService)).build()
 
           running(application) {
             val request = FakeRequest(GET, getUrl)
@@ -1039,14 +939,10 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         }
 
         "must redirect to Journey Recovery if no answers are found" in {
-          val userAnswers = emptyUserAnswers
-
           when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
 
-//          val application = applicationBuilder(Some(emptyUserAnswers))
-//            .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)).build()
-
-          val application = fakeApplication(Some(userAnswers))
+          val application = applicationBuilder(Some(emptyUserAnswers))
+            .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)).build()
 
           running(application) {
             val request = FakeRequest(GET, getUrl)
@@ -1059,14 +955,10 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         }
 
         "must redirect to Journey Recovery if no record is found" in {
-          val userAnswers = emptyUserAnswers
-
           when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.failed(new RuntimeException("Something went very wrong"))
 
-//          val application = applicationBuilder(Some(emptyUserAnswers))
-//            .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)).build()
-
-          val application = fakeApplication(Some(userAnswers))
+          val application = applicationBuilder(Some(emptyUserAnswers))
+            .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)).build()
 
           running(application) {
             val request = FakeRequest(GET, getUrl)
@@ -1081,10 +973,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
         "must redirect to Journey Recovery if no existing data is found" in {
           val userAnswers = emptyUserAnswers
-
-//          val application = applicationBuilder(userAnswers = None).build()
-
-          val application = fakeApplication(Some(userAnswers))
+          val application = applicationBuilder(userAnswers = None).build()
 
           running(application) {
             val request = FakeRequest(GET, getUrl)
@@ -1110,13 +999,11 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             when(mockGoodsRecordConnector.putGoodsRecord(any(), any())(any())).thenReturn(Future.successful(Done))
             when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
 
-//            val application =
-//              applicationBuilder(userAnswers = Some(userAnswers))
-//                .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
-//                .overrides(bind[AuditService].toInstance(mockAuditService))
-//                .overrides(bind[CommodityService].toInstance(mockCommodityService)).build()
-
-            val application = fakeApplication(Some(userAnswers))
+            val application =
+              applicationBuilder(userAnswers = Some(userAnswers))
+                .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
+                .overrides(bind[AuditService].toInstance(mockAuditService))
+                .overrides(bind[CommodityService].toInstance(mockCommodityService)).build()
 
             running(application) {
               val request = FakeRequest(POST, postUrl)
@@ -1162,15 +1049,13 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
             when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
 
-//            val application =
-//              applicationBuilder(userAnswers = Some(userAnswers))
-//                .overrides(
-//                  bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-//                  bind[SessionRepository].toInstance(mockSessionRepository),
-//                  bind[AuditService].toInstance(mockAuditService),
-//                  bind[CommodityService].toInstance(mockCommodityService)).build()
-
-            val application = fakeApplication(Some(userAnswers))
+            val application =
+              applicationBuilder(userAnswers = Some(userAnswers))
+                .overrides(
+                  bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+                  bind[SessionRepository].toInstance(mockSessionRepository),
+                  bind[AuditService].toInstance(mockAuditService),
+                  bind[CommodityService].toInstance(mockCommodityService)).build()
 
             running(application) {
               val request = FakeRequest(POST, postUrl)
@@ -1205,13 +1090,11 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(record))
             when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any)).thenReturn(Future.successful(Done))
 
-//            val application =applicationBuilder(userAnswers = Some(userAnswers))
-//                .overrides(
-//                  bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-//                  bind[AuditService].toInstance(mockAuditService),
-//                  bind[CommodityService].toInstance(mockCommodityService)).build()
-
-            val application = fakeApplication(Some(userAnswers))
+            val application =applicationBuilder(userAnswers = Some(userAnswers))
+                .overrides(
+                  bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+                  bind[AuditService].toInstance(mockAuditService),
+                  bind[CommodityService].toInstance(mockCommodityService)).build()
 
             running(application) {
               val request = FakeRequest(POST, postUrl)
@@ -1242,13 +1125,11 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               .thenReturn(Future.failed(UpstreamErrorResponse(openAccreditationErrorCode, BAD_REQUEST)))
             when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
 
-//            val application = applicationBuilder(userAnswers = Some(userAnswers))
-//                .overrides(
-//                  bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-//                  bind[AuditService].toInstance(mockAuditService),
-//                  bind[CommodityService].toInstance(mockCommodityService)).build()
-
-            val application = fakeApplication(Some(userAnswers))
+            val application = applicationBuilder(userAnswers = Some(userAnswers))
+                .overrides(
+                  bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+                  bind[AuditService].toInstance(mockAuditService),
+                  bind[CommodityService].toInstance(mockCommodityService)).build()
 
             running(application) {
               val request = FakeRequest(POST, postUrl)
@@ -1267,16 +1148,12 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
         "when user answers cannot create an update goods record" - {
           "must not submit anything, and redirect to Journey Recovery" in {
-            val userAnswers = emptyUserAnswers
-
             when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
 
-//            val application =
-//              applicationBuilder(userAnswers = Some(emptyUserAnswers))
-//                .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
-//                .overrides(bind[CommodityService].toInstance(mockCommodityService)).build()
-
-            val application = fakeApplication(Some(userAnswers))
+            val application =
+              applicationBuilder(userAnswers = Some(emptyUserAnswers))
+                .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
+                .overrides(bind[CommodityService].toInstance(mockCommodityService)).build()
 
             running(application) {
               val request = FakeRequest(POST, postUrl)
@@ -1290,15 +1167,11 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           }
 
           "must not submit anything when record is not found, and must let the play error handler deal with connector failure" in {
-            val userAnswers = emptyUserAnswers
-
             when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
               .failed(new RuntimeException("Something went very wrong"))
 
-//            val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-//                .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)).build()
-
-            val application = fakeApplication(Some(userAnswers))
+            val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+                .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)).build()
 
             running(application) {
               val request = FakeRequest(POST, postUrl)
@@ -1321,12 +1194,10 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           when(mockGoodsRecordConnector.patchGoodsRecord(any())(any())).thenReturn(Future.failed(new RuntimeException("Connector failed")))
           when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
 
-//          val application = applicationBuilder(userAnswers = Some(userAnswers))
-//              .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
-//              .overrides(bind[AuditService].toInstance(mockAuditService))
-//              .overrides(bind[CommodityService].toInstance(mockCommodityService)).build()
-
-          val application = fakeApplication(Some(userAnswers))
+          val application = applicationBuilder(userAnswers = Some(userAnswers))
+              .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
+              .overrides(bind[AuditService].toInstance(mockAuditService))
+              .overrides(bind[CommodityService].toInstance(mockCommodityService)).build()
 
           running(application) {
             val request = FakeRequest(POST, postUrl)
@@ -1343,11 +1214,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         }
 
         "must redirect to Journey Recovery if no existing data is found (Country of Origin example)" in {
-//          val application = applicationBuilder(userAnswers = None).build()
-
-          val userAnswers = emptyUserAnswers
-
-          val application = fakeApplication(Some(userAnswers))
+          val application = applicationBuilder(userAnswers = None).build()
 
           running(application) {
             val request = FakeRequest(POST, controllers.goodsRecord.routes.CyaUpdateRecordController.onSubmitCountryOfOrigin(testRecordId).url)
