@@ -44,7 +44,6 @@ import scala.concurrent.Future
 class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency with MockitoSugar {
 
   "CyaCreateRecordController" - {
-
     def createChangeList(userAnswers: UserAnswers, app: Application): SummaryList = SummaryListViewModel(
       rows = Seq(
         ProductReferenceSummary.row(userAnswers)(messages(app)),
@@ -55,26 +54,20 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
     )
 
     "for a GET" - {
-
       "must return OK and the correct view with valid mandatory data" in {
-
         val mockOttConnector = mock[OttConnector]
         when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
-          Seq(Country("CN", "China"))
-        )
+          Seq(Country("CN", "China")))
 
         val application =
           applicationBuilder(userAnswers = Some(mandatoryRecordUserAnswers))
             .overrides(
               bind[OttConnector].toInstance(mockOttConnector)
-            )
-            .build()
+            ).build()
 
         running(application) {
           val request = FakeRequest(GET, controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad().url)
-
           val result = route(application, request).value
-
           val view = application.injector.instanceOf[CyaCreateRecordView]
           val list = createChangeList(mandatoryRecordUserAnswers, application)
 
@@ -85,26 +78,21 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
       }
 
       "must return OK and the correct view with all data (including optional)" in {
-
         val mockOttConnector = mock[OttConnector]
         when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
           Seq(Country("CN", "China"))
         )
 
         val userAnswers = fullRecordUserAnswers
-
         val application =
           applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
               bind[OttConnector].toInstance(mockOttConnector)
-            )
-            .build()
+            ).build()
 
         running(application) {
           val request = FakeRequest(GET, controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad().url)
-
           val result = route(application, request).value
-
           val view = application.injector.instanceOf[CyaCreateRecordView]
           val list = createChangeList(userAnswers, application)
 
@@ -115,17 +103,12 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
       }
 
       "must return OK and the correct view when countries query has countries in it" in {
-
         val userAnswers = fullRecordUserAnswers.set(CountriesQuery, Seq(Country("CN", "China"))).success.value
-
-        val application =
-          applicationBuilder(userAnswers = Some(userAnswers)).build()
+        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
         running(application) {
           val request = FakeRequest(GET, controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad().url)
-
           val result = route(application, request).value
-
           val view = application.injector.instanceOf[CyaCreateRecordView]
           val list = createChangeList(userAnswers, application)
 
@@ -135,30 +118,24 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
       }
 
       "must redirect to Journey Recovery if no answers are found" in {
-
         val application = applicationBuilder(Some(emptyUserAnswers)).build()
         val continueUrl = RedirectUrl(controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad().url)
 
         running(application) {
           val request = FakeRequest(GET, controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad().url)
-
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
-            .onPageLoad(Some(continueUrl))
-            .url
-
+            .onPageLoad(Some(continueUrl)).url
         }
       }
 
       "must redirect to Journey Recovery if no existing data is found" in {
-
         val application = applicationBuilder(userAnswers = None).build()
 
         running(application) {
           val request = FakeRequest(GET, controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad().url)
-
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
@@ -168,13 +145,9 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
     }
 
     "for a POST" - {
-
       "when user answers can create a valid goods record" - {
-
         "must submit the goods record and redirect to the CreateRecordSuccessController and cleanse userAnswers" in {
-
           val userAnswers = mandatoryRecordUserAnswers
-
           val mockConnector = mock[GoodsRecordConnector]
           when(mockConnector.submitGoodsRecord(any())(any()))
             .thenReturn(Future.successful("test"))
@@ -194,9 +167,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
           running(application) {
             val request = FakeRequest(POST, controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad().url)
-
             val result = route(application, request).value
-
             val expectedPayload = GoodsRecord(
               testEori,
               "123",
@@ -207,8 +178,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual controllers.goodsRecord.routes.CreateRecordSuccessController
-              .onPageLoad("test")
-              .url
+              .onPageLoad("test").url
             verify(mockConnector, atLeastOnce()).submitGoodsRecord(eqTo(expectedPayload))(any())
 
             withClue("must call the audit connector with the supplied details") {
@@ -223,13 +193,10 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
       }
 
       "when user answers cannot create a goods record" - {
-
         "must not submit anything, and redirect to Journey Recovery" in {
-
           val mockConnector    = mock[GoodsRecordConnector]
           val mockAuditService = mock[AuditService]
           val continueUrl      = RedirectUrl(controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad().url)
-
           val sessionRepository = mock[SessionRepository]
           when(sessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
 
@@ -242,13 +209,11 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
           running(application) {
             val request = FakeRequest(POST, controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad().url)
-
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
-              .onPageLoad(Some(continueUrl))
-              .url
+              .onPageLoad(Some(continueUrl)).url
             verify(mockConnector, never()).submitGoodsRecord(any())(any())
 
             withClue("must not try and submit an audit") {
@@ -258,14 +223,11 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               verify(sessionRepository).clearData(eqTo(emptyUserAnswers.id), eqTo(CreateRecordJourney))
             }
           }
-
         }
       }
 
       "must let the play error handler deal with connector failure" in {
-
         val userAnswers = mandatoryRecordUserAnswers
-
         val mockConnector = mock[GoodsRecordConnector]
         when(mockConnector.submitGoodsRecord(any())(any()))
           .thenReturn(Future.failed(new RuntimeException("Connector failed")))
@@ -296,17 +258,14 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           withClue("must not cleanse the user answers data when connector fails") {
             verify(sessionRepository, never()).clearData(eqTo(userAnswers.id), eqTo(CreateRecordJourney))
           }
-
         }
       }
 
       "must redirect to Journey Recovery if no existing data is found" in {
-
         val application = applicationBuilder(userAnswers = None).build()
 
         running(application) {
           val request = FakeRequest(POST, controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad().url)
-
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
