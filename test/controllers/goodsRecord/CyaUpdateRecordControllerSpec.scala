@@ -39,7 +39,6 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants.{commodityCodeKey, countryOfOriginKey, goodsDescriptionKey, openAccreditationErrorCode, productReferenceKey}
-import models.UserAnswers
 import viewmodels.checkAnswers.goodsRecord.UpdateRecordSummary
 import viewmodels.govuk.SummaryListFluency
 import views.html.goodsRecord.CyaUpdateRecordView
@@ -67,12 +66,6 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
     reset(mockSessionRepository)
     when(mockCommodityService.isCommodityCodeValid(any(), any())(any(), any())).thenReturn(Future.successful(true))
   }
-
-//  override protected def afterEach(): Unit = {
-//    super.afterEach()
-//    reset(mockAuditService)
-//    reset(mockGoodsRecordConnector)
-//  }
 
   "CyaUpdateRecordController" - {
     val record = goodsRecordResponse(
@@ -972,7 +965,6 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
         }
 
         "must redirect to Journey Recovery if no existing data is found" in {
-          val userAnswers = emptyUserAnswers
           val application = applicationBuilder(userAnswers = None).build()
 
           running(application) {
