@@ -60,10 +60,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
   override protected def beforeEach(): Unit = {
     super.beforeEach()
-    reset(mockAuditService)
-    reset(mockGoodsRecordConnector)
-    reset(mockOttConnector)
-    reset(mockSessionRepository)
+    reset(mockAuditService, mockGoodsRecordConnector, mockOttConnector, mockSessionRepository)
     when(mockCommodityService.isCommodityCodeValid(any(), any())(any(), any())).thenReturn(Future.successful(true))
   }
 
