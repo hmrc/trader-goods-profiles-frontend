@@ -25,7 +25,7 @@
     govukWarningText: GovukWarningText
 )
 
-@(form: Form[_], recordId: String, location: Location)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], recordId: String, location: Location, productRef: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("removeGoodsRecord.title"))) {
 
@@ -35,9 +35,14 @@
 
       <h1 class="govuk-heading-l">@messages("removeGoodsRecord.heading")</h1>
 
+    <h2>@messages("createRecordStart.h2")</h2>
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+    <p class="govuk-body">@productRef</p>
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+
     @govukWarningText(WarningText(
-        iconFallbackText = Some(messages("removeGoodsRecord.warning")),
-        content = Text(messages("removeGoodsRecord.warningText"))
+    iconFallbackText = Some(messages("removeGoodsRecord.warning")),
+    content = Text(messages("removeGoodsRecord.warningText"))
     ))
 
     @formHelper(action = controllers.goodsProfile.routes.RemoveGoodsRecordController.onSubmit(recordId, location), Symbol("autoComplete") -> "off") {

@@ -17,13 +17,14 @@
 package controllers.goodsProfile
 
 import connectors.GoodsRecordConnector
-import controllers.actions._
 import controllers.BaseController
+import controllers.actions.*
 import forms.goodsProfile.RemoveGoodsRecordFormProvider
 import models.GoodsRecordsPagination.firstPage
 import models.{Location, NormalMode}
 import navigation.GoodsProfileNavigator
 import pages.goodsProfile.RemoveGoodsRecordPage
+import pages.goodsRecord.{ProductReferencePage, ProductReferenceUpdatePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.AuditService
@@ -53,16 +54,18 @@ class RemoveGoodsRecordController @Inject() (
   def onPageLoad(recordId: String, location: Location): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       auditService.auditStartRemoveGoodsRecord(request.eori, request.affinityGroup, recordId)
+      val productRef: String = request.userAnswers.get(ProductReferenceUpdatePage(recordId)).getOrElse("")
 
-      Ok(view(form, recordId, location))
+      Ok(view(form, recordId, location, productRef))
     }
 
   def onSubmit(recordId: String, location: Location): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
+      val productRef: String = request.userAnswers.get(ProductReferenceUpdatePage(recordId)).getOrElse("")
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, recordId, location))),
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, recordId, location, productRef))),
           {
             case true  =>
               goodsRecordConnector
