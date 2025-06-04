@@ -68,16 +68,16 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
     when(mockCommodityService.isCommodityCodeValid(any(), any())(any(), any())).thenReturn(Future.successful(true))
   }
 
-  override def fakeApplication(userAnswers: Option[UserAnswers] = None): Application = {
-    applicationBuilder(userAnswers)
+  private lazy val baseApplication: Application = {
+    applicationBuilder()
       .overrides(
-        bind[OttConnector].toInstance(mockOttConnector),
-        bind[AuditService].toInstance(mockAuditService),
-        bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-        bind[CommodityService].toInstance(mockCommodityService),
-        bind[SessionRepository].toInstance(mockSessionRepository)
-      )
-      .build()
+      bind[OttConnector].toInstance(mockOttConnector),
+      bind[AuditService].toInstance(mockAuditService),
+      bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+      bind[CommodityService].toInstance(mockCommodityService),
+      bind[SessionRepository].toInstance(mockSessionRepository)
+    )
+    .build()
   }
 
 //  override protected def afterEach(): Unit = {
@@ -93,17 +93,17 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
     ).copy(recordId = testRecordId, eori = testEori)
 
     "for Country of Origin Update" - {
-      val summaryValue    = "China"
-      val summaryKey      = "countryOfOrigin.checkYourAnswersLabel"
-      val summaryHidden   = "countryOfOrigin.change.hidden"
-      val summaryUrl      = controllers.goodsRecord.countryOfOrigin.routes.UpdateCountryOfOriginController.onPageLoad(CheckMode, testRecordId).url
-      val page            = CountryOfOriginUpdatePage(testRecordId)
-      val answer          = "CN"
+      val summaryValue = "China"
+      val summaryKey = "countryOfOrigin.checkYourAnswersLabel"
+      val summaryHidden = "countryOfOrigin.change.hidden"
+      val summaryUrl = controllers.goodsRecord.countryOfOrigin.routes.UpdateCountryOfOriginController.onPageLoad(CheckMode, testRecordId).url
+      val page = CountryOfOriginUpdatePage(testRecordId)
+      val answer = "CN"
       val expectedPayload = UpdateGoodsRecord(testEori, testRecordId, countryOfOrigin = Some(answer))
-      val getUrl          = controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(testRecordId).url
-      val call            = controllers.goodsRecord.routes.CyaUpdateRecordController.onSubmitCountryOfOrigin(testRecordId)
-      val postUrl         = controllers.goodsRecord.routes.CyaUpdateRecordController.onSubmitCountryOfOrigin(testRecordId).url
-      val warningPage     = HasCountryOfOriginChangePage(testRecordId)
+      val getUrl = controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(testRecordId).url
+      val call = controllers.goodsRecord.routes.CyaUpdateRecordController.onSubmitCountryOfOrigin(testRecordId)
+      val postUrl = controllers.goodsRecord.routes.CyaUpdateRecordController.onSubmitCountryOfOrigin(testRecordId).url
+      val warningPage = HasCountryOfOriginChangePage(testRecordId)
 
       "for a GET" - {
         def createChangeList(app: Application): SummaryList = SummaryListViewModel(
@@ -118,13 +118,13 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           when(mockOttConnector.getCountries(any())) thenReturn Future.successful(Seq(Country("CN", "China")))
           when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
 
-          val application = fakeApplication(Some(userAnswers))
+          val application = baseApplication
 //          val application = applicationBuilder(userAnswers = Some(userAnswers))
 //            .overrides(bind[OttConnector].toInstance(mockOttConnector))
 //            .overrides(bind[AuditService].toInstance(mockAuditService))
 //            .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)).build()
 
-          running(application) {
+          running(baseApplication) {
             val request = FakeRequest(GET, getUrl)
             val result = route(application, request).value
             val view = application.injector.instanceOf[CyaUpdateRecordView]
