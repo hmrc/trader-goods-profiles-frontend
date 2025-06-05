@@ -15,6 +15,7 @@
  *@
 
 @import config.FrontendAppConfig
+@import models.DeclarableStatus.NotReadyForUse
 
 @this(
     appConfig: FrontendAppConfig,
@@ -46,26 +47,28 @@
      autoCategoriseScenario: Option[Scenario]
      )(implicit request: Request[_], messages: Messages)
 
-    @bannerContentForUpdate(page: String, dataRemoved:Boolean) = {
+@bannerContentForUpdate(page: String, dataRemoved: Boolean) = {
     @if(dataRemoved) {
         <h3 class="govuk-notification-banner__heading">
-                    @messages("successBannerRemove.heading", page)
+            @messages("successBannerRemove.heading", page)
         </h3>
-    } else {
+        } else {
+        @defining(messages(s"singleRecord.$page")) { fieldName =>
         <p class="govuk-body">
-            @messages("successBanner.para1")
+            @messages(s"successBanner.$page")
         </p>
         <p class="govuk-body">
             @messages("successBanner.para2")
             <strong class="govuk-tag govuk-!-display-inline @declarableStatus.paragraphTagColour">
                 @messages(declarableStatus.messageKey)
-            </strong>
+            </strong>.
         </p>
         }
-
     }
+}
 
-    @autoCategorisedBannerContent(scenario: Scenario) = {
+
+@autoCategorisedBannerContent(scenario: Scenario) = {
         <h3 class="govuk-notification-banner__heading">
             @messages("autoCategorisation.completed") @scenario
         </h3>
@@ -73,7 +76,7 @@
 
 @layout(backLinkUrl = previousUrl, backLinkMessageKey = "singleRecord.back", pageTitle = titleNoForm(messages("singleRecord.title"))) {
 
-    @if(changesMade) {
+    @if(changesMade && declarableStatus != NotReadyForUse) {
         @govukNotificationBanner(NotificationBanner(
             title = Text(messages("successBanner.title")),
             content = HtmlContent(bannerContentForUpdate(changedPage, dataRemoved)),
@@ -82,16 +85,7 @@
         )
     }
 
-    @autoCategoriseScenario.map { scenario =>
-        @govukNotificationBanner(NotificationBanner(
-            title = Text("Important"),
-            content = HtmlContent(autoCategorisedBannerContent(scenario)),
-            bannerType = Some("information"),
-            role=Some("alert"))
-        )
-    }
-
-    <h1 class="govuk-heading-l">@messages("singleRecord.h1")</h1>
+       <h1 class="govuk-heading-l">@messages("singleRecord.h1")</h1>
     <h2 class="govuk-heading-m">@messages("singleRecord.h2")</h2>
 
     <p class="govuk-body">

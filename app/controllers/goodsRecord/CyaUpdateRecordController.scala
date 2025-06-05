@@ -33,7 +33,7 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request, Result}
 import queries.CountriesQuery
 import repositories.SessionRepository
-import services.{AuditService, CommodityService}
+import services.{AuditService, AutoCategoriseService, CommodityService}
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants.{commodityCodeKey, countryOfOriginKey, goodsDescriptionKey, openAccreditationErrorCode, productReferenceKey}
@@ -58,6 +58,7 @@ class CyaUpdateRecordController @Inject() (
   sessionRepository: SessionRepository,
   navigator: GoodsRecordNavigator,
   config: FrontendAppConfig,
+  autoCategoriseService: AutoCategoriseService,
   commodityService: CommodityService
 )(implicit ec: ExecutionContext)
     extends BaseController {
@@ -300,7 +301,7 @@ class CyaUpdateRecordController @Inject() (
 
   def onSubmitCountryOfOrigin(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      (for {
+      val resultFuture = for {
         oldRecord                <- goodsRecordConnector.getRecord(recordId)
         countryOfOrigin          <-
           handleValidateError(
@@ -332,9 +333,15 @@ class CyaUpdateRecordController @Inject() (
                                     )
         updatedAnswersWithChange <- Future.fromTry(request.userAnswers.remove(HasCountryOfOriginChangePage(recordId)))
         updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CountryOfOriginUpdatePage(recordId)))
+        autoCategoriseScenario   <- autoCategoriseService.autoCategoriseRecord(recordId, updatedAnswers)
         _                        <- sessionRepository.set(updatedAnswers)
-      } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers)))
-        .recover(handleRecover(recordId))
+      } yield
+        if (autoCategoriseScenario.isDefined) {
+          Redirect(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
+        } else
+          Redirect(controllers.goodsRecord.countryOfOrigin.routes.UpdatedCountryOfOriginController.onPageLoad(recordId))
+            .addingToSession(pageUpdated -> countryOfOrigin)
+      resultFuture.recover(handleRecover(recordId))
     }
 
   def onSubmitGoodsDescription(recordId: String): Action[AnyContent] =
