@@ -25,22 +25,14 @@ import views.html.goodsRecord.UpdatedCountryOfOriginView
 class UpdatedCountryOfOriginControllerSpec extends SpecBase {
 
   "UpdatedCountryOfOrigin Controller" - {
-
     "must return OK and the correct view for a GET" in {
-
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request =
-          FakeRequest(
-            GET,
-            controllers.goodsRecord.countryOfOrigin.routes.UpdatedCountryOfOriginController.onPageLoad(testRecordId).url
-          )
-
+        val request = FakeRequest(GET, controllers.goodsRecord.countryOfOrigin.routes.UpdatedCountryOfOriginController.onPageLoad(testRecordId).url)
         val result = route(application, request).value
-
         val view = application.injector.instanceOf[UpdatedCountryOfOriginView]
-
+        
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(testRecordId)(request, messages(application)).toString
       }

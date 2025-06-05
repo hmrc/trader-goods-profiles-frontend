@@ -25,7 +25,7 @@ import models.{Country, NormalMode, UserAnswers}
 import navigation.{FakeGoodsRecordNavigator, GoodsRecordNavigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{atLeastOnce, never, verify, when}
+import org.mockito.Mockito.{atLeastOnce, never, verify, when, reset}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.goodsRecord.{CountryOfOriginUpdatePage, HasCountryOfOriginChangePage}
 import play.api.inject.bind
@@ -49,30 +49,24 @@ class UpdateCountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
   val formProvider = new CountryOfOriginFormProvider()
   private val form = formProvider(countries)
 
-  "CountryOfOrigin Controller" - {
+  private val mockAuditService = mock[AuditService]
+  private val mockOttConnector = mock[OttConnector]
+  private val mockSessionRepository = mock[SessionRepository]
 
-    lazy val countryOfOriginRoute =
-      controllers.goodsRecord.countryOfOrigin.routes.UpdateCountryOfOriginController
-        .onPageLoad(NormalMode, testRecordId)
-        .url
-    lazy val onSubmitAction       =
-      controllers.goodsRecord.countryOfOrigin.routes.UpdateCountryOfOriginController
-        .onSubmit(NormalMode, testRecordId)
+  override protected def beforeEach(): Unit = {
+    super.beforeEach()
+    reset(mockAuditService, mockOttConnector, mockSessionRepository)
+  }
+
+  "CountryOfOrigin Controller" - {
+    lazy val countryOfOriginRoute = controllers.goodsRecord.countryOfOrigin.routes.UpdateCountryOfOriginController.onPageLoad(NormalMode, testRecordId).url
+    lazy val onSubmitAction       = controllers.goodsRecord.countryOfOrigin.routes.UpdateCountryOfOriginController.onSubmit(NormalMode, testRecordId)
 
     "must return OK and the correct view for a GET" in {
+      when(mockAuditService.auditStartUpdateGoodsRecord(any(), any(), any(), any(), any())(any())).thenReturn(Future.successful(Done))
+      when(mockOttConnector.getCountries(any())) thenReturn Future.successful(countries)
 
-      val mockAuditService = mock[AuditService]
-
-      when(mockAuditService.auditStartUpdateGoodsRecord(any(), any(), any(), any(), any())(any()))
-        .thenReturn(Future.successful(Done))
-
-      val mockOttConnector = mock[OttConnector]
-      when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
-        countries
-      )
-
-      val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
             bind[OttConnector].toInstance(mockOttConnector),
@@ -82,47 +76,32 @@ class UpdateCountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request = FakeRequest(GET, countryOfOriginRoute)
-
-        val result = route(application, request).value
-
+        val call = onSubmitAction
         val view = application.injector.instanceOf[CountryOfOriginView]
 
-        val call = onSubmitAction
-
+        val result = route(application, request).value
+        
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, call, countries, NormalMode, Some(testRecordId))(
-          request,
-          messages(application)
-        ).toString
+        contentAsString(result) mustEqual view(form, call, countries, NormalMode, Some(testRecordId))(request, messages(application)).toString
 
         withClue("must call the audit service with the correct details") {
-          verify(mockAuditService, atLeastOnce())
-            .auditStartUpdateGoodsRecord(
+          verify(mockAuditService, atLeastOnce()).auditStartUpdateGoodsRecord(
               eqTo(testEori),
               eqTo(AffinityGroup.Individual),
               eqTo(GoodsDetailsUpdate),
               eqTo(testRecordId),
-              any()
-            )(any())
+              any())(any())
           verify(mockOttConnector, atLeastOnce()).getCountries(any())
         }
-
       }
     }
 
     "must not fire audit event if already fired on last page" in {
-
-      val mockAuditService = mock[AuditService]
-
-      val mockOttConnector = mock[OttConnector]
-      when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
-        countries
-      )
+      when(mockOttConnector.getCountries(any())) thenReturn Future.successful(countries)
 
       val userAnswers = emptyUserAnswers.set(HasCountryOfOriginChangePage(testRecordId), true).success.value
 
-      val application =
-        applicationBuilder(userAnswers = Some(userAnswers))
+      val application = applicationBuilder(userAnswers = Some(userAnswers))
           .overrides(
             bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
             bind[OttConnector].toInstance(mockOttConnector),
@@ -132,46 +111,27 @@ class UpdateCountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request = FakeRequest(GET, countryOfOriginRoute)
-
-        val result = route(application, request).value
-
+        val call = onSubmitAction
         val view = application.injector.instanceOf[CountryOfOriginView]
 
-        val call = onSubmitAction
-
+        val result = route(application, request).value
+        
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, call, countries, NormalMode, Some(testRecordId))(
-          request,
-          messages(application)
-        ).toString
+        contentAsString(result) mustEqual view(form, call, countries, NormalMode, Some(testRecordId))(request, messages(application)).toString
 
         withClue("must not call the audit service as this has already been done") {
-          verify(mockAuditService, never())
-            .auditStartUpdateGoodsRecord(
-              any(),
-              any(),
-              any(),
-              any(),
-              any()
-            )(any())
+          verify(mockAuditService, never()).auditStartUpdateGoodsRecord(any(), any(), any(), any(), any())(any())
           verify(mockOttConnector, atLeastOnce()).getCountries(any())
         }
-
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
+      val userAnswers = UserAnswers(userAnswersId).set(CountryOfOriginUpdatePage(testRecordId), "answer").success.value
+      
+      when(mockOttConnector.getCountries(any())) thenReturn Future.successful(countries)
 
-      val userAnswers =
-        UserAnswers(userAnswersId).set(CountryOfOriginUpdatePage(testRecordId), "answer").success.value
-
-      val mockOttConnector = mock[OttConnector]
-      when(mockOttConnector.getCountries(any())) thenReturn Future.successful(
-        countries
-      )
-
-      val application =
-        applicationBuilder(userAnswers = Some(userAnswers))
+      val application = applicationBuilder(userAnswers = Some(userAnswers))
           .overrides(
             bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
             bind[OttConnector].toInstance(mockOttConnector)
@@ -180,28 +140,21 @@ class UpdateCountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request = FakeRequest(GET, countryOfOriginRoute)
-
+        val call = onSubmitAction
         val view = application.injector.instanceOf[CountryOfOriginView]
-
+        
         val result = route(application, request).value
 
-        val call = onSubmitAction
-
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill("answer"), call, countries, NormalMode, Some(testRecordId))(
-          request,
-          messages(application)
-        ).toString
+        contentAsString(result) mustEqual view(form.fill("answer"), call, countries, NormalMode, Some(testRecordId))(request, messages(application)).toString
         verify(mockOttConnector, atLeastOnce()).getCountries(any())
       }
     }
 
     "must populate the view correctly on a GET when countries data is already present" in {
-
       val userAnswers = UserAnswers(userAnswersId).set(CountriesQuery, countries).success.value
 
-      val application =
-        applicationBuilder(userAnswers = Some(userAnswers))
+      val application = applicationBuilder(userAnswers = Some(userAnswers))
           .overrides(
             bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute))
           )
@@ -209,31 +162,22 @@ class UpdateCountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request = FakeRequest(GET, countryOfOriginRoute)
-
-        val result = route(application, request).value
-
-        val view = application.injector.instanceOf[CountryOfOriginView]
-
         val call = onSubmitAction
-
+        val view = application.injector.instanceOf[CountryOfOriginView]
+        
+        val result = route(application, request).value
+        
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, call, countries, NormalMode, Some(testRecordId))(
-          request,
-          messages(application)
-        ).toString
+        contentAsString(result) mustEqual view(form, call, countries, NormalMode, Some(testRecordId))(request, messages(application)).toString
       }
     }
 
     "must redirect to the next page when valid data is submitted" in {
-
-      val mockSessionRepository = mock[SessionRepository]
-
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val userAnswers = UserAnswers(userAnswersId).set(CountriesQuery, countries).success.value
 
-      val application =
-        applicationBuilder(userAnswers = Some(userAnswers))
+      val application = applicationBuilder(userAnswers = Some(userAnswers))
           .overrides(
             bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository)
@@ -241,10 +185,7 @@ class UpdateCountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, countryOfOriginRoute)
-            .withFormUrlEncodedBody(("value", "CN"))
-
+        val request = FakeRequest(POST, countryOfOriginRoute).withFormUrlEncodedBody(("value", "CN"))
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
@@ -253,16 +194,12 @@ class UpdateCountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must set changesMade to true if country of origin is updated" in {
-
-      val mockSessionRepository = mock[SessionRepository]
-
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val userAnswers        = UserAnswers(userAnswersId).set(CountriesQuery, countries).success.value
       val updatedUserAnswers = userAnswers.set(CountryOfOriginUpdatePage(testRecordId), "CN").success.value
 
-      val application =
-        applicationBuilder(userAnswers = Some(updatedUserAnswers))
+      val application = applicationBuilder(userAnswers = Some(updatedUserAnswers))
           .overrides(
             bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository)
@@ -271,9 +208,7 @@ class UpdateCountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val controller = application.injector.instanceOf[UpdateCountryOfOriginController]
-        val request    =
-          FakeRequest(POST, countryOfOriginRoute)
-            .withFormUrlEncodedBody(("value", "US"))
+        val request    = FakeRequest(POST, countryOfOriginRoute).withFormUrlEncodedBody(("value", "US"))
 
         val result: Future[Result] = controller.onSubmit(NormalMode, testRecordId)(request)
 
@@ -286,16 +221,12 @@ class UpdateCountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must set changesMade to false if country of origin is not updated" in {
-
-      val mockSessionRepository = mock[SessionRepository]
-
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val userAnswers        = UserAnswers(userAnswersId).set(CountriesQuery, countries).success.value
       val updatedUserAnswers = userAnswers.set(CountryOfOriginUpdatePage(testRecordId), "CN").success.value
 
-      val application =
-        applicationBuilder(userAnswers = Some(updatedUserAnswers))
+      val application = applicationBuilder(userAnswers = Some(updatedUserAnswers))
           .overrides(
             bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository)
@@ -304,9 +235,7 @@ class UpdateCountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val controller = application.injector.instanceOf[UpdateCountryOfOriginController]
-        val request    =
-          FakeRequest(POST, countryOfOriginRoute)
-            .withFormUrlEncodedBody(("value", "CN"))
+        val request    = FakeRequest(POST, countryOfOriginRoute).withFormUrlEncodedBody(("value", "CN"))
 
         val result: Future[Result] = controller.onSubmit(NormalMode, testRecordId)(request)
 
@@ -318,20 +247,16 @@ class UpdateCountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must error when data is submitted and countries query is empty" in {
-
       val userAnswers = UserAnswers(userAnswersId)
 
-      val application =
-        applicationBuilder(userAnswers = Some(userAnswers))
+      val application = applicationBuilder(userAnswers = Some(userAnswers))
           .overrides(
             bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute))
           )
           .build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, countryOfOriginRoute)
-            .withFormUrlEncodedBody(("value", "CN"))
+        val request = FakeRequest(POST, countryOfOriginRoute).withFormUrlEncodedBody(("value", "CN"))
 
         intercept[Exception] {
           await(route(application, request).value)
@@ -340,64 +265,45 @@ class UpdateCountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
-
       val userAnswers = UserAnswers(userAnswersId).set(CountriesQuery, countries).success.value
 
-      val application = applicationBuilder(userAnswers = Some(userAnswers))
-        .build()
+      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, countryOfOriginRoute)
-            .withFormUrlEncodedBody(("value", "TEST"))
-
+        val request = FakeRequest(POST, countryOfOriginRoute).withFormUrlEncodedBody(("value", "TEST"))
         val boundForm = form.bind(Map("value" -> "TEST"))
-
         val view = application.injector.instanceOf[CountryOfOriginView]
-
-        val result = route(application, request).value
-
         val call = onSubmitAction
 
+        val result = route(application, request).value
+        
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, call, countries, NormalMode, Some(testRecordId))(
-          request,
-          messages(application)
-        ).toString
+        contentAsString(result) mustEqual view(boundForm, call, countries, NormalMode, Some(testRecordId))(request, messages(application)).toString
       }
     }
 
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
-
-      val application = applicationBuilder(userAnswers = None)
-        .build()
+      val application = applicationBuilder(userAnswers = None).build()
 
       running(application) {
         val request = FakeRequest(GET, countryOfOriginRoute)
-
         val result = route(application, request).value
-
+        
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
       }
     }
 
     "must redirect to Journey Recovery for a POST if no existing data is found" in {
-
-      val application = applicationBuilder(userAnswers = None)
-        .build()
+      val application = applicationBuilder(userAnswers = None).build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, countryOfOriginRoute)
-            .withFormUrlEncodedBody(("value", "answer"))
-
+        val request = FakeRequest(POST, countryOfOriginRoute).withFormUrlEncodedBody(("value", "answer"))
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
       }
     }
-
   }
 }
