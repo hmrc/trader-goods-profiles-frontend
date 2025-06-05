@@ -75,10 +75,7 @@ class CreateUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           form,
           CreateUkimsNumberController.onSubmit(NormalMode),
           isCreateJourney = true
-        )(
-          request,
-          messages(application)
-        ).toString
+        )(request, messages(application)).toString
       }
     }
 
@@ -105,10 +102,7 @@ class CreateUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           form.fill("answer"),
           CreateUkimsNumberController.onSubmit(NormalMode),
           isCreateJourney = true
-        )(
-          request,
-          messages(application)
-        ).toString
+        )(request, messages(application)).toString
       }
     }
 
@@ -129,9 +123,7 @@ class CreateUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, ukimsNumberRoute)
-            .withFormUrlEncodedBody(("value", "XIUKIM47699357400020231115081800"))
+        val request = FakeRequest(POST, ukimsNumberRoute).withFormUrlEncodedBody(("value", "XIUKIM47699357400020231115081800"))
 
         val result = route(application, request).value
 
@@ -153,9 +145,7 @@ class CreateUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
         .build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, ukimsNumberRoute)
-            .withFormUrlEncodedBody(("value", ""))
+        val request = FakeRequest(POST, ukimsNumberRoute).withFormUrlEncodedBody(("value", ""))
 
         val boundForm = form.bind(Map("value" -> ""))
 
@@ -167,10 +157,7 @@ class CreateUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
         contentAsString(result) mustEqual view(
           boundForm,
           CreateUkimsNumberController.onSubmit(NormalMode)
-        )(
-          request,
-          messages(application)
-        ).toString
+        )(request, messages(application)).toString
       }
     }
 
@@ -223,9 +210,7 @@ class CreateUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
         .build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, ukimsNumberRoute)
-            .withFormUrlEncodedBody(("value", "answer"))
+        val request = FakeRequest(POST, ukimsNumberRoute).withFormUrlEncodedBody(("value", "answer"))
 
         val result = route(application, request).value
 
@@ -233,6 +218,5 @@ class CreateUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
         redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
       }
     }
-
   }
 }

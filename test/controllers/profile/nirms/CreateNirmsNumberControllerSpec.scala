@@ -51,11 +51,9 @@ class CreateNirmsNumberControllerSpec extends SpecBase with MockitoSugar {
   when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
 
   "CreateNirmsNumberController" - {
-
     val nirmsNumberRoute = CreateNirmsNumberController.onPageLoad(NormalMode).url
 
     "must return OK and the correct view for a GET" in {
-
       val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
       when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
 
@@ -67,24 +65,18 @@ class CreateNirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request = FakeRequest(GET, nirmsNumberRoute)
-
         val result = route(application, request).value
-
         val view = application.injector.instanceOf[NirmsNumberView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(
           form,
           CreateNirmsNumberController.onSubmit(NormalMode)
-        )(
-          request,
-          messages(application)
-        ).toString
+        )(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-
       val userAnswers = UserAnswers(userAnswersId).set(NirmsNumberPage, "answer").success.value
 
       val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
@@ -98,9 +90,7 @@ class CreateNirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request = FakeRequest(GET, nirmsNumberRoute)
-
         val view = application.injector.instanceOf[NirmsNumberView]
-
         val result = route(application, request).value
 
         status(result) mustEqual OK
@@ -112,7 +102,6 @@ class CreateNirmsNumberControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to the next page when valid data is submitted" in {
-
       val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
       when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
 
@@ -128,10 +117,7 @@ class CreateNirmsNumberControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, nirmsNumberRoute)
-            .withFormUrlEncodedBody(("value", "RMS-GB-123456"))
-
+        val request = FakeRequest(POST, nirmsNumberRoute).withFormUrlEncodedBody(("value", "RMS-GB-123456"))
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
@@ -140,7 +126,6 @@ class CreateNirmsNumberControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
-
       val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
       when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
 
@@ -151,29 +136,20 @@ class CreateNirmsNumberControllerSpec extends SpecBase with MockitoSugar {
         .build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, nirmsNumberRoute)
-            .withFormUrlEncodedBody(("value", ""))
-
+        val request = FakeRequest(POST, nirmsNumberRoute).withFormUrlEncodedBody(("value", ""))
         val boundForm = form.bind(Map("value" -> ""))
-
         val view = application.injector.instanceOf[NirmsNumberView]
-
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
         contentAsString(result) mustEqual view(
           boundForm,
           CreateNirmsNumberController.onSubmit(NormalMode)
-        )(
-          request,
-          messages(application)
-        ).toString
+        )(request, messages(application)).toString
       }
     }
 
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
-
       val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
       when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
 
@@ -185,7 +161,6 @@ class CreateNirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request = FakeRequest(GET, nirmsNumberRoute)
-
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
@@ -194,7 +169,6 @@ class CreateNirmsNumberControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to Homepage for a GET if profile already exists" in {
-
       val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
       when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
@@ -206,7 +180,6 @@ class CreateNirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request = FakeRequest(GET, nirmsNumberRoute)
-
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
@@ -215,7 +188,6 @@ class CreateNirmsNumberControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to Journey Recovery for a POST if no existing data is found" in {
-
       val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
       when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
 
@@ -226,16 +198,12 @@ class CreateNirmsNumberControllerSpec extends SpecBase with MockitoSugar {
         .build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, nirmsNumberRoute)
-            .withFormUrlEncodedBody(("value", "answer"))
-
+        val request = FakeRequest(POST, nirmsNumberRoute).withFormUrlEncodedBody(("value", "answer"))
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
       }
     }
-
   }
 }

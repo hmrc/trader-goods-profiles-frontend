@@ -42,10 +42,10 @@ class ProfileSetupControllerSpec extends SpecBase with MockitoSugar {
     "for a GET" - {
 
       "must return OK and the correct view" in {
-
         val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
 
         when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
+        
         val application = applicationBuilder(userAnswers = None)
           .overrides(
             bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)

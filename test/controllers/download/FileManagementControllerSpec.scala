@@ -71,10 +71,7 @@ class FileManagementControllerSpec extends SpecBase with MockitoSugar with Befor
           val view    = application.injector.instanceOf[FileManagementView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(viewModel)(
-            request,
-            messages(application)
-          ).toString
+          contentAsString(result) mustEqual view(viewModel)(request, messages(application)).toString
         }
 
         verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())
@@ -112,9 +109,7 @@ class FileManagementControllerSpec extends SpecBase with MockitoSugar with Befor
         val request = FakeRequest(GET, fileManagementRoute)
         val result  = route(application, request).value
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
-          .onPageLoad()
-          .url
+        redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
       }
 
       verify(mockDownloadDataConnector, never()).getDownloadDataSummary(any())

@@ -121,9 +121,7 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
-            .onPageLoad(Some(continueUrl))
-            .url
+          redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
 
         }
       }
@@ -142,9 +140,7 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
-            .onPageLoad()
-            .url
+          redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
         }
       }
 
@@ -201,9 +197,7 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
             val expectedPayload = TraderProfile(testEori, "1", None, None, eoriChanged = false)
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual controllers.profile.routes.CreateProfileSuccessController
-              .onPageLoad()
-              .url
+            redirectLocation(result).value mustEqual controllers.profile.routes.CreateProfileSuccessController.onPageLoad().url
             verify(mockTraderProfileConnector).submitTraderProfile(eqTo(expectedPayload))(any())
 
             withClue("must call the audit connector with the supplied details") {
@@ -216,7 +210,6 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
             }
           }
         }
-
       }
 
       "when user answers cannot create a trader profile" - {
@@ -245,9 +238,7 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
-              .onPageLoad(Some(continueUrl))
-              .url
+            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
             verify(mockTraderProfileConnector, never()).submitTraderProfile(any())(any())
 
             withClue("must not try and submit an audit") {
@@ -294,7 +285,6 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
           withClue("must not cleanse the user answers data when connector fails") {
             verify(sessionRepository, never()).clearData(eqTo(userAnswers.id), eqTo(CreateProfileJourney))
           }
-
         }
       }
 
@@ -313,9 +303,7 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
-            .onPageLoad()
-            .url
+          redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
         }
       }
     }

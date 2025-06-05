@@ -73,10 +73,7 @@ class CreateNiphlNumberControllerSpec extends SpecBase with MockitoSugar {
         contentAsString(result) mustEqual view(
           form,
           CreateNiphlNumberController.onSubmit(NormalMode)
-        )(
-          request,
-          messages(application)
-        ).toString
+        )(request, messages(application)).toString
       }
     }
 
@@ -157,10 +154,7 @@ class CreateNiphlNumberControllerSpec extends SpecBase with MockitoSugar {
         contentAsString(result) mustEqual view(
           boundForm,
           CreateNiphlNumberController.onSubmit(NormalMode)
-        )(
-          request,
-          messages(application)
-        ).toString
+        )(request, messages(application)).toString
       }
     }
 
@@ -214,9 +208,7 @@ class CreateNiphlNumberControllerSpec extends SpecBase with MockitoSugar {
         .build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, niphlNumberRouteCreate)
-            .withFormUrlEncodedBody(("value", "answer"))
+        val request = FakeRequest(POST, niphlNumberRouteCreate).withFormUrlEncodedBody(("value", "answer"))
 
         val result = route(application, request).value
 

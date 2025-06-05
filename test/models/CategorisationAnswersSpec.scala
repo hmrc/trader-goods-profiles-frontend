@@ -33,15 +33,9 @@ class CategorisationAnswersSpec extends SpecBase {
 
         "a NoExemption means the following assessment pages are unanswered" in {
           val answers = emptyUserAnswers
-            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
-            .success
-            .value
-            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
-            .success
-            .value
-            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.NoExemption)
-            .success
-            .value
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.NoExemption).success.value
 
           val result = CategorisationAnswers.build(answers, testRecordId)
 

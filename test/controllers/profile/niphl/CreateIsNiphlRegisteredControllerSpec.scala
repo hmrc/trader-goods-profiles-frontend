@@ -75,10 +75,7 @@ class CreateIsNiphlRegisteredControllerSpec extends SpecBase with MockitoSugar {
           CreateIsNiphlRegisteredController.onSubmit(NormalMode),
           NormalMode,
           isCreateJourney = true
-        )(
-          request,
-          messages(application)
-        ).toString
+        )(request, messages(application)).toString
       }
     }
 
@@ -105,10 +102,7 @@ class CreateIsNiphlRegisteredControllerSpec extends SpecBase with MockitoSugar {
           CreateIsNiphlRegisteredController.onSubmit(NormalMode),
           NormalMode,
           isCreateJourney = true
-        )(
-          request,
-          messages(application)
-        ).toString
+        )(request, messages(application)).toString
       }
     }
 
@@ -126,9 +120,7 @@ class CreateIsNiphlRegisteredControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, hasNiphlRouteCreate)
-            .withFormUrlEncodedBody(("value", "true"))
+        val request = FakeRequest(POST, hasNiphlRouteCreate).withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 
@@ -162,10 +154,7 @@ class CreateIsNiphlRegisteredControllerSpec extends SpecBase with MockitoSugar {
           CreateIsNiphlRegisteredController.onSubmit(NormalMode),
           NormalMode,
           isCreateJourney = true
-        )(
-          request,
-          messages(application)
-        ).toString
+        )(request, messages(application)).toString
       }
     }
 

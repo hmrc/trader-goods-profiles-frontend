@@ -39,14 +39,12 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
   private lazy val profileRoute          = controllers.profile.routes.ProfileController.onPageLoad().url
   private val mockTraderProfileConnector = mock[TraderProfileConnector]
   private val mockSessionRepository      = mock[SessionRepository]
-  when(mockSessionRepository.set(any())) thenReturn Future
-    .successful(true)
+  when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
   when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
 
   "Profile Controller" - {
 
     "must return OK and the correct view for a GET" in {
-
       val profileResponse = TraderProfile(
         actorId = "actorId",
         ukimsNumber = "Ukims number",
@@ -61,8 +59,7 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
         )
         .build()
 
-      when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future
-        .successful(profileResponse)
+      when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future.successful(profileResponse)
 
       implicit val message: Messages = messages(application)
 
@@ -84,15 +81,11 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[ProfileView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(detailsList, false, "", false, false)(
-          request,
-          messages(application)
-        ).toString
+        contentAsString(result) mustEqual view(detailsList, false, "", false, false)(request, messages(application)).toString
       }
     }
 
     "must return OK and the correct view for a GET without NIRMS number" in {
-
       val profileResponse = TraderProfile(
         actorId = "actorId",
         ukimsNumber = "Ukims Number",
@@ -107,8 +100,7 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
         )
         .build()
 
-      when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future
-        .successful(profileResponse)
+      when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future.successful(profileResponse)
 
       implicit val message: Messages = messages(application)
 
@@ -130,15 +122,11 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[ProfileView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(detailsList, false, "", false, false)(
-          request,
-          messages(application)
-        ).toString
+        contentAsString(result) mustEqual view(detailsList, false, "", false, false)(request, messages(application)).toString
       }
     }
 
     "must return OK and the correct view for a GET without NIPHL number" in {
-
       val profileResponse = TraderProfile(
         actorId = "actorId",
         ukimsNumber = "Ukims Number",
@@ -153,8 +141,7 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
         )
         .build()
 
-      when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future
-        .successful(profileResponse)
+      when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future.successful(profileResponse)
 
       implicit val message: Messages = messages(application)
 
@@ -176,15 +163,11 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[ProfileView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(detailsList, false, "", false, false)(
-          request,
-          messages(application)
-        ).toString
+        contentAsString(result) mustEqual view(detailsList, false, "", false, false)(request, messages(application)).toString
       }
     }
 
     "must return OK and the correct view for a GET without NIRMS and NIPHL number" in {
-
       val profileResponse = TraderProfile(
         actorId = "actorId",
         ukimsNumber = "Ukims Number",
@@ -199,8 +182,7 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
         )
         .build()
 
-      when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future
-        .successful(profileResponse)
+      when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future.successful(profileResponse)
 
       implicit val message: Messages = messages(application)
 
@@ -222,10 +204,7 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[ProfileView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(detailsList, false, "", false, false)(
-          request,
-          messages(application)
-        ).toString
+        contentAsString(result) mustEqual view(detailsList, false, "", false, false)(request, messages(application)).toString
       }
     }
 
@@ -237,8 +216,7 @@ class ProfileControllerSpec extends SpecBase with MockitoSugar {
         )
         .build()
 
-      when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future
-        .failed(new NotFoundException("Failed to find record"))
+      when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future.failed(new NotFoundException("Failed to find record"))
 
       running(application) {
         val request = FakeRequest(GET, profileRoute)

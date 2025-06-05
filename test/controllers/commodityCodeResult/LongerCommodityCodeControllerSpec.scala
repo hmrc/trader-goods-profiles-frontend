@@ -48,25 +48,15 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
     "for the Longer Commodity Code Journey" - {
 
-      lazy val hasCorrectGoodsRoute =
-        controllers.commodityCodeResult.routes.LongerCommodityCodeController
-          .onPageLoad(NormalMode, testRecordId)
-          .url
-      lazy val onSubmitAction: Call =
-        controllers.commodityCodeResult.routes.LongerCommodityCodeController.onSubmit(NormalMode, testRecordId)
+      lazy val hasCorrectGoodsRoute = controllers.commodityCodeResult.routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId).url
+      lazy val onSubmitAction: Call = controllers.commodityCodeResult.routes.LongerCommodityCodeController.onSubmit(NormalMode, testRecordId)
 
       "for a GET" - {
 
         "must return OK and the correct view" in {
 
           val userAnswers =
-            emptyUserAnswers
-              .set(
-                LongerCommodityQuery(testRecordId),
-                Commodity("654321", List("Description", "Other"), Instant.now, None)
-              )
-              .success
-              .value
+            emptyUserAnswers.set(LongerCommodityQuery(testRecordId), Commodity("654321", List("Description", "Other"), Instant.now, None)).success.value
 
           val application                  = applicationBuilder(userAnswers = Some(userAnswers))
             .build()
@@ -110,12 +100,8 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
           val commodity   = Commodity("654321", List("Description"), Instant.now, None)
           val userAnswers = emptyUserAnswers
-            .set(LongerCommodityQuery(testRecordId), commodity)
-            .success
-            .value
-            .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
-            .success
-            .value
+            .set(LongerCommodityQuery(testRecordId), commodity).success.value
+            .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true).success.value
 
           val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -132,11 +118,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
               onSubmitAction,
               NormalMode,
               Some(testRecordId)
-            )(
-              request,
-              messages(application),
-              appConfig
-            ).toString
+            )(request, messages(application), appConfig).toString
           }
         }
 
@@ -161,12 +143,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
 
           val userAnswers =
             emptyUserAnswers
-              .set(
-                LongerCommodityQuery(testRecordId),
-                Commodity("654321", List("Description", "Other"), Instant.now, None)
-              )
-              .success
-              .value
+              .set(LongerCommodityQuery(testRecordId), Commodity("654321", List("Description", "Other"), Instant.now, None)).success.value
 
           val mockSessionRepository = mock[SessionRepository]
           when(mockSessionRepository.set(any())) thenReturn Future.successful(true)

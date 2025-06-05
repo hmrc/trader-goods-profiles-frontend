@@ -52,16 +52,13 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
   "RemoveNirms Controller" - {
 
     "must return OK and the correct view for a GET" in {
-
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
         .build()
 
       running(application) {
         val request = FakeRequest(GET, removeNirmsRoute)
-
         val result = route(application, request).value
-
         val view = application.injector.instanceOf[RemoveNirmsView]
 
         status(result) mustEqual OK
@@ -70,7 +67,6 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-
       val userAnswers = UserAnswers(userAnswersId).set(RemoveNirmsPage, true).success.value
       val application = applicationBuilder(userAnswers = Some(userAnswers))
         .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
@@ -78,9 +74,7 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request = FakeRequest(GET, removeNirmsRoute)
-
         val result = route(application, request).value
-
         val view = application.injector.instanceOf[RemoveNirmsView]
 
         status(result) mustEqual OK
@@ -106,10 +100,7 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
         .build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, removeNirmsRoute)
-            .withFormUrlEncodedBody(("value", "false"))
-
+        val request = FakeRequest(POST, removeNirmsRoute).withFormUrlEncodedBody(("value", "false"))
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
@@ -124,15 +115,14 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
         withClue("must have saved the nirms number as future items will depend on it") {
           finalUserAnswers.get(NirmsNumberUpdatePage).get mustBe "RMS-GB-848211"
         }
-
       }
     }
 
     "must redirect to the next page when No submitted and not overwrite the existing nirms value" in {
       val mockSessionRepository                               = mock[SessionRepository]
       val finalUserAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+      
       when(mockSessionRepository.set(finalUserAnswersCaptor.capture())).thenReturn(Future.successful(true))
-
       when(mockTraderProfileConnector.getTraderProfile(any())).thenReturn(
         Future.successful(TraderProfile(testEori, "1", Some("RMS-GB-848211"), None, eoriChanged = false))
       )
@@ -148,10 +138,7 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
         .build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, removeNirmsRoute)
-            .withFormUrlEncodedBody(("value", "false"))
-
+        val request = FakeRequest(POST, removeNirmsRoute).withFormUrlEncodedBody(("value", "false"))
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
@@ -173,8 +160,8 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
     "must redirect to the next page when Yes submitted and save the answers" in {
       val mockSessionRepository                               = mock[SessionRepository]
       val finalUserAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+      
       when(mockSessionRepository.set(finalUserAnswersCaptor.capture())).thenReturn(Future.successful(true))
-
       when(mockTraderProfileConnector.getTraderProfile(any())).thenReturn(
         Future.successful(TraderProfile(testEori, "1", Some("RMS-GB-848211"), None, eoriChanged = false))
       )
@@ -189,9 +176,7 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, removeNirmsRoute)
-            .withFormUrlEncodedBody(("value", "true"))
+        val request = FakeRequest(POST, removeNirmsRoute).withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 
@@ -211,20 +196,14 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
-
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
         .build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, removeNirmsRoute)
-            .withFormUrlEncodedBody(("value", ""))
-
+        val request = FakeRequest(POST, removeNirmsRoute).withFormUrlEncodedBody(("value", ""))
         val boundForm = form.bind(Map("value" -> ""))
-
         val view = application.injector.instanceOf[RemoveNirmsView]
-
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
@@ -233,14 +212,12 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
-
       val application = applicationBuilder(userAnswers = None)
         .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
         .build()
 
       running(application) {
         val request = FakeRequest(GET, removeNirmsRoute)
-
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
@@ -249,16 +226,12 @@ class RemoveNirmsControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to Journey Recovery for a POST if no existing data is found" in {
-
       val application = applicationBuilder(userAnswers = None)
         .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
         .build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, removeNirmsRoute)
-            .withFormUrlEncodedBody(("value", "true"))
-
+        val request = FakeRequest(POST, removeNirmsRoute).withFormUrlEncodedBody(("value", "true"))
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER

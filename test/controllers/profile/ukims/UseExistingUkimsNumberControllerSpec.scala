@@ -53,10 +53,7 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
 
   private val ukimsNumber = "UKIMS123"
 
-  private val userAnswersWithUkimsNumber = UserAnswers(userAnswersId)
-    .set(UkimsNumberPage, ukimsNumber)
-    .success
-    .value
+  private val userAnswersWithUkimsNumber = UserAnswers(userAnswersId).set(UkimsNumberPage, ukimsNumber).success.value
 
   "onPageLoad" - {
 
@@ -81,10 +78,7 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           form,
           UseExistingUkimsNumberController.onSubmit(),
           ukimsNumber
-        )(
-          request,
-          messages(application)
-        ).toString
+        )(request, messages(application)).toString
       }
     }
 
@@ -146,9 +140,7 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
         .build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, onSubmitRoute)
-            .withFormUrlEncodedBody(("value", ""))
+        val request = FakeRequest(POST, onSubmitRoute).withFormUrlEncodedBody(("value", ""))
 
         val boundForm = form.bind(Map("value" -> ""))
 
@@ -161,10 +153,7 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           boundForm,
           UseExistingUkimsNumberController.onSubmit(),
           ukimsNumber
-        )(
-          request,
-          messages(application)
-        ).toString
+        )(request, messages(application)).toString
       }
     }
 
@@ -189,6 +178,5 @@ class UseExistingUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
         }
       }
     }
-
   }
 }
