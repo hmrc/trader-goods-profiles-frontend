@@ -25,20 +25,13 @@ import views.html.goodsRecord.UpdatedCommodityCodeView
 class UpdatedCommodityCodeControllerSpec extends SpecBase {
 
   "UpdatedCommodityCode Controller" - {
-
     "must return OK and the correct view for a GET" in {
-
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request =
-          FakeRequest(
-            GET,
-            controllers.goodsRecord.commodityCode.routes.UpdatedCommodityCodeController.onPageLoad(testRecordId).url
-          )
-
+        val request = FakeRequest(GET, 
+          controllers.goodsRecord.commodityCode.routes.UpdatedCommodityCodeController.onPageLoad(testRecordId).url)
         val result = route(application, request).value
-
         val view = application.injector.instanceOf[UpdatedCommodityCodeView]
 
         status(result) mustEqual OK

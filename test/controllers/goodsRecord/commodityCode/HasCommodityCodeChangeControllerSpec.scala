@@ -44,64 +44,40 @@ import scala.concurrent.Future
 class HasCommodityCodeChangedControllerSpec extends SpecBase with MockitoSugar with BeforeAndAfterEach {
 
   private def onwardRoute = Call("GET", "/foo")
-
   val formProvider = new HasCommodityCodeChangeFormProvider()
   private val form = formProvider()
-
   private lazy val hasCommodityCodeChangeRoute =
     controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangedController
-      .onPageLoad(NormalMode, testRecordId)
-      .url
+      .onPageLoad(NormalMode, testRecordId).url
 
   private val goodsRecord              = goodsRecordResponse()
-  private val goodsRecordCatNoAdvice   = goodsRecord.copy(
-    category = Some(2),
-    adviceStatus = NotRequested
-  )
-  private val goodsRecordNoCatAdvice   = goodsRecord.copy(
-    category = None,
-    adviceStatus = AdviceReceived
-  )
-  private val goodsRecordCatAdvice     = goodsRecord.copy(
-    category = Some(2),
-    adviceStatus = AdviceReceived
-  )
+  private val goodsRecordCatNoAdvice   = goodsRecord.copy(category = Some(2), adviceStatus = NotRequested)
+  private val goodsRecordNoCatAdvice   = goodsRecord.copy(category = None, adviceStatus = AdviceReceived)
+  private val goodsRecordCatAdvice     = goodsRecord.copy(category = Some(2), adviceStatus = AdviceReceived)
   private val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
   override def beforeEach(): Unit = {
-
-    when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(
-      Future.successful(goodsRecord)
-    )
-
+    when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(goodsRecord))
     super.beforeEach()
   }
 
   "HasCommodityCodeChange Controller" - {
-
     "must return OK and the correct view for a GET" - {
-
       "when categorisation has happened" in {
         val mockAuditService = mock[AuditService]
 
-        when(mockAuditService.auditStartUpdateGoodsRecord(any(), any(), any(), any(), any())(any()))
-          .thenReturn(Future.successful(Done))
-        when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(
-          Future.successful(goodsRecordCatNoAdvice)
-        )
+        when(mockAuditService.auditStartUpdateGoodsRecord(any(), any(), any(), any(), any())(any())).thenReturn(Future.successful(Done))
+        when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(goodsRecordCatNoAdvice))
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
             bind[AuditService].toInstance(mockAuditService)
-          )
-          .build()
+          ).build()
 
         running(application) {
           val request = FakeRequest(GET, hasCommodityCodeChangeRoute)
-
           val result = route(application, request).value
-
           val view = application.injector.instanceOf[HasCommodityCodeChangeView]
 
           status(result) mustEqual OK
@@ -119,27 +95,20 @@ class HasCommodityCodeChangedControllerSpec extends SpecBase with MockitoSugar w
                 eqTo(AffinityGroup.Individual),
                 eqTo(GoodsDetailsUpdate),
                 eqTo(testRecordId),
-                any()
-              )(any())
+                any())(any())
           }
         }
       }
 
       "when advice status has happened" in {
-
-        when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(
-          Future.successful(goodsRecordNoCatAdvice)
-        )
+        when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(goodsRecordNoCatAdvice))
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
-          .build()
+          .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)).build()
 
         running(application) {
           val request = FakeRequest(GET, hasCommodityCodeChangeRoute)
-
           val result = route(application, request).value
-
           val view = application.injector.instanceOf[HasCommodityCodeChangeView]
 
           status(result) mustEqual OK
@@ -154,20 +123,14 @@ class HasCommodityCodeChangedControllerSpec extends SpecBase with MockitoSugar w
       }
 
       "when categorisation and advice has happened" in {
-
-        when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(
-          Future.successful(goodsRecordCatAdvice)
-        )
+        when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(goodsRecordCatAdvice))
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
-          .build()
+          .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)).build()
 
         running(application) {
           val request = FakeRequest(GET, hasCommodityCodeChangeRoute)
-
           val result = route(application, request).value
-
           val view = application.injector.instanceOf[HasCommodityCodeChangeView]
 
           status(result) mustEqual OK
@@ -180,26 +143,19 @@ class HasCommodityCodeChangedControllerSpec extends SpecBase with MockitoSugar w
           )(request, messages(application)).toString
         }
       }
-
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-      when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(
-        Future.successful(goodsRecordCatNoAdvice)
-      )
+      when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(goodsRecordCatNoAdvice))
       val userAnswers = UserAnswers(userAnswersId).set(HasCommodityCodeChangePage(testRecordId), true).success.value
-
       val application = applicationBuilder(userAnswers = Some(userAnswers))
         .overrides(
           bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
-        )
-        .build()
+        ).build()
 
       running(application) {
         val request = FakeRequest(GET, hasCommodityCodeChangeRoute)
-
         val view = application.injector.instanceOf[HasCommodityCodeChangeView]
-
         val result = route(application, request).value
 
         status(result) mustEqual OK
@@ -217,52 +173,36 @@ class HasCommodityCodeChangedControllerSpec extends SpecBase with MockitoSugar w
     }
 
     "must redirect to the next page when valid data is submitted" in {
-
       val mockSessionRepository = mock[SessionRepository]
 
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
-      val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(
-            bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
-            bind[SessionRepository].toInstance(mockSessionRepository),
-            bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
-          )
-          .build()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+                      .overrides(
+                        bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
+                        bind[SessionRepository].toInstance(mockSessionRepository),
+                        bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
+                      ).build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, hasCommodityCodeChangeRoute)
-            .withFormUrlEncodedBody(("value", "true"))
-
+        val request =FakeRequest(POST, hasCommodityCodeChangeRoute).withFormUrlEncodedBody(("value", "true"))
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
-
       }
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
-
-      when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(
-        Future.successful(goodsRecordCatAdvice)
-      )
+      when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(goodsRecordCatAdvice))
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
-        .build()
+        .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)).build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, hasCommodityCodeChangeRoute)
-            .withFormUrlEncodedBody(("value", ""))
-
+        val request = FakeRequest(POST, hasCommodityCodeChangeRoute).withFormUrlEncodedBody(("value", ""))
         val boundForm = form.bind(Map("value" -> ""))
-
         val view = application.injector.instanceOf[HasCommodityCodeChangeView]
-
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
@@ -280,14 +220,11 @@ class HasCommodityCodeChangedControllerSpec extends SpecBase with MockitoSugar w
     }
 
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
-
       val application = applicationBuilder(userAnswers = None)
-        .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
-        .build()
+        .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)).build()
 
       running(application) {
         val request = FakeRequest(GET, hasCommodityCodeChangeRoute)
-
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
@@ -296,16 +233,11 @@ class HasCommodityCodeChangedControllerSpec extends SpecBase with MockitoSugar w
     }
 
     "must redirect to Journey Recovery for a POST if no existing data is found" in {
-
       val application = applicationBuilder(userAnswers = None)
-        .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
-        .build()
+        .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)).build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, hasCommodityCodeChangeRoute)
-            .withFormUrlEncodedBody(("value", "true"))
-
+        val request = FakeRequest(POST, hasCommodityCodeChangeRoute).withFormUrlEncodedBody(("value", "true"))
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
@@ -314,28 +246,20 @@ class HasCommodityCodeChangedControllerSpec extends SpecBase with MockitoSugar w
     }
 
     "must redirect to Journey Recovery when POST and goods connector fails" in {
-
-      when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(
-        Future.failed(new Exception(":("))
-      )
+      when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.failed(new Exception(":(")))
 
       val mockSessionRepository = mock[SessionRepository]
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
-      val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(
-            bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
-            bind[SessionRepository].toInstance(mockSessionRepository),
-            bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
-          )
-          .build()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+                        .overrides(
+                          bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
+                          bind[SessionRepository].toInstance(mockSessionRepository),
+                          bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
+                        ).build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, hasCommodityCodeChangeRoute)
-            .withFormUrlEncodedBody(("value", "true"))
-
+        val request = FakeRequest(POST, hasCommodityCodeChangeRoute).withFormUrlEncodedBody(("value", "true"))
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
@@ -344,24 +268,18 @@ class HasCommodityCodeChangedControllerSpec extends SpecBase with MockitoSugar w
     }
 
     "must redirect to Journey Recovery when GET and goods connector fails" in {
-
-      when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(
-        Future.failed(new Exception(":("))
-      )
+      when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.failed(new Exception(":(")))
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
-        .build()
+        .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)).build()
 
       running(application) {
         val request = FakeRequest(GET, hasCommodityCodeChangeRoute)
-
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
       }
     }
-
   }
 }
