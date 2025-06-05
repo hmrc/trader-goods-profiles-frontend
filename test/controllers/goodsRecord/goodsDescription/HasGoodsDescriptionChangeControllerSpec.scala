@@ -23,8 +23,8 @@ import models.helper.GoodsDetailsUpdate
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeGoodsRecordNavigator, GoodsRecordNavigator}
 import org.apache.pekko.Done
-import org.mockito.ArgumentMatchers.{any, eq as eqTo}
-import org.mockito.Mockito.{atLeastOnce, verify, when}
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.Mockito.{atLeastOnce, verify, when, reset}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import pages.goodsRecord.HasGoodsDescriptionChangePage
@@ -36,7 +36,6 @@ import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import views.html.goodsRecord.HasGoodsDescriptionChangeView
-
 import scala.concurrent.Future
 
 class HasGoodsDescriptionChangeControllerSpec extends SpecBase with MockitoSugar with BeforeAndAfterEach {
