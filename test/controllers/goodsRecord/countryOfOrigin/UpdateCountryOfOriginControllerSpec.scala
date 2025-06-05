@@ -24,14 +24,15 @@ import models.helper.GoodsDetailsUpdate
 import models.{Country, NormalMode, UserAnswers}
 import navigation.{FakeGoodsRecordNavigator, GoodsRecordNavigator}
 import org.apache.pekko.Done
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{atLeastOnce, never, verify, when, reset}
+import org.mockito.ArgumentMatchers.{any, eq as eqTo}
+import org.mockito.Mockito.{atLeastOnce, never, reset, verify, when}
+import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import pages.goodsRecord.{CountryOfOriginUpdatePage, HasCountryOfOriginChangePage}
 import play.api.inject.bind
 import play.api.mvc.{Call, Result}
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import queries.CountriesQuery
 import repositories.SessionRepository
 import services.AuditService
@@ -41,7 +42,7 @@ import views.html.goodsRecord.CountryOfOriginView
 
 import scala.concurrent.Future
 
-class UpdateCountryOfOriginControllerSpec extends SpecBase with MockitoSugar {
+class UpdateCountryOfOriginControllerSpec extends SpecBase with MockitoSugar with BeforeAndAfterEach {
 
   private def onwardRoute = Call("GET", "/foo")
   private val countries   = Seq(Country("CN", "China"), Country("US", "United States"))

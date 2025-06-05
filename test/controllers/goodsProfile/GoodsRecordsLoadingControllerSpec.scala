@@ -22,68 +22,55 @@ import connectors.GoodsRecordConnector
 import models.RecordsSummary
 import models.RecordsSummary.Update
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{when, reset}
+import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject.bind
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import views.html.goodsProfile.GoodsRecordsLoadingView
 
 import java.time.Instant
 import scala.concurrent.Future
 
-class GoodsRecordsLoadingControllerSpec extends SpecBase {
+class GoodsRecordsLoadingControllerSpec extends SpecBase with BeforeAndAfterEach {
 
+  private val mockGoodsRecordConnector = mock[GoodsRecordConnector]
+
+  override protected def beforeEach(): Unit = {
+    super.beforeEach()
+    reset(mockGoodsRecordConnector)
+  }
+  
   "GoodsRecordsLoading Controller" - {
-
     val continueUrl = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url
 
     "must return OK and the correct view for a GET if it's updating" in {
-
       val recordsToStore = 15
       val recordsStored  = 5
 
-      val mockGoodsRecordConnector = mock[GoodsRecordConnector]
-
-      when(mockGoodsRecordConnector.getRecordsSummary(any())) thenReturn Future
-        .successful(RecordsSummary(testEori, Some(Update(recordsStored, recordsToStore)), Instant.now))
-
+      when(mockGoodsRecordConnector.getRecordsSummary(any())) thenReturn Future.successful(
+        RecordsSummary(testEori, Some(Update(recordsStored, recordsToStore)), Instant.now))
+      
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .configure(
-          "goods-records-loading-page.refresh-rate" -> 3
-        )
-        .overrides(
-          bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
-        )
+        .configure("goods-records-loading-page.refresh-rate" -> 3)
+        .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
         .build()
 
       running(application) {
-        val request =
-          FakeRequest(
-            GET,
-            controllers.goodsProfile.routes.GoodsRecordsLoadingController.onPageLoad(Some(RedirectUrl(continueUrl))).url
-          )
-
+        val request = FakeRequest(GET, controllers.goodsProfile.routes.GoodsRecordsLoadingController.onPageLoad(Some(RedirectUrl(continueUrl))).url)
         val result = route(application, request).value
-
         val view = application.injector.instanceOf[GoodsRecordsLoadingView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(recordsStored, recordsToStore, Some(RedirectUrl(continueUrl)))(
-          request,
-          messages(application)
-        ).toString
+        contentAsString(result) mustEqual view(recordsStored, recordsToStore, Some(RedirectUrl(continueUrl)))(request, messages(application)).toString
         header("Refresh", result).value mustEqual "3"
       }
     }
 
     "must redirect to previous page if it has finished updating" in {
-
-      val mockGoodsRecordConnector = mock[GoodsRecordConnector]
-
-      when(mockGoodsRecordConnector.getRecordsSummary(any())) thenReturn Future
-        .successful(RecordsSummary(testEori, None, Instant.now))
+      when(mockGoodsRecordConnector.getRecordsSummary(any())) thenReturn Future.successful(RecordsSummary(testEori, None, Instant.now))
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
@@ -92,12 +79,7 @@ class GoodsRecordsLoadingControllerSpec extends SpecBase {
         .build()
 
       running(application) {
-        val request =
-          FakeRequest(
-            GET,
-            controllers.goodsProfile.routes.GoodsRecordsLoadingController.onPageLoad(Some(RedirectUrl(continueUrl))).url
-          )
-
+        val request = FakeRequest(GET, controllers.goodsProfile.routes.GoodsRecordsLoadingController.onPageLoad(Some(RedirectUrl(continueUrl))).url)
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER

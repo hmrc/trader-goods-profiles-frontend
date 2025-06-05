@@ -25,38 +25,41 @@ import models.{GoodsProfileLocation, GoodsRecordLocation}
 import navigation.{FakeGoodsProfileNavigator, GoodsProfileNavigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{never, verify, when}
+import org.mockito.Mockito.{never, verify, when, reset}
+import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import services.AuditService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import views.html.goodsProfile.RemoveGoodsRecordView
 
 import scala.concurrent.Future
 
-class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
+class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar with BeforeAndAfterEach {
 
   private def onwardRoute = Call("GET", "/foo")
 
   val formProvider = new RemoveGoodsRecordFormProvider()
   private val form = formProvider()
 
-  private lazy val removeGoodsRecordRoute =
-    controllers.goodsProfile.routes.RemoveGoodsRecordController.onPageLoad(testRecordId, GoodsRecordLocation).url
+  private lazy val removeGoodsRecordRoute = controllers.goodsProfile.routes.RemoveGoodsRecordController.onPageLoad(testRecordId, GoodsRecordLocation).url
 
   private val mockAuditService = mock[AuditService]
+  private val mockConnector = mock[GoodsRecordConnector]
+
+  override protected def beforeEach(): Unit = {
+    super.beforeEach()
+    reset(mockAuditService, mockConnector)
+  }
 
   "RemoveGoodsRecord Controller" - {
-
     "must return OK and the correct view for a GET" in {
-
       when(mockAuditService.auditStartRemoveGoodsRecord(any(), any(), any())(any())).thenReturn(Future.successful(Done))
 
-      val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[AuditService].toInstance(mockAuditService)
           )
@@ -64,57 +67,33 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request = FakeRequest(GET, removeGoodsRecordRoute)
-
         val result = route(application, request).value
-
         val view = application.injector.instanceOf[RemoveGoodsRecordView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, testRecordId, GoodsRecordLocation)(
-          request,
-          messages(application)
-        ).toString
+        contentAsString(result) mustEqual view(form, testRecordId, GoodsRecordLocation)(request, messages(application)).toString
 
         verify(mockAuditService).auditStartRemoveGoodsRecord(any(), any(), any())(any())
       }
     }
 
     "must return OK and the alternate correct view for a GET with different url" in {
-
-      val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .build()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request =
-          FakeRequest(
-            GET,
-            controllers.goodsProfile.routes.RemoveGoodsRecordController
-              .onPageLoad(testRecordId, GoodsProfileLocation)
-              .url
-          )
-
+        val request = FakeRequest(GET, controllers.goodsProfile.routes.RemoveGoodsRecordController.onPageLoad(testRecordId, GoodsProfileLocation).url)
         val result = route(application, request).value
-
         val view = application.injector.instanceOf[RemoveGoodsRecordView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, testRecordId, GoodsProfileLocation)(
-          request,
-          messages(application)
-        ).toString
+        contentAsString(result) mustEqual view(form, testRecordId, GoodsProfileLocation)(request, messages(application)).toString
       }
     }
 
     "must redirect to the goods records list and delete record when Yes is submitted and record is deleted" in {
+      when(mockConnector.removeGoodsRecord(eqTo(testRecordId))(any())).thenReturn(Future.successful(true))
 
-      val mockConnector = mock[GoodsRecordConnector]
-
-      when(mockConnector.removeGoodsRecord(eqTo(testRecordId))(any()))
-        .thenReturn(Future.successful(true))
-
-      val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[GoodsProfileNavigator].toInstance(new FakeGoodsProfileNavigator(onwardRoute)),
             bind[GoodsRecordConnector].toInstance(mockConnector)
@@ -122,10 +101,7 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, removeGoodsRecordRoute)
-            .withFormUrlEncodedBody(("value", "true"))
-
+        val request = FakeRequest(POST, removeGoodsRecordRoute).withFormUrlEncodedBody(("value", "true"))
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
@@ -135,17 +111,10 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must error when Yes is submitted and record is not there" in {
+      when(mockAuditService.auditFinishRemoveGoodsRecord(any(), any(), any())(any())).thenReturn(Future.successful(Done))
+      when(mockConnector.removeGoodsRecord(eqTo(testRecordId))(any())).thenReturn(Future.successful(false))
 
-      val mockConnector = mock[GoodsRecordConnector]
-
-      when(mockAuditService.auditFinishRemoveGoodsRecord(any(), any(), any())(any()))
-        .thenReturn(Future.successful(Done))
-
-      when(mockConnector.removeGoodsRecord(eqTo(testRecordId))(any()))
-        .thenReturn(Future.successful(false))
-
-      val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[GoodsProfileNavigator].toInstance(new FakeGoodsProfileNavigator(onwardRoute)),
             bind[GoodsRecordConnector].toInstance(mockConnector),
@@ -154,78 +123,55 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, removeGoodsRecordRoute)
-            .withFormUrlEncodedBody(("value", "true"))
-
+        val request = FakeRequest(POST, removeGoodsRecordRoute).withFormUrlEncodedBody(("value", "true"))
         val result      = route(application, request).value
         val continueUrl = RedirectUrl(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url)
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
-          .onPageLoad(Some(continueUrl))
-          .url
+        redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(continueUrl)).url
+
         verify(mockConnector).removeGoodsRecord(eqTo(testRecordId))(any())
         verify(mockAuditService).auditFinishRemoveGoodsRecord(any(), any(), any())(any())
       }
     }
 
     "must redirect to the goods records list when No is submitted" in {
-      val mockConnector = mock[GoodsRecordConnector]
-
-      val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[GoodsProfileNavigator].toInstance(new FakeGoodsProfileNavigator(onwardRoute))
           )
           .build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, removeGoodsRecordRoute)
-            .withFormUrlEncodedBody(("value", "false"))
-
+        val request = FakeRequest(POST, removeGoodsRecordRoute).withFormUrlEncodedBody(("value", "false"))
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
-        verify(mockConnector, never()).removeGoodsRecord(any())(any())
 
+        verify(mockConnector, never()).removeGoodsRecord(any())(any())
       }
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
-
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .build()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, removeGoodsRecordRoute)
-            .withFormUrlEncodedBody(("value", ""))
-
+        val request = FakeRequest(POST, removeGoodsRecordRoute).withFormUrlEncodedBody(("value", ""))
         val boundForm = form.bind(Map("value" -> ""))
-
         val view = application.injector.instanceOf[RemoveGoodsRecordView]
-
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, testRecordId, GoodsRecordLocation)(
-          request,
-          messages(application)
-        ).toString
+        contentAsString(result) mustEqual view(boundForm, testRecordId, GoodsRecordLocation)(request, messages(application)).toString
       }
     }
 
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
-
-      val application = applicationBuilder(userAnswers = None)
-        .build()
+      val application = applicationBuilder(userAnswers = None).build()
 
       running(application) {
         val request = FakeRequest(GET, removeGoodsRecordRoute)
-
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
@@ -234,15 +180,10 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to Journey Recovery for a POST if no existing data is found" in {
-
-      val application = applicationBuilder(userAnswers = None)
-        .build()
+      val application = applicationBuilder(userAnswers = None).build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, removeGoodsRecordRoute)
-            .withFormUrlEncodedBody(("value", "true"))
-
+        val request = FakeRequest(POST, removeGoodsRecordRoute).withFormUrlEncodedBody(("value", "true"))
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
