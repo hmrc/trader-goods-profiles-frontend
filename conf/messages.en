@@ -820,7 +820,7 @@ updatedCommodityCode.paragraph2 = You do not need to categorise this record now.
 
 updatedCountryOfOrigin.title = You’ve updated the country of origin
 updatedCountryOfOrigin.heading = You’ve updated the country of origin
-updatedCountryOfOrigin.paragraph1 = The country of origin has changed which means you'll need to categorise this record before you can use it.
+updatedCountryOfOrigin.paragraph1 = The country of origin has changed which means you’ll need to categorise this record before you can use it.
 updatedCountryOfOrigin.paragraph2 = You do not have to categorise this record now. You can review the record from your list of goods records and start categorisation from there.
 
 recordLocked.title = There is a problem
