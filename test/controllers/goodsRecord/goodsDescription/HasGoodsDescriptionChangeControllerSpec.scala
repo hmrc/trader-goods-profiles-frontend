@@ -44,7 +44,9 @@ class HasGoodsDescriptionChangeControllerSpec extends SpecBase with MockitoSugar
 
   val formProvider = new HasGoodsDescriptionChangeFormProvider()
   private val form = formProvider()
+  
   private lazy val hasGoodsDescriptionChangeRoute = controllers.goodsRecord.goodsDescription.routes.HasGoodsDescriptionChangeController.onPageLoad(NormalMode, testRecordId).url
+  
   private val mockAuditService = mock[AuditService]
   private val mockSessionRepository = mock[SessionRepository]
 
