@@ -35,10 +35,18 @@
 
       <h1 class="govuk-heading-l">@messages("removeGoodsRecord.heading")</h1>
 
-    <h2>@messages("createRecordStart.h2")</h2>
-    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
-    <p class="govuk-body">@productRef</p>
-    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+    <table class="govuk-table">
+        <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+                <th scope="col" class="govuk-table__header">@messages("goodsRecords.tableHeader.productReference")</th>
+            </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">@productRef</td>
+            </tr>
+         </tbody>
+    </table>
 
     @govukWarningText(WarningText(
     iconFallbackText = Some(messages("removeGoodsRecord.warning")),

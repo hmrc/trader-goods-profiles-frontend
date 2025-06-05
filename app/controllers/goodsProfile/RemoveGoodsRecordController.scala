@@ -55,9 +55,9 @@ class RemoveGoodsRecordController @Inject() (
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       auditService.auditStartRemoveGoodsRecord(request.eori, request.affinityGroup, recordId)
 
-      val maybeProductRef = request.userAnswers.get(ProductReferenceUpdatePage(recordId))
+      val productReference = request.userAnswers.get(ProductReferenceUpdatePage(recordId))
 
-      maybeProductRef match {
+      productReference match {
         case Some(productRef) =>
           Future.successful(Ok(view(form, recordId, location, productRef)))
         case None             =>
