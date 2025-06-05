@@ -17,7 +17,7 @@
 package controllers.goodsProfile
 
 import connectors.GoodsRecordConnector
-import controllers.actions._
+import controllers.actions.*
 import controllers.BaseController
 import forms.goodsProfile.RemoveGoodsRecordFormProvider
 import models.GoodsRecordsPagination.firstPage
@@ -28,6 +28,7 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.AuditService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
+import utils.SessionData.{dataUpdated, initialValueOfHasSuppUnit, initialValueOfSuppUnit, pageUpdated}
 import views.html.goodsProfile.RemoveGoodsRecordView
 
 import javax.inject.Inject
@@ -54,7 +55,8 @@ class RemoveGoodsRecordController @Inject() (
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       auditService.auditStartRemoveGoodsRecord(request.eori, request.affinityGroup, recordId)
 
-      Ok(view(form, recordId, location))
+      Ok(view(form, recordId, location)).removingFromSession(dataUpdated, pageUpdated)
+
     }
 
   def onSubmit(recordId: String, location: Location): Action[AnyContent] =
