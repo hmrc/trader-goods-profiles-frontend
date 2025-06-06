@@ -83,38 +83,29 @@ class CommodityServiceSpec extends SpecBase with BeforeAndAfterEach with Generat
   }
 
   "CommodityService" - {
-
     "isCommodityValid" - {
       "must return the correct value when passed country of origin and the commodity code" in {
-        when(mockOttConnector.getCommodityCode(any(), any(), any(), any(), any(), any())(any()))
-          .thenReturn(Future.successful(validCommodity))
+        when(mockOttConnector.getCommodityCode(any(), any(), any(), any(), any(), any())(any())).thenReturn(Future.successful(validCommodity))
 
-        commodityService
-          .isCommodityCodeValid(mockGoodsRecordResponse.comcode, mockGoodsRecordResponse.countryOfOrigin)(request, hc)
-          .futureValue mustBe true
+        commodityService.isCommodityCodeValid(mockGoodsRecordResponse.comcode, mockGoodsRecordResponse.countryOfOrigin)(request, hc).futureValue mustBe true
       }
 
       "must return false when passed country of origin and the commodity code and NOT_FOUND is returned" in {
-        when(mockOttConnector.getCommodityCode(any(), any(), any(), any(), any(), any())(any()))
-          .thenReturn(Future.failed(UpstreamErrorResponse("not found", NOT_FOUND)))
+        when(mockOttConnector.getCommodityCode(any(), any(), any(), any(), any(), any())(any())).thenReturn(Future.failed(UpstreamErrorResponse("not found", NOT_FOUND)))
 
-        commodityService
-          .isCommodityCodeValid(mockGoodsRecordResponse.comcode, mockGoodsRecordResponse.countryOfOrigin)(request, hc)
-          .futureValue mustBe false
+        commodityService.isCommodityCodeValid(mockGoodsRecordResponse.comcode, mockGoodsRecordResponse.countryOfOrigin)(request, hc).futureValue mustBe false
       }
 
       "must return the correct value when passed a recordId" in {
         when(mockGoodsRecordsConnector.getRecord(any())(any())).thenReturn(Future.successful(mockGoodsRecordResponse))
-        when(mockOttConnector.getCommodityCode(any(), any(), any(), any(), any(), any())(any()))
-          .thenReturn(Future.successful(validCommodity))
+        when(mockOttConnector.getCommodityCode(any(), any(), any(), any(), any(), any())(any())).thenReturn(Future.successful(validCommodity))
 
         commodityService.isCommodityCodeValid(mockGoodsRecordResponse.recordId)(request, hc).futureValue mustBe true
       }
 
       "must return false when passed a recordId and NOT_FOUND is returned" in {
         when(mockGoodsRecordsConnector.getRecord(any())(any())).thenReturn(Future.successful(mockGoodsRecordResponse))
-        when(mockOttConnector.getCommodityCode(any(), any(), any(), any(), any(), any())(any()))
-          .thenReturn(Future.failed(UpstreamErrorResponse("not found", NOT_FOUND)))
+        when(mockOttConnector.getCommodityCode(any(), any(), any(), any(), any(), any())(any())).thenReturn(Future.failed(UpstreamErrorResponse("not found", NOT_FOUND)))
 
         commodityService.isCommodityCodeValid(mockGoodsRecordResponse.recordId)(request, hc).futureValue mustBe false
       }
@@ -123,27 +114,21 @@ class CommodityServiceSpec extends SpecBase with BeforeAndAfterEach with Generat
       "must return commodity code and country of origin from a goods record" in {
         when(mockGoodsRecordsConnector.getRecord(any())(any())).thenReturn(Future.successful(mockGoodsRecordResponse))
 
-        commodityService
-          .fetchRecordValues(mockGoodsRecordResponse.recordId)(request, hc)
-          .futureValue mustBe (mockGoodsRecordResponse.comcode, mockGoodsRecordResponse.countryOfOrigin)
+        commodityService.fetchRecordValues(mockGoodsRecordResponse.recordId)(request, hc).futureValue mustBe (mockGoodsRecordResponse.comcode, mockGoodsRecordResponse.countryOfOrigin)
       }
     }
     "fetchCommodity" - {
       "must return commodity information if valid commodity code" in {
-        when(mockOttConnector.getCommodityCode(any(), any(), any(), any(), any(), any())(any()))
-          .thenReturn(Future.successful(validCommodity))
+        when(mockOttConnector.getCommodityCode(any(), any(), any(), any(), any(), any())(any())).thenReturn(Future.successful(validCommodity))
 
         commodityService.fetchCommodity("170200", "GB")(request, hc).futureValue mustBe Some(validCommodity)
       }
 
       "must return none if a not found upstream error response" in {
-        when(mockOttConnector.getCommodityCode(any(), any(), any(), any(), any(), any())(any()))
-          .thenReturn(Future.failed(UpstreamErrorResponse("not found", NOT_FOUND)))
+        when(mockOttConnector.getCommodityCode(any(), any(), any(), any(), any(), any())(any())).thenReturn(Future.failed(UpstreamErrorResponse("not found", NOT_FOUND)))
 
         commodityService.fetchCommodity("170200", "GB")(request, hc).futureValue mustBe None
       }
     }
-
   }
-
 }

@@ -205,5 +205,4 @@ trait GetRecordsResponseUtil {
       pagination = mockPagination
     )
   )
-
 }

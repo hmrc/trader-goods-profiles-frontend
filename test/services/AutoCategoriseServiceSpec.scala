@@ -78,51 +78,29 @@ class AutoCategoriseServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
     Instant.now()
   )
 
-  private val traderProfileWithAuthorisation =
-    TraderProfile("actorId", "ukims number", Some("NIPHL"), Some("NIRMS"), eoriChanged = false)
-
-  private val autoCategorisationService =
-    new AutoCategoriseService(mockCategorisationService, mockGoodsRecordsConnector, mockSessionRepository)
-
+  private val traderProfileWithAuthorisation = TraderProfile("actorId", "ukims number", Some("NIPHL"), Some("NIRMS"), eoriChanged = false)
+  private val autoCategorisationService = new AutoCategoriseService(mockCategorisationService, mockGoodsRecordsConnector, mockSessionRepository)
   private val mockDataRequest = mock[DataRequest[AnyContent]]
 
   override def beforeEach(): Unit = {
     super.beforeEach()
 
     when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
-
-    when(mockGoodsRecordsConnector.getRecord(any())(any()))
-      .thenReturn(Future.successful(mockGoodsRecordResponse))
-
-    when(mockTraderProfileConnector.getTraderProfile(any()))
-      .thenReturn(Future.successful(traderProfileWithAuthorisation))
-
+    when(mockGoodsRecordsConnector.getRecord(any())(any())).thenReturn(Future.successful(mockGoodsRecordResponse))
+    when(mockTraderProfileConnector.getTraderProfile(any())).thenReturn(Future.successful(traderProfileWithAuthorisation))
     when(mockDataRequest.eori).thenReturn("eori")
-
     when(mockDataRequest.affinityGroup).thenReturn(AffinityGroup.Individual)
-
   }
 
   override def afterEach(): Unit = {
     super.afterEach()
-    reset(mockSessionRepository)
-    reset(mockGoodsRecordsConnector)
-    reset(mockTraderProfileConnector)
-    reset(mockCategorisationService)
+    reset(mockSessionRepository, mockGoodsRecordsConnector, mockTraderProfileConnector, mockCategorisationService)
   }
 
-  val categoryAssessment: CategoryAssessment = CategoryAssessment(
-    id = "assessmentId",
-    category = 1,
-    exemptions = Seq(Certificate("1", "1", "1")),
-    themeDescription = "1",
-    None
-  )
+  val categoryAssessment: CategoryAssessment = CategoryAssessment(id = "assessmentId", category = 1, exemptions = Seq(Certificate("1", "1", "1")), themeDescription = "1", None)
 
   "autoCategoriseRecord(recordId, userAnswers)" - {
-
     "return None when the record is already categorised" in {
-
       val categorisationInfo: CategorisationInfo = CategorisationInfo(
         commodityCode = "1234567890",
         countryOfOrigin = "GB",
@@ -133,25 +111,17 @@ class AutoCategoriseServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
         descendantCount = 0
       )
 
-      val userAnswers = emptyUserAnswers
-        .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
-        .success
-        .value
+      val userAnswers = emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
 
-      when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any()))
-        .thenReturn(Future.successful(categorisationInfo))
+      when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any())).thenReturn(Future.successful(categorisationInfo))
+      when(mockGoodsRecordsConnector.getRecord(any())(any())).thenReturn(Future.successful(mockGoodsRecordResponse.copy(category = Some(1))))
 
-      when(mockGoodsRecordsConnector.getRecord(any())(any()))
-        .thenReturn(Future.successful(mockGoodsRecordResponse.copy(category = Some(1))))
-
-      val result =
-        autoCategorisationService.autoCategoriseRecord("recordId", userAnswers)(mockDataRequest, hc).futureValue
+      val result = autoCategorisationService.autoCategoriseRecord("recordId", userAnswers)(mockDataRequest, hc).futureValue
 
       result shouldBe None
     }
 
     "return None when the record is not auto categorisable" in {
-
       val categorisationInfo: CategorisationInfo = CategorisationInfo(
         commodityCode = "1234567890",
         countryOfOrigin = "GB",
@@ -162,19 +132,12 @@ class AutoCategoriseServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
         descendantCount = 0
       )
 
-      val userAnswers = emptyUserAnswers
-        .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
-        .success
-        .value
+      val userAnswers = emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
 
-      when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any()))
-        .thenReturn(Future.successful(categorisationInfo))
+      when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any())).thenReturn(Future.successful(categorisationInfo))
+      when(mockGoodsRecordsConnector.getRecord(any())(any())).thenReturn(Future.successful(mockGoodsRecordResponse.copy(category = None)))
 
-      when(mockGoodsRecordsConnector.getRecord(any())(any()))
-        .thenReturn(Future.successful(mockGoodsRecordResponse.copy(category = None)))
-
-      val result =
-        autoCategorisationService.autoCategoriseRecord(testRecordId, userAnswers)(mockDataRequest, hc).futureValue
+      val result = autoCategorisationService.autoCategoriseRecord(testRecordId, userAnswers)(mockDataRequest, hc).futureValue
 
       result shouldBe None
     }
@@ -190,34 +153,21 @@ class AutoCategoriseServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
         descendantCount = 0
       )
 
-      val userAnswers = emptyUserAnswers
-        .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
-        .success
-        .value
+      val userAnswers = emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
 
-      when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any()))
-        .thenReturn(Future.successful(categorisationInfo))
+      when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any())).thenReturn(Future.successful(categorisationInfo))
+      when(mockCategorisationService.calculateResult(any(), any(), any())).thenReturn(StandardGoodsNoAssessmentsScenario)
+      when(mockGoodsRecordsConnector.getRecord(any())(any())).thenReturn(Future.successful(mockGoodsRecordResponse.copy(category = None)))
+      when(mockGoodsRecordsConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any())(any())).thenReturn(Future.successful(Done))
 
-      when(mockCategorisationService.calculateResult(any(), any(), any()))
-        .thenReturn(StandardGoodsNoAssessmentsScenario)
-
-      when(mockGoodsRecordsConnector.getRecord(any())(any()))
-        .thenReturn(Future.successful(mockGoodsRecordResponse.copy(category = None)))
-
-      when(mockGoodsRecordsConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any())(any()))
-        .thenReturn(Future.successful(Done))
-
-      val result =
-        autoCategorisationService.autoCategoriseRecord(testRecordId, userAnswers)(mockDataRequest, hc).futureValue
+      val result = autoCategorisationService.autoCategoriseRecord(testRecordId, userAnswers)(mockDataRequest, hc).futureValue
 
       result.value shouldBe StandardGoodsNoAssessmentsScenario
     }
   }
 
   "autoCategoriseRecord(record, userAnswers)" - {
-
     "return None when the record is already categorised" in {
-
       val categorisationInfo: CategorisationInfo = CategorisationInfo(
         commodityCode = "1234567890",
         countryOfOrigin = "GB",
@@ -228,26 +178,17 @@ class AutoCategoriseServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
         descendantCount = 0
       )
 
-      val userAnswers = emptyUserAnswers
-        .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
-        .success
-        .value
+      val userAnswers = emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
 
-      when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any()))
-        .thenReturn(Future.successful(categorisationInfo))
+      when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any())).thenReturn(Future.successful(categorisationInfo))
+      when(mockGoodsRecordsConnector.getRecord(any())(any())).thenReturn(Future.successful(mockGoodsRecordResponse.copy(category = Some(1))))
 
-      when(mockGoodsRecordsConnector.getRecord(any())(any()))
-        .thenReturn(Future.successful(mockGoodsRecordResponse.copy(category = Some(1))))
-
-      val result = autoCategorisationService
-        .autoCategoriseRecord(mockGoodsRecordResponse.copy(category = Some(1)), userAnswers)(mockDataRequest, hc)
-        .futureValue
+      val result = autoCategorisationService.autoCategoriseRecord(mockGoodsRecordResponse.copy(category = Some(1)), userAnswers)(mockDataRequest, hc).futureValue
 
       result shouldBe None
     }
 
     "return None when the record is not auto categorisable" in {
-
       val categorisationInfo: CategorisationInfo = CategorisationInfo(
         commodityCode = "1234567890",
         countryOfOrigin = "GB",
@@ -258,20 +199,12 @@ class AutoCategoriseServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
         descendantCount = 0
       )
 
-      val userAnswers = emptyUserAnswers
-        .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
-        .success
-        .value
+      val userAnswers = emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
 
-      when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any()))
-        .thenReturn(Future.successful(categorisationInfo))
+      when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any())).thenReturn(Future.successful(categorisationInfo))
+      when(mockGoodsRecordsConnector.getRecord(any())(any())).thenReturn(Future.successful(mockGoodsRecordResponse.copy(category = None)))
 
-      when(mockGoodsRecordsConnector.getRecord(any())(any()))
-        .thenReturn(Future.successful(mockGoodsRecordResponse.copy(category = None)))
-
-      val result = autoCategorisationService
-        .autoCategoriseRecord(mockGoodsRecordResponse, userAnswers)(mockDataRequest, hc)
-        .futureValue
+      val result = autoCategorisationService.autoCategoriseRecord(mockGoodsRecordResponse, userAnswers)(mockDataRequest, hc).futureValue
 
       result shouldBe None
     }
@@ -289,26 +222,14 @@ class AutoCategoriseServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
 
       println("\n\n" + categorisationInfo.isAutoCategorisable + "\n\n")
 
-      val userAnswers = emptyUserAnswers
-        .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
-        .success
-        .value
+      val userAnswers = emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
 
-      when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any()))
-        .thenReturn(Future.successful(categorisationInfo))
+      when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any())).thenReturn(Future.successful(categorisationInfo))
+      when(mockCategorisationService.calculateResult(any(), any(), any())).thenReturn(StandardGoodsNoAssessmentsScenario)
+      when(mockGoodsRecordsConnector.getRecord(any())(any())).thenReturn(Future.successful(mockGoodsRecordResponse.copy(category = None)))
+      when(mockGoodsRecordsConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any())(any())).thenReturn(Future.successful(Done))
 
-      when(mockCategorisationService.calculateResult(any(), any(), any()))
-        .thenReturn(StandardGoodsNoAssessmentsScenario)
-
-      when(mockGoodsRecordsConnector.getRecord(any())(any()))
-        .thenReturn(Future.successful(mockGoodsRecordResponse.copy(category = None)))
-
-      when(mockGoodsRecordsConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any())(any()))
-        .thenReturn(Future.successful(Done))
-
-      val result = autoCategorisationService
-        .autoCategoriseRecord(mockGoodsRecordResponse.copy(category = None), userAnswers)(mockDataRequest, hc)
-        .futureValue
+      val result = autoCategorisationService.autoCategoriseRecord(mockGoodsRecordResponse.copy(category = None), userAnswers)(mockDataRequest, hc).futureValue
 
       result.value shouldBe StandardGoodsNoAssessmentsScenario
     }
