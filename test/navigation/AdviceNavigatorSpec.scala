@@ -40,162 +40,94 @@ class AdviceNavigatorSpec extends SpecBase with BeforeAndAfterEach {
   }
 
   "Navigator" - {
-
     "in Normal mode" - {
-
       "must go from a page that doesn't exist in the route map to Index" in {
-
         case object UnknownPage extends Page
         navigator.nextPage(UnknownPage, NormalMode, emptyUserAnswers) mustBe routes.IndexController.onPageLoad()
       }
 
       "in Require Advice Journey" - {
-
         "must go from AdviceStartPage to NamePage" in {
-
-          navigator.nextPage(
-            AdviceStartPage(testRecordId),
-            NormalMode,
-            emptyUserAnswers
-          ) mustBe controllers.advice.routes.NameController
-            .onPageLoad(NormalMode, testRecordId)
+          navigator.nextPage(AdviceStartPage(testRecordId), NormalMode, emptyUserAnswers) mustBe
+            controllers.advice.routes.NameController.onPageLoad(NormalMode, testRecordId)
         }
 
         "must go from NamePage to EmailPage" in {
-
-          navigator.nextPage(
-            NamePage(testRecordId),
-            NormalMode,
-            emptyUserAnswers
-          ) mustBe controllers.advice.routes.EmailController
-            .onPageLoad(
-              NormalMode,
-              testRecordId
-            )
+          navigator.nextPage(NamePage(testRecordId), NormalMode, emptyUserAnswers) mustBe
+            controllers.advice.routes.EmailController.onPageLoad(NormalMode, testRecordId)
         }
 
         "must go from EmailPage to CyaRequestAdviceController" in {
-
-          navigator.nextPage(
-            EmailPage(testRecordId),
-            NormalMode,
-            emptyUserAnswers
-          ) mustBe controllers.advice.routes.CyaRequestAdviceController.onPageLoad(testRecordId)
+          navigator.nextPage(EmailPage(testRecordId), NormalMode, emptyUserAnswers) mustBe
+            controllers.advice.routes.CyaRequestAdviceController.onPageLoad(testRecordId)
         }
 
         "must go from CyaRequestAdviceController to AdviceSuccess" in {
-
-          navigator.nextPage(
-            CyaRequestAdvicePage(testRecordId),
-            NormalMode,
-            emptyUserAnswers
-          ) mustBe controllers.advice.routes.AdviceSuccessController
-            .onPageLoad(testRecordId)
+          navigator.nextPage(CyaRequestAdvicePage(testRecordId), NormalMode, emptyUserAnswers) mustBe
+            controllers.advice.routes.AdviceSuccessController.onPageLoad(testRecordId)
         }
-
       }
 
       "in Withdraw Advice Journey" - {
-
         "must go from WithdrawAdviceStartPage to ReasonForWithdrawAdvicePage when answer is Yes" in {
           val answers = UserAnswers(userAnswersId).set(WithdrawAdviceStartPage(testRecordId), true).success.value
-          navigator.nextPage(
-            WithdrawAdviceStartPage(testRecordId),
-            NormalMode,
-            answers
-          ) mustBe controllers.advice.routes.ReasonForWithdrawAdviceController
-            .onPageLoad(testRecordId)
+          navigator.nextPage(WithdrawAdviceStartPage(testRecordId), NormalMode, answers) mustBe
+            controllers.advice.routes.ReasonForWithdrawAdviceController.onPageLoad(testRecordId)
         }
 
         "must go from WithdrawAdviceStartPage to SingleRecordPage when answer is No" in {
           val answers = UserAnswers(userAnswersId).set(WithdrawAdviceStartPage(testRecordId), false).success.value
-          navigator.nextPage(
-            WithdrawAdviceStartPage(testRecordId),
-            NormalMode,
-            answers
-          ) mustBe controllers.goodsRecord.routes.SingleRecordController
-            .onPageLoad(testRecordId)
+          navigator.nextPage(WithdrawAdviceStartPage(testRecordId), NormalMode, answers) mustBe
+            controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId)
         }
 
         "must go from ReasonForWithdrawAdvicePage to WithdrawAdviceSuccessPage" in {
-
-          navigator.nextPage(
-            ReasonForWithdrawAdvicePage(testRecordId),
-            NormalMode,
-            emptyUserAnswers
-          ) mustBe controllers.advice.routes.WithdrawAdviceSuccessController
-            .onPageLoad(
-              testRecordId
-            )
+          navigator.nextPage(ReasonForWithdrawAdvicePage(testRecordId), NormalMode, emptyUserAnswers) mustBe
+            controllers.advice.routes.WithdrawAdviceSuccessController.onPageLoad(testRecordId)
         }
 
         "must go to JourneyRecoveryController when there is no answer for WithdrawAdviceStartPage" in {
           val continueUrl =
             RedirectUrl(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId).url)
-          navigator.nextPage(
-            WithdrawAdviceStartPage(testRecordId),
-            NormalMode,
-            emptyUserAnswers
-          ) mustBe controllers.problem.routes.JourneyRecoveryController
-            .onPageLoad(Some(continueUrl))
+          navigator.nextPage(WithdrawAdviceStartPage(testRecordId), NormalMode, emptyUserAnswers) mustBe
+            controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(continueUrl))
         }
       }
-
     }
 
     "in Check mode" - {
-
       "must go from a page that doesn't exist in the edit route map to Index" in {
-
         case object UnknownPage extends Page
-        navigator.nextPage(
-          UnknownPage,
-          CheckMode,
-          emptyUserAnswers
-        ) mustBe controllers.problem.routes.JourneyRecoveryController.onPageLoad()
+        navigator.nextPage(UnknownPage, CheckMode, emptyUserAnswers) mustBe
+          controllers.problem.routes.JourneyRecoveryController.onPageLoad()
       }
 
       "in Require Advice Journey" - {
-
         "must go from NamePage to CyaRequestAdviceController" in {
-
-          navigator.nextPage(
-            NamePage(testRecordId),
-            CheckMode,
-            emptyUserAnswers
-          ) mustBe controllers.advice.routes.CyaRequestAdviceController.onPageLoad(testRecordId)
+          navigator.nextPage(NamePage(testRecordId), CheckMode, emptyUserAnswers) mustBe
+            controllers.advice.routes.CyaRequestAdviceController.onPageLoad(testRecordId)
         }
 
         "must go from EmailPage to CyaRequestAdviceController" in {
-
-          navigator.nextPage(
-            EmailPage(testRecordId),
-            CheckMode,
-            emptyUserAnswers
-          ) mustBe controllers.advice.routes.CyaRequestAdviceController.onPageLoad(testRecordId)
+          navigator.nextPage(EmailPage(testRecordId), CheckMode, emptyUserAnswers) mustBe
+            controllers.advice.routes.CyaRequestAdviceController.onPageLoad(testRecordId)
         }
       }
-
     }
 
     ".journeyRecovery" - {
-
       "redirect to JourneyRecovery" - {
-
         "with no ContinueUrl if none supplied" in {
           val result = navigator.journeyRecovery()
           result.header.status mustEqual SEE_OTHER
-          result.header
-            .headers("Location") mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
+          result.header.headers("Location") mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
         }
 
         "with ContinueUrl if one supplied" in {
           val redirectUrl = Some(RedirectUrl("/redirectUrl"))
           val result      = navigator.journeyRecovery(redirectUrl)
           result.header.status mustEqual SEE_OTHER
-          result.header.headers("Location") mustEqual controllers.problem.routes.JourneyRecoveryController
-            .onPageLoad(redirectUrl)
-            .url
+          result.header.headers("Location") mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad(redirectUrl).url
         }
       }
     }

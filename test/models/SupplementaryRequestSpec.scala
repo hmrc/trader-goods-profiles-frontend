@@ -50,17 +50,9 @@ class SupplementaryRequestSpec extends AnyFreeSpec with Matchers with TryValues 
 
       "must return a SupplementaryRequest when all optional data is present" in {
 
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(HasSupplementaryUnitUpdatePage(testRecordId), true)
-            .success
-            .value
-            .set(SupplementaryUnitUpdatePage(testRecordId), "1.0")
-            .success
-            .value
-            .set(MeasurementQuery(testRecordId), "kg")
-            .success
-            .value
+        val answers = UserAnswers(userAnswersId).set(HasSupplementaryUnitUpdatePage(testRecordId), true).success.value
+            .set(SupplementaryUnitUpdatePage(testRecordId), "1.0").success.value
+            .set(MeasurementQuery(testRecordId), "kg").success.value
 
         val result = SupplementaryRequest.build(answers, testEori, testRecordId)
 
@@ -77,14 +69,8 @@ class SupplementaryRequestSpec extends AnyFreeSpec with Matchers with TryValues 
 
       "must return a SupplementaryRequest when HasSupplementaryUnitUpdatePage is missing but have SupplementaryUnitUpdatePage" in {
 
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(SupplementaryUnitUpdatePage(testRecordId), "1.0")
-            .success
-            .value
-            .set(MeasurementQuery(testRecordId), "kg")
-            .success
-            .value
+        val answers = UserAnswers(userAnswersId).set(SupplementaryUnitUpdatePage(testRecordId), "1.0").success.value
+            .set(MeasurementQuery(testRecordId), "kg").success.value
 
         val result = SupplementaryRequest.build(answers, testEori, testRecordId)
 
@@ -101,11 +87,7 @@ class SupplementaryRequestSpec extends AnyFreeSpec with Matchers with TryValues 
 
       "must return errors when the user said they have a SupplementaryUnit but it is missing" in {
 
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(HasSupplementaryUnitUpdatePage(testRecordId), true)
-            .success
-            .value
+        val answers = UserAnswers(userAnswersId).set(HasSupplementaryUnitUpdatePage(testRecordId), true).success.value
 
         val result = SupplementaryRequest.build(answers, testEori, testRecordId)
 
@@ -119,11 +101,7 @@ class SupplementaryRequestSpec extends AnyFreeSpec with Matchers with TryValues 
 
       "must return supplementaryrequest when user said they don't have a SupplementaryUnit and it is missing" in {
 
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(HasSupplementaryUnitUpdatePage(testRecordId), false)
-            .success
-            .value
+        val answers = UserAnswers(userAnswersId).set(HasSupplementaryUnitUpdatePage(testRecordId), false).success.value
 
         val result = SupplementaryRequest.build(answers, testEori, testRecordId)
 
@@ -154,10 +132,7 @@ class SupplementaryRequestSpec extends AnyFreeSpec with Matchers with TryValues 
 
       "when supplementaryunit is define but measurementquery is missing " in {
 
-        val answers = UserAnswers(userAnswersId)
-          .set(SupplementaryUnitUpdatePage(testRecordId), "1.0")
-          .success
-          .value
+        val answers = UserAnswers(userAnswersId).set(SupplementaryUnitUpdatePage(testRecordId), "1.0").success.value
 
         val result = SupplementaryRequest.build(answers, testEori, testRecordId)
 
@@ -167,7 +142,6 @@ class SupplementaryRequestSpec extends AnyFreeSpec with Matchers with TryValues 
           )
         }
       }
-
     }
   }
 }

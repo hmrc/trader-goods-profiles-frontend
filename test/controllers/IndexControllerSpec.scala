@@ -21,17 +21,27 @@ import config.{FrontendAppConfig, Service}
 import connectors.{DownloadDataConnector, TraderProfileConnector}
 import models.{Email, TraderProfile}
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{never, spy, verify, when}
+import org.mockito.Mockito.{never, spy, verify, when, reset}
+import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject.bind
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 
 import java.time.Instant
 import scala.concurrent.Future
 
-class IndexControllerSpec extends SpecBase {
+class IndexControllerSpec extends SpecBase with BeforeAndAfterEach {
 
+  private val mockTraderProfileConnector = mock[TraderProfileConnector]
+  private val mockDownloadDataConnector = mock[DownloadDataConnector]
+  private val mockConfig = mock[FrontendAppConfig]
+
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    reset(mockTraderProfileConnector, mockDownloadDataConnector, mockConfig)
+  }
+  
   "Index Controller" - {
 
     val address   = "somebody@email.com"
@@ -40,23 +50,16 @@ class IndexControllerSpec extends SpecBase {
 
     "when download feature flag is true" - {
       "and trader has credential role of user" - {
-
         val app           = applicationBuilder(userAnswers = None).build()
         val mockAppConfig = spy(app.injector.instanceOf[FrontendAppConfig])
         when(mockAppConfig.downloadFileEnabled).thenReturn(true)
 
         "when email is present" - {
-
           "must redirect to ProfileSetupController if no profile present" in {
-
-            val mockTraderProfileConnector = mock[TraderProfileConnector]
             when(mockTraderProfileConnector.checkTraderProfile(any())(any())).thenReturn(Future.successful(false))
-
-            val mockDownloadDataConnector = mock[DownloadDataConnector]
             when(mockDownloadDataConnector.getEmail(any())).thenReturn(Future.successful(Some(email)))
 
-            val application =
-              applicationBuilder(userAnswers = None)
+            val application = applicationBuilder(userAnswers = None)
                 .overrides(bind[FrontendAppConfig].toInstance(mockAppConfig))
                 .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
                 .overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector))
@@ -64,14 +67,11 @@ class IndexControllerSpec extends SpecBase {
 
             running(application) {
               val request = FakeRequest(GET, routes.IndexController.onPageLoad().url)
-
               val result = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
 
-              redirectLocation(result).value mustEqual controllers.profile.routes.ProfileSetupController
-                .onPageLoad()
-                .url
+              redirectLocation(result).value mustEqual controllers.profile.routes.ProfileSetupController.onPageLoad().url
 
               verify(mockTraderProfileConnector).checkTraderProfile(any())(any())
               verify(mockDownloadDataConnector).getEmail(any())
@@ -79,15 +79,10 @@ class IndexControllerSpec extends SpecBase {
           }
 
           "must redirect to HomePageController if no profile present" in {
-
-            val mockTraderProfileConnector = mock[TraderProfileConnector]
             when(mockTraderProfileConnector.checkTraderProfile(any())(any())).thenReturn(Future.successful(false))
-
-            val mockDownloadDataConnector = mock[DownloadDataConnector]
             when(mockDownloadDataConnector.getEmail(any())).thenReturn(Future.successful(Some(email)))
 
-            val application =
-              applicationBuilder(userAnswers = None)
+            val application = applicationBuilder(userAnswers = None)
                 .overrides(bind[FrontendAppConfig].toInstance(mockAppConfig))
                 .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
                 .overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector))
@@ -95,14 +90,11 @@ class IndexControllerSpec extends SpecBase {
 
             running(application) {
               val request = FakeRequest(GET, routes.IndexController.onPageLoad().url)
-
               val result = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
 
-              redirectLocation(result).value mustEqual controllers.profile.routes.ProfileSetupController
-                .onPageLoad()
-                .url
+              redirectLocation(result).value mustEqual controllers.profile.routes.ProfileSetupController.onPageLoad().url
 
               verify(mockTraderProfileConnector).checkTraderProfile(any())(any())
               verify(mockDownloadDataConnector).getEmail(any())
@@ -110,16 +102,9 @@ class IndexControllerSpec extends SpecBase {
           }
 
           "must redirect to HomePageController if no profile present and eori has not changed" in {
-            val mockTraderProfileConnector = mock[TraderProfileConnector]
             when(mockTraderProfileConnector.checkTraderProfile(any())(any())).thenReturn(Future.successful(true))
             when(mockTraderProfileConnector.getTraderProfile(any()))
-              .thenReturn(
-                Future.successful(
-                  TraderProfile("name", "address", Some("postcode"), Some("country"), eoriChanged = false)
-                )
-              )
-
-            val mockDownloadDataConnector = mock[DownloadDataConnector]
+              .thenReturn(Future.successful(TraderProfile("name", "address", Some("postcode"), Some("country"), eoriChanged = false)))
             when(mockDownloadDataConnector.getEmail(any())).thenReturn(Future.successful(Some(email)))
 
             val application =
@@ -131,7 +116,6 @@ class IndexControllerSpec extends SpecBase {
 
             running(application) {
               val request = FakeRequest(GET, routes.IndexController.onPageLoad().url)
-
               val result = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
@@ -145,21 +129,12 @@ class IndexControllerSpec extends SpecBase {
           }
 
           "must redirect to UkimsNumberChangeController if no profile present and eori has changed" in {
-
-            val mockTraderProfileConnector = mock[TraderProfileConnector]
             when(mockTraderProfileConnector.checkTraderProfile(any())(any())).thenReturn(Future.successful(true))
             when(mockTraderProfileConnector.getTraderProfile(any()))
-              .thenReturn(
-                Future.successful(
-                  TraderProfile("name", "address", Some("postcode"), Some("country"), eoriChanged = true)
-                )
-              )
-
-            val mockDownloadDataConnector = mock[DownloadDataConnector]
+              .thenReturn(Future.successful(TraderProfile("name", "address", Some("postcode"), Some("country"), eoriChanged = true)))
             when(mockDownloadDataConnector.getEmail(any())).thenReturn(Future.successful(Some(email)))
 
-            val application =
-              applicationBuilder(userAnswers = None)
+            val application = applicationBuilder(userAnswers = None)
                 .overrides(bind[FrontendAppConfig].toInstance(mockAppConfig))
                 .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
                 .overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector))
@@ -167,14 +142,11 @@ class IndexControllerSpec extends SpecBase {
 
             running(application) {
               val request = FakeRequest(GET, routes.IndexController.onPageLoad().url)
-
               val result = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
 
-              redirectLocation(result).value mustEqual controllers.newUkims.routes.UkimsNumberChangeController
-                .onPageLoad()
-                .url
+              redirectLocation(result).value mustEqual controllers.newUkims.routes.UkimsNumberChangeController.onPageLoad().url
 
               verify(mockTraderProfileConnector).checkTraderProfile(any())(any())
               verify(mockDownloadDataConnector).getEmail(any())
@@ -184,50 +156,38 @@ class IndexControllerSpec extends SpecBase {
         }
 
         "when email is not present must redirect to custom email frontend" in {
-
-          val mockConnector = mock[DownloadDataConnector]
-          when(mockConnector.getEmail(any())).thenReturn(Future.successful(None))
-
-          val mockConfig = mock[FrontendAppConfig]
+          when(mockDownloadDataConnector.getEmail(any())).thenReturn(Future.successful(None))
           when(mockConfig.customsEmailUrl).thenReturn(Service("localhost", "3000", "http"))
 
-          val application =
-            applicationBuilder(userAnswers = None)
+          val application = applicationBuilder(userAnswers = None)
               .overrides(bind[FrontendAppConfig].toInstance(mockAppConfig))
               .overrides(
-                bind[DownloadDataConnector].toInstance(mockConnector)
+                bind[DownloadDataConnector].toInstance(mockDownloadDataConnector)
               )
               .build()
 
           running(application) {
             val request = FakeRequest(GET, routes.IndexController.onPageLoad().url)
-
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
 
             redirectLocation(result).value contains "/manage-email-cds/service/trader-goods-profiles"
 
-            verify(mockConnector).getEmail(any())
+            verify(mockDownloadDataConnector).getEmail(any())
           }
         }
       }
       "and trader has credential role of assistant" - {
-
         val app           = applicationBuilderAssistant(userAnswers = None).build()
         val mockAppConfig = spy(app.injector.instanceOf[FrontendAppConfig])
         when(mockAppConfig.downloadFileEnabled).thenReturn(true)
 
         "must redirect to ProfileSetupController if no profile present" in {
-
-          val mockTraderProfileConnector = mock[TraderProfileConnector]
           when(mockTraderProfileConnector.checkTraderProfile(any())(any())).thenReturn(Future.successful(false))
-
-          val mockDownloadDataConnector = mock[DownloadDataConnector]
           when(mockDownloadDataConnector.getEmail(any())).thenReturn(Future.successful(Some(email)))
 
-          val application =
-            applicationBuilderAssistant(userAnswers = None)
+          val application = applicationBuilderAssistant(userAnswers = None)
               .overrides(bind[FrontendAppConfig].toInstance(mockAppConfig))
               .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
               .overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector))
@@ -235,7 +195,6 @@ class IndexControllerSpec extends SpecBase {
 
           running(application) {
             val request = FakeRequest(GET, routes.IndexController.onPageLoad().url)
-
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
@@ -248,15 +207,10 @@ class IndexControllerSpec extends SpecBase {
         }
 
         "must redirect to HomePageController if no profile present" in {
-
-          val mockTraderProfileConnector = mock[TraderProfileConnector]
           when(mockTraderProfileConnector.checkTraderProfile(any())(any())).thenReturn(Future.successful(false))
-
-          val mockDownloadDataConnector = mock[DownloadDataConnector]
           when(mockDownloadDataConnector.getEmail(any())).thenReturn(Future.successful(Some(email)))
 
-          val application =
-            applicationBuilderAssistant(userAnswers = None)
+          val application = applicationBuilderAssistant(userAnswers = None)
               .overrides(bind[FrontendAppConfig].toInstance(mockAppConfig))
               .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
               .overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector))
@@ -264,7 +218,6 @@ class IndexControllerSpec extends SpecBase {
 
           running(application) {
             val request = FakeRequest(GET, routes.IndexController.onPageLoad().url)
-
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
@@ -277,20 +230,12 @@ class IndexControllerSpec extends SpecBase {
         }
 
         "must redirect to HomePageController if no profile present and eori has not changed" in {
-          val mockTraderProfileConnector = mock[TraderProfileConnector]
           when(mockTraderProfileConnector.checkTraderProfile(any())(any())).thenReturn(Future.successful(true))
           when(mockTraderProfileConnector.getTraderProfile(any()))
-            .thenReturn(
-              Future.successful(
-                TraderProfile("name", "address", Some("postcode"), Some("country"), eoriChanged = false)
-              )
-            )
-
-          val mockDownloadDataConnector = mock[DownloadDataConnector]
+            .thenReturn(Future.successful(TraderProfile("name", "address", Some("postcode"), Some("country"), eoriChanged = false)))
           when(mockDownloadDataConnector.getEmail(any())).thenReturn(Future.successful(Some(email)))
 
-          val application =
-            applicationBuilderAssistant(userAnswers = None)
+          val application = applicationBuilderAssistant(userAnswers = None)
               .overrides(bind[FrontendAppConfig].toInstance(mockAppConfig))
               .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
               .overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector))
@@ -298,7 +243,6 @@ class IndexControllerSpec extends SpecBase {
 
           running(application) {
             val request = FakeRequest(GET, routes.IndexController.onPageLoad().url)
-
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
@@ -312,19 +256,12 @@ class IndexControllerSpec extends SpecBase {
         }
 
         "must redirect to UkimsNumberChangeController if no profile present and eori has changed" in {
-
-          val mockTraderProfileConnector = mock[TraderProfileConnector]
           when(mockTraderProfileConnector.checkTraderProfile(any())(any())).thenReturn(Future.successful(true))
           when(mockTraderProfileConnector.getTraderProfile(any()))
-            .thenReturn(
-              Future.successful(TraderProfile("name", "address", Some("postcode"), Some("country"), eoriChanged = true))
-            )
-
-          val mockDownloadDataConnector = mock[DownloadDataConnector]
+            .thenReturn(Future.successful(TraderProfile("name", "address", Some("postcode"), Some("country"), eoriChanged = true)))
           when(mockDownloadDataConnector.getEmail(any())).thenReturn(Future.successful(Some(email)))
 
-          val application =
-            applicationBuilderAssistant(userAnswers = None)
+          val application = applicationBuilderAssistant(userAnswers = None)
               .overrides(bind[FrontendAppConfig].toInstance(mockAppConfig))
               .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
               .overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector))
@@ -332,40 +269,30 @@ class IndexControllerSpec extends SpecBase {
 
           running(application) {
             val request = FakeRequest(GET, routes.IndexController.onPageLoad().url)
-
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
 
-            redirectLocation(result).value mustEqual controllers.newUkims.routes.UkimsNumberChangeController
-              .onPageLoad()
-              .url
+            redirectLocation(result).value mustEqual controllers.newUkims.routes.UkimsNumberChangeController.onPageLoad().url
 
             verify(mockTraderProfileConnector).checkTraderProfile(any())(any())
             verify(mockDownloadDataConnector, never()).getEmail(any())
             verify(mockTraderProfileConnector).getTraderProfile(any())
           }
         }
-
       }
     }
 
     "when download feature flag is false" - {
-
       val app           = applicationBuilder(userAnswers = None).build()
       val mockAppConfig = spy(app.injector.instanceOf[FrontendAppConfig])
       when(mockAppConfig.downloadFileEnabled).thenReturn(false)
 
       "must redirect to ProfileSetupController if no profile present" in {
-
-        val mockTraderProfileConnector = mock[TraderProfileConnector]
         when(mockTraderProfileConnector.checkTraderProfile(any())(any())).thenReturn(Future.successful(false))
-
-        val mockDownloadDataConnector = mock[DownloadDataConnector]
         when(mockDownloadDataConnector.getEmail(any())).thenReturn(Future.successful(Some(email)))
 
-        val application =
-          applicationBuilder(userAnswers = None)
+        val application = applicationBuilder(userAnswers = None)
             .overrides(bind[FrontendAppConfig].toInstance(mockAppConfig))
             .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
             .overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector))
@@ -373,7 +300,6 @@ class IndexControllerSpec extends SpecBase {
 
         running(application) {
           val request = FakeRequest(GET, routes.IndexController.onPageLoad().url)
-
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
@@ -386,15 +312,10 @@ class IndexControllerSpec extends SpecBase {
       }
 
       "must redirect to HomePageController if no profile present" in {
-
-        val mockTraderProfileConnector = mock[TraderProfileConnector]
         when(mockTraderProfileConnector.checkTraderProfile(any())(any())).thenReturn(Future.successful(false))
-
-        val mockDownloadDataConnector = mock[DownloadDataConnector]
         when(mockDownloadDataConnector.getEmail(any())).thenReturn(Future.successful(Some(email)))
 
-        val application =
-          applicationBuilder(userAnswers = None)
+        val application = applicationBuilder(userAnswers = None)
             .overrides(bind[FrontendAppConfig].toInstance(mockAppConfig))
             .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
             .overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector))
@@ -402,7 +323,6 @@ class IndexControllerSpec extends SpecBase {
 
         running(application) {
           val request = FakeRequest(GET, routes.IndexController.onPageLoad().url)
-
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
@@ -415,20 +335,12 @@ class IndexControllerSpec extends SpecBase {
       }
 
       "must redirect to HomePageController if no profile present and eori has not changed" in {
-        val mockTraderProfileConnector = mock[TraderProfileConnector]
         when(mockTraderProfileConnector.checkTraderProfile(any())(any())).thenReturn(Future.successful(true))
         when(mockTraderProfileConnector.getTraderProfile(any()))
-          .thenReturn(
-            Future.successful(
-              TraderProfile("name", "address", Some("postcode"), Some("country"), eoriChanged = false)
-            )
-          )
-
-        val mockDownloadDataConnector = mock[DownloadDataConnector]
+          .thenReturn(Future.successful(TraderProfile("name", "address", Some("postcode"), Some("country"), eoriChanged = false)))
         when(mockDownloadDataConnector.getEmail(any())).thenReturn(Future.successful(Some(email)))
 
-        val application =
-          applicationBuilder(userAnswers = None)
+        val application = applicationBuilder(userAnswers = None)
             .overrides(bind[FrontendAppConfig].toInstance(mockAppConfig))
             .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
             .overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector))
@@ -436,7 +348,6 @@ class IndexControllerSpec extends SpecBase {
 
         running(application) {
           val request = FakeRequest(GET, routes.IndexController.onPageLoad().url)
-
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
@@ -450,19 +361,12 @@ class IndexControllerSpec extends SpecBase {
       }
 
       "must redirect to UkimsNumberChangeController if no profile present and eori has changed" in {
-
-        val mockTraderProfileConnector = mock[TraderProfileConnector]
         when(mockTraderProfileConnector.checkTraderProfile(any())(any())).thenReturn(Future.successful(true))
         when(mockTraderProfileConnector.getTraderProfile(any()))
-          .thenReturn(
-            Future.successful(TraderProfile("name", "address", Some("postcode"), Some("country"), eoriChanged = true))
-          )
-
-        val mockDownloadDataConnector = mock[DownloadDataConnector]
+          .thenReturn(Future.successful(TraderProfile("name", "address", Some("postcode"), Some("country"), eoriChanged = true)))
         when(mockDownloadDataConnector.getEmail(any())).thenReturn(Future.successful(Some(email)))
 
-        val application =
-          applicationBuilder(userAnswers = None)
+        val application = applicationBuilder(userAnswers = None)
             .overrides(bind[FrontendAppConfig].toInstance(mockAppConfig))
             .overrides(bind[TraderProfileConnector].toInstance(mockTraderProfileConnector))
             .overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector))
@@ -470,21 +374,17 @@ class IndexControllerSpec extends SpecBase {
 
         running(application) {
           val request = FakeRequest(GET, routes.IndexController.onPageLoad().url)
-
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
 
-          redirectLocation(result).value mustEqual controllers.newUkims.routes.UkimsNumberChangeController
-            .onPageLoad()
-            .url
+          redirectLocation(result).value mustEqual controllers.newUkims.routes.UkimsNumberChangeController.onPageLoad().url
 
           verify(mockTraderProfileConnector).checkTraderProfile(any())(any())
           verify(mockDownloadDataConnector, never()).getEmail(any())
           verify(mockTraderProfileConnector).getTraderProfile(any())
         }
       }
-
     }
   }
 }

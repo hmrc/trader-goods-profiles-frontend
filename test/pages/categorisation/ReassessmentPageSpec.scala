@@ -62,26 +62,12 @@ class ReassessmentPageSpec extends SpecBase {
     "must not remove any assessments" - {
       "when an assessment is answered with an exemption" in {
 
-        val answers =
-          emptyUserAnswers
-            .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
-            .success
-            .value
-            .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE"))))
-            .success
-            .value
-            .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE"))))
-            .success
-            .value
-            .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE"))))
-            .success
-            .value
+        val answers = emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
+            .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE")))).success.value
+            .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE")))).success.value
+            .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE")))).success.value
 
-        val result =
-          answers
-            .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE"))))
-            .success
-            .value
+        val result = answers.set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE")))).success.value
 
         result.isDefined(ReassessmentPage(testRecordId, 0)) mustBe true
         result.isDefined(ReassessmentPage(testRecordId, 1)) mustBe true
@@ -92,35 +78,19 @@ class ReassessmentPageSpec extends SpecBase {
 
     "must remove all assessments later in the list" - {
       "when an assessment is answered with no exemption" in {
+        val answers = emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
+            .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE")))).success.value
+            .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE")))).success.value
+            .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE")))).success.value
+            .set(ReassessmentPage(testRecordId, 3), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE")))).success.value
 
-        val answers =
-          emptyUserAnswers
-            .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
-            .success
-            .value
-            .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE"))))
-            .success
-            .value
-            .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE"))))
-            .success
-            .value
-            .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE"))))
-            .success
-            .value
-            .set(ReassessmentPage(testRecordId, 3), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE"))))
-            .success
-            .value
-
-        val result =
-          answers.set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.NoExemption)).success.value
+        val result = answers.set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.NoExemption)).success.value
 
         result.isDefined(ReassessmentPage(testRecordId, 0)) mustBe true
         result.isDefined(ReassessmentPage(testRecordId, 1)) mustBe true
         result.isDefined(ReassessmentPage(testRecordId, 2)) mustBe false
         result.isDefined(ReassessmentPage(testRecordId, 3)) mustBe false
       }
-
     }
   }
-
 }

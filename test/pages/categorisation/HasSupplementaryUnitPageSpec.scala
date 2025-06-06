@@ -41,32 +41,19 @@ class HasSupplementaryUnitPageSpec extends AnyFreeSpec with Matchers with TryVal
       }
 
       "when the answer for HasSupplementaryUnit is being removed" in {
-        val userAnswers = UserAnswers(userAnswersId)
-          .set(HasSupplementaryUnitPage(testRecordId), true)
-          .success
-          .value
-          .set(SupplementaryUnitPage(testRecordId), "42.0")
-          .success
-          .value
+        val userAnswers = UserAnswers(userAnswersId).set(HasSupplementaryUnitPage(testRecordId), true).success.value
+          .set(SupplementaryUnitPage(testRecordId), "42.0").success.value
 
         val result = userAnswers.remove(HasSupplementaryUnitPage(testRecordId)).success.value
 
         result.get(SupplementaryUnitPage(testRecordId)) mustBe None
         result.get(HasSupplementaryUnitPage(testRecordId)) mustBe None
-
       }
-
     }
 
     "removes SupplementaryUnit only for the given record id" in {
-
-      val userAnswers = UserAnswers(userAnswersId)
-        .set(SupplementaryUnitPage("differentRecordId"), "42.0")
-        .success
-        .value
-        .set(SupplementaryUnitPage(testRecordId), "43.0")
-        .success
-        .value
+      val userAnswers = UserAnswers(userAnswersId).set(SupplementaryUnitPage("differentRecordId"), "42.0").success.value
+        .set(SupplementaryUnitPage(testRecordId), "43.0").success.value
 
       val result = userAnswers.set(HasSupplementaryUnitPage(testRecordId), false).success.value
 
@@ -74,11 +61,9 @@ class HasSupplementaryUnitPageSpec extends AnyFreeSpec with Matchers with TryVal
       result.get(SupplementaryUnitPage("differentRecordId")).value mustBe "42.0"
 
       result.get(HasSupplementaryUnitPage(testRecordId)).value mustBe false
-
     }
 
     "does not remove SupplementaryUnit when the answer is Yes" in {
-
       val userAnswers = UserAnswers(userAnswersId).set(SupplementaryUnitPage(testRecordId), "42.0").success.value
 
       val result = userAnswers.set(HasSupplementaryUnitPage(testRecordId), true).success.value
@@ -87,6 +72,5 @@ class HasSupplementaryUnitPageSpec extends AnyFreeSpec with Matchers with TryVal
 
       result.get(HasSupplementaryUnitPage(testRecordId)).value mustBe true
     }
-
   }
 }

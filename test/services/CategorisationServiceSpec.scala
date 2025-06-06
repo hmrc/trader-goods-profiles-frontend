@@ -102,7 +102,6 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-
     when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
     when(mockOttConnector.getCategorisationInfo(any(), any(), any(), any(), any(), any())(any())).thenReturn(Future.successful(mockOttResponse()))
     when(mockGoodsRecordsConnector.getRecord(any())(any())).thenReturn(Future.successful(mockGoodsRecordResponse))

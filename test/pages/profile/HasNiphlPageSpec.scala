@@ -49,5 +49,4 @@ class HasNiphlPageSpec extends AnyFreeSpec with Matchers with TryValues with Opt
       result.get(HasNiphlPage).value mustBe true
     }
   }
-
 }

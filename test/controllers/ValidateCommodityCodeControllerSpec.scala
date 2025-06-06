@@ -52,15 +52,12 @@ class ValidateCommodityCodeControllerSpec extends SpecBase with BeforeAndAfterEa
         when(mockCommodityService.isCommodityCodeValid(any())(any(), any())).thenReturn(Future.successful(true))
 
         running(application) {
-          val request =
-            FakeRequest(GET, controllers.routes.ValidateCommodityCodeController.changeCategory(testRecordId).url)
+          val request = FakeRequest(GET, controllers.routes.ValidateCommodityCodeController.changeCategory(testRecordId).url)
 
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustBe controllers.categorisation.routes.CategorisationPreparationController
-            .startCategorisation(testRecordId)
-            .url
+          redirectLocation(result).value mustBe controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(testRecordId).url
         }
       }
       "must redirect to InvalidCommodityCodePage when commodity code is invalid" in {
@@ -74,17 +71,11 @@ class ValidateCommodityCodeControllerSpec extends SpecBase with BeforeAndAfterEa
         when(mockCommodityService.isCommodityCodeValid(any())(any(), any())).thenReturn(Future.successful(false))
 
         running(application) {
-          val request =
-            FakeRequest(GET, controllers.routes.ValidateCommodityCodeController.changeCategory(testRecordId).url)
-
+          val request = FakeRequest(GET, controllers.routes.ValidateCommodityCodeController.changeCategory(testRecordId).url)
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(
-            result
-          ).value mustBe controllers.goodsRecord.commodityCode.routes.InvalidCommodityCodeController
-            .onPageLoad(testRecordId)
-            .url
+          redirectLocation(result).value mustBe controllers.goodsRecord.commodityCode.routes.InvalidCommodityCodeController.onPageLoad(testRecordId).url
         }
       }
 

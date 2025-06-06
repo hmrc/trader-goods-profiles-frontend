@@ -34,7 +34,6 @@ class GoodsProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
   private val navigator             = new GoodsProfileNavigator(mockFrontendAppConfig)
 
   "GoodsProfileNavigator" - {
-
     "must go from RemoveGoodsRecordPage" - {
       val searchFormData = SearchForm(
         searchTerm = Some("bananas"),
@@ -47,40 +46,26 @@ class GoodsProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
       "to page 1 of GoodsRecordsController.onPageLoadFilter when there is a GoodsRecordSearchFilter applied and enhancedSearch is true" in {
         when(mockFrontendAppConfig.enhancedSearch) thenReturn true
 
-        navigator.nextPage(
-          RemoveGoodsRecordPage,
-          NormalMode,
-          userAnswers
-        ) mustEqual controllers.goodsProfile.routes.GoodsRecordsController.onPageLoadFilter(firstPage)
+        navigator.nextPage(RemoveGoodsRecordPage, NormalMode, userAnswers) mustEqual
+          controllers.goodsProfile.routes.GoodsRecordsController.onPageLoadFilter(firstPage)
       }
 
       "to page 1 of GoodsRecordsSearchResultController when there is a GoodsRecordSearchFilter applied and enhancedSearch is false" in {
         when(mockFrontendAppConfig.enhancedSearch) thenReturn false
 
-        navigator.nextPage(
-          RemoveGoodsRecordPage,
-          NormalMode,
-          userAnswers
-        ) mustEqual controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(firstPage)
+        navigator.nextPage(RemoveGoodsRecordPage, NormalMode, userAnswers) mustEqual
+          controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(firstPage)
       }
 
       "to page 1 of GoodsRecordsController when there is no GoodsRecordSearchFilter applied" in {
-        navigator.nextPage(
-          RemoveGoodsRecordPage,
-          NormalMode,
-          emptyUserAnswers
-        ) mustEqual controllers.goodsProfile.routes.GoodsRecordsController
-          .onPageLoad(firstPage)
+        navigator.nextPage(RemoveGoodsRecordPage, NormalMode, emptyUserAnswers) mustEqual
+          controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage)
       }
     }
 
     "must go from PreviousMovementsRecordsPage to page 1 of the GoodsRecordController" in {
-      navigator.nextPage(
-        PreviousMovementRecordsPage,
-        NormalMode,
-        emptyUserAnswers
-      ) mustEqual controllers.goodsProfile.routes.GoodsRecordsController
-        .onPageLoad(firstPage)
+      navigator.nextPage(PreviousMovementRecordsPage, NormalMode, emptyUserAnswers) mustEqual
+        controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage)
     }
 
     "return IndexController.onPageLoad for other pages in normalRoutes" in {
@@ -88,6 +73,5 @@ class GoodsProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
       navigator.normalRoutes(page)(emptyUserAnswers) mustBe routes.IndexController.onPageLoad()
     }
-
   }
 }

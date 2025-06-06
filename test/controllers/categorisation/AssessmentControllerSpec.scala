@@ -191,14 +191,14 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
       "onSubmit" - {
         "must save the answer and redirect to the next page when a valid value is submitted" in {
-          when(mockRepository.set(any())).thenReturn(Future.successful(true))
+          when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
 
           val answers = emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
 
           val application =
             applicationBuilder(userAnswers = Some(answers))
               .overrides(
-                bind[SessionRepository].toInstance(mockRepository),
+                bind[SessionRepository].toInstance(mockSessionRepository),
                 bind[CategorisationNavigator].toInstance(new FakeCategorisationNavigator(onwardRoute))
               )
               .build()
@@ -211,7 +211,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual onwardRoute.url
-            verify(mockRepository).set(eqTo(expectedAnswers))
+            verify(mockSessionRepository).set(eqTo(expectedAnswers))
           }
         }
 
@@ -312,7 +312,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
             val application = applicationBuilder(userAnswers = Some(answers))
               .overrides(
-                bind[SessionRepository].toInstance(mockSessionRepo)
+                bind[SessionRepository].toInstance(mockSessionRepository)
               )
               .build()
 
@@ -327,7 +327,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               ).url
 
               withClue("must cleanse the user answers data") {
-                verify(mockSessionRepo).clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
+                verify(mockSessionRepository).clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
               }
             }
           }
@@ -466,14 +466,14 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
       "onSubmit" - {
         "must save the answer and redirect to the next page when a valid value is submitted" in {
-          when(mockRepository.set(any())).thenReturn(Future.successful(true))
+          when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
 
           val answers = emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
 
           val application =
             applicationBuilder(userAnswers = Some(answers))
               .overrides(
-                bind[SessionRepository].toInstance(mockRepository),
+                bind[SessionRepository].toInstance(mockSessionRepository),
                 bind[CategorisationNavigator].toInstance(new FakeCategorisationNavigator(onwardRoute))
               )
               .build()
@@ -489,7 +489,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual onwardRoute.url
-            verify(mockRepository).set(eqTo(expectedAnswers))
+            verify(mockSessionRepository).set(eqTo(expectedAnswers))
           }
         }
 
@@ -593,7 +593,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
             val application = applicationBuilder(userAnswers = Some(answers))
               .overrides(
-                bind[SessionRepository].toInstance(mockSessionRepo)
+                bind[SessionRepository].toInstance(mockSessionRepository)
               )
               .build()
 
@@ -612,7 +612,7 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 ).url
 
               withClue("must cleanse the user answers data") {
-                verify(mockSessionRepo).clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
+                verify(mockSessionRepository).clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
               }
             }
           }
