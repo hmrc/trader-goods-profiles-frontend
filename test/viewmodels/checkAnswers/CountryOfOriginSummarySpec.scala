@@ -30,7 +30,6 @@ class CountryOfOriginSummarySpec extends SpecBase {
   private val testCountryName             = "United Kingdom"
 
   "must return a SummaryListRow without change links when record is locked" in {
-
     val row = CountryOfOriginSummary.rowUpdate(
       recordForTestingSummaryRows,
       testRecordId,
@@ -38,14 +37,11 @@ class CountryOfOriginSummarySpec extends SpecBase {
       recordLocked = true,
       countries
     )
-
     row.actions mustBe Some(Actions("", List()))
   }
 
   "must return a SummaryListRow with change links when record is not locked" - {
-
     "and category is set" in {
-
       val row = CountryOfOriginSummary.rowUpdate(
         recordForTestingSummaryRows,
         testRecordId,
@@ -53,17 +49,12 @@ class CountryOfOriginSummarySpec extends SpecBase {
         recordLocked = false,
         countries
       )
-
       row.actions mustBe defined
-      row.actions.value.items.head.href mustEqual controllers.goodsRecord.countryOfOrigin.routes.HasCountryOfOriginChangeController
-        .onPageLoad(NormalMode, testRecordId)
-        .url
+      row.actions.value.items.head.href mustEqual controllers.goodsRecord.countryOfOrigin.routes.HasCountryOfOriginChangeController.onPageLoad(NormalMode, testRecordId).url
     }
 
     "and category is not set" in {
-
       val recordNoCategory = recordForTestingSummaryRows.copy(category = None)
-
       val row = CountryOfOriginSummary.rowUpdate(
         recordNoCategory,
         testRecordId,
@@ -71,17 +62,12 @@ class CountryOfOriginSummarySpec extends SpecBase {
         recordLocked = false,
         countries
       )
-
       row.actions mustBe defined
-      row.actions.value.items.head.href mustEqual controllers.goodsRecord.countryOfOrigin.routes.UpdateCountryOfOriginController
-        .onPageLoad(NormalMode, testRecordId)
-        .url
+      row.actions.value.items.head.href mustEqual controllers.goodsRecord.countryOfOrigin.routes.UpdateCountryOfOriginController.onPageLoad(NormalMode, testRecordId).url
     }
 
     "must display country name instead of country code" in {
-
       val recordNoCategory = recordForTestingSummaryRows.copy(category = None)
-
       val row = CountryOfOriginSummary.rowUpdate(
         recordNoCategory,
         testRecordId,
@@ -91,10 +77,7 @@ class CountryOfOriginSummarySpec extends SpecBase {
       )
       row.value.content.asHtml.toString() must include(testCountryName)
       row.actions mustBe defined
-      row.actions.value.items.head.href mustEqual controllers.goodsRecord.countryOfOrigin.routes.UpdateCountryOfOriginController
-        .onPageLoad(NormalMode, testRecordId)
-        .url
+      row.actions.value.items.head.href mustEqual controllers.goodsRecord.countryOfOrigin.routes.UpdateCountryOfOriginController.onPageLoad(NormalMode, testRecordId).url
     }
   }
-
 }

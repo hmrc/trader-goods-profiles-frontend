@@ -39,53 +39,29 @@ class HasSupplementaryUnitSummarySpec extends SpecBase {
   ).copy(recordId = testRecordId, category = Some(1))
 
   "HasSupplementaryUnitSummary.row" - {
-
     "must not return a SummaryListRow when no measurement unit" in {
-
-      val row = HasSupplementaryUnitSummary.row(
-        goodsRecordResponse(Instant.now, Instant.now),
-        testRecordId,
-        recordLocked = false
-      )
+      val row = HasSupplementaryUnitSummary.row(goodsRecordResponse(Instant.now, Instant.now), testRecordId, recordLocked = false)
 
       row mustBe None
     }
 
     "must not return a SummaryListRow when there is a measurement unit but the category is not 2" in {
-
-      val row = HasSupplementaryUnitSummary.row(
-        recordWithSupplementaryUnitCat1,
-        testRecordId,
-        recordLocked = false
-      )
+      val row = HasSupplementaryUnitSummary.row(recordWithSupplementaryUnitCat1, testRecordId, recordLocked = false)
 
       row mustBe None
     }
 
     "must return a SummaryListRow without change links when record is locked and is Category 2" in {
-
-      val row = HasSupplementaryUnitSummary.row(
-        recordWithSupplementaryUnitCat2,
-        testRecordId,
-        recordLocked = true
-      )
+      val row = HasSupplementaryUnitSummary.row(recordWithSupplementaryUnitCat2, testRecordId, recordLocked = true)
 
       row.get.actions mustBe Some(Actions("", List()))
     }
 
     "must return a SummaryListRow with change links when record is not locked and is Category 2" in {
-
-      val row = HasSupplementaryUnitSummary.row(
-        recordWithSupplementaryUnitCat2,
-        testRecordId,
-        recordLocked = false
-      )
+      val row = HasSupplementaryUnitSummary.row(recordWithSupplementaryUnitCat2, testRecordId, recordLocked = false)
 
       row.get.actions mustBe defined
-      row.get.actions.value.items.head.href mustEqual controllers.categorisation.routes.HasSupplementaryUnitController
-        .onPageLoadUpdate(NormalMode, testRecordId)
-        .url
+      row.get.actions.value.items.head.href mustEqual controllers.categorisation.routes.HasSupplementaryUnitController.onPageLoadUpdate(NormalMode, testRecordId).url
     }
   }
-
 }

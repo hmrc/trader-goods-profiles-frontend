@@ -27,7 +27,6 @@ class SupplementaryUnitSummarySpec extends SpecBase with MockitoSugar {
   implicit private val messages: Messages = messages(applicationBuilder().build())
 
   "SupplementaryUnitSummary.row" - {
-
     "must return a SummaryListRow when category is 2" in {
       val row = SupplementaryUnitSummary.row(
         Some(2),
@@ -38,9 +37,7 @@ class SupplementaryUnitSummarySpec extends SpecBase with MockitoSugar {
       )
 
       row mustBe defined
-      row.get.actions.value.items.head.href mustEqual controllers.categorisation.routes.SupplementaryUnitController
-        .onPageLoadUpdate(NormalMode, testRecordId)
-        .url
+      row.get.actions.value.items.head.href mustEqual controllers.categorisation.routes.SupplementaryUnitController.onPageLoadUpdate(NormalMode, testRecordId).url
     }
 
     "must not return a SummaryListRow when category is not 2" in {

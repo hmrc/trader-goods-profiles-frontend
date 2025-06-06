@@ -39,30 +39,19 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
 
   "FileManagementViewModel" - {
 
-    val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-      .build()
-
+    val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
     val availableFilesTableRow = arbitrarySeqTableRows.sample.value
-
     val pendingFilesTableRow = arbitrarySeqTableRows.sample.value
-
-    implicit val fileManagementTableComponentHelper: FileManagementTableComponentHelper =
-      application.injector.instanceOf[FileManagementTableComponentHelper]
-
+    implicit val fileManagementTableComponentHelper: FileManagementTableComponentHelper = application.injector.instanceOf[FileManagementTableComponentHelper]
     implicit val message: Messages = messages(application)
 
     val viewModelAvailableFiles = FileManagementViewModel(Some(AvailableFilesTable(availableFilesTableRow)), None)
     val viewModelPendingFiles   = FileManagementViewModel(None, Some(PendingFilesTable(pendingFilesTableRow)))
     val viewModelNoFiles        = FileManagementViewModel(None, None)
-    val viewModelAllFiles       = FileManagementViewModel(
-      Some(AvailableFilesTable(availableFilesTableRow)),
-      Some(PendingFilesTable(pendingFilesTableRow))
-    )
-    val viewModels              =
-      Gen.oneOf(Seq(viewModelAvailableFiles, viewModelPendingFiles, viewModelNoFiles, viewModelAllFiles)).sample.value
+    val viewModelAllFiles       = FileManagementViewModel(Some(AvailableFilesTable(availableFilesTableRow)), Some(PendingFilesTable(pendingFilesTableRow)))
+    val viewModels              = Gen.oneOf(Seq(viewModelAvailableFiles, viewModelPendingFiles, viewModelNoFiles, viewModelAllFiles)).sample.value
 
     "isFiles" - {
-
       "must return true if both tables are defined" in {
         viewModelAllFiles.isFiles mustEqual true
       }
@@ -125,98 +114,60 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
           "with correct values" - {
             "when there is no data" in {
               val viewModelProvider = new FileManagementViewModel.FileManagementViewModelProvider()
-
               val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
 
-              when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(
-                Seq.empty
-              )
+              when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(Seq.empty)
               when(mockDownloadDataConnector.getDownloadData(any())) thenReturn Future.successful(Seq.empty)
 
-              val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-                .overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector))
-                .build()
-
+              val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector)).build()
               val messagesImp: Messages        = messages(application)
               val ec: ExecutionContextExecutor = scala.concurrent.ExecutionContext.global
               val hc: HeaderCarrier            = HeaderCarrier()
-
               val result = viewModelProvider.apply(mockDownloadDataConnector)(messagesImp, ec, hc).futureValue
 
               result.pendingFilesTable mustBe None
               result.availableFilesTable mustBe None
-
               verify(mockDownloadDataConnector, never()).updateSeenStatus(any())
-
             }
 
             "when all files are pending" in {
               val viewModelProvider = new FileManagementViewModel.FileManagementViewModelProvider()
-
               val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+              val downloadDataSummary = Seq(DownloadDataSummary("id", "eori", FileInProgress, Instant.now(), Instant.now(), None))
 
-              val downloadDataSummary =
-                Seq(DownloadDataSummary("id", "eori", FileInProgress, Instant.now(), Instant.now(), None))
-
-              when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(
-                downloadDataSummary
-              )
+              when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(downloadDataSummary)
               when(mockDownloadDataConnector.getDownloadData(any())) thenReturn Future.successful(Seq.empty)
 
-              val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-                .overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector))
-                .build()
-
+              val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector)).build()
               val messagesImp: Messages        = messages(application)
               val ec: ExecutionContextExecutor = scala.concurrent.ExecutionContext.global
               val hc: HeaderCarrier            = HeaderCarrier()
-
               val result = viewModelProvider.apply(mockDownloadDataConnector)(messagesImp, ec, hc).futureValue
-
               val pendingFilesTable = PendingFilesTable(Some(downloadDataSummary))
 
               result.pendingFilesTable mustBe pendingFilesTable
               result.availableFilesTable mustBe None
-
               verify(mockDownloadDataConnector, never()).updateSeenStatus(any())
-
             }
 
             "when all files are available" in {
               val viewModelProvider = new FileManagementViewModel.FileManagementViewModelProvider()
-
               val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
-
               val fileName = "file"
-
               val fileInfo            = FileInfo(fileName, 1, "30")
-              val downloadDataSummary =
-                DownloadDataSummary("id", "eori", FileReadyUnseen, Instant.now(), Instant.now(), Some(fileInfo))
+              val downloadDataSummary = DownloadDataSummary("id", "eori", FileReadyUnseen, Instant.now(), Instant.now(), Some(fileInfo))
               val downloadData        = DownloadData("file", fileName, 1, Seq.empty)
 
-              when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(
-                Seq(downloadDataSummary)
-              )
-              when(mockDownloadDataConnector.getDownloadData(any())) thenReturn Future.successful(
-                Seq(downloadData)
-              )
+              when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(Seq(downloadDataSummary))
+              when(mockDownloadDataConnector.getDownloadData(any())) thenReturn Future.successful(Seq(downloadData))
+              when(mockDownloadDataConnector.updateSeenStatus(any())) thenReturn Future.successful(Done)
 
-              when(mockDownloadDataConnector.updateSeenStatus(any())) thenReturn Future.successful(
-                Done
-              )
-
-              val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-                .overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector))
-                .build()
-
+              val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector)).build()
               val messagesImp: Messages        = messages(application)
               val ec: ExecutionContextExecutor = scala.concurrent.ExecutionContext.global
               val hc: HeaderCarrier            = HeaderCarrier()
-
               val result = viewModelProvider.apply(mockDownloadDataConnector)(messagesImp, ec, hc).futureValue
-
-              val availableFilesTable =
-                AvailableFilesTable(Some(Seq((downloadDataSummary, downloadData))))
+              val availableFilesTable = AvailableFilesTable(Some(Seq((downloadDataSummary, downloadData))))
 
               result.pendingFilesTable mustBe None
               result.availableFilesTable mustBe availableFilesTable
@@ -226,43 +177,22 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
 
             "when both files are available and pending" in {
               val viewModelProvider = new FileManagementViewModel.FileManagementViewModelProvider()
-
               val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
-
               val fileName = "file"
-
               val fileInfo            = FileInfo(fileName, 1, "30")
-              val downloadDataSummary = Seq(
-                DownloadDataSummary("id", "eori", FileReadyUnseen, Instant.now(), Instant.now(), Some(fileInfo)),
-                DownloadDataSummary("id", "eori", FileInProgress, Instant.now(), Instant.now(), None)
-              )
-
+              val downloadDataSummary = Seq(DownloadDataSummary("id", "eori", FileReadyUnseen, Instant.now(), Instant.now(), Some(fileInfo)), DownloadDataSummary("id", "eori", FileInProgress, Instant.now(), Instant.now(), None))
               val downloadData = DownloadData("file", fileName, 1, Seq.empty)
 
-              when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(
-                downloadDataSummary
-              )
-              when(mockDownloadDataConnector.getDownloadData(any())) thenReturn Future.successful(
-                Seq(downloadData)
-              )
+              when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(downloadDataSummary)
+              when(mockDownloadDataConnector.getDownloadData(any())) thenReturn Future.successful(Seq(downloadData))
+              when(mockDownloadDataConnector.updateSeenStatus(any())) thenReturn Future.successful(Done)
 
-              when(mockDownloadDataConnector.updateSeenStatus(any())) thenReturn Future.successful(
-                Done
-              )
-
-              val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-                .overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector))
-                .build()
-
+              val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector)).build()
               val messagesImp: Messages        = messages(application)
               val ec: ExecutionContextExecutor = scala.concurrent.ExecutionContext.global
               val hc: HeaderCarrier            = HeaderCarrier()
-
               val result = viewModelProvider.apply(mockDownloadDataConnector)(messagesImp, ec, hc).futureValue
-
-              val availableFilesTable =
-                AvailableFilesTable(Some(Seq((downloadDataSummary.head, downloadData))))
-
+              val availableFilesTable = AvailableFilesTable(Some(Seq((downloadDataSummary.head, downloadData))))
               val pendingFilesTable = PendingFilesTable(Some(Seq(downloadDataSummary.last)))
 
               result.pendingFilesTable mustBe pendingFilesTable
@@ -273,75 +203,45 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
 
             "when files should be available, but there is no DownloadData" in {
               val viewModelProvider = new FileManagementViewModel.FileManagementViewModelProvider()
-
               val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
-
               val fileName = "file"
-
               val fileInfo            = FileInfo(fileName, 1, "30")
-              val downloadDataSummary = Seq(
-                DownloadDataSummary("id", "eori", FileReadyUnseen, Instant.now(), Instant.now(), Some(fileInfo))
-              )
+              val downloadDataSummary = Seq(DownloadDataSummary("id", "eori", FileReadyUnseen, Instant.now(), Instant.now(), Some(fileInfo)))
 
-              when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(
-                downloadDataSummary
-              )
-              when(mockDownloadDataConnector.getDownloadData(any())) thenReturn Future.successful(
-                Seq.empty
-              )
+              when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(downloadDataSummary)
+              when(mockDownloadDataConnector.getDownloadData(any())) thenReturn Future.successful(Seq.empty)
 
-              val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-                .overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector))
-                .build()
-
+              val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector)).build()
               val messagesImp: Messages        = messages(application)
               val ec: ExecutionContextExecutor = scala.concurrent.ExecutionContext.global
               val hc: HeaderCarrier            = HeaderCarrier()
-
               val result = viewModelProvider.apply(mockDownloadDataConnector)(messagesImp, ec, hc).futureValue
 
               result.pendingFilesTable mustBe None
               result.availableFilesTable mustBe None
-
               verify(mockDownloadDataConnector, never()).updateSeenStatus(any())
-
             }
 
             "when files should be available, but there is no DownloadData with a matching fileName" in {
               val viewModelProvider = new FileManagementViewModel.FileManagementViewModelProvider()
-
               val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
-
               val fileName = "file"
-
               val fileInfo            = FileInfo(fileName, 1, "30")
-              val downloadDataSummary = Seq(
-                DownloadDataSummary("id", "eori", FileReadyUnseen, Instant.now(), Instant.now(), Some(fileInfo))
-              )
+              val downloadDataSummary = Seq(DownloadDataSummary("id", "eori", FileReadyUnseen, Instant.now(), Instant.now(), Some(fileInfo)))
               val downloadData        = DownloadData("unmatched", "unmatched", 1, Seq.empty)
 
-              when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(
-                downloadDataSummary
-              )
-              when(mockDownloadDataConnector.getDownloadData(any())) thenReturn Future.successful(
-                Seq(downloadData)
-              )
+              when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(downloadDataSummary)
+              when(mockDownloadDataConnector.getDownloadData(any())) thenReturn Future.successful(Seq(downloadData))
 
-              val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-                .overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector))
-                .build()
-
+              val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector)).build()
               val messagesImp: Messages        = messages(application)
               val ec: ExecutionContextExecutor = scala.concurrent.ExecutionContext.global
               val hc: HeaderCarrier            = HeaderCarrier()
-
               val result = viewModelProvider.apply(mockDownloadDataConnector)(messagesImp, ec, hc).futureValue
 
               result.pendingFilesTable mustBe None
               result.availableFilesTable mustBe None
-
               verify(mockDownloadDataConnector, never()).updateSeenStatus(any())
-
             }
           }
         }
