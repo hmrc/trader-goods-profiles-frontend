@@ -17,15 +17,16 @@
 package controllers.goodsProfile
 
 import connectors.GoodsRecordConnector
-import controllers.actions.*
 import controllers.BaseController
+import controllers.actions.*
 import forms.goodsProfile.RemoveGoodsRecordFormProvider
 import models.GoodsRecordsPagination.firstPage
 import models.{Location, NormalMode}
 import navigation.GoodsProfileNavigator
 import pages.goodsProfile.RemoveGoodsRecordPage
+import pages.goodsRecord.{ProductReferencePage, ProductReferenceUpdatePage}
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.AuditService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.SessionData.{dataUpdated, initialValueOfHasSuppUnit, initialValueOfSuppUnit, pageUpdated}
@@ -52,24 +53,40 @@ class RemoveGoodsRecordController @Inject() (
   private val form = formProvider()
 
   def onPageLoad(recordId: String, location: Location): Action[AnyContent] =
-    (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       auditService.auditStartRemoveGoodsRecord(request.eori, request.affinityGroup, recordId)
 
-      Ok(view(form, recordId, location)).removingFromSession(dataUpdated, pageUpdated)
+      val productReference = request.userAnswers.get(ProductReferenceUpdatePage(recordId))
 
+      productReference match {
+        case Some(productRef) =>
+          Future.successful(Ok(view(form, recordId, location, productRef)))
+        case None             =>
+          goodsRecordConnector
+            .getRecord(recordId)
+            .map { record =>
+              val productRef = record.traderRef
+              Ok(view(form, recordId, location, productRef))
+            }
+            .recover { case ex =>
+              logger.error(s"Failed to fetch record for ID $recordId: ${ex.getMessage}", ex)
+              Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
+            }
+      }
     }
 
   def onSubmit(recordId: String, location: Location): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      form
-        .bindFromRequest()
-        .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, recordId, location))),
-          {
-            case true  =>
-              goodsRecordConnector
-                .removeGoodsRecord(recordId)
-                .map { value =>
+      val maybeProductRef = request.userAnswers.get(ProductReferenceUpdatePage(recordId))
+
+      def processForm(productRef: String): Future[Result] =
+        form
+          .bindFromRequest()
+          .fold(
+            formWithErrors => Future.successful(BadRequest(view(formWithErrors, recordId, location, productRef))),
+            {
+              case true  =>
+                goodsRecordConnector.removeGoodsRecord(recordId).map { value =>
                   auditService.auditFinishRemoveGoodsRecord(request.eori, request.affinityGroup, recordId)
                   if (value) {
                     Redirect(navigator.nextPage(RemoveGoodsRecordPage, NormalMode, request.userAnswers))
@@ -81,9 +98,26 @@ class RemoveGoodsRecordController @Inject() (
                     )
                   }
                 }
-            case false =>
-              Future.successful(Redirect(navigator.nextPage(RemoveGoodsRecordPage, NormalMode, request.userAnswers)))
-          }
-        )
+              case false =>
+                Future.successful(Redirect(navigator.nextPage(RemoveGoodsRecordPage, NormalMode, request.userAnswers)))
+            }
+          )
+
+      maybeProductRef match {
+        case Some(productRef) =>
+          processForm(productRef)
+        case None             =>
+          goodsRecordConnector
+            .getRecord(recordId)
+            .flatMap { record =>
+              val productRef = record.traderRef
+              processForm(productRef)
+            }
+            .recover { case ex =>
+              logger.error(s"Failed to fetch record for ID $recordId: ${ex.getMessage}", ex)
+              Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
+            }
+      }
     }
+
 }
