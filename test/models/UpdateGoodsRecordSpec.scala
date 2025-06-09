@@ -32,8 +32,13 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
   ".build" - {
     "must return an UpdateGoodsRecord when all mandatory questions are answered" - {
       "and all country of origin data is present when record is categorised" in {
-        val answers = UserAnswers(userAnswersId).set(CountryOfOriginUpdatePage(testRecordId), "CN").success.value
-            .set(HasCountryOfOriginChangePage(testRecordId), true).success.value
+        val answers = UserAnswers(userAnswersId)
+          .set(CountryOfOriginUpdatePage(testRecordId), "CN")
+          .success
+          .value
+          .set(HasCountryOfOriginChangePage(testRecordId), true)
+          .success
+          .value
 
         val result = UpdateGoodsRecord.validateCountryOfOrigin(answers, testRecordId, isCategorised = true)
 
@@ -49,7 +54,8 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
       }
 
       "and all goods description data is present" in {
-        val answers = UserAnswers(userAnswersId).set(GoodsDescriptionUpdatePage(testRecordId), "goods description").success.value
+        val answers =
+          UserAnswers(userAnswersId).set(GoodsDescriptionUpdatePage(testRecordId), "goods description").success.value
 
         val result = UpdateGoodsRecord.validateGoodsDescription(answers, testRecordId)
 
@@ -58,7 +64,8 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
       }
 
       "and all product reference data is present" in {
-        val answers = UserAnswers(userAnswersId).set(ProductReferenceUpdatePage(testRecordId), "product reference").success.value
+        val answers =
+          UserAnswers(userAnswersId).set(ProductReferenceUpdatePage(testRecordId), "product reference").success.value
 
         val result = UpdateGoodsRecord.validateproductReference(answers, testRecordId)
 
@@ -80,10 +87,19 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
             Some(effectiveTo)
           )
 
-        val answers = UserAnswers(userAnswersId).set(CommodityCodeUpdatePage(testRecordId), "170490").success.value
-            .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true).success.value
-            .set(HasCommodityCodeChangePage(testRecordId), true).success.value
-            .set(CommodityUpdateQuery(testRecordId), commodity).success.value
+        val answers = UserAnswers(userAnswersId)
+          .set(CommodityCodeUpdatePage(testRecordId), "170490")
+          .success
+          .value
+          .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true)
+          .success
+          .value
+          .set(HasCommodityCodeChangePage(testRecordId), true)
+          .success
+          .value
+          .set(CommodityUpdateQuery(testRecordId), commodity)
+          .success
+          .value
 
         val result = UpdateGoodsRecord.validateCommodityCode(
           answers,
@@ -110,9 +126,16 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
             Some(effectiveTo)
           )
 
-        val answers = UserAnswers(userAnswersId).set(CommodityCodeUpdatePage(testRecordId), "170490").success.value
-            .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true).success.value
-            .set(CommodityUpdateQuery(testRecordId), commodity).success.value
+        val answers = UserAnswers(userAnswersId)
+          .set(CommodityCodeUpdatePage(testRecordId), "170490")
+          .success
+          .value
+          .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true)
+          .success
+          .value
+          .set(CommodityUpdateQuery(testRecordId), commodity)
+          .success
+          .value
 
         val result = UpdateGoodsRecord.validateCommodityCode(
           answers,
@@ -136,9 +159,16 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
           Some(effectiveTo)
         )
 
-        val answers = UserAnswers(userAnswersId).set(CommodityCodeUpdatePage(testRecordId), "170490").success.value
-          .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true).success.value
-          .set(CommodityUpdateQuery(testRecordId), commodity).success.value
+        val answers = UserAnswers(userAnswersId)
+          .set(CommodityCodeUpdatePage(testRecordId), "170490")
+          .success
+          .value
+          .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true)
+          .success
+          .value
+          .set(CommodityUpdateQuery(testRecordId), commodity)
+          .success
+          .value
 
         val result = UpdateGoodsRecord.validateCommodityCode(
           answers,
@@ -223,8 +253,13 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
       }
 
       "when has correct goods is missing" in {
-        val answers = UserAnswers(userAnswersId).set(HasCommodityCodeChangePage(testRecordId), true).success.value
-          .set(CommodityCodeUpdatePage(testRecordId), "test").success.value
+        val answers = UserAnswers(userAnswersId)
+          .set(HasCommodityCodeChangePage(testRecordId), true)
+          .success
+          .value
+          .set(CommodityCodeUpdatePage(testRecordId), "test")
+          .success
+          .value
 
         val result = UpdateGoodsRecord.validateCommodityCode(
           answers,
@@ -239,9 +274,16 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
       }
 
       "when has correct goods is false" in {
-        val answers = UserAnswers(userAnswersId).set(HasCommodityCodeChangePage(testRecordId), true).success.value
-          .set(CommodityCodeUpdatePage(testRecordId), "test").success.value
-          .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), false).success.value
+        val answers = UserAnswers(userAnswersId)
+          .set(HasCommodityCodeChangePage(testRecordId), true)
+          .success
+          .value
+          .set(CommodityCodeUpdatePage(testRecordId), "test")
+          .success
+          .value
+          .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), false)
+          .success
+          .value
 
         val result = UpdateGoodsRecord.validateCommodityCode(
           answers,

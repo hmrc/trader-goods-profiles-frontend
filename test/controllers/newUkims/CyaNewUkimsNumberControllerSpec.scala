@@ -21,14 +21,14 @@ import base.TestConstants.testEori
 import connectors.TraderProfileConnector
 import models.TraderProfile
 import org.apache.pekko.Done
-import org.mockito.ArgumentMatchers.{any, eq as eqto}
+import org.mockito.ArgumentMatchers.{any, eq => eqto}
 import org.mockito.Mockito.{atLeastOnce, never, reset, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import pages.newUkims.NewUkimsNumberPage
 import play.api.inject.bind
 import play.api.test.FakeRequest
-import play.api.test.Helpers.{running, *}
+import play.api.test.Helpers.{*, running}
 import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
@@ -39,24 +39,28 @@ import views.html.newUkims.CyaNewUkimsNumberView
 
 import scala.concurrent.Future
 
-class CyaNewUkimsNumberControllerSpec extends SpecBase with SummaryListFluency with MockitoSugar with BeforeAndAfterEach {
+class CyaNewUkimsNumberControllerSpec
+    extends SpecBase
+    with SummaryListFluency
+    with MockitoSugar
+    with BeforeAndAfterEach {
 
   private lazy val journeyRecoveryContinueUrl = routes.UkimsNumberChangeController.onPageLoad().url
 
   private val mockTraderProfileConnector = mock[TraderProfileConnector]
-  private val mockAuditService = mock[AuditService]
-  private val sessionRepository = mock[SessionRepository]
+  private val mockAuditService           = mock[AuditService]
+  private val sessionRepository          = mock[SessionRepository]
 
   override protected def beforeEach(): Unit = {
     super.beforeEach()
     reset(mockTraderProfileConnector, mockAuditService, sessionRepository)
   }
-  
+
   "CyaNewUkimsNumberController" - {
     "UKIMS Number" - {
       "for a GET" - {
         "must return OK and the correct view" in {
-          val answer = "newUkims"
+          val answer      = "newUkims"
           val userAnswers = emptyUserAnswers.set(NewUkimsNumberPage, answer).success.value
           val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -68,8 +72,8 @@ class CyaNewUkimsNumberControllerSpec extends SpecBase with SummaryListFluency w
             )
 
             val request = FakeRequest(GET, controllers.newUkims.routes.CyaNewUkimsNumberController.onPageLoad().url)
-            val result = route(application, request).value
-            val view = application.injector.instanceOf[CyaNewUkimsNumberView]
+            val result  = route(application, request).value
+            val view    = application.injector.instanceOf[CyaNewUkimsNumberView]
 
             status(result) mustEqual OK
             contentAsString(result) mustEqual view(list)(request, messages(application)).toString
@@ -81,12 +85,14 @@ class CyaNewUkimsNumberControllerSpec extends SpecBase with SummaryListFluency w
 
           running(application) {
             val request = FakeRequest(GET, controllers.newUkims.routes.CyaNewUkimsNumberController.onPageLoad().url)
-            val result = route(application, request).value
-            
+            val result  = route(application, request).value
+
             status(result) mustEqual SEE_OTHER
-            
+
             redirectLocation(result).value mustEqual
-              controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl))).url
+              controllers.problem.routes.JourneyRecoveryController
+                .onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl)))
+                .url
           }
         }
 
@@ -95,10 +101,12 @@ class CyaNewUkimsNumberControllerSpec extends SpecBase with SummaryListFluency w
 
           running(application) {
             val request = FakeRequest(GET, controllers.newUkims.routes.CyaNewUkimsNumberController.onPageLoad().url)
-            val result = route(application, request).value
+            val result  = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
+            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad()
+              .url
           }
         }
       }
@@ -108,7 +116,7 @@ class CyaNewUkimsNumberControllerSpec extends SpecBase with SummaryListFluency w
           val newUkims             = "newUkims"
           val traderProfile        = TraderProfile(testEori, "1", Some("2"), Some("3"), eoriChanged = true)
           val updatedTraderProfile = traderProfile.copy(ukimsNumber = newUkims)
-          val userAnswers = emptyUserAnswers.set(NewUkimsNumberPage, newUkims).success.value
+          val userAnswers          = emptyUserAnswers.set(NewUkimsNumberPage, newUkims).success.value
 
           when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future.successful(traderProfile)
           when(mockTraderProfileConnector.submitTraderProfile(any())(any())).thenReturn(Future.successful(Done))
@@ -125,23 +133,27 @@ class CyaNewUkimsNumberControllerSpec extends SpecBase with SummaryListFluency w
 
           running(application) {
             val request = FakeRequest(POST, controllers.newUkims.routes.CyaNewUkimsNumberController.onSubmit().url)
-            val result = route(application, request).value
+            val result  = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            
+
             redirectLocation(result).value mustEqual controllers.routes.HomePageController.onPageLoad().url
             verify(mockTraderProfileConnector, atLeastOnce()).submitTraderProfile(eqto(updatedTraderProfile))(any())
           }
 
           withClue("must call the audit connector with the supplied details") {
-            verify(mockAuditService, atLeastOnce()).auditMaintainProfile(eqto(traderProfile), eqto(updatedTraderProfile), eqto(AffinityGroup.Individual))(any())
+            verify(mockAuditService, atLeastOnce()).auditMaintainProfile(
+              eqto(traderProfile),
+              eqto(updatedTraderProfile),
+              eqto(AffinityGroup.Individual)
+            )(any())
           }
         }
 
         "must redirect to Journey recovery" - {
           "when the data is invalid" in {
             val userAnswers = emptyUserAnswers
-            
+
             when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future.successful(
               TraderProfile(testEori, "ukims", None, None, eoriChanged = false)
             )
@@ -155,12 +167,14 @@ class CyaNewUkimsNumberControllerSpec extends SpecBase with SummaryListFluency w
 
             running(application) {
               val request = FakeRequest(POST, controllers.newUkims.routes.CyaNewUkimsNumberController.onSubmit().url)
-              val result = route(application, request).value
+              val result  = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
-              
+
               redirectLocation(result).value mustEqual
-                controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl))).url
+                controllers.problem.routes.JourneyRecoveryController
+                  .onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl)))
+                  .url
 
               verify(mockTraderProfileConnector, never()).getTraderProfile(any())
 
@@ -174,7 +188,8 @@ class CyaNewUkimsNumberControllerSpec extends SpecBase with SummaryListFluency w
         "must let the play error handler deal with connector failure when getTraderProfile request fails" in {
           val userAnswers = emptyUserAnswers.set(NewUkimsNumberPage, "newUkims").success.value
 
-          when(mockTraderProfileConnector.getTraderProfile(any())).thenReturn(Future.failed(new RuntimeException("Connector failed")))
+          when(mockTraderProfileConnector.getTraderProfile(any()))
+            .thenReturn(Future.failed(new RuntimeException("Connector failed")))
 
           val application =
             applicationBuilder(userAnswers = Some(userAnswers))
@@ -197,21 +212,22 @@ class CyaNewUkimsNumberControllerSpec extends SpecBase with SummaryListFluency w
         }
 
         "must let the play error handler deal with connector failure when submitTraderProfile request fails" in {
-          val newUkims = "newUkims"
+          val newUkims             = "newUkims"
           val traderProfile        = TraderProfile(testEori, "1", Some("2"), Some("3"), eoriChanged = true)
           val updatedTraderProfile = traderProfile.copy(ukimsNumber = newUkims)
-          val userAnswers = emptyUserAnswers.set(NewUkimsNumberPage, newUkims).success.value
-          
+          val userAnswers          = emptyUserAnswers.set(NewUkimsNumberPage, newUkims).success.value
+
           when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future.successful(traderProfile)
-          when(mockTraderProfileConnector.submitTraderProfile(any())(any())).thenReturn(Future.failed(new RuntimeException("Connector failed")))
+          when(mockTraderProfileConnector.submitTraderProfile(any())(any()))
+            .thenReturn(Future.failed(new RuntimeException("Connector failed")))
           when(mockAuditService.auditMaintainProfile(any(), any(), any())(any)).thenReturn(Future.successful(Done))
 
           val application = applicationBuilder(userAnswers = Some(userAnswers))
-              .overrides(
-                bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-                bind[AuditService].toInstance(mockAuditService)
-              )
-              .build()
+            .overrides(
+              bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+              bind[AuditService].toInstance(mockAuditService)
+            )
+            .build()
 
           running(application) {
             val request = FakeRequest(POST, controllers.newUkims.routes.CyaNewUkimsNumberController.onSubmit().url)
@@ -221,7 +237,9 @@ class CyaNewUkimsNumberControllerSpec extends SpecBase with SummaryListFluency w
 
             withClue("must call the audit connector with the supplied details") {
               verify(mockAuditService, atLeastOnce())
-                .auditMaintainProfile(eqto(traderProfile), eqto(updatedTraderProfile), eqto(AffinityGroup.Individual))(any())
+                .auditMaintainProfile(eqto(traderProfile), eqto(updatedTraderProfile), eqto(AffinityGroup.Individual))(
+                  any()
+                )
             }
           }
         }
@@ -231,10 +249,12 @@ class CyaNewUkimsNumberControllerSpec extends SpecBase with SummaryListFluency w
 
           running(application) {
             val request = FakeRequest(POST, controllers.newUkims.routes.CyaNewUkimsNumberController.onSubmit().url)
-            val result = route(application, request).value
+            val result  = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
+            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad()
+              .url
           }
         }
       }

@@ -37,7 +37,9 @@ class SupplementaryUnitSummarySpec extends SpecBase with MockitoSugar {
       )
 
       row mustBe defined
-      row.get.actions.value.items.head.href mustEqual controllers.categorisation.routes.SupplementaryUnitController.onPageLoadUpdate(NormalMode, testRecordId).url
+      row.get.actions.value.items.head.href mustEqual controllers.categorisation.routes.SupplementaryUnitController
+        .onPageLoadUpdate(NormalMode, testRecordId)
+        .url
     }
 
     "must not return a SummaryListRow when category is not 2" in {

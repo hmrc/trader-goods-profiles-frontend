@@ -24,8 +24,8 @@ import models.helper.GoodsDetailsUpdate
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeGoodsRecordNavigator, GoodsRecordNavigator}
 import org.apache.pekko.Done
-import org.mockito.ArgumentMatchers.{any, eq as eqTo}
-import org.mockito.Mockito.{verify, when, reset}
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.Mockito.{reset, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import pages.goodsRecord.ProductReferenceUpdatePage
@@ -50,22 +50,26 @@ class UpdateProductReferenceControllerSpec extends SpecBase with MockitoSugar wi
   val formProvider   = new ProductReferenceFormProvider()
   private val form   = formProvider()
   private val record = goodsRecordResponse(Instant.parse("2022-11-18T23:20:19Z"), Instant.parse("2022-11-18T23:20:19Z"))
-  
-  private val mockAuditService = mock[AuditService]
-  private val mockSessionRepository = mock[SessionRepository]
+
+  private val mockAuditService         = mock[AuditService]
+  private val mockSessionRepository    = mock[SessionRepository]
   private val mockGoodsRecordConnector = mock[GoodsRecordConnector]
-  
+
   override protected def beforeEach(): Unit = {
     super.beforeEach()
     reset(mockAuditService, mockSessionRepository, mockGoodsRecordConnector)
   }
 
   "productReference Controller" - {
-    lazy val productReferenceRoute = controllers.goodsRecord.productReference.routes.UpdateProductReferenceController.onPageLoad(NormalMode, testRecordId).url
-    lazy val onSubmitAction = controllers.goodsRecord.productReference.routes.UpdateProductReferenceController.onSubmit(NormalMode, testRecordId)
+    lazy val productReferenceRoute = controllers.goodsRecord.productReference.routes.UpdateProductReferenceController
+      .onPageLoad(NormalMode, testRecordId)
+      .url
+    lazy val onSubmitAction        = controllers.goodsRecord.productReference.routes.UpdateProductReferenceController
+      .onSubmit(NormalMode, testRecordId)
 
     "must return OK and the correct view for a GET" in {
-      when(mockAuditService.auditStartUpdateGoodsRecord(any(), any(), any(), any(), any())(any())).thenReturn(Future.successful(Done))
+      when(mockAuditService.auditStartUpdateGoodsRecord(any(), any(), any(), any(), any())(any()))
+        .thenReturn(Future.successful(Done))
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(bind[AuditService].toInstance(mockAuditService))
@@ -73,18 +77,20 @@ class UpdateProductReferenceControllerSpec extends SpecBase with MockitoSugar wi
 
       running(application) {
         val request = FakeRequest(GET, productReferenceRoute)
-        val result = route(application, request).value
-        val view = application.injector.instanceOf[ProductReferenceView]
+        val result  = route(application, request).value
+        val view    = application.injector.instanceOf[ProductReferenceView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form, onSubmitAction)(request, messages(application)).toString
 
         withClue("must call the audit service with the correct details") {
           verify(mockAuditService).auditStartUpdateGoodsRecord(
-              eqTo(testEori),
-              eqTo(AffinityGroup.Individual),
-              eqTo(GoodsDetailsUpdate),
-              eqTo(testRecordId), any())(any())
+            eqTo(testEori),
+            eqTo(AffinityGroup.Individual),
+            eqTo(GoodsDetailsUpdate),
+            eqTo(testRecordId),
+            any()
+          )(any())
         }
       }
     }
@@ -96,11 +102,14 @@ class UpdateProductReferenceControllerSpec extends SpecBase with MockitoSugar wi
 
       running(application) {
         val request = FakeRequest(GET, productReferenceRoute)
-        val view = application.injector.instanceOf[ProductReferenceView]
-        val result = route(application, request).value
+        val view    = application.injector.instanceOf[ProductReferenceView]
+        val result  = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill("answer"), onSubmitAction)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill("answer"), onSubmitAction)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 
@@ -110,7 +119,9 @@ class UpdateProductReferenceControllerSpec extends SpecBase with MockitoSugar wi
       when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
 
       val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers.set(ProductReferenceUpdatePage(recordId = testRecordId), "oldAnswer").success.value))
+        applicationBuilder(userAnswers =
+          Some(emptyUserAnswers.set(ProductReferenceUpdatePage(recordId = testRecordId), "oldAnswer").success.value)
+        )
           .overrides(
             bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository),
@@ -120,7 +131,7 @@ class UpdateProductReferenceControllerSpec extends SpecBase with MockitoSugar wi
 
       running(application) {
         val request = FakeRequest(POST, productReferenceRoute).withFormUrlEncodedBody(("value", "answer"))
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
@@ -137,18 +148,18 @@ class UpdateProductReferenceControllerSpec extends SpecBase with MockitoSugar wi
       when(mockGoodsRecordConnector.isProductReferenceUnique(any())(any())) thenReturn Future.successful(false)
 
       val application = applicationBuilder(userAnswers =
-          Some(emptyUserAnswers.set(ProductReferenceUpdatePage(recordId = testRecordId), "BAN0010011").success.value)
+        Some(emptyUserAnswers.set(ProductReferenceUpdatePage(recordId = testRecordId), "BAN0010011").success.value)
+      )
+        .overrides(
+          bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
+          bind[SessionRepository].toInstance(mockSessionRepository),
+          bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
         )
-          .overrides(
-            bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
-            bind[SessionRepository].toInstance(mockSessionRepository),
-            bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
-          )
-          .build()
+        .build()
 
       running(application) {
         val request = FakeRequest(POST, productReferenceRoute).withFormUrlEncodedBody(("value", "BAN0010011"))
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
@@ -164,18 +175,19 @@ class UpdateProductReferenceControllerSpec extends SpecBase with MockitoSugar wi
       when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
       when(mockGoodsRecordConnector.isProductReferenceUnique(any())(any())) thenReturn Future.successful(true)
 
-      val userAnswers = UserAnswers(userAnswersId).set(ProductReferenceUpdatePage(testRecordId), "oldValue").success.value
+      val userAnswers =
+        UserAnswers(userAnswersId).set(ProductReferenceUpdatePage(testRecordId), "oldValue").success.value
       val application = applicationBuilder(userAnswers = Some(userAnswers))
-          .overrides(
-            bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
-            bind[SessionRepository].toInstance(mockSessionRepository),
-            bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
-          )
-          .build()
+        .overrides(
+          bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
+          bind[SessionRepository].toInstance(mockSessionRepository),
+          bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
+        )
+        .build()
 
       running(application) {
-        val controller = application.injector.instanceOf[UpdateProductReferenceController]
-        val request    = FakeRequest(POST, productReferenceRoute).withFormUrlEncodedBody(("value", "newValue"))
+        val controller             = application.injector.instanceOf[UpdateProductReferenceController]
+        val request                = FakeRequest(POST, productReferenceRoute).withFormUrlEncodedBody(("value", "newValue"))
         val result: Future[Result] = controller.onSubmit(NormalMode, testRecordId)(request)
 
         status(result) mustEqual SEE_OTHER
@@ -195,18 +207,19 @@ class UpdateProductReferenceControllerSpec extends SpecBase with MockitoSugar wi
       when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
       when(mockGoodsRecordConnector.isProductReferenceUnique(any())(any())) thenReturn Future.successful(false)
 
-      val userAnswers = UserAnswers(userAnswersId).set(ProductReferenceUpdatePage(testRecordId), "BAN0010011").success.value
+      val userAnswers =
+        UserAnswers(userAnswersId).set(ProductReferenceUpdatePage(testRecordId), "BAN0010011").success.value
       val application = applicationBuilder(userAnswers = Some(userAnswers))
-          .overrides(
-            bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
-            bind[SessionRepository].toInstance(mockSessionRepository),
-            bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
-          )
-          .build()
+        .overrides(
+          bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
+          bind[SessionRepository].toInstance(mockSessionRepository),
+          bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
+        )
+        .build()
 
       running(application) {
-        val controller = application.injector.instanceOf[UpdateProductReferenceController]
-        val request    = FakeRequest(POST, productReferenceRoute).withFormUrlEncodedBody(("value", "BAN0010011"))
+        val controller             = application.injector.instanceOf[UpdateProductReferenceController]
+        val request                = FakeRequest(POST, productReferenceRoute).withFormUrlEncodedBody(("value", "BAN0010011"))
         val result: Future[Result] = controller.onSubmit(NormalMode, testRecordId)(request)
 
         status(result) mustEqual SEE_OTHER
@@ -224,10 +237,10 @@ class UpdateProductReferenceControllerSpec extends SpecBase with MockitoSugar wi
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(POST, productReferenceRoute).withFormUrlEncodedBody(("value", ""))
+        val request   = FakeRequest(POST, productReferenceRoute).withFormUrlEncodedBody(("value", ""))
         val boundForm = form.bind(Map("value" -> ""))
-        val view = application.injector.instanceOf[ProductReferenceView]
-        val result = route(application, request).value
+        val view      = application.injector.instanceOf[ProductReferenceView]
+        val result    = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
         contentAsString(result) mustEqual view(boundForm, onSubmitAction)(request, messages(application)).toString
@@ -238,18 +251,26 @@ class UpdateProductReferenceControllerSpec extends SpecBase with MockitoSugar wi
       when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
       when(mockGoodsRecordConnector.isProductReferenceUnique(any())(any())) thenReturn Future.successful(false)
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers.set(ProductReferenceUpdatePage(recordId = testRecordId), "oldAnswer").success.value))
-          .overrides(
-            bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
-            bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
-          )
-          .build()
+      val application = applicationBuilder(userAnswers =
+        Some(emptyUserAnswers.set(ProductReferenceUpdatePage(recordId = testRecordId), "oldAnswer").success.value)
+      )
+        .overrides(
+          bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
+          bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
+        )
+        .build()
 
       running(application) {
-        val request = FakeRequest(POST, productReferenceRoute).withFormUrlEncodedBody(("value", "answer"))
-        val boundForm = form.fill("answer").copy(errors = Seq(elems = FormError("value", "This product reference is already in your TGP. Enter a unique product reference.")))
-        val view = application.injector.instanceOf[ProductReferenceView]
-        val result = route(application, request).value
+        val request   = FakeRequest(POST, productReferenceRoute).withFormUrlEncodedBody(("value", "answer"))
+        val boundForm = form
+          .fill("answer")
+          .copy(errors =
+            Seq(elems =
+              FormError("value", "This product reference is already in your TGP. Enter a unique product reference.")
+            )
+          )
+        val view      = application.injector.instanceOf[ProductReferenceView]
+        val result    = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
         contentAsString(result) mustEqual view(boundForm, onSubmitAction)(request, messages(application)).toString
@@ -264,7 +285,7 @@ class UpdateProductReferenceControllerSpec extends SpecBase with MockitoSugar wi
 
       running(application) {
         val request = FakeRequest(GET, productReferenceRoute)
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
@@ -276,7 +297,7 @@ class UpdateProductReferenceControllerSpec extends SpecBase with MockitoSugar wi
 
       running(application) {
         val request = FakeRequest(POST, productReferenceRoute).withFormUrlEncodedBody(("value", "answer"))
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url

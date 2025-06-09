@@ -32,57 +32,63 @@ class CommodityCodeSummarySpec extends SpecBase {
 
   "must return a SummaryListRow without change links when record is locked" in {
     val row = CommodityCodeSummary.rowUpdate(
-              recordForTestingSummaryRows,
-              testRecordId,
-              NormalMode,
-              recordLocked = true,
-              isReviewReasonCommodity = false
-            )
+      recordForTestingSummaryRows,
+      testRecordId,
+      NormalMode,
+      recordLocked = true,
+      isReviewReasonCommodity = false
+    )
     row.actions mustBe Some(Actions("", List()))
   }
 
   "must return a SummaryListRow with change links when record is not locked" - {
     "and category is set" in {
       val row = CommodityCodeSummary.rowUpdate(
-                recordForTestingSummaryRows,
-                testRecordId,
-                NormalMode,
-                recordLocked = false,
-                isReviewReasonCommodity = false
-              )
+        recordForTestingSummaryRows,
+        testRecordId,
+        NormalMode,
+        recordLocked = false,
+        isReviewReasonCommodity = false
+      )
       row.actions mustBe defined
-      row.actions.value.items.head.href mustEqual controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangedController.onPageLoad(NormalMode, testRecordId).url
+      row.actions.value.items.head.href mustEqual controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangedController
+        .onPageLoad(NormalMode, testRecordId)
+        .url
     }
 
     "and advice is provided" in {
       val recordAdviceProvided = recordForTestingSummaryRows.copy(adviceStatus = AdviceReceived)
-      val row = CommodityCodeSummary.rowUpdate(
-                recordAdviceProvided,
-                testRecordId,
-                NormalMode,
-                recordLocked = false,
-                isReviewReasonCommodity = false
-              )
+      val row                  = CommodityCodeSummary.rowUpdate(
+        recordAdviceProvided,
+        testRecordId,
+        NormalMode,
+        recordLocked = false,
+        isReviewReasonCommodity = false
+      )
       row.actions mustBe defined
-      row.actions.value.items.head.href mustEqual controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangedController.onPageLoad(NormalMode, testRecordId).url
+      row.actions.value.items.head.href mustEqual controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangedController
+        .onPageLoad(NormalMode, testRecordId)
+        .url
     }
 
     "and neither category is set nor advice is provided" in {
       val recordNoCatNoAdvice = recordForTestingSummaryRows.copy(category = None)
-      val row = CommodityCodeSummary.rowUpdate(
-                recordNoCatNoAdvice,
-                testRecordId,
-                NormalMode,
-                recordLocked = false,
-                isReviewReasonCommodity = false
-              )
+      val row                 = CommodityCodeSummary.rowUpdate(
+        recordNoCatNoAdvice,
+        testRecordId,
+        NormalMode,
+        recordLocked = false,
+        isReviewReasonCommodity = false
+      )
       row.actions mustBe defined
-      row.actions.value.items.head.href mustEqual controllers.goodsRecord.commodityCode.routes.UpdateCommodityCodeController.onPageLoad(NormalMode, testRecordId).url
+      row.actions.value.items.head.href mustEqual controllers.goodsRecord.commodityCode.routes.UpdateCommodityCodeController
+        .onPageLoad(NormalMode, testRecordId)
+        .url
     }
 
     "must render a 'Does not match' tag when reviewReason is Mismatch and declarable is NotReadyForUse" in {
       val record = recordForTestingSummaryRows.copy(reviewReason = Some(Mismatch), declarable = NotReadyForUse)
-      val row = CommodityCodeSummary.rowUpdate(record, testRecordId, NormalMode, recordLocked = false, false)
+      val row    = CommodityCodeSummary.rowUpdate(record, testRecordId, NormalMode, recordLocked = false, false)
       row.value.content.toString must include("""<strong class="govuk-tag govuk-tag--grey">""")
       row.value.content.toString must include(messages("commodityCode.mismatch"))
       row.value.content.toString must include(record.comcode)

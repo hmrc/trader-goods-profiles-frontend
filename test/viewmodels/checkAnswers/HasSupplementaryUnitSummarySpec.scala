@@ -40,7 +40,11 @@ class HasSupplementaryUnitSummarySpec extends SpecBase {
 
   "HasSupplementaryUnitSummary.row" - {
     "must not return a SummaryListRow when no measurement unit" in {
-      val row = HasSupplementaryUnitSummary.row(goodsRecordResponse(Instant.now, Instant.now), testRecordId, recordLocked = false)
+      val row = HasSupplementaryUnitSummary.row(
+        goodsRecordResponse(Instant.now, Instant.now),
+        testRecordId,
+        recordLocked = false
+      )
 
       row mustBe None
     }
@@ -61,7 +65,9 @@ class HasSupplementaryUnitSummarySpec extends SpecBase {
       val row = HasSupplementaryUnitSummary.row(recordWithSupplementaryUnitCat2, testRecordId, recordLocked = false)
 
       row.get.actions mustBe defined
-      row.get.actions.value.items.head.href mustEqual controllers.categorisation.routes.HasSupplementaryUnitController.onPageLoadUpdate(NormalMode, testRecordId).url
+      row.get.actions.value.items.head.href mustEqual controllers.categorisation.routes.HasSupplementaryUnitController
+        .onPageLoadUpdate(NormalMode, testRecordId)
+        .url
     }
   }
 }

@@ -37,7 +37,8 @@ class OutboundControllerSpec extends SpecBase {
       "must redirect to the link" in {
 
         val mockAuditService = mock[AuditService]
-        when(mockAuditService.auditOutboundClick(any(), any(), any(), any(), any())(any())).thenReturn(Future.successful(Done))
+        when(mockAuditService.auditOutboundClick(any(), any(), any(), any(), any())(any()))
+          .thenReturn(Future.successful(Done))
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(bind[AuditService].toInstance(mockAuditService))
@@ -45,11 +46,15 @@ class OutboundControllerSpec extends SpecBase {
 
         running(application) {
           val request =
-            FakeRequest(GET, routes.OutboundController.redirect(
+            FakeRequest(
+              GET,
+              routes.OutboundController
+                .redirect(
                   OutboundLink.ImportGoodsIntoUK.link,
                   OutboundLink.ImportGoodsIntoUK.linkTextKey,
                   OutboundLink.ImportGoodsIntoUK.originatingPage
-                ).url
+                )
+                .url
             )
 
           val result = route(application, request).value

@@ -45,7 +45,7 @@ class ProfileSetupControllerSpec extends SpecBase with MockitoSugar {
         val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
 
         when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
-        
+
         val application = applicationBuilder(userAnswers = None)
           .overrides(
             bind[TraderProfileConnector].toInstance(mockTraderProfileConnector)

@@ -37,14 +37,40 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
   }
 
   ".build" - {
-    val assessment1 = CategoryAssessment("assessmentId1", 1, Seq(Certificate("1", "code", "description")), "measureTypeId1", Some("regulationId1"))
-    val assessment2 = CategoryAssessment("assessmentId2", 1, Seq(Certificate("1", "code", "description")), "measureTypeId2", Some("regulationId2"))
-    val assessment3 = CategoryAssessment("assessmentId3", 2, Seq(Certificate("1", "code", "description")), "measureTypeId3", Some("regulationId3"))
-    val assessment4 = CategoryAssessment("assessmentId4", 2, Seq(Certificate("1", "code", "description")), "measureTypeId4", Some("regulationId3"))
+    val assessment1 = CategoryAssessment(
+      "assessmentId1",
+      1,
+      Seq(Certificate("1", "code", "description")),
+      "measureTypeId1",
+      Some("regulationId1")
+    )
+    val assessment2 = CategoryAssessment(
+      "assessmentId2",
+      1,
+      Seq(Certificate("1", "code", "description")),
+      "measureTypeId2",
+      Some("regulationId2")
+    )
+    val assessment3 = CategoryAssessment(
+      "assessmentId3",
+      2,
+      Seq(Certificate("1", "code", "description")),
+      "measureTypeId3",
+      Some("regulationId3")
+    )
+    val assessment4 = CategoryAssessment(
+      "assessmentId4",
+      2,
+      Seq(Certificate("1", "code", "description")),
+      "measureTypeId4",
+      Some("regulationId3")
+    )
 
     val assessmentList                = Seq(assessment1, assessment2, assessment3, assessment4)
-    val categorisationInfo            = CategorisationInfo("1234567890", "BV", Some(validityEndDate), assessmentList, assessmentList, None, 1)
-    val categorisationInfoMeasureUnit = CategorisationInfo("1234567890", "BV", Some(validityEndDate), assessmentList, assessmentList, Some("Weight"), 1)
+    val categorisationInfo            =
+      CategorisationInfo("1234567890", "BV", Some(validityEndDate), assessmentList, assessmentList, None, 1)
+    val categorisationInfoMeasureUnit =
+      CategorisationInfo("1234567890", "BV", Some(validityEndDate), assessmentList, assessmentList, Some("Weight"), 1)
 
     "must return a CategoryRecord" - {
 
@@ -52,13 +78,23 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
 
         val answers =
           emptyUserAnswers
-            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
-            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-            .set(AssessmentPage(testRecordId, 3), AssessmentAnswer.NoExemption).success.value
-        
-        val result  = CategoryRecord.build(answers, testEori, testRecordId, mockCategorisationService)
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 3), AssessmentAnswer.NoExemption)
+            .success
+            .value
+
+        val result = CategoryRecord.build(answers, testEori, testRecordId, mockCategorisationService)
 
         result mustEqual Right(
           CategoryRecord(
@@ -82,11 +118,22 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
 
       "when all assessments are answered and measurement unit is set but not answered" in {
 
-        val answers = emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), categorisationInfoMeasureUnit).success.value
-            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-            .set(AssessmentPage(testRecordId, 3), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
+        val answers = emptyUserAnswers
+          .set(CategorisationDetailsQuery(testRecordId), categorisationInfoMeasureUnit)
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 3), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+          .success
+          .value
         val result  = CategoryRecord.build(answers, testEori, testRecordId, mockCategorisationService)
 
         result mustEqual Right(
@@ -149,13 +196,27 @@ class CategoryRecordSpec extends SpecBase with BeforeAndAfterEach {
 
         val answers =
           emptyUserAnswers
-            .set(CategorisationDetailsQuery(testRecordId), categorisationInfoMeasureUnit).success.value
-            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-            .set(AssessmentPage(testRecordId, 3), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-            .set(HasSupplementaryUnitPage(testRecordId), true).success.value
-            .set(SupplementaryUnitPage(testRecordId), "1234").success.value
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfoMeasureUnit)
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 3), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .success
+            .value
+            .set(HasSupplementaryUnitPage(testRecordId), true)
+            .success
+            .value
+            .set(SupplementaryUnitPage(testRecordId), "1234")
+            .success
+            .value
 
         val result = CategoryRecord.build(answers, testEori, testRecordId, mockCategorisationService)
 

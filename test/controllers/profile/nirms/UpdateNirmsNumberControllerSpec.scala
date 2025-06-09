@@ -69,8 +69,8 @@ class UpdateNirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request = FakeRequest(GET, nirmsNumberRoute)
-        val result = route(application, request).value
-        val view = application.injector.instanceOf[NirmsNumberView]
+        val result  = route(application, request).value
+        val view    = application.injector.instanceOf[NirmsNumberView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(
@@ -103,8 +103,8 @@ class UpdateNirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request = FakeRequest(GET, nirmsNumberRoute)
-        val result = route(application, request).value
-        val view = application.injector.instanceOf[NirmsNumberView]
+        val result  = route(application, request).value
+        val view    = application.injector.instanceOf[NirmsNumberView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(
@@ -137,8 +137,8 @@ class UpdateNirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request = FakeRequest(GET, nirmsNumberRoute)
-        val result = route(application, request).value
-        val view = application.injector.instanceOf[NirmsNumberView]
+        val result  = route(application, request).value
+        val view    = application.injector.instanceOf[NirmsNumberView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(
@@ -153,10 +153,15 @@ class UpdateNirmsNumberControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to CyaMaintainProfile for a POST" in {
-      val answer = "RMS-GB-123456"
+      val answer        = "RMS-GB-123456"
       val traderProfile = TraderProfile(testEori, "1", Some(answer), Some("3"), eoriChanged = false)
-      val userAnswers = emptyUserAnswers.set(HasNirmsUpdatePage, true).success.value
-        .set(NirmsNumberUpdatePage, answer).success.value
+      val userAnswers   = emptyUserAnswers
+        .set(HasNirmsUpdatePage, true)
+        .success
+        .value
+        .set(NirmsNumberUpdatePage, answer)
+        .success
+        .value
 
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
@@ -174,7 +179,7 @@ class UpdateNirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request = FakeRequest(POST, nirmsNumberRoute).withFormUrlEncodedBody(("value", answer))
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual CyaMaintainProfileController.onPageLoadNirmsNumber().url
@@ -185,10 +190,10 @@ class UpdateNirmsNumberControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(POST, nirmsNumberRoute).withFormUrlEncodedBody(("value", ""))
+        val request   = FakeRequest(POST, nirmsNumberRoute).withFormUrlEncodedBody(("value", ""))
         val boundForm = form.bind(Map("value" -> ""))
-        val view = application.injector.instanceOf[NirmsNumberView]
-        val result = route(application, request).value
+        val view      = application.injector.instanceOf[NirmsNumberView]
+        val result    = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
         contentAsString(result) mustEqual view(
@@ -214,11 +219,13 @@ class UpdateNirmsNumberControllerSpec extends SpecBase with MockitoSugar {
         .build()
 
       val expectedRedirectLocation =
-        controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(ProfileController.onPageLoad().url))).url
+        controllers.problem.routes.JourneyRecoveryController
+          .onPageLoad(Some(RedirectUrl(ProfileController.onPageLoad().url)))
+          .url
 
       running(application) {
         val request = FakeRequest(GET, nirmsNumberRoute)
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual expectedRedirectLocation
@@ -243,11 +250,13 @@ class UpdateNirmsNumberControllerSpec extends SpecBase with MockitoSugar {
         .build()
 
       val expectedRedirectLocation =
-        controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(ProfileController.onPageLoad().url))).url
+        controllers.problem.routes.JourneyRecoveryController
+          .onPageLoad(Some(RedirectUrl(ProfileController.onPageLoad().url)))
+          .url
 
       running(application) {
         val request = FakeRequest(GET, nirmsNumberRoute)
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual expectedRedirectLocation
@@ -261,7 +270,7 @@ class UpdateNirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request = FakeRequest(GET, nirmsNumberRoute)
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
@@ -273,7 +282,7 @@ class UpdateNirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request = FakeRequest(POST, nirmsNumberRoute).withFormUrlEncodedBody(("value", "answer"))
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url

@@ -45,9 +45,16 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
     "must go from assessment page" - {
 
       "to the next assessment if answer is yes and there are more assessments and the next one is not answered" in {
-        val userAnswers = emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
-            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-            .set(HasLongComCodeQuery(testRecordId), true).success.value
+        val userAnswers = emptyUserAnswers
+          .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+          .success
+          .value
+          .set(HasLongComCodeQuery(testRecordId), true)
+          .success
+          .value
         navigator.nextPage(AssessmentPage(testRecordId, 0), CheckMode, userAnswers) mustEqual
           controllers.categorisation.routes.AssessmentController.onPageLoad(CheckMode, testRecordId, 2)
       }
@@ -57,11 +64,22 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
         "if answer is yes" - {
 
           "and there are no more assessments" in {
-            val userAnswers = emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
-                .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-                .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-                .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-                .set(HasLongComCodeQuery(testRecordId), true).success.value
+            val userAnswers = emptyUserAnswers
+              .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+              .success
+              .value
+              .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+              .success
+              .value
+              .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+              .success
+              .value
+              .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+              .success
+              .value
+              .set(HasLongComCodeQuery(testRecordId), true)
+              .success
+              .value
 
             navigator.nextPage(AssessmentPage(testRecordId, 2), CheckMode, userAnswers) mustEqual
               controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
@@ -74,10 +92,19 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
                 categoryAssessmentsThatNeedAnswers = Seq(category1, category2)
               )
 
-              val userAnswers = emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), catInfo).success.value
-                  .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-                  .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-                  .set(HasLongComCodeQuery(testRecordId), true).success.value
+              val userAnswers = emptyUserAnswers
+                .set(CategorisationDetailsQuery(testRecordId), catInfo)
+                .success
+                .value
+                .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+                .success
+                .value
+                .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+                .success
+                .value
+                .set(HasLongComCodeQuery(testRecordId), true)
+                .success
+                .value
 
               navigator.nextPage(AssessmentPage(testRecordId, 1), CheckMode, userAnswers) mustEqual
                 controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
@@ -89,10 +116,19 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
                 categoryAssessmentsThatNeedAnswers = Seq(category1, category2)
               )
 
-              val userAnswers = emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), catInfo).success.value
-                  .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-                  .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-                  .set(HasLongComCodeQuery(testRecordId), true).success.value
+              val userAnswers = emptyUserAnswers
+                .set(CategorisationDetailsQuery(testRecordId), catInfo)
+                .success
+                .value
+                .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+                .success
+                .value
+                .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+                .success
+                .value
+                .set(HasLongComCodeQuery(testRecordId), true)
+                .success
+                .value
 
               navigator.nextPage(AssessmentPage(testRecordId, 1), CheckMode, userAnswers) mustEqual
                 controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
@@ -104,10 +140,19 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
                 categoryAssessmentsThatNeedAnswers = Seq(category1, category2)
               )
 
-              val userAnswers = emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), catInfo).success.value
-                  .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-                  .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-                  .set(HasLongComCodeQuery(testRecordId), false).success.value
+              val userAnswers = emptyUserAnswers
+                .set(CategorisationDetailsQuery(testRecordId), catInfo)
+                .success
+                .value
+                .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+                .success
+                .value
+                .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+                .success
+                .value
+                .set(HasLongComCodeQuery(testRecordId), false)
+                .success
+                .value
 
               navigator.nextPage(AssessmentPage(testRecordId, 1), CheckMode, userAnswers) mustEqual
                 controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
@@ -120,10 +165,19 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
                 descendantCount = 0
               )
 
-              val userAnswers = emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), catInfo).success.value
-                  .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-                  .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-                  .set(HasLongComCodeQuery(testRecordId), false).success.value
+              val userAnswers = emptyUserAnswers
+                .set(CategorisationDetailsQuery(testRecordId), catInfo)
+                .success
+                .value
+                .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+                .success
+                .value
+                .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+                .success
+                .value
+                .set(HasLongComCodeQuery(testRecordId), false)
+                .success
+                .value
 
               navigator.nextPage(AssessmentPage(testRecordId, 1), CheckMode, userAnswers) mustEqual
                 controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
@@ -132,20 +186,38 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
         }
 
         "if the Assessment answer is no for category 1 assessment" in {
-          val userAnswers = emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
-              .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.NoExemption).success.value
-              .set(HasLongComCodeQuery(testRecordId), true).success.value
+          val userAnswers = emptyUserAnswers
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.NoExemption)
+            .success
+            .value
+            .set(HasLongComCodeQuery(testRecordId), true)
+            .success
+            .value
 
           navigator.nextPage(AssessmentPage(testRecordId, 0), CheckMode, userAnswers) mustEqual
             controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
         }
 
         "if category 2 question has been answered no and 10 digits and there's not a measurement unit" in {
-          val userAnswers = emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), categorisationInfo.copy(measurementUnit = None)).success.value
-              .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-              .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-              .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption).success.value
-              .set(HasLongComCodeQuery(testRecordId), true).success.value
+          val userAnswers = emptyUserAnswers
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo.copy(measurementUnit = None))
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
+            .success
+            .value
+            .set(HasLongComCodeQuery(testRecordId), true)
+            .success
+            .value
 
           navigator.nextPage(AssessmentPage(testRecordId, 2), CheckMode, userAnswers) mustEqual
             controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
@@ -153,11 +225,22 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
 
         "if category 2 question has been answered no and 8 digits and there's not a measurement unit" in {
           val catInfo     = categorisationInfo.copy(measurementUnit = None, commodityCode = "12345678")
-          val userAnswers = emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), catInfo).success.value
-              .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-              .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-              .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption).success.value
-              .set(HasLongComCodeQuery(testRecordId), false).success.value
+          val userAnswers = emptyUserAnswers
+            .set(CategorisationDetailsQuery(testRecordId), catInfo)
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
+            .success
+            .value
+            .set(HasLongComCodeQuery(testRecordId), false)
+            .success
+            .value
 
           navigator.nextPage(AssessmentPage(testRecordId, 2), CheckMode, userAnswers) mustEqual
             controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
@@ -166,23 +249,47 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
         "if category 2 question has been answered no and 6 digits with no descendants and there's not a measurement unit" in {
           val catInfo = categorisationInfo.copy(commodityCode = "123456", descendantCount = 0, measurementUnit = None)
 
-          val userAnswers = emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), catInfo).success.value
-              .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-              .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-              .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption).success.value
-              .set(HasLongComCodeQuery(testRecordId), false).success.value
+          val userAnswers = emptyUserAnswers
+            .set(CategorisationDetailsQuery(testRecordId), catInfo)
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
+            .success
+            .value
+            .set(HasLongComCodeQuery(testRecordId), false)
+            .success
+            .value
 
           navigator.nextPage(AssessmentPage(testRecordId, 2), CheckMode, userAnswers) mustEqual
             controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
         }
 
         "when category 2 question has been answered no and there's a measurement unit and that has been answered already" in {
-          val userAnswers = emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
-              .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-              .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-              .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption).success.value
-              .set(HasSupplementaryUnitPage(testRecordId), false).success.value
-              .set(HasLongComCodeQuery(testRecordId), true).success.value
+          val userAnswers = emptyUserAnswers
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
+            .success
+            .value
+            .set(HasSupplementaryUnitPage(testRecordId), false)
+            .success
+            .value
+            .set(HasLongComCodeQuery(testRecordId), true)
+            .success
+            .value
 
           navigator.nextPage(AssessmentPage(testRecordId, 2), CheckMode, userAnswers) mustEqual
             controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
@@ -192,11 +299,22 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
       "to the has supplementary unit page" - {
         "when category 2 question has been answered no and there's a measurement unit and that has not been answered already" - {
           "and commodity code is 10 digits" in {
-            val userAnswers = emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
-                .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-                .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-                .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption).success.value
-                .set(HasLongComCodeQuery(testRecordId), true).success.value
+            val userAnswers = emptyUserAnswers
+              .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+              .success
+              .value
+              .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+              .success
+              .value
+              .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+              .success
+              .value
+              .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
+              .success
+              .value
+              .set(HasLongComCodeQuery(testRecordId), true)
+              .success
+              .value
 
             navigator.nextPage(AssessmentPage(testRecordId, 2), CheckMode, userAnswers) mustEqual
               controllers.categorisation.routes.HasSupplementaryUnitController.onPageLoad(CheckMode, testRecordId)
@@ -204,11 +322,22 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
 
           "and commodity code is 8 digits" in {
             val catInfo     = categorisationInfo.copy(commodityCode = "12345678")
-            val userAnswers = emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), catInfo).success.value
-                .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-                .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-                .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption).success.value
-                .set(HasLongComCodeQuery(testRecordId), false).success.value
+            val userAnswers = emptyUserAnswers
+              .set(CategorisationDetailsQuery(testRecordId), catInfo)
+              .success
+              .value
+              .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+              .success
+              .value
+              .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+              .success
+              .value
+              .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
+              .success
+              .value
+              .set(HasLongComCodeQuery(testRecordId), false)
+              .success
+              .value
 
             navigator.nextPage(AssessmentPage(testRecordId, 2), CheckMode, userAnswers) mustEqual
               controllers.categorisation.routes.HasSupplementaryUnitController.onPageLoad(CheckMode, testRecordId)
@@ -217,11 +346,22 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
           "and commodity code is 6 digits with no descendants" in {
 
             val catInfo     = categorisationInfo.copy(commodityCode = "123456", descendantCount = 0)
-            val userAnswers = emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), catInfo).success.value
-                .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-                .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-                .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption).success.value
-                .set(HasLongComCodeQuery(testRecordId), false).success.value
+            val userAnswers = emptyUserAnswers
+              .set(CategorisationDetailsQuery(testRecordId), catInfo)
+              .success
+              .value
+              .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+              .success
+              .value
+              .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+              .success
+              .value
+              .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
+              .success
+              .value
+              .set(HasLongComCodeQuery(testRecordId), false)
+              .success
+              .value
 
             navigator.nextPage(AssessmentPage(testRecordId, 2), CheckMode, userAnswers) mustEqual
               controllers.categorisation.routes.HasSupplementaryUnitController.onPageLoad(CheckMode, testRecordId)
@@ -234,11 +374,22 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
           "and six digit commodity code and descendant count is not zero" in {
             val catInfo6Digits = categorisationInfo.copy(commodityCode = "123456")
 
-            val userAnswers = emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), catInfo6Digits).success.value
-                .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-                .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-                .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption).success.value
-                .set(HasLongComCodeQuery(testRecordId), false).success.value
+            val userAnswers = emptyUserAnswers
+              .set(CategorisationDetailsQuery(testRecordId), catInfo6Digits)
+              .success
+              .value
+              .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+              .success
+              .value
+              .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+              .success
+              .value
+              .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
+              .success
+              .value
+              .set(HasLongComCodeQuery(testRecordId), false)
+              .success
+              .value
 
             navigator.nextPage(AssessmentPage(testRecordId, 2), CheckMode, userAnswers) mustEqual
               controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(CheckMode, testRecordId)
@@ -247,11 +398,22 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
           "and six digit commodity code with four padded zeroes and descendant count is not zero" in {
             val catInfo6Digits = categorisationInfo.copy(commodityCode = "1234560000")
 
-            val userAnswers = emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), catInfo6Digits).success.value
-                .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-                .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-                .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption).success.value
-                .set(HasLongComCodeQuery(testRecordId), false).success.value
+            val userAnswers = emptyUserAnswers
+              .set(CategorisationDetailsQuery(testRecordId), catInfo6Digits)
+              .success
+              .value
+              .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+              .success
+              .value
+              .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+              .success
+              .value
+              .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
+              .success
+              .value
+              .set(HasLongComCodeQuery(testRecordId), false)
+              .success
+              .value
 
             navigator.nextPage(AssessmentPage(testRecordId, 2), CheckMode, userAnswers) mustEqual
               controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(CheckMode, testRecordId)
@@ -260,11 +422,22 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
           "and six digit commodity code with two padded zeroes and descendant count is not zero" in {
             val catInfo6Digits = categorisationInfo.copy(commodityCode = "12345600")
 
-            val userAnswers = emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), catInfo6Digits).success.value
-                .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-                .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-                .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption).success.value
-                .set(HasLongComCodeQuery(testRecordId), false).success.value
+            val userAnswers = emptyUserAnswers
+              .set(CategorisationDetailsQuery(testRecordId), catInfo6Digits)
+              .success
+              .value
+              .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+              .success
+              .value
+              .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+              .success
+              .value
+              .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.NoExemption)
+              .success
+              .value
+              .set(HasLongComCodeQuery(testRecordId), false)
+              .success
+              .value
 
             navigator.nextPage(AssessmentPage(testRecordId, 2), CheckMode, userAnswers) mustEqual
               controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(CheckMode, testRecordId)
@@ -278,10 +451,19 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
 
             "and six digit commodity code and descendant count is not zero" in {
 
-              val userAnswers = emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), catInfoNoCat2Exempts).success.value
-                  .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-                  .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-                  .set(HasLongComCodeQuery(testRecordId), false).success.value
+              val userAnswers = emptyUserAnswers
+                .set(CategorisationDetailsQuery(testRecordId), catInfoNoCat2Exempts)
+                .success
+                .value
+                .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+                .success
+                .value
+                .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+                .success
+                .value
+                .set(HasLongComCodeQuery(testRecordId), false)
+                .success
+                .value
 
               navigator.nextPage(AssessmentPage(testRecordId, 1), CheckMode, userAnswers) mustEqual
                 controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(CheckMode, testRecordId)
@@ -290,21 +472,41 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
 
             "and six digit commodity code with four padded zeroes and descendant count is not zero" in {
 
-              val userAnswers = emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), catInfoNoCat2Exempts).success.value
-                  .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-                  .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-                  .set(HasLongComCodeQuery(testRecordId), false).success.value
-                  .set(HasLongComCodeQuery(testRecordId), false).success.value
+              val userAnswers = emptyUserAnswers
+                .set(CategorisationDetailsQuery(testRecordId), catInfoNoCat2Exempts)
+                .success
+                .value
+                .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+                .success
+                .value
+                .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+                .success
+                .value
+                .set(HasLongComCodeQuery(testRecordId), false)
+                .success
+                .value
+                .set(HasLongComCodeQuery(testRecordId), false)
+                .success
+                .value
 
               navigator.nextPage(AssessmentPage(testRecordId, 1), CheckMode, userAnswers) mustEqual
                 controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(CheckMode, testRecordId)
             }
 
             "and six digit commodity code with two padded zeroes and descendant count is not zero" in {
-              val userAnswers = emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), catInfoNoCat2Exempts).success.value
-                  .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-                  .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-                  .set(HasLongComCodeQuery(testRecordId), false).success.value
+              val userAnswers = emptyUserAnswers
+                .set(CategorisationDetailsQuery(testRecordId), catInfoNoCat2Exempts)
+                .success
+                .value
+                .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+                .success
+                .value
+                .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+                .success
+                .value
+                .set(HasLongComCodeQuery(testRecordId), false)
+                .success
+                .value
 
               navigator.nextPage(AssessmentPage(testRecordId, 1), CheckMode, userAnswers) mustEqual
                 controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(CheckMode, testRecordId)
@@ -320,18 +522,30 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
         }
 
         "if assessment answer is not defined" in {
-          val userAnswers = emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
+          val userAnswers =
+            emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
 
           navigator.nextPage(AssessmentPage(testRecordId, 0), CheckMode, userAnswers) mustEqual
             controllers.problem.routes.JourneyRecoveryController.onPageLoad()
         }
 
         "if assessment question is not defined" in {
-          val userAnswers = emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
-              .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-              .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-              .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-              .set(AssessmentPage(testRecordId, 3), AssessmentAnswer.NoExemption).success.value
+          val userAnswers = emptyUserAnswers
+            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 3), AssessmentAnswer.NoExemption)
+            .success
+            .value
 
           navigator.nextPage(AssessmentPage(testRecordId, 3), CheckMode, userAnswers) mustEqual
             controllers.problem.routes.JourneyRecoveryController.onPageLoad()
@@ -348,44 +562,69 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
 
       "to first assessment page when" - {
         "first reassessment is unanswered" in {
-          val userAnswers = emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
+          val userAnswers =
+            emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
 
           navigator.nextPage(RecategorisationPreparationPage(testRecordId), CheckMode, userAnswers) mustEqual
-            controllers.categorisation.routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, firstAssessmentNumber)
+            controllers.categorisation.routes.AssessmentController
+              .onPageLoadReassessment(CheckMode, testRecordId, firstAssessmentNumber)
 
         }
 
         "first reassessment is set to NotAnsweredYet" in {
-          val userAnswers = emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
-            .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.NotAnsweredYet)).success.value
+          val userAnswers = emptyUserAnswers
+            .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .success
+            .value
+            .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.NotAnsweredYet))
+            .success
+            .value
 
           navigator.nextPage(RecategorisationPreparationPage(testRecordId), CheckMode, userAnswers) mustEqual
-            controllers.categorisation.routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, firstAssessmentNumber)
+            controllers.categorisation.routes.AssessmentController
+              .onPageLoadReassessment(CheckMode, testRecordId, firstAssessmentNumber)
 
         }
 
         "first reassessment is answered but answer was not copied from shorter assessment" in {
-          val userAnswers = emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
-            .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE")))).success.value
+          val userAnswers = emptyUserAnswers
+            .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .success
+            .value
+            .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE"))))
+            .success
+            .value
 
           navigator.nextPage(RecategorisationPreparationPage(testRecordId), CheckMode, userAnswers) mustEqual
-            controllers.categorisation.routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, firstAssessmentNumber)
+            controllers.categorisation.routes.AssessmentController
+              .onPageLoadReassessment(CheckMode, testRecordId, firstAssessmentNumber)
         }
       }
 
       "to the third assessment page when the first two are answered" - {
         "third reassessment is unanswered" in {
-          val userAnswers = emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfoWithThreeCat1).success.value
-            .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(
+          val userAnswers = emptyUserAnswers
+            .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfoWithThreeCat1)
+            .success
+            .value
+            .set(
+              ReassessmentPage(testRecordId, 0),
+              ReassessmentAnswer(
                 AssessmentAnswer.Exemption(Seq("TEST_CODE")),
                 isAnswerCopiedFromPreviousAssessment = true
               )
-            ).success.value
-            .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(
+            )
+            .success
+            .value
+            .set(
+              ReassessmentPage(testRecordId, 1),
+              ReassessmentAnswer(
                 AssessmentAnswer.Exemption(Seq("TEST_CODE")),
                 isAnswerCopiedFromPreviousAssessment = true
               )
-            ).success.value
+            )
+            .success
+            .value
 
           navigator.nextPage(RecategorisationPreparationPage(testRecordId), CheckMode, userAnswers) mustEqual
             controllers.categorisation.routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, 3)
@@ -393,16 +632,31 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
         }
 
         "third reassessment is set to NotAnsweredYet" in {
-          val userAnswers = emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfoWithThreeCat1).success.value
-            .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(
+          val userAnswers = emptyUserAnswers
+            .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfoWithThreeCat1)
+            .success
+            .value
+            .set(
+              ReassessmentPage(testRecordId, 0),
+              ReassessmentAnswer(
                 AssessmentAnswer.Exemption(Seq("TEST_CODE")),
                 isAnswerCopiedFromPreviousAssessment = true
-              )).success.value
-            .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(
+              )
+            )
+            .success
+            .value
+            .set(
+              ReassessmentPage(testRecordId, 1),
+              ReassessmentAnswer(
                 AssessmentAnswer.Exemption(Seq("TEST_CODE")),
                 isAnswerCopiedFromPreviousAssessment = true
-              )).success.value
-            .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(AssessmentAnswer.NotAnsweredYet)).success.value
+              )
+            )
+            .success
+            .value
+            .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(AssessmentAnswer.NotAnsweredYet))
+            .success
+            .value
 
           navigator.nextPage(RecategorisationPreparationPage(testRecordId), CheckMode, userAnswers) mustEqual
             controllers.categorisation.routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, 3)
@@ -414,37 +668,63 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
       "to the CYA if no questions need reassessing" - {
 
         "because one is answered no" in {
-          val userAnswers = emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfoWithThreeCat1).success.value
-            .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(
+          val userAnswers = emptyUserAnswers
+            .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfoWithThreeCat1)
+            .success
+            .value
+            .set(
+              ReassessmentPage(testRecordId, 0),
+              ReassessmentAnswer(
                 AssessmentAnswer.Exemption(Seq("TEST_CODE")),
                 isAnswerCopiedFromPreviousAssessment = true
               )
-            ).success.value
-            .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.NoExemption, isAnswerCopiedFromPreviousAssessment = true)).success.value
+            )
+            .success
+            .value
+            .set(
+              ReassessmentPage(testRecordId, 1),
+              ReassessmentAnswer(AssessmentAnswer.NoExemption, isAnswerCopiedFromPreviousAssessment = true)
+            )
+            .success
+            .value
 
-          navigator.nextPage(
-            RecategorisationPreparationPage(testRecordId), CheckMode, userAnswers) mustBe
+          navigator.nextPage(RecategorisationPreparationPage(testRecordId), CheckMode, userAnswers) mustBe
             controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
 
         }
 
         "because all have already been answered" in {
-          val userAnswers = emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
-            .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(
+          val userAnswers = emptyUserAnswers
+            .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .success
+            .value
+            .set(
+              ReassessmentPage(testRecordId, 0),
+              ReassessmentAnswer(
                 AssessmentAnswer.Exemption(Seq("TEST_CODE")),
                 isAnswerCopiedFromPreviousAssessment = true
               )
-            ).success.value
-            .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(
+            )
+            .success
+            .value
+            .set(
+              ReassessmentPage(testRecordId, 1),
+              ReassessmentAnswer(
                 AssessmentAnswer.Exemption(Seq("TEST_CODE")),
                 isAnswerCopiedFromPreviousAssessment = true
               )
-            ).success.value
-            .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(
+            )
+            .success
+            .value
+            .set(
+              ReassessmentPage(testRecordId, 2),
+              ReassessmentAnswer(
                 AssessmentAnswer.Exemption(Seq("TEST_CODE")),
                 isAnswerCopiedFromPreviousAssessment = true
               )
-            ).success.value
+            )
+            .success
+            .value
 
           when(mockCategorisationService.calculateResult(any(), any(), any())).thenReturn(StandardGoodsScenario)
 
@@ -465,12 +745,17 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
             1
           )
 
-          val userAnswers = emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categoryInfoNoAssessments).success.value
+          val userAnswers = emptyUserAnswers
+            .set(LongerCategorisationDetailsQuery(testRecordId), categoryInfoNoAssessments)
+            .success
+            .value
 
-          when(mockCategorisationService.calculateResult(any(), any(), any())).thenReturn(StandardGoodsNoAssessmentsScenario)
+          when(mockCategorisationService.calculateResult(any(), any(), any()))
+            .thenReturn(StandardGoodsNoAssessmentsScenario)
 
           navigator.nextPage(RecategorisationPreparationPage(testRecordId), CheckMode, userAnswers) mustBe
-            controllers.categorisation.routes.CategorisationResultController.onPageLoad(testRecordId, StandardGoodsNoAssessmentsScenario)
+            controllers.categorisation.routes.CategorisationResultController
+              .onPageLoad(testRecordId, StandardGoodsNoAssessmentsScenario)
         }
 
         "for category 1 no exemptions when there is a category 1 assessment with no exemptions" in {
@@ -484,12 +769,16 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
             1
           )
 
-          val userAnswers = emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categoryInfoNoAssessments).success.value
+          val userAnswers = emptyUserAnswers
+            .set(LongerCategorisationDetailsQuery(testRecordId), categoryInfoNoAssessments)
+            .success
+            .value
 
           when(mockCategorisationService.calculateResult(any(), any(), any())).thenReturn(Category1NoExemptionsScenario)
 
           navigator.nextPage(RecategorisationPreparationPage(testRecordId), CheckMode, userAnswers) mustBe
-            controllers.categorisation.routes.CategorisationResultController.onPageLoad(testRecordId, Category1NoExemptionsScenario)
+            controllers.categorisation.routes.CategorisationResultController
+              .onPageLoad(testRecordId, Category1NoExemptionsScenario)
         }
       }
 
@@ -507,7 +796,10 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
             isTraderNiphlAuthorised = true
           )
 
-          val userAnswers = emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categoryInfoWithNiphlAssessments).success.value
+          val userAnswers = emptyUserAnswers
+            .set(LongerCategorisationDetailsQuery(testRecordId), categoryInfoWithNiphlAssessments)
+            .success
+            .value
 
           when(mockCategorisationService.calculateResult(any(), any(), any())).thenReturn(Category2Scenario)
 
@@ -528,7 +820,10 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
             isTraderNiphlAuthorised = true
           )
 
-          val userAnswers = emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categoryInfoWithNirmsAssessments).success.value
+          val userAnswers = emptyUserAnswers
+            .set(LongerCategorisationDetailsQuery(testRecordId), categoryInfoWithNirmsAssessments)
+            .success
+            .value
 
           when(mockCategorisationService.calculateResult(any(), any(), any())).thenReturn(Category2Scenario)
 
@@ -548,7 +843,10 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
             0
           )
 
-          val userAnswers = emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categoryInfoNoAssessments).success.value
+          val userAnswers = emptyUserAnswers
+            .set(LongerCategorisationDetailsQuery(testRecordId), categoryInfoNoAssessments)
+            .success
+            .value
 
           when(mockCategorisationService.calculateResult(any(), any(), any())).thenReturn(Category2Scenario)
 
@@ -569,7 +867,10 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
             isTraderNiphlAuthorised = true
           )
 
-          val userAnswers = emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categoryInfoWithNiphlAssessments).success.value
+          val userAnswers = emptyUserAnswers
+            .set(LongerCategorisationDetailsQuery(testRecordId), categoryInfoWithNiphlAssessments)
+            .success
+            .value
 
           when(mockCategorisationService.calculateResult(any(), any(), any())).thenReturn(Category2Scenario)
 
@@ -590,7 +891,10 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
             isTraderNiphlAuthorised = true
           )
 
-          val userAnswers = emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categoryInfoWithNirmsAssessments).success.value
+          val userAnswers = emptyUserAnswers
+            .set(LongerCategorisationDetailsQuery(testRecordId), categoryInfoWithNirmsAssessments)
+            .success
+            .value
 
           when(mockCategorisationService.calculateResult(any(), any(), any())).thenReturn(Category2Scenario)
 
@@ -610,7 +914,10 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
             0
           )
 
-          val userAnswers = emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categoryInfoNoAssessments).success.value
+          val userAnswers = emptyUserAnswers
+            .set(LongerCategorisationDetailsQuery(testRecordId), categoryInfoNoAssessments)
+            .success
+            .value
 
           when(mockCategorisationService.calculateResult(any(), any(), any())).thenReturn(Category2Scenario)
 
@@ -632,8 +939,13 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
       "to the next reassessment if answer is yes and there are more assessments" - {
 
         "and next question is not set" in {
-          val userAnswers = emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
-              .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE")))).success.value
+          val userAnswers = emptyUserAnswers
+            .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .success
+            .value
+            .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE"))))
+            .success
+            .value
 
           navigator.nextPage(ReassessmentPage(testRecordId, 0), CheckMode, userAnswers) mustEqual
             controllers.categorisation.routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, 2)
@@ -641,9 +953,16 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
         }
 
         "and next question is set to not answered placeholder" in {
-          val userAnswers = emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
-              .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE")))).success.value
-              .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.NotAnsweredYet)).success.value
+          val userAnswers = emptyUserAnswers
+            .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .success
+            .value
+            .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE"))))
+            .success
+            .value
+            .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.NotAnsweredYet))
+            .success
+            .value
 
           navigator.nextPage(ReassessmentPage(testRecordId, 0), CheckMode, userAnswers) mustEqual
             controllers.categorisation.routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, 2)
@@ -652,17 +971,28 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
 
       "to a later reassessment if the next one is answered yes" - {
         "and the one after is not set" in {
-          val userAnswers = emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
-              .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(
-                  AssessmentAnswer.Exemption(Seq("TEST_CODE")),
-                  isAnswerCopiedFromPreviousAssessment = true
-                )
-              ).success.value
-              .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(
-                  AssessmentAnswer.Exemption(Seq("TEST_CODE")),
-                  isAnswerCopiedFromPreviousAssessment = true
-                )
-              ).success.value
+          val userAnswers = emptyUserAnswers
+            .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .success
+            .value
+            .set(
+              ReassessmentPage(testRecordId, 0),
+              ReassessmentAnswer(
+                AssessmentAnswer.Exemption(Seq("TEST_CODE")),
+                isAnswerCopiedFromPreviousAssessment = true
+              )
+            )
+            .success
+            .value
+            .set(
+              ReassessmentPage(testRecordId, 1),
+              ReassessmentAnswer(
+                AssessmentAnswer.Exemption(Seq("TEST_CODE")),
+                isAnswerCopiedFromPreviousAssessment = true
+              )
+            )
+            .success
+            .value
 
           navigator.nextPage(ReassessmentPage(testRecordId, 0), CheckMode, userAnswers) mustEqual
             controllers.categorisation.routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, 3)
@@ -670,32 +1000,56 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
         }
 
         "and the one after is set to not answered placeholder" in {
-          val userAnswers = emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
-              .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(
-                  AssessmentAnswer.Exemption(Seq("TEST_CODE")),
-                  isAnswerCopiedFromPreviousAssessment = true
-                )
-              ).success.value
-              .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(
-                  AssessmentAnswer.Exemption(Seq("TEST_CODE")),
-                  isAnswerCopiedFromPreviousAssessment = true
-                )
-              ).success.value
-              .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(AssessmentAnswer.NotAnsweredYet, isAnswerCopiedFromPreviousAssessment = true)
-              ).success.value
+          val userAnswers = emptyUserAnswers
+            .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .success
+            .value
+            .set(
+              ReassessmentPage(testRecordId, 0),
+              ReassessmentAnswer(
+                AssessmentAnswer.Exemption(Seq("TEST_CODE")),
+                isAnswerCopiedFromPreviousAssessment = true
+              )
+            )
+            .success
+            .value
+            .set(
+              ReassessmentPage(testRecordId, 1),
+              ReassessmentAnswer(
+                AssessmentAnswer.Exemption(Seq("TEST_CODE")),
+                isAnswerCopiedFromPreviousAssessment = true
+              )
+            )
+            .success
+            .value
+            .set(
+              ReassessmentPage(testRecordId, 2),
+              ReassessmentAnswer(AssessmentAnswer.NotAnsweredYet, isAnswerCopiedFromPreviousAssessment = true)
+            )
+            .success
+            .value
 
           navigator.nextPage(ReassessmentPage(testRecordId, 0), CheckMode, userAnswers) mustEqual
             controllers.categorisation.routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, 3)
         }
 
         "and next question is answered but was not copied from shorter assessment" in {
-          val userAnswers = emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
-              .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE")))).success.value
-              .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(
-                  AssessmentAnswer.Exemption(Seq("TEST_CODE")),
-                  isAnswerCopiedFromPreviousAssessment = true
-                )
-              ).success.value
+          val userAnswers = emptyUserAnswers
+            .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .success
+            .value
+            .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE"))))
+            .success
+            .value
+            .set(
+              ReassessmentPage(testRecordId, 1),
+              ReassessmentAnswer(
+                AssessmentAnswer.Exemption(Seq("TEST_CODE")),
+                isAnswerCopiedFromPreviousAssessment = true
+              )
+            )
+            .success
+            .value
 
           navigator.nextPage(ReassessmentPage(testRecordId, 0), CheckMode, userAnswers) mustEqual
             controllers.categorisation.routes.AssessmentController.onPageLoadReassessment(CheckMode, testRecordId, 3)
@@ -704,78 +1058,137 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
 
       "to the check your answers page" - {
         "if answer is yes and there are no more assessments" in {
-          val userAnswers = emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
-              .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(
-                  AssessmentAnswer.Exemption(Seq("TEST_CODE")),
-                  isAnswerCopiedFromPreviousAssessment = true
-                )
-              ).success.value
-              .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(
-                  AssessmentAnswer.Exemption(Seq("TEST_CODE")),
-                  isAnswerCopiedFromPreviousAssessment = true
-                )
-              ).success.value
-              .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(
-                  AssessmentAnswer.Exemption(Seq("TEST_CODE")),
-                  isAnswerCopiedFromPreviousAssessment = true
-                )
-              ).success.value
-              .set(HasLongComCodeQuery(testRecordId), true).success.value
+          val userAnswers = emptyUserAnswers
+            .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .success
+            .value
+            .set(
+              ReassessmentPage(testRecordId, 0),
+              ReassessmentAnswer(
+                AssessmentAnswer.Exemption(Seq("TEST_CODE")),
+                isAnswerCopiedFromPreviousAssessment = true
+              )
+            )
+            .success
+            .value
+            .set(
+              ReassessmentPage(testRecordId, 1),
+              ReassessmentAnswer(
+                AssessmentAnswer.Exemption(Seq("TEST_CODE")),
+                isAnswerCopiedFromPreviousAssessment = true
+              )
+            )
+            .success
+            .value
+            .set(
+              ReassessmentPage(testRecordId, 2),
+              ReassessmentAnswer(
+                AssessmentAnswer.Exemption(Seq("TEST_CODE")),
+                isAnswerCopiedFromPreviousAssessment = true
+              )
+            )
+            .success
+            .value
+            .set(HasLongComCodeQuery(testRecordId), true)
+            .success
+            .value
 
           navigator.nextPage(ReassessmentPage(testRecordId, 2), CheckMode, userAnswers) mustEqual
             controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
         }
 
         "if answer is yes and the next one is answered no" in {
-          val userAnswers = emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
-              .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(
-                  AssessmentAnswer.Exemption(Seq("TEST_CODE")),
-                  isAnswerCopiedFromPreviousAssessment = true
-                )
-              ).success.value
-              .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.NoExemption, isAnswerCopiedFromPreviousAssessment = true)
-              ).success.value
+          val userAnswers = emptyUserAnswers
+            .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .success
+            .value
+            .set(
+              ReassessmentPage(testRecordId, 0),
+              ReassessmentAnswer(
+                AssessmentAnswer.Exemption(Seq("TEST_CODE")),
+                isAnswerCopiedFromPreviousAssessment = true
+              )
+            )
+            .success
+            .value
+            .set(
+              ReassessmentPage(testRecordId, 1),
+              ReassessmentAnswer(AssessmentAnswer.NoExemption, isAnswerCopiedFromPreviousAssessment = true)
+            )
+            .success
+            .value
 
           navigator.nextPage(ReassessmentPage(testRecordId, 0), CheckMode, userAnswers) mustEqual
             controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
         }
 
         "if answer is yes and the next question is answered" in {
-          val userAnswers = emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
-              .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(
-                  AssessmentAnswer.Exemption(Seq("TEST_CODE")),
-                  isAnswerCopiedFromPreviousAssessment = true
-                )
-              ).success.value
-              .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(
-                  AssessmentAnswer.Exemption(Seq("TEST_CODE")),
-                  isAnswerCopiedFromPreviousAssessment = true
-                )
-              ).success.value
-              .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(
-                  AssessmentAnswer.Exemption(Seq("TEST_CODE")),
-                  isAnswerCopiedFromPreviousAssessment = true
-                )
-              ).success.value
+          val userAnswers = emptyUserAnswers
+            .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .success
+            .value
+            .set(
+              ReassessmentPage(testRecordId, 0),
+              ReassessmentAnswer(
+                AssessmentAnswer.Exemption(Seq("TEST_CODE")),
+                isAnswerCopiedFromPreviousAssessment = true
+              )
+            )
+            .success
+            .value
+            .set(
+              ReassessmentPage(testRecordId, 1),
+              ReassessmentAnswer(
+                AssessmentAnswer.Exemption(Seq("TEST_CODE")),
+                isAnswerCopiedFromPreviousAssessment = true
+              )
+            )
+            .success
+            .value
+            .set(
+              ReassessmentPage(testRecordId, 2),
+              ReassessmentAnswer(
+                AssessmentAnswer.Exemption(Seq("TEST_CODE")),
+                isAnswerCopiedFromPreviousAssessment = true
+              )
+            )
+            .success
+            .value
 
           navigator.nextPage(ReassessmentPage(testRecordId, 1), CheckMode, userAnswers) mustEqual
             controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
         }
 
         "if the Assessment answer is no for category 1 assessment" in {
-          val userAnswers = emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
-              .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.NoExemption)).success.value
-              .set(HasLongComCodeQuery(testRecordId), true).success.value
+          val userAnswers = emptyUserAnswers
+            .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .success
+            .value
+            .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.NoExemption))
+            .success
+            .value
+            .set(HasLongComCodeQuery(testRecordId), true)
+            .success
+            .value
 
           navigator.nextPage(ReassessmentPage(testRecordId, 0), CheckMode, userAnswers) mustEqual
             controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
         }
 
         "if category 2 question has been answered no and there's not a measurement unit" in {
-          val userAnswers = emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo.copy(measurementUnit = None)).success.value
-              .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE")))).success.value
-              .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE")))).success.value
-              .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(AssessmentAnswer.NoExemption)).success.value
+          val userAnswers = emptyUserAnswers
+            .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo.copy(measurementUnit = None))
+            .success
+            .value
+            .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE"))))
+            .success
+            .value
+            .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE"))))
+            .success
+            .value
+            .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(AssessmentAnswer.NoExemption))
+            .success
+            .value
 
           navigator.nextPage(ReassessmentPage(testRecordId, 2), CheckMode, userAnswers) mustEqual
             controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
@@ -783,10 +1196,19 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
       }
 
       "to the has supplementary unit page when category 2 question has been answered no and there's a measurement unit" in {
-        val userAnswers = emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
-          .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE")))).success.value
-          .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE")))).success.value
-          .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(AssessmentAnswer.NoExemption)).success.value
+        val userAnswers = emptyUserAnswers
+          .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
+          .success
+          .value
+          .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE"))))
+          .success
+          .value
+          .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE"))))
+          .success
+          .value
+          .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(AssessmentAnswer.NoExemption))
+          .success
+          .value
 
         navigator.nextPage(ReassessmentPage(testRecordId, 2), CheckMode, userAnswers) mustEqual
           controllers.categorisation.routes.HasSupplementaryUnitController.onPageLoad(CheckMode, testRecordId)
@@ -801,18 +1223,30 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
         }
 
         "if assessment answer is not defined" in {
-          val userAnswers = emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
+          val userAnswers =
+            emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
 
           navigator.nextPage(ReassessmentPage(testRecordId, 0), CheckMode, userAnswers) mustEqual
             controllers.problem.routes.JourneyRecoveryController.onPageLoad()
         }
 
         "if assessment question is not defined" in {
-          val userAnswers = emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
-              .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE")))).success.value
-              .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE")))).success.value
-              .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE")))).success.value
-              .set(ReassessmentPage(testRecordId, 3), ReassessmentAnswer(AssessmentAnswer.NoExemption)).success.value
+          val userAnswers = emptyUserAnswers
+            .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
+            .success
+            .value
+            .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE"))))
+            .success
+            .value
+            .set(ReassessmentPage(testRecordId, 1), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE"))))
+            .success
+            .value
+            .set(ReassessmentPage(testRecordId, 2), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("TEST_CODE"))))
+            .success
+            .value
+            .set(ReassessmentPage(testRecordId, 3), ReassessmentAnswer(AssessmentAnswer.NoExemption))
+            .success
+            .value
 
           navigator.nextPage(ReassessmentPage(testRecordId, 3), CheckMode, userAnswers) mustEqual
             controllers.problem.routes.JourneyRecoveryController.onPageLoad()
@@ -838,8 +1272,13 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
       }
 
       "to the cya when answer is yes and the answer is already defined" in {
-        val userAnswers = emptyUserAnswers.set(HasSupplementaryUnitPage(testRecordId), true).success.value
-          .set(SupplementaryUnitPage(testRecordId), "1234").success.value
+        val userAnswers = emptyUserAnswers
+          .set(HasSupplementaryUnitPage(testRecordId), true)
+          .success
+          .value
+          .set(SupplementaryUnitPage(testRecordId), "1234")
+          .success
+          .value
 
         navigator.nextPage(HasSupplementaryUnitPage(testRecordId), CheckMode, userAnswers) mustBe
           controllers.categorisation.routes.CyaCategorisationController.onPageLoad(testRecordId)
@@ -864,8 +1303,13 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
 
         "to SupplementaryUnitUpdatePage when answer is Yes and supplementary unit is not defined" in {
 
-          val answers = UserAnswers(userAnswersId).set(HasSupplementaryUnitUpdatePage(testRecordId), true).success.value
-            .remove(SupplementaryUnitUpdatePage(testRecordId)).success.value
+          val answers = UserAnswers(userAnswersId)
+            .set(HasSupplementaryUnitUpdatePage(testRecordId), true)
+            .success
+            .value
+            .remove(SupplementaryUnitUpdatePage(testRecordId))
+            .success
+            .value
 
           navigator.nextPage(HasSupplementaryUnitUpdatePage(testRecordId), CheckMode, answers) mustBe
             controllers.categorisation.routes.SupplementaryUnitController.onPageLoadUpdate(CheckMode, testRecordId)
@@ -873,15 +1317,21 @@ class CategorisationNavigatorCheckModeSpec extends SpecBase with BeforeAndAfterE
 
         "to CyaSupplementaryUnitController when answer is Yes and supplementary unit is already defined" in {
 
-          val answers = UserAnswers(userAnswersId).set(HasSupplementaryUnitUpdatePage(testRecordId), true).success.value
-            .set(SupplementaryUnitUpdatePage(testRecordId), "974.0").success.value
+          val answers = UserAnswers(userAnswersId)
+            .set(HasSupplementaryUnitUpdatePage(testRecordId), true)
+            .success
+            .value
+            .set(SupplementaryUnitUpdatePage(testRecordId), "974.0")
+            .success
+            .value
 
           navigator.nextPage(HasSupplementaryUnitUpdatePage(testRecordId), CheckMode, answers) mustBe
             controllers.categorisation.routes.CyaSupplementaryUnitController.onPageLoad(testRecordId)
         }
 
         "to CyaSupplementaryUnitController when answer is No" in {
-          val answers = UserAnswers(userAnswersId).set(HasSupplementaryUnitUpdatePage(testRecordId), false).success.value
+          val answers =
+            UserAnswers(userAnswersId).set(HasSupplementaryUnitUpdatePage(testRecordId), false).success.value
 
           navigator.nextPage(HasSupplementaryUnitUpdatePage(testRecordId), CheckMode, answers) mustBe
             controllers.categorisation.routes.CyaSupplementaryUnitController.onPageLoad(testRecordId)

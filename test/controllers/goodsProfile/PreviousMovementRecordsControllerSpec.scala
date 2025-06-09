@@ -30,9 +30,10 @@ class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url)
-        val result = route(application, request).value
-        val view = application.injector.instanceOf[PreviousMovementRecordsView]
+        val request =
+          FakeRequest(GET, controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url)
+        val result  = route(application, request).value
+        val view    = application.injector.instanceOf[PreviousMovementRecordsView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view()(request, messages(application)).toString
@@ -43,11 +44,14 @@ class PreviousMovementRecordsControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(POST, controllers.goodsProfile.routes.PreviousMovementRecordsController.onSubmit().url)
-        val result = route(application, request).value
+        val request =
+          FakeRequest(POST, controllers.goodsProfile.routes.PreviousMovementRecordsController.onSubmit().url)
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url
+        redirectLocation(result).value mustEqual controllers.goodsProfile.routes.GoodsRecordsController
+          .onPageLoad(firstPage)
+          .url
       }
     }
   }

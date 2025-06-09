@@ -52,7 +52,9 @@ class UkimsNumberChangeControllerSpec extends SpecBase {
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual controllers.newUkims.routes.NewUkimsNumberController.onPageLoad(NormalMode).url
+        redirectLocation(result).value mustEqual controllers.newUkims.routes.NewUkimsNumberController
+          .onPageLoad(NormalMode)
+          .url
       }
     }
   }

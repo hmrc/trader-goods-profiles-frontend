@@ -43,8 +43,8 @@ class CreateRecordStartControllerSpec extends SpecBase {
 
         running(application) {
           val request = FakeRequest(GET, controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad().url)
-          val result = route(application, request).value
-          val view = application.injector.instanceOf[CreateRecordStartView]
+          val result  = route(application, request).value
+          val view    = application.injector.instanceOf[CreateRecordStartView]
 
           status(result) mustEqual OK
           contentAsString(result) mustEqual view()(request, messages(application)).toString
@@ -54,7 +54,7 @@ class CreateRecordStartControllerSpec extends SpecBase {
 
     "for a POST" - {
       "must redirect to the product reference controller page" in {
-        val onwardRoute = Call("", "")
+        val onwardRoute      = Call("", "")
         val mockAuditService = mock[AuditService]
         when(mockAuditService.auditStartCreateGoodsRecord(any(), any())(any())).thenReturn(Future.successful(Done))
 
@@ -66,11 +66,12 @@ class CreateRecordStartControllerSpec extends SpecBase {
             bind[SessionRepository].toInstance(mockSessionRepository),
             bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
             bind[AuditService].toInstance(mockAuditService)
-          ).build()
+          )
+          .build()
 
         running(application) {
           val request = FakeRequest(POST, controllers.goodsRecord.routes.CreateRecordStartController.onSubmit().url)
-          val result = route(application, request).value
+          val result  = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual onwardRoute.url

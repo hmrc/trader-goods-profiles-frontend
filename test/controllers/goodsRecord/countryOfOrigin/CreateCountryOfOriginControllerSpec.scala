@@ -23,7 +23,7 @@ import forms.goodsRecord.CountryOfOriginFormProvider
 import models.{Country, NormalMode, UserAnswers}
 import navigation.{FakeGoodsRecordNavigator, GoodsRecordNavigator}
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{atLeastOnce, verify, when, reset}
+import org.mockito.Mockito.{atLeastOnce, reset, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import pages.goodsRecord.CountryOfOriginPage
@@ -45,37 +45,42 @@ class CreateCountryOfOriginControllerSpec extends SpecBase with MockitoSugar wit
   val formProvider = new CountryOfOriginFormProvider()
   private val form = formProvider(countries)
 
-  private val mockOttConnector = mock[OttConnector]
+  private val mockOttConnector      = mock[OttConnector]
   private val mockSessionRepository = mock[SessionRepository]
-  
+
   override protected def beforeEach(): Unit = {
     super.beforeEach()
     reset(mockOttConnector, mockSessionRepository)
   }
 
   "CountryOfOrigin Controller" - {
-    lazy val countryOfOriginRoute = controllers.goodsRecord.countryOfOrigin.routes.CreateCountryOfOriginController.onPageLoad(NormalMode).url
-    lazy val onSubmitAction       = controllers.goodsRecord.countryOfOrigin.routes.CreateCountryOfOriginController.onSubmit(NormalMode)
+    lazy val countryOfOriginRoute =
+      controllers.goodsRecord.countryOfOrigin.routes.CreateCountryOfOriginController.onPageLoad(NormalMode).url
+    lazy val onSubmitAction       =
+      controllers.goodsRecord.countryOfOrigin.routes.CreateCountryOfOriginController.onSubmit(NormalMode)
 
     "must return OK and the correct view for a GET" in {
       when(mockOttConnector.getCountries(any())) thenReturn Future.successful(countries)
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(
-            bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
-            bind[OttConnector].toInstance(mockOttConnector)
-          )
-          .build()
+        .overrides(
+          bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
+          bind[OttConnector].toInstance(mockOttConnector)
+        )
+        .build()
 
       running(application) {
         val request = FakeRequest(GET, countryOfOriginRoute)
-        val result = route(application, request).value
-        val call = onSubmitAction
-        
+        val result  = route(application, request).value
+        val call    = onSubmitAction
+
         val view = application.injector.instanceOf[CountryOfOriginView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, call, countries, NormalMode, None)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, call, countries, NormalMode, None)(
+          request,
+          messages(application)
+        ).toString
         verify(mockOttConnector, atLeastOnce()).getCountries(any())
       }
     }
@@ -86,21 +91,24 @@ class CreateCountryOfOriginControllerSpec extends SpecBase with MockitoSugar wit
       when(mockOttConnector.getCountries(any())) thenReturn Future.successful(countries)
 
       val application = applicationBuilder(userAnswers = Some(userAnswers))
-          .overrides(
-            bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
-            bind[OttConnector].toInstance(mockOttConnector)
-          )
-          .build()
+        .overrides(
+          bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
+          bind[OttConnector].toInstance(mockOttConnector)
+        )
+        .build()
 
       running(application) {
         val request = FakeRequest(GET, countryOfOriginRoute)
-        val call = onSubmitAction
-        val view = application.injector.instanceOf[CountryOfOriginView]
-        
+        val call    = onSubmitAction
+        val view    = application.injector.instanceOf[CountryOfOriginView]
+
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill("answer"), call, countries, NormalMode, None)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill("answer"), call, countries, NormalMode, None)(
+          request,
+          messages(application)
+        ).toString
         verify(mockOttConnector, atLeastOnce()).getCountries(any())
       }
     }
@@ -109,20 +117,23 @@ class CreateCountryOfOriginControllerSpec extends SpecBase with MockitoSugar wit
       val userAnswers = UserAnswers(userAnswersId).set(CountriesQuery, countries).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers))
-          .overrides(
-            bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute))
-          )
-          .build()
+        .overrides(
+          bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute))
+        )
+        .build()
 
       running(application) {
         val request = FakeRequest(GET, countryOfOriginRoute)
-        val call = onSubmitAction
-        val view = application.injector.instanceOf[CountryOfOriginView]
+        val call    = onSubmitAction
+        val view    = application.injector.instanceOf[CountryOfOriginView]
 
         val result = route(application, request).value
-        
+
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, call, countries, NormalMode, None)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, call, countries, NormalMode, None)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 
@@ -132,15 +143,15 @@ class CreateCountryOfOriginControllerSpec extends SpecBase with MockitoSugar wit
       val userAnswers = UserAnswers(userAnswersId).set(CountriesQuery, countries).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers))
-          .overrides(
-            bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
-            bind[SessionRepository].toInstance(mockSessionRepository)
-          )
-          .build()
+        .overrides(
+          bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
+          bind[SessionRepository].toInstance(mockSessionRepository)
+        )
+        .build()
 
       running(application) {
         val request = FakeRequest(POST, countryOfOriginRoute).withFormUrlEncodedBody(("value", "CN"))
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
@@ -151,10 +162,10 @@ class CreateCountryOfOriginControllerSpec extends SpecBase with MockitoSugar wit
       val userAnswers = UserAnswers(userAnswersId)
 
       val application = applicationBuilder(userAnswers = Some(userAnswers))
-          .overrides(
-            bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute))
-          )
-          .build()
+        .overrides(
+          bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute))
+        )
+        .build()
 
       running(application) {
         val request = FakeRequest(POST, countryOfOriginRoute).withFormUrlEncodedBody(("value", "CN"))
@@ -171,15 +182,18 @@ class CreateCountryOfOriginControllerSpec extends SpecBase with MockitoSugar wit
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(POST, countryOfOriginRoute).withFormUrlEncodedBody(("value", "TEST"))
+        val request   = FakeRequest(POST, countryOfOriginRoute).withFormUrlEncodedBody(("value", "TEST"))
         val boundForm = form.bind(Map("value" -> "TEST"))
-        val view = application.injector.instanceOf[CountryOfOriginView]
-        val call = onSubmitAction
-        
+        val view      = application.injector.instanceOf[CountryOfOriginView]
+        val call      = onSubmitAction
+
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, call, countries, NormalMode, None)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, call, countries, NormalMode, None)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 
@@ -188,7 +202,7 @@ class CreateCountryOfOriginControllerSpec extends SpecBase with MockitoSugar wit
 
       running(application) {
         val request = FakeRequest(GET, countryOfOriginRoute)
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
@@ -200,7 +214,7 @@ class CreateCountryOfOriginControllerSpec extends SpecBase with MockitoSugar wit
 
       running(application) {
         val request = FakeRequest(POST, countryOfOriginRoute).withFormUrlEncodedBody(("value", "answer"))
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url

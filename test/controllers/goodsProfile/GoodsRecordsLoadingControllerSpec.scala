@@ -22,7 +22,7 @@ import connectors.GoodsRecordConnector
 import models.RecordsSummary
 import models.RecordsSummary.Update
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{when, reset}
+import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.inject.bind
@@ -42,7 +42,7 @@ class GoodsRecordsLoadingControllerSpec extends SpecBase with BeforeAndAfterEach
     super.beforeEach()
     reset(mockGoodsRecordConnector)
   }
-  
+
   "GoodsRecordsLoading Controller" - {
     val continueUrl = controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url
 
@@ -51,26 +51,35 @@ class GoodsRecordsLoadingControllerSpec extends SpecBase with BeforeAndAfterEach
       val recordsStored  = 5
 
       when(mockGoodsRecordConnector.getRecordsSummary(any())) thenReturn Future.successful(
-        RecordsSummary(testEori, Some(Update(recordsStored, recordsToStore)), Instant.now))
-      
+        RecordsSummary(testEori, Some(Update(recordsStored, recordsToStore)), Instant.now)
+      )
+
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .configure("goods-records-loading-page.refresh-rate" -> 3)
         .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
         .build()
 
       running(application) {
-        val request = FakeRequest(GET, controllers.goodsProfile.routes.GoodsRecordsLoadingController.onPageLoad(Some(RedirectUrl(continueUrl))).url)
-        val result = route(application, request).value
-        val view = application.injector.instanceOf[GoodsRecordsLoadingView]
+        val request = FakeRequest(
+          GET,
+          controllers.goodsProfile.routes.GoodsRecordsLoadingController.onPageLoad(Some(RedirectUrl(continueUrl))).url
+        )
+        val result  = route(application, request).value
+        val view    = application.injector.instanceOf[GoodsRecordsLoadingView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(recordsStored, recordsToStore, Some(RedirectUrl(continueUrl)))(request, messages(application)).toString
+        contentAsString(result) mustEqual view(recordsStored, recordsToStore, Some(RedirectUrl(continueUrl)))(
+          request,
+          messages(application)
+        ).toString
         header("Refresh", result).value mustEqual "3"
       }
     }
 
     "must redirect to previous page if it has finished updating" in {
-      when(mockGoodsRecordConnector.getRecordsSummary(any())) thenReturn Future.successful(RecordsSummary(testEori, None, Instant.now))
+      when(mockGoodsRecordConnector.getRecordsSummary(any())) thenReturn Future.successful(
+        RecordsSummary(testEori, None, Instant.now)
+      )
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
@@ -79,8 +88,11 @@ class GoodsRecordsLoadingControllerSpec extends SpecBase with BeforeAndAfterEach
         .build()
 
       running(application) {
-        val request = FakeRequest(GET, controllers.goodsProfile.routes.GoodsRecordsLoadingController.onPageLoad(Some(RedirectUrl(continueUrl))).url)
-        val result = route(application, request).value
+        val request = FakeRequest(
+          GET,
+          controllers.goodsProfile.routes.GoodsRecordsLoadingController.onPageLoad(Some(RedirectUrl(continueUrl))).url
+        )
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual continueUrl

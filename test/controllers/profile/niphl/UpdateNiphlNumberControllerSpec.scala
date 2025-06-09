@@ -199,8 +199,13 @@ class UpdateNiphlNumberControllerSpec extends SpecBase with MockitoSugar {
       val answer = "SN12345"
 
       val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"), eoriChanged = false)
-      val userAnswers   = emptyUserAnswers.set(HasNiphlUpdatePage, true).success.value
-        .set(NiphlNumberUpdatePage, answer).success.value
+      val userAnswers   = emptyUserAnswers
+        .set(HasNiphlUpdatePage, true)
+        .success
+        .value
+        .set(NiphlNumberUpdatePage, answer)
+        .success
+        .value
 
       val mockAuditService = mock[AuditService]
 
@@ -220,7 +225,7 @@ class UpdateNiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request = FakeRequest(POST, niphlNumberRouteUpdate).withFormUrlEncodedBody(("value", answer))
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
@@ -232,8 +237,13 @@ class UpdateNiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
       val traderProfile = TraderProfile(testEori, "1", Some("2"), Some(answer), eoriChanged = false)
 
-      val userAnswers = emptyUserAnswers.set(HasNiphlUpdatePage, true).success.value
-        .set(NiphlNumberUpdatePage, answer).success.value
+      val userAnswers = emptyUserAnswers
+        .set(HasNiphlUpdatePage, true)
+        .success
+        .value
+        .set(NiphlNumberUpdatePage, answer)
+        .success
+        .value
 
       val mockAuditService = mock[AuditService]
 
@@ -258,7 +268,9 @@ class UpdateNiphlNumberControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual controllers.profile.routes.CyaMaintainProfileController.onPageLoadNiphlNumber().url
+        redirectLocation(result).value mustEqual controllers.profile.routes.CyaMaintainProfileController
+          .onPageLoadNiphlNumber()
+          .url
         verify(mockTraderProfileConnector, never()).submitTraderProfile(any())(any())
 
         withClue("must not try and submit an audit") {

@@ -48,35 +48,45 @@ import scala.concurrent.Future
 
 class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar with BeforeAndAfterEach {
 
-  private def onwardRoute          = Call("GET", "/foo")
+  private def onwardRoute = Call("GET", "/foo")
 
   val formProvider                                      = new HasCorrectGoodsFormProvider()
   private val form                                      = formProvider()
   private lazy val journeyRecoveryContinueUrl           =
     controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId).url
   private val warningPage: HasCountryOfOriginChangePage = HasCountryOfOriginChangePage(testRecordId)
-  private val record =
-    goodsRecordResponse(Instant.parse("2022-11-18T23:20:19Z"), Instant.parse("2022-11-18T23:20:19Z")).copy(recordId = testRecordId, eori = testEori)
+  private val record                                    =
+    goodsRecordResponse(Instant.parse("2022-11-18T23:20:19Z"), Instant.parse("2022-11-18T23:20:19Z"))
+      .copy(recordId = testRecordId, eori = testEori)
 
   private val expectedPayload = UpdateGoodsRecord(testEori, testRecordId, commodityCode = Some(testCommodity))
 
-  private val mockGoodsRecordConnector = mock[GoodsRecordConnector]
-  private val mockAuditService = mock[AuditService]
-  private val mockSessionRepository = mock[SessionRepository]
-  private val mockFrontendAppConfig = mock[FrontendAppConfig]
-  private val mockCommodityService = mock[CommodityService]
+  private val mockGoodsRecordConnector  = mock[GoodsRecordConnector]
+  private val mockAuditService          = mock[AuditService]
+  private val mockSessionRepository     = mock[SessionRepository]
+  private val mockFrontendAppConfig     = mock[FrontendAppConfig]
+  private val mockCommodityService      = mock[CommodityService]
   private val mockAutoCategoriseService = mock[AutoCategoriseService]
 
   override protected def beforeEach(): Unit = {
     super.beforeEach()
-    reset(mockGoodsRecordConnector, mockAuditService, mockSessionRepository, mockFrontendAppConfig, mockCommodityService, mockAutoCategoriseService)
+    reset(
+      mockGoodsRecordConnector,
+      mockAuditService,
+      mockSessionRepository,
+      mockFrontendAppConfig,
+      mockCommodityService,
+      mockAutoCategoriseService
+    )
   }
-  
+
   "UpdateCommodityCodeController" - {
 
     "For update journey" - {
       lazy val hasCorrectGoodsUpdateRoute =
-        controllers.commodityCodeResult.routes.UpdateCommodityCodeResultController.onPageLoad(NormalMode, testRecordId).url
+        controllers.commodityCodeResult.routes.UpdateCommodityCodeResultController
+          .onPageLoad(NormalMode, testRecordId)
+          .url
       lazy val onSubmitAction: Call       =
         controllers.commodityCodeResult.routes.UpdateCommodityCodeResultController.onSubmit(NormalMode, testRecordId)
       val page: QuestionPage[Boolean]     = HasCorrectGoodsCommodityCodeUpdatePage(testRecordId)
@@ -129,8 +139,12 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
 
         val commodity   = Commodity("654321", List("Description"), Instant.now, None)
         val userAnswers = emptyUserAnswers
-          .set(CommodityUpdateQuery(testRecordId), commodity).success.value
-          .set(page, true).success.value
+          .set(CommodityUpdateQuery(testRecordId), commodity)
+          .success
+          .value
+          .set(page, true)
+          .success
+          .value
 
         val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -161,18 +175,36 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
 
           "must redirect to the next page when valid data is submitted" in {
 
-            val userAnswers = emptyUserAnswers.set(updatePage, testCommodity.commodityCode).success.value
-              .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true).success.value
-              .set(warningPage, true).success.value
-              .set(HasCommodityCodeChangePage(testRecordId), true).success.value
-              .set(CommodityUpdateQuery(testRecordId), testCommodity).success.value
+            val userAnswers = emptyUserAnswers
+              .set(updatePage, testCommodity.commodityCode)
+              .success
+              .value
+              .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true)
+              .success
+              .value
+              .set(warningPage, true)
+              .success
+              .value
+              .set(HasCommodityCodeChangePage(testRecordId), true)
+              .success
+              .value
+              .set(CommodityUpdateQuery(testRecordId), testCommodity)
+              .success
+              .value
 
-            when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any)).thenReturn(Future.successful(Done))
+            when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
+              .thenReturn(Future.successful(Done))
             when(mockGoodsRecordConnector.putGoodsRecord(any(), any())(any())).thenReturn(Future.successful(Done))
             when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(record))
             when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
-            when(mockCommodityService.isCommodityCodeValid(any(), any())(any(), any())).thenReturn(Future.successful(false))
-            when(mockAutoCategoriseService.autoCategoriseRecord(any[GetGoodsRecordResponse], any[UserAnswers])(any(), any())).thenReturn(Future.successful(None))
+            when(mockCommodityService.isCommodityCodeValid(any(), any())(any(), any()))
+              .thenReturn(Future.successful(false))
+            when(
+              mockAutoCategoriseService.autoCategoriseRecord(any[GetGoodsRecordResponse], any[UserAnswers])(
+                any(),
+                any()
+              )
+            ).thenReturn(Future.successful(None))
 
             val application =
               applicationBuilder(userAnswers = Some(userAnswers))
@@ -194,17 +226,30 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
               status(result) mustEqual SEE_OTHER
               redirectLocation(
                 result
-              ).value mustEqual controllers.goodsRecord.commodityCode.routes.UpdatedCommodityCodeController.onPageLoad(testRecordId).url
+              ).value mustEqual controllers.goodsRecord.commodityCode.routes.UpdatedCommodityCodeController
+                .onPageLoad(testRecordId)
+                .url
             }
           }
 
           "must PUT the goods record, cleanse the data and redirect to the Goods record Page" in {
 
-            val userAnswers = emptyUserAnswers.set(updatePage, testCommodity.commodityCode).success.value
-              .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true).success.value
-              .set(warningPage, true).success.value
-              .set(HasCommodityCodeChangePage(testRecordId), true).success.value
-              .set(CommodityUpdateQuery(testRecordId), testCommodity).success.value
+            val userAnswers = emptyUserAnswers
+              .set(updatePage, testCommodity.commodityCode)
+              .success
+              .value
+              .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true)
+              .success
+              .value
+              .set(warningPage, true)
+              .success
+              .value
+              .set(HasCommodityCodeChangePage(testRecordId), true)
+              .success
+              .value
+              .set(CommodityUpdateQuery(testRecordId), testCommodity)
+              .success
+              .value
 
             val newRecord = PutRecordRequest(
               actorId = record.eori,
@@ -222,11 +267,19 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
 
             when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
             when(mockGoodsRecordConnector.putGoodsRecord(any(), any())(any())).thenReturn(Future.successful(Done))
-            when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any)).thenReturn(Future.successful(Done))
+            when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
+              .thenReturn(Future.successful(Done))
             when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
-            when(mockCommodityService.isCommodityCodeValid(any(), any())(any(), any())) thenReturn Future.successful(false)
-            when(mockAutoCategoriseService.autoCategoriseRecord(any[GetGoodsRecordResponse], any[UserAnswers])(any(), any())).thenReturn(Future.successful(None))
-            
+            when(mockCommodityService.isCommodityCodeValid(any(), any())(any(), any())) thenReturn Future.successful(
+              false
+            )
+            when(
+              mockAutoCategoriseService.autoCategoriseRecord(any[GetGoodsRecordResponse], any[UserAnswers])(
+                any(),
+                any()
+              )
+            ).thenReturn(Future.successful(None))
+
             val application =
               applicationBuilder(userAnswers = Some(userAnswers))
                 .overrides(
@@ -269,11 +322,21 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
           "must PATCH the goods record, cleanse the data and redirect to the Goods record Page" in {
 
             val userAnswers = emptyUserAnswers
-              .set(updatePage, testCommodity.commodityCode).success.value
-              .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true).success.value
-              .set(warningPage, true).success.value
-              .set(HasCommodityCodeChangePage(testRecordId), true).success.value
-              .set(CommodityUpdateQuery(testRecordId), testCommodity).success.value
+              .set(updatePage, testCommodity.commodityCode)
+              .success
+              .value
+              .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true)
+              .success
+              .value
+              .set(warningPage, true)
+              .success
+              .value
+              .set(HasCommodityCodeChangePage(testRecordId), true)
+              .success
+              .value
+              .set(CommodityUpdateQuery(testRecordId), testCommodity)
+              .success
+              .value
 
             when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
 
@@ -315,7 +378,9 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
 
               redirectLocation(
                 result
-              ).value mustEqual controllers.goodsRecord.commodityCode.routes.UpdatedCommodityCodeController.onPageLoad(testRecordId).url
+              ).value mustEqual controllers.goodsRecord.commodityCode.routes.UpdatedCommodityCodeController
+                .onPageLoad(testRecordId)
+                .url
 
               verify(mockGoodsRecordConnector).updateGoodsRecord(any())(any())
               verify(mockSessionRepository, times(2)).set(any())
@@ -336,17 +401,35 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
             val answer          = Commodity(record.comcode, List("test"), validityStartDate, None)
             val expectedPayload = UpdateGoodsRecord(testEori, testRecordId, commodityCode = Some(answer))
 
-            val userAnswers = emptyUserAnswers.set(updatePage, answer.commodityCode).success.value
-              .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true).success.value
-              .set(warningPage, true).success.value
-              .set(HasCommodityCodeChangePage(testRecordId), true).success.value
-              .set(CommodityUpdateQuery(testRecordId), answer).success.value
+            val userAnswers = emptyUserAnswers
+              .set(updatePage, answer.commodityCode)
+              .success
+              .value
+              .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true)
+              .success
+              .value
+              .set(warningPage, true)
+              .success
+              .value
+              .set(HasCommodityCodeChangePage(testRecordId), true)
+              .success
+              .value
+              .set(CommodityUpdateQuery(testRecordId), answer)
+              .success
+              .value
 
             when(mockGoodsRecordConnector.getRecord(eqTo(testRecordId))(any())).thenReturn(Future.successful(record))
-            when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any())).thenReturn(Future.successful(Done))
+            when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any()))
+              .thenReturn(Future.successful(Done))
             when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
-            when(mockCommodityService.isCommodityCodeValid(any(), any())(any(), any())).thenReturn(Future.successful(false))
-            when(mockAutoCategoriseService.autoCategoriseRecord(any[GetGoodsRecordResponse], any[UserAnswers])(any(), any())).thenReturn(Future.successful(None))
+            when(mockCommodityService.isCommodityCodeValid(any(), any())(any(), any()))
+              .thenReturn(Future.successful(false))
+            when(
+              mockAutoCategoriseService.autoCategoriseRecord(any[GetGoodsRecordResponse], any[UserAnswers])(
+                any(),
+                any()
+              )
+            ).thenReturn(Future.successful(None))
 
             val application = applicationBuilder(userAnswers = Some(userAnswers))
               .overrides(
@@ -391,7 +474,9 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
             "must not submit anything, and redirect to Journey Recovery" in {
               when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
               when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
-              when(mockCommodityService.isCommodityCodeValid(any(), any())(any(), any())) thenReturn Future.successful(false)
+              when(mockCommodityService.isCommodityCodeValid(any(), any())(any(), any())) thenReturn Future.successful(
+                false
+              )
 
               val application =
                 applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -420,7 +505,9 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
 
             "must not submit anything when record is not found, and must let the play error handler deal with connector failure" in {
               when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
-              when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.failed(new RuntimeException("Something went very wrong"))
+              when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.failed(
+                new RuntimeException("Something went very wrong")
+              )
 
               val application =
                 applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -442,17 +529,32 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
             }
 
             "must let the play error handler deal with connector failure when updating" in {
-              val userAnswers = emptyUserAnswers.set(updatePage, testCommodity.commodityCode).success.value
-                .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true).success.value
-                .set(warningPage, true).success.value
-                .set(HasCommodityCodeChangePage(testRecordId), true).success.value
-                .set(CommodityUpdateQuery(testRecordId), testCommodity).success.value
+              val userAnswers = emptyUserAnswers
+                .set(updatePage, testCommodity.commodityCode)
+                .success
+                .value
+                .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true)
+                .success
+                .value
+                .set(warningPage, true)
+                .success
+                .value
+                .set(HasCommodityCodeChangePage(testRecordId), true)
+                .success
+                .value
+                .set(CommodityUpdateQuery(testRecordId), testCommodity)
+                .success
+                .value
 
               when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
-              when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any)).thenReturn(Future.successful(Done))
-              when(mockGoodsRecordConnector.patchGoodsRecord(any())(any())).thenReturn(Future.failed(new RuntimeException("Connector failed")))
+              when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
+                .thenReturn(Future.successful(Done))
+              when(mockGoodsRecordConnector.patchGoodsRecord(any())(any()))
+                .thenReturn(Future.failed(new RuntimeException("Connector failed")))
               when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
-              when(mockCommodityService.isCommodityCodeValid(any(), any())(any(), any())) thenReturn Future.successful(false)
+              when(mockCommodityService.isCommodityCodeValid(any(), any())(any(), any())) thenReturn Future.successful(
+                false
+              )
 
               val application =
                 applicationBuilder(userAnswers = Some(userAnswers))
@@ -494,11 +596,21 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
           "must redirect to correct page" in {
 
             val userAnswers = emptyUserAnswers
-              .set(updatePage, testCommodity.commodityCode).success.value
-              .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true).success.value
-              .set(warningPage, true).success.value
-              .set(HasCommodityCodeChangePage(testRecordId), false).success.value
-              .set(CommodityUpdateQuery(testRecordId), testCommodity).success.value
+              .set(updatePage, testCommodity.commodityCode)
+              .success
+              .value
+              .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true)
+              .success
+              .value
+              .set(warningPage, true)
+              .success
+              .value
+              .set(HasCommodityCodeChangePage(testRecordId), false)
+              .success
+              .value
+              .set(CommodityUpdateQuery(testRecordId), testCommodity)
+              .success
+              .value
 
             when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 

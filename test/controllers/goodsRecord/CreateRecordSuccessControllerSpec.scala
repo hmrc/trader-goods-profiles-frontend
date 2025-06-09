@@ -39,7 +39,7 @@ import scala.concurrent.Future
 class CreateRecordSuccessControllerSpec extends SpecBase with BeforeAndAfterEach {
 
   private val mockAutoCategoriseService: AutoCategoriseService = mock[AutoCategoriseService]
-  private val mockGoodsRecordConnector:  GoodsRecordConnector = mock[GoodsRecordConnector]
+  private val mockGoodsRecordConnector: GoodsRecordConnector   = mock[GoodsRecordConnector]
 
   override def beforeEach(): Unit =
     super.beforeEach()
@@ -79,7 +79,8 @@ class CreateRecordSuccessControllerSpec extends SpecBase with BeforeAndAfterEach
       )
 
       when(mockGoodsRecordConnector.getRecord(eqTo("test"))(any[HeaderCarrier])).thenReturn(Future.successful(record))
-      when(mockAutoCategoriseService.autoCategoriseRecord(any[String](), any())(any(), any())) thenReturn Future.successful(None)
+      when(mockAutoCategoriseService.autoCategoriseRecord(any[String](), any())(any(), any())) thenReturn Future
+        .successful(None)
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(inject.bind[AutoCategoriseService].toInstance(mockAutoCategoriseService))
@@ -87,9 +88,10 @@ class CreateRecordSuccessControllerSpec extends SpecBase with BeforeAndAfterEach
         .build()
 
       running(application) {
-        val request = FakeRequest(GET, controllers.goodsRecord.routes.CreateRecordSuccessController.onPageLoad("test").url)
-        val result = route(application, request).value
-        val view = application.injector.instanceOf[CreateRecordSuccessView]
+        val request =
+          FakeRequest(GET, controllers.goodsRecord.routes.CreateRecordSuccessController.onPageLoad("test").url)
+        val result  = route(application, request).value
+        val view    = application.injector.instanceOf[CreateRecordSuccessView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view("test", None)(request, messages(application)).toString
@@ -124,24 +126,37 @@ class CreateRecordSuccessControllerSpec extends SpecBase with BeforeAndAfterEach
         updatedDateTime = Instant.now()
       )
 
-      when(mockAutoCategoriseService.autoCategoriseRecord(eqTo(TestConstants.testRecordId), any[UserAnswers])(any[DataRequest[_]], any[HeaderCarrier]))
+      when(
+        mockAutoCategoriseService.autoCategoriseRecord(eqTo(TestConstants.testRecordId), any[UserAnswers])(
+          any[DataRequest[_]],
+          any[HeaderCarrier]
+        )
+      )
         .thenReturn(Future.successful(Some(StandardGoodsScenario)))
-      when(mockGoodsRecordConnector.getRecord(eqTo(TestConstants.testRecordId))(any[HeaderCarrier])).thenReturn(Future.successful(record))
+      when(mockGoodsRecordConnector.getRecord(eqTo(TestConstants.testRecordId))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(record))
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
           inject.bind[AutoCategoriseService].toInstance(mockAutoCategoriseService),
           inject.bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
-        ).build()
+        )
+        .build()
 
       running(application) {
-        val request = FakeRequest(GET, controllers.goodsRecord.routes.CreateRecordSuccessController.onPageLoad(TestConstants.testRecordId).url)
-        val result = route(application, request).value
-        val view   = application.injector.instanceOf[CreateRecordAutoCategorisationSuccessView]
+        val request = FakeRequest(
+          GET,
+          controllers.goodsRecord.routes.CreateRecordSuccessController.onPageLoad(TestConstants.testRecordId).url
+        )
+        val result  = route(application, request).value
+        val view    = application.injector.instanceOf[CreateRecordAutoCategorisationSuccessView]
         val tagText = messages(application)("declarableStatus.immiReady")
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(TestConstants.testRecordId, true, tagText)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(TestConstants.testRecordId, true, tagText)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 
@@ -174,7 +189,10 @@ class CreateRecordSuccessControllerSpec extends SpecBase with BeforeAndAfterEach
       )
 
       when(
-        mockAutoCategoriseService.autoCategoriseRecord(eqTo(TestConstants.testRecordId), any[UserAnswers])(any[DataRequest[_]], any[HeaderCarrier])
+        mockAutoCategoriseService.autoCategoriseRecord(eqTo(TestConstants.testRecordId), any[UserAnswers])(
+          any[DataRequest[_]],
+          any[HeaderCarrier]
+        )
       ).thenReturn(Future.successful(Some(StandardGoodsScenario)))
 
       when(mockGoodsRecordConnector.getRecord(eqTo(TestConstants.testRecordId))(any[HeaderCarrier]))
@@ -184,16 +202,23 @@ class CreateRecordSuccessControllerSpec extends SpecBase with BeforeAndAfterEach
         .overrides(
           inject.bind[AutoCategoriseService].toInstance(mockAutoCategoriseService),
           inject.bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
-        ).build()
+        )
+        .build()
 
       running(application) {
-        val request = FakeRequest(GET, controllers.goodsRecord.routes.CreateRecordSuccessController.onPageLoad(TestConstants.testRecordId).url)
+        val request = FakeRequest(
+          GET,
+          controllers.goodsRecord.routes.CreateRecordSuccessController.onPageLoad(TestConstants.testRecordId).url
+        )
         val result  = route(application, request).value
         val view    = application.injector.instanceOf[CreateRecordAutoCategorisationSuccessView]
         val tagText = messages(application)("declarableStatus.notReadyForImmi")
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(TestConstants.testRecordId, false, tagText)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(TestConstants.testRecordId, false, tagText)(
+          request,
+          messages(application)
+        ).toString
       }
     }
   }

@@ -38,7 +38,11 @@ class DownloadNavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
       "in Data Download Journey" - {
         "must go from RequestDataPage to DownloadRequestSuccessController" in {
-          navigator.nextPage(RequestDataPage, NormalMode, emptyUserAnswers) mustBe controllers.download.routes.DownloadRequestSuccessController.onPageLoad()
+          navigator.nextPage(
+            RequestDataPage,
+            NormalMode,
+            emptyUserAnswers
+          ) mustBe controllers.download.routes.DownloadRequestSuccessController.onPageLoad()
         }
       }
     }
@@ -46,7 +50,11 @@ class DownloadNavigatorSpec extends SpecBase with BeforeAndAfterEach {
     "in Check mode" - {
       "must go from a page that doesn't exist in the edit route map to Index" in {
         case object UnknownPage extends Page
-        navigator.nextPage(UnknownPage, CheckMode, emptyUserAnswers) mustBe controllers.problem.routes.JourneyRecoveryController.onPageLoad()
+        navigator.nextPage(
+          UnknownPage,
+          CheckMode,
+          emptyUserAnswers
+        ) mustBe controllers.problem.routes.JourneyRecoveryController.onPageLoad()
       }
     }
 
@@ -55,14 +63,17 @@ class DownloadNavigatorSpec extends SpecBase with BeforeAndAfterEach {
         "with no ContinueUrl if none supplied" in {
           val result = navigator.journeyRecovery()
           result.header.status mustEqual SEE_OTHER
-          result.header.headers("Location") mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
+          result.header
+            .headers("Location") mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
         }
 
         "with ContinueUrl if one supplied" in {
           val redirectUrl = Some(RedirectUrl("/redirectUrl"))
           val result      = navigator.journeyRecovery(redirectUrl)
           result.header.status mustEqual SEE_OTHER
-          result.header.headers("Location") mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad(redirectUrl).url
+          result.header.headers("Location") mustEqual controllers.problem.routes.JourneyRecoveryController
+            .onPageLoad(redirectUrl)
+            .url
         }
       }
     }

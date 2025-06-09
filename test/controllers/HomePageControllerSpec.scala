@@ -42,34 +42,45 @@ import scala.concurrent.Future
 class HomePageControllerSpec extends SpecBase with BeforeAndAfterEach {
 
   private val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-  val mockGoodsRecordConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
-  val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
-
+  val mockGoodsRecordConnector: GoodsRecordConnector             = mock[GoodsRecordConnector]
+  val mockDownloadDataConnector: DownloadDataConnector           = mock[DownloadDataConnector]
 
   override def beforeEach(): Unit = {
     super.beforeEach()
     reset(mockTraderProfileConnector, mockGoodsRecordConnector, mockTraderProfileConnector)
   }
 
-    "HomePage Controller" - {
+  "HomePage Controller" - {
     val fileName      = "fileName"
     val fileSize      = 600
     val retentionDays = "30"
 
     "when there are goods records" - {
-      val records = Seq(goodsRecordResponse(Instant.parse("2022-11-18T23:20:19Z"), Instant.parse("2022-11-18T23:20:19Z")))
-      val goodsResponse = GetRecordsResponse(records, GoodsRecordsPagination(1, 1, 1, None, None))
+      val records             =
+        Seq(goodsRecordResponse(Instant.parse("2022-11-18T23:20:19Z"), Instant.parse("2022-11-18T23:20:19Z")))
+      val goodsResponse       = GetRecordsResponse(records, GoodsRecordsPagination(1, 1, 1, None, None))
       val historicProfileData = HistoricProfileData("GB123456789", "GB123456789", Some("XIUKIMS1234567890"), None, None)
 
       "must return OK and the correct view for a GET with banner" in {
         val downloadDataSummary = Seq(
-          DownloadDataSummary("id", testEori, FileReadyUnseen, Instant.now(), Instant.now(), Some(FileInfo(fileName, fileSize, retentionDays)))
+          DownloadDataSummary(
+            "id",
+            testEori,
+            FileReadyUnseen,
+            Instant.now(),
+            Instant.now(),
+            Some(FileInfo(fileName, fileSize, retentionDays))
+          )
         )
-        
+
         when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
-        when(mockTraderProfileConnector.getHistoricProfileData(any())(any())) thenReturn Future.successful(Some(historicProfileData))
+        when(mockTraderProfileConnector.getHistoricProfileData(any())(any())) thenReturn Future.successful(
+          Some(historicProfileData)
+        )
         when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(downloadDataSummary)
-        when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(Some(Email("address", Instant.now())))
+        when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(
+          Some(Email("address", Instant.now()))
+        )
         when(mockGoodsRecordConnector.getRecords(any(), any())(any())) thenReturn Future.successful(Some(goodsResponse))
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -82,8 +93,8 @@ class HomePageControllerSpec extends SpecBase with BeforeAndAfterEach {
 
         running(application) {
           val request = FakeRequest(GET, routes.HomePageController.onPageLoad().url)
-          val result = route(application, request).value
-          val view = application.injector.instanceOf[HomePageView]
+          val result  = route(application, request).value
+          val view    = application.injector.instanceOf[HomePageView]
 
           implicit val message: Messages = messages(application)
 
@@ -110,7 +121,9 @@ class HomePageControllerSpec extends SpecBase with BeforeAndAfterEach {
 
       "must return OK and the correct view for a GET without banner" in {
         when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
-        when(mockTraderProfileConnector.getHistoricProfileData(any())(any())) thenReturn Future.successful(Some(historicProfileData))
+        when(mockTraderProfileConnector.getHistoricProfileData(any())(any())) thenReturn Future.successful(
+          Some(historicProfileData)
+        )
 
         val downloadDataSummary = Seq(
           DownloadDataSummary(
@@ -124,7 +137,9 @@ class HomePageControllerSpec extends SpecBase with BeforeAndAfterEach {
         )
 
         when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(downloadDataSummary)
-        when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(Some(Email("address", Instant.now())))
+        when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(
+          Some(Email("address", Instant.now()))
+        )
         when(mockGoodsRecordConnector.getRecords(any(), any())(any())) thenReturn Future.successful(Some(goodsResponse))
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -137,8 +152,8 @@ class HomePageControllerSpec extends SpecBase with BeforeAndAfterEach {
 
         running(application) {
           val request = FakeRequest(GET, routes.HomePageController.onPageLoad().url)
-          val result = route(application, request).value
-          val view = application.injector.instanceOf[HomePageView]
+          val result  = route(application, request).value
+          val view    = application.injector.instanceOf[HomePageView]
 
           implicit val message: Messages = messages(application)
 
@@ -166,10 +181,16 @@ class HomePageControllerSpec extends SpecBase with BeforeAndAfterEach {
       "must return OK and the correct view for a GET with correct messageKey" - {
         "when downloadDataSummary is None" in {
           when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
-          when(mockTraderProfileConnector.getHistoricProfileData(any())(any())) thenReturn Future.successful(Some(historicProfileData))
+          when(mockTraderProfileConnector.getHistoricProfileData(any())(any())) thenReturn Future.successful(
+            Some(historicProfileData)
+          )
           when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(Seq.empty)
-          when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(Some(Email("address", Instant.now())))
-          when(mockGoodsRecordConnector.getRecords(any(), any())(any())) thenReturn Future.successful(Some(goodsResponse))
+          when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(
+            Some(Email("address", Instant.now()))
+          )
+          when(mockGoodsRecordConnector.getRecords(any(), any())(any())) thenReturn Future.successful(
+            Some(goodsResponse)
+          )
 
           val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(
@@ -181,8 +202,8 @@ class HomePageControllerSpec extends SpecBase with BeforeAndAfterEach {
 
           running(application) {
             val request = FakeRequest(GET, routes.HomePageController.onPageLoad().url)
-            val result = route(application, request).value
-            val view = application.injector.instanceOf[HomePageView]
+            val result  = route(application, request).value
+            val view    = application.injector.instanceOf[HomePageView]
 
             implicit val message: Messages = messages(application)
 
@@ -213,10 +234,18 @@ class HomePageControllerSpec extends SpecBase with BeforeAndAfterEach {
           )
 
           when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
-          when(mockTraderProfileConnector.getHistoricProfileData(any())(any())) thenReturn Future.successful(Some(historicProfileData))
-          when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(downloadDataSummary)
-          when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(Some(Email("address", Instant.now())))
-          when(mockGoodsRecordConnector.getRecords(any(), any())(any())) thenReturn Future.successful(Some(goodsResponse))
+          when(mockTraderProfileConnector.getHistoricProfileData(any())(any())) thenReturn Future.successful(
+            Some(historicProfileData)
+          )
+          when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(
+            downloadDataSummary
+          )
+          when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(
+            Some(Email("address", Instant.now()))
+          )
+          when(mockGoodsRecordConnector.getRecords(any(), any())(any())) thenReturn Future.successful(
+            Some(goodsResponse)
+          )
 
           val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(
@@ -228,8 +257,8 @@ class HomePageControllerSpec extends SpecBase with BeforeAndAfterEach {
 
           running(application) {
             val request = FakeRequest(GET, routes.HomePageController.onPageLoad().url)
-            val result = route(application, request).value
-            val view = application.injector.instanceOf[HomePageView]
+            val result  = route(application, request).value
+            val view    = application.injector.instanceOf[HomePageView]
 
             implicit val message: Messages = messages(application)
 
@@ -260,10 +289,18 @@ class HomePageControllerSpec extends SpecBase with BeforeAndAfterEach {
           )
 
           when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
-          when(mockTraderProfileConnector.getHistoricProfileData(any())(any())) thenReturn Future.successful(Some(historicProfileData))
-          when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(downloadDataSummary)
-          when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(Some(Email("address", Instant.now())))
-          when(mockGoodsRecordConnector.getRecords(any(), any())(any())) thenReturn Future.successful(Some(goodsResponse))
+          when(mockTraderProfileConnector.getHistoricProfileData(any())(any())) thenReturn Future.successful(
+            Some(historicProfileData)
+          )
+          when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(
+            downloadDataSummary
+          )
+          when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(
+            Some(Email("address", Instant.now()))
+          )
+          when(mockGoodsRecordConnector.getRecords(any(), any())(any())) thenReturn Future.successful(
+            Some(goodsResponse)
+          )
 
           val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(
@@ -275,8 +312,8 @@ class HomePageControllerSpec extends SpecBase with BeforeAndAfterEach {
 
           running(application) {
             val request = FakeRequest(GET, routes.HomePageController.onPageLoad().url)
-            val result = route(application, request).value
-            val view = application.injector.instanceOf[HomePageView]
+            val result  = route(application, request).value
+            val view    = application.injector.instanceOf[HomePageView]
 
             implicit val message: Messages = messages(application)
 
@@ -303,10 +340,18 @@ class HomePageControllerSpec extends SpecBase with BeforeAndAfterEach {
           )
 
           when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
-          when(mockTraderProfileConnector.getHistoricProfileData(any())(any())) thenReturn Future.successful(Some(historicProfileData))
-          when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(downloadDataSummary)
-          when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(Some(Email("address", Instant.now())))
-          when(mockGoodsRecordConnector.getRecords(any(), any())(any())) thenReturn Future.successful(Some(goodsResponse))
+          when(mockTraderProfileConnector.getHistoricProfileData(any())(any())) thenReturn Future.successful(
+            Some(historicProfileData)
+          )
+          when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(
+            downloadDataSummary
+          )
+          when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(
+            Some(Email("address", Instant.now()))
+          )
+          when(mockGoodsRecordConnector.getRecords(any(), any())(any())) thenReturn Future.successful(
+            Some(goodsResponse)
+          )
 
           val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
             .overrides(
@@ -318,8 +363,8 @@ class HomePageControllerSpec extends SpecBase with BeforeAndAfterEach {
 
           running(application) {
             val request = FakeRequest(GET, routes.HomePageController.onPageLoad().url)
-            val result = route(application, request).value
-            val view = application.injector.instanceOf[HomePageView]
+            val result  = route(application, request).value
+            val view    = application.injector.instanceOf[HomePageView]
 
             implicit val message: Messages = messages(application)
 
@@ -354,7 +399,9 @@ class HomePageControllerSpec extends SpecBase with BeforeAndAfterEach {
           Some(GetRecordsResponse(Seq.empty, GoodsRecordsPagination(0, 1, 1, None, None)))
         )
         when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(Seq.empty)
-        when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(Some(Email("address", Instant.now())))
+        when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(
+          Some(Email("address", Instant.now()))
+        )
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
@@ -366,8 +413,8 @@ class HomePageControllerSpec extends SpecBase with BeforeAndAfterEach {
 
         running(application) {
           val request = FakeRequest(GET, routes.HomePageController.onPageLoad().url)
-          val result = route(application, request).value
-          val view = application.injector.instanceOf[HomePageView]
+          val result  = route(application, request).value
+          val view    = application.injector.instanceOf[HomePageView]
 
           implicit val message: Messages = messages(application)
 
@@ -398,7 +445,9 @@ class HomePageControllerSpec extends SpecBase with BeforeAndAfterEach {
       when(mockTraderProfileConnector.getHistoricProfileData(any())(any())) thenReturn Future.successful(None)
       when(mockGoodsRecordConnector.getRecords(any(), any())(any())) thenReturn Future.successful(None)
       when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(Seq.empty)
-      when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(Some(Email("address", Instant.now())))
+      when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(
+        Some(Email("address", Instant.now()))
+      )
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
@@ -410,11 +459,12 @@ class HomePageControllerSpec extends SpecBase with BeforeAndAfterEach {
 
       running(application) {
         val request = FakeRequest(GET, routes.HomePageController.onPageLoad().url)
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual controllers.goodsProfile.routes.GoodsRecordsLoadingController.onPageLoad(
-          Some(RedirectUrl(controllers.routes.HomePageController.onPageLoad().url))).url
+        redirectLocation(result).value mustEqual controllers.goodsProfile.routes.GoodsRecordsLoadingController
+          .onPageLoad(Some(RedirectUrl(controllers.routes.HomePageController.onPageLoad().url)))
+          .url
       }
     }
 
@@ -438,8 +488,8 @@ class HomePageControllerSpec extends SpecBase with BeforeAndAfterEach {
 
         running(application) {
           val request = FakeRequest(GET, routes.HomePageController.onPageLoad().url)
-          val result = route(application, request).value
-          val view = application.injector.instanceOf[HomePageView]
+          val result  = route(application, request).value
+          val view    = application.injector.instanceOf[HomePageView]
 
           implicit val message: Messages = messages(application)
 
@@ -473,7 +523,9 @@ class HomePageControllerSpec extends SpecBase with BeforeAndAfterEach {
           Some(GetRecordsResponse(Seq.empty, GoodsRecordsPagination(0, 1, 1, None, None)))
         )
         when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(Seq.empty)
-        when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(Some(Email("address", Instant.now())))
+        when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(
+          Some(Email("address", Instant.now()))
+        )
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
@@ -485,8 +537,8 @@ class HomePageControllerSpec extends SpecBase with BeforeAndAfterEach {
 
         running(application) {
           val request = FakeRequest(GET, routes.HomePageController.onPageLoad().url)
-          val result = route(application, request).value
-          val view = application.injector.instanceOf[HomePageView]
+          val result  = route(application, request).value
+          val view    = application.injector.instanceOf[HomePageView]
 
           implicit val message: Messages = messages(application)
 
@@ -517,7 +569,9 @@ class HomePageControllerSpec extends SpecBase with BeforeAndAfterEach {
           Some(GetRecordsResponse(Seq.empty, GoodsRecordsPagination(0, 1, 1, None, None)))
         )
         when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(Seq.empty)
-        when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(Some(Email("address", Instant.now())))
+        when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(
+          Some(Email("address", Instant.now()))
+        )
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
@@ -528,9 +582,10 @@ class HomePageControllerSpec extends SpecBase with BeforeAndAfterEach {
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, routes.HomePageController.onPageLoad().url).withSession(pageUpdated -> newUkimsNumberPage)
+          val request =
+            FakeRequest(GET, routes.HomePageController.onPageLoad().url).withSession(pageUpdated -> newUkimsNumberPage)
           val result  = route(application, request).value
-          val view = application.injector.instanceOf[HomePageView]
+          val view    = application.injector.instanceOf[HomePageView]
 
           implicit val message: Messages = messages(application)
 

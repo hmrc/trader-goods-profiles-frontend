@@ -92,30 +92,33 @@ class GoodsRecordNavigatorSpec extends SpecBase with BeforeAndAfterEach {
         "if answer is Yes" - {
           "must go from HasCountryOfOriginChangePage to CountryOfOriginUpdatePage" in {
             val userAnswers = emptyUserAnswers.set(HasCountryOfOriginChangePage(testRecordId), true).success.value
-            
+
             navigator.nextPage(HasCountryOfOriginChangePage(testRecordId), NormalMode, userAnswers) mustBe
-              controllers.goodsRecord.countryOfOrigin.routes.UpdateCountryOfOriginController.onPageLoad(NormalMode, testRecordId)
+              controllers.goodsRecord.countryOfOrigin.routes.UpdateCountryOfOriginController
+                .onPageLoad(NormalMode, testRecordId)
           }
 
           "must go from HasGoodsDescriptionChangePage to GoodsDescriptionUpdatePage" in {
             val userAnswers = emptyUserAnswers.set(HasGoodsDescriptionChangePage(testRecordId), true).success.value
-            
+
             navigator.nextPage(HasGoodsDescriptionChangePage(testRecordId), NormalMode, userAnswers) mustBe
-              controllers.goodsRecord.goodsDescription.routes.UpdateGoodsDescriptionController.onPageLoad(NormalMode, testRecordId)
+              controllers.goodsRecord.goodsDescription.routes.UpdateGoodsDescriptionController
+                .onPageLoad(NormalMode, testRecordId)
           }
 
           "must go from HasCommodityCodeChangePage to CommodityCodeUpdatePage" in {
             val userAnswers = emptyUserAnswers.set(HasCommodityCodeChangePage(testRecordId), true).success.value
-            
+
             navigator.nextPage(HasCommodityCodeChangePage(testRecordId), NormalMode, userAnswers) mustBe
-              controllers.goodsRecord.commodityCode.routes.UpdateCommodityCodeController.onPageLoad(NormalMode, testRecordId)
+              controllers.goodsRecord.commodityCode.routes.UpdateCommodityCodeController
+                .onPageLoad(NormalMode, testRecordId)
           }
         }
 
         "if answer is No" - {
           "must go from HasCountryOfOriginChangePage to SingleRecordController" in {
             val userAnswers = emptyUserAnswers.set(HasCountryOfOriginChangePage(testRecordId), false).success.value
-            
+
             navigator.nextPage(HasCountryOfOriginChangePage(testRecordId), NormalMode, userAnswers) mustBe
               controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId)
           }
@@ -129,9 +132,12 @@ class GoodsRecordNavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
           "must go from HasCommodityCodeChangePage to SingleRecordController" in {
             val userAnswers = emptyUserAnswers.set(HasCommodityCodeChangePage(testRecordId), false).success.value
-            
+
             navigator.nextPage(
-              HasCommodityCodeChangePage(testRecordId), NormalMode, emptyUserAnswers.set(HasCommodityCodeChangePage(testRecordId), false).success.value) mustBe
+              HasCommodityCodeChangePage(testRecordId),
+              NormalMode,
+              emptyUserAnswers.set(HasCommodityCodeChangePage(testRecordId), false).success.value
+            ) mustBe
               controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId)
           }
         }
@@ -153,7 +159,8 @@ class GoodsRecordNavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
         "must go from CommodityCodeUpdatePage to HasCorrectGoodsCommodityCodeUpdatePage" in {
           navigator.nextPage(CommodityCodeUpdatePage(testRecordId), NormalMode, emptyUserAnswers) mustBe
-            controllers.commodityCodeResult.routes.UpdateCommodityCodeResultController.onPageLoad(NormalMode, testRecordId)
+            controllers.commodityCodeResult.routes.UpdateCommodityCodeResultController
+              .onPageLoad(NormalMode, testRecordId)
         }
 
         "must go from CyaUpdateRecord to SingleRecordController" in {
@@ -204,7 +211,8 @@ class GoodsRecordNavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
         "must go from CommodityCodePage to HasCorrectGoodsCommodityCodeUpdatePage" in {
           navigator.nextPage(CommodityCodeUpdatePage(testRecordId), CheckMode, emptyUserAnswers) mustBe
-            controllers.commodityCodeResult.routes.UpdateCommodityCodeResultController.onPageLoad(CheckMode, testRecordId)
+            controllers.commodityCodeResult.routes.UpdateCommodityCodeResultController
+              .onPageLoad(CheckMode, testRecordId)
         }
       }
     }
@@ -213,14 +221,17 @@ class GoodsRecordNavigatorSpec extends SpecBase with BeforeAndAfterEach {
       "with no ContinueUrl if none supplied" in {
         val result = navigator.journeyRecovery()
         result.header.status mustEqual SEE_OTHER
-        result.header.headers("Location") mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
+        result.header
+          .headers("Location") mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
       }
 
       "with ContinueUrl if one supplied" in {
         val redirectUrl = Some(RedirectUrl("/redirectUrl"))
         val result      = navigator.journeyRecovery(redirectUrl)
         result.header.status mustEqual SEE_OTHER
-        result.header.headers("Location") mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad(redirectUrl).url
+        result.header.headers("Location") mustEqual controllers.problem.routes.JourneyRecoveryController
+          .onPageLoad(redirectUrl)
+          .url
       }
     }
   }

@@ -55,16 +55,32 @@ trait SpecBase
   def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
 
   def fullProfileUserAnswers: UserAnswers = UserAnswers(userAnswersId)
-    .set(UkimsNumberPage, "1").success.value
-    .set(HasNirmsPage, true).success.value
-    .set(NirmsNumberPage, "2").success.value
-    .set(HasNiphlPage, true).success.value
-    .set(NiphlNumberPage, "3").success.value
+    .set(UkimsNumberPage, "1")
+    .success
+    .value
+    .set(HasNirmsPage, true)
+    .success
+    .value
+    .set(NirmsNumberPage, "2")
+    .success
+    .value
+    .set(HasNiphlPage, true)
+    .success
+    .value
+    .set(NiphlNumberPage, "3")
+    .success
+    .value
 
   def mandatoryProfileUserAnswers: UserAnswers = UserAnswers(userAnswersId)
-    .set(UkimsNumberPage, "1").success.value
-    .set(HasNirmsPage, false).success.value
-    .set(HasNiphlPage, false).success.value
+    .set(UkimsNumberPage, "1")
+    .success
+    .value
+    .set(HasNirmsPage, false)
+    .success
+    .value
+    .set(HasNiphlPage, false)
+    .success
+    .value
 
   def validityStartDate: Instant = Instant.parse("2007-12-03T10:15:30.00Z")
 
@@ -80,37 +96,74 @@ trait SpecBase
   ).copy(adviceStatus = Requested)
 
   def testAuditOttResponse: OttResponse = OttResponse(
-    GoodsNomenclatureResponse("test", "1234567890", None, Instant.EPOCH, None, List("test")), Seq(), Seq(), Seq()
+    GoodsNomenclatureResponse("test", "1234567890", None, Instant.EPOCH, None, List("test")),
+    Seq(),
+    Seq(),
+    Seq()
   )
 
   def fullRecordUserAnswers: UserAnswers =
     UserAnswers(userAnswersId)
-      .set(ProductReferencePage, "123").success.value
-      .set(CommodityCodePage, testCommodity.commodityCode).success.value
-      .set(CountryOfOriginPage, "1").success.value
-      .set(HasCorrectGoodsPage, true).success.value
-      .set(GoodsDescriptionPage, "DESCRIPTION").success.value
-      .set(CommodityQuery, testCommodity).success.value
+      .set(ProductReferencePage, "123")
+      .success
+      .value
+      .set(CommodityCodePage, testCommodity.commodityCode)
+      .success
+      .value
+      .set(CountryOfOriginPage, "1")
+      .success
+      .value
+      .set(HasCorrectGoodsPage, true)
+      .success
+      .value
+      .set(GoodsDescriptionPage, "DESCRIPTION")
+      .success
+      .value
+      .set(CommodityQuery, testCommodity)
+      .success
+      .value
 
   def mandatoryRecordUserAnswers: UserAnswers =
     UserAnswers(userAnswersId)
-      .set(ProductReferencePage, "123").success.value
-      .set(CommodityCodePage, testCommodity.commodityCode).success.value
-      .set(CountryOfOriginPage, "1").success.value
-      .set(GoodsDescriptionPage, "DESCRIPTION").success.value
-      .set(HasCorrectGoodsPage, true).success.value
-      .set(CommodityQuery, testCommodity).success.value
+      .set(ProductReferencePage, "123")
+      .success
+      .value
+      .set(CommodityCodePage, testCommodity.commodityCode)
+      .success
+      .value
+      .set(CountryOfOriginPage, "1")
+      .success
+      .value
+      .set(GoodsDescriptionPage, "DESCRIPTION")
+      .success
+      .value
+      .set(HasCorrectGoodsPage, true)
+      .success
+      .value
+      .set(CommodityQuery, testCommodity)
+      .success
+      .value
 
   def mandatoryAdviceUserAnswers: UserAnswers =
     UserAnswers(userAnswersId)
-      .set(NamePage(testRecordId), "Firstname Lastname").success.value
-      .set(EmailPage(testRecordId), "test@test.com").success.value
+      .set(NamePage(testRecordId), "Firstname Lastname")
+      .success
+      .value
+      .set(EmailPage(testRecordId), "test@test.com")
+      .success
+      .value
 
   def mandatorySupplementaryUserAnswers: UserAnswers =
     UserAnswers(userAnswersId)
-      .set(HasSupplementaryUnitUpdatePage(testRecordId), true).success.value
-      .set(SupplementaryUnitUpdatePage(testRecordId), "1234567890.123456").success.value
-      .set(MeasurementQuery(testRecordId), "litres").success.value
+      .set(HasSupplementaryUnitUpdatePage(testRecordId), true)
+      .success
+      .value
+      .set(SupplementaryUnitUpdatePage(testRecordId), "1234567890.123456")
+      .success
+      .value
+      .set(MeasurementQuery(testRecordId), "litres")
+      .success
+      .value
 
   lazy val category1: CategoryAssessment =
     CategoryAssessment(
@@ -118,7 +171,9 @@ trait SpecBase
       1,
       Seq(Certificate("Y994", "Y994", "Goods are not from warzone")),
       "measure description",
-      Some("http://eur-lex.europa.eu/search.html?whOJ=NO_OJ%3D88,YEAR_OJ%3D2012,PAGE_FIRST%3D0001&DB_COLL_OJ=oj-l&type=advanced&lang=en")
+      Some(
+        "http://eur-lex.europa.eu/search.html?whOJ=NO_OJ%3D88,YEAR_OJ%3D2012,PAGE_FIRST%3D0001&DB_COLL_OJ=oj-l&type=advanced&lang=en"
+      )
     )
 
   lazy val category2: CategoryAssessment =
@@ -127,7 +182,9 @@ trait SpecBase
       1,
       Seq(AdditionalCode("NC123", "NC123", "Not required")),
       "measure description",
-      Some("http://eur-lex.europa.eu/search.html?whOJ=NO_OJ%3D224,YEAR_OJ%3D2017,PAGE_FIRST%3D0001&DB_COLL_OJ=oj-l&type=advanced&lang=en")
+      Some(
+        "http://eur-lex.europa.eu/search.html?whOJ=NO_OJ%3D224,YEAR_OJ%3D2017,PAGE_FIRST%3D0001&DB_COLL_OJ=oj-l&type=advanced&lang=en"
+      )
     )
 
   lazy val category3: CategoryAssessment = CategoryAssessment(
@@ -138,7 +195,9 @@ trait SpecBase
       Certificate("X812", "X812", "Goods not containing seal products")
     ),
     "measure description",
-    Some("http://eur-lex.europa.eu/search.html?whOJ=NO_OJ%3D229,YEAR_OJ%3D2014,PAGE_FIRST%3D0013&DB_COLL_OJ=oj-l&type=advanced&lang=en")
+    Some(
+      "http://eur-lex.europa.eu/search.html?whOJ=NO_OJ%3D229,YEAR_OJ%3D2014,PAGE_FIRST%3D0013&DB_COLL_OJ=oj-l&type=advanced&lang=en"
+    )
   )
 
   lazy val category1Niphl: CategoryAssessment =
@@ -147,7 +206,9 @@ trait SpecBase
       1,
       Seq(OtherExemption(NiphlCode, "Y994", "Goods are not from warzone")),
       "measure description",
-      Some("http://eur-lex.europa.eu/search.html?whOJ=NO_OJ%3D183,YEAR_OJ%3D2014,PAGE_FIRST%3D0009&DB_COLL_OJ=oj-l&type=advanced&lang=en")
+      Some(
+        "http://eur-lex.europa.eu/search.html?whOJ=NO_OJ%3D183,YEAR_OJ%3D2014,PAGE_FIRST%3D0009&DB_COLL_OJ=oj-l&type=advanced&lang=en"
+      )
     )
 
   lazy val category2Nirms: CategoryAssessment =
@@ -156,7 +217,9 @@ trait SpecBase
       2,
       Seq(OtherExemption(NirmsCode, "Y990", "Nirms description")),
       "measure description",
-      Some("http://eur-lex.europa.eu/search.html?whOJ=NO_OJ%3D42I,YEAR_OJ%3D2022,PAGE_FIRST%3D0077&DB_COLL_OJ=oj-l&type=advanced&lang=en")
+      Some(
+        "http://eur-lex.europa.eu/search.html?whOJ=NO_OJ%3D42I,YEAR_OJ%3D2022,PAGE_FIRST%3D0077&DB_COLL_OJ=oj-l&type=advanced&lang=en"
+      )
     )
 
   lazy val categorisationInfo: CategorisationInfo = CategorisationInfo(
@@ -179,7 +242,7 @@ trait SpecBase
     1
   )
 
-  val today: Instant = LocalDate.now().atStartOfDay(ZoneId.of("UTC")).toInstant
+  val today: Instant                                                      = LocalDate.now().atStartOfDay(ZoneId.of("UTC")).toInstant
   lazy val categorisationInfoWithExpiredCommodityCode: CategorisationInfo = CategorisationInfo(
     "1234567890",
     "BV",
@@ -250,10 +313,18 @@ trait SpecBase
   )
 
   lazy val userAnswersForCategorisation: UserAnswers = emptyUserAnswers
-    .set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
-    .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-    .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
-    .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
+    .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+    .success
+    .value
+    .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+    .success
+    .value
+    .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+    .success
+    .value
+    .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+    .success
+    .value
 
   lazy val category1NoExemptions: CategoryAssessment =
     CategoryAssessment(
@@ -261,7 +332,9 @@ trait SpecBase
       1,
       Seq(),
       "measure description",
-      Some("http://eur-lex.europa.eu/search.html?whOJ=NO_OJ%3D190,YEAR_OJ%3D2006,PAGE_FIRST%3D0001&DB_COLL_OJ=oj-l&type=advanced&lang=en")
+      Some(
+        "http://eur-lex.europa.eu/search.html?whOJ=NO_OJ%3D190,YEAR_OJ%3D2006,PAGE_FIRST%3D0001&DB_COLL_OJ=oj-l&type=advanced&lang=en"
+      )
     )
 
   lazy val category2NoExemptions: CategoryAssessment =
@@ -270,7 +343,9 @@ trait SpecBase
       2,
       Seq(),
       "measure description",
-      Some("http://eur-lex.europa.eu/search.html?whOJ=NO_OJ%3D190,YEAR_OJ%3D2006,PAGE_FIRST%3D0001&DB_COLL_OJ=oj-l&type=advanced&lang=en")
+      Some(
+        "http://eur-lex.europa.eu/search.html?whOJ=NO_OJ%3D190,YEAR_OJ%3D2006,PAGE_FIRST%3D0001&DB_COLL_OJ=oj-l&type=advanced&lang=en"
+      )
     )
 
   def goodsRecordResponse(

@@ -54,7 +54,10 @@ class CreateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
 
       "must return OK and the correct view for a GET" in {
 
-        val userAnswers = emptyUserAnswers.set(CommodityQuery, Commodity("654321", List("Description", "Other"), Instant.now, None)).success.value
+        val userAnswers = emptyUserAnswers
+          .set(CommodityQuery, Commodity("654321", List("Description", "Other"), Instant.now, None))
+          .success
+          .value
 
         val application = applicationBuilder(userAnswers = Some(userAnswers))
           .build()
@@ -95,8 +98,13 @@ class CreateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
       "must populate the view correctly on a GET when the question has previously been answered" in {
 
         val commodity   = Commodity("654321", List("Description"), Instant.now, None)
-        val userAnswers = emptyUserAnswers.set(CommodityQuery, commodity).success.value
-          .set(page, true).success.value
+        val userAnswers = emptyUserAnswers
+          .set(CommodityQuery, commodity)
+          .success
+          .value
+          .set(page, true)
+          .success
+          .value
 
         val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -110,7 +118,10 @@ class CreateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
 
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(form.fill(true), commodity, onSubmitAction, NormalMode, None)(
-            request, messages(application), appConfig).toString
+            request,
+            messages(application),
+            appConfig
+          ).toString
         }
       }
 

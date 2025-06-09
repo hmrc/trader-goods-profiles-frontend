@@ -65,8 +65,8 @@ class CreateNirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request = FakeRequest(GET, nirmsNumberRoute)
-        val result = route(application, request).value
-        val view = application.injector.instanceOf[NirmsNumberView]
+        val result  = route(application, request).value
+        val view    = application.injector.instanceOf[NirmsNumberView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(
@@ -90,8 +90,8 @@ class CreateNirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request = FakeRequest(GET, nirmsNumberRoute)
-        val view = application.injector.instanceOf[NirmsNumberView]
-        val result = route(application, request).value
+        val view    = application.injector.instanceOf[NirmsNumberView]
+        val result  = route(application, request).value
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(
@@ -118,7 +118,7 @@ class CreateNirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request = FakeRequest(POST, nirmsNumberRoute).withFormUrlEncodedBody(("value", "RMS-GB-123456"))
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
@@ -136,10 +136,10 @@ class CreateNirmsNumberControllerSpec extends SpecBase with MockitoSugar {
         .build()
 
       running(application) {
-        val request = FakeRequest(POST, nirmsNumberRoute).withFormUrlEncodedBody(("value", ""))
+        val request   = FakeRequest(POST, nirmsNumberRoute).withFormUrlEncodedBody(("value", ""))
         val boundForm = form.bind(Map("value" -> ""))
-        val view = application.injector.instanceOf[NirmsNumberView]
-        val result = route(application, request).value
+        val view      = application.injector.instanceOf[NirmsNumberView]
+        val result    = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
         contentAsString(result) mustEqual view(
@@ -161,7 +161,7 @@ class CreateNirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request = FakeRequest(GET, nirmsNumberRoute)
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
@@ -180,7 +180,7 @@ class CreateNirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request = FakeRequest(GET, nirmsNumberRoute)
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.HomePageController.onPageLoad().url
@@ -199,7 +199,7 @@ class CreateNirmsNumberControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request = FakeRequest(POST, nirmsNumberRoute).withFormUrlEncodedBody(("value", "answer"))
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url

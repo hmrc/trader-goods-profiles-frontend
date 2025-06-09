@@ -96,8 +96,8 @@ class UpdateIsNirmsRegisteredControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request = FakeRequest(GET, hasNirmsRoute)
-        val view = application.injector.instanceOf[HasNirmsView]
-        val result = route(application, request).value
+        val view    = application.injector.instanceOf[HasNirmsView]
+        val result  = route(application, request).value
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(
@@ -127,7 +127,7 @@ class UpdateIsNirmsRegisteredControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request = FakeRequest(POST, hasNirmsRoute).withFormUrlEncodedBody(("value", "true"))
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
@@ -143,16 +143,16 @@ class UpdateIsNirmsRegisteredControllerSpec extends SpecBase with MockitoSugar {
       when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future.successful(traderProfile)
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(
-            bind[SessionRepository].toInstance(mockSessionRepository),
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-            bind[ProfileNavigator].toInstance(new FakeProfileNavigator(onwardRoute))
-          )
-          .build()
+        .overrides(
+          bind[SessionRepository].toInstance(mockSessionRepository),
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+          bind[ProfileNavigator].toInstance(new FakeProfileNavigator(onwardRoute))
+        )
+        .build()
 
       running(application) {
         val request = FakeRequest(POST, hasNirmsRoute).withFormUrlEncodedBody(("value", "true"))
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
@@ -164,10 +164,10 @@ class UpdateIsNirmsRegisteredControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(POST, hasNirmsRoute).withFormUrlEncodedBody(("value", ""))
+        val request   = FakeRequest(POST, hasNirmsRoute).withFormUrlEncodedBody(("value", ""))
         val boundForm = form.bind(Map("value" -> ""))
-        val view = application.injector.instanceOf[HasNirmsView]
-        val result = route(application, request).value
+        val view      = application.injector.instanceOf[HasNirmsView]
+        val result    = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
         contentAsString(result) mustEqual view(
@@ -197,7 +197,7 @@ class UpdateIsNirmsRegisteredControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request = FakeRequest(POST, hasNirmsRoute).withFormUrlEncodedBody(("value", "true"))
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url

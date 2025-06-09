@@ -67,9 +67,16 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
           val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"), eoriChanged = false)
 
-          val userAnswers = emptyUserAnswers.set(RemoveNirmsPage, true).success.value
-            .set(HasNirmsUpdatePage, false).success.value
-            .set(TraderProfileQuery, traderProfile).success.value
+          val userAnswers = emptyUserAnswers
+            .set(RemoveNirmsPage, true)
+            .success
+            .value
+            .set(HasNirmsUpdatePage, false)
+            .success
+            .value
+            .set(TraderProfileQuery, traderProfile)
+            .success
+            .value
 
           val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -103,7 +110,9 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual
-              controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl))).url
+              controllers.problem.routes.JourneyRecoveryController
+                .onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl)))
+                .url
           }
         }
 
@@ -118,7 +127,9 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
+            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad()
+              .url
           }
         }
       }
@@ -132,9 +143,15 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val updatedTraderProfile = TraderProfile(testEori, "1", None, Some("3"), eoriChanged = false)
 
             val userAnswers = emptyUserAnswers
-              .set(RemoveNirmsPage, true).success.value
-              .set(HasNirmsUpdatePage, false).success.value
-              .set(TraderProfileQuery, traderProfile).success.value
+              .set(RemoveNirmsPage, true)
+              .success
+              .value
+              .set(HasNirmsUpdatePage, false)
+              .success
+              .value
+              .set(TraderProfileQuery, traderProfile)
+              .success
+              .value
 
             val mockTraderProfileConnector = mock[TraderProfileConnector]
             val mockAuditService           = mock[AuditService]
@@ -166,7 +183,11 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
               withClue("must call the relevant services") {
                 verify(mockTraderProfileConnector).submitTraderProfile(eqTo(updatedTraderProfile))(any())
                 verify(mockTraderProfileConnector).getTraderProfile(any())
-                verify(mockAuditService).auditMaintainProfile(eqTo(traderProfile), eqTo(updatedTraderProfile), eqTo(AffinityGroup.Individual))(any())
+                verify(mockAuditService).auditMaintainProfile(
+                  eqTo(traderProfile),
+                  eqTo(updatedTraderProfile),
+                  eqTo(AffinityGroup.Individual)
+                )(any())
               }
             }
           }
@@ -176,8 +197,13 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
           "when the data is invalid" in {
 
-            val userAnswers = emptyUserAnswers.set(RemoveNirmsPage, true).success.value
-              .set(HasNirmsUpdatePage, true).success.value
+            val userAnswers = emptyUserAnswers
+              .set(RemoveNirmsPage, true)
+              .success
+              .value
+              .set(HasNirmsUpdatePage, true)
+              .success
+              .value
 
             val mockTraderProfileConnector = mock[TraderProfileConnector]
             val mockAuditService           = mock[AuditService]
@@ -195,13 +221,16 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
             running(application) {
 
-              val request = FakeRequest(POST, controllers.profile.routes.CyaMaintainProfileController.onSubmitNirms().url)
+              val request =
+                FakeRequest(POST, controllers.profile.routes.CyaMaintainProfileController.onSubmitNirms().url)
 
               val result = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual
-                controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl))).url
+                controllers.problem.routes.JourneyRecoveryController
+                  .onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl)))
+                  .url
 
               verify(mockTraderProfileConnector, never()).getTraderProfile(any())
 
@@ -226,13 +255,16 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
                 .build()
 
             running(application) {
-              val request = FakeRequest(POST, controllers.profile.routes.CyaMaintainProfileController.onSubmitNirms().url)
+              val request =
+                FakeRequest(POST, controllers.profile.routes.CyaMaintainProfileController.onSubmitNirms().url)
 
               val result = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual
-                controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl))).url
+                controllers.problem.routes.JourneyRecoveryController
+                  .onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl)))
+                  .url
             }
           }
         }
@@ -241,9 +273,16 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
           val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"), eoriChanged = false)
 
-          val userAnswers = emptyUserAnswers.set(RemoveNirmsPage, true).success.value
-            .set(HasNirmsUpdatePage, false).success.value
-            .set(TraderProfileQuery, traderProfile).success.value
+          val userAnswers = emptyUserAnswers
+            .set(RemoveNirmsPage, true)
+            .success
+            .value
+            .set(HasNirmsUpdatePage, false)
+            .success
+            .value
+            .set(TraderProfileQuery, traderProfile)
+            .success
+            .value
 
           val mockTraderProfileConnector = mock[TraderProfileConnector]
           val mockAuditService           = mock[AuditService]
@@ -276,15 +315,23 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
           val traderProfile        = TraderProfile(testEori, "1", Some("2"), Some("3"), eoriChanged = false)
           val updatedTraderProfile = TraderProfile(testEori, "1", None, Some("3"), eoriChanged = false)
 
-          val userAnswers = emptyUserAnswers.set(RemoveNirmsPage, true).success.value
-            .set(HasNirmsUpdatePage, false).success.value
-            .set(TraderProfileQuery, traderProfile).success.value
+          val userAnswers = emptyUserAnswers
+            .set(RemoveNirmsPage, true)
+            .success
+            .value
+            .set(HasNirmsUpdatePage, false)
+            .success
+            .value
+            .set(TraderProfileQuery, traderProfile)
+            .success
+            .value
 
           val mockTraderProfileConnector = mock[TraderProfileConnector]
           val mockAuditService           = mock[AuditService]
 
           when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future.successful(traderProfile)
-          when(mockTraderProfileConnector.submitTraderProfile(any())(any())).thenReturn(Future.failed(new RuntimeException("Connector failed")))
+          when(mockTraderProfileConnector.submitTraderProfile(any())(any()))
+            .thenReturn(Future.failed(new RuntimeException("Connector failed")))
           when(mockAuditService.auditMaintainProfile(any(), any(), any())(any)).thenReturn(Future.successful(Done))
 
           val application =
@@ -302,7 +349,11 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             }
 
             withClue("must call the audit connector with the supplied details") {
-              verify(mockAuditService).auditMaintainProfile(eqTo(traderProfile), eqTo(updatedTraderProfile), eqTo(AffinityGroup.Individual))(any())
+              verify(mockAuditService).auditMaintainProfile(
+                eqTo(traderProfile),
+                eqTo(updatedTraderProfile),
+                eqTo(AffinityGroup.Individual)
+              )(any())
             }
           }
         }
@@ -312,10 +363,12 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
           running(application) {
             val request = FakeRequest(POST, controllers.profile.routes.CyaMaintainProfileController.onSubmitNirms().url)
-            val result = route(application, request).value
+            val result  = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
+            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad()
+              .url
           }
         }
       }
@@ -332,16 +385,20 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
         "must return OK and the correct view" in {
           val userAnswers = emptyUserAnswers.set(UkimsNumberUpdatePage, "newUkims").success.value
           val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
-          val action = controllers.profile.routes.CyaMaintainProfileController.onSubmitUkimsNumber()
+          val action      = controllers.profile.routes.CyaMaintainProfileController.onSubmitUkimsNumber()
 
           running(application) {
-            val list = createChangeList(application, userAnswers)
-            val request = FakeRequest(GET, controllers.profile.routes.CyaMaintainProfileController.onPageLoadUkimsNumber().url)
-            val result = route(application, request).value
-            val view = application.injector.instanceOf[CyaMaintainProfileView]
+            val list    = createChangeList(application, userAnswers)
+            val request =
+              FakeRequest(GET, controllers.profile.routes.CyaMaintainProfileController.onPageLoadUkimsNumber().url)
+            val result  = route(application, request).value
+            val view    = application.injector.instanceOf[CyaMaintainProfileView]
 
             status(result) mustEqual OK
-            contentAsString(result) mustEqual view(list, action, ukimsNumberKey)(request, messages(application)).toString
+            contentAsString(result) mustEqual view(list, action, ukimsNumberKey)(
+              request,
+              messages(application)
+            ).toString
           }
         }
 
@@ -349,12 +406,15 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
           val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
           running(application) {
-            val request = FakeRequest(GET, controllers.profile.routes.CyaMaintainProfileController.onPageLoadUkimsNumber().url)
+            val request =
+              FakeRequest(GET, controllers.profile.routes.CyaMaintainProfileController.onPageLoadUkimsNumber().url)
 
             val result = route(application, request).value
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual
-              controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl))).url
+              controllers.problem.routes.JourneyRecoveryController
+                .onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl)))
+                .url
           }
         }
 
@@ -362,11 +422,14 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
           val application = applicationBuilder(userAnswers = None).build()
 
           running(application) {
-            val request = FakeRequest(GET, controllers.profile.routes.CyaMaintainProfileController.onPageLoadUkimsNumber().url)
-            val result = route(application, request).value
+            val request =
+              FakeRequest(GET, controllers.profile.routes.CyaMaintainProfileController.onPageLoadUkimsNumber().url)
+            val result  = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
+            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad()
+              .url
           }
         }
       }
@@ -398,7 +461,8 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
             running(application) {
 
-              val request = FakeRequest(POST, controllers.profile.routes.CyaMaintainProfileController.onSubmitUkimsNumber().url)
+              val request =
+                FakeRequest(POST, controllers.profile.routes.CyaMaintainProfileController.onSubmitUkimsNumber().url)
 
               val result = route(application, request).value
 
@@ -408,7 +472,8 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             }
 
             withClue("must call the audit connector with the supplied details") {
-              verify(mockAuditService).auditMaintainProfile(eqTo(traderProfile), eqTo(traderProfile), eqTo(AffinityGroup.Individual))(any())
+              verify(mockAuditService)
+                .auditMaintainProfile(eqTo(traderProfile), eqTo(traderProfile), eqTo(AffinityGroup.Individual))(any())
             }
           }
 
@@ -436,7 +501,8 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
             running(application) {
 
-              val request = FakeRequest(POST, controllers.profile.routes.CyaMaintainProfileController.onSubmitUkimsNumber().url)
+              val request =
+                FakeRequest(POST, controllers.profile.routes.CyaMaintainProfileController.onSubmitUkimsNumber().url)
 
               val result = route(application, request).value
 
@@ -446,7 +512,11 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             }
 
             withClue("must call the audit connector with the supplied details") {
-              verify(mockAuditService).auditMaintainProfile(eqTo(traderProfile), eqTo(updatedTraderProfile), eqTo(AffinityGroup.Individual))(any())
+              verify(mockAuditService).auditMaintainProfile(
+                eqTo(traderProfile),
+                eqTo(updatedTraderProfile),
+                eqTo(AffinityGroup.Individual)
+              )(any())
             }
           }
         }
@@ -473,13 +543,16 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
             running(application) {
 
-              val request = FakeRequest(POST, controllers.profile.routes.CyaMaintainProfileController.onSubmitUkimsNumber().url)
+              val request =
+                FakeRequest(POST, controllers.profile.routes.CyaMaintainProfileController.onSubmitUkimsNumber().url)
 
               val result = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual
-                controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl))).url
+                controllers.problem.routes.JourneyRecoveryController
+                  .onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl)))
+                  .url
 
               verify(mockTraderProfileConnector, never()).getTraderProfile(any())
 
@@ -496,7 +569,8 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
           val mockTraderProfileConnector = mock[TraderProfileConnector]
           val mockAuditService           = mock[AuditService]
 
-          when(mockTraderProfileConnector.getTraderProfile(any())).thenReturn(Future.failed(new RuntimeException("Connector failed")))
+          when(mockTraderProfileConnector.getTraderProfile(any()))
+            .thenReturn(Future.failed(new RuntimeException("Connector failed")))
 
           val application =
             applicationBuilder(userAnswers = Some(userAnswers))
@@ -507,7 +581,8 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
               .build()
 
           running(application) {
-            val request = FakeRequest(POST, controllers.profile.routes.CyaMaintainProfileController.onSubmitUkimsNumber().url)
+            val request =
+              FakeRequest(POST, controllers.profile.routes.CyaMaintainProfileController.onSubmitUkimsNumber().url)
             intercept[RuntimeException] {
               await(route(application, request).value)
             }
@@ -532,7 +607,8 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
           val mockAuditService           = mock[AuditService]
 
           when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future.successful(traderProfile)
-          when(mockTraderProfileConnector.submitTraderProfile(any())(any())).thenReturn(Future.failed(new RuntimeException("Connector failed")))
+          when(mockTraderProfileConnector.submitTraderProfile(any())(any()))
+            .thenReturn(Future.failed(new RuntimeException("Connector failed")))
           when(mockAuditService.auditMaintainProfile(any(), any(), any())(any)).thenReturn(Future.successful(Done))
 
           val application =
@@ -544,13 +620,18 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
               .build()
 
           running(application) {
-            val request = FakeRequest(POST, controllers.profile.routes.CyaMaintainProfileController.onSubmitUkimsNumber().url)
+            val request =
+              FakeRequest(POST, controllers.profile.routes.CyaMaintainProfileController.onSubmitUkimsNumber().url)
             intercept[RuntimeException] {
               await(route(application, request).value)
             }
 
             withClue("must call the audit connector with the supplied details") {
-              verify(mockAuditService, atLeastOnce()).auditMaintainProfile(eqTo(traderProfile), eqTo(updatedTraderProfile), eqTo(AffinityGroup.Individual))(any())
+              verify(mockAuditService, atLeastOnce()).auditMaintainProfile(
+                eqTo(traderProfile),
+                eqTo(updatedTraderProfile),
+                eqTo(AffinityGroup.Individual)
+              )(any())
             }
           }
         }
@@ -565,7 +646,9 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
+            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad()
+              .url
           }
         }
       }
@@ -584,9 +667,16 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
         "must return OK and the correct view" in {
           val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"), eoriChanged = false)
 
-          val userAnswers = emptyUserAnswers.set(RemoveNiphlPage, true).success.value
-            .set(HasNiphlUpdatePage, false).success.value
-            .set(TraderProfileQuery, traderProfile).success.value
+          val userAnswers = emptyUserAnswers
+            .set(RemoveNiphlPage, true)
+            .success
+            .value
+            .set(HasNiphlUpdatePage, false)
+            .success
+            .value
+            .set(TraderProfileQuery, traderProfile)
+            .success
+            .value
 
           val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -595,7 +685,8 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
           running(application) {
             val list = createChangeList(application, userAnswers)
 
-            val request = FakeRequest(GET, controllers.profile.routes.CyaMaintainProfileController.onPageLoadNiphl().url)
+            val request =
+              FakeRequest(GET, controllers.profile.routes.CyaMaintainProfileController.onPageLoadNiphl().url)
 
             val result = route(application, request).value
 
@@ -611,13 +702,16 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
           running(application) {
 
-            val request = FakeRequest(GET, controllers.profile.routes.CyaMaintainProfileController.onPageLoadNiphl().url)
+            val request =
+              FakeRequest(GET, controllers.profile.routes.CyaMaintainProfileController.onPageLoadNiphl().url)
 
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual
-              controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl))).url
+              controllers.problem.routes.JourneyRecoveryController
+                .onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl)))
+                .url
           }
         }
 
@@ -625,12 +719,15 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
           val application = applicationBuilder(userAnswers = None).build()
 
           running(application) {
-            val request = FakeRequest(GET, controllers.profile.routes.CyaMaintainProfileController.onPageLoadNiphl().url)
+            val request =
+              FakeRequest(GET, controllers.profile.routes.CyaMaintainProfileController.onPageLoadNiphl().url)
 
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
+            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad()
+              .url
           }
         }
       }
@@ -642,9 +739,15 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val updatedTraderProfile = TraderProfile(testEori, "1", Some("2"), None, eoriChanged = false)
 
             val userAnswers = emptyUserAnswers
-              .set(RemoveNiphlPage, true).success.value
-              .set(HasNiphlUpdatePage, false).success.value
-              .set(TraderProfileQuery, traderProfile).success.value
+              .set(RemoveNiphlPage, true)
+              .success
+              .value
+              .set(HasNiphlUpdatePage, false)
+              .success
+              .value
+              .set(TraderProfileQuery, traderProfile)
+              .success
+              .value
 
             val mockTraderProfileConnector = mock[TraderProfileConnector]
             val mockAuditService           = mock[AuditService]
@@ -663,7 +766,8 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
             running(application) {
 
-              val request = FakeRequest(POST, controllers.profile.routes.CyaMaintainProfileController.onSubmitNiphl().url)
+              val request =
+                FakeRequest(POST, controllers.profile.routes.CyaMaintainProfileController.onSubmitNiphl().url)
 
               val result = route(application, request).value
 
@@ -673,7 +777,11 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             }
 
             withClue("must call the audit connector with the supplied details") {
-              verify(mockAuditService).auditMaintainProfile(eqTo(traderProfile), eqTo(updatedTraderProfile), eqTo(AffinityGroup.Individual))(any())
+              verify(mockAuditService).auditMaintainProfile(
+                eqTo(traderProfile),
+                eqTo(updatedTraderProfile),
+                eqTo(AffinityGroup.Individual)
+              )(any())
             }
           }
         }
@@ -683,8 +791,12 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"), eoriChanged = false)
 
             val userAnswers = emptyUserAnswers
-              .set(RemoveNiphlPage, true).success.value
-              .set(HasNiphlUpdatePage, true).success.value
+              .set(RemoveNiphlPage, true)
+              .success
+              .value
+              .set(HasNiphlUpdatePage, true)
+              .success
+              .value
 
             val mockTraderProfileConnector = mock[TraderProfileConnector]
             val mockAuditService           = mock[AuditService]
@@ -700,13 +812,16 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
             running(application) {
 
-              val request = FakeRequest(POST, controllers.profile.routes.CyaMaintainProfileController.onSubmitNiphl().url)
+              val request =
+                FakeRequest(POST, controllers.profile.routes.CyaMaintainProfileController.onSubmitNiphl().url)
 
               val result = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual
-                controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl))).url
+                controllers.problem.routes.JourneyRecoveryController
+                  .onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl)))
+                  .url
 
               verify(mockTraderProfileConnector, never()).getTraderProfile(any())
 
@@ -730,13 +845,16 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
                 .build()
 
             running(application) {
-              val request = FakeRequest(POST, controllers.profile.routes.CyaMaintainProfileController.onSubmitNiphl().url)
+              val request =
+                FakeRequest(POST, controllers.profile.routes.CyaMaintainProfileController.onSubmitNiphl().url)
 
               val result = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual
-                controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl))).url
+                controllers.problem.routes.JourneyRecoveryController
+                  .onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl)))
+                  .url
             }
           }
         }
@@ -744,14 +862,22 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
         "must let the play error handler deal with connector failure when getTraderProfile request fails" in {
           val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"), eoriChanged = false)
 
-          val userAnswers = emptyUserAnswers.set(RemoveNiphlPage, true).success.value
-            .set(HasNiphlUpdatePage, false).success.value
-            .set(TraderProfileQuery, traderProfile).success.value
-          
+          val userAnswers = emptyUserAnswers
+            .set(RemoveNiphlPage, true)
+            .success
+            .value
+            .set(HasNiphlUpdatePage, false)
+            .success
+            .value
+            .set(TraderProfileQuery, traderProfile)
+            .success
+            .value
+
           val mockTraderProfileConnector = mock[TraderProfileConnector]
           val mockAuditService           = mock[AuditService]
 
-          when(mockTraderProfileConnector.getTraderProfile(any())).thenReturn(Future.failed(new RuntimeException("Connector failed")))
+          when(mockTraderProfileConnector.getTraderProfile(any()))
+            .thenReturn(Future.failed(new RuntimeException("Connector failed")))
 
           val application =
             applicationBuilder(userAnswers = Some(userAnswers))
@@ -777,15 +903,23 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
           val traderProfile        = TraderProfile(testEori, "1", Some("2"), Some("3"), eoriChanged = false)
           val updatedTraderProfile = TraderProfile(testEori, "1", Some("2"), None, eoriChanged = false)
 
-          val userAnswers = emptyUserAnswers.set(RemoveNiphlPage, true).success.value
-            .set(HasNiphlUpdatePage, false).success.value
-            .set(TraderProfileQuery, traderProfile).success.value
+          val userAnswers = emptyUserAnswers
+            .set(RemoveNiphlPage, true)
+            .success
+            .value
+            .set(HasNiphlUpdatePage, false)
+            .success
+            .value
+            .set(TraderProfileQuery, traderProfile)
+            .success
+            .value
 
           val mockTraderProfileConnector = mock[TraderProfileConnector]
           val mockAuditService           = mock[AuditService]
 
           when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future.successful(traderProfile)
-          when(mockTraderProfileConnector.submitTraderProfile(any())(any())).thenReturn(Future.failed(new RuntimeException("Connector failed")))
+          when(mockTraderProfileConnector.submitTraderProfile(any())(any()))
+            .thenReturn(Future.failed(new RuntimeException("Connector failed")))
 
           val application =
             applicationBuilder(userAnswers = Some(userAnswers))
@@ -802,7 +936,11 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             }
           }
           withClue("must call the audit connector with the supplied details") {
-            verify(mockAuditService, atLeastOnce()).auditMaintainProfile(eqTo(traderProfile), eqTo(updatedTraderProfile), eqTo(AffinityGroup.Individual))(any())
+            verify(mockAuditService, atLeastOnce()).auditMaintainProfile(
+              eqTo(traderProfile),
+              eqTo(updatedTraderProfile),
+              eqTo(AffinityGroup.Individual)
+            )(any())
           }
         }
 
@@ -815,7 +953,9 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
+            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad()
+              .url
           }
         }
       }
@@ -833,13 +973,27 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
       val updatedTraderProfile = TraderProfile(testEori, "1", Some("RMS-GB-555555"), Some("3"), eoriChanged = false)
 
-      val nirmsNumberAnswers = emptyUserAnswers.set(HasNirmsUpdatePage, true).success.value
-        .set(NirmsNumberUpdatePage, "RMS-GB-555555").success.value
-        .set(TraderProfileQuery, traderProfile).success.value
+      val nirmsNumberAnswers = emptyUserAnswers
+        .set(HasNirmsUpdatePage, true)
+        .success
+        .value
+        .set(NirmsNumberUpdatePage, "RMS-GB-555555")
+        .success
+        .value
+        .set(TraderProfileQuery, traderProfile)
+        .success
+        .value
 
-      val nirmsNumberAnswersNoUpdate = emptyUserAnswers.set(HasNirmsUpdatePage, true).success.value
-        .set(NirmsNumberUpdatePage, "RMS-GB-123456").success.value
-        .set(TraderProfileQuery, traderProfile).success.value
+      val nirmsNumberAnswersNoUpdate = emptyUserAnswers
+        .set(HasNirmsUpdatePage, true)
+        .success
+        .value
+        .set(NirmsNumberUpdatePage, "RMS-GB-123456")
+        .success
+        .value
+        .set(TraderProfileQuery, traderProfile)
+        .success
+        .value
 
       "for a GET" - {
 
@@ -860,14 +1014,18 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
           running(application) {
             val list = createChangeList(application, nirmsNumberAnswersNoUpdate)
 
-            val request = FakeRequest(GET, controllers.profile.routes.CyaMaintainProfileController.onPageLoadNirmsNumber().url)
+            val request =
+              FakeRequest(GET, controllers.profile.routes.CyaMaintainProfileController.onPageLoadNirmsNumber().url)
 
             val result = route(application, request).value
 
             val view = application.injector.instanceOf[CyaMaintainProfileView]
 
             status(result) mustEqual OK
-            contentAsString(result) mustEqual view(list, action, nirmsNumberKey)(request, messages(application)).toString
+            contentAsString(result) mustEqual view(list, action, nirmsNumberKey)(
+              request,
+              messages(application)
+            ).toString
           }
         }
 
@@ -885,13 +1043,16 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
           running(application) {
 
-            val request = FakeRequest(GET, controllers.profile.routes.CyaMaintainProfileController.onPageLoadNirmsNumber().url)
+            val request =
+              FakeRequest(GET, controllers.profile.routes.CyaMaintainProfileController.onPageLoadNirmsNumber().url)
 
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual
-              controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl))).url
+              controllers.problem.routes.JourneyRecoveryController
+                .onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl)))
+                .url
           }
         }
 
@@ -905,7 +1066,9 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
+            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad()
+              .url
           }
         }
       }
@@ -929,7 +1092,8 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
           running(application) {
 
-            val request = FakeRequest(POST, controllers.profile.routes.CyaMaintainProfileController.onSubmitNirmsNumber().url)
+            val request =
+              FakeRequest(POST, controllers.profile.routes.CyaMaintainProfileController.onSubmitNirmsNumber().url)
 
             val result = route(application, request).value
 
@@ -940,7 +1104,11 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
           }
 
           withClue("must call the audit connector with the supplied details") {
-            verify(mockAuditService).auditMaintainProfile(eqTo(traderProfile), eqTo(updatedTraderProfile), eqTo(AffinityGroup.Individual))(any())
+            verify(mockAuditService).auditMaintainProfile(
+              eqTo(traderProfile),
+              eqTo(updatedTraderProfile),
+              eqTo(AffinityGroup.Individual)
+            )(any())
           }
         }
 
@@ -948,7 +1116,8 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
           val mockTraderProfileConnector = mock[TraderProfileConnector]
           val mockAuditService           = mock[AuditService]
 
-          when(mockTraderProfileConnector.getTraderProfile(any())).thenReturn(Future.failed(new RuntimeException("Connector failed")))
+          when(mockTraderProfileConnector.getTraderProfile(any()))
+            .thenReturn(Future.failed(new RuntimeException("Connector failed")))
 
           val application =
             applicationBuilder(userAnswers = Some(nirmsNumberAnswers))
@@ -959,7 +1128,8 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
               .build()
 
           running(application) {
-            val request = FakeRequest(POST, controllers.profile.routes.CyaMaintainProfileController.onSubmitNirmsNumber().url)
+            val request =
+              FakeRequest(POST, controllers.profile.routes.CyaMaintainProfileController.onSubmitNirmsNumber().url)
             intercept[RuntimeException] {
               await(route(application, request).value)
             }
@@ -975,7 +1145,8 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
           val mockAuditService           = mock[AuditService]
 
           when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future.successful(traderProfile)
-          when(mockTraderProfileConnector.submitTraderProfile(any())(any())).thenReturn(Future.failed(new RuntimeException("Connector failed")))
+          when(mockTraderProfileConnector.submitTraderProfile(any())(any()))
+            .thenReturn(Future.failed(new RuntimeException("Connector failed")))
           when(mockAuditService.auditMaintainProfile(any(), any(), any())(any)).thenReturn(Future.successful(Done))
 
           val application =
@@ -987,14 +1158,17 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
               .build()
 
           running(application) {
-            val request = FakeRequest(POST, controllers.profile.routes.CyaMaintainProfileController.onSubmitNirmsNumber().url)
+            val request =
+              FakeRequest(POST, controllers.profile.routes.CyaMaintainProfileController.onSubmitNirmsNumber().url)
             intercept[RuntimeException] {
               await(route(application, request).value)
             }
 
             withClue("must call the audit connector with the supplied details") {
               verify(mockAuditService, atLeastOnce())
-                .auditMaintainProfile(eqTo(traderProfile), eqTo(updatedTraderProfile), eqTo(AffinityGroup.Individual))(any())
+                .auditMaintainProfile(eqTo(traderProfile), eqTo(updatedTraderProfile), eqTo(AffinityGroup.Individual))(
+                  any()
+                )
             }
           }
         }
@@ -1003,30 +1177,42 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
           val application = applicationBuilder(userAnswers = None).build()
 
           running(application) {
-            val request = FakeRequest(POST, controllers.profile.routes.CyaMaintainProfileController.onSubmitNirmsNumber().url)
+            val request =
+              FakeRequest(POST, controllers.profile.routes.CyaMaintainProfileController.onSubmitNirmsNumber().url)
 
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
+            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad()
+              .url
           }
         }
 
         "must redirect to Journey Recovery if data is invalid" in {
           val invalidNirmsNumberAnswers = emptyUserAnswers
-            .set(HasNirmsUpdatePage, false).success.value
-            .set(NirmsNumberUpdatePage, "RMS-GB-555555").success.value
-            .set(TraderProfileQuery, traderProfile).success.value
+            .set(HasNirmsUpdatePage, false)
+            .success
+            .value
+            .set(NirmsNumberUpdatePage, "RMS-GB-555555")
+            .success
+            .value
+            .set(TraderProfileQuery, traderProfile)
+            .success
+            .value
 
           val application = applicationBuilder(userAnswers = Some(invalidNirmsNumberAnswers)).build()
 
           running(application) {
-            val request = FakeRequest(POST, controllers.profile.routes.CyaMaintainProfileController.onSubmitNirmsNumber().url)
+            val request =
+              FakeRequest(POST, controllers.profile.routes.CyaMaintainProfileController.onSubmitNirmsNumber().url)
 
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl))).url
+            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl)))
+              .url
           }
         }
       }
@@ -1045,14 +1231,26 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
       val updatedTraderProfile = TraderProfile(testEori, "1", None, Some("5"), eoriChanged = false)
 
       val niphlNumberAnswers = emptyUserAnswers
-        .set(HasNiphlUpdatePage, true).success.value
-        .set(NiphlNumberUpdatePage, "5").success.value
-        .set(TraderProfileQuery, traderProfile).success.value
+        .set(HasNiphlUpdatePage, true)
+        .success
+        .value
+        .set(NiphlNumberUpdatePage, "5")
+        .success
+        .value
+        .set(TraderProfileQuery, traderProfile)
+        .success
+        .value
 
       val niphlNumberAnswersNoUpdate = emptyUserAnswers
-        .set(HasNiphlUpdatePage, true).success.value
-        .set(NiphlNumberUpdatePage, "3").success.value
-        .set(TraderProfileQuery, traderProfile).success.value
+        .set(HasNiphlUpdatePage, true)
+        .success
+        .value
+        .set(NiphlNumberUpdatePage, "3")
+        .success
+        .value
+        .set(TraderProfileQuery, traderProfile)
+        .success
+        .value
 
       "for a GET" - {
         "must return OK and the correct view" in {
@@ -1072,14 +1270,18 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
           running(application) {
             val list = createChangeList(application, niphlNumberAnswersNoUpdate)
 
-            val request = FakeRequest(GET, controllers.profile.routes.CyaMaintainProfileController.onPageLoadNiphlNumber().url)
+            val request =
+              FakeRequest(GET, controllers.profile.routes.CyaMaintainProfileController.onPageLoadNiphlNumber().url)
 
             val result = route(application, request).value
 
             val view = application.injector.instanceOf[CyaMaintainProfileView]
 
             status(result) mustEqual OK
-            contentAsString(result) mustEqual view(list, action, niphlNumberKey)(request, messages(application)).toString
+            contentAsString(result) mustEqual view(list, action, niphlNumberKey)(
+              request,
+              messages(application)
+            ).toString
           }
         }
 
@@ -1097,13 +1299,16 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
           running(application) {
 
-            val request = FakeRequest(GET, controllers.profile.routes.CyaMaintainProfileController.onPageLoadNiphlNumber().url)
+            val request =
+              FakeRequest(GET, controllers.profile.routes.CyaMaintainProfileController.onPageLoadNiphlNumber().url)
 
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual
-              controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl))).url
+              controllers.problem.routes.JourneyRecoveryController
+                .onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl)))
+                .url
           }
         }
 
@@ -1111,12 +1316,15 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
           val application = applicationBuilder(userAnswers = None).build()
 
           running(application) {
-            val request = FakeRequest(GET, controllers.profile.routes.CyaMaintainProfileController.onPageLoadNiphlNumber().url)
+            val request =
+              FakeRequest(GET, controllers.profile.routes.CyaMaintainProfileController.onPageLoadNiphlNumber().url)
 
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
+            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad()
+              .url
           }
         }
       }
@@ -1140,7 +1348,8 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
           running(application) {
 
-            val request = FakeRequest(POST, controllers.profile.routes.CyaMaintainProfileController.onSubmitNiphlNumber().url)
+            val request =
+              FakeRequest(POST, controllers.profile.routes.CyaMaintainProfileController.onSubmitNiphlNumber().url)
 
             val result = route(application, request).value
 
@@ -1152,7 +1361,9 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
 
           withClue("must call the audit connector with the supplied details") {
             verify(mockAuditService, atLeastOnce())
-              .auditMaintainProfile(eqTo(traderProfile), eqTo(updatedTraderProfile), eqTo(AffinityGroup.Individual))(any())
+              .auditMaintainProfile(eqTo(traderProfile), eqTo(updatedTraderProfile), eqTo(AffinityGroup.Individual))(
+                any()
+              )
           }
         }
 
@@ -1189,7 +1400,8 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
           val mockAuditService           = mock[AuditService]
 
           when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future.successful(traderProfile)
-          when(mockTraderProfileConnector.submitTraderProfile(any())(any())).thenReturn(Future.failed(new RuntimeException("Connector failed")))
+          when(mockTraderProfileConnector.submitTraderProfile(any())(any()))
+            .thenReturn(Future.failed(new RuntimeException("Connector failed")))
           when(mockAuditService.auditMaintainProfile(any(), any(), any())(any)).thenReturn(Future.successful(Done))
 
           val application =
@@ -1208,8 +1420,7 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             }
 
             withClue("must call the audit connector with the supplied details") {
-              verify(mockAuditService, atLeastOnce()).auditMaintainProfile(any(), any(), any())(any()
-                )
+              verify(mockAuditService, atLeastOnce()).auditMaintainProfile(any(), any(), any())(any())
             }
           }
 
@@ -1226,16 +1437,24 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
+            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad()
+              .url
           }
         }
 
         "must redirect to Journey Recovery if data is invalid" in {
 
           val invalidNiphlNumberAnswers = emptyUserAnswers
-            .set(HasNirmsUpdatePage, false).success.value
-            .set(NirmsNumberUpdatePage, "NIPHL").success.value
-            .set(TraderProfileQuery, traderProfile).success.value
+            .set(HasNirmsUpdatePage, false)
+            .success
+            .value
+            .set(NirmsNumberUpdatePage, "NIPHL")
+            .success
+            .value
+            .set(TraderProfileQuery, traderProfile)
+            .success
+            .value
 
           val application = applicationBuilder(userAnswers = Some(invalidNiphlNumberAnswers)).build()
 
@@ -1246,7 +1465,9 @@ class CyaMaintainProfileControllerSpec extends SpecBase with SummaryListFluency 
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl))).url
+            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl)))
+              .url
           }
         }
       }

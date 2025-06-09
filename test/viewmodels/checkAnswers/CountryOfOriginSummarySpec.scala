@@ -50,12 +50,14 @@ class CountryOfOriginSummarySpec extends SpecBase {
         countries
       )
       row.actions mustBe defined
-      row.actions.value.items.head.href mustEqual controllers.goodsRecord.countryOfOrigin.routes.HasCountryOfOriginChangeController.onPageLoad(NormalMode, testRecordId).url
+      row.actions.value.items.head.href mustEqual controllers.goodsRecord.countryOfOrigin.routes.HasCountryOfOriginChangeController
+        .onPageLoad(NormalMode, testRecordId)
+        .url
     }
 
     "and category is not set" in {
       val recordNoCategory = recordForTestingSummaryRows.copy(category = None)
-      val row = CountryOfOriginSummary.rowUpdate(
+      val row              = CountryOfOriginSummary.rowUpdate(
         recordNoCategory,
         testRecordId,
         NormalMode,
@@ -63,12 +65,14 @@ class CountryOfOriginSummarySpec extends SpecBase {
         countries
       )
       row.actions mustBe defined
-      row.actions.value.items.head.href mustEqual controllers.goodsRecord.countryOfOrigin.routes.UpdateCountryOfOriginController.onPageLoad(NormalMode, testRecordId).url
+      row.actions.value.items.head.href mustEqual controllers.goodsRecord.countryOfOrigin.routes.UpdateCountryOfOriginController
+        .onPageLoad(NormalMode, testRecordId)
+        .url
     }
 
     "must display country name instead of country code" in {
       val recordNoCategory = recordForTestingSummaryRows.copy(category = None)
-      val row = CountryOfOriginSummary.rowUpdate(
+      val row              = CountryOfOriginSummary.rowUpdate(
         recordNoCategory,
         testRecordId,
         NormalMode,
@@ -77,7 +81,9 @@ class CountryOfOriginSummarySpec extends SpecBase {
       )
       row.value.content.asHtml.toString() must include(testCountryName)
       row.actions mustBe defined
-      row.actions.value.items.head.href mustEqual controllers.goodsRecord.countryOfOrigin.routes.UpdateCountryOfOriginController.onPageLoad(NormalMode, testRecordId).url
+      row.actions.value.items.head.href mustEqual controllers.goodsRecord.countryOfOrigin.routes.UpdateCountryOfOriginController
+        .onPageLoad(NormalMode, testRecordId)
+        .url
     }
   }
 }

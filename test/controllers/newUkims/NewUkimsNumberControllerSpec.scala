@@ -41,7 +41,7 @@ class NewUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
   private val form = formProvider()
 
   val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-  val mockSessionRepository: SessionRepository = mock[SessionRepository]
+  val mockSessionRepository: SessionRepository           = mock[SessionRepository]
 
   when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
 

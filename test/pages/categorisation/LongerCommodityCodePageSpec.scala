@@ -29,11 +29,22 @@ class LongerCommodityCodePageSpec extends SpecBase {
   "clean up" - {
 
     "does not removes HasCorrectGoodsLongerCommodityCodePage when longer commodity is same" in {
-      val userAnswers = UserAnswers(userAnswersId).set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true).success.value
+      val userAnswers =
+        UserAnswers(userAnswersId).set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true).success.value
 
-      val result = userAnswers.set(LongerCommodityQuery(testRecordId), Commodity("1234567890", List("Description", "Other"), Instant.now, None)).success.value
-        .set(CategorisationDetailsQuery(testRecordId), categorisationInfo.copy(commodityCode = "123456")).success.value
-        .set(LongerCommodityCodePage(testRecordId), "7890").success.value
+      val result = userAnswers
+        .set(
+          LongerCommodityQuery(testRecordId),
+          Commodity("1234567890", List("Description", "Other"), Instant.now, None)
+        )
+        .success
+        .value
+        .set(CategorisationDetailsQuery(testRecordId), categorisationInfo.copy(commodityCode = "123456"))
+        .success
+        .value
+        .set(LongerCommodityCodePage(testRecordId), "7890")
+        .success
+        .value
 
       result.isDefined(HasCorrectGoodsLongerCommodityCodePage(testRecordId)) mustBe true
 
@@ -42,11 +53,22 @@ class LongerCommodityCodePageSpec extends SpecBase {
 
     "removes HasCorrectGoodsLongerCommodityCodePage when longer commodity is different" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true).success.value
+      val userAnswers =
+        UserAnswers(userAnswersId).set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true).success.value
 
-      val result = userAnswers.set(LongerCommodityQuery(testRecordId), Commodity("1234567890", List("Description", "Other"), Instant.now, None)).success.value
-        .set(CategorisationDetailsQuery(testRecordId), categorisationInfo.copy(commodityCode = "123456")).success.value
-        .set(LongerCommodityCodePage(testRecordId), "1234").success.value
+      val result = userAnswers
+        .set(
+          LongerCommodityQuery(testRecordId),
+          Commodity("1234567890", List("Description", "Other"), Instant.now, None)
+        )
+        .success
+        .value
+        .set(CategorisationDetailsQuery(testRecordId), categorisationInfo.copy(commodityCode = "123456"))
+        .success
+        .value
+        .set(LongerCommodityCodePage(testRecordId), "1234")
+        .success
+        .value
 
       result.isDefined(HasCorrectGoodsLongerCommodityCodePage(testRecordId)) mustBe false
     }

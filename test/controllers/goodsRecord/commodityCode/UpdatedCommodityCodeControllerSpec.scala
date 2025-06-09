@@ -29,10 +29,12 @@ class UpdatedCommodityCodeControllerSpec extends SpecBase {
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, 
-          controllers.goodsRecord.commodityCode.routes.UpdatedCommodityCodeController.onPageLoad(testRecordId).url)
-        val result = route(application, request).value
-        val view = application.injector.instanceOf[UpdatedCommodityCodeView]
+        val request = FakeRequest(
+          GET,
+          controllers.goodsRecord.commodityCode.routes.UpdatedCommodityCodeController.onPageLoad(testRecordId).url
+        )
+        val result  = route(application, request).value
+        val view    = application.injector.instanceOf[UpdatedCommodityCodeView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(testRecordId)(request, messages(application)).toString

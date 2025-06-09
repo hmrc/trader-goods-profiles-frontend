@@ -25,7 +25,7 @@ import models.ott.{CategorisationInfo, CategoryAssessment}
 import models.{AssessmentAnswer, NormalMode, ReassessmentAnswer}
 import navigation.{CategorisationNavigator, FakeCategorisationNavigator}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{verify, when, reset}
+import org.mockito.Mockito.{reset, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import pages.categorisation.{AssessmentPage, ReassessmentPage}
@@ -46,10 +46,14 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
   private def onwardRoute     = Call("GET", "/foo")
   private val formProvider    = new AssessmentFormProvider()
   private def assessmentRoute =
-    controllers.categorisation.routes.AssessmentController.onPageLoad(NormalMode, testRecordId, Constants.firstAssessmentNumber).url
+    controllers.categorisation.routes.AssessmentController
+      .onPageLoad(NormalMode, testRecordId, Constants.firstAssessmentNumber)
+      .url
 
   private def reassessmentRoute =
-    controllers.categorisation.routes.AssessmentController.onPageLoadReassessment(NormalMode, testRecordId, Constants.firstAssessmentNumber).url
+    controllers.categorisation.routes.AssessmentController
+      .onPageLoadReassessment(NormalMode, testRecordId, Constants.firstAssessmentNumber)
+      .url
 
   private val mockSessionRepository = mock[SessionRepository]
 
@@ -64,19 +68,22 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
       "onPageLoad" - {
         "must render the view when an assessment can be found for this id" - {
           "and has not previously been answered" in {
-            val answers = emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
+            val answers =
+              emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
 
             val application = applicationBuilder(userAnswers = Some(answers)).build()
 
             running(application) {
-              val request = FakeRequest(GET, assessmentRoute)
-              val result = route(application, request).value
-              val onSubmitAction = controllers.categorisation.routes.AssessmentController.onSubmit(NormalMode, testRecordId, Constants.firstAssessmentNumber)
+              val request                      = FakeRequest(GET, assessmentRoute)
+              val result                       = route(application, request).value
+              val onSubmitAction               = controllers.categorisation.routes.AssessmentController
+                .onSubmit(NormalMode, testRecordId, Constants.firstAssessmentNumber)
               val view                         = application.injector.instanceOf[AssessmentView]
               val appConfig: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
               val form                         = formProvider()
-              val expectedCodesAndDescriptions = categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map {
-                exemption => (exemption.code, exemption.description)
+              val expectedCodesAndDescriptions =
+                categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map { exemption =>
+                  (exemption.code, exemption.description)
                 }
 
               status(result) mustEqual OK
@@ -97,20 +104,27 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
           "and has previously been answered" in {
             val answers =
-              emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
-                .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.NoExemption).success.value
+              emptyUserAnswers
+                .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+                .success
+                .value
+                .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.NoExemption)
+                .success
+                .value
 
             val application = applicationBuilder(userAnswers = Some(answers)).build()
 
             running(application) {
-              val request = FakeRequest(GET, assessmentRoute)
-              val result = route(application, request).value
-              val onSubmitAction = controllers.categorisation.routes.AssessmentController.onSubmit(NormalMode, testRecordId, Constants.firstAssessmentNumber)
+              val request                      = FakeRequest(GET, assessmentRoute)
+              val result                       = route(application, request).value
+              val onSubmitAction               = controllers.categorisation.routes.AssessmentController
+                .onSubmit(NormalMode, testRecordId, Constants.firstAssessmentNumber)
               val view                         = application.injector.instanceOf[AssessmentView]
               val form                         = formProvider().fill(AssessmentAnswer.NoExemption)
               val appConfig: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
-              val expectedCodesAndDescriptions = categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map {
-                  exemption => (exemption.code, exemption.description)
+              val expectedCodesAndDescriptions =
+                categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map { exemption =>
+                  (exemption.code, exemption.description)
                 }
 
               status(result) mustEqual OK
@@ -140,12 +154,20 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
             running(application) {
               val request = FakeRequest(GET, assessmentRoute)
-              val result = route(application, request).value
+              val result  = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
-                .onPageLoad(Some(
-                    RedirectUrl(controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(testRecordId).url))).url
+                .onPageLoad(
+                  Some(
+                    RedirectUrl(
+                      controllers.categorisation.routes.CategorisationPreparationController
+                        .startCategorisation(testRecordId)
+                        .url
+                    )
+                  )
+                )
+                .url
               withClue("must cleanse the user answers data") {
                 verify(mockSessionRepository).clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
               }
@@ -165,7 +187,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 None,
                 1
               )
-            val answers = emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
+            val answers            =
+              emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
 
             val application = applicationBuilder(userAnswers = Some(answers))
               .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
@@ -173,12 +196,20 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
             running(application) {
               val request = FakeRequest(GET, assessmentRoute)
-              val result = route(application, request).value
+              val result  = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad(
+              redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+                .onPageLoad(
                   Some(
-                    RedirectUrl(controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(testRecordId).url))).url
+                    RedirectUrl(
+                      controllers.categorisation.routes.CategorisationPreparationController
+                        .startCategorisation(testRecordId)
+                        .url
+                    )
+                  )
+                )
+                .url
 
               withClue("must cleanse the user answers data") {
                 verify(mockSessionRepository)
@@ -204,10 +235,13 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               .build()
 
           running(application) {
-            val checkedValues = List("none")
-            val request = FakeRequest(POST, assessmentRoute).withFormUrlEncodedBody(checkedValues.flatMap(value => Seq("value[]" -> value)): _*)
-            val result = route(application, request).value
-            val expectedAnswers = answers.set(AssessmentPage(testRecordId, 0), AssessmentAnswer.NoExemption).success.value
+            val checkedValues   = List("none")
+            val request         = FakeRequest(POST, assessmentRoute).withFormUrlEncodedBody(
+              checkedValues.flatMap(value => Seq("value[]" -> value)): _*
+            )
+            val result          = route(application, request).value
+            val expectedAnswers =
+              answers.set(AssessmentPage(testRecordId, 0), AssessmentAnswer.NoExemption).success.value
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual onwardRoute.url
@@ -216,19 +250,21 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
         }
 
         "must return a Bad Request and errors when invalid data is submitted" in {
-          val answers = emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
+          val answers     = emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
           val application = applicationBuilder(userAnswers = Some(answers)).build()
 
           running(application) {
-            val request = FakeRequest(POST, assessmentRoute).withFormUrlEncodedBody(("value", ""))
-            val result = route(application, request).value
-            val onSubmitAction = controllers.categorisation.routes.AssessmentController.onSubmit(NormalMode, testRecordId, Constants.firstAssessmentNumber)
+            val request                      = FakeRequest(POST, assessmentRoute).withFormUrlEncodedBody(("value", ""))
+            val result                       = route(application, request).value
+            val onSubmitAction               = controllers.categorisation.routes.AssessmentController
+              .onSubmit(NormalMode, testRecordId, Constants.firstAssessmentNumber)
             val view                         = application.injector.instanceOf[AssessmentView]
             val form                         = formProvider().fill(AssessmentAnswer.NoExemption)
             val appConfig: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
             val boundForm                    = form.bind(Map("value" -> ""))
-            val expectedCodesAndDescriptions = categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map {
-                exemption => (exemption.code, exemption.description)
+            val expectedCodesAndDescriptions =
+              categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map { exemption =>
+                (exemption.code, exemption.description)
               }
 
             status(result) mustEqual BAD_REQUEST
@@ -257,11 +293,20 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
             running(application) {
               val request = FakeRequest(POST, assessmentRoute)
-              val result = route(application, request).value
+              val result  = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(
-                    RedirectUrl(controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(testRecordId).url))).url
+              redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+                .onPageLoad(
+                  Some(
+                    RedirectUrl(
+                      controllers.categorisation.routes.CategorisationPreparationController
+                        .startCategorisation(testRecordId)
+                        .url
+                    )
+                  )
+                )
+                .url
 
               withClue("must cleanse the user answers data") {
                 verify(mockSessionRepository)
@@ -283,7 +328,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 None,
                 1
               )
-            val answers = emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
+            val answers            =
+              emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
 
             val application = applicationBuilder(userAnswers = Some(answers))
               .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
@@ -296,7 +342,16 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
               status(result) mustEqual SEE_OTHER
               redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
-                .onPageLoad(Some(RedirectUrl(controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(testRecordId).url))).url
+                .onPageLoad(
+                  Some(
+                    RedirectUrl(
+                      controllers.categorisation.routes.CategorisationPreparationController
+                        .startCategorisation(testRecordId)
+                        .url
+                    )
+                  )
+                )
+                .url
 
               withClue("must cleanse the user answers data") {
                 verify(mockSessionRepository).clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
@@ -308,7 +363,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
             when(mockSessionRepository.set(any())).thenReturn(Future.failed(new Exception(":(")))
             when(mockSessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
 
-            val answers = emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
+            val answers =
+              emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
 
             val application = applicationBuilder(userAnswers = Some(answers))
               .overrides(
@@ -318,13 +374,23 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
             running(application) {
               val checkedValues = List("none")
-              val request = FakeRequest(POST, assessmentRoute).withFormUrlEncodedBody(checkedValues.flatMap(value => Seq("value[]" -> value)): _*)
-              val result = route(application, request).value
+              val request       = FakeRequest(POST, assessmentRoute).withFormUrlEncodedBody(
+                checkedValues.flatMap(value => Seq("value[]" -> value)): _*
+              )
+              val result        = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad(
-                  Some(RedirectUrl(controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
-              ).url
+              redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+                .onPageLoad(
+                  Some(
+                    RedirectUrl(
+                      controllers.categorisation.routes.CategorisationPreparationController
+                        .startCategorisation(testRecordId)
+                        .url
+                    )
+                  )
+                )
+                .url
 
               withClue("must cleanse the user answers data") {
                 verify(mockSessionRepository).clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
@@ -339,19 +405,22 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
       "onPageLoad" - {
         "must render the view when an assessment can be found for this id" - {
           "and has not previously been answered" in {
-            val answers = emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
+            val answers     =
+              emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
             val application = applicationBuilder(userAnswers = Some(answers)).build()
 
             running(application) {
-              val request = FakeRequest(GET, reassessmentRoute)
-              val result = route(application, request).value
-              val onSubmitAction = controllers.categorisation.routes.AssessmentController.onSubmitReassessment(NormalMode, testRecordId, Constants.firstAssessmentNumber)
-              val view = application.injector.instanceOf[AssessmentView]
+              val request                      = FakeRequest(GET, reassessmentRoute)
+              val result                       = route(application, request).value
+              val onSubmitAction               = controllers.categorisation.routes.AssessmentController
+                .onSubmitReassessment(NormalMode, testRecordId, Constants.firstAssessmentNumber)
+              val view                         = application.injector.instanceOf[AssessmentView]
               val appConfig: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
 
-              val form = formProvider()
-              val expectedCodesAndDescriptions = categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map {
-                exemption => (exemption.code, exemption.description)
+              val form                         = formProvider()
+              val expectedCodesAndDescriptions =
+                categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map { exemption =>
+                  (exemption.code, exemption.description)
                 }
 
               status(result) mustEqual OK
@@ -372,21 +441,28 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
           "and has previously been answered" in {
             val answers =
-              emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
-                .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.NoExemption)).success.value
+              emptyUserAnswers
+                .set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo)
+                .success
+                .value
+                .set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.NoExemption))
+                .success
+                .value
 
             val application    = applicationBuilder(userAnswers = Some(answers)).build()
-            val onSubmitAction = controllers.categorisation.routes.AssessmentController.onSubmitReassessment(NormalMode, testRecordId, Constants.firstAssessmentNumber)
+            val onSubmitAction = controllers.categorisation.routes.AssessmentController
+              .onSubmitReassessment(NormalMode, testRecordId, Constants.firstAssessmentNumber)
 
             running(application) {
               val request = FakeRequest(GET, reassessmentRoute)
-              val result = route(application, request).value
+              val result  = route(application, request).value
 
               val view                         = application.injector.instanceOf[AssessmentView]
               val appConfig: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
               val form                         = formProvider().fill(AssessmentAnswer.NoExemption)
-              val expectedCodesAndDescriptions = categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map {
-                exemption => (exemption.code, exemption.description)
+              val expectedCodesAndDescriptions =
+                categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map { exemption =>
+                  (exemption.code, exemption.description)
                 }
 
               status(result) mustEqual OK
@@ -416,12 +492,20 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
             running(application) {
               val request = FakeRequest(GET, reassessmentRoute)
-              val result = route(application, request).value
+              val result  = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad(
-                  Some(RedirectUrl(controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
-                ).url
+              redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+                .onPageLoad(
+                  Some(
+                    RedirectUrl(
+                      controllers.categorisation.routes.CategorisationPreparationController
+                        .startCategorisation(testRecordId)
+                        .url
+                    )
+                  )
+                )
+                .url
 
               withClue("must cleanse the user answers data") {
                 verify(mockSessionRepository).clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
@@ -442,19 +526,28 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 None,
                 1
               )
-            val answers = emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
-            val application = applicationBuilder(userAnswers = Some(answers))
+            val answers            =
+              emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
+            val application        = applicationBuilder(userAnswers = Some(answers))
               .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
               .build()
 
             running(application) {
               val request = FakeRequest(GET, reassessmentRoute)
-              val result = route(application, request).value
+              val result  = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad(
-                  Some(RedirectUrl(controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
-                ).url
+              redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+                .onPageLoad(
+                  Some(
+                    RedirectUrl(
+                      controllers.categorisation.routes.CategorisationPreparationController
+                        .startCategorisation(testRecordId)
+                        .url
+                    )
+                  )
+                )
+                .url
 
               withClue("must cleanse the user answers data") {
                 verify(mockSessionRepository).clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
@@ -468,7 +561,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
         "must save the answer and redirect to the next page when a valid value is submitted" in {
           when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
 
-          val answers = emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
+          val answers =
+            emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
 
           val application =
             applicationBuilder(userAnswers = Some(answers))
@@ -480,12 +574,20 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
           running(application) {
             val checkedValues = List("Y903", "Y256")
-            val request = FakeRequest(POST, reassessmentRoute).withFormUrlEncodedBody(checkedValues.flatMap(value => Seq("value[]" -> value)): _*)
+            val request       = FakeRequest(POST, reassessmentRoute).withFormUrlEncodedBody(
+              checkedValues.flatMap(value => Seq("value[]" -> value)): _*
+            )
 
             val result = route(application, request).value
 
             val expectedAnswers =
-              answers.set(ReassessmentPage(testRecordId, 0), ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("Y903", "Y256")))).success.value
+              answers
+                .set(
+                  ReassessmentPage(testRecordId, 0),
+                  ReassessmentAnswer(AssessmentAnswer.Exemption(Seq("Y903", "Y256")))
+                )
+                .success
+                .value
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual onwardRoute.url
@@ -494,22 +596,25 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
         }
 
         "must return a Bad Request and errors when invalid data is submitted" in {
-          val answers = emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
+          val answers     =
+            emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
           val application = applicationBuilder(userAnswers = Some(answers)).build()
 
           running(application) {
-            val request = FakeRequest(POST, reassessmentRoute).withFormUrlEncodedBody(("value", ""))
-            val result = route(application, request).value
+            val request        = FakeRequest(POST, reassessmentRoute).withFormUrlEncodedBody(("value", ""))
+            val result         = route(application, request).value
             val onSubmitAction =
-              controllers.categorisation.routes.AssessmentController.onSubmitReassessment(NormalMode, testRecordId, Constants.firstAssessmentNumber)
+              controllers.categorisation.routes.AssessmentController
+                .onSubmitReassessment(NormalMode, testRecordId, Constants.firstAssessmentNumber)
             val view           = application.injector.instanceOf[AssessmentView]
             val form           = formProvider().fill(AssessmentAnswer.NoExemption)
 
             val boundForm                    = form.bind(Map("value" -> ""))
             val appConfig: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
 
-            val expectedCodesAndDescriptions = categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map {
-              exemption => (exemption.code, exemption.description)
+            val expectedCodesAndDescriptions =
+              categorisationInfo.categoryAssessmentsThatNeedAnswers.head.exemptions.map { exemption =>
+                (exemption.code, exemption.description)
               }
 
             status(result) mustEqual BAD_REQUEST
@@ -538,12 +643,20 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
             running(application) {
               val request = FakeRequest(POST, reassessmentRoute)
-              val result = route(application, request).value
+              val result  = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad(
-                  Some(RedirectUrl(controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
-                ).url
+              redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+                .onPageLoad(
+                  Some(
+                    RedirectUrl(
+                      controllers.categorisation.routes.CategorisationPreparationController
+                        .startCategorisation(testRecordId)
+                        .url
+                    )
+                  )
+                )
+                .url
 
               withClue("must cleanse the user answers data") {
                 verify(mockSessionRepository).clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
@@ -564,7 +677,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
                 None,
                 1
               )
-            val answers            = emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
+            val answers            =
+              emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
 
             val application = applicationBuilder(userAnswers = Some(answers))
               .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
@@ -572,12 +686,20 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
 
             running(application) {
               val request = FakeRequest(POST, reassessmentRoute)
-              val result = route(application, request).value
+              val result  = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad(
-                  Some(RedirectUrl(controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
-                ).url
+              redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+                .onPageLoad(
+                  Some(
+                    RedirectUrl(
+                      controllers.categorisation.routes.CategorisationPreparationController
+                        .startCategorisation(testRecordId)
+                        .url
+                    )
+                  )
+                )
+                .url
 
               withClue("must cleanse the user answers data") {
                 verify(mockSessionRepository).clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
@@ -589,7 +711,8 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
             when(mockSessionRepository.set(any())).thenReturn(Future.failed(new Exception(":(")))
             when(mockSessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
 
-            val answers = emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
+            val answers =
+              emptyUserAnswers.set(LongerCategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
 
             val application = applicationBuilder(userAnswers = Some(answers))
               .overrides(
@@ -607,9 +730,17 @@ class AssessmentControllerSpec extends SpecBase with MockitoSugar with BeforeAnd
               val result = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad(
-                  Some(RedirectUrl(controllers.categorisation.routes.CategorisationPreparationController.startCategorisation(testRecordId).url))
-                ).url
+              redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+                .onPageLoad(
+                  Some(
+                    RedirectUrl(
+                      controllers.categorisation.routes.CategorisationPreparationController
+                        .startCategorisation(testRecordId)
+                        .url
+                    )
+                  )
+                )
+                .url
 
               withClue("must cleanse the user answers data") {
                 verify(mockSessionRepository).clearData(eqTo(emptyUserAnswers.id), eqTo(CategorisationJourney))
