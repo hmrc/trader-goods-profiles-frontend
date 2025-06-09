@@ -18,7 +18,6 @@ package controllers.goodsRecord.countryOfOrigin
 
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
-import connectors.OttConnector
 import forms.goodsRecord.HasCountryOfOriginChangeFormProvider
 import models.helper.GoodsDetailsUpdate
 import models.{NormalMode, UserAnswers}

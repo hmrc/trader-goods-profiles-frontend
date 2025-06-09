@@ -131,8 +131,6 @@ class GoodsRecordNavigatorSpec extends SpecBase with BeforeAndAfterEach {
           }
 
           "must go from HasCommodityCodeChangePage to SingleRecordController" in {
-            val userAnswers = emptyUserAnswers.set(HasCommodityCodeChangePage(testRecordId), false).success.value
-
             navigator.nextPage(
               HasCommodityCodeChangePage(testRecordId),
               NormalMode,
