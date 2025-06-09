@@ -19,6 +19,7 @@ package navigation
 import controllers.routes
 import models.GoodsRecordsPagination.firstPage
 import models.UserAnswers
+import models.Location
 import pages.Page
 import pages.goodsProfile.{GoodsRecordsPage, PreviousMovementRecordsPage, RemoveGoodsRecordPage}
 import play.api.mvc.Call
@@ -32,8 +33,10 @@ class GoodsProfileNavigator @Inject() (appConfig: FrontendAppConfig) extends Nav
   val normalRoutes: Page => UserAnswers => Call = {
     case PreviousMovementRecordsPage =>
       _ => controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage)
-    case RemoveGoodsRecordPage       => navigateFromRemoveGoodsRecordPage
-    case _                           => _ => routes.IndexController.onPageLoad()
+    case RemoveGoodsRecordPage       =>
+      answers => navigateFromRemoveGoodsRecordPage(answers)
+    case _                           =>
+      _ => routes.IndexController.onPageLoad()
   }
 
   val checkRoutes: Page => UserAnswers => Call = { case _ =>
@@ -41,7 +44,7 @@ class GoodsProfileNavigator @Inject() (appConfig: FrontendAppConfig) extends Nav
   }
 
   private def navigateFromRemoveGoodsRecordPage(answers: UserAnswers): Call =
-    if (searchFilterIsApplied(answers) && (appConfig.enhancedSearch)) {
+    if (searchFilterIsApplied(answers) && appConfig.enhancedSearch) {
       controllers.goodsProfile.routes.GoodsRecordsController.onPageLoadFilter(firstPage)
     } else if (searchFilterIsApplied(answers)) {
       controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(firstPage)
@@ -50,8 +53,8 @@ class GoodsProfileNavigator @Inject() (appConfig: FrontendAppConfig) extends Nav
     }
 
   private def searchFilterIsApplied(answers: UserAnswers): Boolean =
-    answers.get(GoodsRecordsPage) match {
-      case Some(searchText) => true
-      case None             => false
-    }
+    answers.get(GoodsRecordsPage).isDefined
+
+  def nextPageAfterRemoveGoodsRecord(answers: UserAnswers, location: Location): Call =
+    navigateFromRemoveGoodsRecordPage(answers)
 }

@@ -21,15 +21,13 @@ import controllers.BaseController
 import controllers.actions.*
 import forms.goodsProfile.RemoveGoodsRecordFormProvider
 import models.GoodsRecordsPagination.firstPage
-import models.{Location, NormalMode}
+import models.{GoodsProfileLocation, Location}
 import navigation.GoodsProfileNavigator
-import pages.goodsProfile.RemoveGoodsRecordPage
-import pages.goodsRecord.{ProductReferencePage, ProductReferenceUpdatePage}
+import pages.goodsRecord.ProductReferenceUpdatePage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.AuditService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import utils.SessionData.{dataUpdated, initialValueOfHasSuppUnit, initialValueOfSuppUnit, pageUpdated}
 import views.html.goodsProfile.RemoveGoodsRecordView
 
 import javax.inject.Inject
@@ -86,10 +84,10 @@ class RemoveGoodsRecordController @Inject() (
             formWithErrors => Future.successful(BadRequest(view(formWithErrors, recordId, location, productRef))),
             {
               case true  =>
-                goodsRecordConnector.removeGoodsRecord(recordId).map { value =>
+                goodsRecordConnector.removeGoodsRecord(recordId).map { removed =>
                   auditService.auditFinishRemoveGoodsRecord(request.eori, request.affinityGroup, recordId)
-                  if (value) {
-                    Redirect(navigator.nextPage(RemoveGoodsRecordPage, NormalMode, request.userAnswers))
+                  if (removed) {
+                    Redirect(navigator.nextPageAfterRemoveGoodsRecord(request.userAnswers, location))
                   } else {
                     navigator.journeyRecovery(
                       Some(
@@ -99,7 +97,13 @@ class RemoveGoodsRecordController @Inject() (
                   }
                 }
               case false =>
-                Future.successful(Redirect(navigator.nextPage(RemoveGoodsRecordPage, NormalMode, request.userAnswers)))
+                val redirectCall = location match {
+                  case GoodsProfileLocation =>
+                    controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage)
+                  case _                    =>
+                    controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId)
+                }
+                Future.successful(Redirect(redirectCall))
             }
           )
 
