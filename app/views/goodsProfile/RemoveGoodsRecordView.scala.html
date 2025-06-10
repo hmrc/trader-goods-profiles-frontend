@@ -15,8 +15,11 @@
  *@
 
 @import viewmodels.LegendSize._
+@import uk.gov.hmrc.govukfrontend.views.html.components.*
 
 @this(
+govukTable: GovukTable,
+
     layout: templates.Layout,
     formHelper: FormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
@@ -36,15 +39,16 @@
       <h1 class="govuk-heading-l">@messages("removeGoodsRecord.heading")</h1>
       <h2 class="govuk-heading-m">@messages("goodsRecords.tableHeader.productReference")</h2>
 
-    <hr class="govuk-section-break  govuk-section-break--visible">
+      <hr class="govuk-section-break  govuk-section-break--visible">
 
-    <table class="govuk-table">
-        <tbody class="govuk-table__body">
-            <tr class="govuk-table__row">
-                <td class="govuk-table__cell">@productRef</td>
-            </tr>
-         </tbody>
-    </table>
+      <table class="govuk-table">
+          <caption class="govuk-table__caption govuk-visually-hidden">@messages("goodsRecords.tableHeader.productReference")</caption>
+            <tbody class="govuk-table__body">
+                <tr class="govuk-table__row">
+                    <td class="govuk-table__cell">@productRef</td>
+                </tr>
+            </tbody>
+      </table>
 
     @govukWarningText(WarningText(
     iconFallbackText = Some(messages("removeGoodsRecord.warning")),
