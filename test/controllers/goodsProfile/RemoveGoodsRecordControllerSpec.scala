@@ -169,7 +169,8 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar with Be
 
     "must error when Yes is submitted and record is not there" in {
       when(mockAuditService.auditStartRemoveGoodsRecord(any(), any(), any())(any())).thenReturn(Future.successful(Done))
-      when(mockAuditService.auditFinishRemoveGoodsRecord(any(), any(), any())(any())).thenReturn(Future.successful(Done))
+      when(mockAuditService.auditFinishRemoveGoodsRecord(any(), any(), any())(any()))
+        .thenReturn(Future.successful(Done))
       when(mockConnector.removeGoodsRecord(eqTo(testRecordId))(any())).thenReturn(Future.successful(false))
       when(mockConnector.getRecord(eqTo(testRecordId))(any())).thenReturn(Future.successful(testRecord))
 
@@ -218,7 +219,9 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar with Be
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url
+        redirectLocation(result).value mustEqual controllers.goodsProfile.routes.GoodsRecordsController
+          .onPageLoad(firstPage)
+          .url
         verify(mockConnector, never()).removeGoodsRecord(any())(any())
       }
     }
