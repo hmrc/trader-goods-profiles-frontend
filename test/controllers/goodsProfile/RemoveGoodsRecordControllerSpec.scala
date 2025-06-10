@@ -143,13 +143,10 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar with Be
       }
     }
 
-    "must redirect to the goods records list and delete record when Yes is submitted and record is deleted" in {
+    "must redirect to the goods profile list and delete record when Yes is submitted and record is deleted" in {
       when(mockConnector.getRecord(eqTo(testRecordId))(any()))
         .thenReturn(Future.successful(testRecord))
       when(mockConnector.removeGoodsRecord(eqTo(testRecordId))(any())).thenReturn(Future.successful(true))
-
-      when(mockConnector.removeGoodsRecord(eqTo(testRecordId))(any()))
-        .thenReturn(Future.successful(true))
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
@@ -164,15 +161,15 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar with Be
         val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual onwardRoute.url
+        redirectLocation(result).value mustEqual
+          controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url
         verify(mockConnector).removeGoodsRecord(eqTo(testRecordId))(any())
       }
     }
 
     "must error when Yes is submitted and record is not there" in {
       when(mockAuditService.auditStartRemoveGoodsRecord(any(), any(), any())(any())).thenReturn(Future.successful(Done))
-      when(mockAuditService.auditFinishRemoveGoodsRecord(any(), any(), any())(any()))
-        .thenReturn(Future.successful(Done))
+      when(mockAuditService.auditFinishRemoveGoodsRecord(any(), any(), any())(any())).thenReturn(Future.successful(Done))
       when(mockConnector.removeGoodsRecord(eqTo(testRecordId))(any())).thenReturn(Future.successful(false))
       when(mockConnector.getRecord(eqTo(testRecordId))(any())).thenReturn(Future.successful(testRecord))
 
@@ -201,7 +198,7 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar with Be
       }
     }
 
-    "must redirect to the goods records list when No is submitted" in {
+    "must redirect to the goods profile list when No is submitted and location is GoodsProfileLocation" in {
       val mockConnector = mock[GoodsRecordConnector]
 
       when(mockConnector.getRecord(eqTo(testRecordId))(any())).thenReturn(Future.successful(testRecord))
@@ -213,13 +210,15 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar with Be
         )
         .build()
 
+      val location = GoodsProfileLocation
+      val request  = FakeRequest(POST, routes.RemoveGoodsRecordController.onSubmit(testRecordId, location).url)
+        .withFormUrlEncodedBody(("value", "false"))
+
       running(application) {
-        val request = FakeRequest(POST, removeGoodsRecordRoute).withFormUrlEncodedBody(("value", "false"))
-        val result  = route(application, request).value
+        val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual onwardRoute.url
-
+        redirectLocation(result).value mustEqual controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url
         verify(mockConnector, never()).removeGoodsRecord(any())(any())
       }
     }
