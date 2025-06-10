@@ -41,8 +41,7 @@ class NewUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
   private val form = formProvider()
 
   val mockTraderProfileConnector: TraderProfileConnector = mock[TraderProfileConnector]
-
-  val mockSessionRepository: SessionRepository = mock[SessionRepository]
+  val mockSessionRepository: SessionRepository           = mock[SessionRepository]
 
   when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(false)
 
@@ -70,10 +69,7 @@ class NewUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
         contentAsString(result) mustEqual view(
           form,
           controllers.newUkims.routes.NewUkimsNumberController.onSubmit(NormalMode)
-        )(
-          request,
-          messages(application)
-        ).toString
+        )(request, messages(application)).toString
       }
     }
 
@@ -98,10 +94,7 @@ class NewUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
         contentAsString(result) mustEqual view(
           form.fill("answer"),
           controllers.newUkims.routes.NewUkimsNumberController.onSubmit(NormalMode)
-        )(
-          request,
-          messages(application)
-        ).toString
+        )(request, messages(application)).toString
       }
     }
 
@@ -159,10 +152,7 @@ class NewUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
         contentAsString(result) mustEqual view(
           boundForm,
           controllers.newUkims.routes.NewUkimsNumberController.onSubmit(NormalMode)
-        )(
-          request,
-          messages(application)
-        ).toString
+        )(request, messages(application)).toString
       }
     }
 
@@ -200,10 +190,7 @@ class NewUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
         contentAsString(result) mustEqual view(
           boundForm,
           controllers.newUkims.routes.NewUkimsNumberController.onSubmit(NormalMode)
-        )(
-          request,
-          messages(application)
-        ).toString
+        )(request, messages(application)).toString
       }
     }
 

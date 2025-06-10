@@ -57,26 +57,25 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
 
         "and all optional data is present" in {
 
-          val answers =
-            UserAnswers(userAnswersId)
-              .set(ProductReferencePage, "123")
-              .success
-              .value
-              .set(CommodityCodePage, testCommodity.commodityCode)
-              .success
-              .value
-              .set(CountryOfOriginPage, "1")
-              .success
-              .value
-              .set(GoodsDescriptionPage, "2")
-              .success
-              .value
-              .set(HasCorrectGoodsPage, true)
-              .success
-              .value
-              .set(CommodityQuery, testCommodity)
-              .success
-              .value
+          val answers = UserAnswers(userAnswersId)
+            .set(ProductReferencePage, "123")
+            .success
+            .value
+            .set(CommodityCodePage, testCommodity.commodityCode)
+            .success
+            .value
+            .set(CountryOfOriginPage, "1")
+            .success
+            .value
+            .set(GoodsDescriptionPage, "2")
+            .success
+            .value
+            .set(HasCorrectGoodsPage, true)
+            .success
+            .value
+            .set(CommodityQuery, testCommodity)
+            .success
+            .value
 
           val result = GoodsRecord.build(answers, testEori)
 
@@ -87,26 +86,25 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
 
         "and all optional data is missing" in {
 
-          val answers =
-            UserAnswers(userAnswersId)
-              .set(ProductReferencePage, "123")
-              .success
-              .value
-              .set(CommodityCodePage, testCommodity.commodityCode)
-              .success
-              .value
-              .set(CountryOfOriginPage, "1")
-              .success
-              .value
-              .set(GoodsDescriptionPage, "DESCRIPTION")
-              .success
-              .value
-              .set(HasCorrectGoodsPage, true)
-              .success
-              .value
-              .set(CommodityQuery, testCommodity)
-              .success
-              .value
+          val answers = UserAnswers(userAnswersId)
+            .set(ProductReferencePage, "123")
+            .success
+            .value
+            .set(CommodityCodePage, testCommodity.commodityCode)
+            .success
+            .value
+            .set(CountryOfOriginPage, "1")
+            .success
+            .value
+            .set(GoodsDescriptionPage, "DESCRIPTION")
+            .success
+            .value
+            .set(HasCorrectGoodsPage, true)
+            .success
+            .value
+            .set(CommodityQuery, testCommodity)
+            .success
+            .value
 
           val result = GoodsRecord.build(answers, testEori)
 
@@ -166,23 +164,22 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
 
         "when the user said they have a Goods Description but it is missing" in {
 
-          val answers =
-            UserAnswers(userAnswersId)
-              .set(ProductReferencePage, "123")
-              .success
-              .value
-              .set(CommodityCodePage, testCommodity.commodityCode)
-              .success
-              .value
-              .set(HasCorrectGoodsPage, true)
-              .success
-              .value
-              .set(CountryOfOriginPage, "1")
-              .success
-              .value
-              .set(CommodityQuery, testCommodity)
-              .success
-              .value
+          val answers = UserAnswers(userAnswersId)
+            .set(ProductReferencePage, "123")
+            .success
+            .value
+            .set(CommodityCodePage, testCommodity.commodityCode)
+            .success
+            .value
+            .set(HasCorrectGoodsPage, true)
+            .success
+            .value
+            .set(CountryOfOriginPage, "1")
+            .success
+            .value
+            .set(CommodityQuery, testCommodity)
+            .success
+            .value
 
           val result = GoodsRecord.build(answers, testEori)
 
@@ -193,29 +190,28 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
 
         "when HasCorrectGoodsPage is false but they do have a CommodityCodePage" in {
 
-          val answers =
-            UserAnswers(userAnswersId)
-              .set(ProductReferencePage, "123")
-              .success
-              .value
-              .set(CommodityCodePage, testCommodity.commodityCode)
-              .success
-              .value
-              .set(HasCorrectGoodsPage, false)
-              .success
-              .value
-              .set(CountryOfOriginPage, "1")
-              .success
-              .value
-              .set(GoodsDescriptionPage, "goods description")
-              .success
-              .value
-              .set(GoodsDescriptionPage, "2")
-              .success
-              .value
-              .set(CommodityQuery, testCommodity)
-              .success
-              .value
+          val answers = UserAnswers(userAnswersId)
+            .set(ProductReferencePage, "123")
+            .success
+            .value
+            .set(CommodityCodePage, testCommodity.commodityCode)
+            .success
+            .value
+            .set(HasCorrectGoodsPage, false)
+            .success
+            .value
+            .set(CountryOfOriginPage, "1")
+            .success
+            .value
+            .set(GoodsDescriptionPage, "goods description")
+            .success
+            .value
+            .set(GoodsDescriptionPage, "2")
+            .success
+            .value
+            .set(CommodityQuery, testCommodity)
+            .success
+            .value
 
           val result = GoodsRecord.build(answers, testEori)
 
@@ -226,29 +222,28 @@ class GoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues with Opti
 
         "when CommodityQuery code and CommodityCodePage do not match" in {
 
-          val answers =
-            UserAnswers(userAnswersId)
-              .set(ProductReferencePage, "123")
-              .success
-              .value
-              .set(CommodityCodePage, "test")
-              .success
-              .value
-              .set(HasCorrectGoodsPage, true)
-              .success
-              .value
-              .set(CountryOfOriginPage, "1")
-              .success
-              .value
-              .set(GoodsDescriptionPage, "goods description")
-              .success
-              .value
-              .set(GoodsDescriptionPage, "2")
-              .success
-              .value
-              .set(CommodityQuery, testCommodity)
-              .success
-              .value
+          val answers = UserAnswers(userAnswersId)
+            .set(ProductReferencePage, "123")
+            .success
+            .value
+            .set(CommodityCodePage, "test")
+            .success
+            .value
+            .set(HasCorrectGoodsPage, true)
+            .success
+            .value
+            .set(CountryOfOriginPage, "1")
+            .success
+            .value
+            .set(GoodsDescriptionPage, "goods description")
+            .success
+            .value
+            .set(GoodsDescriptionPage, "2")
+            .success
+            .value
+            .set(CommodityQuery, testCommodity)
+            .success
+            .value
 
           val result = GoodsRecord.build(answers, testEori)
 

@@ -27,7 +27,6 @@ class CommodityCodeUpdatePageSpec extends AnyFreeSpec with Matchers with TryValu
   "clean up" - {
 
     "removes HasCorrectGoodsCommodityCodeUpdatePage when commodity code has changed" in {
-
       val userAnswers = UserAnswers(userAnswersId)
         .set(CommodityCodeUpdatePage(testRecordId), "123")
         .success
@@ -43,7 +42,6 @@ class CommodityCodeUpdatePageSpec extends AnyFreeSpec with Matchers with TryValu
     }
 
     "retains HasCorrectGoodsCommodityCodeUpdatePage when commodity code has not changed" in {
-
       val userAnswers = UserAnswers(userAnswersId)
         .set(CommodityCodeUpdatePage(testRecordId), "123")
         .success
@@ -55,7 +53,6 @@ class CommodityCodeUpdatePageSpec extends AnyFreeSpec with Matchers with TryValu
       val result = userAnswers.set(CommodityCodeUpdatePage(testRecordId), "123").success.value
 
       result.isDefined(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId)) mustBe true
-
     }
   }
 }

@@ -43,8 +43,7 @@ class OttServiceSpec extends SpecBase with BeforeAndAfterEach with Generators {
 
   private val mockOttConnector          = mock[OttConnector]
   private val mockGoodsRecordsConnector = mock[GoodsRecordConnector]
-
-  private val ottService = new OttService(mockOttConnector, mockGoodsRecordsConnector)
+  private val ottService                = new OttService(mockOttConnector, mockGoodsRecordsConnector)
 
   private val mockGoodsRecordResponse = GetGoodsRecordResponse(
     "recordId",
@@ -82,26 +81,22 @@ class OttServiceSpec extends SpecBase with BeforeAndAfterEach with Generators {
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    when(mockGoodsRecordsConnector.getRecord(any())(any()))
-      .thenReturn(Future.successful(mockGoodsRecordResponse))
+    when(mockGoodsRecordsConnector.getRecord(any())(any())).thenReturn(Future.successful(mockGoodsRecordResponse))
     when(mockOttConnector.getCategorisationInfo(any(), any(), any(), any(), any(), any())(any()))
       .thenReturn(Future.successful(mockOttResponse()))
   }
 
   override def afterEach(): Unit = {
     super.afterEach()
-    reset(mockOttConnector)
-    reset(mockGoodsRecordsConnector)
+    reset(mockOttConnector, mockGoodsRecordsConnector)
   }
 
   "getMeasurementUnit" - {
-
     "should return measurement unit when both connectors respond successfully" in {
       val mockDataRequest = mock[DataRequest[AnyContent]]
       when(mockDataRequest.userAnswers).thenReturn(emptyUserAnswers)
 
       val expectedMeasurementUnit = "some measure unit"
-
       when(mockOttConnector.getCategorisationInfo(any(), any(), any(), any(), any(), any())(any()))
         .thenReturn(Future.successful(mockOttResponse()))
 
@@ -120,7 +115,6 @@ class OttServiceSpec extends SpecBase with BeforeAndAfterEach with Generators {
     "should return None when Goods Records Connector fails" in {
       val mockDataRequest = mock[DataRequest[AnyContent]]
       when(mockDataRequest.userAnswers).thenReturn(emptyUserAnswers)
-
       when(mockGoodsRecordsConnector.getRecord(any())(any()))
         .thenReturn(Future.failed(new RuntimeException("Failed to get goods record")))
 
@@ -131,14 +125,11 @@ class OttServiceSpec extends SpecBase with BeforeAndAfterEach with Generators {
     "should return None when OTT Connector fails" in {
       val mockDataRequest = mock[DataRequest[AnyContent]]
       when(mockDataRequest.userAnswers).thenReturn(emptyUserAnswers)
-
       when(mockOttConnector.getCategorisationInfo(any(), any(), any(), any(), any(), any())(any()))
         .thenReturn(Future.failed(new RuntimeException("Failed to get categorisation info")))
 
       val result = await(ottService.getMeasurementUnit(mockDataRequest, "recordId"))
       result shouldBe None
     }
-
   }
-
 }

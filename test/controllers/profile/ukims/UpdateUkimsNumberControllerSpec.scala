@@ -59,13 +59,8 @@ class UpdateUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
       val traderProfile    = TraderProfile(testEori, "1", Some("2"), Some("3"), eoriChanged = false)
       val mockAuditService = mock[AuditService]
 
-      when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future.successful(
-        traderProfile
-      )
-
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(
-        true
-      )
+      when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future.successful(traderProfile)
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
@@ -86,10 +81,7 @@ class UpdateUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
         contentAsString(result) mustEqual view(
           form.fill("1"),
           UpdateUkimsNumberController.onSubmit(NormalMode)
-        )(
-          request,
-          messages(application)
-        ).toString
+        )(request, messages(application)).toString
 
         withClue("must not try and submit an audit") {
           verify(mockAuditService, never()).auditMaintainProfile(any(), any(), any())(any())
@@ -97,17 +89,14 @@ class UpdateUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must return OK and the correct view for a GET with all trader profile complete if the user is returning from the CYA page and UKIMS number should be filled in" in {
-
+    "must return OK and the correct view for a GET with all trader profile complete if the user is returning from the CYA page with UKIMS number" in {
       val ukimsNumberCheckRoute = UpdateUkimsNumberController.onPageLoad(CheckMode).url
       val newUkims              = "newUkims"
       val mockAuditService      = mock[AuditService]
 
       val userAnswers = emptyUserAnswers.set(UkimsNumberUpdatePage, newUkims).success.value
 
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(
-        true
-      )
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application = applicationBuilder(userAnswers = Some(userAnswers))
         .overrides(
@@ -127,10 +116,7 @@ class UpdateUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
         contentAsString(result) mustEqual view(
           form.fill(newUkims),
           UpdateUkimsNumberController.onSubmit(CheckMode)
-        )(
-          request,
-          messages(application)
-        ).toString
+        )(request, messages(application)).toString
 
         withClue("must not try and submit an audit or get profile") {
           verify(mockAuditService, never()).auditMaintainProfile(any(), any(), any())(any())
@@ -139,14 +125,10 @@ class UpdateUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect for a POST" in {
-
       val answer                 = "XIUKIM47699357400020231115081800"
       val ukimsNumberSubmitRoute = UpdateUkimsNumberController.onSubmit(NormalMode).url
 
-      val userAnswers = emptyUserAnswers
-        .set(UkimsNumberUpdatePage, answer)
-        .success
-        .value
+      val userAnswers = emptyUserAnswers.set(UkimsNumberUpdatePage, answer).success.value
 
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
@@ -159,9 +141,7 @@ class UpdateUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, ukimsNumberSubmitRoute)
-            .withFormUrlEncodedBody(("value", answer))
+        val request = FakeRequest(POST, ukimsNumberSubmitRoute).withFormUrlEncodedBody(("value", answer))
 
         val result = route(application, request).value
 
@@ -173,13 +153,10 @@ class UpdateUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
-
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, ukimsNumberRoute)
-            .withFormUrlEncodedBody(("value", ""))
+        val request = FakeRequest(POST, ukimsNumberRoute).withFormUrlEncodedBody(("value", ""))
 
         val boundForm = form.bind(Map("value" -> ""))
 
@@ -191,15 +168,11 @@ class UpdateUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
         contentAsString(result) mustEqual view(
           boundForm,
           UpdateUkimsNumberController.onSubmit(NormalMode)
-        )(
-          request,
-          messages(application)
-        ).toString
+        )(request, messages(application)).toString
       }
     }
 
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
-
       val application = applicationBuilder(userAnswers = None)
         .build()
 
@@ -214,13 +187,10 @@ class UpdateUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to Journey Recovery for a POST if no existing data is found" in {
-
       val application = applicationBuilder(userAnswers = None).build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, ukimsNumberRoute)
-            .withFormUrlEncodedBody(("value", "answer"))
+        val request = FakeRequest(POST, ukimsNumberRoute).withFormUrlEncodedBody(("value", "answer"))
 
         val result = route(application, request).value
 
@@ -228,6 +198,5 @@ class UpdateUkimsNumberControllerSpec extends SpecBase with MockitoSugar {
         redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
       }
     }
-
   }
 }

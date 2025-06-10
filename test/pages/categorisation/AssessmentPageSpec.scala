@@ -61,27 +61,22 @@ class AssessmentPageSpec extends SpecBase {
 
     "must not remove any assessments" - {
       "when an assessment is answered with an exemption" in {
-
-        val answers =
-          emptyUserAnswers
-            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
-            .success
-            .value
-            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
-            .success
-            .value
-            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
-            .success
-            .value
-            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
-            .success
-            .value
+        val answers = emptyUserAnswers
+          .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+          .success
+          .value
 
         val result =
-          answers
-            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
-            .success
-            .value
+          answers.set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE"))).success.value
 
         result.isDefined(AssessmentPage(testRecordId, 0)) mustBe true
         result.isDefined(AssessmentPage(testRecordId, 1)) mustBe true
@@ -91,27 +86,24 @@ class AssessmentPageSpec extends SpecBase {
 
     "must remove all assessments later in the list" - {
       "when an assessment is answered with no exemption" in {
+        val answers = emptyUserAnswers
+          .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+          .success
+          .value
+          .set(AssessmentPage(testRecordId, 3), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
+          .success
+          .value
 
-        val answers =
-          emptyUserAnswers
-            .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
-            .success
-            .value
-            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
-            .success
-            .value
-            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
-            .success
-            .value
-            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
-            .success
-            .value
-            .set(AssessmentPage(testRecordId, 3), AssessmentAnswer.Exemption(Seq("TEST_CODE")))
-            .success
-            .value
-
-        val result =
-          answers.set(AssessmentPage(testRecordId, 1), AssessmentAnswer.NoExemption).success.value
+        val result = answers.set(AssessmentPage(testRecordId, 1), AssessmentAnswer.NoExemption).success.value
 
         result.isDefined(AssessmentPage(testRecordId, 0)) mustBe true
         result.isDefined(AssessmentPage(testRecordId, 1)) mustBe true

@@ -29,11 +29,8 @@ class LongerCommodityCodePageSpec extends SpecBase {
   "clean up" - {
 
     "does not removes HasCorrectGoodsLongerCommodityCodePage when longer commodity is same" in {
-
-      val userAnswers = UserAnswers(userAnswersId)
-        .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
-        .success
-        .value
+      val userAnswers =
+        UserAnswers(userAnswersId).set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true).success.value
 
       val result = userAnswers
         .set(
@@ -56,10 +53,8 @@ class LongerCommodityCodePageSpec extends SpecBase {
 
     "removes HasCorrectGoodsLongerCommodityCodePage when longer commodity is different" in {
 
-      val userAnswers = UserAnswers(userAnswersId)
-        .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
-        .success
-        .value
+      val userAnswers =
+        UserAnswers(userAnswersId).set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true).success.value
 
       val result = userAnswers
         .set(
@@ -76,8 +71,6 @@ class LongerCommodityCodePageSpec extends SpecBase {
         .value
 
       result.isDefined(HasCorrectGoodsLongerCommodityCodePage(testRecordId)) mustBe false
-
     }
-
   }
 }

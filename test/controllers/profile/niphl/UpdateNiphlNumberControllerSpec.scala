@@ -55,19 +55,12 @@ class UpdateNiphlNumberControllerSpec extends SpecBase with MockitoSugar {
     UpdateNiphlNumberController.onPageLoad(NormalMode).url
 
   "UpdateNiphlNumberControllerSpec" - {
-
     "must return OK and the correct view for a GET when HasNiphl hasn't been answered when there is a niphl number" in {
-
       val traderProfile    = TraderProfile(testEori, "1", Some("2"), Some("3"), eoriChanged = false)
       val mockAuditService = mock[AuditService]
 
-      when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future.successful(
-        traderProfile
-      )
-
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(
-        true
-      )
+      when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future.successful(traderProfile)
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
@@ -88,10 +81,7 @@ class UpdateNiphlNumberControllerSpec extends SpecBase with MockitoSugar {
         contentAsString(result) mustEqual view(
           form.fill("3"),
           UpdateNiphlNumberController.onSubmit(NormalMode)
-        )(
-          request,
-          messages(application)
-        ).toString
+        )(request, messages(application)).toString
 
         withClue("must not try and submit an audit") {
           verify(mockAuditService, never()).auditMaintainProfile(any(), any(), any())(any())
@@ -100,17 +90,11 @@ class UpdateNiphlNumberControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must return OK and the correct view for a GET when HasNiphl hasn't been answered when there isn't a niphl number" in {
-
       val traderProfile    = TraderProfile(testEori, "1", Some("2"), None, eoriChanged = false)
       val mockAuditService = mock[AuditService]
 
-      when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future.successful(
-        traderProfile
-      )
-
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(
-        true
-      )
+      when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future.successful(traderProfile)
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
@@ -131,10 +115,7 @@ class UpdateNiphlNumberControllerSpec extends SpecBase with MockitoSugar {
         contentAsString(result) mustEqual view(
           form,
           UpdateNiphlNumberController.onSubmit(NormalMode)
-        )(
-          request,
-          messages(application)
-        ).toString
+        )(request, messages(application)).toString
 
         withClue("must not try and submit an audit") {
           verify(mockAuditService, never()).auditMaintainProfile(any(), any(), any())(any())
@@ -143,18 +124,12 @@ class UpdateNiphlNumberControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must return OK and the correct view for a GET when HasNiphl has been answered when there is a niphl number" in {
-
       val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"), eoriChanged = false)
 
       val mockAuditService = mock[AuditService]
 
-      when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future.successful(
-        traderProfile
-      )
-
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(
-        true
-      )
+      when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future.successful(traderProfile)
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers.set(HasNiphlUpdatePage, true).success.value))
@@ -176,10 +151,7 @@ class UpdateNiphlNumberControllerSpec extends SpecBase with MockitoSugar {
         contentAsString(result) mustEqual view(
           form.fill("3"),
           UpdateNiphlNumberController.onSubmit(NormalMode)
-        )(
-          request,
-          messages(application)
-        ).toString
+        )(request, messages(application)).toString
 
         withClue("must not try and submit an audit") {
           verify(mockAuditService, never()).auditMaintainProfile(any(), any(), any())(any())
@@ -188,18 +160,12 @@ class UpdateNiphlNumberControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must return OK and the correct view for a GET when HasNiphl has been answered when there isn't a niphl number" in {
-
       val traderProfile = TraderProfile(testEori, "1", Some("3"), None, eoriChanged = false)
 
       val mockAuditService = mock[AuditService]
 
-      when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future.successful(
-        traderProfile
-      )
-
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(
-        true
-      )
+      when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future.successful(traderProfile)
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers.set(HasNiphlUpdatePage, true).success.value))
@@ -221,10 +187,7 @@ class UpdateNiphlNumberControllerSpec extends SpecBase with MockitoSugar {
         contentAsString(result) mustEqual view(
           form,
           UpdateNiphlNumberController.onSubmit(NormalMode)
-        )(
-          request,
-          messages(application)
-        ).toString
+        )(request, messages(application)).toString
 
         withClue("must not try and submit an audit") {
           verify(mockAuditService, never()).auditMaintainProfile(any(), any(), any())(any())
@@ -246,11 +209,8 @@ class UpdateNiphlNumberControllerSpec extends SpecBase with MockitoSugar {
 
       val mockAuditService = mock[AuditService]
 
-      when(mockAuditService.auditMaintainProfile(any(), any(), any())(any))
-        .thenReturn(Future.successful(Done))
-
+      when(mockAuditService.auditMaintainProfile(any(), any(), any())(any)).thenReturn(Future.successful(Done))
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-
       when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future.successful(traderProfile)
 
       val application =
@@ -264,11 +224,8 @@ class UpdateNiphlNumberControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, niphlNumberRouteUpdate)
-            .withFormUrlEncodedBody(("value", answer))
-
-        val result = route(application, request).value
+        val request = FakeRequest(POST, niphlNumberRouteUpdate).withFormUrlEncodedBody(("value", answer))
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
@@ -306,9 +263,7 @@ class UpdateNiphlNumberControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, niphlNumberRouteUpdate)
-            .withFormUrlEncodedBody(("value", answer))
+        val request = FakeRequest(POST, niphlNumberRouteUpdate).withFormUrlEncodedBody(("value", answer))
 
         val result = route(application, request).value
 
@@ -316,8 +271,7 @@ class UpdateNiphlNumberControllerSpec extends SpecBase with MockitoSugar {
         redirectLocation(result).value mustEqual controllers.profile.routes.CyaMaintainProfileController
           .onPageLoadNiphlNumber()
           .url
-        verify(mockTraderProfileConnector, never())
-          .submitTraderProfile(any())(any())
+        verify(mockTraderProfileConnector, never()).submitTraderProfile(any())(any())
 
         withClue("must not try and submit an audit") {
           verify(mockAuditService, never()).auditMaintainProfile(any(), any(), any())(any())
@@ -326,13 +280,10 @@ class UpdateNiphlNumberControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
-
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, niphlNumberRouteUpdate)
-            .withFormUrlEncodedBody(("value", ""))
+        val request = FakeRequest(POST, niphlNumberRouteUpdate).withFormUrlEncodedBody(("value", ""))
 
         val boundForm = form.bind(Map("value" -> ""))
 
@@ -344,15 +295,11 @@ class UpdateNiphlNumberControllerSpec extends SpecBase with MockitoSugar {
         contentAsString(result) mustEqual view(
           boundForm,
           UpdateNiphlNumberController.onSubmit(NormalMode)
-        )(
-          request,
-          messages(application)
-        ).toString
+        )(request, messages(application)).toString
       }
     }
 
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
-
       val application = applicationBuilder(userAnswers = None)
         .build()
 
@@ -367,7 +314,6 @@ class UpdateNiphlNumberControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to Journey Recovery for a POST if no existing data is found" in {
-
       val application = applicationBuilder(userAnswers = None).build()
 
       running(application) {
@@ -381,6 +327,5 @@ class UpdateNiphlNumberControllerSpec extends SpecBase with MockitoSugar {
         redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
       }
     }
-
   }
 }

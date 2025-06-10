@@ -27,7 +27,6 @@ class SupplementaryUnitSummarySpec extends SpecBase with MockitoSugar {
   implicit private val messages: Messages = messages(applicationBuilder().build())
 
   "SupplementaryUnitSummary.row" - {
-
     "must return a SummaryListRow when category is 2" in {
       val row = SupplementaryUnitSummary.row(
         Some(2),

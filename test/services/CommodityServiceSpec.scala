@@ -83,7 +83,6 @@ class CommodityServiceSpec extends SpecBase with BeforeAndAfterEach with Generat
   }
 
   "CommodityService" - {
-
     "isCommodityValid" - {
       "must return the correct value when passed country of origin and the commodity code" in {
         when(mockOttConnector.getCommodityCode(any(), any(), any(), any(), any(), any())(any()))
@@ -143,7 +142,5 @@ class CommodityServiceSpec extends SpecBase with BeforeAndAfterEach with Generat
         commodityService.fetchCommodity("170200", "GB")(request, hc).futureValue mustBe None
       }
     }
-
   }
-
 }

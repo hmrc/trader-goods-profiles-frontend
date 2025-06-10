@@ -32,19 +32,14 @@ class GoodsDescriptionSummarySpec extends SpecBase {
   implicit private val messages: Messages = messages(applicationBuilder().build())
 
   ".rowUpdate" - {
-
     "must return a SummaryListRow without change link when record is locked" in {
-
       val row =
         GoodsDescriptionSummary.rowUpdate(recordForTestingSummaryRows, testRecordId, NormalMode, recordLocked = true)
-
       row.actions mustBe Some(Actions("", List()))
     }
 
     "must return a SummaryListRow with change link when record is not locked" - {
-
       "and advice has not been provided" in {
-
         val row =
           GoodsDescriptionSummary.rowUpdate(recordForTestingSummaryRows, testRecordId, NormalMode, recordLocked = false)
 
@@ -55,10 +50,8 @@ class GoodsDescriptionSummarySpec extends SpecBase {
       }
 
       "and advice has been provided" in {
-
         val recordWithAdviceProvided = recordForTestingSummaryRows.copy(adviceStatus = AdviceReceived)
-
-        val row =
+        val row                      =
           GoodsDescriptionSummary.rowUpdate(recordWithAdviceProvided, testRecordId, NormalMode, recordLocked = false)
 
         row.actions mustBe defined
@@ -66,17 +59,11 @@ class GoodsDescriptionSummarySpec extends SpecBase {
           controllers.goodsRecord.goodsDescription.routes.HasGoodsDescriptionChangeController
             .onPageLoad(NormalMode, testRecordId)
             .url
-
       }
 
       "must render a 'Does not match' tag when reviewReason is Mismatch and declarable is NotReadyForUse" in {
-        val record = recordForTestingSummaryRows.copy(
-          reviewReason = Some(Mismatch),
-          declarable = NotReadyForUse
-        )
-
-        val row =
-          GoodsDescriptionSummary.rowUpdate(record, testRecordId, NormalMode, recordLocked = false)
+        val record = recordForTestingSummaryRows.copy(reviewReason = Some(Mismatch), declarable = NotReadyForUse)
+        val row    = GoodsDescriptionSummary.rowUpdate(record, testRecordId, NormalMode, recordLocked = false)
 
         row.value.content.toString must include("""<strong class="govuk-tag govuk-tag--grey">""")
         row.value.content.toString must include(messages("goodsDescription.doesNotMatch"))
@@ -84,13 +71,8 @@ class GoodsDescriptionSummarySpec extends SpecBase {
       }
 
       "must render a 'Not clear' tag when reviewReason is Unclear and declarable is NotReadyForUse" in {
-        val record = recordForTestingSummaryRows.copy(
-          reviewReason = Some(Unclear),
-          declarable = NotReadyForUse
-        )
-
-        val row =
-          GoodsDescriptionSummary.rowUpdate(record, testRecordId, NormalMode, recordLocked = false)
+        val record = recordForTestingSummaryRows.copy(reviewReason = Some(Unclear), declarable = NotReadyForUse)
+        val row    = GoodsDescriptionSummary.rowUpdate(record, testRecordId, NormalMode, recordLocked = false)
 
         row.value.content.toString must include("""<strong class="govuk-tag govuk-tag--grey">""")
         row.value.content.toString must include(messages("goodsDescription.unclear"))
@@ -98,40 +80,29 @@ class GoodsDescriptionSummarySpec extends SpecBase {
       }
 
       "must not render a tag if declarable is ImmiReady, even if reviewReason is present" in {
-        val record = recordForTestingSummaryRows.copy(
-          reviewReason = Some(Inadequate),
-          declarable = ImmiReady
-        )
-
-        val row =
-          GoodsDescriptionSummary.rowUpdate(record, testRecordId, NormalMode, recordLocked = false)
+        val record = recordForTestingSummaryRows.copy(reviewReason = Some(Inadequate), declarable = ImmiReady)
+        val row    = GoodsDescriptionSummary.rowUpdate(record, testRecordId, NormalMode, recordLocked = false)
 
         row.value.content.toString must not include "govuk-tag govuk-tag--grey"
         row.value.content.toString must include(record.goodsDescription)
       }
-
     }
   }
 
   ".row" - {
-
     "must return a SummaryListRow when GoodsDescriptionPage is defined" in {
-      val ua = UserAnswers("id").set(GoodsDescriptionPage, "Test").success.value
-
+      val ua     = UserAnswers("id").set(GoodsDescriptionPage, "Test").success.value
       val result = GoodsDescriptionSummary.row(ua)
 
       result mustBe defined
       result.value.key.content.toString   must include(messages("goodsDescription.checkYourAnswersLabel"))
       result.value.value.content.toString must include("Test")
       result.value.actions.value.items.head.href mustEqual
-        controllers.goodsRecord.goodsDescription.routes.CreateGoodsDescriptionController
-          .onPageLoad(CheckMode)
-          .url
+        controllers.goodsRecord.goodsDescription.routes.CreateGoodsDescriptionController.onPageLoad(CheckMode).url
     }
 
     "must return None when GoodsDescriptionPage is undefined" in {
-      val ua = UserAnswers("id")
-
+      val ua     = UserAnswers("id")
       val result = GoodsDescriptionSummary.row(ua)
 
       result mustBe None
@@ -139,7 +110,6 @@ class GoodsDescriptionSummarySpec extends SpecBase {
   }
 
   ".rowUpdateCya" - {
-
     "must return a SummaryListRow with correct value and link" in {
       val result = GoodsDescriptionSummary.rowUpdateCya("Updated goods", testRecordId, NormalMode)
 
@@ -151,5 +121,4 @@ class GoodsDescriptionSummarySpec extends SpecBase {
           .url
     }
   }
-
 }

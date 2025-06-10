@@ -24,21 +24,21 @@ import models.{NormalMode, UserAnswers}
 import navigation.{FakeGoodsRecordNavigator, GoodsRecordNavigator}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{atLeastOnce, verify, when}
+import org.mockito.Mockito.{atLeastOnce, reset, verify, when}
+import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import pages.goodsRecord.HasGoodsDescriptionChangePage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import views.html.goodsRecord.HasGoodsDescriptionChangeView
-
 import scala.concurrent.Future
 
-class HasGoodsDescriptionChangeControllerSpec extends SpecBase with MockitoSugar {
+class HasGoodsDescriptionChangeControllerSpec extends SpecBase with MockitoSugar with BeforeAndAfterEach {
 
   private def onwardRoute = Call("GET", "/foo")
 
@@ -50,12 +50,17 @@ class HasGoodsDescriptionChangeControllerSpec extends SpecBase with MockitoSugar
       .onPageLoad(NormalMode, testRecordId)
       .url
 
+  private val mockAuditService      = mock[AuditService]
+  private val mockSessionRepository = mock[SessionRepository]
+
+  override protected def beforeEach(): Unit = {
+    super.beforeEach()
+    reset(mockAuditService, mockSessionRepository)
+  }
+
   "HasGoodsDescriptionChange Controller" - {
 
     "must return OK and the correct view for a GET" in {
-
-      val mockAuditService = mock[AuditService]
-
       when(mockAuditService.auditStartUpdateGoodsRecord(any(), any(), any(), any(), any())(any()))
         .thenReturn(Future.successful(Done))
 
@@ -65,40 +70,32 @@ class HasGoodsDescriptionChangeControllerSpec extends SpecBase with MockitoSugar
 
       running(application) {
         val request = FakeRequest(GET, hasGoodsDescriptionChangeRoute)
-
-        val result = route(application, request).value
-
-        val view = application.injector.instanceOf[HasGoodsDescriptionChangeView]
+        val result  = route(application, request).value
+        val view    = application.injector.instanceOf[HasGoodsDescriptionChangeView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form, NormalMode, testRecordId)(request, messages(application)).toString
 
         withClue("must call the audit service with the correct details") {
-          verify(mockAuditService, atLeastOnce())
-            .auditStartUpdateGoodsRecord(
-              eqTo(testEori),
-              eqTo(AffinityGroup.Individual),
-              eqTo(GoodsDetailsUpdate),
-              eqTo(testRecordId),
-              any()
-            )(any())
+          verify(mockAuditService, atLeastOnce()).auditStartUpdateGoodsRecord(
+            eqTo(testEori),
+            eqTo(AffinityGroup.Individual),
+            eqTo(GoodsDetailsUpdate),
+            eqTo(testRecordId),
+            any()
+          )(any())
         }
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-
       val userAnswers = UserAnswers(userAnswersId).set(HasGoodsDescriptionChangePage(testRecordId), true).success.value
-
-      val application = applicationBuilder(userAnswers = Some(userAnswers))
-        .build()
+      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, hasGoodsDescriptionChangeRoute)
-
-        val view = application.injector.instanceOf[HasGoodsDescriptionChangeView]
-
-        val result = route(application, request).value
+        val view    = application.injector.instanceOf[HasGoodsDescriptionChangeView]
+        val result  = route(application, request).value
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form.fill(true), NormalMode, testRecordId)(
@@ -109,24 +106,18 @@ class HasGoodsDescriptionChangeControllerSpec extends SpecBase with MockitoSugar
     }
 
     "must redirect to the next page when valid data is submitted" in {
-
-      val mockSessionRepository = mock[SessionRepository]
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
-      val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(
-            bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
-            bind[SessionRepository].toInstance(mockSessionRepository)
-          )
-          .build()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
+          bind[SessionRepository].toInstance(mockSessionRepository)
+        )
+        .build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, hasGoodsDescriptionChangeRoute)
-            .withFormUrlEncodedBody(("value", "true"))
-
-        val result = route(application, request).value
+        val request = FakeRequest(POST, hasGoodsDescriptionChangeRoute).withFormUrlEncodedBody(("value", "true"))
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
@@ -134,20 +125,13 @@ class HasGoodsDescriptionChangeControllerSpec extends SpecBase with MockitoSugar
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
-
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .build()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, hasGoodsDescriptionChangeRoute)
-            .withFormUrlEncodedBody(("value", ""))
-
+        val request   = FakeRequest(POST, hasGoodsDescriptionChangeRoute).withFormUrlEncodedBody(("value", ""))
         val boundForm = form.bind(Map("value" -> ""))
-
-        val view = application.injector.instanceOf[HasGoodsDescriptionChangeView]
-
-        val result = route(application, request).value
+        val view      = application.injector.instanceOf[HasGoodsDescriptionChangeView]
+        val result    = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
         contentAsString(result) mustEqual view(boundForm, NormalMode, testRecordId)(
@@ -158,14 +142,11 @@ class HasGoodsDescriptionChangeControllerSpec extends SpecBase with MockitoSugar
     }
 
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
-
-      val application = applicationBuilder(userAnswers = None)
-        .build()
+      val application = applicationBuilder(userAnswers = None).build()
 
       running(application) {
         val request = FakeRequest(GET, hasGoodsDescriptionChangeRoute)
-
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
@@ -173,16 +154,11 @@ class HasGoodsDescriptionChangeControllerSpec extends SpecBase with MockitoSugar
     }
 
     "must redirect to Journey Recovery for a POST if no existing data is found" in {
-
-      val application = applicationBuilder(userAnswers = None)
-        .build()
+      val application = applicationBuilder(userAnswers = None).build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, hasGoodsDescriptionChangeRoute)
-            .withFormUrlEncodedBody(("value", "true"))
-
-        val result = route(application, request).value
+        val request = FakeRequest(POST, hasGoodsDescriptionChangeRoute).withFormUrlEncodedBody(("value", "true"))
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url

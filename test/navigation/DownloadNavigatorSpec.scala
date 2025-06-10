@@ -30,19 +30,14 @@ class DownloadNavigatorSpec extends SpecBase with BeforeAndAfterEach {
   private val navigator = new DownloadNavigator()
 
   "Navigator" - {
-
     "in Normal mode" - {
-
       "must go from a page that doesn't exist in the route map to Index" in {
-
         case object UnknownPage extends Page
         navigator.nextPage(UnknownPage, NormalMode, emptyUserAnswers) mustBe routes.IndexController.onPageLoad()
       }
 
       "in Data Download Journey" - {
-
         "must go from RequestDataPage to DownloadRequestSuccessController" in {
-
           navigator.nextPage(
             RequestDataPage,
             NormalMode,
@@ -53,9 +48,7 @@ class DownloadNavigatorSpec extends SpecBase with BeforeAndAfterEach {
     }
 
     "in Check mode" - {
-
       "must go from a page that doesn't exist in the edit route map to Index" in {
-
         case object UnknownPage extends Page
         navigator.nextPage(
           UnknownPage,
@@ -63,13 +56,10 @@ class DownloadNavigatorSpec extends SpecBase with BeforeAndAfterEach {
           emptyUserAnswers
         ) mustBe controllers.problem.routes.JourneyRecoveryController.onPageLoad()
       }
-
     }
 
     ".journeyRecovery" - {
-
       "redirect to JourneyRecovery" - {
-
         "with no ContinueUrl if none supplied" in {
           val result = navigator.journeyRecovery()
           result.header.status mustEqual SEE_OTHER

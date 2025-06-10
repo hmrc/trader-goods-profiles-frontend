@@ -39,19 +39,17 @@ import scala.concurrent.Future
 class CreateRecordSuccessControllerSpec extends SpecBase with BeforeAndAfterEach {
 
   private val mockAutoCategoriseService: AutoCategoriseService = mock[AutoCategoriseService]
-  private val mockGoodsRecordConnector                         = mock[GoodsRecordConnector]
+  private val mockGoodsRecordConnector: GoodsRecordConnector   = mock[GoodsRecordConnector]
 
   override def beforeEach(): Unit =
     super.beforeEach()
 
   override def afterEach(): Unit = {
     super.afterEach()
-    reset(mockAutoCategoriseService)
-    reset(mockGoodsRecordConnector)
+    reset(mockAutoCategoriseService, mockGoodsRecordConnector)
   }
 
   "CreateRecordSuccess Controller" - {
-
     "must return OK and the correct view for a GET" in {
       val record: GetGoodsRecordResponse = GetGoodsRecordResponse(
         recordId = "test",
@@ -81,7 +79,6 @@ class CreateRecordSuccessControllerSpec extends SpecBase with BeforeAndAfterEach
       )
 
       when(mockGoodsRecordConnector.getRecord(eqTo("test"))(any[HeaderCarrier])).thenReturn(Future.successful(record))
-
       when(mockAutoCategoriseService.autoCategoriseRecord(any[String](), any())(any(), any())) thenReturn Future
         .successful(None)
 
@@ -93,10 +90,8 @@ class CreateRecordSuccessControllerSpec extends SpecBase with BeforeAndAfterEach
       running(application) {
         val request =
           FakeRequest(GET, controllers.goodsRecord.routes.CreateRecordSuccessController.onPageLoad("test").url)
-
-        val result = route(application, request).value
-
-        val view = application.injector.instanceOf[CreateRecordSuccessView]
+        val result  = route(application, request).value
+        val view    = application.injector.instanceOf[CreateRecordSuccessView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view("test", None)(request, messages(application)).toString
@@ -132,13 +127,12 @@ class CreateRecordSuccessControllerSpec extends SpecBase with BeforeAndAfterEach
       )
 
       when(
-        mockAutoCategoriseService.autoCategoriseRecord(
-          eqTo(TestConstants.testRecordId),
-          any[UserAnswers]
-        )(any[DataRequest[_]], any[HeaderCarrier])
+        mockAutoCategoriseService.autoCategoriseRecord(eqTo(TestConstants.testRecordId), any[UserAnswers])(
+          any[DataRequest[_]],
+          any[HeaderCarrier]
+        )
       )
         .thenReturn(Future.successful(Some(StandardGoodsScenario)))
-
       when(mockGoodsRecordConnector.getRecord(eqTo(TestConstants.testRecordId))(any[HeaderCarrier]))
         .thenReturn(Future.successful(record))
 
@@ -152,14 +146,10 @@ class CreateRecordSuccessControllerSpec extends SpecBase with BeforeAndAfterEach
       running(application) {
         val request = FakeRequest(
           GET,
-          controllers.goodsRecord.routes.CreateRecordSuccessController
-            .onPageLoad(TestConstants.testRecordId)
-            .url
+          controllers.goodsRecord.routes.CreateRecordSuccessController.onPageLoad(TestConstants.testRecordId).url
         )
-
-        val result = route(application, request).value
-        val view   = application.injector.instanceOf[CreateRecordAutoCategorisationSuccessView]
-
+        val result  = route(application, request).value
+        val view    = application.injector.instanceOf[CreateRecordAutoCategorisationSuccessView]
         val tagText = messages(application)("declarableStatus.immiReady")
 
         status(result) mustEqual OK
@@ -199,12 +189,11 @@ class CreateRecordSuccessControllerSpec extends SpecBase with BeforeAndAfterEach
       )
 
       when(
-        mockAutoCategoriseService.autoCategoriseRecord(
-          eqTo(TestConstants.testRecordId),
-          any[UserAnswers]
-        )(any[DataRequest[_]], any[HeaderCarrier])
-      )
-        .thenReturn(Future.successful(Some(StandardGoodsScenario)))
+        mockAutoCategoriseService.autoCategoriseRecord(eqTo(TestConstants.testRecordId), any[UserAnswers])(
+          any[DataRequest[_]],
+          any[HeaderCarrier]
+        )
+      ).thenReturn(Future.successful(Some(StandardGoodsScenario)))
 
       when(mockGoodsRecordConnector.getRecord(eqTo(TestConstants.testRecordId))(any[HeaderCarrier]))
         .thenReturn(Future.successful(record))
@@ -219,11 +208,8 @@ class CreateRecordSuccessControllerSpec extends SpecBase with BeforeAndAfterEach
       running(application) {
         val request = FakeRequest(
           GET,
-          controllers.goodsRecord.routes.CreateRecordSuccessController
-            .onPageLoad(TestConstants.testRecordId)
-            .url
+          controllers.goodsRecord.routes.CreateRecordSuccessController.onPageLoad(TestConstants.testRecordId).url
         )
-
         val result  = route(application, request).value
         val view    = application.injector.instanceOf[CreateRecordAutoCategorisationSuccessView]
         val tagText = messages(application)("declarableStatus.notReadyForImmi")
@@ -235,6 +221,5 @@ class CreateRecordSuccessControllerSpec extends SpecBase with BeforeAndAfterEach
         ).toString
       }
     }
-
   }
 }

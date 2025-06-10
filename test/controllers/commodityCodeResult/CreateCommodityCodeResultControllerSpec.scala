@@ -54,11 +54,10 @@ class CreateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
 
       "must return OK and the correct view for a GET" in {
 
-        val userAnswers =
-          emptyUserAnswers
-            .set(CommodityQuery, Commodity("654321", List("Description", "Other"), Instant.now, None))
-            .success
-            .value
+        val userAnswers = emptyUserAnswers
+          .set(CommodityQuery, Commodity("654321", List("Description", "Other"), Instant.now, None))
+          .success
+          .value
 
         val application = applicationBuilder(userAnswers = Some(userAnswers))
           .build()
@@ -78,11 +77,7 @@ class CreateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
             onSubmitAction,
             NormalMode,
             None
-          )(
-            request,
-            messages(application),
-            appConfig
-          ).toString
+          )(request, messages(application), appConfig).toString
         }
       }
 

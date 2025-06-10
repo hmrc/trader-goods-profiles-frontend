@@ -57,13 +57,8 @@ class UpdateIsNirmsRegisteredControllerSpec extends SpecBase with MockitoSugar {
 
       val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"), eoriChanged = false)
 
-      when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future.successful(
-        traderProfile
-      )
-
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(
-        true
-      )
+      when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future.successful(traderProfile)
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
@@ -85,16 +80,12 @@ class UpdateIsNirmsRegisteredControllerSpec extends SpecBase with MockitoSugar {
           UpdateIsNirmsRegisteredController.onSubmit(NormalMode),
           NormalMode,
           isCreateJourney = false
-        )(
-          request,
-          messages(application)
-        ).toString
+        )(request, messages(application)).toString
         verify(mockTraderProfileConnector, atLeastOnce()).getTraderProfile(any())
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-
       val userAnswers = UserAnswers(userAnswersId).set(HasNirmsUpdatePage, true).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers))
@@ -105,10 +96,8 @@ class UpdateIsNirmsRegisteredControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request = FakeRequest(GET, hasNirmsRoute)
-
-        val view = application.injector.instanceOf[HasNirmsView]
-
-        val result = route(application, request).value
+        val view    = application.injector.instanceOf[HasNirmsView]
+        val result  = route(application, request).value
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(
@@ -116,15 +105,11 @@ class UpdateIsNirmsRegisteredControllerSpec extends SpecBase with MockitoSugar {
           UpdateIsNirmsRegisteredController.onSubmit(NormalMode),
           NormalMode,
           isCreateJourney = false
-        )(
-          request,
-          messages(application)
-        ).toString
+        )(request, messages(application)).toString
       }
     }
 
     "must redirect to the next page when valid data is submitted" in {
-
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val traderProfile = TraderProfile(testEori, "1", None, Some("3"), eoriChanged = false)
@@ -141,11 +126,8 @@ class UpdateIsNirmsRegisteredControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, hasNirmsRoute)
-            .withFormUrlEncodedBody(("value", "true"))
-
-        val result = route(application, request).value
+        val request = FakeRequest(POST, hasNirmsRoute).withFormUrlEncodedBody(("value", "true"))
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
@@ -154,28 +136,23 @@ class UpdateIsNirmsRegisteredControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to ProfilePage when no changes made" in {
-
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"), eoriChanged = false)
 
       when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future.successful(traderProfile)
 
-      val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(
-            bind[SessionRepository].toInstance(mockSessionRepository),
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-            bind[ProfileNavigator].toInstance(new FakeProfileNavigator(onwardRoute))
-          )
-          .build()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[SessionRepository].toInstance(mockSessionRepository),
+          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
+          bind[ProfileNavigator].toInstance(new FakeProfileNavigator(onwardRoute))
+        )
+        .build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, hasNirmsRoute)
-            .withFormUrlEncodedBody(("value", "true"))
-
-        val result = route(application, request).value
+        val request = FakeRequest(POST, hasNirmsRoute).withFormUrlEncodedBody(("value", "true"))
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
@@ -184,20 +161,13 @@ class UpdateIsNirmsRegisteredControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
-
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .build()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, hasNirmsRoute)
-            .withFormUrlEncodedBody(("value", ""))
-
+        val request   = FakeRequest(POST, hasNirmsRoute).withFormUrlEncodedBody(("value", ""))
         val boundForm = form.bind(Map("value" -> ""))
-
-        val view = application.injector.instanceOf[HasNirmsView]
-
-        val result = route(application, request).value
+        val view      = application.injector.instanceOf[HasNirmsView]
+        val result    = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
         contentAsString(result) mustEqual view(
@@ -205,17 +175,12 @@ class UpdateIsNirmsRegisteredControllerSpec extends SpecBase with MockitoSugar {
           UpdateIsNirmsRegisteredController.onSubmit(NormalMode),
           NormalMode,
           isCreateJourney = false
-        )(
-          request,
-          messages(application)
-        ).toString
+        )(request, messages(application)).toString
       }
     }
 
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
-
-      val application = applicationBuilder(userAnswers = None)
-        .build()
+      val application = applicationBuilder(userAnswers = None).build()
 
       running(application) {
         val request = FakeRequest(GET, hasNirmsRoute)
@@ -228,21 +193,15 @@ class UpdateIsNirmsRegisteredControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to Journey Recovery for a POST if no existing data is found" in {
-
-      val application = applicationBuilder(userAnswers = None)
-        .build()
+      val application = applicationBuilder(userAnswers = None).build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, hasNirmsRoute)
-            .withFormUrlEncodedBody(("value", "true"))
-
-        val result = route(application, request).value
+        val request = FakeRequest(POST, hasNirmsRoute).withFormUrlEncodedBody(("value", "true"))
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
       }
     }
-
   }
 }

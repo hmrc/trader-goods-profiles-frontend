@@ -49,9 +49,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
     "for the Longer Commodity Code Journey" - {
 
       lazy val hasCorrectGoodsRoute =
-        controllers.commodityCodeResult.routes.LongerCommodityCodeController
-          .onPageLoad(NormalMode, testRecordId)
-          .url
+        controllers.commodityCodeResult.routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId).url
       lazy val onSubmitAction: Call =
         controllers.commodityCodeResult.routes.LongerCommodityCodeController.onSubmit(NormalMode, testRecordId)
 
@@ -132,11 +130,7 @@ class LongerCommodityCodeControllerSpec extends SpecBase with MockitoSugar {
               onSubmitAction,
               NormalMode,
               Some(testRecordId)
-            )(
-              request,
-              messages(application),
-              appConfig
-            ).toString
+            )(request, messages(application), appConfig).toString
           }
         }
 

@@ -76,8 +76,7 @@ class ValidateCommodityCodeControllerSpec extends SpecBase with BeforeAndAfterEa
         running(application) {
           val request =
             FakeRequest(GET, controllers.routes.ValidateCommodityCodeController.changeCategory(testRecordId).url)
-
-          val result = route(application, request).value
+          val result  = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(

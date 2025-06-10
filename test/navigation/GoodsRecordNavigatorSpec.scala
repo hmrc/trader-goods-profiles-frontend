@@ -30,150 +30,104 @@ class GoodsRecordNavigatorSpec extends SpecBase with BeforeAndAfterEach {
   private val navigator = new GoodsRecordNavigator()
 
   "GoodsRecordNavigator" - {
-
     "in Normal mode" - {
       "must go from a page that doesn't exist in the route map to Index" in {
-
         case object UnknownPage extends Page
         navigator.nextPage(UnknownPage, NormalMode, emptyUserAnswers) mustBe routes.IndexController.onPageLoad()
       }
 
       "in Create Record Journey" - {
-
         "must go from CreateRecordStartPage to ProductReferencePage" in {
-
-          navigator.nextPage(
-            CreateRecordStartPage,
-            NormalMode,
-            emptyUserAnswers
-          ) mustBe controllers.goodsRecord.productReference.routes.CreateProductReferenceController
-            .onPageLoad(NormalMode)
+          navigator.nextPage(CreateRecordStartPage, NormalMode, emptyUserAnswers) mustBe
+            controllers.goodsRecord.productReference.routes.CreateProductReferenceController.onPageLoad(NormalMode)
         }
 
         "must go from ProductReferencePage to GoodsDescriptionPage" in {
-
-          navigator.nextPage(
-            ProductReferencePage,
-            NormalMode,
-            emptyUserAnswers
-          ) mustBe controllers.goodsRecord.goodsDescription.routes.CreateGoodsDescriptionController
-            .onPageLoad(NormalMode)
+          navigator.nextPage(ProductReferencePage, NormalMode, emptyUserAnswers) mustBe
+            controllers.goodsRecord.goodsDescription.routes.CreateGoodsDescriptionController.onPageLoad(NormalMode)
         }
 
         "must go from GoodsDescriptionPage to CountryOfOriginPage" in {
-          navigator.nextPage(
-            GoodsDescriptionPage,
-            NormalMode,
-            emptyUserAnswers
-          ) mustBe controllers.goodsRecord.countryOfOrigin.routes.CreateCountryOfOriginController.onPageLoad(NormalMode)
+          navigator.nextPage(GoodsDescriptionPage, NormalMode, emptyUserAnswers) mustBe
+            controllers.goodsRecord.countryOfOrigin.routes.CreateCountryOfOriginController.onPageLoad(NormalMode)
         }
 
         "must go from CountryOfOriginPage to CommodityCodePage" in {
-          navigator.nextPage(
-            CountryOfOriginPage,
-            NormalMode,
-            emptyUserAnswers
-          ) mustBe controllers.goodsRecord.commodityCode.routes.CreateCommodityCodeController.onPageLoad(NormalMode)
+          navigator.nextPage(CountryOfOriginPage, NormalMode, emptyUserAnswers) mustBe
+            controllers.goodsRecord.commodityCode.routes.CreateCommodityCodeController.onPageLoad(NormalMode)
         }
 
         "must go from CommodityCodePage to HasCorrectGoodsPage" in {
-
-          navigator.nextPage(
-            CommodityCodePage,
-            NormalMode,
-            emptyUserAnswers
-          ) mustBe controllers.commodityCodeResult.routes.CreateCommodityCodeResultController.onPageLoad(NormalMode)
+          navigator.nextPage(CommodityCodePage, NormalMode, emptyUserAnswers) mustBe
+            controllers.commodityCodeResult.routes.CreateCommodityCodeResultController.onPageLoad(NormalMode)
         }
 
         "must go from CyaCreateRecord to CreateRecordSuccess" in {
-
-          navigator.nextPage(
-            CyaCreateRecordPage(testRecordId),
-            NormalMode,
-            emptyUserAnswers
-          ) mustBe controllers.goodsRecord.routes.CreateRecordSuccessController
-            .onPageLoad(testRecordId)
+          navigator.nextPage(CyaCreateRecordPage(testRecordId), NormalMode, emptyUserAnswers) mustBe
+            controllers.goodsRecord.routes.CreateRecordSuccessController.onPageLoad(testRecordId)
         }
-
       }
 
       "in Update Record Journey" - {
-
         "if not answered" - {
           val continueUrl =
             RedirectUrl(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId).url)
 
           "must go from HasCountryOfOriginChangePage to JourneyRecoveryController" in {
-            navigator.nextPage(
-              HasCountryOfOriginChangePage(testRecordId),
-              NormalMode,
-              emptyUserAnswers
-            ) mustBe controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(continueUrl))
+            navigator.nextPage(HasCountryOfOriginChangePage(testRecordId), NormalMode, emptyUserAnswers) mustBe
+              controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(continueUrl))
           }
 
           "must go from HasGoodsDescriptionChangePage to JourneyRecoveryController" in {
-            navigator.nextPage(
-              HasGoodsDescriptionChangePage(testRecordId),
-              NormalMode,
-              emptyUserAnswers
-            ) mustBe controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(continueUrl))
+            navigator.nextPage(HasGoodsDescriptionChangePage(testRecordId), NormalMode, emptyUserAnswers) mustBe
+              controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(continueUrl))
           }
 
           "must go from HasCommodityCodeChangePage to JourneyRecoveryController" in {
-            navigator.nextPage(
-              HasCommodityCodeChangePage(testRecordId),
-              NormalMode,
-              emptyUserAnswers
-            ) mustBe controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(continueUrl))
+            navigator.nextPage(HasCommodityCodeChangePage(testRecordId), NormalMode, emptyUserAnswers) mustBe
+              controllers.problem.routes.JourneyRecoveryController.onPageLoad(Some(continueUrl))
           }
         }
 
         "if answer is Yes" - {
-
           "must go from HasCountryOfOriginChangePage to CountryOfOriginUpdatePage" in {
-            navigator.nextPage(
-              HasCountryOfOriginChangePage(testRecordId),
-              NormalMode,
-              emptyUserAnswers.set(HasCountryOfOriginChangePage(testRecordId), true).success.value
-            ) mustBe controllers.goodsRecord.countryOfOrigin.routes.UpdateCountryOfOriginController
-              .onPageLoad(NormalMode, testRecordId)
+            val userAnswers = emptyUserAnswers.set(HasCountryOfOriginChangePage(testRecordId), true).success.value
+
+            navigator.nextPage(HasCountryOfOriginChangePage(testRecordId), NormalMode, userAnswers) mustBe
+              controllers.goodsRecord.countryOfOrigin.routes.UpdateCountryOfOriginController
+                .onPageLoad(NormalMode, testRecordId)
           }
 
           "must go from HasGoodsDescriptionChangePage to GoodsDescriptionUpdatePage" in {
-            navigator.nextPage(
-              HasGoodsDescriptionChangePage(testRecordId),
-              NormalMode,
-              emptyUserAnswers.set(HasGoodsDescriptionChangePage(testRecordId), true).success.value
-            ) mustBe controllers.goodsRecord.goodsDescription.routes.UpdateGoodsDescriptionController
-              .onPageLoad(NormalMode, testRecordId)
+            val userAnswers = emptyUserAnswers.set(HasGoodsDescriptionChangePage(testRecordId), true).success.value
+
+            navigator.nextPage(HasGoodsDescriptionChangePage(testRecordId), NormalMode, userAnswers) mustBe
+              controllers.goodsRecord.goodsDescription.routes.UpdateGoodsDescriptionController
+                .onPageLoad(NormalMode, testRecordId)
           }
 
           "must go from HasCommodityCodeChangePage to CommodityCodeUpdatePage" in {
-            navigator.nextPage(
-              HasCommodityCodeChangePage(testRecordId),
-              NormalMode,
-              emptyUserAnswers.set(HasCommodityCodeChangePage(testRecordId), true).success.value
-            ) mustBe controllers.goodsRecord.commodityCode.routes.UpdateCommodityCodeController
-              .onPageLoad(NormalMode, testRecordId)
+            val userAnswers = emptyUserAnswers.set(HasCommodityCodeChangePage(testRecordId), true).success.value
+
+            navigator.nextPage(HasCommodityCodeChangePage(testRecordId), NormalMode, userAnswers) mustBe
+              controllers.goodsRecord.commodityCode.routes.UpdateCommodityCodeController
+                .onPageLoad(NormalMode, testRecordId)
           }
         }
 
         "if answer is No" - {
-
           "must go from HasCountryOfOriginChangePage to SingleRecordController" in {
-            navigator.nextPage(
-              HasCountryOfOriginChangePage(testRecordId),
-              NormalMode,
-              emptyUserAnswers.set(HasCountryOfOriginChangePage(testRecordId), false).success.value
-            ) mustBe controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId)
+            val userAnswers = emptyUserAnswers.set(HasCountryOfOriginChangePage(testRecordId), false).success.value
+
+            navigator.nextPage(HasCountryOfOriginChangePage(testRecordId), NormalMode, userAnswers) mustBe
+              controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId)
           }
 
           "must go from HasGoodsDescriptionChangePage to SingleRecordController" in {
-            navigator.nextPage(
-              HasGoodsDescriptionChangePage(testRecordId),
-              NormalMode,
-              emptyUserAnswers.set(HasGoodsDescriptionChangePage(testRecordId), false).success.value
-            ) mustBe controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId)
+            val userAnswers = emptyUserAnswers.set(HasGoodsDescriptionChangePage(testRecordId), false).success.value
+
+            navigator.nextPage(HasGoodsDescriptionChangePage(testRecordId), NormalMode, userAnswers) mustBe
+              controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId)
           }
 
           "must go from HasCommodityCodeChangePage to SingleRecordController" in {
@@ -181,134 +135,87 @@ class GoodsRecordNavigatorSpec extends SpecBase with BeforeAndAfterEach {
               HasCommodityCodeChangePage(testRecordId),
               NormalMode,
               emptyUserAnswers.set(HasCommodityCodeChangePage(testRecordId), false).success.value
-            ) mustBe controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId)
+            ) mustBe
+              controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId)
           }
         }
 
         "must go from CountryOfOriginUpdatePage to CyaUpdateRecord" in {
-          navigator.nextPage(
-            CountryOfOriginUpdatePage(testRecordId),
-            NormalMode,
-            emptyUserAnswers
-          ) mustBe controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(testRecordId)
+          navigator.nextPage(CountryOfOriginUpdatePage(testRecordId), NormalMode, emptyUserAnswers) mustBe
+            controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(testRecordId)
         }
 
         "must go from ProductReferenceUpdatePage to CyaUpdateRecord" in {
-          navigator.nextPage(
-            ProductReferenceUpdatePage(testRecordId),
-            NormalMode,
-            emptyUserAnswers
-          ) mustBe controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadproductReference(testRecordId)
+          navigator.nextPage(ProductReferenceUpdatePage(testRecordId), NormalMode, emptyUserAnswers) mustBe
+            controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadproductReference(testRecordId)
         }
 
         "must go from GoodsDescriptionUpdatePage to CyaUpdateRecord" in {
-          navigator.nextPage(
-            GoodsDescriptionUpdatePage(testRecordId),
-            NormalMode,
-            emptyUserAnswers
-          ) mustBe controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadGoodsDescription(testRecordId)
+          navigator.nextPage(GoodsDescriptionUpdatePage(testRecordId), NormalMode, emptyUserAnswers) mustBe
+            controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadGoodsDescription(testRecordId)
         }
 
         "must go from CommodityCodeUpdatePage to HasCorrectGoodsCommodityCodeUpdatePage" in {
-          navigator.nextPage(
-            CommodityCodeUpdatePage(testRecordId),
-            NormalMode,
-            emptyUserAnswers
-          ) mustBe controllers.commodityCodeResult.routes.UpdateCommodityCodeResultController
-            .onPageLoad(NormalMode, testRecordId)
+          navigator.nextPage(CommodityCodeUpdatePage(testRecordId), NormalMode, emptyUserAnswers) mustBe
+            controllers.commodityCodeResult.routes.UpdateCommodityCodeResultController
+              .onPageLoad(NormalMode, testRecordId)
         }
 
         "must go from CyaUpdateRecord to SingleRecordController" in {
-
-          navigator.nextPage(
-            CyaUpdateRecordPage(testRecordId),
-            NormalMode,
-            emptyUserAnswers
-          ) mustBe controllers.goodsRecord.routes.SingleRecordController
-            .onPageLoad(testRecordId)
+          navigator.nextPage(CyaUpdateRecordPage(testRecordId), NormalMode, emptyUserAnswers) mustBe
+            controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId)
         }
-
       }
     }
 
     "in Check mode" - {
       "in Create Record Journey" - {
-
         "must go from ProductReferencePage to CyaCreateRecord" in {
-
-          navigator.nextPage(
-            ProductReferencePage,
-            CheckMode,
-            emptyUserAnswers
-          ) mustBe controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad()
+          navigator.nextPage(ProductReferencePage, CheckMode, emptyUserAnswers) mustBe
+            controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad()
         }
 
         "must go from GoodsDescriptionPage to CyaCreateRecord" in {
-          navigator.nextPage(
-            GoodsDescriptionPage,
-            CheckMode,
-            emptyUserAnswers
-          ) mustBe controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad()
+          navigator.nextPage(GoodsDescriptionPage, CheckMode, emptyUserAnswers) mustBe
+            controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad()
         }
 
         "must go from CountryOfOriginPage to CyaCreateRecord" in {
-          navigator.nextPage(
-            CountryOfOriginPage,
-            CheckMode,
-            emptyUserAnswers
-          ) mustBe controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad()
+          navigator.nextPage(CountryOfOriginPage, CheckMode, emptyUserAnswers) mustBe
+            controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad()
         }
 
         "must go from CommodityCodePage to HasCorrectGoodsPage" in {
-
-          navigator.nextPage(
-            CommodityCodePage,
-            CheckMode,
-            emptyUserAnswers
-          ) mustBe controllers.commodityCodeResult.routes.CreateCommodityCodeResultController.onPageLoad(CheckMode)
+          navigator.nextPage(CommodityCodePage, CheckMode, emptyUserAnswers) mustBe
+            controllers.commodityCodeResult.routes.CreateCommodityCodeResultController.onPageLoad(CheckMode)
         }
       }
 
       "in Update Record Journey" - {
-
         "must go from CountryOfOriginPage to CyaUpdateRecord" in {
-          navigator.nextPage(
-            CountryOfOriginUpdatePage(testRecordId),
-            CheckMode,
-            emptyUserAnswers
-          ) mustBe controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(testRecordId)
+          navigator.nextPage(CountryOfOriginUpdatePage(testRecordId), CheckMode, emptyUserAnswers) mustBe
+            controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(testRecordId)
         }
 
         "must go from ProductReferencePage to CyaUpdateRecord" in {
-          navigator.nextPage(
-            ProductReferenceUpdatePage(testRecordId),
-            CheckMode,
-            emptyUserAnswers
-          ) mustBe controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadproductReference(testRecordId)
+          navigator.nextPage(ProductReferenceUpdatePage(testRecordId), CheckMode, emptyUserAnswers) mustBe
+            controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadproductReference(testRecordId)
         }
 
         "must go from GoodsDescriptionPage to CyaUpdateRecord" in {
-          navigator.nextPage(
-            GoodsDescriptionUpdatePage(testRecordId),
-            CheckMode,
-            emptyUserAnswers
-          ) mustBe controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadGoodsDescription(testRecordId)
+          navigator.nextPage(GoodsDescriptionUpdatePage(testRecordId), CheckMode, emptyUserAnswers) mustBe
+            controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadGoodsDescription(testRecordId)
         }
 
         "must go from CommodityCodePage to HasCorrectGoodsCommodityCodeUpdatePage" in {
-          navigator.nextPage(
-            CommodityCodeUpdatePage(testRecordId),
-            CheckMode,
-            emptyUserAnswers
-          ) mustBe controllers.commodityCodeResult.routes.UpdateCommodityCodeResultController
-            .onPageLoad(CheckMode, testRecordId)
+          navigator.nextPage(CommodityCodeUpdatePage(testRecordId), CheckMode, emptyUserAnswers) mustBe
+            controllers.commodityCodeResult.routes.UpdateCommodityCodeResultController
+              .onPageLoad(CheckMode, testRecordId)
         }
-
       }
     }
 
     "redirect to JourneyRecovery" - {
-
       "with no ContinueUrl if none supplied" in {
         val result = navigator.journeyRecovery()
         result.header.status mustEqual SEE_OTHER
@@ -326,5 +233,4 @@ class GoodsRecordNavigatorSpec extends SpecBase with BeforeAndAfterEach {
       }
     }
   }
-
 }

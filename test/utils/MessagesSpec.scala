@@ -77,7 +77,6 @@ class MessagesSpec extends SpecBase {
     }
 
   "english messages" - {
-
     "must be used somewhere in the code" in {
       val missingKeys = findUnusedKeys(english.keySet, appFiles)
       failAndShowKeys("Warning: There are unused English message keys in the codebase", missingKeys)
@@ -90,7 +89,6 @@ class MessagesSpec extends SpecBase {
   }
 
   "welsh messages" - {
-
     "must be used somewhere in the code" in {
       val missingKeys = findUnusedKeys(welsh.keySet, appFiles)
       failAndShowKeys("Warning: There are unused Welsh message keys in the codebase", missingKeys)
@@ -101,5 +99,4 @@ class MessagesSpec extends SpecBase {
       failAndShowKeys("Warning: There are Welsh message keys missing English translations", missingEnglishKeys)
     }
   }
-
 }

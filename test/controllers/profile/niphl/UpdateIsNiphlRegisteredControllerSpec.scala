@@ -57,13 +57,9 @@ class UpdateIsNiphlRegisteredControllerSpec extends SpecBase with MockitoSugar {
 
       val traderProfile = TraderProfile(testEori, "1", Some("2"), Some("3"), eoriChanged = false)
 
-      when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future.successful(
-        traderProfile
-      )
+      when(mockTraderProfileConnector.getTraderProfile(any())) thenReturn Future.successful(traderProfile)
 
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(
-        true
-      )
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
@@ -85,10 +81,7 @@ class UpdateIsNiphlRegisteredControllerSpec extends SpecBase with MockitoSugar {
           UpdateIsNiphlRegisteredController.onSubmit(NormalMode),
           NormalMode,
           isCreateJourney = false
-        )(
-          request,
-          messages(application)
-        ).toString
+        )(request, messages(application)).toString
         verify(mockTraderProfileConnector, atLeastOnce()).getTraderProfile(any())
       }
     }
@@ -116,10 +109,7 @@ class UpdateIsNiphlRegisteredControllerSpec extends SpecBase with MockitoSugar {
           UpdateIsNiphlRegisteredController.onSubmit(NormalMode),
           NormalMode,
           isCreateJourney = false
-        )(
-          request,
-          messages(application)
-        ).toString
+        )(request, messages(application)).toString
       }
     }
 
@@ -141,9 +131,7 @@ class UpdateIsNiphlRegisteredControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, hasNiphlRouteUpdate)
-            .withFormUrlEncodedBody(("value", "true"))
+        val request = FakeRequest(POST, hasNiphlRouteUpdate).withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 
@@ -171,9 +159,7 @@ class UpdateIsNiphlRegisteredControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, hasNiphlRouteUpdate)
-            .withFormUrlEncodedBody(("value", "true"))
+        val request = FakeRequest(POST, hasNiphlRouteUpdate).withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 
@@ -189,9 +175,7 @@ class UpdateIsNiphlRegisteredControllerSpec extends SpecBase with MockitoSugar {
         .build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, hasNiphlRouteUpdate)
-            .withFormUrlEncodedBody(("value", ""))
+        val request = FakeRequest(POST, hasNiphlRouteUpdate).withFormUrlEncodedBody(("value", ""))
 
         val boundForm = form.bind(Map("value" -> ""))
 
@@ -205,10 +189,7 @@ class UpdateIsNiphlRegisteredControllerSpec extends SpecBase with MockitoSugar {
           UpdateIsNiphlRegisteredController.onSubmit(NormalMode),
           NormalMode,
           isCreateJourney = false
-        )(
-          request,
-          messages(application)
-        ).toString
+        )(request, messages(application)).toString
       }
     }
 
@@ -243,6 +224,5 @@ class UpdateIsNiphlRegisteredControllerSpec extends SpecBase with MockitoSugar {
         redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
       }
     }
-
   }
 }

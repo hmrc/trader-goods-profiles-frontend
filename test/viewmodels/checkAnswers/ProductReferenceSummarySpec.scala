@@ -27,22 +27,17 @@ class ProductReferenceSummarySpec extends SpecBase {
   implicit private val messages: Messages = messages(applicationBuilder().build())
 
   "ProductReferenceSummary.row" - {
-
     "must return a SummaryListRow without change links when record is locked" in {
-
       val recordLocked = true
-
-      val row =
+      val row          =
         ProductReferenceSummary.row(recordForTestingSummaryRows.traderRef, testRecordId, NormalMode, recordLocked)
 
       row.actions mustBe Some(Actions("", List()))
     }
 
     "must return a SummaryListRow with change links when record is not locked" in {
-
       val recordLocked = false
-
-      val row =
+      val row          =
         ProductReferenceSummary.row(recordForTestingSummaryRows.traderRef, testRecordId, NormalMode, recordLocked)
 
       row.actions mustBe defined
@@ -51,5 +46,4 @@ class ProductReferenceSummarySpec extends SpecBase {
         .url
     }
   }
-
 }

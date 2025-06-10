@@ -106,9 +106,7 @@ class RemoveNiphlControllerSpec extends SpecBase with MockitoSugar {
         .build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, removeNiphlRoute)
-            .withFormUrlEncodedBody(("value", "false"))
+        val request = FakeRequest(POST, removeNiphlRoute).withFormUrlEncodedBody(("value", "false"))
 
         val result = route(application, request).value
 
@@ -147,9 +145,7 @@ class RemoveNiphlControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, removeNiphlRoute)
-            .withFormUrlEncodedBody(("value", "false"))
+        val request = FakeRequest(POST, removeNiphlRoute).withFormUrlEncodedBody(("value", "false"))
 
         val result = route(application, request).value
 
@@ -190,8 +186,7 @@ class RemoveNiphlControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, removeNiphlRoute)
-            .withFormUrlEncodedBody(("value", "true"))
+          FakeRequest(POST, removeNiphlRoute).withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 

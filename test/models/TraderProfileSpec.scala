@@ -37,23 +37,22 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
       "and all optional data is present" in {
 
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(UkimsNumberPage, "1")
-            .success
-            .value
-            .set(HasNirmsPage, true)
-            .success
-            .value
-            .set(NirmsNumberPage, "2")
-            .success
-            .value
-            .set(HasNiphlPage, true)
-            .success
-            .value
-            .set(NiphlNumberPage, "3")
-            .success
-            .value
+        val answers = UserAnswers(userAnswersId)
+          .set(UkimsNumberPage, "1")
+          .success
+          .value
+          .set(HasNirmsPage, true)
+          .success
+          .value
+          .set(NirmsNumberPage, "2")
+          .success
+          .value
+          .set(HasNiphlPage, true)
+          .success
+          .value
+          .set(NiphlNumberPage, "3")
+          .success
+          .value
 
         val result = TraderProfile.build(answers, testEori)
 
@@ -62,17 +61,16 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
       "and all optional data is missing" in {
 
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(UkimsNumberPage, "1")
-            .success
-            .value
-            .set(HasNirmsPage, false)
-            .success
-            .value
-            .set(HasNiphlPage, false)
-            .success
-            .value
+        val answers = UserAnswers(userAnswersId)
+          .set(UkimsNumberPage, "1")
+          .success
+          .value
+          .set(HasNirmsPage, false)
+          .success
+          .value
+          .set(HasNiphlPage, false)
+          .success
+          .value
 
         val result = TraderProfile.build(answers, testEori)
 
@@ -98,18 +96,16 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
       }
 
       "when the user said they have a Nirms number but it is missing" in {
-
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(UkimsNumberPage, "1")
-            .success
-            .value
-            .set(HasNirmsPage, true)
-            .success
-            .value
-            .set(HasNiphlPage, false)
-            .success
-            .value
+        val answers = UserAnswers(userAnswersId)
+          .set(UkimsNumberPage, "1")
+          .success
+          .value
+          .set(HasNirmsPage, true)
+          .success
+          .value
+          .set(HasNiphlPage, false)
+          .success
+          .value
 
         val result = TraderProfile.build(answers, testEori)
 
@@ -119,18 +115,16 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
       }
 
       "when the user said they have a Niphl number but it is missing" in {
-
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(UkimsNumberPage, "1")
-            .success
-            .value
-            .set(HasNirmsPage, false)
-            .success
-            .value
-            .set(HasNiphlPage, true)
-            .success
-            .value
+        val answers = UserAnswers(userAnswersId)
+          .set(UkimsNumberPage, "1")
+          .success
+          .value
+          .set(HasNirmsPage, false)
+          .success
+          .value
+          .set(HasNiphlPage, true)
+          .success
+          .value
 
         val result = TraderProfile.build(answers, testEori)
 
@@ -140,24 +134,22 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
       }
 
       "when the user said they don't have optional data but it is present" in {
-
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(UkimsNumberPage, "1")
-            .success
-            .value
-            .set(HasNirmsPage, false)
-            .success
-            .value
-            .set(NirmsNumberPage, "2")
-            .success
-            .value
-            .set(HasNiphlPage, false)
-            .success
-            .value
-            .set(NiphlNumberPage, "3")
-            .success
-            .value
+        val answers = UserAnswers(userAnswersId)
+          .set(UkimsNumberPage, "1")
+          .success
+          .value
+          .set(HasNirmsPage, false)
+          .success
+          .value
+          .set(NirmsNumberPage, "2")
+          .success
+          .value
+          .set(HasNiphlPage, false)
+          .success
+          .value
+          .set(NiphlNumberPage, "3")
+          .success
+          .value
 
         val result = TraderProfile.build(answers, testEori)
 
@@ -176,15 +168,13 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
     "must return a TraderProfile when all nirms data is answered" - {
 
       "and nirms is not present" in {
-
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(HasNirmsUpdatePage, false)
-            .success
-            .value
-            .set(RemoveNirmsPage, true)
-            .success
-            .value
+        val answers = UserAnswers(userAnswersId)
+          .set(HasNirmsUpdatePage, false)
+          .success
+          .value
+          .set(RemoveNirmsPage, true)
+          .success
+          .value
 
         val result = TraderProfile.validateHasNirms(answers)
 
@@ -192,15 +182,13 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
       }
 
       "except RemoveNirms and TraderProfileQuery has no nirms number" in {
-
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(HasNirmsUpdatePage, false)
-            .success
-            .value
-            .set(TraderProfileQuery, traderProfile.copy(nirmsNumber = None))
-            .success
-            .value
+        val answers = UserAnswers(userAnswersId)
+          .set(HasNirmsUpdatePage, false)
+          .success
+          .value
+          .set(TraderProfileQuery, traderProfile.copy(nirmsNumber = None))
+          .success
+          .value
 
         val result = TraderProfile.validateHasNirms(answers)
 
@@ -211,7 +199,6 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
     "must return errors" - {
 
       "and nirms is present" in {
-
         val answers =
           UserAnswers(userAnswersId)
             .set(HasNirmsUpdatePage, true)
@@ -231,7 +218,6 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
       }
 
       "when mandatory answers are missing" in {
-
         val answers = UserAnswers(userAnswersId)
 
         val result = TraderProfile.validateHasNirms(answers)
@@ -244,11 +230,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
       }
 
       "when the user said they don't have optional data but they haven't confirmed it" in {
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(HasNirmsUpdatePage, false)
-            .success
-            .value
+        val answers = UserAnswers(userAnswersId).set(HasNirmsUpdatePage, false).success.value
 
         val result = TraderProfile.validateHasNirms(answers)
 
@@ -260,17 +242,16 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
       }
 
       "when the user has confirmed deleting something they don't want to delete" in {
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(RemoveNirmsPage, false)
-            .success
-            .value
-            .set(HasNirmsUpdatePage, false)
-            .success
-            .value
-            .set(NirmsNumberUpdatePage, "123")
-            .success
-            .value
+        val answers = UserAnswers(userAnswersId)
+          .set(RemoveNirmsPage, false)
+          .success
+          .value
+          .set(HasNirmsUpdatePage, false)
+          .success
+          .value
+          .set(NirmsNumberUpdatePage, "123")
+          .success
+          .value
 
         val result = TraderProfile.validateHasNirms(answers)
 
@@ -289,14 +270,13 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
       "and nirms is present" in {
 
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(HasNirmsUpdatePage, true)
-            .success
-            .value
-            .set(NirmsNumberUpdatePage, "2")
-            .success
-            .value
+        val answers = UserAnswers(userAnswersId)
+          .set(HasNirmsUpdatePage, true)
+          .success
+          .value
+          .set(NirmsNumberUpdatePage, "2")
+          .success
+          .value
 
         val result = TraderProfile.validateNirmsNumber(answers)
 
@@ -309,14 +289,13 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
       "and nirms is not present" in {
 
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(HasNirmsUpdatePage, false)
-            .success
-            .value
-            .set(RemoveNirmsPage, true)
-            .success
-            .value
+        val answers = UserAnswers(userAnswersId)
+          .set(HasNirmsUpdatePage, false)
+          .success
+          .value
+          .set(RemoveNirmsPage, true)
+          .success
+          .value
 
         val result = TraderProfile.validateNirmsNumber(answers)
 
@@ -328,7 +307,6 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
       }
 
       "when mandatory answers are missing" in {
-
         val answers = UserAnswers(userAnswersId)
 
         val result = TraderProfile.validateNirmsNumber(answers)
@@ -341,12 +319,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
       }
 
       "when the user said they have a Nirms number but it is missing" in {
-
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(HasNirmsUpdatePage, true)
-            .success
-            .value
+        val answers = UserAnswers(userAnswersId).set(HasNirmsUpdatePage, true).success.value
 
         val result = TraderProfile.validateNirmsNumber(answers)
 
@@ -363,14 +336,13 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
       "and niphl is not present" in {
 
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(HasNiphlUpdatePage, false)
-            .success
-            .value
-            .set(RemoveNiphlPage, true)
-            .success
-            .value
+        val answers = UserAnswers(userAnswersId)
+          .set(HasNiphlUpdatePage, false)
+          .success
+          .value
+          .set(RemoveNiphlPage, true)
+          .success
+          .value
 
         val result = TraderProfile.validateHasNiphl(answers)
 
@@ -379,14 +351,13 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
 
       "except RemoveNiphl and TraderProfileQuery has no niphl number" in {
 
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(HasNiphlUpdatePage, false)
-            .success
-            .value
-            .set(TraderProfileQuery, traderProfile.copy(niphlNumber = None))
-            .success
-            .value
+        val answers = UserAnswers(userAnswersId)
+          .set(HasNiphlUpdatePage, false)
+          .success
+          .value
+          .set(TraderProfileQuery, traderProfile.copy(niphlNumber = None))
+          .success
+          .value
 
         val result = TraderProfile.validateHasNiphl(answers)
 
@@ -397,15 +368,13 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
     "must return errors" - {
 
       "and niphl is present" in {
-
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(HasNiphlUpdatePage, true)
-            .success
-            .value
-            .set(NiphlNumberUpdatePage, "2")
-            .success
-            .value
+        val answers = UserAnswers(userAnswersId)
+          .set(HasNiphlUpdatePage, true)
+          .success
+          .value
+          .set(NiphlNumberUpdatePage, "2")
+          .success
+          .value
 
         val result = TraderProfile.validateHasNiphl(answers)
 
@@ -417,7 +386,6 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
       }
 
       "when mandatory answers are missing" in {
-
         val answers = UserAnswers(userAnswersId)
 
         val result = TraderProfile.validateHasNiphl(answers)
@@ -430,11 +398,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
       }
 
       "when the user said they don't have optional data but they haven't confirmed it" in {
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(HasNiphlUpdatePage, false)
-            .success
-            .value
+        val answers = UserAnswers(userAnswersId).set(HasNiphlUpdatePage, false).success.value
 
         val result = TraderProfile.validateHasNiphl(answers)
 
@@ -446,17 +410,16 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
       }
 
       "when the user has confirmed deleting something they don't want to delete" in {
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(RemoveNiphlPage, false)
-            .success
-            .value
-            .set(HasNiphlUpdatePage, false)
-            .success
-            .value
-            .set(NiphlNumberUpdatePage, "123")
-            .success
-            .value
+        val answers = UserAnswers(userAnswersId)
+          .set(RemoveNiphlPage, false)
+          .success
+          .value
+          .set(HasNiphlUpdatePage, false)
+          .success
+          .value
+          .set(NiphlNumberUpdatePage, "123")
+          .success
+          .value
 
         val result = TraderProfile.validateHasNiphl(answers)
 
@@ -470,19 +433,15 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
   }
 
   "validateNiphlNumber" - {
-
     "must return a Niphl Number when all niphl data is answered" - {
-
       "and niphl is present" in {
-
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(HasNiphlUpdatePage, true)
-            .success
-            .value
-            .set(NiphlNumberUpdatePage, "2")
-            .success
-            .value
+        val answers = UserAnswers(userAnswersId)
+          .set(HasNiphlUpdatePage, true)
+          .success
+          .value
+          .set(NiphlNumberUpdatePage, "2")
+          .success
+          .value
 
         val result = TraderProfile.validateNiphlNumber(answers)
 
@@ -494,15 +453,13 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
     "must return errors" - {
 
       "and niphl is not present" in {
-
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(HasNiphlUpdatePage, false)
-            .success
-            .value
-            .set(RemoveNiphlPage, true)
-            .success
-            .value
+        val answers = UserAnswers(userAnswersId)
+          .set(HasNiphlUpdatePage, false)
+          .success
+          .value
+          .set(RemoveNiphlPage, true)
+          .success
+          .value
 
         val result = TraderProfile.validateNiphlNumber(answers)
 
@@ -514,7 +471,6 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
       }
 
       "when mandatory answers are missing" in {
-
         val answers = UserAnswers(userAnswersId)
 
         val result = TraderProfile.validateNiphlNumber(answers)
@@ -527,12 +483,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
       }
 
       "when the user said they have a Niphl number but it is missing" in {
-
-        val answers =
-          UserAnswers(userAnswersId)
-            .set(HasNiphlUpdatePage, true)
-            .success
-            .value
+        val answers = UserAnswers(userAnswersId).set(HasNiphlUpdatePage, true).success.value
 
         val result = TraderProfile.validateNiphlNumber(answers)
 
@@ -544,14 +495,8 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
   }
 
   "validateUkimsNumber" - {
-
     "must validate Ukims Number" in {
-
-      val answers =
-        UserAnswers(userAnswersId)
-          .set(UkimsNumberUpdatePage, "newUkims")
-          .success
-          .value
+      val answers = UserAnswers(userAnswersId).set(UkimsNumberUpdatePage, "newUkims").success.value
 
       val result = TraderProfile.validateUkimsNumber(answers)
 
@@ -560,9 +505,7 @@ class TraderProfileSpec extends AnyFreeSpec with Matchers with TryValues with Op
     }
 
     "must return errors" - {
-
       "when user does not have answers" in {
-
         def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
         val result                        = TraderProfile.validateUkimsNumber(emptyUserAnswers)
 

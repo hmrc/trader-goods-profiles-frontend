@@ -142,9 +142,7 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
-            .onPageLoad()
-            .url
+          redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
         }
       }
 
@@ -216,7 +214,6 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
             }
           }
         }
-
       }
 
       "when user answers cannot create a trader profile" - {
@@ -294,7 +291,6 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
           withClue("must not cleanse the user answers data when connector fails") {
             verify(sessionRepository, never()).clearData(eqTo(userAnswers.id), eqTo(CreateProfileJourney))
           }
-
         }
       }
 
@@ -313,9 +309,7 @@ class CyaCreateProfileControllerSpec extends SpecBase with SummaryListFluency wi
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
-            .onPageLoad()
-            .url
+          redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
         }
       }
     }
