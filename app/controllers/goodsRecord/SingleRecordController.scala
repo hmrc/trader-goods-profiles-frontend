@@ -102,13 +102,6 @@ class SingleRecordController @Inject() (
         .flatMap(_.set(CommodityCodeUpdatePage(recordId), record.comcode))
     )
 
-  private def dataCleansing(request: DataRequest[AnyContent]) = {
-    dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
-    dataCleansingService.deleteMongoData(request.userAnswers.id, RequestAdviceJourney)
-    dataCleansingService.deleteMongoData(request.userAnswers.id, WithdrawAdviceJourney)
-    dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
-  }
-
   private def retrieveAndStoreCountries(implicit hc: HeaderCarrier, request: DataRequest[_]): Future[Seq[Country]] =
     request.userAnswers.get(CountriesQuery) match {
       case Some(countries) =>
@@ -140,7 +133,7 @@ class SingleRecordController @Inject() (
         ProductReferenceSummary.row(record.traderRef, recordId, NormalMode, recordIsLocked),
         GoodsDescriptionSummary.rowUpdate(record, recordId, NormalMode, recordIsLocked),
         CountryOfOriginSummary.rowUpdate(record, recordId, NormalMode, recordIsLocked, countries),
-        CommodityCodeSummary.rowUpdate(record, recordId, NormalMode, recordIsLocked, isReviewReasonCommodity)
+        CommodityCodeSummary.rowUpdate(record, recordId, NormalMode, recordIsLocked)
       )
     )
 
