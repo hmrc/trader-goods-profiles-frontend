@@ -35,8 +35,7 @@ class CommodityCodeSummarySpec extends SpecBase {
       recordForTestingSummaryRows,
       testRecordId,
       NormalMode,
-      recordLocked = true,
-      isReviewReasonCommodity = false
+      recordLocked = true
     )
     row.actions mustBe Some(Actions("", List()))
   }
@@ -47,8 +46,7 @@ class CommodityCodeSummarySpec extends SpecBase {
         recordForTestingSummaryRows,
         testRecordId,
         NormalMode,
-        recordLocked = false,
-        isReviewReasonCommodity = false
+        recordLocked = false
       )
       row.actions mustBe defined
       row.actions.value.items.head.href mustEqual controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangedController
@@ -62,8 +60,7 @@ class CommodityCodeSummarySpec extends SpecBase {
         recordAdviceProvided,
         testRecordId,
         NormalMode,
-        recordLocked = false,
-        isReviewReasonCommodity = false
+        recordLocked = false
       )
       row.actions mustBe defined
       row.actions.value.items.head.href mustEqual controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangedController
@@ -77,8 +74,7 @@ class CommodityCodeSummarySpec extends SpecBase {
         recordNoCatNoAdvice,
         testRecordId,
         NormalMode,
-        recordLocked = false,
-        isReviewReasonCommodity = false
+        recordLocked = false
       )
       row.actions mustBe defined
       row.actions.value.items.head.href mustEqual controllers.goodsRecord.commodityCode.routes.UpdateCommodityCodeController
@@ -88,7 +84,7 @@ class CommodityCodeSummarySpec extends SpecBase {
 
     "must render a 'Does not match' tag when reviewReason is Mismatch and declarable is NotReadyForUse" in {
       val record = recordForTestingSummaryRows.copy(reviewReason = Some(Mismatch), declarable = NotReadyForUse)
-      val row    = CommodityCodeSummary.rowUpdate(record, testRecordId, NormalMode, recordLocked = false, false)
+      val row    = CommodityCodeSummary.rowUpdate(record, testRecordId, NormalMode, recordLocked = false)
       row.value.content.toString must include("""<strong class="govuk-tag govuk-tag--grey">""")
       row.value.content.toString must include(messages("commodityCode.mismatch"))
       row.value.content.toString must include(record.comcode)
