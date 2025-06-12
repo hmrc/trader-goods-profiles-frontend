@@ -118,7 +118,10 @@ class UpdateCommodityCodeResultController @Inject() (
 
   private def updateCommodityCode(recordId: String, request: DataRequest[AnyContent], updatedUserAnswers: UserAnswers)(
     implicit hc: HeaderCarrier
-  ): Future[Result] =
+  ): Future[Result] = {
+
+    def normaliseCode(code: String): String = code.trim.replaceAll("\\s", "")
+
     (for {
       oldRecord                <- goodsRecordConnector.getRecord(recordId)
       isValidCommodity         <- commodityService.isCommodityCodeValid(oldRecord.comcode, oldRecord.countryOfOrigin)(request)
@@ -157,7 +160,9 @@ class UpdateCommodityCodeResultController @Inject() (
       updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CommodityCodeUpdatePage(recordId)))
       _                        <- sessionRepository.set(updatedAnswers)
     } yield
-      if (autoCategoriseScenario.isDefined) {
+      if (
+        autoCategoriseScenario.isDefined || normaliseCode(commodity.commodityCode) == normaliseCode(oldRecord.comcode)
+      ) {
         Redirect(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
       } else {
         Redirect(controllers.goodsRecord.commodityCode.routes.UpdatedCommodityCodeController.onPageLoad(recordId))
@@ -167,6 +172,7 @@ class UpdateCommodityCodeResultController @Inject() (
         controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId)
       )
     }
+  }
 
   private def handleValidateError[T](result: EitherNec[ValidationError, T]): Future[T] =
     result match {

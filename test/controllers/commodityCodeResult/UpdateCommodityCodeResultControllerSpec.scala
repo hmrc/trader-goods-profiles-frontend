@@ -451,7 +451,7 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
               status(result) mustEqual SEE_OTHER
               redirectLocation(
                 result
-              ).value mustEqual controllers.goodsRecord.commodityCode.routes.UpdatedCommodityCodeController
+              ).value mustEqual controllers.goodsRecord.routes.SingleRecordController
                 .onPageLoad(testRecordId)
                 .url
 

@@ -336,11 +336,13 @@ class CyaUpdateRecordController @Inject() (
         autoCategoriseScenario   <- autoCategoriseService.autoCategoriseRecord(recordId, updatedAnswers)
         _                        <- sessionRepository.set(updatedAnswers)
       } yield
-        if (autoCategoriseScenario.isDefined) {
+        if (autoCategoriseScenario.isDefined || countryOfOrigin == oldRecord.countryOfOrigin) {
+          // Redirect to SingleRecordController if auto categorised or no change in country
           Redirect(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
-        } else
+        } else {
           Redirect(controllers.goodsRecord.countryOfOrigin.routes.UpdatedCountryOfOriginController.onPageLoad(recordId))
             .addingToSession(pageUpdated -> countryOfOrigin)
+        }
       resultFuture.recover(handleRecover(recordId))
     }
 
