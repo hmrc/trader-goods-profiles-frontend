@@ -41,25 +41,25 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class UpdateCountryOfOriginController @Inject() (
-  override val messagesApi: MessagesApi,
-  sessionRepository: SessionRepository,
-  navigator: GoodsRecordNavigator,
-  identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
-  profileAuth: ProfileAuthenticateAction,
-  formProvider: CountryOfOriginFormProvider,
-  val controllerComponents: MessagesControllerComponents,
-  ottConnector: OttConnector,
-  view: CountryOfOriginView,
-  auditService: AuditService
-)(implicit ec: ExecutionContext)
-    extends BaseController {
+                                                  override val messagesApi: MessagesApi,
+                                                  sessionRepository: SessionRepository,
+                                                  navigator: GoodsRecordNavigator,
+                                                  identify: IdentifierAction,
+                                                  getData: DataRetrievalAction,
+                                                  requireData: DataRequiredAction,
+                                                  profileAuth: ProfileAuthenticateAction,
+                                                  formProvider: CountryOfOriginFormProvider,
+                                                  val controllerComponents: MessagesControllerComponents,
+                                                  ottConnector: OttConnector,
+                                                  view: CountryOfOriginView,
+                                                  auditService: AuditService
+                                                )(implicit ec: ExecutionContext)
+  extends BaseController {
 
   private def retrieveAndStoreCountryData(implicit
-    hc: HeaderCarrier,
-    request: DataRequest[_]
-  ): Future[(Seq[Country], UserAnswers)] =
+                                          hc: HeaderCarrier,
+                                          request: DataRequest[_]
+                                         ): Future[(Seq[Country], UserAnswers)] =
     for {
       countries               <- ottConnector.getCountries
       updatedAnswersWithQuery <- Future.fromTry(request.userAnswers.set(CountriesQuery, countries))
@@ -67,7 +67,7 @@ class UpdateCountryOfOriginController @Inject() (
     } yield (countries, updatedAnswersWithQuery)
 
   private def prepareForm[T](page: QuestionPage[T], form: Form[T], userAnswers: UserAnswers)(implicit
-    rds: Reads[T]
+                                                                                             rds: Reads[T]
   ): Form[T] =
     userAnswers.get(page).map(form.fill).getOrElse(form)
 
@@ -128,9 +128,16 @@ class UpdateCountryOfOriginController @Inject() (
                 for {
                   updatedAnswers <- Future.fromTry(request.userAnswers.set(CountryOfOriginUpdatePage(recordId), value))
                   _              <- sessionRepository.set(updatedAnswers)
-                } yield Redirect(navigator.nextPage(CountryOfOriginUpdatePage(recordId), mode, updatedAnswers))
-                  .addingToSession(dataUpdated -> isValueChanged.toString)
-                  .addingToSession(pageUpdated -> countryOfOrigin)
+                  redirectResult = Redirect(navigator.nextPage(CountryOfOriginUpdatePage(recordId), mode, updatedAnswers))
+                } yield {
+                  if (isValueChanged) {
+                    redirectResult
+                      .addingToSession(dataUpdated -> "true")
+                      .addingToSession(pageUpdated -> countryOfOrigin)
+                  } else {
+                    redirectResult
+                  }
+                }
               }
             )
         case None            => throw new Exception("Countries should have been populated on page load.")
@@ -138,14 +145,14 @@ class UpdateCountryOfOriginController @Inject() (
     }
 
   private def displayViewUpdate(
-    countries: Seq[Country],
-    action: Call,
-    userAnswers: UserAnswers,
-    recordId: String,
-    mode: Mode
-  )(implicit
-    request: Request[_]
-  ): Result = {
+                                 countries: Seq[Country],
+                                 action: Call,
+                                 userAnswers: UserAnswers,
+                                 recordId: String,
+                                 mode: Mode
+                               )(implicit
+                                 request: Request[_]
+                               ): Result = {
     val form         = formProvider(countries)
     val preparedForm = prepareForm(CountryOfOriginUpdatePage(recordId), form, userAnswers)
 
