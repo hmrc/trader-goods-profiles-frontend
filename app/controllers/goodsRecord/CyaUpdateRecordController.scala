@@ -302,40 +302,40 @@ class CyaUpdateRecordController @Inject() (
   def onSubmitCountryOfOrigin(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       val resultFuture = for {
-        oldRecord <- goodsRecordConnector.getRecord(recordId)
-        countryOfOrigin <-
+        oldRecord                <- goodsRecordConnector.getRecord(recordId)
+        countryOfOrigin          <-
           handleValidateError(
             UpdateGoodsRecord.validateCountryOfOrigin(request.userAnswers, recordId, oldRecord.category.isDefined)
           )
-        updateGoodsRecord = UpdateGoodsRecord(
-          request.eori,
-          recordId,
-          countryOfOrigin = Some(countryOfOrigin)
-        )
-        putGoodsRecord = PutRecordRequest(
-          actorId = oldRecord.eori,
-          traderRef = oldRecord.traderRef,
-          comcode = oldRecord.comcode,
-          goodsDescription = oldRecord.goodsDescription,
-          countryOfOrigin = countryOfOrigin,
-          category = None,
-          assessments = oldRecord.assessments,
-          supplementaryUnit = oldRecord.supplementaryUnit,
-          measurementUnit = oldRecord.measurementUnit,
-          comcodeEffectiveFromDate = oldRecord.comcodeEffectiveFromDate,
-          comcodeEffectiveToDate = oldRecord.comcodeEffectiveToDate
-        )
-        _ = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
-        _ <- updateGoodsRecordIfPutValueChanged(
-          countryOfOrigin,
-          oldRecord.countryOfOrigin,
-          updateGoodsRecord,
-          putGoodsRecord
-        )
+        updateGoodsRecord         = UpdateGoodsRecord(
+                                      request.eori,
+                                      recordId,
+                                      countryOfOrigin = Some(countryOfOrigin)
+                                    )
+        putGoodsRecord            = PutRecordRequest(
+                                      actorId = oldRecord.eori,
+                                      traderRef = oldRecord.traderRef,
+                                      comcode = oldRecord.comcode,
+                                      goodsDescription = oldRecord.goodsDescription,
+                                      countryOfOrigin = countryOfOrigin,
+                                      category = None,
+                                      assessments = oldRecord.assessments,
+                                      supplementaryUnit = oldRecord.supplementaryUnit,
+                                      measurementUnit = oldRecord.measurementUnit,
+                                      comcodeEffectiveFromDate = oldRecord.comcodeEffectiveFromDate,
+                                      comcodeEffectiveToDate = oldRecord.comcodeEffectiveToDate
+                                    )
+        _                         = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
+        _                        <- updateGoodsRecordIfPutValueChanged(
+                                      countryOfOrigin,
+                                      oldRecord.countryOfOrigin,
+                                      updateGoodsRecord,
+                                      putGoodsRecord
+                                    )
         updatedAnswersWithChange <- Future.fromTry(request.userAnswers.remove(HasCountryOfOriginChangePage(recordId)))
-        updatedAnswers <- Future.fromTry(updatedAnswersWithChange.remove(CountryOfOriginUpdatePage(recordId)))
-        autoCategoriseScenario <- autoCategoriseService.autoCategoriseRecord(recordId, updatedAnswers)
-        _ <- sessionRepository.set(updatedAnswers)
+        updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CountryOfOriginUpdatePage(recordId)))
+        autoCategoriseScenario   <- autoCategoriseService.autoCategoriseRecord(recordId, updatedAnswers)
+        _                        <- sessionRepository.set(updatedAnswers)
       } yield {
         val cameFromChangeFlow = request.session.get(pageUpdated).isDefined
 
@@ -375,66 +375,73 @@ class CyaUpdateRecordController @Inject() (
   def onSubmitCommodityCode(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       (for {
-        oldRecord                <- goodsRecordConnector.getRecord(recordId)
-        isCommodityValid         <- commodityService.isCommodityCodeValid(oldRecord.comcode, oldRecord.countryOfOrigin)
-        commodity                <-
-          handleValidateError(
-            UpdateGoodsRecord.validateCommodityCode(
-              request.userAnswers,
-              recordId,
-              oldRecord.category.isDefined,
-              !isCommodityValid
-            )
-          )
+        oldRecord      <- goodsRecordConnector.getRecord(recordId)
+        rawUserInputOpt = request.userAnswers.get(CommodityCodeUpdatePage(recordId)) // ← RAW input
+        rawUserInput    = rawUserInputOpt.getOrElse("").trim.toUpperCase
+        originalComcode = oldRecord.comcode.trim.toUpperCase
+        hasChanged      = rawUserInput.nonEmpty && rawUserInput != originalComcode
 
+        isCommodityValid <- commodityService.isCommodityCodeValid(oldRecord.comcode, oldRecord.countryOfOrigin)
+
+        commodity <- handleValidateError(
+                       UpdateGoodsRecord.validateCommodityCode(
+                         request.userAnswers,
+                         recordId,
+                         oldRecord.category.isDefined,
+                         !isCommodityValid
+                       )
+                     )
 
         updateGoodsRecord = UpdateGoodsRecord(
-          request.eori,
-          recordId,
-          commodityCode = Some(commodity)
-        )
+                              request.eori,
+                              recordId,
+                              commodityCode = Some(commodity)
+                            )
 
         putGoodsRecord = PutRecordRequest(
-          actorId = oldRecord.eori,
-          traderRef = oldRecord.traderRef,
-          comcode = commodity.commodityCode,
-          goodsDescription = oldRecord.goodsDescription,
-          countryOfOrigin = oldRecord.countryOfOrigin,
-          category = None,
-          assessments = oldRecord.assessments,
-          supplementaryUnit = oldRecord.supplementaryUnit,
-          measurementUnit = oldRecord.measurementUnit,
-          comcodeEffectiveFromDate = oldRecord.comcodeEffectiveFromDate,
-          comcodeEffectiveToDate = oldRecord.comcodeEffectiveToDate
-        )
+                           actorId = oldRecord.eori,
+                           traderRef = oldRecord.traderRef,
+                           comcode = commodity.commodityCode,
+                           goodsDescription = oldRecord.goodsDescription,
+                           countryOfOrigin = oldRecord.countryOfOrigin,
+                           category = None,
+                           assessments = oldRecord.assessments,
+                           supplementaryUnit = oldRecord.supplementaryUnit,
+                           measurementUnit = oldRecord.measurementUnit,
+                           comcodeEffectiveFromDate = oldRecord.comcodeEffectiveFromDate,
+                           comcodeEffectiveToDate = oldRecord.comcodeEffectiveToDate
+                         )
 
         _ = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
 
         _ <- updateGoodsRecordIfPutValueChanged(
-          commodity.commodityCode,
-          oldRecord.comcode,
-          updateGoodsRecord,
-          putGoodsRecord
-        )
-
-        previouslyRejectedChange = request.userAnswers.get(HasCommodityCodeChangePage(recordId)).contains(false)
-
-        previouslyEnteredCommodityCode = request.userAnswers.get(CommodityCodeUpdatePage(recordId))
+               commodity.commodityCode,
+               oldRecord.comcode,
+               updateGoodsRecord,
+               putGoodsRecord
+             )
 
         updatedAnswersWithChange <- Future.fromTry(request.userAnswers.remove(HasCommodityCodeChangePage(recordId)))
-        updatedAnswers <- Future.fromTry(updatedAnswersWithChange.remove(CommodityCodeUpdatePage(recordId)))
-
-        isValueChanged = oldRecord.comcode != commodity.commodityCode || previouslyRejectedChange
-
+        updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CommodityCodeUpdatePage(recordId)))
 
         _ <- sessionRepository.set(updatedAnswers)
       } yield {
+        val cameFromChangeFlow = request.session.get(pageUpdated).isDefined
 
+        if (hasChanged) {
+          Redirect(routes.SingleRecordController.onPageLoad(recordId))
+            .addingToSession(dataUpdated -> "true")
+            .addingToSession(pageUpdated -> "commodityCode")
 
-        Redirect(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
-          .addingToSession(dataUpdated -> isValueChanged.toString)
-          .addingToSession(pageUpdated -> "commodityCode")
+        } else if (cameFromChangeFlow) {
+          Redirect(routes.SingleRecordController.onPageLoad(recordId))
+            .removingFromSession(pageUpdated, dataUpdated)
+        } else {
+          Redirect(routes.SingleRecordController.onPageLoad(recordId))
+            .removingFromSession(dataUpdated, pageUpdated)
+        }
       }).recover(handleRecover(recordId))
+
     }
 
   private def handleRecover(
