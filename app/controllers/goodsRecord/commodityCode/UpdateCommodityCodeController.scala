@@ -91,7 +91,6 @@ class UpdateCommodityCodeController @Inject() (
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, onSubmitAction, mode, Some(recordId)))),
           value => {
-            val isValueChanged = oldValueOpt.exists(_ != value)
 
             fetchCommodity(value, countryOfOrigin).flatMap {
               case commodity if commodity.isValid =>
