@@ -25,35 +25,35 @@
 
 @(form: Form[_], countries: Seq[Country], page: Int, searchForm: SearchForm)(implicit request: Request[_], messages: Messages)
 
-@if(searchForm.searchTerm.nonEmpty
-        || searchForm.countryOfOrigin.nonEmpty
-        || searchForm.statusValue.nonEmpty) {
+@if(searchForm.searchTerm.nonEmpty || searchForm.countryOfOrigin.nonEmpty || searchForm.statusValue.nonEmpty) {
 
-  <div class="govuk-!-margin-top-1">
-      <p class="govuk-body govuk-!-margin-bottom-1">@messages("goodsRecords.relatedTo")</p>
-      <ul class="govuk-list moj-filter__tag_lock">
-          @searchForm.searchTerm.map { searchTerm => <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock">@messages("goodsRecordSearchResult.p5", searchTerm) </li> }
+    @defining(searchForm.statusValue.map(_.trim).flatMap {
+        case "IMMIReady"        => Some(messages("declarableStatus.immiReady"))
+        case "notReadyForImmi"  => Some(messages("declarableStatus.notReadyForImmi"))
+        case "actionNeeded"     => Some(messages("declarableStatus.notReadyForUse"))
+        case _                  => None
+    }) { statusLabels =>
 
-          @{
-          val statusLabels: Seq[String] = searchForm.statusValue.map(_.trim).flatMap {
-          case "IMMIReady"        => Some(messages("declarableStatus.immiReady"))
-          case "notReadyForImmi"  => Some(messages("declarableStatus.notReadyForImmi"))
-          case "actionNeeded"     => Some(messages("declarableStatus.notReadyForUse"))
-          case _                  => None
-          }
-          val statusText = statusLabels.mkString(", ")
-          val label = messages("declarableStatus.status") + ": " + statusText
+    <div class="govuk-!-margin-top-1">
+        <p class="govuk-body govuk-!-margin-bottom-1">@messages("goodsRecords.relatedTo")</p>
+        <ul class="govuk-list moj-filter__tag_lock">
+            @searchForm.searchTerm.map { searchTerm =>
+            <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock">@messages("goodsRecordSearchResult.p5", searchTerm)</li>
+            }
 
-          <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock">
-              {label}
-          </li>
-          }
+            @if(statusLabels.nonEmpty) {
+            <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock">
+                @messages("declarableStatus.status"): @statusLabels.mkString(", ")
+            </li>
+            }
 
-          @if(searchForm.countryOfOrigin.isDefined) {
-              <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock">@messages("goodsRecordSearchResult.p6")
-                  <span lang="en"> @countries.find(_.id == searchForm.countryOfOrigin.getOrElse("")).map(_.description).getOrElse("")</span>
-              </li>
-          }
-      </ul>
-  </div>
+            @if(searchForm.countryOfOrigin.isDefined) {
+            <li class="govuk-tag govuk-tag--grey moj-filter__tag_lock">
+                @messages("goodsRecordSearchResult.p6")
+                <span lang="en">@countries.find(_.id == searchForm.countryOfOrigin.get).map(_.description).getOrElse("")</span>
+            </li>
+            }
+        </ul>
+    </div>
+    }
 }
