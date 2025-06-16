@@ -345,7 +345,6 @@ class CyaUpdateRecordController @Inject() (
           Redirect(controllers.goodsRecord.countryOfOrigin.routes.UpdatedCountryOfOriginController.onPageLoad(recordId))
             .addingToSession(pageUpdated -> countryOfOrigin)
         } else if (cameFromChangeFlow) {
-          // Country unchanged, but user came from change flow, so show banner anyway
           Redirect(controllers.goodsRecord.countryOfOrigin.routes.UpdatedCountryOfOriginController.onPageLoad(recordId))
             .addingToSession(pageUpdated -> countryOfOrigin)
         } else {
@@ -376,7 +375,7 @@ class CyaUpdateRecordController @Inject() (
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       (for {
         oldRecord      <- goodsRecordConnector.getRecord(recordId)
-        rawUserInputOpt = request.userAnswers.get(CommodityCodeUpdatePage(recordId)) // ← RAW input
+        rawUserInputOpt = request.userAnswers.get(CommodityCodeUpdatePage(recordId))
         rawUserInput    = rawUserInputOpt.getOrElse("").trim.toUpperCase
         originalComcode = oldRecord.comcode.trim.toUpperCase
         hasChanged      = rawUserInput.nonEmpty && rawUserInput != originalComcode
@@ -429,6 +428,7 @@ class CyaUpdateRecordController @Inject() (
         val cameFromChangeFlow = request.session.get(pageUpdated).isDefined
 
         if (hasChanged) {
+
           Redirect(routes.SingleRecordController.onPageLoad(recordId))
             .addingToSession(dataUpdated -> "true")
             .addingToSession(pageUpdated -> "commodityCode")

@@ -39,19 +39,20 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class UpdateCommodityCodeController @Inject() (
-                                                override val messagesApi: MessagesApi,
-                                                sessionRepository: SessionRepository,
-                                                navigator: GoodsRecordNavigator,
-                                                identify: IdentifierAction,
-                                                getData: DataRetrievalAction,
-                                                requireData: DataRequiredAction,
-                                                profileAuth: ProfileAuthenticateAction,
-                                                formProvider: CommodityCodeFormProvider,
-                                                ottConnector: OttConnector,
-                                                val controllerComponents: MessagesControllerComponents,
-                                                view: CommodityCodeView,
-                                                auditService: AuditService
-                                              )(implicit ec: ExecutionContext) extends BaseController {
+  override val messagesApi: MessagesApi,
+  sessionRepository: SessionRepository,
+  navigator: GoodsRecordNavigator,
+  identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
+  profileAuth: ProfileAuthenticateAction,
+  formProvider: CommodityCodeFormProvider,
+  ottConnector: OttConnector,
+  val controllerComponents: MessagesControllerComponents,
+  view: CommodityCodeView,
+  auditService: AuditService
+)(implicit ec: ExecutionContext)
+    extends BaseController {
 
   private val form = formProvider()
 
@@ -95,48 +96,51 @@ class UpdateCommodityCodeController @Inject() (
       form
         .bindFromRequest()
         .fold(
-          formWithErrors =>
-            Future.successful(BadRequest(view(formWithErrors, onSubmitAction, mode, Some(recordId)))),
-          value => {
-            fetchCommodity(value, countryOfOrigin).flatMap {
-              case commodity if commodity.isValid =>
-                val oldValue = oldValueOpt.getOrElse("").trim.toUpperCase
-                val newValue = value.trim.toUpperCase
-                val hasChanged = newValue.nonEmpty && newValue != oldValue
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, onSubmitAction, mode, Some(recordId)))),
+          value =>
+            fetchCommodity(value, countryOfOrigin)
+              .flatMap {
+                case commodity if commodity.isValid =>
+                  val oldValue   = oldValueOpt.getOrElse("").trim.toUpperCase
+                  val newValue   = value.trim.toUpperCase
+                  val hasChanged = newValue.nonEmpty && newValue != oldValue
 
-                for {
-                  updatedAnswers          <- Future.fromTry(request.userAnswers.set(CommodityCodeUpdatePage(recordId), value))
-                  updatedAnswersWithQuery <- Future.fromTry(updatedAnswers.set(CommodityUpdateQuery(recordId), commodity.copy(commodityCode = value)))
-                  _                      <- sessionRepository.set(updatedAnswersWithQuery)
-                } yield {
-                  val redirect = Redirect(navigator.nextPage(CommodityCodeUpdatePage(recordId), mode, updatedAnswersWithQuery))
+                  for {
+                    updatedAnswers          <- Future.fromTry(request.userAnswers.set(CommodityCodeUpdatePage(recordId), value))
+                    updatedAnswersWithQuery <-
+                      Future.fromTry(
+                        updatedAnswers.set(CommodityUpdateQuery(recordId), commodity.copy(commodityCode = value))
+                      )
+                    _                       <- sessionRepository.set(updatedAnswersWithQuery)
+                  } yield {
+                    val redirect =
+                      Redirect(navigator.nextPage(CommodityCodeUpdatePage(recordId), mode, updatedAnswersWithQuery))
 
-                  if (hasChanged) {
-                    redirect.addingToSession(
-                      "commodityCodeChanged" -> "true",
-                      dataUpdated -> "true",
-                      pageUpdated -> "commodityCode"
-                    )
-                  } else {
-                    redirect.removingFromSession(dataUpdated, pageUpdated)
+                    if (hasChanged) {
+                      redirect.addingToSession(
+                        "commodityCodeChanged" -> "true",
+                        dataUpdated            -> "true",
+                        pageUpdated            -> "commodityCode"
+                      )
+                    } else {
+                      redirect.removingFromSession(dataUpdated, pageUpdated)
+                    }
                   }
-                }
 
-              case _ =>
-                val formWithErrors = createFormWithErrors(form, value, "commodityCode.error.expired")
-                Future.successful(BadRequest(view(formWithErrors, onSubmitAction, mode, Some(recordId))))
-            }.recover {
-              case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
+                case _ =>
+                  val formWithErrors = createFormWithErrors(form, value, "commodityCode.error.expired")
+                  Future.successful(BadRequest(view(formWithErrors, onSubmitAction, mode, Some(recordId))))
+              }
+              .recover { case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
                 handleFormError(form, "commodityCode.error.invalid", onSubmitAction, mode, Some(recordId))
-            }
-          }
+              }
         )
     }
 
   private def fetchCommodity(
-                              value: String,
-                              countryOfOrigin: String
-                            )(implicit request: DataRequest[AnyContent]): Future[Commodity] =
+    value: String,
+    countryOfOrigin: String
+  )(implicit request: DataRequest[AnyContent]): Future[Commodity] =
     ottConnector.getCommodityCode(
       value,
       request.eori,
@@ -147,12 +151,12 @@ class UpdateCommodityCodeController @Inject() (
     )
 
   private def handleFormError[T](
-                                  form: Form[T],
-                                  errorKey: String,
-                                  onSubmitAction: Call,
-                                  mode: Mode,
-                                  recordId: Option[String]
-                                )(implicit request: Request[AnyContent]): Result = {
+    form: Form[T],
+    errorKey: String,
+    onSubmitAction: Call,
+    mode: Mode,
+    recordId: Option[String]
+  )(implicit request: Request[AnyContent]): Result = {
     val formWithApiErrors = form.copy(errors = Seq(FormError("value", getMessage(errorKey))))
     BadRequest(view(formWithApiErrors, onSubmitAction, mode, recordId))
   }

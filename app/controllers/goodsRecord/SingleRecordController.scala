@@ -40,19 +40,19 @@ import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 
 class SingleRecordController @Inject() (
-                                         val controllerComponents: MessagesControllerComponents,
-                                         goodsRecordConnector: GoodsRecordConnector,
-                                         sessionRepository: SessionRepository,
-                                         autoCategoriseService: AutoCategoriseService,
-                                         dataCleansingService: DataCleansingService,
-                                         identify: IdentifierAction,
-                                         profileAuth: ProfileAuthenticateAction,
-                                         getData: DataRetrievalAction,
-                                         requireData: DataRequiredAction,
-                                         ottConnector: OttConnector,
-                                         view: SingleRecordView
-                                       )(implicit @unused ec: ExecutionContext)
-  extends BaseController {
+  val controllerComponents: MessagesControllerComponents,
+  goodsRecordConnector: GoodsRecordConnector,
+  sessionRepository: SessionRepository,
+  autoCategoriseService: AutoCategoriseService,
+  dataCleansingService: DataCleansingService,
+  identify: IdentifierAction,
+  profileAuth: ProfileAuthenticateAction,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
+  ottConnector: OttConnector,
+  view: SingleRecordView
+)(implicit @unused ec: ExecutionContext)
+    extends BaseController {
 
   def onPageLoad(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
@@ -64,25 +64,25 @@ class SingleRecordController @Inject() (
             .filter(_.contains("page"))
             .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url)
           for {
-            countries <- retrieveAndStoreCountries
-            updatedAnswers <- updateUserAnswers(recordId, initialRecord)
+            countries              <- retrieveAndStoreCountries
+            updatedAnswers         <- updateUserAnswers(recordId, initialRecord)
             autoCategoriseScenario <- if (shouldAutoCategorise(initialRecord)) {
-              autoCategoriseService.autoCategoriseRecord(initialRecord, updatedAnswers)
-            } else {
-              Future.successful(None)
-            }
-            _ <- sessionRepository.set(updatedAnswers)
-            finalRecord <- if (autoCategoriseScenario.isDefined) {
-              goodsRecordConnector.getRecord(recordId)
-            } else {
-              Future.successful(initialRecord)
-            }
+                                        autoCategoriseService.autoCategoriseRecord(initialRecord, updatedAnswers)
+                                      } else {
+                                        Future.successful(None)
+                                      }
+            _                      <- sessionRepository.set(updatedAnswers)
+            finalRecord            <- if (autoCategoriseScenario.isDefined) {
+                                        goodsRecordConnector.getRecord(recordId)
+                                      } else {
+                                        Future.successful(initialRecord)
+                                      }
           } yield {
-            val recordIsLocked = finalRecord.adviceStatus.isRecordLocked
-            val isCategorised = finalRecord.category.isDefined
+            val recordIsLocked          = finalRecord.adviceStatus.isRecordLocked
+            val isCategorised           = finalRecord.category.isDefined
             val isReviewReasonCommodity = (finalRecord.toReview, finalRecord.reviewReason) match {
               case (true, Some(ReviewReason.Commodity)) => true
-              case _ => false
+              case _                                    => false
             }
 
             val detailsList = SummaryListViewModel(
@@ -95,7 +95,8 @@ class SingleRecordController @Inject() (
             )
 
             val categoryValue = finalRecord.category match {
-              case None => if (recordIsLocked) "singleRecord.notCategorised.recordLocked" else "singleRecord.categoriseThisGood"
+              case None        =>
+                if (recordIsLocked) "singleRecord.notCategorised.recordLocked" else "singleRecord.categoriseThisGood"
               case Some(value) =>
                 value match {
                   case 1 => "singleRecord.cat1"
@@ -114,7 +115,13 @@ class SingleRecordController @Inject() (
               rows = Seq(
                 HasSupplementaryUnitSummary.row(finalRecord, recordId, recordIsLocked),
                 SupplementaryUnitSummary
-                  .row(finalRecord.category, finalRecord.supplementaryUnit, finalRecord.measurementUnit, recordId, recordIsLocked)
+                  .row(
+                    finalRecord.category,
+                    finalRecord.supplementaryUnit,
+                    finalRecord.measurementUnit,
+                    recordId,
+                    recordIsLocked
+                  )
               ).flatten
             )
 
@@ -124,11 +131,15 @@ class SingleRecordController @Inject() (
               )
             )
 
-            // Extract banner flags from session, including new commodityCodeChanged flag
-            val changesMade: Boolean = request.session.get(dataUpdated).contains("true")
-            val changedPage = request.session.get(pageUpdated).getOrElse("")
-            val pageRemoved = request.session.get(dataRemoved).contains("true")
+            val changesMade: Boolean          = request.session.get(dataUpdated).contains("true")
             val commodityCodeChanged: Boolean = request.session.get("commodityCodeChanged").contains("true")
+            val pageRemoved                   = request.session.get(dataRemoved).contains("true")
+            val changedPageRaw                = request.session.get(pageUpdated)
+            val changedPage                   = if (changedPageRaw.isEmpty && commodityCodeChanged) {
+              "commodityCode"
+            } else {
+              changedPageRaw.getOrElse("")
+            }
 
             val para = AdviceStatusMessage.fromString(finalRecord.adviceStatus)
 
@@ -137,7 +148,6 @@ class SingleRecordController @Inject() (
             dataCleansingService.deleteMongoData(request.userAnswers.id, WithdrawAdviceJourney)
             dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
 
-            // Show banner if either changesMade or commodityCodeChanged flag is true
             Ok(
               view(
                 recordId,
@@ -145,7 +155,7 @@ class SingleRecordController @Inject() (
                 categorisationList,
                 supplementaryUnitList,
                 adviceList,
-                changesMade || commodityCodeChanged,  // <== combined flag for banner visibility
+                changesMade || commodityCodeChanged,
                 changedPage,
                 pageRemoved,
                 recordIsLocked,
@@ -158,13 +168,20 @@ class SingleRecordController @Inject() (
                 backLink,
                 autoCategoriseScenario
               )
-            ).removingFromSession(dataUpdated, dataRemoved, pageUpdated, "commodityCodeChanged", initialValueOfHasSuppUnit, initialValueOfSuppUnit)
+            ).removingFromSession(
+              dataUpdated,
+              dataRemoved,
+              pageUpdated,
+              "commodityCodeChanged",
+              initialValueOfHasSuppUnit,
+              initialValueOfSuppUnit
+            )
           }
         }
         .recover {
           case e: UpstreamErrorResponse if e.statusCode == 404 =>
             Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
-          case e: Exception =>
+          case e: Exception                                    =>
             logger.error(s"Error: ${e.getMessage}")
             Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
         }
@@ -174,7 +191,7 @@ class SingleRecordController @Inject() (
     record.category.isEmpty && !record.adviceStatus.isRecordLocked
 
   private def updateUserAnswers(recordId: String, record: GetGoodsRecordResponse)(implicit
-                                                                                  request: DataRequest[_]
+    request: DataRequest[_]
   ): Future[UserAnswers] =
     Future.fromTry(
       request.userAnswers
