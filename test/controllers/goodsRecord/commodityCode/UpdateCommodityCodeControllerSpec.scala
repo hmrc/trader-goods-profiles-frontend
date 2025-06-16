@@ -422,7 +422,7 @@ class UpdateCommodityCodeControllerSpec extends SpecBase with MockitoSugar with 
       }
     }
 
-    "must set changesMade to false if commodity code is not updated" in {
+    "must not set changesMade if commodity code is not updated" in {
       val commodityCodeRoute = controllers.goodsRecord.commodityCode.routes.UpdateCommodityCodeController
         .onPageLoad(NormalMode, testRecordId)
         .url
@@ -464,7 +464,7 @@ class UpdateCommodityCodeControllerSpec extends SpecBase with MockitoSugar with 
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
-        session(result).get(dataUpdated) must be(Some("false"))
+        session(result).get(dataUpdated) mustBe None
         verify(mockOttConnector).getCommodityCode(anyString(), any(), any(), any(), any(), any())(any())
       }
     }

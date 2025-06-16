@@ -128,9 +128,16 @@ class UpdateCountryOfOriginController @Inject() (
                 for {
                   updatedAnswers <- Future.fromTry(request.userAnswers.set(CountryOfOriginUpdatePage(recordId), value))
                   _              <- sessionRepository.set(updatedAnswers)
-                } yield Redirect(navigator.nextPage(CountryOfOriginUpdatePage(recordId), mode, updatedAnswers))
-                  .addingToSession(dataUpdated -> isValueChanged.toString)
-                  .addingToSession(pageUpdated -> countryOfOrigin)
+                  redirectResult  =
+                    Redirect(navigator.nextPage(CountryOfOriginUpdatePage(recordId), mode, updatedAnswers))
+                } yield
+                  if (isValueChanged) {
+                    redirectResult
+                      .addingToSession(dataUpdated -> "true")
+                      .addingToSession(pageUpdated -> countryOfOrigin)
+                  } else {
+                    redirectResult
+                  }
               }
             )
         case None            => throw new Exception("Countries should have been populated on page load.")
