@@ -44,7 +44,8 @@
      adviceStatus: AdviceStatus,
      reviewReason: Option[ReviewReason] = None,
      previousUrl: String,
-     autoCategoriseScenario: Option[Scenario]
+     autoCategoriseScenario: Option[Scenario],
+     countryOfOriginUpdated:Boolean
      )(implicit request: Request[_], messages: Messages)
 
 @bannerContentForUpdate(page: String, dataRemoved: Boolean) = {
@@ -76,7 +77,7 @@
 
 @layout(backLinkUrl = previousUrl, backLinkMessageKey = "singleRecord.back", pageTitle = titleNoForm(messages("singleRecord.title"))) {
 
-    @if(changesMade && declarableStatus != NotReadyForUse) {
+    @if(changesMade && declarableStatus != NotReadyForUse || countryOfOriginUpdated ) {
         @govukNotificationBanner(NotificationBanner(
             title = Text(messages("successBanner.title")),
             content = HtmlContent(bannerContentForUpdate(changedPage, dataRemoved)),

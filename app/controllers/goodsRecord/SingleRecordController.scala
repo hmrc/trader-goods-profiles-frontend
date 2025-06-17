@@ -56,6 +56,10 @@ class SingleRecordController @Inject() (
 
   def onPageLoad(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
+      val countryOfOriginUpdated = request.session.get(dataUpdated).match {
+        case Some("true") => true
+        case _ => false
+      }
       goodsRecordConnector
         .getRecord(recordId)
         .flatMap { initialRecord =>
@@ -77,7 +81,7 @@ class SingleRecordController @Inject() (
                                       } else {
                                         Future.successful(initialRecord)
                                       }
-          } yield renderView(recordId, finalRecord, backLink, countries, autoCategoriseScenario)
+          } yield renderView(recordId, finalRecord, backLink, countries, autoCategoriseScenario, countryOfOriginUpdated)
         }
         .recover {
           case e: UpstreamErrorResponse if e.statusCode == 404 =>
@@ -119,7 +123,8 @@ class SingleRecordController @Inject() (
     record: GetGoodsRecordResponse,
     backLink: String,
     countries: Seq[Country],
-    autoCategoriseScenario: Option[Scenario]
+    autoCategoriseScenario: Option[Scenario],
+    countryOfOriginUpdated: Boolean
   )(implicit request: DataRequest[_]): Result = {
     val recordIsLocked          = record.adviceStatus.isRecordLocked
     val isCategorised           = record.category.isDefined
@@ -195,7 +200,8 @@ class SingleRecordController @Inject() (
         record.adviceStatus,
         record.reviewReason,
         backLink,
-        autoCategoriseScenario
+        autoCategoriseScenario,
+        countryOfOriginUpdated
       )
     ).removingFromSession(initialValueOfHasSuppUnit, initialValueOfSuppUnit)
   }

@@ -301,6 +301,11 @@ class CyaUpdateRecordController @Inject() (
 
   def onSubmitCountryOfOrigin(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
+
+      val countryOfOriginUpdated = request.session.get(dataUpdated).match {
+        case Some("true") => "true"
+        case _ => "false"
+      }
       val resultFuture = for {
         oldRecord                <- goodsRecordConnector.getRecord(recordId)
         countryOfOrigin          <-
@@ -339,6 +344,8 @@ class CyaUpdateRecordController @Inject() (
         if (autoCategoriseScenario.isDefined || countryOfOrigin == oldRecord.countryOfOrigin) {
           // Redirect to SingleRecordController if auto categorised or no change in country
           Redirect(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
+            .addingToSession(dataUpdated -> countryOfOriginUpdated)
+
         } else {
           Redirect(controllers.goodsRecord.countryOfOrigin.routes.UpdatedCountryOfOriginController.onPageLoad(recordId))
             .addingToSession(pageUpdated -> countryOfOrigin)
