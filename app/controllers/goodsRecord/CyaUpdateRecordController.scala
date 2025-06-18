@@ -246,15 +246,15 @@ class CyaUpdateRecordController @Inject() (
   )(implicit hc: HeaderCarrier): Future[Done] =
     if (newValue != oldValue) {
       // TODO: remove this flag when EIS has implemented the PATCH method - TGP-2417 and keep the call to patchGoodsRecord as default
-      if (config.useEisPatchMethod) {
-        goodsRecordConnector.patchGoodsRecord(
-          newUpdateGoodsRecord
-        )
-      } else {
-        goodsRecordConnector.updateGoodsRecord(
-          newUpdateGoodsRecord
-        )
-      }
+      // if (config.useEisPatchMethod) {
+      goodsRecordConnector.patchGoodsRecord(
+        newUpdateGoodsRecord
+      )
+      //      } else {
+      //        goodsRecordConnector.updateGoodsRecord(
+      //          newUpdateGoodsRecord
+      //        )
+      //      }
     } else {
       Future.successful(Done)
     }
@@ -268,16 +268,16 @@ class CyaUpdateRecordController @Inject() (
     if (newValue != oldValue) {
 
       // TODO: remove this flag when EIS has implemented the PATCH method - TGP-2417 and keep the call to putGoodsRecord as default
-      if (config.useEisPatchMethod) {
-        goodsRecordConnector.putGoodsRecord(
-          putRecordRequest,
-          newUpdateGoodsRecord.recordId
-        )
-      } else {
-        goodsRecordConnector.updateGoodsRecord(
-          newUpdateGoodsRecord
-        )
-      }
+//      if (config.useEisPatchMethod) {
+      goodsRecordConnector.putGoodsRecord(
+        putRecordRequest,
+        newUpdateGoodsRecord.recordId
+      )
+//      } else {
+//        goodsRecordConnector.updateGoodsRecord(
+//          newUpdateGoodsRecord
+//        )
+//      }
 
     } else {
       Future.successful(Done)
