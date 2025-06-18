@@ -132,17 +132,6 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
           false
       }
 
-  // TODO: remove this function when EIS has implemented the PATCH method - TGP-2417 and keep putGoodsRecord and patchGoodsRecord
-  def updateGoodsRecord(updateGoodsRecord: UpdateGoodsRecord)(implicit
-    hc: HeaderCarrier
-  ): Future[Done] =
-    httpClient
-      .patch(goodsRecordUrl(updateGoodsRecord.recordId))
-      .setHeader(clientIdHeader)
-      .withBody(Json.toJson(PatchRecordRequest.map(updateGoodsRecord)))
-      .execute[HttpResponse]
-      .map(_ => Done)
-
   def patchGoodsRecord(updateGoodsRecord: UpdateGoodsRecord)(implicit
     hc: HeaderCarrier
   ): Future[Done] =
@@ -170,22 +159,12 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
   )(implicit
     hc: HeaderCarrier
   ): Future[Done] =
-    // TODO: remove this flag when EIS has implemented the PATCH method - TGP-2417 and keep the put call as default
-    if (appConfig.useEisPatchMethod) {
-      httpClient
-        .put(goodsRecordUrl(recordId))
-        .setHeader(clientIdHeader)
-        .withBody(Json.toJson(PutRecordRequest.mapFromCategoryAndComcode(categoryRecord, oldRecord)))
-        .execute[HttpResponse]
-        .map(_ => Done)
-    } else {
-      httpClient
-        .patch(goodsRecordUrl(recordId))
-        .setHeader(clientIdHeader)
-        .withBody(Json.toJson(PatchRecordRequest.mapFromCategoryAndComcode(categoryRecord)))
-        .execute[HttpResponse]
-        .map(_ => Done)
-    }
+    httpClient
+      .put(goodsRecordUrl(recordId))
+      .setHeader(clientIdHeader)
+      .withBody(Json.toJson(PutRecordRequest.mapFromCategoryAndComcode(categoryRecord, oldRecord)))
+      .execute[HttpResponse]
+      .map(_ => Done)
 
   def updateSupplementaryUnitForGoodsRecord(
     recordId: String,
@@ -194,22 +173,12 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
   )(implicit
     hc: HeaderCarrier
   ): Future[Done] =
-    // TODO: remove this flag when EIS has implemented the PATCH method - TGP-2417 and keep the put call as default
-    if (appConfig.useEisPatchMethod) {
-      httpClient
-        .put(goodsRecordUrl(recordId))
-        .setHeader(clientIdHeader)
-        .withBody(Json.toJson(PutRecordRequest.mapFromSupplementary(supplementaryRequest, oldRecord)))
-        .execute[HttpResponse]
-        .map(_ => Done)
-    } else {
-      httpClient
-        .patch(goodsRecordUrl(recordId))
-        .setHeader(clientIdHeader)
-        .withBody(Json.toJson(PatchRecordRequest.mapFromSupplementary(supplementaryRequest)))
-        .execute[HttpResponse]
-        .map(_ => Done)
-    }
+    httpClient
+      .put(goodsRecordUrl(recordId))
+      .setHeader(clientIdHeader)
+      .withBody(Json.toJson(PutRecordRequest.mapFromSupplementary(supplementaryRequest, oldRecord)))
+      .execute[HttpResponse]
+      .map(_ => Done)
 
   def getRecord(recordId: String)(implicit
     hc: HeaderCarrier

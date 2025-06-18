@@ -340,7 +340,7 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
 
             when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
 
-            when(mockGoodsRecordConnector.updateGoodsRecord(any())(any())).thenReturn(Future.successful(Done))
+            when(mockGoodsRecordConnector.patchGoodsRecord(any())(any())).thenReturn(Future.successful(Done))
             when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
               .thenReturn(Future.successful(Done))
             when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
@@ -382,7 +382,7 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
                 .onPageLoad(testRecordId)
                 .url
 
-              verify(mockGoodsRecordConnector).updateGoodsRecord(any())(any())
+              verify(mockGoodsRecordConnector).patchGoodsRecord(any())(any())
               verify(mockSessionRepository, times(2)).set(any())
 
               withClue("must call the audit connector with the supplied details") {

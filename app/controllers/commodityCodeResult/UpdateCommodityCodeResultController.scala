@@ -200,7 +200,7 @@ class UpdateCommodityCodeResultController @Inject() (
           newUpdateGoodsRecord.recordId
         )
       } else {
-        goodsRecordConnector.updateGoodsRecord(
+        goodsRecordConnector.patchGoodsRecord(
           newUpdateGoodsRecord
         )
       }
