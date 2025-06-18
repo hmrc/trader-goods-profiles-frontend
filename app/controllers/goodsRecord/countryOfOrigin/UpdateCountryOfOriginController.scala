@@ -123,11 +123,11 @@ class UpdateCountryOfOriginController @Inject() (
                 ),
               value => {
                 val originalCountryOpt = request.userAnswers.get(CountryOfOriginPage)
-                val currentCountryOpt = request.userAnswers.get(CountryOfOriginUpdatePage(recordId))
+                val currentCountryOpt  = request.userAnswers.get(CountryOfOriginUpdatePage(recordId))
 
                 val isValueChanged = currentCountryOpt match {
                   case Some(current) => current != value
-                  case None => originalCountryOpt.exists(_ != value)
+                  case None          => originalCountryOpt.exists(_ != value)
                 }
 
                 for {

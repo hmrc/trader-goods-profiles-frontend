@@ -56,9 +56,7 @@ class SingleRecordController @Inject() (
 
   def onPageLoad(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-
       val countryChanged = request.session.get("countryOfOriginChanged").contains("true")
-
 
       goodsRecordConnector
         .getRecord(recordId)
@@ -96,7 +94,7 @@ class SingleRecordController @Inject() (
     record.category.isEmpty && !record.adviceStatus.isRecordLocked
 
   private def updateUserAnswers(recordId: String, record: GetGoodsRecordResponse)(implicit
-                                                                                  request: DataRequest[_]
+    request: DataRequest[_]
   ): Future[UserAnswers] = {
     val baseTry =
       request.userAnswers
@@ -113,7 +111,6 @@ class SingleRecordController @Inject() (
 
     Future.fromTry(withOriginal)
   }
-
 
   private def retrieveAndStoreCountries(implicit hc: HeaderCarrier, request: DataRequest[_]): Future[Seq[Country]] =
     request.userAnswers.get(CountriesQuery) match {

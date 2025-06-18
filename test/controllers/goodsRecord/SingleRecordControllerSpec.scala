@@ -26,7 +26,7 @@ import models.helper.SupplementaryUnitUpdateJourney
 import models.router.responses.GetGoodsRecordResponse
 import models.{Country, NormalMode, ReviewReason, UserAnswers}
 import org.mockito.ArgumentCaptor
-import org.mockito.ArgumentMatchers.{any, eq as eqTo}
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.Inspectors.forAll
@@ -93,11 +93,21 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
   "SingleRecord Controller" - {
     "must return OK and the correct view for a GET and set up userAnswers when record is categorised" in {
       val expectedUserAnswers = UserAnswers(userAnswersId)
-        .set(ProductReferenceUpdatePage(testRecordId), recordForTestingSummaryRows.traderRef).success.value
-        .set(GoodsDescriptionUpdatePage(testRecordId), recordForTestingSummaryRows.goodsDescription).success.value
-        .set(CountryOfOriginUpdatePage(testRecordId), recordForTestingSummaryRows.countryOfOrigin).success.value
-        .set(CommodityCodeUpdatePage(testRecordId), recordForTestingSummaryRows.comcode).success.value
-        .set(OriginalCountryOfOriginPage(testRecordId), recordForTestingSummaryRows.countryOfOrigin).success.value // ✅ Add this
+        .set(ProductReferenceUpdatePage(testRecordId), recordForTestingSummaryRows.traderRef)
+        .success
+        .value
+        .set(GoodsDescriptionUpdatePage(testRecordId), recordForTestingSummaryRows.goodsDescription)
+        .success
+        .value
+        .set(CountryOfOriginUpdatePage(testRecordId), recordForTestingSummaryRows.countryOfOrigin)
+        .success
+        .value
+        .set(CommodityCodeUpdatePage(testRecordId), recordForTestingSummaryRows.comcode)
+        .success
+        .value
+        .set(OriginalCountryOfOriginPage(testRecordId), recordForTestingSummaryRows.countryOfOrigin)
+        .success
+        .value // ✅ Add this
 
       // Mock responses
       when(mockGoodsRecordConnector.getRecord(any())(any()))
@@ -121,7 +131,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
         val request = FakeRequest(GET, singleRecordRoute)
           .withSession("countryOfOriginChanged" -> "true")
 
-        val result = route(application, request).value
+        val result  = route(application, request).value
         val content = contentAsString(result)
 
         // ✅ Assertions
@@ -283,10 +293,18 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
     "must return OK and the correct view for a GET when the record is locked" in {
 
       val expectedUserAnswers = UserAnswers(userAnswersId)
-        .set(ProductReferenceUpdatePage(lockedRecord.recordId), lockedRecord.traderRef).success.value
-        .set(GoodsDescriptionUpdatePage(lockedRecord.recordId), lockedRecord.goodsDescription).success.value
-        .set(CountryOfOriginUpdatePage(lockedRecord.recordId), lockedRecord.countryOfOrigin).success.value
-        .set(CommodityCodeUpdatePage(lockedRecord.recordId), lockedRecord.comcode).success.value
+        .set(ProductReferenceUpdatePage(lockedRecord.recordId), lockedRecord.traderRef)
+        .success
+        .value
+        .set(GoodsDescriptionUpdatePage(lockedRecord.recordId), lockedRecord.goodsDescription)
+        .success
+        .value
+        .set(CountryOfOriginUpdatePage(lockedRecord.recordId), lockedRecord.countryOfOrigin)
+        .success
+        .value
+        .set(CommodityCodeUpdatePage(lockedRecord.recordId), lockedRecord.comcode)
+        .success
+        .value
 
       when(mockGoodsRecordConnector.getRecord(any())(any()))
         .thenReturn(Future.successful(lockedRecord))
@@ -301,13 +319,14 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           bind[SessionRepository].toInstance(mockSessionRepository),
           bind[OttConnector].toInstance(mockOttConnector),
           bind[AutoCategoriseService].toInstance(mockAutoCategoriseService)
-        ).build()
+        )
+        .build()
 
       running(application) {
         val request = FakeRequest(GET, singleRecordRouteLocked)
           .withSession("countryOfOriginChanged" -> "false")
 
-        val result = route(application, request).value
+        val result  = route(application, request).value
         val content = contentAsString(result)
 
         status(result) mustEqual OK
@@ -719,16 +738,26 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
           val isReviewReasonCommodity = reviewReason == ReviewReason.Commodity
 
-          val record = goodsRecordResponseWithReviewReason(reviewReason = reviewReason)
+          val record   = goodsRecordResponseWithReviewReason(reviewReason = reviewReason)
           val toReview = true
 
           // 🔑 Build expected UserAnswers to include OriginalCountryOfOriginPage
           val expectedUserAnswers = UserAnswers(userAnswersId)
-            .set(ProductReferenceUpdatePage(record.recordId), record.traderRef).success.value
-            .set(GoodsDescriptionUpdatePage(record.recordId), record.goodsDescription).success.value
-            .set(CountryOfOriginUpdatePage(record.recordId), record.countryOfOrigin).success.value
-            .set(CommodityCodeUpdatePage(record.recordId), record.comcode).success.value
-            .set(OriginalCountryOfOriginPage(record.recordId), record.countryOfOrigin).success.value
+            .set(ProductReferenceUpdatePage(record.recordId), record.traderRef)
+            .success
+            .value
+            .set(GoodsDescriptionUpdatePage(record.recordId), record.goodsDescription)
+            .success
+            .value
+            .set(CountryOfOriginUpdatePage(record.recordId), record.countryOfOrigin)
+            .success
+            .value
+            .set(CommodityCodeUpdatePage(record.recordId), record.comcode)
+            .success
+            .value
+            .set(OriginalCountryOfOriginPage(record.recordId), record.countryOfOrigin)
+            .success
+            .value
 
           when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
           when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
@@ -744,11 +773,11 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
             )
             .build()
 
-          val messagesApi = application.injector.instanceOf[MessagesApi]
-          implicit val request = FakeRequest()
+          val messagesApi                 = application.injector.instanceOf[MessagesApi]
+          implicit val request            = FakeRequest()
           implicit val messages: Messages = messagesApi.preferred(request)
 
-          val detailsList = SummaryListViewModel(
+          val detailsList           = SummaryListViewModel(
             rows = Seq(
               ProductReferenceSummary.row(record.traderRef, record.recordId, NormalMode, recordIsLocked),
               GoodsDescriptionSummary.rowUpdate(record, record.recordId, NormalMode, recordIsLocked),
@@ -756,7 +785,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
               CommodityCodeSummary.rowUpdate(record, record.recordId, NormalMode, recordIsLocked)
             )
           )
-          val categorisationList = SummaryListViewModel(
+          val categorisationList    = SummaryListViewModel(
             rows = Seq(
               CategorySummary.row(
                 "singleRecord.cat1",
@@ -770,19 +799,20 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           val supplementaryUnitList = SummaryListViewModel(
             rows = Seq(
               HasSupplementaryUnitSummary.row(record, record.recordId, recordIsLocked),
-              SupplementaryUnitSummary.row(Some(2), record.supplementaryUnit, record.measurementUnit, record.recordId, recordIsLocked)
+              SupplementaryUnitSummary
+                .row(Some(2), record.supplementaryUnit, record.measurementUnit, record.recordId, recordIsLocked)
             ).flatten
           )
-          val adviceList = SummaryListViewModel(
+          val adviceList            = SummaryListViewModel(
             rows = Seq(
               AdviceStatusSummary.row(record.adviceStatus, record.recordId, recordIsLocked, isReviewReasonCommodity)
             )
           )
 
           running(application) {
-            val request = FakeRequest(GET, singleRecordRoute).withSession("countryOfOriginChanged" -> "true")
-            val result = route(application, request).value
-            val view = application.injector.instanceOf[SingleRecordView]
+            val request     = FakeRequest(GET, singleRecordRoute).withSession("countryOfOriginChanged" -> "true")
+            val result      = route(application, request).value
+            val view        = application.injector.instanceOf[SingleRecordView]
             val changesMade = request.session.get(dataUpdated).contains("true")
             val changedPage = request.session.get(pageUpdated).getOrElse("")
             val pageRemoved = request.session.get(dataRemoved).contains("true")
@@ -804,9 +834,11 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
               record.category.isDefined,
               record.adviceStatus,
               Some(reviewReason),
-              request.headers.get("Referer").getOrElse(
-                controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url
-              ),
+              request.headers
+                .get("Referer")
+                .getOrElse(
+                  controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url
+                ),
               autoCategoriseScenario = None,
               countryOfOriginUpdated = true
             )(request, messages).toString

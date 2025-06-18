@@ -301,41 +301,40 @@ class CyaUpdateRecordController @Inject() (
 
   def onSubmitCountryOfOrigin(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-
       val resultFuture = for {
-        oldRecord <- goodsRecordConnector.getRecord(recordId)
-        countryOfOrigin <-
+        oldRecord                <- goodsRecordConnector.getRecord(recordId)
+        countryOfOrigin          <-
           handleValidateError(
             UpdateGoodsRecord.validateCountryOfOrigin(request.userAnswers, recordId, oldRecord.category.isDefined)
           )
-        updateGoodsRecord <-
+        updateGoodsRecord        <-
           Future.successful(UpdateGoodsRecord(request.eori, recordId, countryOfOrigin = Some(countryOfOrigin)))
-        putGoodsRecord <- Future.successful(
-          PutRecordRequest(
-            actorId = oldRecord.eori,
-            traderRef = oldRecord.traderRef,
-            comcode = oldRecord.comcode,
-            goodsDescription = oldRecord.goodsDescription,
-            countryOfOrigin = countryOfOrigin,
-            category = None,
-            assessments = oldRecord.assessments,
-            supplementaryUnit = oldRecord.supplementaryUnit,
-            measurementUnit = oldRecord.measurementUnit,
-            comcodeEffectiveFromDate = oldRecord.comcodeEffectiveFromDate,
-            comcodeEffectiveToDate = oldRecord.comcodeEffectiveToDate
-          )
-        )
-        _ = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
-        _ <- updateGoodsRecordIfPutValueChanged(
-          countryOfOrigin,
-          oldRecord.countryOfOrigin,
-          updateGoodsRecord,
-          putGoodsRecord
-        )
+        putGoodsRecord           <- Future.successful(
+                                      PutRecordRequest(
+                                        actorId = oldRecord.eori,
+                                        traderRef = oldRecord.traderRef,
+                                        comcode = oldRecord.comcode,
+                                        goodsDescription = oldRecord.goodsDescription,
+                                        countryOfOrigin = countryOfOrigin,
+                                        category = None,
+                                        assessments = oldRecord.assessments,
+                                        supplementaryUnit = oldRecord.supplementaryUnit,
+                                        measurementUnit = oldRecord.measurementUnit,
+                                        comcodeEffectiveFromDate = oldRecord.comcodeEffectiveFromDate,
+                                        comcodeEffectiveToDate = oldRecord.comcodeEffectiveToDate
+                                      )
+                                    )
+        _                         = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
+        _                        <- updateGoodsRecordIfPutValueChanged(
+                                      countryOfOrigin,
+                                      oldRecord.countryOfOrigin,
+                                      updateGoodsRecord,
+                                      putGoodsRecord
+                                    )
         updatedAnswersWithChange <- Future.fromTry(request.userAnswers.remove(HasCountryOfOriginChangePage(recordId)))
-        updatedAnswers <- Future.fromTry(updatedAnswersWithChange.remove(CountryOfOriginUpdatePage(recordId)))
-        autoCategoriseScenario <- autoCategoriseService.autoCategoriseRecord(recordId, updatedAnswers)
-        _ <- sessionRepository.set(updatedAnswers)
+        updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CountryOfOriginUpdatePage(recordId)))
+        autoCategoriseScenario   <- autoCategoriseService.autoCategoriseRecord(recordId, updatedAnswers)
+        _                        <- sessionRepository.set(updatedAnswers)
       } yield {
         // Core decision: was the value actually changed?
         val hasChanged = countryOfOrigin != oldRecord.countryOfOrigin
@@ -351,7 +350,6 @@ class CyaUpdateRecordController @Inject() (
         } else {
           Redirect(controllers.goodsRecord.countryOfOrigin.routes.UpdatedCountryOfOriginController.onPageLoad(recordId))
             .addingToSession("countryOfOriginChanged" -> "true", pageUpdated -> "countryOfOrigin")
-
 
         }
 
