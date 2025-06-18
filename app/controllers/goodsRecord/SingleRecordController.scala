@@ -23,7 +23,7 @@ import models.helper.{CategorisationJourney, RequestAdviceJourney, Supplementary
 import models.requests.DataRequest
 import models.router.responses.GetGoodsRecordResponse
 import models.{AdviceStatusMessage, Country, NormalMode, ReviewReason, Scenario, UserAnswers}
-import pages.goodsRecord.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage, ProductReferenceUpdatePage}
+import pages.goodsRecord.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage, OriginalCountryOfOriginPage, ProductReferenceUpdatePage}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import queries.CountriesQuery
 import repositories.SessionRepository
@@ -56,10 +56,10 @@ class SingleRecordController @Inject() (
 
   def onPageLoad(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val countryOfOriginUpdated = request.session.get(dataUpdated).match {
-        case Some("true") => true
-        case _ => false
-      }
+
+      val countryChanged = request.session.get("countryOfOriginChanged").contains("true")
+
+
       goodsRecordConnector
         .getRecord(recordId)
         .flatMap { initialRecord =>
@@ -81,7 +81,7 @@ class SingleRecordController @Inject() (
                                       } else {
                                         Future.successful(initialRecord)
                                       }
-          } yield renderView(recordId, finalRecord, backLink, countries, autoCategoriseScenario, countryOfOriginUpdated)
+          } yield renderView(recordId, finalRecord, backLink, countries, autoCategoriseScenario, countryChanged)
         }
         .recover {
           case e: UpstreamErrorResponse if e.statusCode == 404 =>
@@ -96,15 +96,24 @@ class SingleRecordController @Inject() (
     record.category.isEmpty && !record.adviceStatus.isRecordLocked
 
   private def updateUserAnswers(recordId: String, record: GetGoodsRecordResponse)(implicit
-    request: DataRequest[_]
-  ): Future[UserAnswers] =
-    Future.fromTry(
+                                                                                  request: DataRequest[_]
+  ): Future[UserAnswers] = {
+    val baseTry =
       request.userAnswers
         .set(ProductReferenceUpdatePage(recordId), record.traderRef)
         .flatMap(_.set(GoodsDescriptionUpdatePage(recordId), record.goodsDescription))
         .flatMap(_.set(CountryOfOriginUpdatePage(recordId), record.countryOfOrigin))
         .flatMap(_.set(CommodityCodeUpdatePage(recordId), record.comcode))
-    )
+
+    val withOriginal =
+      if (!record.adviceStatus.isRecordLocked)
+        baseTry.flatMap(_.set(OriginalCountryOfOriginPage(recordId), record.countryOfOrigin))
+      else
+        baseTry
+
+    Future.fromTry(withOriginal)
+  }
+
 
   private def retrieveAndStoreCountries(implicit hc: HeaderCarrier, request: DataRequest[_]): Future[Seq[Country]] =
     request.userAnswers.get(CountriesQuery) match {
