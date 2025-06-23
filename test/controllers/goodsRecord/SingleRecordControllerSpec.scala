@@ -204,7 +204,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           request.headers
             .get("Referer")
             .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url),
-          None
+          None,
+          recordForTestingSummaryRows.traderRef
         )(request, messages(application)).toString
         val uaCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
         verify(mockSessionRepository, times(2)).set(uaCaptor.capture)
@@ -322,7 +323,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           request.headers
             .get("Referer")
             .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url),
-          None
+          None,
+          recordForTestingSummaryRows.traderRef
         )(
           request,
           messages(application)
@@ -453,7 +455,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           request.headers
             .get("Referer")
             .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url),
-          None
+          None,
+          recordForTestingSummaryRows.traderRef
         )(request, messages(application)).toString
         val uaCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
         verify(mockSessionRepository, times(2)).set(uaCaptor.capture)
@@ -595,7 +598,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           request.headers
             .get("Referer")
             .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url),
-          None
+          None,
+          recordForTestingSummaryRows.traderRef
         )(request, messages(application)).toString
         val uaCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
         verify(mockSessionRepository, times(2)).set(uaCaptor.capture)
@@ -966,7 +970,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
               request.headers
                 .get("Referer")
                 .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url),
-              None
+              None,
+              recordForTestingSummaryRows.traderRef
             )(request, messages(application)).toString
             val uaCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
             verify(mockSessionRepository, times(2)).set(uaCaptor.capture)

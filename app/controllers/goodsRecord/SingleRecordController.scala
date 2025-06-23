@@ -22,7 +22,7 @@ import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierA
 import models.helper.{CategorisationJourney, RequestAdviceJourney, SupplementaryUnitUpdateJourney, WithdrawAdviceJourney}
 import models.requests.DataRequest
 import models.router.responses.GetGoodsRecordResponse
-import models.{AdviceStatusMessage, Country, NormalMode, ReviewReason, Scenario, UserAnswers}
+import models.{AdviceStatusMessage, Country, NormalMode, ReviewReason, UserAnswers}
 import pages.goodsRecord.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage, ProductReferenceUpdatePage}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import queries.CountriesQuery
@@ -166,7 +166,8 @@ class SingleRecordController @Inject() (
                 finalRecord.adviceStatus,
                 finalRecord.reviewReason,
                 backLink,
-                autoCategoriseScenario
+                autoCategoriseScenario,
+                finalRecord.traderRef
               )
             ).removingFromSession(
               dataUpdated,
