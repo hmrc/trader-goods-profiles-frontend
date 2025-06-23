@@ -347,6 +347,7 @@ hasCorrectGoods.p2.linkText = Gallwch wirio’r cod nwyddau hwn ar yr Offeryn Ta
 
 singleRecord.title = Cofnod nwyddau
 singleRecord.h1 = Cofnod nwyddau
+singleRecord.p1.prefix = Cyfeirnod y cynnyrch: {0}
 singleRecord.h2.goodsDetails = Manylion nwyddau
 singleRecord.warning = Rhybudd
 singleRecord.warningText = Rydych yn atebol dros yr wybodaeth am unrhyw symudiadau a grëir gennych chi, neu ar eich rhan gan ddefnyddio eich cofnodion Proffil Nwyddau Masnachwr.

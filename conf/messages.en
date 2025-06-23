@@ -499,6 +499,7 @@ removeGoodsRecord.noRecord = No, return to goods record
 
 singleRecord.title = Goods record
 singleRecord.h1 = Goods record
+singleRecord.p1.prefix = Product reference: {0}
 singleRecord.h2 = What to do next
 singleRecord.status = The status of this record is:
 singleRecord.h2.goodsDetails = Goods details
