@@ -68,14 +68,6 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/records/is-trader-reference-unique?traderReference=$encodedRef"
   }
 
-  private def searchRecordsUrl(
-    eori: String,
-    searchTerm: Option[String],
-    exactMatch: Boolean,
-    queryParams: Map[String, String]
-  ) =
-    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/filter?searchTerm=$searchTerm&exactMatch=$exactMatch&$queryParams"
-
   private def filterSearchRecordsUrl(
     searchTerm: Option[String],
     countryOfOrigin: Option[String],
@@ -308,47 +300,30 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     size: Int
   )(implicit
     hc: HeaderCarrier
-  ): Future[Option[GetRecordsResponse]] =
-    if (!appConfig.enhancedSearch) { // TODO: remove this flag when filter search is ready
-      val queryParams = Map(
-        "page" -> page.toString,
-        "size" -> size.toString
-      )
-      httpClient
-        .get(searchRecordsUrl(eori, searchTerm, exactMatch, queryParams))
-        .setHeader(clientIdHeader)
-        .execute[HttpResponse]
-        .flatMap { response =>
-          response.status match {
-            case OK       => Future.successful(Some(response.json.as[GetRecordsResponse]))
-            case ACCEPTED => Future.successful(None)
-            case _        => Future.failed(UpstreamErrorResponse(response.body, response.status))
-          }
-        }
-    } else {
-      val queryParams = Map(
-        "pageOpt" -> page.toString,
-        "sizeOpt" -> size.toString
-      )
-      httpClient
-        .get(
-          filterSearchRecordsUrl(
-            searchTerm,
-            countryOfOrigin,
-            IMMIReady,
-            notReadyForIMMI,
-            actionNeeded,
-            queryParams
-          )
+  ): Future[Option[GetRecordsResponse]] = {
+    val queryParams = Map(
+      "pageOpt" -> page.toString,
+      "sizeOpt" -> size.toString
+    )
+    httpClient
+      .get(
+        filterSearchRecordsUrl(
+          searchTerm,
+          countryOfOrigin,
+          IMMIReady,
+          notReadyForIMMI,
+          actionNeeded,
+          queryParams
         )
-        .setHeader(clientIdHeader)
-        .execute[HttpResponse]
-        .flatMap { response =>
-          response.status match {
-            case OK       => Future.successful(Some(response.json.as[GetRecordsResponse]))
-            case ACCEPTED => Future.successful(None)
-            case _        => Future.failed(UpstreamErrorResponse(response.body, response.status))
-          }
+      )
+      .setHeader(clientIdHeader)
+      .execute[HttpResponse]
+      .flatMap { response =>
+        response.status match {
+          case OK       => Future.successful(Some(response.json.as[GetRecordsResponse]))
+          case ACCEPTED => Future.successful(None)
+          case _        => Future.failed(UpstreamErrorResponse(response.body, response.status))
         }
-    }
+      }
+  }
 }

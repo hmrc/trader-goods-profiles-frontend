@@ -18,17 +18,15 @@ package navigation
 
 import controllers.routes
 import models.GoodsRecordsPagination.firstPage
-import models.UserAnswers
-import models.Location
+import models.{Location, UserAnswers}
 import pages.Page
 import pages.goodsProfile.{GoodsRecordsPage, PreviousMovementRecordsPage, RemoveGoodsRecordPage}
 import play.api.mvc.Call
-import config.FrontendAppConfig
 
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class GoodsProfileNavigator @Inject() (appConfig: FrontendAppConfig) extends Navigator {
+class GoodsProfileNavigator @Inject() extends Navigator {
 
   val normalRoutes: Page => UserAnswers => Call = {
     case PreviousMovementRecordsPage =>
@@ -44,10 +42,8 @@ class GoodsProfileNavigator @Inject() (appConfig: FrontendAppConfig) extends Nav
   }
 
   private def navigateFromRemoveGoodsRecordPage(answers: UserAnswers): Call =
-    if (searchFilterIsApplied(answers) && appConfig.enhancedSearch) {
+    if (searchFilterIsApplied(answers)) {
       controllers.goodsProfile.routes.GoodsRecordsController.onPageLoadFilter(firstPage)
-    } else if (searchFilterIsApplied(answers)) {
-      controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(firstPage)
     } else {
       controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage)
     }
