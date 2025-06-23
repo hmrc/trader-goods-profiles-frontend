@@ -18,13 +18,13 @@ package controllers.goodsRecord.commodityCode
 
 import connectors.GoodsRecordConnector
 import controllers.BaseController
-import controllers.actions._
+import controllers.actions.*
 import forms.goodsRecord.HasCommodityCodeChangeFormProvider
 import models.AdviceStatus.AdviceReceived
 import models.Mode
 import models.helper.GoodsDetailsUpdate
 import navigation.GoodsRecordNavigator
-import pages.goodsRecord.HasCommodityCodeChangePage
+import pages.goodsRecord.{CommodityCodePage, CommodityCodeUpdatePage, HasCommodityCodeChangePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -85,7 +85,8 @@ class HasCommodityCodeChangedController @Inject() (
         .flatMap { goodsRecord =>
           val needCategorisingWarning = goodsRecord.category.isDefined
           val needAdviceWarning       = goodsRecord.adviceStatus == AdviceReceived
-
+          val oldAnswer: String       =
+            request.userAnswers.get(CommodityCodeUpdatePage(recordId)).getOrElse(CommodityCodePage)
           form
             .bindFromRequest()
             .fold(
@@ -98,6 +99,7 @@ class HasCommodityCodeChangedController @Inject() (
                   updatedAnswers <- Future.fromTry(request.userAnswers.set(HasCommodityCodeChangePage(recordId), value))
                   _              <- sessionRepository.set(updatedAnswers)
                 } yield Redirect(navigator.nextPage(HasCommodityCodeChangePage(recordId), mode, updatedAnswers))
+                  .addingToSession("oldAnswer" -> oldAnswer)
             )
         }
         .recover { _ =>

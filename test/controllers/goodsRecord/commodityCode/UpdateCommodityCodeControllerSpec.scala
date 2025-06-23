@@ -459,7 +459,9 @@ class UpdateCommodityCodeControllerSpec extends SpecBase with MockitoSugar with 
 
       running(application) {
         val controller             = application.injector.instanceOf[UpdateCommodityCodeController]
-        val request                = FakeRequest(POST, commodityCodeRoute).withFormUrlEncodedBody(("value", "654321"))
+        val request                = FakeRequest(POST, commodityCodeRoute)
+          .withFormUrlEncodedBody("value" -> "654321")
+          .withSession("oldAnswer" -> "654321")
         val result: Future[Result] = controller.onSubmit(NormalMode, testRecordId)(request)
 
         status(result) mustEqual SEE_OTHER

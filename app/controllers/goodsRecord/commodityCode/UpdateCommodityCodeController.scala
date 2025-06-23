@@ -60,16 +60,15 @@ class UpdateCommodityCodeController @Inject() (
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       val preparedForm = prepareForm(CommodityCodeUpdatePage(recordId), form)
 
-      request.userAnswers.get(HasCommodityCodeChangePage(recordId)) match {
-        case None =>
-          auditService
-            .auditStartUpdateGoodsRecord(
-              request.eori,
-              request.affinityGroup,
-              GoodsDetailsUpdate,
-              recordId
-            )
-        case _    =>
+      request.userAnswers.get(HasCommodityCodeChangePage(recordId)).orElse {
+        Some(
+          auditService.auditStartUpdateGoodsRecord(
+            request.eori,
+            request.affinityGroup,
+            GoodsDetailsUpdate,
+            recordId
+          )
+        )
       }
 
       val onSubmitAction: Call =
@@ -84,14 +83,14 @@ class UpdateCommodityCodeController @Inject() (
       val onSubmitAction  =
         controllers.goodsRecord.commodityCode.routes.UpdateCommodityCodeController.onSubmit(mode, recordId)
       val countryOfOrigin = request.userAnswers.get(CountryOfOriginUpdatePage(recordId)).get
-      val oldValueOpt     = request.userAnswers.get(CommodityCodeUpdatePage(recordId))
-
+      val oldValue        = request.session.get("oldAnswer").getOrElse("")
       form
         .bindFromRequest()
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, onSubmitAction, mode, Some(recordId)))),
           value => {
-            val isValueChanged = oldValueOpt.exists(_ != value)
+            val isValueChanged = oldValue != value
+
             (for {
               commodity <- fetchCommodity(value, countryOfOrigin)
               result    <- validateAndProcessCommodityUpdate(
