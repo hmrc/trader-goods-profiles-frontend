@@ -248,8 +248,6 @@ class AutoCategoriseServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
         descendantCount = 0
       )
 
-      println("\n\n" + categorisationInfo.isAutoCategorisable + "\n\n")
-
       val userAnswers = emptyUserAnswers.set(CategorisationDetailsQuery(testRecordId), categorisationInfo).success.value
 
       when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any()))

@@ -49,12 +49,12 @@ import scala.concurrent.Future
 
 class CreateCommodityCodeControllerSpec extends SpecBase with MockitoSugar with BeforeAndAfterEach {
 
-  private def onwardRoute      = Call("GET", "/foo")
-  val formProvider             = new CommodityCodeFormProvider()
-  private val form             = formProvider()
-  private val mockAuditService = mock[AuditService]
-  private val mockOttConnector = mock[OttConnector]
-  val mockSessionRepository    = mock[SessionRepository]
+  private def onwardRoute                      = Call("GET", "/foo")
+  val formProvider                             = new CommodityCodeFormProvider()
+  private val form                             = formProvider()
+  private val mockAuditService                 = mock[AuditService]
+  private val mockOttConnector                 = mock[OttConnector]
+  val mockSessionRepository: SessionRepository = mock[SessionRepository]
 
   override protected def beforeEach(): Unit = {
     super.beforeEach()
@@ -424,7 +424,7 @@ class CreateCommodityCodeControllerSpec extends SpecBase with MockitoSugar with 
       }
     }
 
-    "must not set changesMade if commodity code is not updated" in {
+    "must set changesMade to false if commodity code is not updated" in {
       val commodityCodeRoute = controllers.goodsRecord.commodityCode.routes.UpdateCommodityCodeController
         .onPageLoad(NormalMode, testRecordId)
         .url
@@ -462,12 +462,14 @@ class CreateCommodityCodeControllerSpec extends SpecBase with MockitoSugar with 
 
       running(application) {
         val controller             = application.injector.instanceOf[UpdateCommodityCodeController]
-        val request                = FakeRequest(POST, commodityCodeRoute).withFormUrlEncodedBody(("value", "654321"))
+        val request                = FakeRequest(POST, commodityCodeRoute)
+          .withFormUrlEncodedBody("value" -> "654321")
+          .withSession("oldAnswer" -> "654321")
         val result: Future[Result] = controller.onSubmit(NormalMode, testRecordId)(request)
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
-        session(result).get(dataUpdated) mustBe None
+        session(result).get(dataUpdated) must be(Some("false"))
         verify(mockOttConnector).getCommodityCode(anyString(), any(), any(), any(), any(), any())(any())
       }
     }
