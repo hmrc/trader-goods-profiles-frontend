@@ -34,6 +34,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import pages.goodsRecord.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage, OriginalCountryOfOriginPage, ProductReferenceUpdatePage}
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.bind
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import repositories.SessionRepository
@@ -274,7 +275,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
             .get("Referer")
             .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url),
           None,
-          countryOfOriginUpdated = true
+          countryOfOriginUpdated = true,
+          recordForTestingSummaryRows.traderRef
         )(
           request,
           messages(application)
@@ -473,7 +475,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
             .get("Referer")
             .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url),
           None,
-          false
+          false,
+          recordForTestingSummaryRows.traderRef
         )(request, messages(application)).toString
         val uaCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
         verify(mockSessionRepository, times(2)).set(uaCaptor.capture)
@@ -773,9 +776,9 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
             )
             .build()
 
-          val messagesApi                 = application.injector.instanceOf[MessagesApi]
-          implicit val request            = FakeRequest()
-          implicit val messages: Messages = messagesApi.preferred(request)
+          val messagesApi                                           = application.injector.instanceOf[MessagesApi]
+          implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+          implicit val messages: Messages                           = messagesApi.preferred(request)
 
           val detailsList           = SummaryListViewModel(
             rows = Seq(
@@ -840,7 +843,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
                   controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url
                 ),
               autoCategoriseScenario = None,
-              countryOfOriginUpdated = true
+              countryOfOriginUpdated = true,
+              recordForTestingSummaryRows.traderRef
             )(request, messages).toString
 
             val uaCaptor = ArgumentCaptor.forClass(classOf[UserAnswers])
