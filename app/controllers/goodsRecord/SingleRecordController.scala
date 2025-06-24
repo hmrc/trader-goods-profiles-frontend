@@ -207,7 +207,8 @@ class SingleRecordController @Inject() (
         record.reviewReason,
         backLink,
         autoCategoriseScenario,
-        countryOfOriginUpdated
+        countryOfOriginUpdated,
+        record.traderRef
       )
     ).removingFromSession(initialValueOfHasSuppUnit, initialValueOfSuppUnit)
   }
