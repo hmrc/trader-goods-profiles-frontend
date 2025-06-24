@@ -778,8 +778,12 @@ class GoodsRecordConnectorSpec
 
       "must get a page of goods records" in {
 
+        val stubUrl =
+          s"/trader-goods-profiles-data-store/traders/records/filter?" +
+            "searchTerm=banana&IMMIReady=false&notReadyForIMMI=false&actionNeeded=false&pageOpt=1&sizeOpt=3"
+
         wireMockServer.stubFor(
-          get(urlEqualTo(pagedGoodsRecordsSearchUrl))
+          get(urlEqualTo(stubUrl))
             .withHeader(xClientIdName, equalTo(xClientId))
             .willReturn(ok().withBody(getRecordsResponse.toString))
         )
@@ -787,7 +791,7 @@ class GoodsRecordConnectorSpec
         connector
           .searchRecords(
             testEori,
-            Some(searchString),
+            Some("banana"),
             exactMatch = false,
             Some(""),
             Some(false),
@@ -802,8 +806,12 @@ class GoodsRecordConnectorSpec
 
       "must return done when the status is ACCEPTED" in {
 
+        val stubUrl =
+          s"/trader-goods-profiles-data-store/traders/records/filter?" +
+            "searchTerm=banana&IMMIReady=false&notReadyForIMMI=false&actionNeeded=false&pageOpt=1&sizeOpt=3"
+
         wireMockServer.stubFor(
-          get(urlEqualTo(pagedGoodsRecordsSearchUrl))
+          get(urlEqualTo(stubUrl))
             .withHeader(xClientIdName, equalTo(xClientId))
             .willReturn(status(ACCEPTED))
         )
@@ -811,7 +819,7 @@ class GoodsRecordConnectorSpec
         connector
           .searchRecords(
             testEori,
-            Some(searchString),
+            Some("banana"),
             exactMatch = false,
             Some(""),
             Some(false),
@@ -1059,7 +1067,8 @@ class GoodsRecordConnectorSpec
 
   ".isProductReferenceUnique" - {
     val productReference = "productReference"
-    val url              = s"/trader-goods-profiles-data-store/traders/records/is-trader-reference-unique?traderReference=$productReference"
+    val url              =
+      s"/trader-goods-profiles-data-store/traders/records/is-trader-reference-unique?traderReference=$productReference"
 
     "must return true if product reference is unique" in {
       wireMockServer.stubFor(

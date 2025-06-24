@@ -16,7 +16,6 @@
 
 package controllers.goodsProfile
 
-import config.FrontendAppConfig
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.BaseController
 import controllers.actions._
@@ -53,7 +52,6 @@ class GoodsRecordsController @Inject() (
   goodsRecordConnector: GoodsRecordConnector,
   ottConnector: OttConnector,
   navigator: GoodsProfileNavigator,
-  appConfig: FrontendAppConfig,
   auditService: AuditService
 )(implicit ec: ExecutionContext)
     extends BaseController {
@@ -156,15 +154,8 @@ class GoodsRecordsController @Inject() (
     for {
       updatedAnswers <- Future.fromTry(request.userAnswers.set(GoodsRecordsPage, searchFormData))
       _              <- sessionRepository.set(updatedAnswers)
-      result         <- if (!appConfig.enhancedSearch) {
-                          Future.successful(
-                            Redirect(controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(1))
-                          )
-                        } else {
-                          Future.successful(
-                            Redirect(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoadFilter(1))
-                          )
-                        }
+      result         <- Future.successful(Redirect(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoadFilter(1)))
+
     } yield result
 
   def onPageLoadFilter(page: Int): Action[AnyContent] =
