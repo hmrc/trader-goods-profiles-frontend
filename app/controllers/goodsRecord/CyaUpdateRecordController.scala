@@ -306,54 +306,55 @@ class CyaUpdateRecordController @Inject() (
       (for {
         oldRecord <- goodsRecordConnector.getRecord(recordId)
 
-        originalCountryOfOrigin <- request.userAnswers
-          .get(OriginalCountryOfOriginPage(recordId))
-          .map(Future.successful)
-          .getOrElse(Future.failed(new Exception(s"Original country of origin not found in session for $recordId")))
+        originalCountryOfOrigin <-
+          request.userAnswers
+            .get(OriginalCountryOfOriginPage(recordId))
+            .map(Future.successful)
+            .getOrElse(Future.failed(new Exception(s"Original country of origin not found in session for $recordId")))
 
         countryOfOrigin <- handleValidateError(
-          UpdateGoodsRecord.validateCountryOfOrigin(
-            request.userAnswers,
-            recordId,
-            oldRecord.category.isDefined
-          )
-        )
+                             UpdateGoodsRecord.validateCountryOfOrigin(
+                               request.userAnswers,
+                               recordId,
+                               oldRecord.category.isDefined
+                             )
+                           )
 
         updateGoodsRecord = UpdateGoodsRecord(
-          eori = request.eori,
-          recordId = recordId,
-          countryOfOrigin = Some(countryOfOrigin)
-        )
+                              eori = request.eori,
+                              recordId = recordId,
+                              countryOfOrigin = Some(countryOfOrigin)
+                            )
 
         putGoodsRecord = PutRecordRequest(
-          actorId = oldRecord.eori,
-          traderRef = oldRecord.traderRef,
-          comcode = oldRecord.comcode,
-          goodsDescription = oldRecord.goodsDescription,
-          countryOfOrigin = countryOfOrigin,
-          category = None,
-          assessments = oldRecord.assessments,
-          supplementaryUnit = oldRecord.supplementaryUnit,
-          measurementUnit = oldRecord.measurementUnit,
-          comcodeEffectiveFromDate = oldRecord.comcodeEffectiveFromDate,
-          comcodeEffectiveToDate = oldRecord.comcodeEffectiveToDate
-        )
+                           actorId = oldRecord.eori,
+                           traderRef = oldRecord.traderRef,
+                           comcode = oldRecord.comcode,
+                           goodsDescription = oldRecord.goodsDescription,
+                           countryOfOrigin = countryOfOrigin,
+                           category = None,
+                           assessments = oldRecord.assessments,
+                           supplementaryUnit = oldRecord.supplementaryUnit,
+                           measurementUnit = oldRecord.measurementUnit,
+                           comcodeEffectiveFromDate = oldRecord.comcodeEffectiveFromDate,
+                           comcodeEffectiveToDate = oldRecord.comcodeEffectiveToDate
+                         )
 
         _ = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
 
         _ <- updateGoodsRecordIfPutValueChanged(
-          newValue = countryOfOrigin,
-          oldValue = oldRecord.countryOfOrigin,
-          updateGoodsRecord,
-          putGoodsRecord
-        )
+               newValue = countryOfOrigin,
+               oldValue = oldRecord.countryOfOrigin,
+               updateGoodsRecord,
+               putGoodsRecord
+             )
 
         cleanedAnswers <- Future.fromTry(
-          request.userAnswers
-            .remove(HasCountryOfOriginChangePage(recordId))
-            .flatMap(_.remove(CountryOfOriginUpdatePage(recordId)))
-            .flatMap(_.remove(OriginalCountryOfOriginPage(recordId)))
-        )
+                            request.userAnswers
+                              .remove(HasCountryOfOriginChangePage(recordId))
+                              .flatMap(_.remove(CountryOfOriginUpdatePage(recordId)))
+                              .flatMap(_.remove(OriginalCountryOfOriginPage(recordId)))
+                          )
 
         _ <- sessionRepository.set(cleanedAnswers)
 

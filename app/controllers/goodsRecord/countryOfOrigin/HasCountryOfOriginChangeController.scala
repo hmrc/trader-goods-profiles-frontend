@@ -78,21 +78,22 @@ class HasCountryOfOriginChangeController @Inject() (
                 case Some(currentValue) =>
                   for {
                     updatedAnswers1 <- Future.fromTry(
-                      request.userAnswers.set(HasCountryOfOriginChangePage(recordId), value)
-                    )
+                                         request.userAnswers.set(HasCountryOfOriginChangePage(recordId), value)
+                                       )
                     updatedAnswers2 <- Future.fromTry(
-                      updatedAnswers1.set(OriginalCountryOfOriginPage(recordId), currentValue)
-                    )
-                    _ <- sessionRepository.set(updatedAnswers2)
+                                         updatedAnswers1.set(OriginalCountryOfOriginPage(recordId), currentValue)
+                                       )
+                    _               <- sessionRepository.set(updatedAnswers2)
                   } yield Redirect(navigator.nextPage(HasCountryOfOriginChangePage(recordId), mode, updatedAnswers2))
 
                 case None =>
-                  Future.failed(new RuntimeException("Could not find data for Country of origin"))              }
+                  Future.failed(new RuntimeException("Could not find data for Country of origin"))
+              }
 
             } else {
               for {
                 updatedAnswers <- Future.fromTry(request.userAnswers.set(HasCountryOfOriginChangePage(recordId), value))
-                _ <- sessionRepository.set(updatedAnswers)
+                _              <- sessionRepository.set(updatedAnswers)
               } yield Redirect(navigator.nextPage(HasCountryOfOriginChangePage(recordId), mode, updatedAnswers))
             }
         )

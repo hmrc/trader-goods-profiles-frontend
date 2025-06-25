@@ -210,6 +210,11 @@ class SingleRecordController @Inject() (
         countryOfOriginUpdated,
         record.traderRef
       )
-    ).removingFromSession(initialValueOfHasSuppUnit, initialValueOfSuppUnit, goodsDescriptionOriginal, "countryOfOriginChanged")
+    ).removingFromSession(
+      initialValueOfHasSuppUnit,
+      initialValueOfSuppUnit,
+      goodsDescriptionOriginal,
+      "countryOfOriginChanged"
+    )
   }
 }

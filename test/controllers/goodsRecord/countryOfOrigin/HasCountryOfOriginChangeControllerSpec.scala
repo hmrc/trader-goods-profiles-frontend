@@ -20,14 +20,14 @@ import base.SpecBase
 import base.TestConstants.{testEori, testRecordId, userAnswersId}
 import forms.goodsRecord.HasCountryOfOriginChangeFormProvider
 import models.helper.GoodsDetailsUpdate
-import models.{Country, NormalMode, UserAnswers}
+import models.{NormalMode, UserAnswers}
 import navigation.{FakeGoodsRecordNavigator, GoodsRecordNavigator}
 import org.apache.pekko.Done
-import org.mockito.ArgumentMatchers.{any, eq as eqTo}
-import org.mockito.Mockito.{atLeastOnce, reset, times, verify, when}
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.Mockito.{atLeastOnce, reset, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
-import pages.goodsRecord.{CountryOfOriginUpdatePage, HasCountryOfOriginChangePage, OriginalCountryOfOriginPage}
+import pages.goodsRecord.{CountryOfOriginUpdatePage, HasCountryOfOriginChangePage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -52,7 +52,7 @@ class HasCountryOfOriginChangeControllerSpec extends SpecBase with MockitoSugar 
       .url
 
   private val userAnswersWithCountry = emptyUserAnswers
-    .set(CountryOfOriginUpdatePage(testRecordId),"United Kingdom")
+    .set(CountryOfOriginUpdatePage(testRecordId), "United Kingdom")
     .success
     .value
 
@@ -122,8 +122,9 @@ class HasCountryOfOriginChangeControllerSpec extends SpecBase with MockitoSugar 
         .build()
 
       running(application) {
-        val request = FakeRequest(POST, routes.HasCountryOfOriginChangeController.onSubmit(NormalMode, testRecordId).url)
-          .withFormUrlEncodedBody(("value", "true"))
+        val request =
+          FakeRequest(POST, routes.HasCountryOfOriginChangeController.onSubmit(NormalMode, testRecordId).url)
+            .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 
@@ -132,7 +133,6 @@ class HasCountryOfOriginChangeControllerSpec extends SpecBase with MockitoSugar 
 
       }
     }
-
 
     "must return a Bad Request and errors when invalid data is submitted" in {
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
