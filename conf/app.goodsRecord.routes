@@ -71,7 +71,7 @@ POST        /update-record/:recordId/check-your-answers/country-of-origin       
 GET         /update-record/:recordId/check-your-answers/goods-description                           controllers.goodsRecord.CyaUpdateRecordController.onPageLoadGoodsDescription(recordId: String)
 POST        /update-record/:recordId/check-your-answers/goods-description                           controllers.goodsRecord.CyaUpdateRecordController.onSubmitGoodsDescription(recordId: String)
 
-GET         /update-record/:recordId/check-your-answers/product-reference                           controllers.goodsRecord.CyaUpdateRecordController.onPageLoadproductReference(recordId: String)
+GET         /update-record/:recordId/check-your-answers/product-reference                           controllers.goodsRecord.CyaUpdateRecordController.onPageLoadProductReference(recordId: String)
 POST        /update-record/:recordId/check-your-answers/product-reference                           controllers.goodsRecord.CyaUpdateRecordController.onSubmitproductReference(recordId: String)
 GET         /update-record/:recordId/check-your-answers/commodity-code                              controllers.goodsRecord.CyaUpdateRecordController.onPageLoadCommodityCode(recordId: String)
 POST        /update-record/:recordId/check-your-answers/commodity-code                              controllers.goodsRecord.CyaUpdateRecordController.onSubmitCommodityCode(recordId: String)
