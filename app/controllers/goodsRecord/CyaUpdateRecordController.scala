@@ -19,13 +19,12 @@ package controllers.goodsRecord
 import cats.data
 import cats.data.EitherNec
 import com.google.inject.Inject
-import config.FrontendAppConfig
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.BaseController
-import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
+import controllers.actions._
 import models.requests.DataRequest
 import models.router.requests.PutRecordRequest
-import models.{CheckMode, Country, NormalMode, UpdateGoodsRecord, UserAnswers, ValidationError}
+import models._
 import navigation.GoodsRecordNavigator
 import org.apache.pekko.Done
 import pages.goodsRecord.*
@@ -38,7 +37,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants.*
 import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
-import viewmodels.checkAnswers.goodsRecord.{CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, ProductReferenceSummary}
+import viewmodels.checkAnswers.goodsRecord._
 import viewmodels.govuk.summarylist.*
 import views.html.goodsRecord.CyaUpdateRecordView
 
@@ -58,7 +57,6 @@ class CyaUpdateRecordController @Inject() (
   ottConnector: OttConnector,
   sessionRepository: SessionRepository,
   navigator: GoodsRecordNavigator,
-  config: FrontendAppConfig,
   autoCategoriseService: AutoCategoriseService,
   commodityService: CommodityService
 )(implicit ec: ExecutionContext)
@@ -392,46 +390,46 @@ class CyaUpdateRecordController @Inject() (
 
       val resultFuture =
         for {
-          oldRecord <- goodsRecordConnector.getRecord(recordId)
-          isCommCodeExpired = oldRecord.comcodeEffectiveToDate.exists(
-            _.isBefore(LocalDate.now().atStartOfDay(ZoneId.of("UTC")).toInstant)
-          )
-          commodity <- UpdateGoodsRecord.validateCommodityCode(
-            request.userAnswers,
-            recordId,
-            oldRecord.category.isDefined,
-            isCommCodeExpired
-          ) match {
-            case Right(value) => Future.successful(value)
-            case Left(errors) => Future.failed(new Exception(errors.toString))
-          }
-          updateGoodsRecord = UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity))
-          putGoodsRecord = PutRecordRequest(
-            actorId = oldRecord.eori,
-            traderRef = oldRecord.traderRef,
-            comcode = commodity.commodityCode,
-            goodsDescription = oldRecord.goodsDescription,
-            countryOfOrigin = oldRecord.countryOfOrigin,
-            category = None,
-            assessments = oldRecord.assessments,
-            supplementaryUnit = oldRecord.supplementaryUnit,
-            measurementUnit = oldRecord.measurementUnit,
-            comcodeEffectiveFromDate = commodity.validityStartDate,
-            comcodeEffectiveToDate = commodity.validityEndDate
-          )
-          _ = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
-          _ <- updateGoodsRecordIfPutValueChanged(
-            commodity.commodityCode,
-            oldRecord.comcode,
-            updateGoodsRecord,
-            putGoodsRecord
-          )
+          oldRecord                <- goodsRecordConnector.getRecord(recordId)
+          isCommCodeExpired         = oldRecord.comcodeEffectiveToDate.exists(
+                                        _.isBefore(LocalDate.now().atStartOfDay(ZoneId.of("UTC")).toInstant)
+                                      )
+          commodity                <- UpdateGoodsRecord.validateCommodityCode(
+                                        request.userAnswers,
+                                        recordId,
+                                        oldRecord.category.isDefined,
+                                        isCommCodeExpired
+                                      ) match {
+                                        case Right(value) => Future.successful(value)
+                                        case Left(errors) => Future.failed(new Exception(errors.toString))
+                                      }
+          updateGoodsRecord         = UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity))
+          putGoodsRecord            = PutRecordRequest(
+                                        actorId = oldRecord.eori,
+                                        traderRef = oldRecord.traderRef,
+                                        comcode = commodity.commodityCode,
+                                        goodsDescription = oldRecord.goodsDescription,
+                                        countryOfOrigin = oldRecord.countryOfOrigin,
+                                        category = None,
+                                        assessments = oldRecord.assessments,
+                                        supplementaryUnit = oldRecord.supplementaryUnit,
+                                        measurementUnit = oldRecord.measurementUnit,
+                                        comcodeEffectiveFromDate = commodity.validityStartDate,
+                                        comcodeEffectiveToDate = commodity.validityEndDate
+                                      )
+          _                         = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
+          _                        <- updateGoodsRecordIfPutValueChanged(
+                                        commodity.commodityCode,
+                                        oldRecord.comcode,
+                                        updateGoodsRecord,
+                                        putGoodsRecord
+                                      )
           updatedAnswersWithChange <- Future.fromTry(request.userAnswers.remove(HasCommodityCodeChangePage(recordId)))
-          updatedAnswers <- Future.fromTry(updatedAnswersWithChange.remove(CommodityCodeUpdatePage(recordId)))
-          _ <- sessionRepository.set(updatedAnswers)
-          autoCategoriseScenario <- autoCategoriseService.autoCategoriseRecord(recordId, updatedAnswers)
+          updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CommodityCodeUpdatePage(recordId)))
+          _                        <- sessionRepository.set(updatedAnswers)
+          autoCategoriseScenario   <- autoCategoriseService.autoCategoriseRecord(recordId, updatedAnswers)
         } yield {
-          val originalCommodityCode = maybeOriginalCommodityCode.getOrElse(oldRecord.comcode)
+          val originalCommodityCode   = maybeOriginalCommodityCode.getOrElse(oldRecord.comcode)
           val commodityCodeHasChanged = commodity.commodityCode != originalCommodityCode
 
           if (commodityCodeHasChanged) {

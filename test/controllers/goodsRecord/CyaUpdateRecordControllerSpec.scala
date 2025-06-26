@@ -62,8 +62,8 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
   private val mockSessionRepository     = mock[SessionRepository]
   private val mockAutoCategoriseService = mock[AutoCategoriseService]
   implicit val hc: HeaderCarrier        = HeaderCarrier()
-  val effectiveFrom = Instant.now
-  val effectiveTo = effectiveFrom.plusSeconds(99)
+  val effectiveFrom: Instant            = Instant.now
+  val effectiveTo: Instant              = effectiveFrom.plusSeconds(1)
   private val commodity                 =
     Commodity(
       "1704900000",
@@ -1413,9 +1413,15 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
               .thenReturn(Future.successful(Seq.empty))
 
             val userAnswersWithMissingPage: UserAnswers = emptyUserAnswers
-              .set(HasCommodityCodeChangePage(testRecordId), true).success.value
-              .set(CommodityUpdateQuery(testRecordId), commodity).success.value
-              .set(CommodityCodeUpdatePage(testRecordId), "0208402002").success.value
+              .set(HasCommodityCodeChangePage(testRecordId), true)
+              .success
+              .value
+              .set(CommodityUpdateQuery(testRecordId), commodity)
+              .success
+              .value
+              .set(CommodityCodeUpdatePage(testRecordId), "0208402002")
+              .success
+              .value
 
             val application = applicationBuilder(userAnswers = Some(userAnswersWithMissingPage))
               .overrides(
@@ -1434,7 +1440,11 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
               redirectLocation(result).value mustEqual
                 controllers.problem.routes.JourneyRecoveryController
-                  .onPageLoad(Some(RedirectUrl(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId).url)))
+                  .onPageLoad(
+                    Some(
+                      RedirectUrl(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId).url)
+                    )
+                  )
                   .url
 
               verify(mockGoodsRecordConnector, atLeastOnce()).getRecord(any())(any())
