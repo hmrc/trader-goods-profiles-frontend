@@ -42,6 +42,7 @@ import viewmodels.checkAnswers.goodsRecord.{CommodityCodeSummary, CountryOfOrigi
 import viewmodels.govuk.summarylist.*
 import views.html.goodsRecord.CyaUpdateRecordView
 
+import java.time.{LocalDate, ZoneId}
 import scala.concurrent.{ExecutionContext, Future}
 
 class CyaUpdateRecordController @Inject() (
@@ -387,49 +388,65 @@ class CyaUpdateRecordController @Inject() (
 
   def onSubmitCommodityCode(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      (for {
-        oldRecord                <- goodsRecordConnector.getRecord(recordId)
-        isCommodityValid         <- commodityService.isCommodityCodeValid(oldRecord.comcode, oldRecord.countryOfOrigin)
-        commodity                <-
-          handleValidateError(
-            UpdateGoodsRecord
-              .validateCommodityCode(
-                request.userAnswers,
-                recordId,
-                oldRecord.category.isDefined,
-                !isCommodityValid
-              )
+      val maybeOriginalCommodityCode: Option[String] = request.session.get("originalCommodityCode")
+
+      val resultFuture =
+        for {
+          oldRecord <- goodsRecordConnector.getRecord(recordId)
+          isCommCodeExpired = oldRecord.comcodeEffectiveToDate.exists(
+            _.isBefore(LocalDate.now().atStartOfDay(ZoneId.of("UTC")).toInstant)
           )
-        updateGoodsRecord        <-
-          Future.successful(UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity)))
-        putGoodsRecord           <- Future.successful(
-                                      PutRecordRequest(
-                                        actorId = oldRecord.eori,
-                                        traderRef = oldRecord.traderRef,
-                                        comcode = commodity.commodityCode,
-                                        goodsDescription = oldRecord.goodsDescription,
-                                        countryOfOrigin = oldRecord.countryOfOrigin,
-                                        category = None,
-                                        assessments = oldRecord.assessments,
-                                        supplementaryUnit = oldRecord.supplementaryUnit,
-                                        measurementUnit = oldRecord.measurementUnit,
-                                        comcodeEffectiveFromDate = oldRecord.comcodeEffectiveFromDate,
-                                        comcodeEffectiveToDate = oldRecord.comcodeEffectiveToDate
-                                      )
-                                    )
-        _                         = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
-        _                        <- updateGoodsRecordIfPutValueChanged(
-                                      commodity.commodityCode,
-                                      oldRecord.comcode,
-                                      updateGoodsRecord,
-                                      putGoodsRecord
-                                    )
-        updatedAnswersWithChange <-
-          Future.fromTry(request.userAnswers.remove(HasCommodityCodeChangePage(recordId)))
-        updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CommodityCodeUpdatePage(recordId)))
-        _                        <- sessionRepository.set(updatedAnswers)
-      } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers)))
-        .recover(handleRecover(recordId))
+          commodity <- UpdateGoodsRecord.validateCommodityCode(
+            request.userAnswers,
+            recordId,
+            oldRecord.category.isDefined,
+            isCommCodeExpired
+          ) match {
+            case Right(value) => Future.successful(value)
+            case Left(errors) => Future.failed(new Exception(errors.toString))
+          }
+          updateGoodsRecord = UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity))
+          putGoodsRecord = PutRecordRequest(
+            actorId = oldRecord.eori,
+            traderRef = oldRecord.traderRef,
+            comcode = commodity.commodityCode,
+            goodsDescription = oldRecord.goodsDescription,
+            countryOfOrigin = oldRecord.countryOfOrigin,
+            category = None,
+            assessments = oldRecord.assessments,
+            supplementaryUnit = oldRecord.supplementaryUnit,
+            measurementUnit = oldRecord.measurementUnit,
+            comcodeEffectiveFromDate = commodity.validityStartDate,
+            comcodeEffectiveToDate = commodity.validityEndDate
+          )
+          _ = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
+          _ <- updateGoodsRecordIfPutValueChanged(
+            commodity.commodityCode,
+            oldRecord.comcode,
+            updateGoodsRecord,
+            putGoodsRecord
+          )
+          updatedAnswersWithChange <- Future.fromTry(request.userAnswers.remove(HasCommodityCodeChangePage(recordId)))
+          updatedAnswers <- Future.fromTry(updatedAnswersWithChange.remove(CommodityCodeUpdatePage(recordId)))
+          _ <- sessionRepository.set(updatedAnswers)
+          autoCategoriseScenario <- autoCategoriseService.autoCategoriseRecord(recordId, updatedAnswers)
+        } yield {
+          val originalCommodityCode = maybeOriginalCommodityCode.getOrElse(oldRecord.comcode)
+          val commodityCodeHasChanged = commodity.commodityCode != originalCommodityCode
+
+          if (commodityCodeHasChanged) {
+            if (autoCategoriseScenario.isDefined) {
+              Redirect(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
+                .addingToSession("showCommodityCodeChangeBanner" -> "true")
+            } else {
+              Redirect(controllers.goodsRecord.commodityCode.routes.UpdatedCommodityCodeController.onPageLoad(recordId))
+            }
+          } else {
+            Redirect(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
+          }
+        }
+
+      resultFuture.recover(handleRecover(recordId))
     }
 
   private def handleRecover(
