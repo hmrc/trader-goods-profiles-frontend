@@ -16,6 +16,7 @@
 
 package navigation
 
+import config.FrontendAppConfig
 import models.{Mode, UserAnswers}
 import org.scalatestplus.mockito.MockitoSugar.mock
 import pages.*

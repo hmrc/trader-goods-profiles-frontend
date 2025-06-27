@@ -23,7 +23,7 @@ import models.helper.{CategorisationJourney, RequestAdviceJourney, Supplementary
 import models.requests.DataRequest
 import models.router.responses.GetGoodsRecordResponse
 import models.{AdviceStatusMessage, Country, NormalMode, ReviewReason, Scenario, UserAnswers}
-import pages.goodsRecord.*
+import pages.goodsRecord.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage, OriginalCountryOfOriginPage, ProductReferenceUpdatePage}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import queries.CountriesQuery
 import repositories.SessionRepository
@@ -56,7 +56,7 @@ class SingleRecordController @Inject() (
 
   def onPageLoad(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val countryOfOriginUpdated = request.session.get("countryOfOriginChanged").contains("true")
+      val countryChanged = request.session.get("countryOfOriginChanged").contains("true")
 
       goodsRecordConnector
         .getRecord(recordId)
@@ -79,7 +79,7 @@ class SingleRecordController @Inject() (
                                       } else {
                                         Future.successful(initialRecord)
                                       }
-          } yield renderView(recordId, finalRecord, backLink, countries, autoCategoriseScenario, countryOfOriginUpdated)
+          } yield renderView(recordId, finalRecord, backLink, countries, autoCategoriseScenario, countryChanged)
         }
         .recover {
           case e: UpstreamErrorResponse if e.statusCode == 404 =>
@@ -210,11 +210,6 @@ class SingleRecordController @Inject() (
         countryOfOriginUpdated,
         record.traderRef
       )
-    ).removingFromSession(
-      initialValueOfHasSuppUnit,
-      initialValueOfSuppUnit,
-      goodsDescriptionOriginal,
-      "countryOfOriginChanged"
-    )
+    ).removingFromSession(initialValueOfHasSuppUnit, initialValueOfSuppUnit)
   }
 }

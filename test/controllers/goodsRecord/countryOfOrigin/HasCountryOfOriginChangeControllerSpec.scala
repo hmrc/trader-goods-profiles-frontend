@@ -27,7 +27,7 @@ import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{atLeastOnce, reset, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
-import pages.goodsRecord.{CountryOfOriginUpdatePage, HasCountryOfOriginChangePage}
+import pages.goodsRecord.HasCountryOfOriginChangePage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -50,11 +50,6 @@ class HasCountryOfOriginChangeControllerSpec extends SpecBase with MockitoSugar 
     controllers.goodsRecord.countryOfOrigin.routes.HasCountryOfOriginChangeController
       .onPageLoad(NormalMode, testRecordId)
       .url
-
-  private val userAnswersWithCountry = emptyUserAnswers
-    .set(CountryOfOriginUpdatePage(testRecordId), "United Kingdom")
-    .success
-    .value
 
   private val mockAuditService      = mock[AuditService]
   private val mockSessionRepository = mock[SessionRepository]
@@ -114,7 +109,7 @@ class HasCountryOfOriginChangeControllerSpec extends SpecBase with MockitoSugar 
     "must redirect to the next page when valid data is submitted" in {
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
-      val application = applicationBuilder(userAnswers = Some(userAnswersWithCountry))
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
           bind[GoodsRecordNavigator].toInstance(new FakeGoodsRecordNavigator(onwardRoute)),
           bind[SessionRepository].toInstance(mockSessionRepository)
@@ -122,15 +117,11 @@ class HasCountryOfOriginChangeControllerSpec extends SpecBase with MockitoSugar 
         .build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, routes.HasCountryOfOriginChangeController.onSubmit(NormalMode, testRecordId).url)
-            .withFormUrlEncodedBody(("value", "true"))
-
-        val result = route(application, request).value
+        val request = FakeRequest(POST, hasCountryOfOriginChangeRoute).withFormUrlEncodedBody(("value", "true"))
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
-
       }
     }
 

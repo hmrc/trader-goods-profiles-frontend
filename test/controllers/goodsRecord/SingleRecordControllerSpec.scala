@@ -41,7 +41,7 @@ import repositories.SessionRepository
 import services.AutoCategoriseService
 import uk.gov.hmrc.govukfrontend.views.Aliases.Actions
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
-import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{NotFoundException, UpstreamErrorResponse}
 import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
 import viewmodels.checkAnswers.*
 import viewmodels.checkAnswers.goodsRecord.{CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, ProductReferenceSummary}
@@ -52,7 +52,6 @@ import java.time.Instant
 import scala.concurrent.Future
 
 class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeAndAfterEach {
-  implicit val hc: HeaderCarrier = HeaderCarrier()
 
   private lazy val singleRecordRoute       =
     controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId).url
@@ -171,7 +170,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
     }
 
     "must return OK and the correct view for a GET and set up userAnswers when record is categorised and is locked" in {
-      val userAnswers = UserAnswers(userAnswersId)
+      val recordIsLocked = true
+      val userAnswers    = UserAnswers(userAnswersId)
         .set(ProductReferenceUpdatePage(lockedRecord.recordId), lockedRecord.traderRef)
         .success
         .value
@@ -187,8 +187,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
       when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(lockedRecord)
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-      when(mockSessionRepository.clearData(any(), any())) thenReturn Future.successful(true)
-      when(mockOttConnector.getCountries).thenReturn(Future.successful(countries))
+      when(mockSessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
@@ -200,32 +199,96 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
         )
         .build()
 
+      implicit val message: Messages = messages(application)
+
+      val detailsList = SummaryListViewModel(
+        rows = Seq(
+          ProductReferenceSummary.row(lockedRecord.traderRef, lockedRecord.recordId, NormalMode, recordIsLocked),
+          GoodsDescriptionSummary.rowUpdate(lockedRecord, lockedRecord.recordId, NormalMode, recordIsLocked),
+          CountryOfOriginSummary.rowUpdate(lockedRecord, lockedRecord.recordId, NormalMode, recordIsLocked, countries),
+          CommodityCodeSummary
+            .rowUpdate(lockedRecord, lockedRecord.recordId, NormalMode, recordIsLocked)
+        )
+      )
+
+      val categorisationList = SummaryListViewModel(
+        rows = Seq(
+          CategorySummary.row(
+            "singleRecord.cat1",
+            testRecordId,
+            recordIsLocked,
+            recordForTestingSummaryRows.category.isDefined,
+            recordForTestingSummaryRows.reviewReason
+          )
+        )
+      )
+
+      val supplementaryUnitList = SummaryListViewModel(
+        rows = Seq(
+          HasSupplementaryUnitSummary.row(
+            lockedRecord,
+            lockedRecord.recordId,
+            recordIsLocked
+          ),
+          SupplementaryUnitSummary.row(
+            Some(2),
+            lockedRecord.supplementaryUnit,
+            lockedRecord.measurementUnit,
+            lockedRecord.recordId,
+            recordIsLocked
+          )
+        ).flatten
+      )
+
+      val adviceList = SummaryListViewModel(
+        rows = Seq(
+          AdviceStatusSummary
+            .row(lockedRecord.adviceStatus, lockedRecord.recordId, recordIsLocked, isReviewReasonCommodity = false)
+        )
+      )
+
       running(application) {
-        val request = FakeRequest(GET, singleRecordRouteLocked)
-
-        val result  = route(application, request).value
-        val content = contentAsString(result)
-
+        val request                               = FakeRequest(GET, singleRecordRouteLocked)
+        val result                                = route(application, request).value
+        val view                                  = application.injector.instanceOf[SingleRecordView]
+        val changesMade                           = request.session.get(dataUpdated).contains("true")
+        val changedPage                           = request.session.get(pageUpdated).getOrElse("")
+        val pageRemoved                           = request.session.get(dataRemoved).contains("true")
         status(result) mustEqual OK
-
-        content must include(lockedRecord.traderRef)
-        content must include(lockedRecord.goodsDescription)
-        content must include(lockedRecord.countryOfOrigin)
-        content must include(lockedRecord.comcode)
-
-        if (request.session.get(dataUpdated).contains("true")) {
-          content must include("govuk-notification-banner--success")
-          content must include("You’ve updated the country of origin")
-          content must include("Action needed")
-        } else {
-          content must not include "govuk-notification-banner"
-        }
-
+        contentAsString(result) mustEqual view(
+          lockedRecord.recordId,
+          detailsList,
+          categorisationList,
+          supplementaryUnitList,
+          adviceList,
+          changesMade,
+          changedPage,
+          pageRemoved,
+          recordIsLocked,
+          Some(RequestedParagraph),
+          NotReadyForUse,
+          toReview = false,
+          isCategorised = recordForTestingSummaryRows.category.isDefined,
+          recordForTestingSummaryRows.adviceStatus,
+          None,
+          request.headers
+            .get("Referer")
+            .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url),
+          None,
+          countryOfOriginUpdated = true,
+          recordForTestingSummaryRows.traderRef
+        )(
+          request,
+          messages(application)
+        ).toString
         val uaCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
         verify(mockSessionRepository, times(2)).set(uaCaptor.capture)
+
         uaCaptor.getValue.data mustEqual userAnswers.data
 
-        verify(mockSessionRepository).clearData(eqTo(userAnswers.id), eqTo(SupplementaryUnitUpdateJourney))
+        withClue("must cleanse the user answers data") {
+          verify(mockSessionRepository).clearData(eqTo(userAnswers.id), eqTo(SupplementaryUnitUpdateJourney))
+        }
       }
     }
 

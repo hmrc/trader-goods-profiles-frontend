@@ -84,7 +84,7 @@
 @layout(backLinkUrl = previousUrl, backLinkMessageKey = "singleRecord.back", pageTitle = titleNoForm(messages("singleRecord.title", productReference))) {
 
 @* only show on non‑locked records *@
-    @if((changesMade && declarableStatus != NotReadyForUse && !recordLocked) ) {
+    @if((changesMade && declarableStatus != NotReadyForUse && !recordLocked) || (countryOfOriginUpdated && !recordLocked)) {
         @govukNotificationBanner(NotificationBanner(
         title = Text(messages("successBanner.title")),
         content = HtmlContent(bannerContentForUpdate(changedPage, dataRemoved)),
@@ -92,25 +92,6 @@
         role = Some("alert")
     ))
 }
-
-@if(countryOfOriginUpdated) {
-    @govukNotificationBanner(NotificationBanner(
-        title = Text(messages("successBanner.title")),
-        content = HtmlContent(
-        Html(
-            s"""
-            |<p class="govuk-body">${messages("successBanner.countryOfOrigin")}</p>
-            |<p class="govuk-body">${messages("successBanner.para2")}
-                |<strong class="govuk-tag govuk-!-display-inline ${declarableStatus.paragraphTagColour}">
-                    |${messages(declarableStatus.messageKey)}</strong>.</p>
-            """.stripMargin
-            )
-        ),
-        bannerType = Some("success"),
-        role = Some("alert")
-    ))
-}
-
 
     <h1 class="govuk-heading-l">@messages("singleRecord.h1")</h1>
     <p class="govuk-body">@messages("singleRecord.p1.prefix", productReference)</p>
