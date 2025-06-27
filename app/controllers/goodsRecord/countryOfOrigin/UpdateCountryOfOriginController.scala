@@ -18,23 +18,23 @@ package controllers.goodsRecord.countryOfOrigin
 
 import connectors.OttConnector
 import controllers.BaseController
-import controllers.actions.*
+import controllers.actions._
 import forms.goodsRecord.CountryOfOriginFormProvider
 import models.helper.GoodsDetailsUpdate
 import models.requests.DataRequest
 import models.{Country, Mode, UserAnswers}
 import navigation.GoodsRecordNavigator
 import pages.QuestionPage
-import pages.goodsRecord.{CountryOfOriginPage, CountryOfOriginUpdatePage, HasCountryOfOriginChangePage}
+import pages.goodsRecord.{CountryOfOriginUpdatePage, HasCountryOfOriginChangePage}
 import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.libs.json.Reads
-import play.api.mvc.*
+import play.api.mvc._
 import queries.CountriesQuery
 import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.SessionData.*
+import utils.SessionData._
 import views.html.goodsRecord.CountryOfOriginView
 
 import javax.inject.Inject
@@ -122,23 +122,22 @@ class UpdateCountryOfOriginController @Inject() (
                   )
                 ),
               value => {
-                val originalCountryOpt = request.userAnswers.get(CountryOfOriginPage)
-                val currentCountryOpt  = request.userAnswers.get(CountryOfOriginUpdatePage(recordId))
-
-                val isValueChanged = currentCountryOpt match {
-                  case Some(current) => current != value
-                  case None          => originalCountryOpt.exists(_ != value)
-                }
+                val oldValueOpt    = request.userAnswers.get(CountryOfOriginUpdatePage(recordId))
+                val isValueChanged = oldValueOpt.exists(_ != value)
 
                 for {
-                  // Store the new updated country for this record
                   updatedAnswers <- Future.fromTry(request.userAnswers.set(CountryOfOriginUpdatePage(recordId), value))
-
-                  _ <- sessionRepository.set(updatedAnswers)
-                } yield Redirect(navigator.nextPage(CountryOfOriginUpdatePage(recordId), mode, updatedAnswers))
-                  .addingToSession(dataUpdated -> isValueChanged.toString)
-                  .addingToSession(pageUpdated -> "countryOfOrigin")
-
+                  _              <- sessionRepository.set(updatedAnswers)
+                  redirectResult  =
+                    Redirect(navigator.nextPage(CountryOfOriginUpdatePage(recordId), mode, updatedAnswers))
+                } yield
+                  if (isValueChanged) {
+                    redirectResult
+                      .addingToSession(dataUpdated -> "true")
+                      .addingToSession(pageUpdated -> countryOfOrigin)
+                  } else {
+                    redirectResult
+                  }
               }
             )
         case None            => throw new Exception("Countries should have been populated on page load.")

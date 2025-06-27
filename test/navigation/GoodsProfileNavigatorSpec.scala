@@ -18,16 +18,20 @@ package navigation
 
 import base.SpecBase
 import base.TestConstants.userAnswersId
+import config.FrontendAppConfig
 import controllers.routes
-import models.*
 import models.GoodsRecordsPagination.firstPage
+import models.*
+import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
+import org.scalatestplus.mockito.MockitoSugar.mock
 import pages.Page
 import pages.goodsProfile.{GoodsRecordsPage, PreviousMovementRecordsPage, RemoveGoodsRecordPage}
 
 class GoodsProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
-  private val navigator = new GoodsProfileNavigator
+  private val mockFrontendAppConfig = mock[FrontendAppConfig]
+  private val navigator             = new GoodsProfileNavigator(mockFrontendAppConfig)
 
   "GoodsProfileNavigator" - {
     "must go from RemoveGoodsRecordPage" - {
@@ -39,10 +43,18 @@ class GoodsProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
       val userAnswers = UserAnswers(userAnswersId).set(GoodsRecordsPage, searchFormData).success.value
 
-      "to page 1 of GoodsRecordsController.onPageLoadFilter when there is a GoodsRecordSearchFilter applied " in {
+      "to page 1 of GoodsRecordsController.onPageLoadFilter when there is a GoodsRecordSearchFilter applied and enhancedSearch is true" in {
+        when(mockFrontendAppConfig.enhancedSearch) thenReturn true
 
         navigator.nextPage(RemoveGoodsRecordPage, NormalMode, userAnswers) mustEqual
           controllers.goodsProfile.routes.GoodsRecordsController.onPageLoadFilter(firstPage)
+      }
+
+      "to page 1 of GoodsRecordsSearchResultController when there is a GoodsRecordSearchFilter applied and enhancedSearch is false" in {
+        when(mockFrontendAppConfig.enhancedSearch) thenReturn false
+
+        navigator.nextPage(RemoveGoodsRecordPage, NormalMode, userAnswers) mustEqual
+          controllers.goodsProfile.routes.GoodsRecordsSearchResultController.onPageLoad(firstPage)
       }
 
       "to page 1 of GoodsRecordsController when there is no GoodsRecordSearchFilter applied" in {
