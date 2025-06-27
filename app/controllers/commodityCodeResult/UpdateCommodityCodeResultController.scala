@@ -37,7 +37,7 @@ import repositories.SessionRepository
 import services.{AuditService, AutoCategoriseService, CommodityService}
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import utils.Constants.openAccreditationErrorCode
-import utils.SessionData.{commodityCode, dataRemoved, dataUpdated, pageUpdated}
+import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
 import views.html.HasCorrectGoodsView
 
 import javax.inject.Inject
@@ -164,8 +164,6 @@ class UpdateCommodityCodeResultController @Inject() (
         autoCategoriseScenario.isDefined || normaliseCode(commodity.commodityCode) == normaliseCode(oldRecord.comcode)
       ) {
         Redirect(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
-          .addingToSession(pageUpdated -> commodityCode)(request)
-          .addingToSession(dataUpdated -> request.session.get(dataUpdated).contains("true").toString)(request)
       } else {
         Redirect(controllers.goodsRecord.commodityCode.routes.UpdatedCommodityCodeController.onPageLoad(recordId))
       }).recover { case e: GoodsRecordBuildFailure =>

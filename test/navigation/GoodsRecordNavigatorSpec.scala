@@ -147,7 +147,7 @@ class GoodsRecordNavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
         "must go from ProductReferenceUpdatePage to CyaUpdateRecord" in {
           navigator.nextPage(ProductReferenceUpdatePage(testRecordId), NormalMode, emptyUserAnswers) mustBe
-            controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadProductReference(testRecordId)
+            controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadproductReference(testRecordId)
         }
 
         "must go from GoodsDescriptionUpdatePage to CyaUpdateRecord" in {
@@ -199,7 +199,7 @@ class GoodsRecordNavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
         "must go from ProductReferencePage to CyaUpdateRecord" in {
           navigator.nextPage(ProductReferenceUpdatePage(testRecordId), CheckMode, emptyUserAnswers) mustBe
-            controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadProductReference(testRecordId)
+            controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadproductReference(testRecordId)
         }
 
         "must go from GoodsDescriptionPage to CyaUpdateRecord" in {
