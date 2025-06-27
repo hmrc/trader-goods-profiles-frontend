@@ -19,12 +19,13 @@ package controllers.goodsRecord
 import cats.data
 import cats.data.EitherNec
 import com.google.inject.Inject
+import config.FrontendAppConfig
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.BaseController
-import controllers.actions._
+import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
 import models.requests.DataRequest
 import models.router.requests.PutRecordRequest
-import models._
+import models.{CheckMode, Country, NormalMode, UpdateGoodsRecord, UserAnswers, ValidationError}
 import navigation.GoodsRecordNavigator
 import org.apache.pekko.Done
 import pages.goodsRecord.*
@@ -37,11 +38,10 @@ import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants.*
 import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
-import viewmodels.checkAnswers.goodsRecord._
+import viewmodels.checkAnswers.goodsRecord.{CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, ProductReferenceSummary}
 import viewmodels.govuk.summarylist.*
 import views.html.goodsRecord.CyaUpdateRecordView
 
-import java.time.{LocalDate, ZoneId}
 import scala.concurrent.{ExecutionContext, Future}
 
 class CyaUpdateRecordController @Inject() (
@@ -57,6 +57,7 @@ class CyaUpdateRecordController @Inject() (
   ottConnector: OttConnector,
   sessionRepository: SessionRepository,
   navigator: GoodsRecordNavigator,
+  config: FrontendAppConfig,
   autoCategoriseService: AutoCategoriseService,
   commodityService: CommodityService
 )(implicit ec: ExecutionContext)
@@ -386,25 +387,23 @@ class CyaUpdateRecordController @Inject() (
 
   def onSubmitCommodityCode(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val maybeOriginalCommodityCode: Option[String] = request.session.get("originalCommodityCode")
-
-      val resultFuture =
-        for {
-          oldRecord                <- goodsRecordConnector.getRecord(recordId)
-          isCommCodeExpired         = oldRecord.comcodeEffectiveToDate.exists(
-                                        _.isBefore(LocalDate.now().atStartOfDay(ZoneId.of("UTC")).toInstant)
-                                      )
-          commodity                <- UpdateGoodsRecord.validateCommodityCode(
-                                        request.userAnswers,
-                                        recordId,
-                                        oldRecord.category.isDefined,
-                                        isCommCodeExpired
-                                      ) match {
-                                        case Right(value) => Future.successful(value)
-                                        case Left(errors) => Future.failed(new Exception(errors.toString))
-                                      }
-          updateGoodsRecord         = UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity))
-          putGoodsRecord            = PutRecordRequest(
+      (for {
+        oldRecord                <- goodsRecordConnector.getRecord(recordId)
+        isCommodityValid         <- commodityService.isCommodityCodeValid(oldRecord.comcode, oldRecord.countryOfOrigin)
+        commodity                <-
+          handleValidateError(
+            UpdateGoodsRecord
+              .validateCommodityCode(
+                request.userAnswers,
+                recordId,
+                oldRecord.category.isDefined,
+                !isCommodityValid
+              )
+          )
+        updateGoodsRecord        <-
+          Future.successful(UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity)))
+        putGoodsRecord           <- Future.successful(
+                                      PutRecordRequest(
                                         actorId = oldRecord.eori,
                                         traderRef = oldRecord.traderRef,
                                         comcode = commodity.commodityCode,
@@ -414,37 +413,23 @@ class CyaUpdateRecordController @Inject() (
                                         assessments = oldRecord.assessments,
                                         supplementaryUnit = oldRecord.supplementaryUnit,
                                         measurementUnit = oldRecord.measurementUnit,
-                                        comcodeEffectiveFromDate = commodity.validityStartDate,
-                                        comcodeEffectiveToDate = commodity.validityEndDate
+                                        comcodeEffectiveFromDate = oldRecord.comcodeEffectiveFromDate,
+                                        comcodeEffectiveToDate = oldRecord.comcodeEffectiveToDate
                                       )
-          _                         = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
-          _                        <- updateGoodsRecordIfPutValueChanged(
-                                        commodity.commodityCode,
-                                        oldRecord.comcode,
-                                        updateGoodsRecord,
-                                        putGoodsRecord
-                                      )
-          updatedAnswersWithChange <- Future.fromTry(request.userAnswers.remove(HasCommodityCodeChangePage(recordId)))
-          updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CommodityCodeUpdatePage(recordId)))
-          _                        <- sessionRepository.set(updatedAnswers)
-          autoCategoriseScenario   <- autoCategoriseService.autoCategoriseRecord(recordId, updatedAnswers)
-        } yield {
-          val originalCommodityCode   = maybeOriginalCommodityCode.getOrElse(oldRecord.comcode)
-          val commodityCodeHasChanged = commodity.commodityCode != originalCommodityCode
-
-          if (commodityCodeHasChanged) {
-            if (autoCategoriseScenario.isDefined) {
-              Redirect(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
-                .addingToSession("showCommodityCodeChangeBanner" -> "true")
-            } else {
-              Redirect(controllers.goodsRecord.commodityCode.routes.UpdatedCommodityCodeController.onPageLoad(recordId))
-            }
-          } else {
-            Redirect(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
-          }
-        }
-
-      resultFuture.recover(handleRecover(recordId))
+                                    )
+        _                         = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
+        _                        <- updateGoodsRecordIfPutValueChanged(
+                                      commodity.commodityCode,
+                                      oldRecord.comcode,
+                                      updateGoodsRecord,
+                                      putGoodsRecord
+                                    )
+        updatedAnswersWithChange <-
+          Future.fromTry(request.userAnswers.remove(HasCommodityCodeChangePage(recordId)))
+        updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CommodityCodeUpdatePage(recordId)))
+        _                        <- sessionRepository.set(updatedAnswers)
+      } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers)))
+        .recover(handleRecover(recordId))
     }
 
   private def handleRecover(
