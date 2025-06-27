@@ -64,5 +64,4 @@ case object SessionData {
   val useExistingUkimsNumberPage: String     = "useExistingUkimsNumberPage"
   val historicProfileDataQuery: String       = "historicProfileData"
   val hasLongComCodeQuery: String            = "hasLongComCode"
-  val originalCountryOfOrigin: String        = "originalCountryOfOrigin"
 }
