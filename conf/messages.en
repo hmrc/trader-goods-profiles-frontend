@@ -497,7 +497,7 @@ removeGoodsRecord.yes = Yes, remove this goods record
 removeGoodsRecord.noProfile = No, return to goods profile
 removeGoodsRecord.noRecord = No, return to goods record
 
-singleRecord.title = {0} - Goods record
+singleRecord.title = Goods record
 singleRecord.h1 = Goods record
 singleRecord.p1.prefix = Product reference: {0}
 singleRecord.h2 = What to do next
