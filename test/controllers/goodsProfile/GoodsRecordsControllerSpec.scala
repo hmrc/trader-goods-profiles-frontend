@@ -407,6 +407,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
     "must redirect to result page when valid data is submitted via onSearch" in {
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+      when(mockFrontendAppConfig.enhancedSearch) thenReturn false
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -421,8 +422,8 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar with BeforeA
         val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual controllers.goodsProfile.routes.GoodsRecordsController
-          .onPageLoadFilter(1)
+        redirectLocation(result).value mustEqual controllers.goodsProfile.routes.GoodsRecordsSearchResultController
+          .onPageLoad(1)
           .url
       }
     }
@@ -432,6 +433,7 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar with BeforeA
         Some(response)
       )
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+      when(mockFrontendAppConfig.enhancedSearch) thenReturn false
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
@@ -445,8 +447,8 @@ class GoodsRecordsControllerSpec extends SpecBase with MockitoSugar with BeforeA
         val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual controllers.goodsProfile.routes.GoodsRecordsController
-          .onPageLoadFilter(1)
+        redirectLocation(result).value mustEqual controllers.goodsProfile.routes.GoodsRecordsSearchResultController
+          .onPageLoad(1)
           .url
       }
     }
