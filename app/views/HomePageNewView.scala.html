@@ -59,9 +59,15 @@ role = Some("alert"))
 <!--EORI subheading-->
 <p class="govuk-body govuk-!-margin-top-0">@messages("homepage.eori", eoriNumber)</p>
 
+<!--The above stays AS IS No change needed-->
+
+
+
 <!--You can manage your goods records... long paragraph-->
 <p class="govuk-body">@messages("homepage.p1")</p>
+<!--This paragraph deleted-->
 
+<!--CARD ONE-->
 <!--goods records heading-->
 <h2 class="govuk-heading-m">@messages("homepage.h2.1")</h2>
 
@@ -85,21 +91,30 @@ role = Some("alert"))
     <a href="@controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad().url" class="govuk-link">@messages("homepage.p3.linkText2").</a>
 </p>
 }
+<!--END CARD ONE-->
+
+<!--CARD TWO - change to 'Profile' as heading-->
 <!--manage your profile heading-->
 <h2 class="govuk-heading-m">@messages("homepage.h2.2")</h2>
 
+<!--Manage your profile link in card-->
 <!--Manage your profile details link-->
 <p class="govuk-body">
     <a href="@controllers.profile.routes.ProfileController.onPageLoad().url" class="govuk-link">@messages("homepage.p5.linkText")</a>
 </p>
+<!--END CARD TWO-->
 
+<!--CARD THREE-->
 <!--Download TGP data heading-->
 @if(appConfig.downloadFileEnabled) {
 <h2 class="govuk-heading-m">@messages("homepage.h2.3")</h2>
 <!--Get your TGP records file-->
 @downloadLinkText.downloadLinkContent
 }
+<!--CARD THREE needs text: Sign in to an administrator blah blah if not available-->
+<!--END CARD THREE-->
 
+<!--CARD FOUR-->
 <!--Help and contact heading-->
 <h2 class="govuk-heading-m">@messages("homepage.h2.4")</h2>
 
@@ -107,5 +122,8 @@ role = Some("alert"))
 <p class="govuk-body">
     <a href="@routes.HelpAndSupportController.onPageLoad().url" class="govuk-link">@messages("homepage.p6.linkText")</a>
 </p>
+<!--END CARD FOUR-->
+
+<!--CARDS NEED TO BE IN A 2x2 GRID PATTERN MAPPED ACCORDINGLY-->
 
 }
