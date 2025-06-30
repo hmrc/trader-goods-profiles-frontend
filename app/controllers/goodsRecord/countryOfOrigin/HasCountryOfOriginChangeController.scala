@@ -17,12 +17,12 @@
 package controllers.goodsRecord.countryOfOrigin
 
 import controllers.BaseController
-import controllers.actions._
+import controllers.actions.*
 import forms.goodsRecord.HasCountryOfOriginChangeFormProvider
 import models.Mode
 import models.helper.GoodsDetailsUpdate
 import navigation.GoodsRecordNavigator
-import pages.goodsRecord.HasCountryOfOriginChangePage
+import pages.goodsRecord.{CountryOfOriginUpdatePage, HasCountryOfOriginChangePage, OriginalCountryOfOriginPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -73,10 +73,30 @@ class HasCountryOfOriginChangeController @Inject() (
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, recordId))),
           value =>
-            for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(HasCountryOfOriginChangePage(recordId), value))
-              _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(HasCountryOfOriginChangePage(recordId), mode, updatedAnswers))
+            if (value) {
+              request.userAnswers.get(CountryOfOriginUpdatePage(recordId)) match {
+                case Some(currentValue) =>
+                  for {
+                    updatedAnswers1 <- Future.fromTry(
+                                         request.userAnswers.set(HasCountryOfOriginChangePage(recordId), value)
+                                       )
+                    updatedAnswers2 <- Future.fromTry(
+                                         updatedAnswers1.set(OriginalCountryOfOriginPage(recordId), currentValue)
+                                       )
+                    _               <- sessionRepository.set(updatedAnswers2)
+                  } yield Redirect(navigator.nextPage(HasCountryOfOriginChangePage(recordId), mode, updatedAnswers2))
+
+                case None =>
+                  Future.failed(new RuntimeException("Could not find data for Country of origin"))
+              }
+
+            } else {
+              for {
+                updatedAnswers <- Future.fromTry(request.userAnswers.set(HasCountryOfOriginChangePage(recordId), value))
+                _              <- sessionRepository.set(updatedAnswers)
+              } yield Redirect(navigator.nextPage(HasCountryOfOriginChangePage(recordId), mode, updatedAnswers))
+            }
         )
     }
+
 }
