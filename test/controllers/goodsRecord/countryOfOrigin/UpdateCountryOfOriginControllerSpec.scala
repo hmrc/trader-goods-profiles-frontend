@@ -238,7 +238,7 @@ class UpdateCountryOfOriginControllerSpec extends SpecBase with MockitoSugar wit
       }
     }
 
-    "must not  set changesMade if country of origin is not updated" in {
+    "must set changesMade to false if country of origin is not updated" in {
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val userAnswers        = UserAnswers(userAnswersId).set(CountriesQuery, countries).success.value
@@ -260,7 +260,7 @@ class UpdateCountryOfOriginControllerSpec extends SpecBase with MockitoSugar wit
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
 
-        session(result).get(dataUpdated) mustBe None
+        session(result).get(dataUpdated) must be(Some("false"))
       }
     }
 

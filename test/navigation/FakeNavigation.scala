@@ -16,7 +16,6 @@
 
 package navigation
 
-import config.FrontendAppConfig
 import models.{Mode, UserAnswers}
 import org.scalatestplus.mockito.MockitoSugar.mock
 import pages.*
@@ -44,7 +43,7 @@ class FakeCategorisationNavigator(desiredRoute: Call) extends CategorisationNavi
   override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = desiredRoute
 }
 
-class FakeGoodsProfileNavigator(desiredRoute: Call) extends GoodsProfileNavigator(mock[FrontendAppConfig]) {
+class FakeGoodsProfileNavigator(desiredRoute: Call) extends GoodsProfileNavigator {
   override def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = desiredRoute
 }
 
