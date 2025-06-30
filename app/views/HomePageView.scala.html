@@ -28,7 +28,7 @@ govukNotificationBanner: GovukNotificationBanner
 
 @(downloadReady: Boolean = false, downloadLinkText: DownloadLinkText, ukimsNumberChanged: Boolean = false, doesGoodsRecordExist: Boolean, eoriNumber: String, viewUpdateGoodsRecordsLink: String)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = s"${messages("homepage.title")} - ${messages("site.govuk")}", showBackLink = false, headerShouldHaveServiceLink = false) {
+@layout(pageTitle = s"${messages("homepage.title")} - ${messages("site.govuk")}", showBackLink = false, headerShouldHaveServiceLink = false, isFullWidth = true) {
 
     @if(ukimsNumberChanged) {
         @govukNotificationBanner(
@@ -58,7 +58,7 @@ govukNotificationBanner: GovukNotificationBanner
     <p class="govuk-body govuk-!-margin-top-0">@messages("homepage.eori", eoriNumber)</p>
 
     <!-- 2x2 Grid of Cards -->
-    <div class="govuk-grid-row">
+    <div class="govuk-grid-row govuk-!-margin-right-8">
         <!-- Card 1: Goods Records -->
         <div class="govuk-grid-column-one-half">
             <div class="govuk-summary-card">
@@ -99,7 +99,7 @@ govukNotificationBanner: GovukNotificationBanner
         </div>
     </div>
 
-    <div class="govuk-grid-row">
+    <div class="govuk-grid-row govuk-!-margin-right-8">
         <!-- Card 3: Download TGP Data -->
         <div class="govuk-grid-column-one-half">
             <div class="govuk-summary-card">
