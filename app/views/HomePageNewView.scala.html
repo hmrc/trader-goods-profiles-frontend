@@ -54,43 +54,56 @@ role = Some("alert"))
 )
 }
 
+<!--Trader Goods Profile homepage heading-->
 <h1 class="govuk-heading-l govuk-!-margin-bottom-0">@messages("homepage.h1")</h1>
+<!--EORI subheading-->
 <p class="govuk-body govuk-!-margin-top-0">@messages("homepage.eori", eoriNumber)</p>
 
+<!--You can manage your goods records... long paragraph-->
 <p class="govuk-body">@messages("homepage.p1")</p>
 
+<!--goods records heading-->
 <h2 class="govuk-heading-m">@messages("homepage.h2.1")</h2>
 
+<!--You do not have any records in your list-->
 @if(doesGoodsRecordExist == false){
 <p class="govuk-body">@messages("homepage.noRecords")</p>
 } else {
+<!--view or update your goods records-->
 <p class="govuk-body">
     <a href="@viewUpdateGoodsRecordsLink" class="govuk-link">@messages("homepage.p2.linkText")</a>
 </p>
 }
+<!--Create a new goods record-->
 @if(doesGoodsRecordExist == true) {
 <p class="govuk-body">
     <a href="@controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad().url" class="govuk-link">@messages("homepage.p3.linkText")</a>
 </p>
+<!--Create a new goods record-->
 } else {
 <p class="govuk-body">@messages("homepage.p3")
     <a href="@controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad().url" class="govuk-link">@messages("homepage.p3.linkText2").</a>
 </p>
 }
-
+<!--manage your profile heading-->
 <h2 class="govuk-heading-m">@messages("homepage.h2.2")</h2>
 
+<!--Manage your profile details link-->
 <p class="govuk-body">
     <a href="@controllers.profile.routes.ProfileController.onPageLoad().url" class="govuk-link">@messages("homepage.p5.linkText")</a>
 </p>
 
+<!--Download TGP data heading-->
 @if(appConfig.downloadFileEnabled) {
 <h2 class="govuk-heading-m">@messages("homepage.h2.3")</h2>
+<!--Get your TGP records file-->
 @downloadLinkText.downloadLinkContent
 }
 
+<!--Help and contact heading-->
 <h2 class="govuk-heading-m">@messages("homepage.h2.4")</h2>
 
+<!--Find additional support and contacts to help you text-->
 <p class="govuk-body">
     <a href="@routes.HelpAndSupportController.onPageLoad().url" class="govuk-link">@messages("homepage.p6.linkText")</a>
 </p>
