@@ -61,32 +61,40 @@ govukNotificationBanner: GovukNotificationBanner
     <div class="govuk-grid-row">
         <!-- Card 1: Goods Records -->
         <div class="govuk-grid-column-one-half">
-            <div class="card">
-                <h2 class="govuk-heading-m">@messages("homepage.h2.1")</h2>
-                @if(doesGoodsRecordExist == false) {
-                <p class="govuk-body">@messages("homepage.noRecords")</p>
-                <p class="govuk-body">
-                    @messages("homepage.p3")
-                    <a href="@controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad().url" class="govuk-link">@messages("homepage.p3.linkText2")</a>.
-                </p>
-                } else {
-                <p class="govuk-body">
-                    <a href="@viewUpdateGoodsRecordsLink" class="govuk-link">@messages("homepage.p2.linkText")</a>
-                </p>
-                <p class="govuk-body">
-                    <a href="@controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad().url" class="govuk-link">@messages("homepage.p3.linkText")</a>
-                </p>
-                }
+            <div class="govuk-summary-card">
+                <div class="govuk-summary-card__title-wrapper">
+                    <h2 class="govuk-summary-card__title govuk-!-margin-bottom-8">@messages("homepage.h2.1")</h2>
+                </div>
+                <div class="govuk-summary-card__content">
+                    @if(doesGoodsRecordExist == false) {
+                    <p class="govuk-body">@messages("homepage.noRecords")</p>
+                    <p class="govuk-body">
+                        @messages("homepage.p3")
+                        <a href="@controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad().url" class="govuk-link">@messages("homepage.p3.linkText2")</a>.
+                    </p>
+                    } else {
+                    <p class="govuk-body">
+                        <a href="@viewUpdateGoodsRecordsLink" class="govuk-link">@messages("homepage.p2.linkText")</a>
+                    </p>
+                    <p class="govuk-body">
+                        <a href="@controllers.goodsRecord.routes.CreateRecordStartController.onPageLoad().url" class="govuk-link">@messages("homepage.p3.linkText")</a>
+                    </p>
+                    }
+                </div>
             </div>
         </div>
 
         <!-- Card 2: Profile -->
         <div class="govuk-grid-column-one-half">
-            <div class="card">
-                <h2 class="govuk-heading-m">@messages("homepage.h2.2")</h2>
+            <div class="govuk-summary-card">
+                <div class="govuk-summary-card__title-wrapper">
+                    <h2 class="govuk-summary-card__title govuk-!-margin-bottom-8">@messages("homepage.h2.2")</h2>
+                </div>
+                <div class="govuk-summary-card__content">
                 <p class="govuk-body">
                     <a href="@controllers.profile.routes.ProfileController.onPageLoad().url" class="govuk-link">@messages("homepage.p5.linkText")</a>
                 </p>
+                </div>
             </div>
         </div>
     </div>
@@ -94,25 +102,32 @@ govukNotificationBanner: GovukNotificationBanner
     <div class="govuk-grid-row">
         <!-- Card 3: Download TGP Data -->
         <div class="govuk-grid-column-one-half">
-            <div class="card">
-                <h2 class="govuk-heading-m">@messages("homepage.h2.3")</h2>
+            <div class="govuk-summary-card">
+                <div class="govuk-summary-card__title-wrapper">
+                <h2 class="govuk-summary-card__title govuk-!-margin-bottom-8">@messages("homepage.h2.3")</h2>
+                </div>
+                <div class="govuk-summary-card__content">
                 @if(appConfig.downloadFileEnabled) {
-                @downloadLinkText.downloadLinkContent
+                    @downloadLinkText.downloadLinkContent
                 } else {
-                <p class="govuk-body">@messages("homepage.downloadNotAvailable")</p>
+                    <p class="govuk-body">@messages("homepage.downloadNotAvailable")</p>
                 }
+                </div>
             </div>
         </div>
 
         <!-- Card 4: Help and Contact -->
         <div class="govuk-grid-column-one-half">
-            <div class="card">
-                <h2 class="govuk-heading-m">@messages("homepage.h2.4")</h2>
+            <div class="govuk-summary-card">
+                <div class="govuk-summary-card__title-wrapper">
+                <h2 class="govuk-summary-card__title govuk-!-margin-bottom-8">@messages("homepage.h2.4")</h2>
+                </div>
+                <div class="govuk-summary-card__content">
                 <p class="govuk-body">
                     <a href="@routes.HelpAndSupportController.onPageLoad().url" class="govuk-link">@messages("homepage.p6.linkText")</a>
                 </p>
+                </div>
             </div>
         </div>
     </div>
-
 }
