@@ -413,7 +413,9 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
             .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url),
           None,
           false,
-          recordForTestingSummaryRows.traderRef
+          recordForTestingSummaryRows.traderRef,
+          true,
+          true
         )(request, messages(application)).toString
         val uaCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
         verify(mockSessionRepository, times(2)).set(uaCaptor.capture)
@@ -781,7 +783,9 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
                 ),
               autoCategoriseScenario = None,
               countryOfOriginUpdated = true,
-              recordForTestingSummaryRows.traderRef
+              recordForTestingSummaryRows.traderRef,
+              true,
+              true
             )(request, messages).toString
 
             val uaCaptor = ArgumentCaptor.forClass(classOf[UserAnswers])
