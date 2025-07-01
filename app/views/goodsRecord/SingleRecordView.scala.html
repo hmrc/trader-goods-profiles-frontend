@@ -46,7 +46,9 @@
     previousUrl: String,
     autoCategoriseScenario: Option[Scenario],
     countryOfOriginUpdated: Boolean,
-    productReference: String
+    productReference: String,
+    isAutoCategorised: Boolean,
+    showCommodityCodeBanner:Boolean
 )(implicit request: Request[_], messages: Messages)
 
 @bannerContentForUpdate(page: String, dataRemoved: Boolean) = {
