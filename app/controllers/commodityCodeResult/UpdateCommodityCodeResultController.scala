@@ -123,46 +123,46 @@ class UpdateCommodityCodeResultController @Inject() (
     def normaliseCode(code: String): String = code.trim.replaceAll("\\s", "")
 
     (for {
-      oldRecord <- goodsRecordConnector.getRecord(recordId)
-      isValidCommodity <- commodityService.isCommodityCodeValid(oldRecord.comcode, oldRecord.countryOfOrigin)(request)
-      commodity <- handleValidateError(
-        UpdateGoodsRecord.validateCommodityCode(
-          updatedUserAnswers,
-          recordId,
-          oldRecord.category.isDefined,
-          !isValidCommodity
-        )
-      )
-      updateGoodsRecord = UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity))
-      putGoodsRecord = PutRecordRequest(
-        actorId = oldRecord.eori,
-        traderRef = oldRecord.traderRef,
-        comcode = commodity.commodityCode,
-        goodsDescription = oldRecord.goodsDescription,
-        countryOfOrigin = oldRecord.countryOfOrigin,
-        category = None,
-        assessments = oldRecord.assessments,
-        supplementaryUnit = oldRecord.supplementaryUnit,
-        measurementUnit = oldRecord.measurementUnit,
-        comcodeEffectiveFromDate = oldRecord.comcodeEffectiveFromDate,
-        comcodeEffectiveToDate = oldRecord.comcodeEffectiveToDate
-      )
-      _ = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
-      _ <- updateGoodsRecordIfPutValueChanged(
-        commodity.commodityCode,
-        oldRecord.comcode,
-        updateGoodsRecord,
-        putGoodsRecord
-      )
-      updatedRecord <- goodsRecordConnector.getRecord(recordId)
-      autoCategoriseScenario <- autoCategoriseService.autoCategoriseRecord(updatedRecord, updatedUserAnswers)(request)
+      oldRecord                <- goodsRecordConnector.getRecord(recordId)
+      isValidCommodity         <- commodityService.isCommodityCodeValid(oldRecord.comcode, oldRecord.countryOfOrigin)(request)
+      commodity                <- handleValidateError(
+                                    UpdateGoodsRecord.validateCommodityCode(
+                                      updatedUserAnswers,
+                                      recordId,
+                                      oldRecord.category.isDefined,
+                                      !isValidCommodity
+                                    )
+                                  )
+      updateGoodsRecord         = UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity))
+      putGoodsRecord            = PutRecordRequest(
+                                    actorId = oldRecord.eori,
+                                    traderRef = oldRecord.traderRef,
+                                    comcode = commodity.commodityCode,
+                                    goodsDescription = oldRecord.goodsDescription,
+                                    countryOfOrigin = oldRecord.countryOfOrigin,
+                                    category = None,
+                                    assessments = oldRecord.assessments,
+                                    supplementaryUnit = oldRecord.supplementaryUnit,
+                                    measurementUnit = oldRecord.measurementUnit,
+                                    comcodeEffectiveFromDate = oldRecord.comcodeEffectiveFromDate,
+                                    comcodeEffectiveToDate = oldRecord.comcodeEffectiveToDate
+                                  )
+      _                         = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
+      _                        <- updateGoodsRecordIfPutValueChanged(
+                                    commodity.commodityCode,
+                                    oldRecord.comcode,
+                                    updateGoodsRecord,
+                                    putGoodsRecord
+                                  )
+      updatedRecord            <- goodsRecordConnector.getRecord(recordId)
+      autoCategoriseScenario   <- autoCategoriseService.autoCategoriseRecord(updatedRecord, updatedUserAnswers)(request)
       updatedAnswersWithChange <- Future.fromTry(request.userAnswers.remove(HasCommodityCodeChangePage(recordId)))
-      updatedAnswers <- Future.fromTry(updatedAnswersWithChange.remove(CommodityCodeUpdatePage(recordId)))
-      _ <- sessionRepository.set(updatedAnswers)
+      updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CommodityCodeUpdatePage(recordId)))
+      _                        <- sessionRepository.set(updatedAnswers)
     } yield {
       val originalCode = normaliseCode(oldRecord.comcode)
-      val newCode = normaliseCode(commodity.commodityCode)
-      val hasChanged = newCode != originalCode
+      val newCode      = normaliseCode(commodity.commodityCode)
+      val hasChanged   = newCode != originalCode
 
       if (autoCategoriseScenario.isDefined || !hasChanged) {
         Redirect(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
@@ -172,12 +172,11 @@ class UpdateCommodityCodeResultController @Inject() (
       } else {
         Redirect(controllers.goodsRecord.commodityCode.routes.UpdatedCommodityCodeController.onPageLoad(recordId))
       }
-    }).recover {
-      case e: GoodsRecordBuildFailure =>
-        logErrorsAndContinue(
-          e.getMessage,
-          controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId)
-        )
+    }).recover { case e: GoodsRecordBuildFailure =>
+      logErrorsAndContinue(
+        e.getMessage,
+        controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId)
+      )
     }
   }
 
