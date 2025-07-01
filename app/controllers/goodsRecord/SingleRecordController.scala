@@ -214,7 +214,8 @@ class SingleRecordController @Inject() (
       initialValueOfHasSuppUnit,
       initialValueOfSuppUnit,
       goodsDescriptionOriginal,
-      "countryOfOriginChanged"
+      "countryOfOriginChanged",
+      "showCommodityCodeChangeBanner"
     )
   }
 }

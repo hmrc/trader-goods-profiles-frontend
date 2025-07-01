@@ -153,6 +153,8 @@ class UpdateCommodityCodeController @Inject() (
       } yield Redirect(navigator.nextPage(CommodityCodeUpdatePage(recordId), mode, updatedAnswersWithQuery))
         .addingToSession(dataUpdated -> isValueChanged.toString)
         .addingToSession(pageUpdated -> commodityCode)
+        .addingToSession("showCommodityCodeChangeBanner" -> "true")
+
     } else {
       val formWithErrors = createFormWithErrors(form, value, "commodityCode.error.expired")
       Future.successful(BadRequest(view(formWithErrors, onSubmitAction, mode, Some(recordId))))
