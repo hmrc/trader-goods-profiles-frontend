@@ -64,10 +64,13 @@ class CreateRecordSuccessController @Inject() (
     scenario match {
       case Some(_) =>
         record.declarable match {
-          case DeclarableStatus.ImmiReady | DeclarableStatus.NotReadyForImmi =>
+          case DeclarableStatus.ImmiReady       =>
             val tagText = messages(record.declarable.messageKey)
             Ok(autoCategorisationView(recordId, record.declarable == DeclarableStatus.ImmiReady, tagText))
-          case DeclarableStatus.NotReadyForUse                               =>
+          case DeclarableStatus.NotReadyForImmi =>
+            val tagText = messages(record.declarable.messageKey)
+            Ok(autoCategorisationView(recordId, record.declarable == DeclarableStatus.NotReadyForImmi, tagText))
+          case DeclarableStatus.NotReadyForUse  =>
             Ok(defaultView(recordId, scenario))
         }
       case None    =>

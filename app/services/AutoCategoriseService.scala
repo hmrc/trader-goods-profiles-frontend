@@ -20,7 +20,7 @@ import connectors.GoodsRecordConnector
 import logging.Logging
 import models.requests.DataRequest
 import models.router.responses.GetGoodsRecordResponse
-import models.{CategoryRecord, CategoryRecordBuildFailure, Scenario, UserAnswers, UserAnswersSetFailure}
+import models.{CategoryRecord, CategoryRecordBuildFailure, ReviewReason, Scenario, UserAnswers, UserAnswersSetFailure}
 import queries.CategorisationDetailsQuery
 import repositories.SessionRepository
 import uk.gov.hmrc.http.HeaderCarrier
@@ -54,7 +54,9 @@ class AutoCategoriseService @Inject() (
     categorisationService
       .getCategorisationInfo(request, record.comcode, record.countryOfOrigin, record.recordId)
       .flatMap { categorisationInfo =>
-        if (categorisationInfo.isAutoCategorisable && record.category.isEmpty) {
+        if (
+          categorisationInfo.isAutoCategorisable && record.category.isEmpty && record.reviewReason != ReviewReason.Unclear
+        ) {
 
           val updatedUserAnswers =
             userAnswers.set(CategorisationDetailsQuery(record.recordId), categorisationInfo) match {
