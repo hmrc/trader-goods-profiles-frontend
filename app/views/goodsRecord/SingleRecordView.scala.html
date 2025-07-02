@@ -123,7 +123,7 @@
         </strong>
     </p>
 
-    @if(!recordLocked && declarableStatus == DeclarableStatus.NotReadyForUse && !isCategorised && !reviewReason.contains(ReviewReason.Commodity)) {
+    @if(!recordLocked && (declarableStatus == DeclarableStatus.NotReadyForUse) && !isCategorised && !reviewReason.contains(ReviewReason.Commodity)) {
         @paragraphBody(message = messages(declarableStatus.paragraphKey,
             link(
             text = messages("declarableStatus.notReadyForUse.paragraph.linkText"),
@@ -131,7 +131,7 @@
             id = None
             )
         ))
-    } else if(declarableStatus != DeclarableStatus.NotReadyForUse){
+    } else if(declarableStatus != DeclarableStatus.NotReadyForUse && !toReview){
         <p class="govuk-body">@messages(declarableStatus.paragraphKey)</p>
     }
 
