@@ -131,14 +131,6 @@
             id = None
             )
         ))
-    }else if(toReview && declarableStatus == DeclarableStatus.NotReadyForUse){
-        @paragraphBody(message = messages("singleRecord.unclearReviewReason",
-            link(
-            text = messages("declarableStatus.notReadyForUse.paragraph.linkText"),
-            call = controllers.routes.ValidateCommodityCodeController.changeCategory(recordId),
-            id = None
-            )
-        ))
     }else if(declarableStatus != DeclarableStatus.NotReadyForUse && !toReview){
         <p class="govuk-body">@messages(declarableStatus.paragraphKey)</p>
     }
@@ -154,7 +146,6 @@
         @reviewReason.map { reviewReason =>
             @(reviewReason.linkKey, reviewReason.url(recordId, adviceStatus)) match {
                 case (Some(linkKey), Some(url)) => {
-
                     @{
                         val additionalPara = reviewReason.setAdditionalContent(isCategorised, adviceStatus)
                         additionalPara.map { case (paragraphText, tagText) => {
