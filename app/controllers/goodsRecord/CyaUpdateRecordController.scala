@@ -386,7 +386,7 @@ class CyaUpdateRecordController @Inject() (
 
   def onSubmitCommodityCode(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val maybeOriginalCommodityCode: Option[String] = request.session.get("originalCommodityCode")
+      val maybeOriginalCommodityCode: Option[String] = request.session.get("originalCommodityCode").map(_.trim)
 
       val resultFuture =
         for {
@@ -429,18 +429,20 @@ class CyaUpdateRecordController @Inject() (
           _                        <- sessionRepository.set(updatedAnswers)
           autoCategoriseScenario   <- autoCategoriseService.autoCategoriseRecord(recordId, updatedAnswers)
         } yield {
-          val originalCommodityCode   = maybeOriginalCommodityCode.getOrElse(oldRecord.comcode)
-          val commodityCodeHasChanged = commodity.commodityCode != originalCommodityCode
+          val newCode      = commodity.commodityCode.trim
+          val originalCode = maybeOriginalCommodityCode.getOrElse("").trim
+
+          val commodityCodeHasChanged = newCode != originalCode
 
           if (commodityCodeHasChanged) {
             if (autoCategoriseScenario.isDefined) {
               Redirect(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
-                .addingToSession("showCommodityCodeChangeBanner" -> "true")
             } else {
               Redirect(controllers.goodsRecord.commodityCode.routes.UpdatedCommodityCodeController.onPageLoad(recordId))
             }
           } else {
             Redirect(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
+              .removingFromSession("showCommodityCodeChangeBanner")
           }
         }
 
