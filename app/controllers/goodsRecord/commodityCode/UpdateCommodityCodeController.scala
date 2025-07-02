@@ -103,6 +103,7 @@ class UpdateCommodityCodeController @Inject() (
                            )
             } yield result).recover { case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
               handleFormError(form, "commodityCode.error.invalid", onSubmitAction, mode, Some(recordId))
+                .addingToSession("showCommodityCodeChangeBanner" -> "true")
             }
           }
         )
@@ -153,8 +154,6 @@ class UpdateCommodityCodeController @Inject() (
       } yield Redirect(navigator.nextPage(CommodityCodeUpdatePage(recordId), mode, updatedAnswersWithQuery))
         .addingToSession(dataUpdated -> isValueChanged.toString)
         .addingToSession(pageUpdated -> commodityCode)
-        .addingToSession("showCommodityCodeChangeBanner" -> "true")
-
     } else {
       val formWithErrors = createFormWithErrors(form, value, "commodityCode.error.expired")
       Future.successful(BadRequest(view(formWithErrors, onSubmitAction, mode, Some(recordId))))

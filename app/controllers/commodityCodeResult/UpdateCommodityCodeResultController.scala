@@ -163,7 +163,6 @@ class UpdateCommodityCodeResultController @Inject() (
       val originalCode = normaliseCode(oldRecord.comcode)
       val newCode      = normaliseCode(commodity.commodityCode)
       val hasChanged   = newCode != originalCode
-
       if (autoCategoriseScenario.isDefined || !hasChanged) {
         Redirect(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
           .addingToSession(pageUpdated -> commodityCode)(request)

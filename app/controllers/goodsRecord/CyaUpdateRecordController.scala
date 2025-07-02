@@ -437,7 +437,6 @@ class CyaUpdateRecordController @Inject() (
           if (commodityCodeHasChanged) {
             if (autoCategoriseScenario.isDefined) {
               Redirect(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
-                .addingToSession("showCommodityCodeChangeBanner" -> "true")
             } else {
               Redirect(controllers.goodsRecord.commodityCode.routes.UpdatedCommodityCodeController.onPageLoad(recordId))
             }
