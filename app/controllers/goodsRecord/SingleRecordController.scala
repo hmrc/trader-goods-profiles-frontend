@@ -140,7 +140,7 @@ class SingleRecordController @Inject() (
     }
 
     val declarable = if record.toReview then
-      DeclarableStatus.NotReadyForImmi
+      DeclarableStatus.NotReadyForUse
     else
       record.declarable
 
