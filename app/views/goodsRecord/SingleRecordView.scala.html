@@ -131,7 +131,15 @@
             id = None
             )
         ))
-    } else if(declarableStatus != DeclarableStatus.NotReadyForUse && !toReview){
+    }else if(toReview && declarableStatus == DeclarableStatus.NotReadyForUse){
+        @paragraphBody(message = messages("singleRecord.unclearReviewReason",
+            link(
+            text = messages("declarableStatus.notReadyForUse.paragraph.linkText"),
+            call = controllers.routes.ValidateCommodityCodeController.changeCategory(recordId),
+            id = None
+            )
+        ))
+    }else if(declarableStatus != DeclarableStatus.NotReadyForUse && !toReview){
         <p class="govuk-body">@messages(declarableStatus.paragraphKey)</p>
     }
 
