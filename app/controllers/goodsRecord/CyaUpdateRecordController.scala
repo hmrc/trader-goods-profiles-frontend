@@ -346,13 +346,12 @@ class CyaUpdateRecordController @Inject() (
       } yield {
         val hasChanged = countryOfOrigin != originalCountryOfOrigin
 
-        if (autoCategoriseScenario.isDefined) {
+        if (autoCategoriseScenario.isDefined && hasChanged) {
           Redirect(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
             .addingToSession("countryOfOriginChanged" -> hasChanged.toString)
             .removingFromSession(dataUpdated)
         } else if (hasChanged) {
           Redirect(controllers.goodsRecord.countryOfOrigin.routes.UpdatedCountryOfOriginController.onPageLoad(recordId))
-            .addingToSession("countryOfOriginChanged" -> "true", pageUpdated -> "countryOfOrigin")
         } else {
           Redirect(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
             .addingToSession("countryOfOriginChanged" -> "false")
