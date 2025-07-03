@@ -22,8 +22,8 @@ import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierA
 import models.helper.{CategorisationJourney, RequestAdviceJourney, SupplementaryUnitUpdateJourney, WithdrawAdviceJourney}
 import models.requests.DataRequest
 import models.router.responses.GetGoodsRecordResponse
-import models.{AdviceStatusMessage, Country, NormalMode, ReviewReason, UserAnswers}
-import pages.goodsRecord.{CommodityCodeUpdatePage, CountryOfOriginUpdatePage, GoodsDescriptionUpdatePage, ProductReferenceUpdatePage}
+import models.{AdviceStatusMessage, Country, NormalMode, ReviewReason, Scenario, UserAnswers}
+import pages.goodsRecord.*
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import queries.CountriesQuery
 import repositories.SessionRepository
@@ -56,6 +56,8 @@ class SingleRecordController @Inject() (
 
   def onPageLoad(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
+      val countryOfOriginUpdated           = request.session.get("countryOfOriginChanged").contains("true")
+      val showCommodityCodeBanner: Boolean = request.session.get("showCommodityCodeChangeBanner").contains("true")
       goodsRecordConnector
         .getRecord(recordId)
         .flatMap { initialRecord =>
@@ -77,107 +79,15 @@ class SingleRecordController @Inject() (
                                       } else {
                                         Future.successful(initialRecord)
                                       }
-          } yield {
-            val recordIsLocked          = finalRecord.adviceStatus.isRecordLocked
-            val isCategorised           = finalRecord.category.isDefined
-            val isReviewReasonCommodity = (finalRecord.toReview, finalRecord.reviewReason) match {
-              case (true, Some(ReviewReason.Commodity)) => true
-              case _                                    => false
-            }
-
-            val detailsList = SummaryListViewModel(
-              rows = Seq(
-                ProductReferenceSummary.row(finalRecord.traderRef, recordId, NormalMode, recordIsLocked),
-                GoodsDescriptionSummary.rowUpdate(finalRecord, recordId, NormalMode, recordIsLocked),
-                CountryOfOriginSummary.rowUpdate(finalRecord, recordId, NormalMode, recordIsLocked, countries),
-                CommodityCodeSummary.rowUpdate(finalRecord, recordId, NormalMode, recordIsLocked)
-              )
-            )
-
-            val categoryValue = finalRecord.category match {
-              case None        =>
-                if (recordIsLocked) "singleRecord.notCategorised.recordLocked" else "singleRecord.categoriseThisGood"
-              case Some(value) =>
-                value match {
-                  case 1 => "singleRecord.cat1"
-                  case 2 => "singleRecord.cat2"
-                  case 3 => "singleRecord.standardGoods"
-                }
-            }
-
-            val categorisationList = SummaryListViewModel(
-              rows = Seq(
-                CategorySummary.row(categoryValue, recordId, recordIsLocked, isCategorised, finalRecord.reviewReason)
-              )
-            )
-
-            val supplementaryUnitList = SummaryListViewModel(
-              rows = Seq(
-                HasSupplementaryUnitSummary.row(finalRecord, recordId, recordIsLocked),
-                SupplementaryUnitSummary
-                  .row(
-                    finalRecord.category,
-                    finalRecord.supplementaryUnit,
-                    finalRecord.measurementUnit,
-                    recordId,
-                    recordIsLocked
-                  )
-              ).flatten
-            )
-
-            val adviceList = SummaryListViewModel(
-              rows = Seq(
-                AdviceStatusSummary.row(finalRecord.adviceStatus, recordId, recordIsLocked, isReviewReasonCommodity)
-              )
-            )
-
-            val changesMade: Boolean          = request.session.get(dataUpdated).contains("true")
-            val commodityCodeChanged: Boolean = request.session.get("commodityCodeChanged").contains("true")
-            val pageRemoved                   = request.session.get(dataRemoved).contains("true")
-            val changedPageRaw                = request.session.get(pageUpdated)
-            val changedPage                   = if (changedPageRaw.isEmpty && commodityCodeChanged) {
-              "commodityCode"
-            } else {
-              changedPageRaw.getOrElse("")
-            }
-
-            val para = AdviceStatusMessage.fromString(finalRecord.adviceStatus)
-
-            dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
-            dataCleansingService.deleteMongoData(request.userAnswers.id, RequestAdviceJourney)
-            dataCleansingService.deleteMongoData(request.userAnswers.id, WithdrawAdviceJourney)
-            dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
-
-            Ok(
-              view(
-                recordId,
-                detailsList,
-                categorisationList,
-                supplementaryUnitList,
-                adviceList,
-                changesMade || commodityCodeChanged,
-                changedPage,
-                pageRemoved,
-                recordIsLocked,
-                para,
-                finalRecord.declarable,
-                finalRecord.toReview,
-                isCategorised,
-                finalRecord.adviceStatus,
-                finalRecord.reviewReason,
-                backLink,
-                autoCategoriseScenario,
-                finalRecord.traderRef
-              )
-            ).removingFromSession(
-              dataUpdated,
-              dataRemoved,
-              pageUpdated,
-              "commodityCodeChanged",
-              initialValueOfHasSuppUnit,
-              initialValueOfSuppUnit
-            )
-          }
+          } yield renderView(
+            recordId,
+            finalRecord,
+            backLink,
+            countries,
+            autoCategoriseScenario,
+            countryOfOriginUpdated,
+            showCommodityCodeBanner
+          )
         }
         .recover {
           case e: UpstreamErrorResponse if e.statusCode == 404 =>
@@ -193,14 +103,22 @@ class SingleRecordController @Inject() (
 
   private def updateUserAnswers(recordId: String, record: GetGoodsRecordResponse)(implicit
     request: DataRequest[_]
-  ): Future[UserAnswers] =
-    Future.fromTry(
+  ): Future[UserAnswers] = {
+    val baseTry =
       request.userAnswers
         .set(ProductReferenceUpdatePage(recordId), record.traderRef)
         .flatMap(_.set(GoodsDescriptionUpdatePage(recordId), record.goodsDescription))
         .flatMap(_.set(CountryOfOriginUpdatePage(recordId), record.countryOfOrigin))
         .flatMap(_.set(CommodityCodeUpdatePage(recordId), record.comcode))
-    )
+
+    val withOriginal =
+      if (!record.adviceStatus.isRecordLocked)
+        baseTry.flatMap(_.set(OriginalCountryOfOriginPage(recordId), record.countryOfOrigin))
+      else
+        baseTry
+
+    Future.fromTry(withOriginal)
+  }
 
   private def retrieveAndStoreCountries(implicit hc: HeaderCarrier, request: DataRequest[_]): Future[Seq[Country]] =
     request.userAnswers.get(CountriesQuery) match {
@@ -213,4 +131,103 @@ class SingleRecordController @Inject() (
           _                       <- sessionRepository.set(updatedAnswersWithQuery)
         } yield countries
     }
+
+  private def renderView(
+    recordId: String,
+    record: GetGoodsRecordResponse,
+    backLink: String,
+    countries: Seq[Country],
+    autoCategoriseScenario: Option[Scenario],
+    countryOfOriginUpdated: Boolean,
+    showCommodityCodeBanner: Boolean
+  )(implicit request: DataRequest[_]): Result = {
+    val recordIsLocked          = record.adviceStatus.isRecordLocked
+    val isCategorised           = record.category.isDefined
+    val isReviewReasonCommodity = (record.toReview, record.reviewReason) match {
+      case (true, Some(ReviewReason.Commodity)) => true
+      case _                                    => false
+    }
+
+    val detailsList = SummaryListViewModel(
+      rows = Seq(
+        ProductReferenceSummary.row(record.traderRef, recordId, NormalMode, recordIsLocked),
+        GoodsDescriptionSummary.rowUpdate(record, recordId, NormalMode, recordIsLocked),
+        CountryOfOriginSummary.rowUpdate(record, recordId, NormalMode, recordIsLocked, countries),
+        CommodityCodeSummary.rowUpdate(record, recordId, NormalMode, recordIsLocked)
+      )
+    )
+
+    val categoryValue = record.category match {
+      case None        => if (recordIsLocked) "singleRecord.notCategorised.recordLocked" else "singleRecord.categoriseThisGood"
+      case Some(value) =>
+        value match {
+          case 1 => "singleRecord.cat1"
+          case 2 => "singleRecord.cat2"
+          case 3 => "singleRecord.standardGoods"
+        }
+    }
+
+    val categorisationList = SummaryListViewModel(
+      rows = Seq(
+        CategorySummary.row(categoryValue, recordId, recordIsLocked, isCategorised, record.reviewReason)
+      )
+    )
+
+    val supplementaryUnitList = SummaryListViewModel(
+      rows = Seq(
+        HasSupplementaryUnitSummary.row(record, recordId, recordIsLocked),
+        SupplementaryUnitSummary
+          .row(record.category, record.supplementaryUnit, record.measurementUnit, recordId, recordIsLocked)
+      ).flatten
+    )
+
+    val adviceList = SummaryListViewModel(
+      rows = Seq(
+        AdviceStatusSummary.row(record.adviceStatus, recordId, recordIsLocked, isReviewReasonCommodity)
+      )
+    )
+
+    val changesMade       = request.session.get(dataUpdated).contains("true")
+    val pageRemoved       = request.session.get(dataRemoved).contains("true")
+    val changedPage       = request.session.get(pageUpdated).getOrElse("")
+    val para              = AdviceStatusMessage.fromString(record.adviceStatus)
+    val isAutoCategorised = autoCategoriseScenario.isDefined
+
+    dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
+    dataCleansingService.deleteMongoData(request.userAnswers.id, RequestAdviceJourney)
+    dataCleansingService.deleteMongoData(request.userAnswers.id, WithdrawAdviceJourney)
+    dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
+
+    Ok(
+      view(
+        recordId,
+        detailsList,
+        categorisationList,
+        supplementaryUnitList,
+        adviceList,
+        changesMade,
+        changedPage,
+        pageRemoved,
+        recordIsLocked,
+        para,
+        record.declarable,
+        record.toReview,
+        isCategorised,
+        record.adviceStatus,
+        record.reviewReason,
+        backLink,
+        autoCategoriseScenario,
+        countryOfOriginUpdated,
+        record.traderRef,
+        isAutoCategorised,
+        showCommodityCodeBanner
+      )
+    ).removingFromSession(
+      initialValueOfHasSuppUnit,
+      initialValueOfSuppUnit,
+      goodsDescriptionOriginal,
+      "countryOfOriginChanged",
+      "showCommodityCodeChangeBanner"
+    )
+  }
 }

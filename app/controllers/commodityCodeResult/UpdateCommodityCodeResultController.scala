@@ -37,7 +37,7 @@ import repositories.SessionRepository
 import services.{AuditService, AutoCategoriseService, CommodityService}
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import utils.Constants.openAccreditationErrorCode
-import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
+import utils.SessionData.{commodityCode, dataRemoved, dataUpdated, pageUpdated}
 import views.html.HasCorrectGoodsView
 
 import javax.inject.Inject
@@ -159,14 +159,19 @@ class UpdateCommodityCodeResultController @Inject() (
       updatedAnswersWithChange <- Future.fromTry(request.userAnswers.remove(HasCommodityCodeChangePage(recordId)))
       updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CommodityCodeUpdatePage(recordId)))
       _                        <- sessionRepository.set(updatedAnswers)
-    } yield
-      if (
-        autoCategoriseScenario.isDefined || normaliseCode(commodity.commodityCode) == normaliseCode(oldRecord.comcode)
-      ) {
+    } yield {
+      val originalCode = normaliseCode(oldRecord.comcode)
+      val newCode      = normaliseCode(commodity.commodityCode)
+      val hasChanged   = newCode != originalCode
+      if (autoCategoriseScenario.isDefined || !hasChanged) {
         Redirect(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
+          .addingToSession(pageUpdated -> commodityCode)(request)
+          .addingToSession(dataUpdated -> request.session.get(dataUpdated).contains("true").toString)(request)
+          .addingToSession("showCommodityCodeChangeBanner" -> hasChanged.toString)(request) // ✅ banner flag
       } else {
         Redirect(controllers.goodsRecord.commodityCode.routes.UpdatedCommodityCodeController.onPageLoad(recordId))
-      }).recover { case e: GoodsRecordBuildFailure =>
+      }
+    }).recover { case e: GoodsRecordBuildFailure =>
       logErrorsAndContinue(
         e.getMessage,
         controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId)
