@@ -129,7 +129,7 @@ object ReviewReason {
   implicit val writes: Writes[ReviewReason] = Writes[ReviewReason] {
     case Commodity  => JsString("commodity")
     case Inadequate => JsString("inadequate")
-    case Unclear    => JsString("unclear")
+    case Unclear    => JsString("Unclear")
     case Measure    => JsString("measure")
     case Mismatch   => JsString("mismatch")
   }
@@ -137,7 +137,7 @@ object ReviewReason {
   implicit val reads: Reads[ReviewReason] = Reads[ReviewReason] {
     case JsString("commodity")  => JsSuccess(Commodity)
     case JsString("inadequate") => JsSuccess(Inadequate)
-    case JsString("unclear")    => JsSuccess(Unclear)
+    case JsString("Unclear")    => JsSuccess(Unclear)
     case JsString("measure")    => JsSuccess(Measure)
     case JsString("mismatch")   => JsSuccess(Mismatch)
     case other                  => JsError(s"[ReviewReason] Reads unknown ReviewReason: $other")
