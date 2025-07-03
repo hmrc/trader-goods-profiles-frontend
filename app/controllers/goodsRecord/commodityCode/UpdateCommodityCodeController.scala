@@ -103,6 +103,7 @@ class UpdateCommodityCodeController @Inject() (
                            )
             } yield result).recover { case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
               handleFormError(form, "commodityCode.error.invalid", onSubmitAction, mode, Some(recordId))
+                .addingToSession("showCommodityCodeChangeBanner" -> "true")
             }
           }
         )
