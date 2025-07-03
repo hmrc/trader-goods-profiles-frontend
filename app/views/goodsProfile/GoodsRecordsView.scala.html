@@ -16,6 +16,7 @@
 
 @import config.FrontendAppConfig
 @import models.Country.*
+@import models.DeclarableStatus.*
 @import models.router.responses.GetGoodsRecordResponse
 @import uk.gov.hmrc.govukfrontend.views.html.components.*
 @import viewmodels.LabelSize.*
@@ -225,33 +226,37 @@ if (
                     .map(_.description)
                     .getOrElse(goodsRecord.countryOfOrigin)
                     }</div>"""
-            )),
-            TableRow(Text(goodsRecord.comcode)),
-            TableRow(
-            content = {
-                HtmlContent(
-                tag(messages(goodsRecord.declarable.messageKey), goodsRecord.declarable.paragraphTagColour)
-        )
-    }
+                )),
+                TableRow(Text(goodsRecord.comcode)),
+                TableRow(
+                    content = {
+                        HtmlContent(
+                            if(!goodsRecord.toReview){
+                                tag(messages(goodsRecord.declarable.messageKey), goodsRecord.declarable.paragraphTagColour)
+                            } else {
+                                tag(messages(NotReadyForUse.messageKey), NotReadyForUse.paragraphTagColour)
+                            }
+                        )
+                    }
 
-    ),
-    TableRow(
-        HtmlContent(
-            tableRowActionList(
-                text1 = messages("site.view"),
-                text2 = messages("site.remove"),
-                visuallyHiddenContent1 = goodsRecord.traderRef,
-                visuallyHiddenContent2 = goodsRecord.traderRef,
-                href1 = controllers.goodsRecord.routes.SingleRecordController.onPageLoad(goodsRecord.recordId).url,
-                href2 = controllers.goodsProfile.routes.RemoveGoodsRecordController.onPageLoad(goodsRecord.recordId, GoodsProfileLocation).url,
-                adviceStatus = goodsRecord.adviceStatus
+                ),
+                TableRow(
+                    HtmlContent(
+                        tableRowActionList(
+                            text1 = messages("site.view"),
+                            text2 = messages("site.remove"),
+                            visuallyHiddenContent1 = goodsRecord.traderRef,
+                            visuallyHiddenContent2 = goodsRecord.traderRef,
+                            href1 = controllers.goodsRecord.routes.SingleRecordController.onPageLoad(goodsRecord.recordId).url,
+                            href2 = controllers.goodsProfile.routes.RemoveGoodsRecordController.onPageLoad(goodsRecord.recordId, GoodsProfileLocation).url,
+                            adviceStatus = goodsRecord.adviceStatus
+                        )
+                    )
                 )
-              )
             )
-          )
-        }
-   )
- )
+            }
+        )
+    )
 </div>
 
   @if(goodsRecordsPagination.totalPages > 1) {

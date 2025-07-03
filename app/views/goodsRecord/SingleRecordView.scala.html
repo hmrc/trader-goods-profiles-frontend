@@ -138,9 +138,9 @@
         id = None
         )
         ))
-        } else if(declarableStatus != DeclarableStatus.NotReadyForUse) {
-            <p class="govuk-body">@messages(declarableStatus.paragraphKey)</p>
-        }
+    }else if(declarableStatus != DeclarableStatus.NotReadyForUse && !toReview){
+        <p class="govuk-body">@messages(declarableStatus.paragraphKey)</p>
+    }
 
         @if(recordLocked) {
             <p class="govuk-inset-text">@messages("singleRecord.recordLocked")</p>

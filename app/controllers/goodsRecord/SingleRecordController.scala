@@ -22,7 +22,7 @@ import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierA
 import models.helper.{CategorisationJourney, RequestAdviceJourney, SupplementaryUnitUpdateJourney, WithdrawAdviceJourney}
 import models.requests.DataRequest
 import models.router.responses.GetGoodsRecordResponse
-import models.{AdviceStatusMessage, Country, NormalMode, ReviewReason, Scenario, UserAnswers}
+import models.{AdviceStatusMessage, Country, DeclarableStatus, NormalMode, ReviewReason, Scenario, UserAnswers}
 import pages.goodsRecord.*
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import queries.CountriesQuery
@@ -148,6 +148,12 @@ class SingleRecordController @Inject() (
       case _                                    => false
     }
 
+    val declarable = if (record.toReview) {
+      DeclarableStatus.NotReadyForUse
+    } else {
+      record.declarable
+    }
+
     val detailsList = SummaryListViewModel(
       rows = Seq(
         ProductReferenceSummary.row(record.traderRef, recordId, NormalMode, recordIsLocked),
@@ -210,7 +216,7 @@ class SingleRecordController @Inject() (
         pageRemoved,
         recordIsLocked,
         para,
-        record.declarable,
+        declarable,
         record.toReview,
         isCategorised,
         record.adviceStatus,

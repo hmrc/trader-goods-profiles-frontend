@@ -36,7 +36,7 @@ class ReviewReasonSpec extends SpecBase {
       }
 
       "when Unclear" in {
-        Json.fromJson[ReviewReason](JsString("unclear")) mustBe JsSuccess(Unclear)
+        Json.fromJson[ReviewReason](JsString("Unclear")) mustBe JsSuccess(Unclear)
       }
 
       "when Measure" in {
@@ -59,7 +59,7 @@ class ReviewReasonSpec extends SpecBase {
       }
 
       "when Unclear" in {
-        Json.toJson(Unclear: ReviewReason) mustBe JsString("unclear")
+        Json.toJson(Unclear: ReviewReason) mustBe JsString("Unclear")
       }
 
       "when Measure" in {
