@@ -67,12 +67,12 @@ class HomePageController @Inject() (
 
         Ok(
           view(
-            downloadReady(downloadDataSummary),
-            downloadLinkText,
-            showNewUkimsBanner,
-            doesGoodsRecordExist,
+            downloadReady = downloadReady(downloadDataSummary),
+            downloadLinkText = downloadLinkText,
+            ukimsNumberChanged = showNewUkimsBanner,
+            doesGoodsRecordExist = doesGoodsRecordExist,
             eoriNumber = request.eori,
-            viewUpdateGoodsRecordsLink
+            viewUpdateGoodsRecordsLink = viewUpdateGoodsRecordsLink
           )
         )
           .removingFromSession(pageUpdated)
