@@ -139,10 +139,11 @@ class SingleRecordController @Inject() (
       case _                                    => false
     }
 
-    val declarable = if record.toReview then
+    val declarable = if (record.toReview) {
       DeclarableStatus.NotReadyForUse
-    else
+    } else {
       record.declarable
+    }
 
     val detailsList = SummaryListViewModel(
       rows = Seq(
