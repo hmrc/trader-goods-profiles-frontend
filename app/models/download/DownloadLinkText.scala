@@ -30,13 +30,14 @@ case class DownloadLinkText(
     doesGoodsRecordExist match {
       case true if downloadDataSummaries.nonEmpty => "homepage.downloadLinkText.filesRequested"
       case true if downloadDataSummaries.isEmpty  => "homepage.downloadLinkText.noFilesRequested"
-      case _                                      => "homepage.noRecords"
+      case _                                      => "homepage.downloadLinkText.noGoodsRecords"
     }
   } else {
     "homepage.downloadLinkText.unverifiedEmail"
   }
 
-  val nonLinks: Seq[String]   = Seq("homepage.noRecords", "homepage.downloadLinkText.unverifiedEmail")
+  val nonLinks: Seq[String]   =
+    Seq("homepage.downloadLinkText.noGoodsRecords", "homepage.downloadLinkText.unverifiedEmail")
   private val isLink: Boolean = !nonLinks.contains(messageKey)
 
   val downloadLinkContent: Html = if (isLink) {
