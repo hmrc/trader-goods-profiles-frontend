@@ -59,7 +59,7 @@ class DownloadLinkTextSpec extends SpecBase with Generators {
 
         "and goods record does not exist" in {
           val downloadLinkText = DownloadLinkText(Seq.empty, doesGoodsRecordExist = false, verifiedEmail = true)
-          downloadLinkText.messageKey mustBe "homepage.noRecords"
+          downloadLinkText.messageKey mustBe "homepage.downloadLinkText.noGoodsRecords"
         }
       }
 
@@ -72,7 +72,10 @@ class DownloadLinkTextSpec extends SpecBase with Generators {
     "nonLinks" - {
       "should contain correct messageKeys" in {
         val downloadLinkText = DownloadLinkText(Seq.empty, doesGoodsRecordExist = false, verifiedEmail = false)
-        downloadLinkText.nonLinks mustBe Seq("homepage.noRecords", "homepage.downloadLinkText.unverifiedEmail")
+        downloadLinkText.nonLinks mustBe Seq(
+          "homepage.downloadLinkText.noGoodsRecords",
+          "homepage.downloadLinkText.unverifiedEmail"
+        )
       }
     }
 
