@@ -30,7 +30,7 @@ case class DownloadLinkText(
     doesGoodsRecordExist match {
       case true if downloadDataSummaries.nonEmpty => "homepage.downloadLinkText.filesRequested"
       case true if downloadDataSummaries.isEmpty  => "homepage.downloadLinkText.noFilesRequested"
-      case _                                      => "homepage.noRecords"
+      case _                                      => "homepage.downloadLinkText.noGoodsRecords"
     }
   } else {
     "homepage.downloadLinkText.unverifiedEmail"
