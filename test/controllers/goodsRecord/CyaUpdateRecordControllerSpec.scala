@@ -441,7 +441,7 @@ class CyaUpdateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             UpdateRecordSummary.row(answer, summaryKey, summaryHidden, summaryUrl)(messages(app))
           )
         )
-//this test
+
         "must return OK and the correct view with valid mandatory data" in {
           val userAnswers = emptyUserAnswers.set(page, answer).success.value
 
