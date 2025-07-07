@@ -32,9 +32,7 @@ import scala.util.{Failure, Success}
 class AutoCategoriseService @Inject() (
   categorisationService: CategorisationService,
   goodsRecordsConnector: GoodsRecordConnector,
-  sessionRepository: SessionRepository,
-  auditService: AuditService,
-  categoryRecord: CategoryRecord
+  sessionRepository: SessionRepository
 )(implicit ec: ExecutionContext)
     extends Logging {
 
@@ -68,15 +66,12 @@ class AutoCategoriseService @Inject() (
           updatedUserAnswers.flatMap { updatedUserAnswers =>
             CategoryRecord.build(updatedUserAnswers, record.eori, record.recordId, categorisationService) match {
               case Right(record) =>
-                // TODO - Probably want to have a  audit event for auto categorisation for monitoring
-
                 for {
                   oldRecord <-
                     goodsRecordsConnector.getRecord(
                       record.recordId
                     )
                   _         <- goodsRecordsConnector.updateCategoryAndComcodeForGoodsRecord(record.recordId, record, oldRecord)
-                  _ = auditService.auditFinishCategorisation(request.eori, request.affinityGroup, record.recordId, categoryRecord)
                 } yield Some(record.category)
 
               case Left(errors) =>

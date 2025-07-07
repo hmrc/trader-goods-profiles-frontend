@@ -154,7 +154,8 @@ case class AuditEventFactory() {
       // How many pages were answered (i.e. actually shown to the user)
       "categoryAssessmentsAnswered" -> categoryRecord.assessmentsAnswered.toString,
       "reassessmentNeeded"          -> categoryRecord.longerCategoryInfo.isDefined.toString,
-      "category"                    -> Scenario.getResultAsInt(categoryRecord.category).toString
+      "category"                    -> Scenario.getResultAsInt(categoryRecord.category).toString,
+      "updateSection"               -> CategorisationUpdate.toString
     ) ++ writeSupplementaryUnitDetails(categoryRecord) ++
       writeReassessmentDetails(categoryRecord)
 
