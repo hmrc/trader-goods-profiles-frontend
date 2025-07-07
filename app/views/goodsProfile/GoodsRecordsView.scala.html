@@ -133,11 +133,46 @@ if (
     }
 
     <div class="govuk-grid-row">
-        @goodsRecordFilterForm(form, countries, page, searchForm)
+        <div class="non-mobile-only">@goodsRecordFilterForm(form, countries, page, searchForm)</div>
 
         <div class="govuk-grid-column-two-thirds govuk-!-padding-left-20">
 
             @if(goodsRecordsPagination.totalRecords > 0) {
+                <div class="govuk-grid-row mobile-only">
+                    <div class="govuk-grid-column-two-thirds">
+                        <h2 class="govuk-heading-s">Contents</h2>
+                        <ul class="govuk-list">
+                            <li>&mdash;<a class="govuk-link"href="#information">Information about goods records</a></li>
+                            <li>&mdash;<a class="govuk-link"href="#createrecord">Creating a goods record</a></li>
+                            <li>&mdash;<a class="govuk-link"href="#searchrecord">Search and filter options</a></li>
+                            <li>&mdash;<a class="govuk-link"href="#goodsRecords">List of goods records</a></li> </ul>
+                    </div>
+                </div>
+
+            <div class="govuk-grid-column-two-thirds item govuk-!-padding-left-20 mobile-only">
+                <h2 class="govuk-heading-m" id="information">@messages("goodsRecords.h2.1")</h2>
+                @paragraphBody(messages("goodsRecords.p1"))
+                @paragraphBody(messages("goodsRecords.p2"))
+                <ul class="govuk-list govuk-list--bullet govuk-list--spaced">
+                    <li>
+                        @tag(messages("declarableStatus.immiReady"), "govuk-tag govuk-tag--green govuk-tag-width-override")
+                        @messages("goodsRecords.bullet.1")
+                    </li>
+                    <li>
+                        @tag(messages("declarableStatus.notReadyForImmi"), "govuk-tag govuk-tag--orange govuk-tag-width-override")
+                        @messages("goodsRecords.bullet.2")
+                    </li>
+                    <li>
+                        @tag(messages("declarableStatus.notReadyForUse"), "govuk-tag govuk-tag--red govuk-tag-width-override")
+                        @messages("goodsRecords.bullet.3")
+                    </li>
+                </ul>
+            </div>
+            <div class="govuk-form-group item last govuk-grid-column-one-third moj-filter__options_TGP mobile-only" id="searchrecord">
+                @goodsRecordFilterForm(form, countries, page, searchForm)
+            </div>
+
+            <div class="non-mobile-only">
                 <h2 class="govuk-heading-m">@messages("goodsRecords.h2.1")</h2>
                 @paragraphBody(messages("goodsRecords.p1"))
                 @paragraphBody(messages("goodsRecords.p2"))
@@ -155,9 +190,10 @@ if (
                         @messages("goodsRecords.bullet.3")
                     </li>
                  </ul>
+            </div>
             }
 
-            <h2 class="govuk-heading-m">@messages("goodsRecord.subHeading")</h2>
+            <h2 class="govuk-heading-m" id="createrecord">@messages("goodsRecord.subHeading")</h2>
 
             @paragraphBody(
                 message = messages("goodsRecords.link1.text") +

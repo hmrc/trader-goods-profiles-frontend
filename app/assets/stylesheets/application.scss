@@ -16,6 +16,43 @@
   animation: spin 2s linear infinite;
 }
 
+.mobile-only {
+    display:block;
+    visibility: visible;
+    }
+.parent {
+    display: flex;
+    flex-wrap: wrap-reverse;
+    }
+.last {
+    margin-right:20px!important;
+    margin-left:20px!important; }
+
+@media screen and (min-width: 600px) {
+    .mobile-only {
+        display:none
+        }
+    .parent {
+        flex-direction: row;
+        }
+    .last {
+        margin-right:0px!important; margin-left:0px!important;
+        }
+    }
+
+@media screen and (max-width: 600px) {
+    .non-mobile-only {
+        display:none
+        }
+    .parent {
+        flex-direction: row;
+        }
+    .last {
+        margin-right:0px!important; margin-left:0px!important;
+        }
+    }
+
+
  .custom-box {
   box-shadow: inset 0 0 0 1px #b1b4b6;
   margin-top: 1px;
