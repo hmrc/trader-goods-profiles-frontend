@@ -126,7 +126,8 @@ case class AuditEventFactory() {
       commodityCodeKey             -> goodsRecord.commodity.commodityCode,
       "commodityDescription"       -> goodsRecord.commodity.descriptions.headOption.getOrElse("null"),
       "commodityCodeEffectiveFrom" -> goodsRecord.commodity.validityStartDate.toString,
-      "commodityCodeEffectiveTo"   -> goodsRecord.commodity.validityEndDate.map(_.toString).getOrElse("null")
+      "commodityCodeEffectiveTo"   -> goodsRecord.commodity.validityEndDate.map(_.toString).getOrElse("null"),
+      "updateSection"              -> CategorisationUpdate.toString
     )
 
     createSubmitGoodsRecordEvent(auditDetails)

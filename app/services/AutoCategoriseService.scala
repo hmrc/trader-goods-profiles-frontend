@@ -32,7 +32,9 @@ import scala.util.{Failure, Success}
 class AutoCategoriseService @Inject() (
   categorisationService: CategorisationService,
   goodsRecordsConnector: GoodsRecordConnector,
-  sessionRepository: SessionRepository
+  sessionRepository: SessionRepository,
+  auditService: AuditService,
+  categoryRecord: CategoryRecord
 )(implicit ec: ExecutionContext)
     extends Logging {
 
@@ -74,6 +76,7 @@ class AutoCategoriseService @Inject() (
                       record.recordId
                     )
                   _         <- goodsRecordsConnector.updateCategoryAndComcodeForGoodsRecord(record.recordId, record, oldRecord)
+                  _ = auditService.auditFinishCategorisation(request.eori, request.affinityGroup, record.recordId, categoryRecord)
                 } yield Some(record.category)
 
               case Left(errors) =>
