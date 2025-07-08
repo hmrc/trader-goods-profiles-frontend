@@ -21,7 +21,7 @@ import base.TestConstants.{testEori, testRecordId}
 import models.audits._
 import models.helper.{CategorisationUpdate, CreateRecordJourney, RequestAdviceJourney, UpdateRecordJourney}
 import models.ott.response._
-import models.{AdviceRequest, Category1Scenario, Category2Scenario, CategoryRecord, Commodity, GoodsRecord, SupplementaryRequest, TraderProfile, UpdateGoodsRecord}
+import models._
 import play.api.http.Status.{NOT_FOUND, OK}
 import play.api.libs.json.Json
 import uk.gov.hmrc.auth.core.AffinityGroup
@@ -177,7 +177,7 @@ class AuditEventFactorySpec extends SpecBase {
           result.tags.isEmpty mustBe false
 
           val auditDetails = result.detail
-          auditDetails.size mustBe 11
+          auditDetails.size mustBe 12
           auditDetails("journey") mustBe "CreateRecord"
           auditDetails("eori") mustBe testEori
           auditDetails("affinityGroup") mustBe "Organisation"
@@ -222,7 +222,7 @@ class AuditEventFactorySpec extends SpecBase {
           result.tags.isEmpty mustBe false
 
           val auditDetails = result.detail
-          auditDetails.size mustBe 11
+          auditDetails.size mustBe 12
           auditDetails("journey") mustBe "CreateRecord"
           auditDetails("eori") mustBe testEori
           auditDetails("affinityGroup") mustBe "Organisation"

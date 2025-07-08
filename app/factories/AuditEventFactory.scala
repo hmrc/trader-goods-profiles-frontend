@@ -16,7 +16,7 @@
 
 package factories
 
-import models.audits._
+import models.audits.*
 import models.helper.{CategorisationUpdate, GoodsDetailsUpdate, Journey, SupplementaryUnitUpdate, UpdateSection}
 import models.ott.CategorisationInfo
 import models.ott.response.OttResponse
@@ -107,6 +107,12 @@ case class AuditEventFactory() {
 
   }
 
+  private def determineAutoCategory: String = if (CategorisationUpdate.toString.isEmpty) {
+    ""
+  } else {
+    "3"
+  }
+
   def createSubmitGoodsRecordEventForCreateRecord(
     affinityGroup: AffinityGroup,
     journey: Journey,
@@ -127,7 +133,8 @@ case class AuditEventFactory() {
       "commodityDescription"       -> goodsRecord.commodity.descriptions.headOption.getOrElse("null"),
       "commodityCodeEffectiveFrom" -> goodsRecord.commodity.validityStartDate.toString,
       "commodityCodeEffectiveTo"   -> goodsRecord.commodity.validityEndDate.map(_.toString).getOrElse("null"),
-      "updateSection"              -> CategorisationUpdate.toString
+      "updateSection"              -> CategorisationUpdate.toString,
+      "category"                   -> determineAutoCategory
     )
 
     createSubmitGoodsRecordEvent(auditDetails)
