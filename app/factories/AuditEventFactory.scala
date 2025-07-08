@@ -27,7 +27,7 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.AuditExtensions.auditHeaderCarrier
 import uk.gov.hmrc.play.audit.model.{DataEvent, ExtendedDataEvent}
-import utils.Constants.{commodityCodeKey, countryOfOriginKey, goodsDescriptionKey, productReferenceKey}
+import utils.Constants.{StandardGoodsAsInt, commodityCodeKey, countryOfOriginKey, goodsDescriptionKey, productReferenceKey}
 import utils.HttpStatusCodeDescriptions.codeDescriptions
 
 import java.time.Instant
@@ -107,10 +107,12 @@ case class AuditEventFactory() {
 
   }
 
-  private def determineAutoCategory: String = if (CategorisationUpdate.toString.isEmpty) {
+  /*All autocategorised goods will be 'StandardGoodsAsInt'. Therefore, to maintain the performance of the audit below, the following val defines the category when autocategorisation
+  is applied will be StandardGoodsAsInt. If not applied it'll be an empty string (no category yet).*/
+  private val autoCategory: String = if (CategorisationUpdate.toString.isEmpty) {
     ""
   } else {
-    "3"
+    StandardGoodsAsInt.toString
   }
 
   def createSubmitGoodsRecordEventForCreateRecord(
@@ -134,7 +136,7 @@ case class AuditEventFactory() {
       "commodityCodeEffectiveFrom" -> goodsRecord.commodity.validityStartDate.toString,
       "commodityCodeEffectiveTo"   -> goodsRecord.commodity.validityEndDate.map(_.toString).getOrElse("null"),
       "updateSection"              -> CategorisationUpdate.toString,
-      "category"                   -> determineAutoCategory
+      "category"                   -> autoCategory
     )
 
     createSubmitGoodsRecordEvent(auditDetails)
