@@ -35,15 +35,15 @@ class GoodsRecordNavigator @Inject() extends Navigator {
     case ProductReferencePage             =>
       _ => controllers.goodsRecord.goodsDescription.routes.CreateGoodsDescriptionController.onPageLoad(NormalMode)
     case p: ProductReferenceUpdatePage    =>
-      _ => controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadProductReference(p.recordId)
+      _ => controllers.goodsRecord.productReference.routes.ProductReferenceCyaController.onPageLoad(p.recordId)
     case GoodsDescriptionPage             =>
       _ => controllers.goodsRecord.countryOfOrigin.routes.CreateCountryOfOriginController.onPageLoad(NormalMode)
     case p: GoodsDescriptionUpdatePage    =>
-      _ => controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadGoodsDescription(p.recordId)
+      _ => controllers.goodsRecord.goodsDescription.routes.GoodsDescriptionCyaController.onPageLoad(p.recordId)
     case CountryOfOriginPage              =>
       _ => controllers.goodsRecord.commodityCode.routes.CreateCommodityCodeController.onPageLoad(NormalMode)
     case p: CountryOfOriginUpdatePage     =>
-      _ => controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(p.recordId)
+      _ => controllers.goodsRecord.countryOfOrigin.routes.CountryOfOriginCyaController.onPageLoad(p.recordId)
     case CommodityCodePage                =>
       _ => controllers.commodityCodeResult.routes.CreateCommodityCodeResultController.onPageLoad(NormalMode)
     case p: CommodityCodeUpdatePage       =>
@@ -60,13 +60,13 @@ class GoodsRecordNavigator @Inject() extends Navigator {
   override val checkRoutes: Page => UserAnswers => Call = {
     case ProductReferencePage          => _ => controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad()
     case p: ProductReferenceUpdatePage =>
-      _ => controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadProductReference(p.recordId)
+      _ => controllers.goodsRecord.productReference.routes.ProductReferenceCyaController.onPageLoad(p.recordId)
     case GoodsDescriptionPage          => _ => controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad()
     case p: GoodsDescriptionUpdatePage =>
-      _ => controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadGoodsDescription(p.recordId)
+      _ => controllers.goodsRecord.goodsDescription.routes.GoodsDescriptionCyaController.onPageLoad(p.recordId)
     case CountryOfOriginPage           => _ => controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad()
     case p: CountryOfOriginUpdatePage  =>
-      _ => controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(p.recordId)
+      _ => controllers.goodsRecord.countryOfOrigin.routes.CountryOfOriginCyaController.onPageLoad(p.recordId)
     case CommodityCodePage             =>
       _ => controllers.commodityCodeResult.routes.CreateCommodityCodeResultController.onPageLoad(CheckMode)
     case p: CommodityCodeUpdatePage    =>
