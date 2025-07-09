@@ -22,7 +22,7 @@ import connectors.{GoodsRecordConnector, OttConnector}
 import models.*
 import models.router.responses.GetGoodsRecordResponse
 import org.apache.pekko.Done
-import org.mockito.ArgumentMatchers.{any, eq as eqTo}
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.*
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
@@ -46,7 +46,11 @@ import views.html.goodsRecord.CyaUpdateRecordView
 import java.time.Instant
 import scala.concurrent.Future
 
-class CountryOfOriginCyaControllerSpec extends SpecBase with SummaryListFluency with MockitoSugar with BeforeAndAfterEach {
+class CountryOfOriginCyaControllerSpec
+    extends SpecBase
+    with SummaryListFluency
+    with MockitoSugar
+    with BeforeAndAfterEach {
 
   private lazy val journeyRecoveryContinueUrl =
     controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId).url
@@ -79,211 +83,251 @@ class CountryOfOriginCyaControllerSpec extends SpecBase with SummaryListFluency 
       Instant.parse("2022-11-18T23:20:19Z")
     ).copy(recordId = testRecordId, eori = testEori)
 
-      val summaryValue    = "China"
-      val summaryKey      = "countryOfOrigin.checkYourAnswersLabel"
-      val summaryHidden   = "countryOfOrigin.change.hidden"
-      val summaryUrl      = controllers.goodsRecord.countryOfOrigin.routes.UpdateCountryOfOriginController
-        .onPageLoad(CheckMode, testRecordId)
-        .url
-      val page            = CountryOfOriginUpdatePage(testRecordId)
-      val answer          = "CN"
-      val expectedPayload = UpdateGoodsRecord(testEori, testRecordId, countryOfOrigin = Some(answer))
-      val getUrl          = controllers.goodsRecord.countryOfOrigin.routes.CountryOfOriginCyaController.onPageLoad(testRecordId).url
-      val call            = controllers.goodsRecord.countryOfOrigin.routes.CountryOfOriginCyaController.onSubmit(testRecordId)
-      val postUrl         = controllers.goodsRecord.countryOfOrigin.routes.CountryOfOriginCyaController.onSubmit(testRecordId).url
-      val warningPage     = HasCountryOfOriginChangePage(testRecordId)
+    val summaryValue    = "China"
+    val summaryKey      = "countryOfOrigin.checkYourAnswersLabel"
+    val summaryHidden   = "countryOfOrigin.change.hidden"
+    val summaryUrl      = controllers.goodsRecord.countryOfOrigin.routes.UpdateCountryOfOriginController
+      .onPageLoad(CheckMode, testRecordId)
+      .url
+    val page            = CountryOfOriginUpdatePage(testRecordId)
+    val answer          = "CN"
+    val expectedPayload = UpdateGoodsRecord(testEori, testRecordId, countryOfOrigin = Some(answer))
+    val getUrl          =
+      controllers.goodsRecord.countryOfOrigin.routes.CountryOfOriginCyaController.onPageLoad(testRecordId).url
+    val call            = controllers.goodsRecord.countryOfOrigin.routes.CountryOfOriginCyaController.onSubmit(testRecordId)
+    val postUrl         = controllers.goodsRecord.countryOfOrigin.routes.CountryOfOriginCyaController.onSubmit(testRecordId).url
+    val warningPage     = HasCountryOfOriginChangePage(testRecordId)
 
-      "for a GET" - {
-        def createChangeList(app: Application): SummaryList = SummaryListViewModel(
-          rows = Seq(UpdateRecordSummary.countryRow(summaryValue, summaryKey, summaryHidden, summaryUrl)(messages(app)))
-        )
+    "for a GET" - {
+      def createChangeList(app: Application): SummaryList = SummaryListViewModel(
+        rows = Seq(UpdateRecordSummary.countryRow(summaryValue, summaryKey, summaryHidden, summaryUrl)(messages(app)))
+      )
 
-        "must return OK and the correct view with valid mandatory data getting countries from connector" in {
-          val userAnswers = emptyUserAnswers
-            .set(page, answer)
-            .success
-            .value
-            .set(warningPage, true)
-            .success
-            .value
+      "must return OK and the correct view with valid mandatory data getting countries from connector" in {
+        val userAnswers = emptyUserAnswers
+          .set(page, answer)
+          .success
+          .value
+          .set(warningPage, true)
+          .success
+          .value
 
-          when(mockOttConnector.getCountries(any())) thenReturn Future.successful(Seq(Country("CN", "China")))
-          when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
+        when(mockOttConnector.getCountries(any())) thenReturn Future.successful(Seq(Country("CN", "China")))
+        when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
 
-          val application = applicationBuilder(userAnswers = Some(userAnswers))
-            .overrides(bind[OttConnector].toInstance(mockOttConnector))
-            .overrides(bind[AuditService].toInstance(mockAuditService))
-            .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
-            .build()
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(bind[OttConnector].toInstance(mockOttConnector))
+          .overrides(bind[AuditService].toInstance(mockAuditService))
+          .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
+          .build()
 
-          running(application) {
-            val request = FakeRequest(GET, getUrl)
-            val result  = route(application, request).value
-            val view    = application.injector.instanceOf[CyaUpdateRecordView]
-            val list    = createChangeList(application)
+        running(application) {
+          val request = FakeRequest(GET, getUrl)
+          val result  = route(application, request).value
+          val view    = application.injector.instanceOf[CyaUpdateRecordView]
+          val list    = createChangeList(application)
 
-            status(result) mustEqual OK
-            contentAsString(result) mustEqual view(list, call, countryOfOriginKey)(
-              request,
-              messages(application)
-            ).toString
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(list, call, countryOfOriginKey)(
+            request,
+            messages(application)
+          ).toString
 
-            withClue("must not try and submit an audit") {
-              verify(mockAuditService, never()).auditFinishUpdateGoodsRecord(any(), any(), any())(any())
-            }
-          }
-        }
-
-        "must return OK and the correct view with valid mandatory data getting countries from query" in {
-          val userAnswers = emptyUserAnswers
-            .set(page, answer)
-            .success
-            .value
-            .set(CountriesQuery, Seq(Country("CN", "China")))
-            .success
-            .value
-            .set(warningPage, true)
-            .success
-            .value
-
-          when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
-
-          val application = applicationBuilder(userAnswers = Some(userAnswers))
-            .overrides(bind[AuditService].toInstance(mockAuditService))
-            .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
-            .build()
-
-          running(application) {
-            val request = FakeRequest(GET, getUrl)
-            val result  = route(application, request).value
-            val view    = application.injector.instanceOf[CyaUpdateRecordView]
-            val list    = createChangeList(application)
-
-            status(result) mustEqual OK
-            contentAsString(result) mustEqual view(list, call, countryOfOriginKey)(
-              request,
-              messages(application)
-            ).toString
-
-            withClue("must not try and submit an audit") {
-              verify(mockAuditService, never()).auditFinishUpdateGoodsRecord(any(), any(), any())(any())
-            }
-          }
-        }
-
-        "must redirect to Journey Recovery if no answers are found" in {
-          when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
-
-          val application = applicationBuilder(Some(emptyUserAnswers))
-            .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
-            .build()
-
-          running(application) {
-            val request = FakeRequest(GET, getUrl)
-            val result  = route(application, request).value
-
-            status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual
-              controllers.problem.routes.JourneyRecoveryController
-                .onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl)))
-                .url
-
-          }
-        }
-
-        "must redirect to Journey Recovery if no record is found" in {
-          when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.failed(
-            new RuntimeException("Something went very wrong")
-          )
-
-          val application = applicationBuilder(Some(emptyUserAnswers))
-            .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
-            .build()
-
-          running(application) {
-            val request = FakeRequest(GET, getUrl)
-            val result  = route(application, request).value
-
-            status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual
-              controllers.problem.routes.JourneyRecoveryController
-                .onPageLoad(continueUrl = Some(RedirectUrl(journeyRecoveryContinueUrl)))
-                .url
-          }
-        }
-
-        "must redirect to Journey Recovery if getCountryOfOriginAnswer returns None" in {
-          val userAnswers = emptyUserAnswers.set(warningPage, true).success.value
-
-          when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
-
-          val application = applicationBuilder(userAnswers = Some(userAnswers))
-            .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
-            .build()
-
-          running(application) {
-            val request = FakeRequest(GET, getUrl)
-            val result  = route(application, request).value
-
-            status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual
-              controllers.problem.routes.JourneyRecoveryController
-                .onPageLoad(continueUrl = Some(RedirectUrl(journeyRecoveryContinueUrl)))
-                .url
-          }
-        }
-
-        "must redirect to Journey Recovery if no existing data is found" in {
-          val application = applicationBuilder(userAnswers = None).build()
-
-          running(application) {
-            val request = FakeRequest(GET, getUrl)
-            val result  = route(application, request).value
-
-            status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
-              .onPageLoad()
-              .url
+          withClue("must not try and submit an audit") {
+            verify(mockAuditService, never()).auditFinishUpdateGoodsRecord(any(), any(), any())(any())
           }
         }
       }
 
-      "for a POST" - {
-        "must update the goods record, cleanse the data and redirect to the Goods record Page" in {
+      "must return OK and the correct view with valid mandatory data getting countries from query" in {
+        val userAnswers = emptyUserAnswers
+          .set(page, answer)
+          .success
+          .value
+          .set(CountriesQuery, Seq(Country("CN", "China")))
+          .success
+          .value
+          .set(warningPage, true)
+          .success
+          .value
 
-          val userAnswers = emptyUserAnswers
-            .set(page, answer)
+        when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
+
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(bind[AuditService].toInstance(mockAuditService))
+          .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
+          .build()
+
+        running(application) {
+          val request = FakeRequest(GET, getUrl)
+          val result  = route(application, request).value
+          val view    = application.injector.instanceOf[CyaUpdateRecordView]
+          val list    = createChangeList(application)
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(list, call, countryOfOriginKey)(
+            request,
+            messages(application)
+          ).toString
+
+          withClue("must not try and submit an audit") {
+            verify(mockAuditService, never()).auditFinishUpdateGoodsRecord(any(), any(), any())(any())
+          }
+        }
+      }
+
+      "must redirect to Journey Recovery if no answers are found" in {
+        when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
+
+        val application = applicationBuilder(Some(emptyUserAnswers))
+          .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
+          .build()
+
+        running(application) {
+          val request = FakeRequest(GET, getUrl)
+          val result  = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual
+            controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl)))
+              .url
+
+        }
+      }
+
+      "must redirect to Journey Recovery if no record is found" in {
+        when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.failed(
+          new RuntimeException("Something went very wrong")
+        )
+
+        val application = applicationBuilder(Some(emptyUserAnswers))
+          .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
+          .build()
+
+        running(application) {
+          val request = FakeRequest(GET, getUrl)
+          val result  = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual
+            controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad(continueUrl = Some(RedirectUrl(journeyRecoveryContinueUrl)))
+              .url
+        }
+      }
+
+      "must redirect to Journey Recovery if getCountryOfOriginAnswer returns None" in {
+        val userAnswers = emptyUserAnswers.set(warningPage, true).success.value
+
+        when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
+
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
+          .build()
+
+        running(application) {
+          val request = FakeRequest(GET, getUrl)
+          val result  = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual
+            controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad(continueUrl = Some(RedirectUrl(journeyRecoveryContinueUrl)))
+              .url
+        }
+      }
+
+      "must redirect to Journey Recovery if no existing data is found" in {
+        val application = applicationBuilder(userAnswers = None).build()
+
+        running(application) {
+          val request = FakeRequest(GET, getUrl)
+          val result  = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+            .onPageLoad()
+            .url
+        }
+      }
+    }
+
+    "for a POST" - {
+      "must update the goods record, cleanse the data and redirect to the Goods record Page" in {
+
+        val userAnswers = emptyUserAnswers
+          .set(page, answer)
+          .success
+          .value
+          .set(warningPage, true)
+          .success
+          .value
+          .set(OriginalCountryOfOriginPage(testRecordId), "GB")
+          .success
+          .value
+
+        when(mockGoodsRecordConnector.getRecord(eqTo(testRecordId))(any()))
+          .thenReturn(Future.successful(record))
+
+        when(mockGoodsRecordConnector.putGoodsRecord(any(), any())(any()))
+          .thenReturn(Future.successful(Done))
+
+        when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any()))
+          .thenReturn(Future.successful(Done))
+
+        when(mockSessionRepository.set(any()))
+          .thenReturn(Future.successful(true))
+
+        // Mock the overload with (String, UserAnswers) explicitly:
+        when(mockAutoCategoriseService.autoCategoriseRecord(any[String], any[UserAnswers])(any(), any()))
+          .thenReturn(Future.successful(None))
+
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(
+            bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[AuditService].toInstance(mockAuditService),
+            bind[AutoCategoriseService].toInstance(mockAutoCategoriseService)
+          )
+          .build()
+
+        running(application) {
+          val request = FakeRequest(POST, postUrl)
+          val result  = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual
+            controllers.goodsRecord.countryOfOrigin.routes.UpdatedCountryOfOriginController
+              .onPageLoad(testRecordId)
+              .url
+
+          verify(mockGoodsRecordConnector).putGoodsRecord(any(), any())(any())
+          verify(mockSessionRepository).set(any())
+
+          withClue("must call the audit connector with the supplied details") {
+            verify(mockAuditService).auditFinishUpdateGoodsRecord(
+              eqTo(testRecordId),
+              eqTo(AffinityGroup.Individual),
+              eqTo(expectedPayload)
+            )(any())
+          }
+        }
+      }
+
+      "when user answers cannot create an update goods record" - {
+        "must not submit anything, and redirect to Journey Recovery" in {
+          val userAnswersWithCountryOrigin = emptyUserAnswers
+            .set(OriginalCountryOfOriginPage(testRecordId), "United Kingdom")
             .success
             .value
-            .set(warningPage, true)
-            .success
-            .value
-            .set(OriginalCountryOfOriginPage(testRecordId), "GB")
-            .success
-            .value
 
-          when(mockGoodsRecordConnector.getRecord(eqTo(testRecordId))(any()))
-            .thenReturn(Future.successful(record))
+          when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(record))
 
-          when(mockGoodsRecordConnector.putGoodsRecord(any(), any())(any()))
-            .thenReturn(Future.successful(Done))
-
-          when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any()))
-            .thenReturn(Future.successful(Done))
-
-          when(mockSessionRepository.set(any()))
-            .thenReturn(Future.successful(true))
-
-          // Mock the overload with (String, UserAnswers) explicitly:
-          when(mockAutoCategoriseService.autoCategoriseRecord(any[String], any[UserAnswers])(any(), any()))
-            .thenReturn(Future.successful(None))
-
-          val application = applicationBuilder(userAnswers = Some(userAnswers))
+          val application = applicationBuilder(userAnswers = Some(userAnswersWithCountryOrigin))
             .overrides(
               bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-              bind[SessionRepository].toInstance(mockSessionRepository),
-              bind[AuditService].toInstance(mockAuditService),
-              bind[AutoCategoriseService].toInstance(mockAutoCategoriseService)
+              bind[CommodityService].toInstance(mockCommodityService)
             )
             .build()
 
@@ -292,119 +336,80 @@ class CountryOfOriginCyaControllerSpec extends SpecBase with SummaryListFluency 
             val result  = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual
-              controllers.goodsRecord.countryOfOrigin.routes.UpdatedCountryOfOriginController
-                .onPageLoad(testRecordId)
-                .url
+            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+              .onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl)))
+              .url
 
-            verify(mockGoodsRecordConnector).putGoodsRecord(any(), any())(any())
-            verify(mockSessionRepository).set(any())
-
-            withClue("must call the audit connector with the supplied details") {
-              verify(mockAuditService).auditFinishUpdateGoodsRecord(
-                eqTo(testRecordId),
-                eqTo(AffinityGroup.Individual),
-                eqTo(expectedPayload)
-              )(any())
-            }
+            verify(mockGoodsRecordConnector).getRecord(any())(any())
           }
         }
 
-        "when user answers cannot create an update goods record" - {
-          "must not submit anything, and redirect to Journey Recovery" in {
-            val userAnswersWithCountryOrigin = emptyUserAnswers
-              .set(OriginalCountryOfOriginPage(testRecordId), "United Kingdom")
-              .success
-              .value
+        "must not submit anything when record is not found, and must let the play error handler deal with connector failure" in {
+          when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
+            .failed(new RuntimeException("Something went very wrong"))
 
-            when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(record))
-
-            val application = applicationBuilder(userAnswers = Some(userAnswersWithCountryOrigin))
-              .overrides(
-                bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-                bind[CommodityService].toInstance(mockCommodityService)
-              )
+          val application =
+            applicationBuilder(userAnswers = Some(emptyUserAnswers))
+              .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
               .build()
 
-            running(application) {
-              val request = FakeRequest(POST, postUrl)
-              val result  = route(application, request).value
-
-              status(result) mustEqual SEE_OTHER
-              redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
-                .onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl)))
-                .url
-
+          running(application) {
+            val request = FakeRequest(POST, postUrl)
+            intercept[RuntimeException] {
+              await(route(application, request).value)
               verify(mockGoodsRecordConnector).getRecord(any())(any())
             }
           }
-
-          "must not submit anything when record is not found, and must let the play error handler deal with connector failure" in {
-            when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
-              .failed(new RuntimeException("Something went very wrong"))
-
-            val application =
-              applicationBuilder(userAnswers = Some(emptyUserAnswers))
-                .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
-                .build()
-
-            running(application) {
-              val request = FakeRequest(POST, postUrl)
-              intercept[RuntimeException] {
-                await(route(application, request).value)
-                verify(mockGoodsRecordConnector).getRecord(any())(any())
-              }
-            }
-          }
-        }
-
-        "must let the play error handler deal with connector failure when updating" in {
-          val userAnswers = emptyUserAnswers
-            .set(page, answer)
-            .success
-            .value
-            .set(warningPage, true)
-            .success
-            .value
-
-          when(mockGoodsRecordConnector.patchGoodsRecord(any())(any()))
-            .thenReturn(Future.failed(new RuntimeException("Connector failed")))
-          when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
-            .thenReturn(Future.successful(Done))
-          when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
-
-          val application = applicationBuilder(userAnswers = Some(userAnswers))
-            .overrides(
-              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-              bind[AuditService].toInstance(mockAuditService)
-            )
-            .build()
-
-          running(application) {
-            val request = FakeRequest(POST, postUrl)
-            intercept[Exception] {
-              await(route(application, request).value)
-            }
-
-            verify(mockGoodsRecordConnector).getRecord(any())(any())
-
-          }
-        }
-
-        "must redirect to Journey Recovery if no existing data is found" in {
-          val application = applicationBuilder(userAnswers = None).build()
-
-          running(application) {
-            val request = FakeRequest(POST, postUrl)
-            val result  = route(application, request).value
-
-            status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
-              .onPageLoad()
-              .url
-          }
         }
       }
 
+      "must let the play error handler deal with connector failure when updating" in {
+        val userAnswers = emptyUserAnswers
+          .set(page, answer)
+          .success
+          .value
+          .set(warningPage, true)
+          .success
+          .value
+
+        when(mockGoodsRecordConnector.patchGoodsRecord(any())(any()))
+          .thenReturn(Future.failed(new RuntimeException("Connector failed")))
+        when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
+          .thenReturn(Future.successful(Done))
+        when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
+
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(
+            bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+            bind[AuditService].toInstance(mockAuditService)
+          )
+          .build()
+
+        running(application) {
+          val request = FakeRequest(POST, postUrl)
+          intercept[Exception] {
+            await(route(application, request).value)
+          }
+
+          verify(mockGoodsRecordConnector).getRecord(any())(any())
+
+        }
+      }
+
+      "must redirect to Journey Recovery if no existing data is found" in {
+        val application = applicationBuilder(userAnswers = None).build()
+
+        running(application) {
+          val request = FakeRequest(POST, postUrl)
+          val result  = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
+            .onPageLoad()
+            .url
+        }
+      }
     }
+
+  }
 }

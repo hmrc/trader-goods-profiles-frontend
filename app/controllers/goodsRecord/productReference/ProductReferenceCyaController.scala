@@ -40,23 +40,22 @@ import views.html.goodsRecord.CyaUpdateRecordView
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ProductReferenceCyaController @Inject()(
-                                               override val messagesApi: MessagesApi,
-                                               identify: IdentifierAction,
-                                               getData: DataRetrievalAction,
-                                               requireData: DataRequiredAction,
-                                               profileAuth: ProfileAuthenticateAction,
-                                               val controllerComponents: MessagesControllerComponents,
-                                               auditService: AuditService,
-                                               view: CyaUpdateRecordView,
-                                               goodsRecordConnector: GoodsRecordConnector,
-                                               sessionRepository: SessionRepository,
-                                               navigator: GoodsRecordNavigator
-                                             )(implicit ec: ExecutionContext)
-  extends BaseController {
+class ProductReferenceCyaController @Inject() (
+  override val messagesApi: MessagesApi,
+  identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
+  profileAuth: ProfileAuthenticateAction,
+  val controllerComponents: MessagesControllerComponents,
+  auditService: AuditService,
+  view: CyaUpdateRecordView,
+  goodsRecordConnector: GoodsRecordConnector,
+  sessionRepository: SessionRepository,
+  navigator: GoodsRecordNavigator
+)(implicit ec: ExecutionContext)
+    extends BaseController {
 
   private val errorMessage: String = "Unable to update Goods Record."
-
 
   def onPageLoad(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
@@ -69,7 +68,7 @@ class ProductReferenceCyaController @Inject()(
             Seq(ProductReferenceSummary.row(productReference, recordId, CheckMode, recordLocked = false))
           )
           Ok(view(list, onSubmitAction, productReferenceKey))
-        case Left(errors) =>
+        case Left(errors)            =>
           logErrorsAndContinue(
             errorMessage,
             controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId),
@@ -91,10 +90,10 @@ class ProductReferenceCyaController @Inject()(
   }
 
   private def updateGoodsRecordIfValueChanged(
-                                               newValue: String,
-                                               oldValue: String,
-                                               newUpdateGoodsRecord: UpdateGoodsRecord
-                                             )(implicit hc: HeaderCarrier): Future[Done] =
+    newValue: String,
+    oldValue: String,
+    newUpdateGoodsRecord: UpdateGoodsRecord
+  )(implicit hc: HeaderCarrier): Future[Done] =
     if (newValue != oldValue) {
       goodsRecordConnector.patchGoodsRecord(
         newUpdateGoodsRecord
@@ -103,26 +102,25 @@ class ProductReferenceCyaController @Inject()(
       Future.successful(Done)
     }
 
-
   def onSubmit(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       (for {
-        productReference <-
+        productReference  <-
           handleValidateError(UpdateGoodsRecord.validateproductReference(request.userAnswers, recordId))
         updateGoodsRecord <-
           Future.successful(UpdateGoodsRecord(request.eori, recordId, productReference = Some(productReference)))
-        _ = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
-        oldRecord <- goodsRecordConnector.getRecord(recordId)
-        _ <- updateGoodsRecordIfValueChanged(productReference, oldRecord.traderRef, updateGoodsRecord)
-        updatedAnswers <- Future.fromTry(request.userAnswers.remove(ProductReferenceUpdatePage(recordId)))
-        _ <- sessionRepository.set(updatedAnswers)
+        _                  = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
+        oldRecord         <- goodsRecordConnector.getRecord(recordId)
+        _                 <- updateGoodsRecordIfValueChanged(productReference, oldRecord.traderRef, updateGoodsRecord)
+        updatedAnswers    <- Future.fromTry(request.userAnswers.remove(ProductReferenceUpdatePage(recordId)))
+        _                 <- sessionRepository.set(updatedAnswers)
       } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers)))
         .recover(handleRecover(recordId))
     }
 
   private def handleRecover(
-                             recordId: String
-                           )(implicit request: DataRequest[AnyContent]): PartialFunction[Throwable, Result] = {
+    recordId: String
+  )(implicit request: DataRequest[AnyContent]): PartialFunction[Throwable, Result] = {
     case e: GoodsRecordBuildFailure =>
       logErrorsAndContinue(
         e.getMessage,

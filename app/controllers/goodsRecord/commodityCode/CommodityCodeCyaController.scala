@@ -17,9 +17,8 @@
 package controllers.goodsRecord.commodityCode
 
 import cats.data
-import cats.data.EitherNec
 import com.google.inject.Inject
-import connectors.{GoodsRecordConnector, OttConnector}
+import connectors.GoodsRecordConnector
 import controllers.BaseController
 import controllers.actions.*
 import models.*
@@ -30,7 +29,6 @@ import org.apache.pekko.Done
 import pages.goodsRecord.*
 import play.api.i18n.MessagesApi
 import play.api.mvc.*
-import queries.CountriesQuery
 import repositories.SessionRepository
 import services.{AuditService, AutoCategoriseService, CommodityService}
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
@@ -44,23 +42,22 @@ import views.html.goodsRecord.CyaUpdateRecordView
 import java.time.{LocalDate, ZoneId}
 import scala.concurrent.{ExecutionContext, Future}
 
-class CommodityCodeCyaController @Inject()(
-                                            override val messagesApi: MessagesApi,
-                                            identify: IdentifierAction,
-                                            getData: DataRetrievalAction,
-                                            requireData: DataRequiredAction,
-                                            profileAuth: ProfileAuthenticateAction,
-                                            val controllerComponents: MessagesControllerComponents,
-                                            auditService: AuditService,
-                                            view: CyaUpdateRecordView,
-                                            goodsRecordConnector: GoodsRecordConnector,
-                                            ottConnector: OttConnector,
-                                            sessionRepository: SessionRepository,
-                                            navigator: GoodsRecordNavigator,
-                                            autoCategoriseService: AutoCategoriseService,
-                                            commodityService: CommodityService
-                                          )(implicit ec: ExecutionContext)
-  extends BaseController {
+class CommodityCodeCyaController @Inject() (
+  override val messagesApi: MessagesApi,
+  identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
+  profileAuth: ProfileAuthenticateAction,
+  val controllerComponents: MessagesControllerComponents,
+  auditService: AuditService,
+  view: CyaUpdateRecordView,
+  goodsRecordConnector: GoodsRecordConnector,
+  sessionRepository: SessionRepository,
+  navigator: GoodsRecordNavigator,
+  autoCategoriseService: AutoCategoriseService,
+  commodityService: CommodityService
+)(implicit ec: ExecutionContext)
+    extends BaseController {
 
   private val errorMessage: String = "Unable to update Goods Record."
 
@@ -94,7 +91,7 @@ class CommodityCodeCyaController @Inject()(
                   )
                 )
                 Future.successful(Ok(view(list, onSubmitAction, commodityCodeKey)))
-              case Left(errors) =>
+              case Left(errors)     =>
                 Future.successful(
                   logErrorsAndContinue(
                     errorMessage,
@@ -115,16 +112,6 @@ class CommodityCodeCyaController @Inject()(
         }
     }
 
-
-
-
-
-  private def handleValidateError[T](result: EitherNec[ValidationError, T]): Future[T] =
-    result match {
-      case Right(value) => Future.successful(value)
-      case Left(errors) => Future.failed(GoodsRecordBuildFailure(errors))
-    }
-
   private case class GoodsRecordBuildFailure(errors: data.NonEmptyChain[ValidationError]) extends Exception {
     private val errorsAsString = errors.toChain.toList.map(_.message).mkString(", ")
 
@@ -132,11 +119,11 @@ class CommodityCodeCyaController @Inject()(
   }
 
   private def updateGoodsRecordIfPutValueChanged(
-                                                  newValue: String,
-                                                  oldValue: String,
-                                                  newUpdateGoodsRecord: UpdateGoodsRecord,
-                                                  putRecordRequest: PutRecordRequest
-                                                )(implicit hc: HeaderCarrier): Future[Done] =
+    newValue: String,
+    oldValue: String,
+    newUpdateGoodsRecord: UpdateGoodsRecord,
+    putRecordRequest: PutRecordRequest
+  )(implicit hc: HeaderCarrier): Future[Done] =
     if (newValue != oldValue) {
       goodsRecordConnector.putGoodsRecord(
         putRecordRequest,
@@ -152,46 +139,46 @@ class CommodityCodeCyaController @Inject()(
 
       val resultFuture =
         for {
-          oldRecord <- goodsRecordConnector.getRecord(recordId)
-          isCommCodeExpired = oldRecord.comcodeEffectiveToDate.exists(
-            _.isBefore(LocalDate.now().atStartOfDay(ZoneId.of("UTC")).toInstant)
-          )
-          commodity <- UpdateGoodsRecord.validateCommodityCode(
-            request.userAnswers,
-            recordId,
-            oldRecord.category.isDefined,
-            isCommCodeExpired
-          ) match {
-            case Right(value) => Future.successful(value)
-            case Left(errors) => Future.failed(new Exception(errors.toString))
-          }
-          updateGoodsRecord = UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity))
-          putGoodsRecord = PutRecordRequest(
-            actorId = oldRecord.eori,
-            traderRef = oldRecord.traderRef,
-            comcode = commodity.commodityCode,
-            goodsDescription = oldRecord.goodsDescription,
-            countryOfOrigin = oldRecord.countryOfOrigin,
-            category = None,
-            assessments = oldRecord.assessments,
-            supplementaryUnit = oldRecord.supplementaryUnit,
-            measurementUnit = oldRecord.measurementUnit,
-            comcodeEffectiveFromDate = commodity.validityStartDate,
-            comcodeEffectiveToDate = commodity.validityEndDate
-          )
-          _ = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
-          _ <- updateGoodsRecordIfPutValueChanged(
-            commodity.commodityCode,
-            oldRecord.comcode,
-            updateGoodsRecord,
-            putGoodsRecord
-          )
+          oldRecord                <- goodsRecordConnector.getRecord(recordId)
+          isCommCodeExpired         = oldRecord.comcodeEffectiveToDate.exists(
+                                        _.isBefore(LocalDate.now().atStartOfDay(ZoneId.of("UTC")).toInstant)
+                                      )
+          commodity                <- UpdateGoodsRecord.validateCommodityCode(
+                                        request.userAnswers,
+                                        recordId,
+                                        oldRecord.category.isDefined,
+                                        isCommCodeExpired
+                                      ) match {
+                                        case Right(value) => Future.successful(value)
+                                        case Left(errors) => Future.failed(new Exception(errors.toString))
+                                      }
+          updateGoodsRecord         = UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity))
+          putGoodsRecord            = PutRecordRequest(
+                                        actorId = oldRecord.eori,
+                                        traderRef = oldRecord.traderRef,
+                                        comcode = commodity.commodityCode,
+                                        goodsDescription = oldRecord.goodsDescription,
+                                        countryOfOrigin = oldRecord.countryOfOrigin,
+                                        category = None,
+                                        assessments = oldRecord.assessments,
+                                        supplementaryUnit = oldRecord.supplementaryUnit,
+                                        measurementUnit = oldRecord.measurementUnit,
+                                        comcodeEffectiveFromDate = commodity.validityStartDate,
+                                        comcodeEffectiveToDate = commodity.validityEndDate
+                                      )
+          _                         = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
+          _                        <- updateGoodsRecordIfPutValueChanged(
+                                        commodity.commodityCode,
+                                        oldRecord.comcode,
+                                        updateGoodsRecord,
+                                        putGoodsRecord
+                                      )
           updatedAnswersWithChange <- Future.fromTry(request.userAnswers.remove(HasCommodityCodeChangePage(recordId)))
-          updatedAnswers <- Future.fromTry(updatedAnswersWithChange.remove(CommodityCodeUpdatePage(recordId)))
-          _ <- sessionRepository.set(updatedAnswers)
-          autoCategoriseScenario <- autoCategoriseService.autoCategoriseRecord(recordId, updatedAnswers)
+          updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CommodityCodeUpdatePage(recordId)))
+          _                        <- sessionRepository.set(updatedAnswers)
+          autoCategoriseScenario   <- autoCategoriseService.autoCategoriseRecord(recordId, updatedAnswers)
         } yield {
-          val newCode = commodity.commodityCode.trim
+          val newCode      = commodity.commodityCode.trim
           val originalCode = maybeOriginalCommodityCode.getOrElse("").trim
 
           val commodityCodeHasChanged = newCode != originalCode
@@ -212,8 +199,8 @@ class CommodityCodeCyaController @Inject()(
     }
 
   private def handleRecover(
-                             recordId: String
-                           )(implicit request: DataRequest[AnyContent]): PartialFunction[Throwable, Result] = {
+    recordId: String
+  )(implicit request: DataRequest[AnyContent]): PartialFunction[Throwable, Result] = {
     case e: GoodsRecordBuildFailure =>
       logErrorsAndContinue(
         e.getMessage,
