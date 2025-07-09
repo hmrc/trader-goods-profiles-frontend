@@ -17,7 +17,7 @@
 package models.router.requests
 
 import models.router.responses.{Assessment, GetGoodsRecordResponse}
-import models.{CategoryRecord, Scenario, SupplementaryRequest}
+import models.{CategoryRecord, Scenario, SupplementaryRequest, UpdateGoodsRecord}
 import play.api.libs.json.{Json, OFormat}
 
 import java.time.Instant
@@ -56,9 +56,9 @@ object PutRecordRequest {
     )
 
   def mapFromSupplementary(
-    supplementaryUnitRequest: SupplementaryRequest,
-    oldRecord: GetGoodsRecordResponse
-  ): PutRecordRequest =
+                            supplementaryUnitRequest: SupplementaryRequest,
+                            oldRecord: GetGoodsRecordResponse
+                          ): PutRecordRequest =
     PutRecordRequest(
       actorId = supplementaryUnitRequest.eori,
       oldRecord.traderRef,
@@ -70,7 +70,7 @@ object PutRecordRequest {
       supplementaryUnit = supplementaryUnitRequest.supplementaryUnit match {
         case s if s.nonEmpty => convertToBigDecimal(supplementaryUnitRequest.supplementaryUnit)
         //API don't support removing supplementaryUnit, so setting it to zero here
-        case _               => Some(0)
+        case _ => Some(0)
       },
       measurementUnit = supplementaryUnitRequest.measurementUnit,
       oldRecord.comcodeEffectiveFromDate,
@@ -79,4 +79,27 @@ object PutRecordRequest {
 
   private def convertToBigDecimal(value: Option[String]): Option[BigDecimal] =
     value.flatMap(v => Try(BigDecimal(v)).toOption)
+
+  def mapFromUpdateGoodsRecord(update: UpdateGoodsRecord, oldRecord: GetGoodsRecordResponse): PutRecordRequest = {
+    // If update.commodityCode is Option[Commodity], extract commodityCode string
+    val comcodeString: String = update.commodityCode match {
+      case Some(commodity) => commodity.commodityCode // extract string from Commodity
+      case None => oldRecord.comcode // fallback to old string code
+    }
+
+    PutRecordRequest(
+      actorId = update.eori,
+      traderRef = oldRecord.traderRef,
+      comcode = comcodeString,
+      goodsDescription = oldRecord.goodsDescription,
+      countryOfOrigin = oldRecord.countryOfOrigin,
+      category = oldRecord.category,
+      assessments = oldRecord.assessments,
+      supplementaryUnit = oldRecord.supplementaryUnit,
+      measurementUnit = oldRecord.measurementUnit,
+      comcodeEffectiveFromDate = oldRecord.comcodeEffectiveFromDate,
+      comcodeEffectiveToDate = oldRecord.comcodeEffectiveToDate
+    )
+  }
+
 }

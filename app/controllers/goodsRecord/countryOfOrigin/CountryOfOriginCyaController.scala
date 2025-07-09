@@ -16,15 +16,14 @@
 
 package controllers.goodsRecord.countryOfOrigin
 
-import cats.data
 import cats.data.EitherNec
 import com.google.inject.Inject
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.BaseController
 import controllers.actions.*
+import exceptions.GoodsRecordBuildFailure.*
 import models.*
 import models.requests.DataRequest
-import models.router.requests.PutRecordRequest
 import navigation.GoodsRecordNavigator
 import org.apache.pekko.Done
 import pages.goodsRecord.*
@@ -32,8 +31,8 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.*
 import queries.CountriesQuery
 import repositories.SessionRepository
-import services.{AuditService, AutoCategoriseService}
-import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
+import services.{AuditService, AutoCategoriseService, GoodsRecordUpdateService}
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants.*
 import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
@@ -44,21 +43,22 @@ import views.html.goodsRecord.CyaUpdateRecordView
 import scala.concurrent.{ExecutionContext, Future}
 
 class CountryOfOriginCyaController @Inject() (
-  override val messagesApi: MessagesApi,
-  identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
-  profileAuth: ProfileAuthenticateAction,
-  val controllerComponents: MessagesControllerComponents,
-  auditService: AuditService,
-  view: CyaUpdateRecordView,
-  goodsRecordConnector: GoodsRecordConnector,
-  ottConnector: OttConnector,
-  sessionRepository: SessionRepository,
-  navigator: GoodsRecordNavigator,
-  autoCategoriseService: AutoCategoriseService
-)(implicit ec: ExecutionContext)
-    extends BaseController {
+                                               override val messagesApi: MessagesApi,
+                                               identify: IdentifierAction,
+                                               getData: DataRetrievalAction,
+                                               requireData: DataRequiredAction,
+                                               profileAuth: ProfileAuthenticateAction,
+                                               val controllerComponents: MessagesControllerComponents,
+                                               auditService: AuditService,
+                                               view: CyaUpdateRecordView,
+                                               goodsRecordConnector: GoodsRecordConnector,
+                                               ottConnector: OttConnector,
+                                               sessionRepository: SessionRepository,
+                                               navigator: GoodsRecordNavigator,
+                                               autoCategoriseService: AutoCategoriseService,
+                                               goodsRecordUpdateService: GoodsRecordUpdateService
+                                             )(implicit ec: ExecutionContext)
+  extends BaseController {
 
   private val errorMessage: String = "Unable to update Goods Record."
 
@@ -109,7 +109,7 @@ class CountryOfOriginCyaController @Inject() (
     }
 
   private def getCountryOfOriginAnswer(userAnswers: UserAnswers, recordId: String)(implicit
-    request: Request[_]
+                                                                                   request: Request[_]
   ): Future[Option[String]] =
     userAnswers.get(CountryOfOriginUpdatePage(recordId)) match {
       case Some(answer) =>
@@ -139,26 +139,6 @@ class CountryOfOriginCyaController @Inject() (
       case Left(errors) => Future.failed(GoodsRecordBuildFailure(errors))
     }
 
-  private case class GoodsRecordBuildFailure(errors: data.NonEmptyChain[ValidationError]) extends Exception {
-    private val errorsAsString = errors.toChain.toList.map(_.message).mkString(", ")
-
-    override def getMessage: String = s"$errorMessage Missing pages: $errorsAsString"
-  }
-
-  private def updateGoodsRecordIfPutValueChanged(
-    newValue: String,
-    oldValue: String,
-    newUpdateGoodsRecord: UpdateGoodsRecord,
-    putRecordRequest: PutRecordRequest
-  )(implicit hc: HeaderCarrier): Future[Done]        =
-    if (newValue != oldValue) {
-      goodsRecordConnector.putGoodsRecord(
-        putRecordRequest,
-        newUpdateGoodsRecord.recordId
-      )
-    } else {
-      Future.successful(Done)
-    }
   def onSubmit(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       (for {
@@ -171,48 +151,34 @@ class CountryOfOriginCyaController @Inject() (
             .getOrElse(Future.failed(new Exception(s"Original country of origin not found in session for $recordId")))
 
         countryOfOrigin <- handleValidateError(
-                             UpdateGoodsRecord.validateCountryOfOrigin(
-                               request.userAnswers,
-                               recordId,
-                               oldRecord.category.isDefined
-                             )
-                           )
+          UpdateGoodsRecord.validateCountryOfOrigin(
+            request.userAnswers,
+            recordId,
+            oldRecord.category.isDefined
+          )
+        )
 
         updateGoodsRecord = UpdateGoodsRecord(
-                              eori = request.eori,
-                              recordId = recordId,
-                              countryOfOrigin = Some(countryOfOrigin)
-                            )
-
-        putGoodsRecord = PutRecordRequest(
-                           actorId = oldRecord.eori,
-                           traderRef = oldRecord.traderRef,
-                           comcode = oldRecord.comcode,
-                           goodsDescription = oldRecord.goodsDescription,
-                           countryOfOrigin = countryOfOrigin,
-                           category = None,
-                           assessments = oldRecord.assessments,
-                           supplementaryUnit = oldRecord.supplementaryUnit,
-                           measurementUnit = oldRecord.measurementUnit,
-                           comcodeEffectiveFromDate = oldRecord.comcodeEffectiveFromDate,
-                           comcodeEffectiveToDate = oldRecord.comcodeEffectiveToDate
-                         )
-
+          eori = request.eori,
+          recordId = recordId,
+          countryOfOrigin = Some(countryOfOrigin)
+        )
         _ = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
 
-        _ <- updateGoodsRecordIfPutValueChanged(
-               newValue = countryOfOrigin,
-               oldValue = oldRecord.countryOfOrigin,
-               updateGoodsRecord,
-               putGoodsRecord
-             )
+        _ <- goodsRecordUpdateService.updateIfChanged(
+          oldValue = oldRecord.countryOfOrigin,
+          newValue = countryOfOrigin,
+          updateGoodsRecord = updateGoodsRecord,
+          oldRecord = oldRecord,
+          patch = false
+        )
 
         cleanedAnswers <- Future.fromTry(
-                            request.userAnswers
-                              .remove(HasCountryOfOriginChangePage(recordId))
-                              .flatMap(_.remove(CountryOfOriginUpdatePage(recordId)))
-                              .flatMap(_.remove(OriginalCountryOfOriginPage(recordId)))
-                          )
+          request.userAnswers
+            .remove(HasCountryOfOriginChangePage(recordId))
+            .flatMap(_.remove(CountryOfOriginUpdatePage(recordId)))
+            .flatMap(_.remove(OriginalCountryOfOriginPage(recordId)))
+        )
 
         _ <- sessionRepository.set(cleanedAnswers)
 
@@ -236,8 +202,8 @@ class CountryOfOriginCyaController @Inject() (
     }
 
   private def handleRecover(
-    recordId: String
-  )(implicit request: DataRequest[AnyContent]): PartialFunction[Throwable, Result] = {
+                             recordId: String
+                           )(implicit request: DataRequest[AnyContent]): PartialFunction[Throwable, Result] = {
     case e: GoodsRecordBuildFailure =>
       logErrorsAndContinue(
         e.getMessage,
