@@ -23,7 +23,7 @@ import models.*
 import models.router.requests.PutRecordRequest
 import models.router.responses.GetGoodsRecordResponse
 import org.apache.pekko.Done
-import org.mockito.ArgumentMatchers.{any, argThat, eq => eqTo}
+import org.mockito.ArgumentMatchers.{any, argThat, eq as eqTo}
 import org.mockito.Mockito.*
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
@@ -35,7 +35,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import queries.CommodityUpdateQuery
 import repositories.SessionRepository
-import services.{AuditService, AutoCategoriseService, CommodityService}
+import services.{AuditService, AutoCategoriseService, CommodityService, GoodsRecordUpdateService}
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
@@ -58,6 +58,7 @@ class CommodityCodeCyaControllerSpec
     controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId).url
 
   private val mockCommodityService      = mock[CommodityService]
+  private val mockGoodsRecordUpdateService      = mock[GoodsRecordUpdateService]
   private val mockAuditService          = mock[AuditService]
   private val mockGoodsRecordConnector  = mock[GoodsRecordConnector]
   private val mockOttConnector          = mock[OttConnector]
@@ -343,48 +344,42 @@ class CommodityCodeCyaControllerSpec
           }
         }
 
-        "must PUT the goods record, cleanse the data and redirect to the Goods record Page" in {
+        "must update the goods record via updateIfChanged, cleanse the data and redirect to the Goods record Page" in {
           val userAnswers = emptyUserAnswers
-            .set(page, testCommodity.commodityCode)
-            .success
-            .value
-            .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true)
-            .success
-            .value
-            .set(warningPage, true)
-            .success
-            .value
-            .set(HasCommodityCodeChangePage(testRecordId), true)
-            .success
-            .value
-            .set(CommodityUpdateQuery(testRecordId), testCommodity)
-            .success
-            .value
+            .set(page, testCommodity.commodityCode).success.value
+            .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true).success.value
+            .set(warningPage, true).success.value
+            .set(HasCommodityCodeChangePage(testRecordId), true).success.value
+            .set(CommodityUpdateQuery(testRecordId), testCommodity).success.value
 
           when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any()))
             .thenReturn(Future.successful(Done))
 
           when(mockOttConnector.getCountries)
-            .thenReturn(
-              Future.successful(
-                Seq(
-                  Country("GB", "United Kingdom"),
-                  Country("FR", "France")
-                )
-              )
-            )
+            .thenReturn(Future.successful(Seq(Country("GB", "United Kingdom"), Country("FR", "France"))))
 
           when(mockSessionRepository.set(any()))
             .thenReturn(Future.successful(true))
 
-          when(mockGoodsRecordConnector.putGoodsRecord(any(), any())(any()))
-            .thenReturn(Future.successful(Done))
-
           when(mockGoodsRecordConnector.getRecord(any())(any()))
             .thenReturn(Future.successful(record))
 
-          when(mockAutoCategoriseService.autoCategoriseRecord(any[String], any[UserAnswers])(any(), any()))
+          when(mockAutoCategoriseService.autoCategoriseRecord(
+            org.mockito.ArgumentMatchers.any[String],
+            org.mockito.ArgumentMatchers.any[UserAnswers]
+          )(any(), any()))
             .thenReturn(Future.successful(Some(emptyUserAnswers)))
+
+
+          when(mockGoodsRecordUpdateService.updateIfChanged(
+            eqTo(record.comcode),
+            eqTo(testCommodity.commodityCode),
+            any(),
+            eqTo(record),
+            eqTo(false)
+          )(any()))
+            .thenReturn(Future.successful(Done))
+
           val application = applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
               bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
@@ -392,29 +387,26 @@ class CommodityCodeCyaControllerSpec
               bind[CommodityService].toInstance(mockCommodityService),
               bind[OttConnector].toInstance(mockOttConnector),
               bind[SessionRepository].toInstance(mockSessionRepository),
-              bind[AutoCategoriseService].toInstance(mockAutoCategoriseService)
+              bind[AutoCategoriseService].toInstance(mockAutoCategoriseService),
+              bind[GoodsRecordUpdateService].toInstance(mockGoodsRecordUpdateService)
             )
             .build()
 
           running(application) {
             val request = FakeRequest(POST, postUrl)
-            val result  = route(application, request).value
+            val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual controllers.goodsRecord.routes.SingleRecordController
               .onPageLoad(testRecordId)
               .url
 
-            verify(mockGoodsRecordConnector).putGoodsRecord(
-              argThat { req =>
-                req.actorId == record.eori &&
-                req.traderRef == record.traderRef &&
-                req.comcode == testCommodity.commodityCode &&
-                req.goodsDescription == record.goodsDescription &&
-                req.countryOfOrigin == record.countryOfOrigin &&
-                req.category.isEmpty
-              },
-              eqTo(testRecordId)
+            verify(mockGoodsRecordUpdateService).updateIfChanged(
+              eqTo(record.comcode),
+              eqTo(testCommodity.commodityCode),
+              any(),
+              eqTo(record),
+              eqTo(false)
             )(any())
 
             verify(mockSessionRepository).set(any())
