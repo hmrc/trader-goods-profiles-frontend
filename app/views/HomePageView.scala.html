@@ -102,13 +102,7 @@ govukNotificationBanner: GovukNotificationBanner
                 <div class="govuk-summary-card__title-wrapper">
                 <h2 class="govuk-summary-card__title govuk-!-margin-bottom-8">@messages("homepage.h2.3")</h2>
                 </div>
-                <div class="govuk-summary-card__content">
-                @if(appConfig.downloadFileEnabled) {
-                    @downloadLinkText.downloadLinkContent
-                } else {
-                    <p class="govuk-body">@messages("homepage.downloadNotAvailable")</p>
-                }
-                </div>
+                <div class="govuk-summary-card__content">@downloadLinkText.downloadLinkContent</div>
             </div>
         </div>
 
