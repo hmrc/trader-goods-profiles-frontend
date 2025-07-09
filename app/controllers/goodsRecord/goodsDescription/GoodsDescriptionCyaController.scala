@@ -19,29 +19,24 @@ package controllers.goodsRecord.goodsDescription
 import cats.data
 import cats.data.EitherNec
 import com.google.inject.Inject
-import connectors.{GoodsRecordConnector, OttConnector}
+import connectors.GoodsRecordConnector
 import controllers.BaseController
 import controllers.actions.*
 import models.*
 import models.requests.DataRequest
-import models.router.requests.PutRecordRequest
-import navigation.GoodsRecordNavigator
 import org.apache.pekko.Done
 import pages.goodsRecord.*
 import play.api.i18n.MessagesApi
 import play.api.mvc.*
-import queries.CountriesQuery
 import repositories.SessionRepository
-import services.{AuditService, AutoCategoriseService, CommodityService}
+import services.AuditService
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
-import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants.*
 import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
 import viewmodels.checkAnswers.goodsRecord.*
 import viewmodels.govuk.summarylist.*
 import views.html.goodsRecord.CyaUpdateRecordView
 
-import java.time.{LocalDate, ZoneId}
 import scala.concurrent.{ExecutionContext, Future}
 
 class GoodsDescriptionCyaController @Inject() (

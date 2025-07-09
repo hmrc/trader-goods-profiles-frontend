@@ -289,7 +289,7 @@ class NavigationSpec extends SpecBase with BeforeAndAfterEach {
                 .value
 
               navigator.nextPage(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), CheckMode, answers) mustBe
-                controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadCommodityCode(testRecordId)
+                controllers.goodsRecord.commodityCode.routes.CommodityCodeCyaController.onPageLoad(testRecordId)
             }
           }
 
