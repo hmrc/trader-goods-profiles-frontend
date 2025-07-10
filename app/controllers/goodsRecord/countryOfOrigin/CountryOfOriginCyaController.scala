@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.BaseController
 import controllers.actions.*
 import exceptions.GoodsRecordBuildFailure
+import helpers.GoodsRecordRecovery
 import models.*
-import models.requests.DataRequest
 import navigation.GoodsRecordNavigator
 import org.apache.pekko.Done
 import pages.goodsRecord.*
@@ -32,111 +32,85 @@ import play.api.mvc.*
 import queries.CountriesQuery
 import repositories.SessionRepository
 import services.{AuditService, AutoCategoriseService, GoodsRecordUpdateService}
-import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants.*
-import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
+import utils.SessionData.dataUpdated
 import viewmodels.checkAnswers.goodsRecord.*
 import viewmodels.govuk.summarylist.*
 import views.html.goodsRecord.CyaUpdateRecordView
+import play.api.Logger
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class CountryOfOriginCyaController @Inject() (
-  override val messagesApi: MessagesApi,
-  identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
-  profileAuth: ProfileAuthenticateAction,
-  val controllerComponents: MessagesControllerComponents,
-  auditService: AuditService,
-  view: CyaUpdateRecordView,
-  goodsRecordConnector: GoodsRecordConnector,
-  ottConnector: OttConnector,
-  sessionRepository: SessionRepository,
-  navigator: GoodsRecordNavigator,
-  autoCategoriseService: AutoCategoriseService,
-  goodsRecordUpdateService: GoodsRecordUpdateService
-)(implicit ec: ExecutionContext)
-    extends BaseController {
+                                               override val messagesApi: MessagesApi,
+                                               identify: IdentifierAction,
+                                               getData: DataRetrievalAction,
+                                               requireData: DataRequiredAction,
+                                               profileAuth: ProfileAuthenticateAction,
+                                               val controllerComponents: MessagesControllerComponents,
+                                               auditService: AuditService,
+                                               navigator: GoodsRecordNavigator,
+                                               view: CyaUpdateRecordView,
+                                               goodsRecordConnector: GoodsRecordConnector,
+                                               ottConnector: OttConnector,
+                                               sessionRepository: SessionRepository,
+                                               autoCategoriseService: AutoCategoriseService,
+                                               goodsRecordUpdateService: GoodsRecordUpdateService
+                                             )(implicit ec: ExecutionContext)
+  extends BaseController
+    with GoodsRecordRecovery
+     {
+
+       override val recoveryLogger: Logger = Logger(this.getClass)
 
   private val errorMessage: String = "Unable to update Goods Record."
 
   def onPageLoad(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      goodsRecordConnector
-        .getRecord(recordId)
-        .flatMap { recordResponse =>
-          UpdateGoodsRecord
-            .validateCountryOfOrigin(
-              request.userAnswers,
-              recordId,
-              recordResponse.category.isDefined
-            ) match {
-            case Right(_) =>
-              val onSubmitAction =
-                controllers.goodsRecord.countryOfOrigin.routes.CountryOfOriginCyaController.onSubmit(recordId)
-              getCountryOfOriginAnswer(request.userAnswers, recordId).map {
-                case Some(answer) =>
-                  val list = SummaryListViewModel(
-                    Seq(
-                      CountryOfOriginSummary
-                        .rowUpdateCya(answer, recordId, CheckMode)
-                    )
+      goodsRecordConnector.getRecord(recordId).flatMap { recordResponse =>
+        UpdateGoodsRecord.validateCountryOfOrigin(
+          request.userAnswers,
+          recordId,
+          recordResponse.category.isDefined
+        ) match {
+          case Right(_) =>
+            val onSubmitAction =
+              controllers.goodsRecord.countryOfOrigin.routes.CountryOfOriginCyaController.onSubmit(recordId)
+
+            getCountryOfOriginAnswer(request.userAnswers, recordId).map {
+              case Some(answer) =>
+                val list = SummaryListViewModel(
+                  Seq(
+                    CountryOfOriginSummary.rowUpdateCya(answer, recordId, CheckMode)
                   )
-                  Ok(view(list, onSubmitAction, countryOfOriginKey))
-                case _            => Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad().url)
-              }
-
-            case Left(errors) =>
-              Future.successful(
-                logErrorsAndContinue(
-                  errorMessage,
-                  controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId),
-                  errors
                 )
-              )
-          }
-        }
-        .recoverWith { case e: Exception =>
-          logger.error(s"Unable to fetch record $recordId: ${e.getMessage}")
-          Future.successful(
-            navigator.journeyRecovery(
-              Some(RedirectUrl(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId).url))
-            )
-          )
-        }
-    }
+                Ok(view(list, onSubmitAction, countryOfOriginKey))
 
-  private def getCountryOfOriginAnswer(userAnswers: UserAnswers, recordId: String)(implicit
-    request: Request[_]
-  ): Future[Option[String]] =
-    userAnswers.get(CountryOfOriginUpdatePage(recordId)) match {
-      case Some(answer) =>
-        userAnswers.get(CountriesQuery) match {
-          case Some(countries) => Future.successful(Some(findCountryName(countries, answer)))
-          case None            =>
-            getCountries(userAnswers).map { countries =>
-              Some(findCountryName(countries, answer))
+              case None =>
+                Redirect(
+                  controllers.problem.routes.JourneyRecoveryController.onPageLoad(
+                    Some(RedirectUrl(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId).url))
+                  )
+                )
             }
+
+          case Left(errors) =>
+            Future.successful(
+              logErrorsAndContinue(
+                errorMessage,
+                controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId),
+                errors
+              )
+            )
         }
-      case _            => Future.successful(None)
-    }
-
-  private def findCountryName(countries: Seq[Country], answer: String): String =
-    countries.find(country => country.id == answer).map(_.description).getOrElse(answer)
-
-  def getCountries(userAnswers: UserAnswers)(implicit request: Request[_]): Future[Seq[Country]] =
-    for {
-      countries               <- ottConnector.getCountries
-      updatedAnswersWithQuery <- Future.fromTry(userAnswers.set(CountriesQuery, countries))
-      _                       <- sessionRepository.set(updatedAnswersWithQuery)
-    } yield countries
-
-  private def handleValidateError[T](result: EitherNec[ValidationError, T]): Future[T] =
-    result match {
-      case Right(value) => Future.successful(value)
-      case Left(errors) => Future.failed(GoodsRecordBuildFailure(errors))
+      }.recoverWith {
+        case e =>  Future.successful(
+          navigator.journeyRecovery(
+            Some(RedirectUrl(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId).url))
+          )
+        )
+      }
     }
 
   def onSubmit(recordId: String): Action[AnyContent] =
@@ -148,37 +122,40 @@ class CountryOfOriginCyaController @Inject() (
           request.userAnswers
             .get(OriginalCountryOfOriginPage(recordId))
             .map(Future.successful)
-            .getOrElse(Future.failed(new Exception(s"Original country of origin not found in session for $recordId")))
+            .getOrElse(
+              Future.failed(new Exception(s"Original country of origin not found in session for $recordId"))
+            )
 
         countryOfOrigin <- handleValidateError(
-                             UpdateGoodsRecord.validateCountryOfOrigin(
-                               request.userAnswers,
-                               recordId,
-                               oldRecord.category.isDefined
-                             )
-                           )
+          UpdateGoodsRecord.validateCountryOfOrigin(
+            request.userAnswers,
+            recordId,
+            oldRecord.category.isDefined
+          )
+        )
 
         updateGoodsRecord = UpdateGoodsRecord(
-                              eori = request.eori,
-                              recordId = recordId,
-                              countryOfOrigin = Some(countryOfOrigin)
-                            )
-        _                 = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
+          eori = request.eori,
+          recordId = recordId,
+          countryOfOrigin = Some(countryOfOrigin)
+        )
+
+        _ = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
 
         _ <- goodsRecordUpdateService.updateIfChanged(
-               oldValue = oldRecord.countryOfOrigin,
-               newValue = countryOfOrigin,
-               updateGoodsRecord = updateGoodsRecord,
-               oldRecord = oldRecord,
-               patch = false
-             )
+          oldValue = oldRecord.countryOfOrigin,
+          newValue = countryOfOrigin,
+          updateGoodsRecord = updateGoodsRecord,
+          oldRecord = oldRecord,
+          patch = false
+        )
 
         cleanedAnswers <- Future.fromTry(
-                            request.userAnswers
-                              .remove(HasCountryOfOriginChangePage(recordId))
-                              .flatMap(_.remove(CountryOfOriginUpdatePage(recordId)))
-                              .flatMap(_.remove(OriginalCountryOfOriginPage(recordId)))
-                          )
+          request.userAnswers
+            .remove(HasCountryOfOriginChangePage(recordId))
+            .flatMap(_.remove(CountryOfOriginUpdatePage(recordId)))
+            .flatMap(_.remove(OriginalCountryOfOriginPage(recordId)))
+        )
 
         _ <- sessionRepository.set(cleanedAnswers)
 
@@ -201,17 +178,35 @@ class CountryOfOriginCyaController @Inject() (
       }).recover(handleRecover(recordId))
     }
 
-  private def handleRecover(
-    recordId: String
-  )(implicit request: DataRequest[AnyContent]): PartialFunction[Throwable, Result] = {
-    case e: GoodsRecordBuildFailure =>
-      logErrorsAndContinue(
-        e.getMessage,
-        controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId)
-      )
+  private def handleValidateError[T](result: EitherNec[ValidationError, T]): Future[T] =
+    result match {
+      case Right(value) => Future.successful(value)
+      case Left(errors) => Future.failed(GoodsRecordBuildFailure(errors))
+    }
 
-    case e: UpstreamErrorResponse if e.message.contains(openAccreditationErrorCode) =>
-      Redirect(controllers.routes.RecordLockedController.onPageLoad(recordId))
-        .removingFromSession(dataRemoved, dataUpdated, pageUpdated)
-  }
+  private def getCountryOfOriginAnswer(
+                                        userAnswers: UserAnswers,
+                                        recordId: String
+                                      )(implicit request: Request[_]): Future[Option[String]] =
+    userAnswers.get(CountryOfOriginUpdatePage(recordId)) match {
+      case Some(answer) =>
+        userAnswers.get(CountriesQuery) match {
+          case Some(countries) => Future.successful(Some(findCountryName(countries, answer)))
+          case None            =>
+            getCountries(userAnswers).map { countries =>
+              Some(findCountryName(countries, answer))
+            }
+        }
+      case None => Future.successful(None)
+    }
+
+  private def findCountryName(countries: Seq[Country], answer: String): String =
+    countries.find(_.id == answer).map(_.description).getOrElse(answer)
+
+  private def getCountries(userAnswers: UserAnswers)(implicit request: Request[_]): Future[Seq[Country]] =
+    for {
+      countries <- ottConnector.getCountries
+      updatedAnswers <- Future.fromTry(userAnswers.set(CountriesQuery, countries))
+      _ <- sessionRepository.set(updatedAnswers)
+    } yield countries
 }

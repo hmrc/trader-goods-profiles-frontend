@@ -58,8 +58,8 @@ class CommodityCodeCyaController @Inject() (
 )(implicit ec: ExecutionContext)
     extends BaseController
     with GoodsRecordRecovery {
+  
   override val recoveryLogger: Logger = Logger(this.getClass)
-
   private val errorMessage: String = "Unable to update Goods Record."
 
   def onPageLoad(recordId: String): Action[AnyContent] =
