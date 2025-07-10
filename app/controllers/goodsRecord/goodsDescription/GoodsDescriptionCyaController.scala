@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import connectors.GoodsRecordConnector
 import controllers.BaseController
 import controllers.actions.*
 import exceptions.GoodsRecordBuildFailure
+import helpers.GoodsRecordRecovery
 import models.*
 import models.requests.DataRequest
 import org.apache.pekko.Done
@@ -38,6 +39,7 @@ import viewmodels.govuk.summarylist.*
 import views.html.goodsRecord.CyaUpdateRecordView
 
 import scala.concurrent.{ExecutionContext, Future}
+import play.api.Logger
 
 class GoodsDescriptionCyaController @Inject() (
   override val messagesApi: MessagesApi,
@@ -50,9 +52,11 @@ class GoodsDescriptionCyaController @Inject() (
   view: CyaUpdateRecordView,
   goodsRecordConnector: GoodsRecordConnector,
   sessionRepository: SessionRepository,
-  goodsRecordUpdateService: GoodsRecordUpdateService // <-- Inject the service here
+  goodsRecordUpdateService: GoodsRecordUpdateService
 )(implicit ec: ExecutionContext)
-    extends BaseController {
+    extends BaseController
+    with GoodsRecordRecovery {
+  override val recoveryLogger: Logger = Logger(this.getClass)
 
   private val errorMessage: String = "Unable to update Goods Record."
 
@@ -115,18 +119,4 @@ class GoodsDescriptionCyaController @Inject() (
         }
       }).recover(handleRecover(recordId))
     }
-
-  private def handleRecover(
-    recordId: String
-  )(implicit request: DataRequest[AnyContent]): PartialFunction[Throwable, Result] = {
-    case e: GoodsRecordBuildFailure =>
-      logErrorsAndContinue(
-        e.getMessage,
-        controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId)
-      )
-
-    case e: UpstreamErrorResponse if e.message.contains(openAccreditationErrorCode) =>
-      Redirect(controllers.routes.RecordLockedController.onPageLoad(recordId))
-        .removingFromSession(dataRemoved, dataUpdated, pageUpdated)
-  }
 }

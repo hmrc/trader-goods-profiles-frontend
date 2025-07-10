@@ -22,30 +22,32 @@ import play.api.Logger
 import play.api.mvc.*
 import play.api.mvc.Results.Redirect
 import uk.gov.hmrc.http.UpstreamErrorResponse
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants
 import utils.SessionData.*
 
 trait GoodsRecordRecovery {
 
-  // Distinct logger name to avoid clash
   val recoveryLogger: Logger
 
   private val openAccreditationErrorCode: String = Constants.openAccreditationErrorCode
 
-  def logErrorsAndRedirect(message: String, redirectTo: Call): Result = {
-    recoveryLogger.warn(s"[GoodsRecordRecovery] $message")
-    Redirect(redirectTo).flashing("error" -> message)
-  }
-
   def handleRecover(recordId: String)(implicit request: DataRequest[AnyContent]): PartialFunction[Throwable, Result] = {
     case e: GoodsRecordBuildFailure =>
-      logErrorsAndRedirect(
-        e.getMessage,
-        controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId)
+      recoveryLogger.warn(s"[GoodsRecordRecovery] ${e.getMessage}")
+      Redirect(
+        controllers.problem.routes.JourneyRecoveryController.onPageLoad(
+          Some(
+            RedirectUrl(
+              controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId).url
+            )
+          )
+        )
       )
 
     case e: UpstreamErrorResponse if e.message.contains(openAccreditationErrorCode) =>
       Redirect(controllers.routes.RecordLockedController.onPageLoad(recordId))
         .removingFromSession(dataRemoved, dataUpdated, pageUpdated)
   }
+
 }
