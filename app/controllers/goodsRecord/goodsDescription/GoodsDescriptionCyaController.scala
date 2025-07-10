@@ -24,22 +24,20 @@ import controllers.actions.*
 import exceptions.GoodsRecordBuildFailure
 import helpers.GoodsRecordRecovery
 import models.*
-import models.requests.DataRequest
 import org.apache.pekko.Done
 import pages.goodsRecord.*
+import play.api.Logger
 import play.api.i18n.MessagesApi
 import play.api.mvc.*
 import repositories.SessionRepository
 import services.{AuditService, GoodsRecordUpdateService}
-import uk.gov.hmrc.http.UpstreamErrorResponse
 import utils.Constants.*
-import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
+import utils.SessionData.dataUpdated
 import viewmodels.checkAnswers.goodsRecord.*
 import viewmodels.govuk.summarylist.*
 import views.html.goodsRecord.CyaUpdateRecordView
 
 import scala.concurrent.{ExecutionContext, Future}
-import play.api.Logger
 
 class GoodsDescriptionCyaController @Inject() (
   override val messagesApi: MessagesApi,
@@ -56,8 +54,8 @@ class GoodsDescriptionCyaController @Inject() (
 )(implicit ec: ExecutionContext)
     extends BaseController
     with GoodsRecordRecovery {
+  
   override val recoveryLogger: Logger = Logger(this.getClass)
-
   private val errorMessage: String = "Unable to update Goods Record."
 
   def onPageLoad(recordId: String): Action[AnyContent] =

@@ -22,7 +22,9 @@ import connectors.GoodsRecordConnector
 import controllers.BaseController
 import controllers.actions.*
 import exceptions.GoodsRecordBuildFailure
+import helpers.GoodsRecordRecovery
 import models.*
+import play.api.Logger
 import models.requests.DataRequest
 import navigation.GoodsRecordNavigator
 import org.apache.pekko.Done
@@ -54,8 +56,9 @@ class ProductReferenceCyaController @Inject() (
   navigator: GoodsRecordNavigator,
   goodsRecordUpdateService: GoodsRecordUpdateService // <-- Inject service here
 )(implicit ec: ExecutionContext)
-    extends BaseController {
+    extends BaseController  with GoodsRecordRecovery{
 
+  override val recoveryLogger: Logger = Logger(this.getClass)
   private val errorMessage: String = "Unable to update Goods Record."
 
   def onPageLoad(recordId: String): Action[AnyContent] =
@@ -108,17 +111,4 @@ class ProductReferenceCyaController @Inject() (
         .recover(handleRecover(recordId))
     }
 
-  private def handleRecover(
-    recordId: String
-  )(implicit request: DataRequest[AnyContent]): PartialFunction[Throwable, Result] = {
-    case e: GoodsRecordBuildFailure =>
-      logErrorsAndContinue(
-        e.getMessage,
-        controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId)
-      )
-
-    case e: UpstreamErrorResponse if e.message.contains(openAccreditationErrorCode) =>
-      Redirect(controllers.routes.RecordLockedController.onPageLoad(recordId))
-        .removingFromSession(dataRemoved, dataUpdated, pageUpdated)
-  }
 }
