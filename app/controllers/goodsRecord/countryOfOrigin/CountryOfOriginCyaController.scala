@@ -21,7 +21,7 @@ import com.google.inject.Inject
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.BaseController
 import controllers.actions.*
-import exceptions.GoodsRecordBuildFailure.*
+import exceptions.GoodsRecordBuildFailure
 import models.*
 import models.requests.DataRequest
 import navigation.GoodsRecordNavigator

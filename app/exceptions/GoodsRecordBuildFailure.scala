@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package exceptions.GoodsRecordBuildFailure
+package exceptions
 
 import cats.data.NonEmptyChain
 import models.ValidationError

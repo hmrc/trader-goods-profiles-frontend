@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,23 +20,22 @@ import com.google.inject.Inject
 import connectors.GoodsRecordConnector
 import controllers.BaseController
 import controllers.actions.*
-import exceptions.GoodsRecordBuildFailure.*
+import exceptions.GoodsRecordBuildFailure
+import helpers.GoodsRecordRecovery
 import models.*
-import models.requests.DataRequest
 import navigation.GoodsRecordNavigator
 import org.apache.pekko.Done
 import pages.goodsRecord.*
 import play.api.i18n.MessagesApi
 import play.api.mvc.*
 import repositories.SessionRepository
-import services.{AuditService, AutoCategoriseService, CommodityService, GoodsRecordUpdateService}
-import uk.gov.hmrc.http.UpstreamErrorResponse
+import services._
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.Constants.*
-import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
 import viewmodels.checkAnswers.goodsRecord.*
 import viewmodels.govuk.summarylist.*
 import views.html.goodsRecord.CyaUpdateRecordView
+import play.api.Logger
 
 import java.time.{LocalDate, ZoneId}
 import scala.concurrent.{ExecutionContext, Future}
@@ -57,7 +56,9 @@ class CommodityCodeCyaController @Inject() (
   commodityService: CommodityService,
   goodsRecordUpdateService: GoodsRecordUpdateService
 )(implicit ec: ExecutionContext)
-    extends BaseController {
+    extends BaseController
+    with GoodsRecordRecovery {
+  override val recoveryLogger: Logger = Logger(this.getClass)
 
   private val errorMessage: String = "Unable to update Goods Record."
 
@@ -91,19 +92,19 @@ class CommodityCodeCyaController @Inject() (
                     )
                   )
                   Future.successful(Ok(view(list, onSubmitAction, commodityCodeKey)))
-                case Left(errors)     =>
+
+                case Left(errors) =>
                   Future.successful(
                     logErrorsAndContinue(
                       errorMessage,
-                      controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId),
-                      errors
+                      controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId)
                     )
                   )
               }
             }
         }
         .recoverWith { case e: Exception =>
-          logger.error(s"Unable to fetch record $recordId: ${e.getMessage}")
+          logger.error(s"Unable to fetch record $recordId")
           Future.successful(
             navigator.journeyRecovery(
               Some(RedirectUrl(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId).url))
@@ -114,39 +115,61 @@ class CommodityCodeCyaController @Inject() (
 
   def onSubmit(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val maybeOriginalCommodityCode: Option[String] = request.session.get("originalCommodityCode").map(_.trim)
+      val maybeOriginalCommodityCode: Option[String] =
+        request.session.get("originalCommodityCode").map(_.trim)
 
       val resultFuture = for {
-        oldRecord                <- goodsRecordConnector.getRecord(recordId)
-        isCommCodeExpired         = oldRecord.comcodeEffectiveToDate.exists(
-                                      _.isBefore(LocalDate.now().atStartOfDay(ZoneId.of("UTC")).toInstant)
-                                    )
-        commodity                <- UpdateGoodsRecord.validateCommodityCode(
-                                      request.userAnswers,
-                                      recordId,
-                                      oldRecord.category.isDefined,
-                                      isCommCodeExpired
-                                    ) match {
-                                      case Right(value) => Future.successful(value)
-                                      case Left(errors) => Future.failed(new Exception(errors.toString))
-                                    }
-        updateGoodsRecord         = UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity))
-        _                         = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
-        _                        <- goodsRecordUpdateService.updateIfChanged(
-                                      oldValue = oldRecord.comcode,
-                                      newValue = commodity.commodityCode,
-                                      updateGoodsRecord = updateGoodsRecord,
-                                      oldRecord = oldRecord,
-                                      patch = false
-                                    )
-        updatedAnswersWithChange <- Future.fromTry(request.userAnswers.remove(HasCommodityCodeChangePage(recordId)))
-        updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CommodityCodeUpdatePage(recordId)))
-        _                        <- sessionRepository.set(updatedAnswers)
-        autoCategoriseScenario   <- autoCategoriseService.autoCategoriseRecord(recordId, updatedAnswers)
-      } yield {
-        val newCode      = commodity.commodityCode.trim
-        val originalCode = maybeOriginalCommodityCode.getOrElse("").trim
+        oldRecord <- goodsRecordConnector.getRecord(recordId)
 
+        isCommCodeExpired = oldRecord.comcodeEffectiveToDate.exists(
+                              _.isBefore(LocalDate.now().atStartOfDay(ZoneId.of("UTC")).toInstant)
+                            )
+
+        commodity <- UpdateGoodsRecord.validateCommodityCode(
+                       request.userAnswers,
+                       recordId,
+                       oldRecord.category.isDefined,
+                       isCommCodeExpired
+                     ) match {
+                       case Right(value) => Future.successful(value)
+                       case Left(errors) => Future.failed(GoodsRecordBuildFailure(errors))
+                     }
+
+        updateGoodsRecord = UpdateGoodsRecord(
+                              eori = request.eori,
+                              recordId = recordId,
+                              commodityCode = Some(commodity)
+                            )
+
+        _ = auditService.auditFinishUpdateGoodsRecord(
+              recordId,
+              request.affinityGroup,
+              updateGoodsRecord
+            )
+
+        _ <- goodsRecordUpdateService.updateIfChanged(
+               oldValue = oldRecord.comcode,
+               newValue = commodity.commodityCode,
+               updateGoodsRecord = updateGoodsRecord,
+               oldRecord = oldRecord,
+               patch = false
+             )
+
+        updatedAnswersWithChange <- Future.fromTry(
+                                      request.userAnswers.remove(HasCommodityCodeChangePage(recordId))
+                                    )
+
+        updatedAnswers <- Future.fromTry(
+                            updatedAnswersWithChange.remove(CommodityCodeUpdatePage(recordId))
+                          )
+
+        _ <- sessionRepository.set(updatedAnswers)
+
+        autoCategoriseScenario <- autoCategoriseService.autoCategoriseRecord(recordId, updatedAnswers)
+
+      } yield {
+        val newCode                 = commodity.commodityCode.trim
+        val originalCode            = maybeOriginalCommodityCode.getOrElse("").trim
         val commodityCodeHasChanged = newCode != originalCode
 
         if (commodityCodeHasChanged) {
@@ -163,18 +186,4 @@ class CommodityCodeCyaController @Inject() (
 
       resultFuture.recover(handleRecover(recordId))
     }
-
-  private def handleRecover(
-    recordId: String
-  )(implicit request: DataRequest[AnyContent]): PartialFunction[Throwable, Result] = {
-    case e: GoodsRecordBuildFailure =>
-      logErrorsAndContinue(
-        e.getMessage,
-        controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId)
-      )
-
-    case e: UpstreamErrorResponse if e.message.contains(openAccreditationErrorCode) =>
-      Redirect(controllers.routes.RecordLockedController.onPageLoad(recordId))
-        .removingFromSession(dataRemoved, dataUpdated, pageUpdated)
-  }
 }
