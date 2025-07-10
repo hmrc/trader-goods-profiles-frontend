@@ -23,7 +23,7 @@ import models.*
 import models.router.requests.PutRecordRequest
 import models.router.responses.GetGoodsRecordResponse
 import org.apache.pekko.Done
-import org.mockito.ArgumentMatchers.{any, argThat, eq as eqTo}
+import org.mockito.ArgumentMatchers.{any, argThat, eq => eqTo}
 import org.mockito.Mockito.*
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
@@ -57,17 +57,17 @@ class CommodityCodeCyaControllerSpec
   private lazy val journeyRecoveryContinueUrl =
     controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId).url
 
-  private val mockCommodityService      = mock[CommodityService]
-  private val mockGoodsRecordUpdateService      = mock[GoodsRecordUpdateService]
-  private val mockAuditService          = mock[AuditService]
-  private val mockGoodsRecordConnector  = mock[GoodsRecordConnector]
-  private val mockOttConnector          = mock[OttConnector]
-  private val mockSessionRepository     = mock[SessionRepository]
-  private val mockAutoCategoriseService = mock[AutoCategoriseService]
-  implicit val hc: HeaderCarrier        = HeaderCarrier()
-  val effectiveFrom: Instant            = Instant.now
-  val effectiveTo: Instant              = effectiveFrom.plusSeconds(1)
-  private val commodity                 =
+  private val mockCommodityService         = mock[CommodityService]
+  private val mockGoodsRecordUpdateService = mock[GoodsRecordUpdateService]
+  private val mockAuditService             = mock[AuditService]
+  private val mockGoodsRecordConnector     = mock[GoodsRecordConnector]
+  private val mockOttConnector             = mock[OttConnector]
+  private val mockSessionRepository        = mock[SessionRepository]
+  private val mockAutoCategoriseService    = mock[AutoCategoriseService]
+  implicit val hc: HeaderCarrier           = HeaderCarrier()
+  val effectiveFrom: Instant               = Instant.now
+  val effectiveTo: Instant                 = effectiveFrom.plusSeconds(1)
+  private val commodity                    =
     Commodity(
       "1704900000",
       List(
@@ -346,11 +346,21 @@ class CommodityCodeCyaControllerSpec
 
         "must update the goods record via updateIfChanged, cleanse the data and redirect to the Goods record Page" in {
           val userAnswers = emptyUserAnswers
-            .set(page, testCommodity.commodityCode).success.value
-            .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true).success.value
-            .set(warningPage, true).success.value
-            .set(HasCommodityCodeChangePage(testRecordId), true).success.value
-            .set(CommodityUpdateQuery(testRecordId), testCommodity).success.value
+            .set(page, testCommodity.commodityCode)
+            .success
+            .value
+            .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true)
+            .success
+            .value
+            .set(warningPage, true)
+            .success
+            .value
+            .set(HasCommodityCodeChangePage(testRecordId), true)
+            .success
+            .value
+            .set(CommodityUpdateQuery(testRecordId), testCommodity)
+            .success
+            .value
 
           when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any()))
             .thenReturn(Future.successful(Done))
@@ -364,20 +374,23 @@ class CommodityCodeCyaControllerSpec
           when(mockGoodsRecordConnector.getRecord(any())(any()))
             .thenReturn(Future.successful(record))
 
-          when(mockAutoCategoriseService.autoCategoriseRecord(
-            org.mockito.ArgumentMatchers.any[String],
-            org.mockito.ArgumentMatchers.any[UserAnswers]
-          )(any(), any()))
+          when(
+            mockAutoCategoriseService.autoCategoriseRecord(
+              org.mockito.ArgumentMatchers.any[String],
+              org.mockito.ArgumentMatchers.any[UserAnswers]
+            )(any(), any())
+          )
             .thenReturn(Future.successful(Some(emptyUserAnswers)))
 
-
-          when(mockGoodsRecordUpdateService.updateIfChanged(
-            eqTo(record.comcode),
-            eqTo(testCommodity.commodityCode),
-            any(),
-            eqTo(record),
-            eqTo(false)
-          )(any()))
+          when(
+            mockGoodsRecordUpdateService.updateIfChanged(
+              eqTo(record.comcode),
+              eqTo(testCommodity.commodityCode),
+              any(),
+              eqTo(record),
+              eqTo(false)
+            )(any())
+          )
             .thenReturn(Future.successful(Done))
 
           val application = applicationBuilder(userAnswers = Some(userAnswers))
@@ -394,7 +407,7 @@ class CommodityCodeCyaControllerSpec
 
           running(application) {
             val request = FakeRequest(POST, postUrl)
-            val result = route(application, request).value
+            val result  = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
             redirectLocation(result).value mustEqual controllers.goodsRecord.routes.SingleRecordController

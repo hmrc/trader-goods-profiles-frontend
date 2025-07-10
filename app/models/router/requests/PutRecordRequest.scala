@@ -56,9 +56,9 @@ object PutRecordRequest {
     )
 
   def mapFromSupplementary(
-                            supplementaryUnitRequest: SupplementaryRequest,
-                            oldRecord: GetGoodsRecordResponse
-                          ): PutRecordRequest =
+    supplementaryUnitRequest: SupplementaryRequest,
+    oldRecord: GetGoodsRecordResponse
+  ): PutRecordRequest =
     PutRecordRequest(
       actorId = supplementaryUnitRequest.eori,
       oldRecord.traderRef,
@@ -70,7 +70,7 @@ object PutRecordRequest {
       supplementaryUnit = supplementaryUnitRequest.supplementaryUnit match {
         case s if s.nonEmpty => convertToBigDecimal(supplementaryUnitRequest.supplementaryUnit)
         //API don't support removing supplementaryUnit, so setting it to zero here
-        case _ => Some(0)
+        case _               => Some(0)
       },
       measurementUnit = supplementaryUnitRequest.measurementUnit,
       oldRecord.comcodeEffectiveFromDate,
@@ -84,7 +84,7 @@ object PutRecordRequest {
     // If update.commodityCode is Option[Commodity], extract commodityCode string
     val comcodeString: String = update.commodityCode match {
       case Some(commodity) => commodity.commodityCode // extract string from Commodity
-      case None => oldRecord.comcode // fallback to old string code
+      case None            => oldRecord.comcode // fallback to old string code
     }
 
     PutRecordRequest(

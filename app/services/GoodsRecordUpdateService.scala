@@ -26,15 +26,15 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-class GoodsRecordUpdateService @Inject()(connector: GoodsRecordConnector) {
+class GoodsRecordUpdateService @Inject() (connector: GoodsRecordConnector) {
 
   def updateIfChanged(
-                       oldValue: String,
-                       newValue: String,
-                       updateGoodsRecord: UpdateGoodsRecord,
-                       oldRecord: GetGoodsRecordResponse,
-                       patch: Boolean = true
-                     )(implicit hc: HeaderCarrier): Future[Done] = {
+    oldValue: String,
+    newValue: String,
+    updateGoodsRecord: UpdateGoodsRecord,
+    oldRecord: GetGoodsRecordResponse,
+    patch: Boolean = true
+  )(implicit hc: HeaderCarrier): Future[Done] =
     if (oldValue != newValue) {
       if (patch) {
         connector.patchGoodsRecord(updateGoodsRecord)
@@ -45,5 +45,4 @@ class GoodsRecordUpdateService @Inject()(connector: GoodsRecordConnector) {
     } else {
       Future.successful(Done)
     }
-  }
 }

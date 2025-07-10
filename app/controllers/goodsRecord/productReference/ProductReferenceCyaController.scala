@@ -41,20 +41,20 @@ import views.html.goodsRecord.CyaUpdateRecordView
 import scala.concurrent.{ExecutionContext, Future}
 
 class ProductReferenceCyaController @Inject() (
-                                                override val messagesApi: MessagesApi,
-                                                identify: IdentifierAction,
-                                                getData: DataRetrievalAction,
-                                                requireData: DataRequiredAction,
-                                                profileAuth: ProfileAuthenticateAction,
-                                                val controllerComponents: MessagesControllerComponents,
-                                                auditService: AuditService,
-                                                view: CyaUpdateRecordView,
-                                                goodsRecordConnector: GoodsRecordConnector,
-                                                sessionRepository: SessionRepository,
-                                                navigator: GoodsRecordNavigator,
-                                                goodsRecordUpdateService: GoodsRecordUpdateService  // <-- Inject service here
-                                              )(implicit ec: ExecutionContext)
-  extends BaseController {
+  override val messagesApi: MessagesApi,
+  identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
+  profileAuth: ProfileAuthenticateAction,
+  val controllerComponents: MessagesControllerComponents,
+  auditService: AuditService,
+  view: CyaUpdateRecordView,
+  goodsRecordConnector: GoodsRecordConnector,
+  sessionRepository: SessionRepository,
+  navigator: GoodsRecordNavigator,
+  goodsRecordUpdateService: GoodsRecordUpdateService // <-- Inject service here
+)(implicit ec: ExecutionContext)
+    extends BaseController {
 
   private val errorMessage: String = "Unable to update Goods Record."
 
@@ -97,11 +97,11 @@ class ProductReferenceCyaController @Inject() (
         _                  = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
         oldRecord         <- goodsRecordConnector.getRecord(recordId)
         _                 <- goodsRecordUpdateService.updateIfChanged(
-          oldValue = oldRecord.traderRef,
-          newValue = productReference,
-          updateGoodsRecord = updateGoodsRecord,
-          oldRecord = oldRecord
-        )
+                               oldValue = oldRecord.traderRef,
+                               newValue = productReference,
+                               updateGoodsRecord = updateGoodsRecord,
+                               oldRecord = oldRecord
+                             )
         updatedAnswers    <- Future.fromTry(request.userAnswers.remove(ProductReferenceUpdatePage(recordId)))
         _                 <- sessionRepository.set(updatedAnswers)
       } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers)))
@@ -109,8 +109,8 @@ class ProductReferenceCyaController @Inject() (
     }
 
   private def handleRecover(
-                             recordId: String
-                           )(implicit request: DataRequest[AnyContent]): PartialFunction[Throwable, Result] = {
+    recordId: String
+  )(implicit request: DataRequest[AnyContent]): PartialFunction[Throwable, Result] = {
     case e: GoodsRecordBuildFailure =>
       logErrorsAndContinue(
         e.getMessage,

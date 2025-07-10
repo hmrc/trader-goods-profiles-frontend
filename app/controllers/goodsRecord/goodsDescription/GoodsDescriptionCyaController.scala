@@ -40,19 +40,19 @@ import views.html.goodsRecord.CyaUpdateRecordView
 import scala.concurrent.{ExecutionContext, Future}
 
 class GoodsDescriptionCyaController @Inject() (
-                                                override val messagesApi: MessagesApi,
-                                                identify: IdentifierAction,
-                                                getData: DataRetrievalAction,
-                                                requireData: DataRequiredAction,
-                                                profileAuth: ProfileAuthenticateAction,
-                                                val controllerComponents: MessagesControllerComponents,
-                                                auditService: AuditService,
-                                                view: CyaUpdateRecordView,
-                                                goodsRecordConnector: GoodsRecordConnector,
-                                                sessionRepository: SessionRepository,
-                                                goodsRecordUpdateService: GoodsRecordUpdateService   // <-- Inject the service here
-                                              )(implicit ec: ExecutionContext)
-  extends BaseController {
+  override val messagesApi: MessagesApi,
+  identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
+  profileAuth: ProfileAuthenticateAction,
+  val controllerComponents: MessagesControllerComponents,
+  auditService: AuditService,
+  view: CyaUpdateRecordView,
+  goodsRecordConnector: GoodsRecordConnector,
+  sessionRepository: SessionRepository,
+  goodsRecordUpdateService: GoodsRecordUpdateService // <-- Inject the service here
+)(implicit ec: ExecutionContext)
+    extends BaseController {
 
   private val errorMessage: String = "Unable to update Goods Record."
 
@@ -66,7 +66,9 @@ class GoodsDescriptionCyaController @Inject() (
           val list = SummaryListViewModel(
             Seq(GoodsDescriptionSummary.rowUpdateCya(goodsDescription, recordId, CheckMode))
           )
-          Future.successful(Ok(view(list, onSubmitAction, goodsDescriptionKey)).addingToSession(goodsDescription -> goodsDescription))
+          Future.successful(
+            Ok(view(list, onSubmitAction, goodsDescriptionKey)).addingToSession(goodsDescription -> goodsDescription)
+          )
 
         case Left(errors) =>
           Future.successful(
@@ -95,11 +97,11 @@ class GoodsDescriptionCyaController @Inject() (
         _                  = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
         oldRecord         <- goodsRecordConnector.getRecord(recordId)
         _                 <- goodsRecordUpdateService.updateIfChanged(
-          oldValue = oldRecord.goodsDescription,
-          newValue = goodsDescription,
-          updateGoodsRecord = updateGoodsRecord,
-          oldRecord = oldRecord
-        )
+                               oldValue = oldRecord.goodsDescription,
+                               newValue = goodsDescription,
+                               updateGoodsRecord = updateGoodsRecord,
+                               oldRecord = oldRecord
+                             )
         updatedAnswers    <- Future.fromTry(request.userAnswers.remove(GoodsDescriptionUpdatePage(recordId)))
         _                 <- sessionRepository.set(updatedAnswers)
       } yield {
@@ -115,8 +117,8 @@ class GoodsDescriptionCyaController @Inject() (
     }
 
   private def handleRecover(
-                             recordId: String
-                           )(implicit request: DataRequest[AnyContent]): PartialFunction[Throwable, Result] = {
+    recordId: String
+  )(implicit request: DataRequest[AnyContent]): PartialFunction[Throwable, Result] = {
     case e: GoodsRecordBuildFailure =>
       logErrorsAndContinue(
         e.getMessage,
