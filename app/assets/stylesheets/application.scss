@@ -16,6 +16,32 @@
   animation: spin 2s linear infinite;
 }
 
+.mobile-only {
+        display: none;
+    }
+    .parent {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .filter-container {
+        order: 1;
+    }
+    .content-container {
+        order: 2;
+    }
+    @media screen and (max-width: 600px) {
+        .mobile-only {
+            display: block;
+        }
+        .filter-container {
+            order: 2;
+        }
+        .content-container {
+            order: 1;
+        }
+    }
+
+
  .custom-box {
   box-shadow: inset 0 0 0 1px #b1b4b6;
   margin-top: 1px;
