@@ -41,6 +41,17 @@
       display: block;
   }
 
+  .timeout-signout-link-wrapper {
+    display: block;
+    margin-top: 12px;
+  }
+
+  .timeout-signout-link-wrapper a.govuk-link {
+    display: inline-block;
+    width: 100%;
+  }
+
+
 @-webkit-keyframes spin {
   0% {
     -webkit-transform: rotate(0deg);

@@ -20,66 +20,75 @@
 @import views.html.components.fullWidthMainContent
 
 @this(
-    appConfig: FrontendAppConfig,
-    govukLayout: GovukLayout,
-    govukBackLink: GovukBackLink,
-    hmrcHead: HmrcHead,
-    hmrcStandardHeader: HmrcStandardHeader,
-    hmrcStandardFooter: HmrcStandardFooter,
-    hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet,
-    hmrcLanguageSelect: HmrcLanguageSelect,
-    hmrcTimeoutDialog: HmrcTimeoutDialog,
-    hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
-    hmrcScripts: HmrcScripts,
-    betaBanner: StandardBetaBanner,
-    twoThirdsMainContent: TwoThirdsMainContent,
-    fullWidthMainContent: fullWidthMainContent
+appConfig: FrontendAppConfig,
+govukLayout: GovukLayout,
+govukBackLink: GovukBackLink,
+hmrcHead: HmrcHead,
+hmrcStandardHeader: HmrcStandardHeader,
+hmrcStandardFooter: HmrcStandardFooter,
+hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet,
+hmrcLanguageSelect: HmrcLanguageSelect,
+hmrcTimeoutDialog: HmrcTimeoutDialog,
+hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
+hmrcScripts: HmrcScripts,
+betaBanner: StandardBetaBanner,
+twoThirdsMainContent: TwoThirdsMainContent,
+fullWidthMainContent: fullWidthMainContent
 )
 
 @(
-    pageTitle: String,
-    backLinkUrl: String = "#",
-    backLinkMessageKey: String = "site.back",
-    showBackLink: Boolean = true,
-    timeout: Boolean = true,
-    showSignOut: Boolean = true,
-    signOutUrl: String = controllers.auth.routes.AuthController.feedbackOnSignOut().url,
-    isFullWidth: Boolean = false,
-    extraHead: Html = HtmlFormat.empty,
-    headerShouldHaveServiceLink: Boolean = true
-    )(contentBlock: Html)(implicit request: RequestHeader, messages: Messages)
+pageTitle: String,
+backLinkUrl: String = "#",
+backLinkMessageKey: String = "site.back",
+showBackLink: Boolean = true,
+timeout: Boolean = true,
+showSignOut: Boolean = true,
+signOutUrl: String = controllers.auth.routes.AuthController.feedbackOnSignOut().url,
+isFullWidth: Boolean = false,
+extraHead: Html = HtmlFormat.empty,
+headerShouldHaveServiceLink: Boolean = true
+)(contentBlock: Html)(implicit request: RequestHeader, messages: Messages)
 
 @head = {
-
-    @hmrcHead(
-        headBlock = if(timeout) { Some(
-            hmrcTimeoutDialog(TimeoutDialog(
-                timeout             = Some(appConfig.timeout),
-                countdown           = Some(appConfig.countdown),
-                keepAliveUrl        = Some(routes.KeepAliveController.keepAlive().url),
-                keepAliveButtonText = Some(messages("timeout.keepAlive")),
-                signOutUrl          = Some(signOutUrl),
-                signOutButtonText   = Some(messages("timeout.signOut")),
-                title               = Some(messages("timeout.title")),
-                message             = Some(messages("timeout.message")),
-                language            = Some(messages.lang.code)
-            )))
-        } else None
-    )
-    <link href="@routes.Assets.versioned("stylesheets/accessible-autocomplete.min.css").url" media="screen" rel="stylesheet" type="text/css" />
-    <link href="@routes.Assets.versioned("stylesheets/application.css")" media="all" rel="stylesheet" type="text/css" />
-    <style>
-        td p a span.govuk-visually-hidden {
-            max-width: 0px !important;
-        }
-    </style>
-    @extraHead
+@hmrcHead(
+headBlock = if (timeout) {
+Some {
+HtmlFormat.fill(Seq(
+hmrcTimeoutDialog(TimeoutDialog(
+timeout             = Some(appConfig.timeout),
+countdown           = Some(appConfig.countdown),
+keepAliveUrl        = Some(routes.KeepAliveController.keepAlive().url),
+keepAliveButtonText = Some(messages("timeout.keepAlive")),
+signOutUrl          = Some(signOutUrl),       // Button in timeout dialog
+signOutButtonText   = Some(messages("timeout.signOut")),
+title               = Some(messages("timeout.title")),
+message             = Some(messages("timeout.message")),
+language            = Some(messages.lang.code)
+)),
+Html(
+s"""
+<div class="timeout-signout-link-wrapper govuk-!-margin-top-2">
+    <a href="$signOutUrl" class="govuk-link">${messages("timeout.signOut")}</a>
+</div>
+"""
+)
+))
+}
+} else None
+)
+<link href="@routes.Assets.versioned("stylesheets/accessible-autocomplete.min.css").url" media="screen" rel="stylesheet" type="text/css" />
+<link href="@routes.Assets.versioned("stylesheets/application.css")" media="all" rel="stylesheet" type="text/css" />
+<style>
+    td p a span.govuk-visually-hidden {
+        max-width: 0px !important;
+    }
+</style>
+@extraHead
 }
 
 @additionalScripts = {
-    <script src='@controllers.routes.Assets.versioned("javascripts/accessible-autocomplete.js")'></script>
-    <script src='@controllers.routes.Assets.versioned("javascripts/application.js")' @CSPNonce.attr></script>
-
+<script src='@controllers.routes.Assets.versioned("javascripts/accessible-autocomplete.js")'></script>
+<script src='@controllers.routes.Assets.versioned("javascripts/application.js")' @CSPNonce.attr></script>
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=@appConfig.googleTagId"></script>
 
@@ -89,51 +98,48 @@
     gtag('js', new Date());
     gtag('config', "@appConfig.googleTagId");
 </script>
-
 }
 
 @beforeContent = {
+@if(appConfig.languageTranslationEnabled) {
+@hmrcLanguageSelect(LanguageSelect(
+if (messages.lang.code == "cy") Cy else En,
+(En, routes.LanguageSwitchController.switchToLanguage("en").url),
+(Cy, routes.LanguageSwitchController.switchToLanguage("cy").url)
+))
+}
 
-    @if(appConfig.languageTranslationEnabled) {
-        @hmrcLanguageSelect(LanguageSelect(
-            if (messages.lang.code == "cy") Cy else En,
-            (En, routes.LanguageSwitchController.switchToLanguage("en").url),
-            (Cy, routes.LanguageSwitchController.switchToLanguage("cy").url)
-        ))
-    }
-
-    @if(showBackLink) {
-        @govukBackLink(BackLinkViewModel(href = backLinkUrl, text = messages(backLinkMessageKey)).withCssClass("js-visible"))
-    }
-
+@if(showBackLink) {
+@govukBackLink(BackLinkViewModel(href = backLinkUrl, text = messages(backLinkMessageKey)).withCssClass("js-visible"))
+}
 }
 
 @content = {
-    @contentBlock
+@contentBlock
 
-    @if(isFullWidth) {
-        <div class="govuk-grid-column-full govuk-!-margin-top-8">
-            @hmrcReportTechnicalIssueHelper()
-        </div>
-    } else {
-        <div class="govuk-!-margin-top-8">
-            @hmrcReportTechnicalIssueHelper()
-        </div>
-    }
+@if(isFullWidth) {
+<div class="govuk-grid-column-full govuk-!-margin-top-8">
+    @hmrcReportTechnicalIssueHelper()
+</div>
+} else {
+<div class="govuk-!-margin-top-8">
+    @hmrcReportTechnicalIssueHelper()
+</div>
+}
 }
 
 @govukLayout(
-    pageTitle   = Some(pageTitle),
-    headBlock   = Some(head),
-    headerBlock = Some(hmrcStandardHeader(
-        serviceUrl  = if (headerShouldHaveServiceLink) Some(routes.IndexController.onPageLoad().url) else None,
-        signOutUrl  = if(showSignOut) Some(signOutUrl) else None,
-        phaseBanner = Some(betaBanner(appConfig.feedbackUrl.toString()))
-    )),
-    mainContentLayout = Some(if(isFullWidth) fullWidthMainContent(_) else twoThirdsMainContent(_)),
-    beforeContentBlock = Some(beforeContent),
-    footerBlock        = Some(hmrcStandardFooter()),
-    scriptsBlock       = Some(hmrcScripts(
-        scriptsBlock = Some(additionalScripts)
-    ))
+pageTitle   = Some(pageTitle),
+headBlock   = Some(head),
+headerBlock = Some(hmrcStandardHeader(
+serviceUrl  = if (headerShouldHaveServiceLink) Some(routes.IndexController.onPageLoad().url) else None,
+signOutUrl  = if(showSignOut) Some(signOutUrl) else None,
+phaseBanner = Some(betaBanner(appConfig.feedbackUrl.toString()))
+)),
+mainContentLayout = Some(if(isFullWidth) fullWidthMainContent(_) else twoThirdsMainContent(_)),
+beforeContentBlock = Some(beforeContent),
+footerBlock        = Some(hmrcStandardFooter()),
+scriptsBlock       = Some(hmrcScripts(
+scriptsBlock = Some(additionalScripts)
+))
 )(content)
