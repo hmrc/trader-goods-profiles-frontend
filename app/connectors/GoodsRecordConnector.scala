@@ -16,10 +16,10 @@
 
 package connectors
 
-import config.{FrontendAppConfig, Service}
+import config.Service
 import models.router.requests.{CreateRecordRequest, PatchRecordRequest, PutRecordRequest}
 import models.router.responses.{GetGoodsRecordResponse, GetRecordsResponse}
-import models.{CategoryRecord, GoodsRecord, LegacyRawReads, RecordsSummary, SupplementaryRequest, UpdateGoodsRecord}
+import models._
 import org.apache.pekko.Done
 import play.api.Configuration
 import play.api.http.Status.{ACCEPTED, NOT_FOUND, NO_CONTENT, OK}
@@ -33,8 +33,8 @@ import java.net.{URL, URLEncoder}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpClientV2, appConfig: FrontendAppConfig)(
-  implicit ec: ExecutionContext
+class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpClientV2)(implicit
+  ec: ExecutionContext
 ) extends LegacyRawReads {
   private val dataStoreBaseUrl: Service = config.get[Service]("microservice.services.trader-goods-profiles-data-store")
   private val clientIdHeader            = ("X-Client-ID", "tgp-frontend")

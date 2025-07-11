@@ -142,17 +142,17 @@ class GoodsRecordNavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
         "must go from CountryOfOriginUpdatePage to CyaUpdateRecord" in {
           navigator.nextPage(CountryOfOriginUpdatePage(testRecordId), NormalMode, emptyUserAnswers) mustBe
-            controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(testRecordId)
+            controllers.goodsRecord.countryOfOrigin.routes.CountryOfOriginCyaController.onPageLoad(testRecordId)
         }
 
         "must go from ProductReferenceUpdatePage to CyaUpdateRecord" in {
           navigator.nextPage(ProductReferenceUpdatePage(testRecordId), NormalMode, emptyUserAnswers) mustBe
-            controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadProductReference(testRecordId)
+            controllers.goodsRecord.productReference.routes.ProductReferenceCyaController.onPageLoad(testRecordId)
         }
 
         "must go from GoodsDescriptionUpdatePage to CyaUpdateRecord" in {
           navigator.nextPage(GoodsDescriptionUpdatePage(testRecordId), NormalMode, emptyUserAnswers) mustBe
-            controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadGoodsDescription(testRecordId)
+            controllers.goodsRecord.goodsDescription.routes.GoodsDescriptionCyaController.onPageLoad(testRecordId)
         }
 
         "must go from CommodityCodeUpdatePage to HasCorrectGoodsCommodityCodeUpdatePage" in {
@@ -194,17 +194,17 @@ class GoodsRecordNavigatorSpec extends SpecBase with BeforeAndAfterEach {
       "in Update Record Journey" - {
         "must go from CountryOfOriginPage to CyaUpdateRecord" in {
           navigator.nextPage(CountryOfOriginUpdatePage(testRecordId), CheckMode, emptyUserAnswers) mustBe
-            controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadCountryOfOrigin(testRecordId)
+            controllers.goodsRecord.countryOfOrigin.routes.CountryOfOriginCyaController.onPageLoad(testRecordId)
         }
 
         "must go from ProductReferencePage to CyaUpdateRecord" in {
           navigator.nextPage(ProductReferenceUpdatePage(testRecordId), CheckMode, emptyUserAnswers) mustBe
-            controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadProductReference(testRecordId)
+            controllers.goodsRecord.productReference.routes.ProductReferenceCyaController.onPageLoad(testRecordId)
         }
 
         "must go from GoodsDescriptionPage to CyaUpdateRecord" in {
           navigator.nextPage(GoodsDescriptionUpdatePage(testRecordId), CheckMode, emptyUserAnswers) mustBe
-            controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadGoodsDescription(testRecordId)
+            controllers.goodsRecord.goodsDescription.routes.GoodsDescriptionCyaController.onPageLoad(testRecordId)
         }
 
         "must go from CommodityCodePage to HasCorrectGoodsCommodityCodeUpdatePage" in {

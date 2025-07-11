@@ -98,7 +98,7 @@ class Navigation @Inject() (categorisationService: CategorisationService) extend
       .map {
         case true  =>
           if (answers.isDefined(CommodityCodeUpdatePage(recordId))) {
-            controllers.goodsRecord.routes.CyaUpdateRecordController.onPageLoadCommodityCode(recordId)
+            controllers.goodsRecord.commodityCode.routes.CommodityCodeCyaController.onPageLoad(recordId)
           } else {
             controllers.goodsRecord.commodityCode.routes.UpdateCommodityCodeController.onPageLoad(CheckMode, recordId)
           }

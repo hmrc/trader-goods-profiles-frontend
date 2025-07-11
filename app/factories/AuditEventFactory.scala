@@ -16,7 +16,7 @@
 
 package factories
 
-import models.audits._
+import models.audits.*
 import models.helper.{CategorisationUpdate, GoodsDetailsUpdate, Journey, SupplementaryUnitUpdate, UpdateSection}
 import models.ott.CategorisationInfo
 import models.ott.response.OttResponse
@@ -27,7 +27,7 @@ import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.AuditExtensions.auditHeaderCarrier
 import uk.gov.hmrc.play.audit.model.{DataEvent, ExtendedDataEvent}
-import utils.Constants.{commodityCodeKey, countryOfOriginKey, goodsDescriptionKey, productReferenceKey}
+import utils.Constants.{StandardGoodsAsInt, commodityCodeKey, countryOfOriginKey, goodsDescriptionKey, productReferenceKey}
 import utils.HttpStatusCodeDescriptions.codeDescriptions
 
 import java.time.Instant
@@ -107,6 +107,14 @@ case class AuditEventFactory() {
 
   }
 
+  /*All autocategorised goods will be 'StandardGoodsAsInt'. Therefore, to maintain the performance of the audit below, the following val defines the category when autocategorisation
+  is applied will be StandardGoodsAsInt. If not applied it'll be an empty string (no category yet).*/
+  private val autoCategory: String = if (CategorisationUpdate.toString.isEmpty) {
+    ""
+  } else {
+    StandardGoodsAsInt.toString
+  }
+
   def createSubmitGoodsRecordEventForCreateRecord(
     affinityGroup: AffinityGroup,
     journey: Journey,
@@ -126,7 +134,9 @@ case class AuditEventFactory() {
       commodityCodeKey             -> goodsRecord.commodity.commodityCode,
       "commodityDescription"       -> goodsRecord.commodity.descriptions.headOption.getOrElse("null"),
       "commodityCodeEffectiveFrom" -> goodsRecord.commodity.validityStartDate.toString,
-      "commodityCodeEffectiveTo"   -> goodsRecord.commodity.validityEndDate.map(_.toString).getOrElse("null")
+      "commodityCodeEffectiveTo"   -> goodsRecord.commodity.validityEndDate.map(_.toString).getOrElse("null"),
+      "updateSection"              -> CategorisationUpdate.toString,
+      "category"                   -> autoCategory
     )
 
     createSubmitGoodsRecordEvent(auditDetails)
@@ -153,7 +163,8 @@ case class AuditEventFactory() {
       // How many pages were answered (i.e. actually shown to the user)
       "categoryAssessmentsAnswered" -> categoryRecord.assessmentsAnswered.toString,
       "reassessmentNeeded"          -> categoryRecord.longerCategoryInfo.isDefined.toString,
-      "category"                    -> Scenario.getResultAsInt(categoryRecord.category).toString
+      "category"                    -> Scenario.getResultAsInt(categoryRecord.category).toString,
+      "updateSection"               -> CategorisationUpdate.toString
     ) ++ writeSupplementaryUnitDetails(categoryRecord) ++
       writeReassessmentDetails(categoryRecord)
 

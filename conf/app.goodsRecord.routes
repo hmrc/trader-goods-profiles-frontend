@@ -66,15 +66,17 @@ POST        /update-record/:recordId/change-record-warning/goods-description    
 GET         /update-record/:recordId/change-record-warning/goods-description/check                  controllers.goodsRecord.goodsDescription.HasGoodsDescriptionChangeController.onPageLoad(mode: Mode = CheckMode, recordId: String)
 POST        /update-record/:recordId/change-record-warning/goods-description/check                  controllers.goodsRecord.goodsDescription.HasGoodsDescriptionChangeController.onSubmit(mode: Mode = CheckMode, recordId: String)
 
-GET         /update-record/:recordId/check-your-answers/country-of-origin                           controllers.goodsRecord.CyaUpdateRecordController.onPageLoadCountryOfOrigin(recordId: String)
-POST        /update-record/:recordId/check-your-answers/country-of-origin                           controllers.goodsRecord.CyaUpdateRecordController.onSubmitCountryOfOrigin(recordId: String)
-GET         /update-record/:recordId/check-your-answers/goods-description                           controllers.goodsRecord.CyaUpdateRecordController.onPageLoadGoodsDescription(recordId: String)
-POST        /update-record/:recordId/check-your-answers/goods-description                           controllers.goodsRecord.CyaUpdateRecordController.onSubmitGoodsDescription(recordId: String)
+GET         /update-record/:recordId/check-your-answers/country-of-origin                           controllers.goodsRecord.countryOfOrigin.CountryOfOriginCyaController.onPageLoad(recordId: String)
+POST        /update-record/:recordId/check-your-answers/country-of-origin                           controllers.goodsRecord.countryOfOrigin.CountryOfOriginCyaController.onSubmit(recordId: String)
 
-GET         /update-record/:recordId/check-your-answers/product-reference                           controllers.goodsRecord.CyaUpdateRecordController.onPageLoadProductReference(recordId: String)
-POST        /update-record/:recordId/check-your-answers/product-reference                           controllers.goodsRecord.CyaUpdateRecordController.onSubmitproductReference(recordId: String)
-GET         /update-record/:recordId/check-your-answers/commodity-code                              controllers.goodsRecord.CyaUpdateRecordController.onPageLoadCommodityCode(recordId: String)
-POST        /update-record/:recordId/check-your-answers/commodity-code                              controllers.goodsRecord.CyaUpdateRecordController.onSubmitCommodityCode(recordId: String)
+GET         /update-record/:recordId/check-your-answers/goods-description                           controllers.goodsRecord.goodsDescription.GoodsDescriptionCyaController.onPageLoad(recordId: String)
+POST        /update-record/:recordId/check-your-answers/goods-description                           controllers.goodsRecord.goodsDescription.GoodsDescriptionCyaController.onSubmit(recordId: String)
+
+GET         /update-record/:recordId/check-your-answers/product-reference                           controllers.goodsRecord.productReference.ProductReferenceCyaController.onPageLoad(recordId: String)
+POST        /update-record/:recordId/check-your-answers/product-reference                           controllers.goodsRecord.productReference.ProductReferenceCyaController.onSubmit(recordId: String)
+
+GET         /update-record/:recordId/check-your-answers/commodity-code                              controllers.goodsRecord.commodityCode.CommodityCodeCyaController.onPageLoad(recordId: String)
+POST        /update-record/:recordId/check-your-answers/commodity-code                              controllers.goodsRecord.commodityCode.CommodityCodeCyaController.onSubmit(recordId: String)
 
 GET         /update-record/:recordId/change-record-warning/updated-commodity-code                                         controllers.goodsRecord.commodityCode.UpdatedCommodityCodeController.onPageLoad(recordId: String)
 GET         /update-record/:recordId/change-record-warning/updated-country-of-origin                                      controllers.goodsRecord.countryOfOrigin.UpdatedCountryOfOriginController.onPageLoad(recordId: String)
