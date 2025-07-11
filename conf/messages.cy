@@ -34,7 +34,7 @@ date.error.month = mis
 date.error.year = blwyddyn
 
 timeout.title = Rydych ar fin cael eich allgofnodi
-timeout.message = Am resymau diogelwch, cewch eich allgofnodi o’r gwasanaeth hwn ymhen
+timeout.message = Er eich diogelwch, byddwn yn eich allgofnodi cyn pen
 timeout.keepAlive = Peidio ag allgofnodi
 timeout.signOut = Allgofnodi
 
