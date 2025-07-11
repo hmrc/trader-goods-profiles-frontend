@@ -140,10 +140,10 @@ if (
               <div class="mobile-only" aria-hidden="true">
                   <h2 class="govuk-heading-s">Contents</h2>
                   <ul class="govuk-list">
-                      <li><a class="govuk-link" href="#information">@messages("goodsRecords.h2.1")</a></li>
-                      <li><a class="govuk-link" href="#createrecord">@messages("goodsRecord.subHeading")</a></li>
-                      <li><a class="govuk-link" href="#searchrecord">@messages("goodsRecords.search")</a></li>
-                      <li><a class="govuk-link" href="#goodsRecords">@messages("goodsRecords.record.list")</a></li>
+                      <li><a class="govuk-link" href="#information" tabindex="-1">@messages("goodsRecords.h2.1")</a></li>
+                      <li><a class="govuk-link" href="#createrecord" tabindex="-1">@messages("goodsRecord.subHeading")</a></li>
+                      <li><a class="govuk-link" href="#searchrecord" tabindex="-1">@messages("goodsRecords.search")</a></li>
+                      <li><a class="govuk-link" href="#goodsRecords" tabindex="-1">@messages("goodsRecords.record.list")</a></li>
                   </ul>
               </div>
 
@@ -211,7 +211,9 @@ if (
     }
 }
 
+<div id = "searchrecord">
 @goodsRecordFilterSearchTerm(form, countries, page, searchForm)
+</div>
 
 <div style="overflow-x: auto;" tabindex="0" role="region" aria-label="goodsProfile">
     @govukTable(
