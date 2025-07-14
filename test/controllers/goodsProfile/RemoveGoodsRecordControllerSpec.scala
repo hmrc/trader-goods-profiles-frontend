@@ -185,8 +185,8 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar with Be
       when(mockConnector.removeGoodsRecord(eqTo(testRecordId))(any())).thenReturn(Future.successful(false))
 
       running(application) {
-        val request     = FakeRequest(POST, removeGoodsRecordRoute).withFormUrlEncodedBody(("value", "true"))
-        val result      = route(application, request).value
+        val request = FakeRequest(POST, removeGoodsRecordRoute).withFormUrlEncodedBody(("value", "true"))
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual controllers.problem.routes.RecordNotFoundController.onPageLoad().url

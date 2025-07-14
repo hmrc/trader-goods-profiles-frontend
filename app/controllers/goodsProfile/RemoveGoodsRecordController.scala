@@ -85,20 +85,23 @@ class RemoveGoodsRecordController @Inject() (
             formWithErrors => Future.successful(BadRequest(view(formWithErrors, recordId, location, productRef))),
             {
               case true  =>
-                goodsRecordConnector.removeGoodsRecord(recordId).map { removed =>
-                  auditService.auditFinishRemoveGoodsRecord(request.eori, request.affinityGroup, recordId)
-                  if (removed) {
-                    Redirect(navigator.nextPageAfterRemoveGoodsRecord(request.userAnswers, location))
-                  } else {
-                    Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
+                goodsRecordConnector
+                  .removeGoodsRecord(recordId)
+                  .map { removed =>
+                    auditService.auditFinishRemoveGoodsRecord(request.eori, request.affinityGroup, recordId)
+                    if (removed) {
+                      Redirect(navigator.nextPageAfterRemoveGoodsRecord(request.userAnswers, location))
+                    } else {
+                      Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
+                    }
                   }
-                }.recover {
-                  case e: UpstreamErrorResponse if e.statusCode == 404 =>
-                    Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
-                  case e: Exception =>
-                    logger.error(s"Error removing record $recordId: ${e.getMessage}", e)
-                    Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
-                }
+                  .recover {
+                    case e: UpstreamErrorResponse if e.statusCode == 404 =>
+                      Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
+                    case e: Exception                                    =>
+                      logger.error(s"Error removing record $recordId: ${e.getMessage}", e)
+                      Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
+                  }
               case false =>
                 val redirectCall = location match {
                   case GoodsProfileLocation =>
