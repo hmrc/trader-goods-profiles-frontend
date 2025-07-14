@@ -27,6 +27,7 @@ import pages.goodsRecord.ProductReferenceUpdatePage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.AuditService
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import views.html.goodsProfile.RemoveGoodsRecordView
 
@@ -89,12 +90,14 @@ class RemoveGoodsRecordController @Inject() (
                   if (removed) {
                     Redirect(navigator.nextPageAfterRemoveGoodsRecord(request.userAnswers, location))
                   } else {
-                    navigator.journeyRecovery(
-                      Some(
-                        RedirectUrl(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url)
-                      )
-                    )
+                    Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
                   }
+                }.recover {
+                  case e: UpstreamErrorResponse if e.statusCode == 404 =>
+                    Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
+                  case e: Exception =>
+                    logger.error(s"Error removing record $recordId: ${e.getMessage}", e)
+                    Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
                 }
               case false =>
                 val redirectCall = location match {
