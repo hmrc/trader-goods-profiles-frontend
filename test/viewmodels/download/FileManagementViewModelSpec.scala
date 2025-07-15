@@ -17,7 +17,7 @@
 package viewmodels.download
 
 import base.SpecBase
-import connectors.DownloadDataConnector
+import connectors.{DownloadDataConnector, GoodsRecordConnector}
 import generators.Generators
 import helpers.FileManagementTableComponentHelper
 import models.DownloadDataStatus.{FileInProgress, FileReadyUnseen}
@@ -46,16 +46,22 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
       application.injector.instanceOf[FileManagementTableComponentHelper]
     implicit val message: Messages                                                      = messages(application)
 
-    val viewModelAvailableFiles = FileManagementViewModel(Some(AvailableFilesTable(availableFilesTableRow)), None)
-    val viewModelPendingFiles   = FileManagementViewModel(None, Some(PendingFilesTable(pendingFilesTableRow)))
-    val viewModelNoFiles        = FileManagementViewModel(None, None)
+    val viewModelAvailableFiles = FileManagementViewModel(Some(AvailableFilesTable(availableFilesTableRow)), None, doesGoodsRecordExist = true)
+    val viewModelPendingFiles   = FileManagementViewModel(None, Some(PendingFilesTable(pendingFilesTableRow)), doesGoodsRecordExist = true)
+    val viewModelNoFiles        = FileManagementViewModel(None, None, doesGoodsRecordExist = true)
     val viewModelAllFiles       = FileManagementViewModel(
       Some(AvailableFilesTable(availableFilesTableRow)),
-      Some(PendingFilesTable(pendingFilesTableRow))
+      Some(PendingFilesTable(pendingFilesTableRow)), doesGoodsRecordExist = true
     )
     val viewModels              =
       Gen.oneOf(Seq(viewModelAvailableFiles, viewModelPendingFiles, viewModelNoFiles, viewModelAllFiles)).sample.value
+    val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+    val mockGoodsRecordConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
 
+    val viewModelProvider = new FileManagementViewModel.FileManagementViewModelProvider(
+      fileManagementTableComponentHelper,
+      mockGoodsRecordConnector
+    )
     "isFiles" - {
       "must return true if both tables are defined" in {
         viewModelAllFiles.isFiles mustEqual true
@@ -118,11 +124,11 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
         "must return a FileManagementViewModel" - {
           "with correct values" - {
             "when there is no data" in {
-              val viewModelProvider                                = new FileManagementViewModel.FileManagementViewModelProvider()
-              val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+
 
               when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(Seq.empty)
               when(mockDownloadDataConnector.getDownloadData(any())) thenReturn Future.successful(Seq.empty)
+              when(mockGoodsRecordConnector.getRecords(any(), any())(any())) thenReturn Future.successful(Seq.empty)
 
               val application                  = applicationBuilder(userAnswers = Some(emptyUserAnswers))
                 .overrides(bind[DownloadDataConnector].toInstance(mockDownloadDataConnector))
@@ -138,8 +144,7 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
             }
 
             "when all files are pending" in {
-              val viewModelProvider                                = new FileManagementViewModel.FileManagementViewModelProvider()
-              val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+
               val downloadDataSummary                              =
                 Seq(DownloadDataSummary("id", "eori", FileInProgress, Instant.now(), Instant.now(), None))
 
@@ -163,8 +168,7 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
             }
 
             "when all files are available" in {
-              val viewModelProvider                                = new FileManagementViewModel.FileManagementViewModelProvider()
-              val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+
               val fileName                                         = "file"
               val fileInfo                                         = FileInfo(fileName, 1, "30")
               val downloadDataSummary                              =
@@ -193,8 +197,7 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
             }
 
             "when both files are available and pending" in {
-              val viewModelProvider                                = new FileManagementViewModel.FileManagementViewModelProvider()
-              val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+
               val fileName                                         = "file"
               val fileInfo                                         = FileInfo(fileName, 1, "30")
               val downloadDataSummary                              = Seq(
@@ -226,8 +229,7 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
             }
 
             "when files should be available, but there is no DownloadData" in {
-              val viewModelProvider                                = new FileManagementViewModel.FileManagementViewModelProvider()
-              val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+
               val fileName                                         = "file"
               val fileInfo                                         = FileInfo(fileName, 1, "30")
               val downloadDataSummary                              =
@@ -252,8 +254,7 @@ class FileManagementViewModelSpec extends SpecBase with Generators {
             }
 
             "when files should be available, but there is no DownloadData with a matching fileName" in {
-              val viewModelProvider                                = new FileManagementViewModel.FileManagementViewModelProvider()
-              val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
+
               val fileName                                         = "file"
               val fileInfo                                         = FileInfo(fileName, 1, "30")
               val downloadDataSummary                              =
