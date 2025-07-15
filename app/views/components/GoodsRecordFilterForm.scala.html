@@ -33,7 +33,7 @@
 
 @(form: Form[_], countries: Seq[Country], page: Int, searchForm: SearchForm)(implicit request: Request[_], messages: Messages)
 
-     <div class="govuk-grid-column-one-third custom-box">
+     <div class="govuk-grid-column-one-third custom-box filter-container" id="searchrecord">
 
           <h2 class="govuk-heading-m">@messages("goodsRecords.search")</h2>
           <p class="govuk-body"> @messages("goodsRecords.search.1")</p>

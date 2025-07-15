@@ -66,6 +66,7 @@ homepage.h2.3 = Lawrlwytho data TGP
 homepage.downloadLinkText.noGoodsRecords = Nid oes gennych unrhyw gofnodion nwyddau TGP i’w lawrlwytho.
 homepage.downloadLinkText.noFilesRequested = Cael eich ffeil cofnodion TGP
 homepage.downloadLinkText.filesRequested = Cael neu lawrlwytho’ch ffeil cofnodion TGP
+homepage.downloadLinkText.downloadRecords = Lawrlwythwch eich ffeil cofnodion TGP
 homepage.downloadLinkText.unverifiedEmail = Mewngofnodwch i Ddynodydd Defnyddiwr (ID) gweinyddwr ar gyfer Porth y Llywodraeth i lawrlwytho’ch data o ran Proffil Nwyddau Masnachwyr (TGP).
 homepage.newUkims.success = Rydych wedi newid y Cynllun Marchnad Fewnol y DU (UKIMS)
 
@@ -322,9 +323,9 @@ createRecordSuccess.h2.1 = Rhowch eich barn
 createRecordSuccess.p6 = Mae hwn yn wasanaeth newydd ac rydym eisiau gwybod beth yw’ch barn amdano.
 createRecordSuccess.p7.linkText = Anfonwch eich adborth atom.
 createRecordSuccess.p7 = Bydd eich meddyliau a’ch syniadau’n ein helpu i wneud gwelliannau.
-createRecordAutoCategorisationSuccess.p1 = Rydym wedi categoreiddio’r nwyddau’n awtomatig oherwydd nad oes esemptiadau ar gael ac oherwydd {0}
+createRecordAutoCategorisationSuccess.p1 = Rydym wedi categoreiddio’r nwyddau’n awtomatig oherwydd nad oes esemptiadau ar gael ac oherwydd eu bod nhw {0}
 createRecordAutoCategorisationSuccess.immiReady = Gallwch ddefnyddio’r cofnod nwyddau hwn i helpu i lenwi ffurflen IMMI.
-createRecordAutoCategorisationSuccess.notReadyForImmi = Ni allwch ddefnyddio’r cofnod nwyddau hwn i helpu i lenwi ffurflen IMMI gan ei bod yn gategori 1.
+createRecordAutoCategorisationSuccess.notReadyForImmi = Ni allwch ddefnyddio’r cofnod nwyddau hwn i helpu i lenwi ffurflen IMMI gan ei fod yn gategori 1.
 
 productReference.error.required = Nodwch gyfeirnod y cynnyrch
 productReference.error.traderRefNotUnique = Mae cyfeirnod y cynnyrch hwn eisoes yn eich TGP. Nodwch gyfeirnod cynnyrch unigryw.
