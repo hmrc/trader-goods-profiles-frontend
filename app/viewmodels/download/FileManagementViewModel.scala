@@ -28,10 +28,10 @@ import scala.concurrent.{ExecutionContext, Future}
 import models.SeqOps
 
 case class FileManagementViewModel(
-                                    availableFilesTable: Option[AvailableFilesTable],
-                                    pendingFilesTable: Option[PendingFilesTable],
-                                    doesGoodsRecordExist: Boolean
-                                  )(implicit messages: Messages) {
+  availableFilesTable: Option[AvailableFilesTable],
+  pendingFilesTable: Option[PendingFilesTable],
+  doesGoodsRecordExist: Boolean
+)(implicit messages: Messages) {
 
   val isFiles: Boolean = availableFilesTable.isDefined || pendingFilesTable.isDefined
 
@@ -52,13 +52,13 @@ case class FileManagementViewModel(
 object FileManagementViewModel {
 
   class FileManagementViewModelProvider @Inject() (
-                                                    fileManagementTableComponentHelper: FileManagementTableComponentHelper,
-                                                    goodsRecordConnector: GoodsRecordConnector
-                                                  ) {
+    fileManagementTableComponentHelper: FileManagementTableComponentHelper,
+    goodsRecordConnector: GoodsRecordConnector
+  ) {
 
     def apply(
-               downloadDataConnector: DownloadDataConnector
-             )(implicit messages: Messages, ec: ExecutionContext, hc: HeaderCarrier): Future[FileManagementViewModel] = {
+      downloadDataConnector: DownloadDataConnector
+    )(implicit messages: Messages, ec: ExecutionContext, hc: HeaderCarrier): Future[FileManagementViewModel] = {
 
       // Bring the helper into local implicit scope
       implicit val helper: FileManagementTableComponentHelper = fileManagementTableComponentHelper
@@ -68,22 +68,22 @@ object FileManagementViewModel {
         downloadData        <- downloadDataConnector.getDownloadData
 
         availableDataSummaries = downloadDataSummary.filterToOption(summary =>
-          summary.status == FileReadySeen || summary.status == FileReadyUnseen
-        )
+                                   summary.status == FileReadySeen || summary.status == FileReadyUnseen
+                                 )
 
         availableFiles = availableDataSummaries.flatMap { availableFilesSeq =>
-          val files = for {
-            availableFile    <- availableFilesSeq
-            fileInfo         <- availableFile.fileInfo
-            matchingDownload <- downloadData.find(_.filename == fileInfo.fileName)
-          } yield (availableFile, matchingDownload)
+                           val files = for {
+                             availableFile    <- availableFilesSeq
+                             fileInfo         <- availableFile.fileInfo
+                             matchingDownload <- downloadData.find(_.filename == fileInfo.fileName)
+                           } yield (availableFile, matchingDownload)
 
-          if (files.nonEmpty) Some(files) else None
-        }
+                           if (files.nonEmpty) Some(files) else None
+                         }
 
         pendingFiles = downloadDataSummary.filterToOption(_.status == FileInProgress)
 
-        goodsRecords <- goodsRecordConnector.getRecords(1, 1)
+        goodsRecords        <- goodsRecordConnector.getRecords(1, 1)
         doesGoodsRecordExist = goodsRecords.exists(_.goodsItemRecords.nonEmpty)
 
       } yield {

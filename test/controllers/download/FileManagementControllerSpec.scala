@@ -39,7 +39,7 @@ class FileManagementControllerSpec extends SpecBase with MockitoSugar with Befor
   private lazy val fileManagementRoute = controllers.download.routes.FileManagementController.onPageLoad().url
 
   private val mockDownloadDataConnector: DownloadDataConnector = mock[DownloadDataConnector]
-  private val mockGoodsRecordConnector: GoodsRecordConnector = mock[GoodsRecordConnector]
+  private val mockGoodsRecordConnector: GoodsRecordConnector   = mock[GoodsRecordConnector]
 
   override def beforeEach(): Unit = {
 
@@ -76,8 +76,8 @@ class FileManagementControllerSpec extends SpecBase with MockitoSugar with Befor
 
         running(application) {
           val request = FakeRequest(GET, fileManagementRoute)
-          val result = route(application, request).value
-          val view = application.injector.instanceOf[FileManagementView]
+          val result  = route(application, request).value
+          val view    = application.injector.instanceOf[FileManagementView]
 
           status(result) mustEqual OK
           contentAsString(result) must include("TGP records files")
