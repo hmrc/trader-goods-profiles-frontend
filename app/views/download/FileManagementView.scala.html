@@ -63,7 +63,15 @@ govukTable: GovukTable
         </div>
     }
 
-    <p class="govuk-body"><a href="@controllers.download.routes.RequestDataController.onPageLoad().url" class="govuk-link" >@viewModel.tgpRecordsLink</a></p>
+@if(viewModel.doesGoodsRecordExist) {
+    <p class="govuk-body">
+        <a href="@controllers.download.routes.RequestDataController.onPageLoad().url" class="govuk-link">
+            @viewModel.tgpRecordsLink
+        </a>
+    </p>
+    } else {
+    <p class="govuk-body">@messages("fileManagement.noFiles")</p>
+    }
     <p class="govuk-body"><a href="@routes.HomePageController.onPageLoad().url" class="govuk-link" >@viewModel.goBackHomeLink</a></p>
 
 }

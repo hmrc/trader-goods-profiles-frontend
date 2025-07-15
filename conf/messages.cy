@@ -547,7 +547,7 @@ fileManagement.pendingFiles.fileText = Nid yw’r ffeil yn barod
 fileManagement.files.requestRecord.linkText = Cael ffeil cofnodion TGP newydd
 fileManagement.noFiles.requestRecord.linkText = Cael ffeil cofnodion TGP
 fileManagement.noFiles.paragraph1 = Nid oes gennych unrhyw ffeiliau cofnodion TGP i’w lawrlwytho. Bydd y ffeiliau hyn ar gael am 30 diwrnod yn unig.
-
+fileManagement.noFiles = Ni allwch gael ffeil cofnodion newydd gan nad oes gennych gofnodion nwyddau.
 
 goodsRecords.title = Proffil Nwyddau
 goodsRecords.title.withPage = Proffil Nwyddau – tudalen {0} o {1}

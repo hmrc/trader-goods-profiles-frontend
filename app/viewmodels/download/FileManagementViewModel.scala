@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package viewmodels.download
 
-import connectors.DownloadDataConnector
+import connectors.{DownloadDataConnector, GoodsRecordConnector}
 import helpers.FileManagementTableComponentHelper
 import models.DownloadDataStatus.{FileInProgress, FileReadySeen, FileReadyUnseen}
 import models.download._
@@ -28,9 +28,10 @@ import scala.concurrent.{ExecutionContext, Future}
 import models.SeqOps
 
 case class FileManagementViewModel(
-  availableFilesTable: Option[AvailableFilesTable],
-  pendingFilesTable: Option[PendingFilesTable]
-)(implicit messages: Messages) {
+                                    availableFilesTable: Option[AvailableFilesTable],
+                                    pendingFilesTable: Option[PendingFilesTable],
+                                    doesGoodsRecordExist: Boolean
+                                  )(implicit messages: Messages) {
 
   val isFiles: Boolean = availableFilesTable.isDefined || pendingFilesTable.isDefined
 
@@ -38,47 +39,54 @@ case class FileManagementViewModel(
   val heading: String = messages("fileManagement.heading")
 
   val paragraph1: String =
-    if (isFiles) messages("fileManagement.files.paragraph1") else messages("fileManagement.noFiles.paragraph1")
+    if (isFiles) messages("fileManagement.files.paragraph1")
+    else messages("fileManagement.noFiles.paragraph1")
 
   val tgpRecordsLink: String =
-    if (isFiles) {
-      messages("fileManagement.files.requestRecord.linkText")
-    } else {
-      messages("fileManagement.noFiles.requestRecord.linkText")
-    }
+    if (isFiles) messages("fileManagement.files.requestRecord.linkText")
+    else messages("fileManagement.noFiles.requestRecord.linkText")
 
   val goBackHomeLink: String = messages("site.goBackToHomePage")
 }
 
 object FileManagementViewModel {
-  class FileManagementViewModelProvider @Inject() (implicit
-    fileManagementTableComponentHelper: FileManagementTableComponentHelper
-  ) {
+
+  class FileManagementViewModelProvider @Inject() (
+                                                    fileManagementTableComponentHelper: FileManagementTableComponentHelper,
+                                                    goodsRecordConnector: GoodsRecordConnector
+                                                  ) {
+
     def apply(
-      downloadDataConnector: DownloadDataConnector
-    )(implicit messages: Messages, ec: ExecutionContext, hc: HeaderCarrier): Future[FileManagementViewModel] =
+               downloadDataConnector: DownloadDataConnector
+             )(implicit messages: Messages, ec: ExecutionContext, hc: HeaderCarrier): Future[FileManagementViewModel] = {
+
+      // Bring the helper into local implicit scope
+      implicit val helper: FileManagementTableComponentHelper = fileManagementTableComponentHelper
+
       for {
         downloadDataSummary <- downloadDataConnector.getDownloadDataSummary
         downloadData        <- downloadDataConnector.getDownloadData
 
         availableDataSummaries = downloadDataSummary.filterToOption(summary =>
-                                   summary.status == FileReadySeen || summary.status == FileReadyUnseen
-                                 )
+          summary.status == FileReadySeen || summary.status == FileReadyUnseen
+        )
 
         availableFiles = availableDataSummaries.flatMap { availableFilesSeq =>
-                           val files = for {
-                             availableFile    <- availableFilesSeq
-                             fileInfo         <- availableFile.fileInfo
-                             matchingDownload <- downloadData.find(_.filename == fileInfo.fileName)
-                           } yield (availableFile, matchingDownload)
+          val files = for {
+            availableFile    <- availableFilesSeq
+            fileInfo         <- availableFile.fileInfo
+            matchingDownload <- downloadData.find(_.filename == fileInfo.fileName)
+          } yield (availableFile, matchingDownload)
 
-                           if (files.nonEmpty) Some(files) else None
-                         }
+          if (files.nonEmpty) Some(files) else None
+        }
 
         pendingFiles = downloadDataSummary.filterToOption(_.status == FileInProgress)
 
-      } yield {
+        goodsRecords <- goodsRecordConnector.getRecords(1, 1)
+        doesGoodsRecordExist = goodsRecords.exists(_.goodsItemRecords.nonEmpty)
 
+      } yield {
         if (availableFiles.isDefined) {
           downloadDataConnector.updateSeenStatus
         }
@@ -86,7 +94,8 @@ object FileManagementViewModel {
         val availableFilesTable = AvailableFilesTable(availableFiles)
         val pendingFilesTable   = PendingFilesTable(pendingFiles)
 
-        new FileManagementViewModel(availableFilesTable, pendingFilesTable)
+        new FileManagementViewModel(availableFilesTable, pendingFilesTable, doesGoodsRecordExist)
       }
+    }
   }
 }

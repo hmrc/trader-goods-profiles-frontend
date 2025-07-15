@@ -794,6 +794,7 @@ fileManagement.pendingFiles.table.header2 = File
 fileManagement.pendingFiles.fileText = File not ready
 fileManagement.files.requestRecord.linkText = Get a new TGP records file
 fileManagement.noFiles.requestRecord.linkText = Get a TGP records file
+fileManagement.noFiles = You can not get a new records file as you have no goods records.
 
 adviceStatus.notRequested = Not requested
 adviceStatus.requested = Requested
