@@ -23,13 +23,10 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.*
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.i18n.Messages
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import uk.gov.hmrc.http.HeaderCarrier
-import viewmodels.download.FileManagementViewModel
-import views.html.download.FileManagementView
 
 import java.time.Instant
 import scala.concurrent.Future
@@ -58,7 +55,6 @@ class FileManagementControllerSpec extends SpecBase with MockitoSugar with Befor
         when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(
           Some(Email("address", Instant.now()))
         )
-        implicit val hc: HeaderCarrier = HeaderCarrier()
 
         when(mockGoodsRecordConnector.getRecords(any[Int], any[Int])(any[HeaderCarrier]))
           .thenReturn(Future.successful(None))
@@ -70,14 +66,9 @@ class FileManagementControllerSpec extends SpecBase with MockitoSugar with Befor
           )
           .build()
 
-        implicit val messagesImplicit: Messages = messages(application)
-
-        val viewModel = FileManagementViewModel(None, None, true)
-
         running(application) {
           val request = FakeRequest(GET, fileManagementRoute)
           val result  = route(application, request).value
-          val view    = application.injector.instanceOf[FileManagementView]
 
           status(result) mustEqual OK
           contentAsString(result) must include("TGP records files")

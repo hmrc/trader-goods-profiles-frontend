@@ -60,7 +60,6 @@ object FileManagementViewModel {
       downloadDataConnector: DownloadDataConnector
     )(implicit messages: Messages, ec: ExecutionContext, hc: HeaderCarrier): Future[FileManagementViewModel] = {
 
-      // Bring the helper into local implicit scope
       implicit val helper: FileManagementTableComponentHelper = fileManagementTableComponentHelper
 
       for {

@@ -17,21 +17,18 @@
 import base.SpecBase
 import connectors.{DownloadDataConnector, GoodsRecordConnector}
 import helpers.FileManagementTableComponentHelper
-import models.router.responses.GetRecordsResponse
-import org.scalatestplus.mockito.MockitoSugar
-import org.mockito.Mockito.*
-
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
-import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
-import uk.gov.hmrc.http.HeaderCarrier
 import models.*
 import models.DownloadDataStatus.{FileInProgress, FileReadySeen, FileReadyUnseen}
-import play.api.test.Helpers.{await, stubMessages, stubMessagesApi}
+import models.router.responses.GetRecordsResponse
+import org.mockito.Mockito.*
+import org.scalatestplus.mockito.MockitoSugar
+import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
+import play.api.test.Helpers.{await, defaultAwaitTimeout, stubMessagesApi}
+import uk.gov.hmrc.http.HeaderCarrier
 import viewmodels.download.FileManagementViewModel.FileManagementViewModelProvider
-import play.api.test.Helpers.defaultAwaitTimeout
 
 import java.time.Instant
+import scala.concurrent.{ExecutionContext, Future}
 
 class FileManagementViewModelProviderSpec extends SpecBase with MockitoSugar {
 
@@ -40,7 +37,7 @@ class FileManagementViewModelProviderSpec extends SpecBase with MockitoSugar {
 
   implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.global
 
-  val defaultPagination = GoodsRecordsPagination(
+  val defaultPagination: GoodsRecordsPagination = GoodsRecordsPagination(
     totalRecords = 0,
     currentPage = 1,
     totalPages = 1,
