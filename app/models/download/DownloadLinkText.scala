@@ -28,9 +28,10 @@ case class DownloadLinkText(
 
   val messageKey: String = if (verifiedEmail) {
     doesGoodsRecordExist match {
-      case true if downloadDataSummaries.nonEmpty => "homepage.downloadLinkText.filesRequested"
-      case true if downloadDataSummaries.isEmpty  => "homepage.downloadLinkText.noFilesRequested"
-      case _                                      => "homepage.downloadLinkText.noGoodsRecords"
+      case true if downloadDataSummaries.nonEmpty  => "homepage.downloadLinkText.filesRequested"
+      case true if downloadDataSummaries.isEmpty   => "homepage.downloadLinkText.noFilesRequested"
+      case false if downloadDataSummaries.nonEmpty => "homepage.downloadLinkText.downloadRecords"
+      case _                                       => "homepage.downloadLinkText.noGoodsRecords"
     }
   } else {
     "homepage.downloadLinkText.unverifiedEmail"
