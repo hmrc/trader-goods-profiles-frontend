@@ -18,7 +18,6 @@ package models.outboundLink
 
 import config.FrontendAppConfig
 import controllers.profile.niphl.routes.*
-import controllers.profile.nirms.routes.*
 import models.Mode
 import models.ott.OttCommodityUrl
 import play.api.mvc.Call
