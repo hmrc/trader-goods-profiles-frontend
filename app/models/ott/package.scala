@@ -18,16 +18,18 @@ package models
 
 package object ott {
   implicit class CategoryAssessmentSeqOps(assessments: Seq[CategoryAssessment]) {
+
     def category1ToAnswer(isTraderNiphlAuthorised: Boolean): Seq[CategoryAssessment] =
       assessments
-        .filter(_.hasExemptions)
-        .filterNot(_.isNiphlAsessmentAndTraderAuthorised(isTraderNiphlAuthorised))
+        .filter(_.isCategory1)
+        .filter(assessment => assessment.needsAnswerEvenIfNoExemptions(isTraderNiphl = isTraderNiphlAuthorised, isTraderNirms = false))
         .filterNot(_.onlyContainsNiphlAnswer)
 
     def category2ToAnswer(isTraderNirmsAuthorised: Boolean): Seq[CategoryAssessment] =
       assessments
-        .filter(_.hasExemptions)
-        .filterNot(_.isNirmsAsessmentAndTraderAuthorised(isTraderNirmsAuthorised))
+        .filter(_.isCategory2)
+        .filter(assessment => assessment.needsAnswerEvenIfNoExemptions(isTraderNiphl = false, isTraderNirms = isTraderNirmsAuthorised))
         .filterNot(_.onlyContainsNirmsAnswer)
+
   }
 }
