@@ -23,167 +23,160 @@ import org.scalatest.matchers.must.Matchers
 class OttSpec extends AnyFreeSpec with Matchers {
 
   "CategoryAssessmentSeqOps" - {
-    "category1answer" - {
-      "must filter out assessment with no answers" in {
-        val categoryAssessments: Seq[CategoryAssessment] = Seq(
+
+    "category1ToAnswer" - {
+
+      "must include assessment with no answers if trader is NOT Niphl authorised" in {
+        val categoryAssessments = Seq(
           CategoryAssessment("1", 1, Seq.empty, "description", None)
         )
-
-        categoryAssessments.category1ToAnswer(isTraderNiphlAuthorised = false) mustBe Seq.empty
+        categoryAssessments.category1ToAnswer(isTraderNiphlAuthorised = false) mustBe categoryAssessments
       }
 
-      "must filter out NIPHL assessment if trader is authorised" in {
-
-        val exemptions = Seq(OtherExemption(NiphlCode, NiphlCode, "description"))
-
-        val categoryAssessments: Seq[CategoryAssessment] = Seq(
-          CategoryAssessment("1", 1, exemptions, "description", None)
+      "must filter out assessment with no answers if trader IS Niphl authorised" in {
+        val categoryAssessments = Seq(
+          CategoryAssessment("1", 1, Seq.empty, "description", None)
         )
-
         categoryAssessments.category1ToAnswer(isTraderNiphlAuthorised = true) mustBe Seq.empty
       }
 
-      "must filter out NIPHL assessment if trader is not authorised and only NIPHL exemption available" in {
-
+      "must filter out NIPHL-only assessment if trader IS authorised" in {
         val exemptions = Seq(OtherExemption(NiphlCode, NiphlCode, "description"))
-
-        val categoryAssessments: Seq[CategoryAssessment] = Seq(
+        val categoryAssessments = Seq(
           CategoryAssessment("1", 1, exemptions, "description", None)
         )
+        categoryAssessments.category1ToAnswer(isTraderNiphlAuthorised = true) mustBe Seq.empty
+      }
 
+      "must filter out NIPHL-only assessment if trader NOT authorised" in {
+        val exemptions = Seq(OtherExemption(NiphlCode, NiphlCode, "description"))
+        val categoryAssessments = Seq(
+          CategoryAssessment("1", 1, exemptions, "description", None)
+        )
         categoryAssessments.category1ToAnswer(isTraderNiphlAuthorised = false) mustBe Seq.empty
       }
 
-      "must not filter out NIPHL assessment if trader is not authorised and there is other available exemptions" in {
-
-        val exemptions =
-          Seq(OtherExemption(NiphlCode, NiphlCode, "description"), Certificate("Y123", "Y123", "description"))
-
-        val categoryAssessments: Seq[CategoryAssessment] = Seq(
+      "must NOT filter out assessment with NIPHL and other exemptions if trader NOT authorised" in {
+        val exemptions = Seq(
+          OtherExemption(NiphlCode, NiphlCode, "description"),
+          Certificate("Y123", "Y123", "description")
+        )
+        val categoryAssessments = Seq(
           CategoryAssessment("1", 1, exemptions, "description", None)
         )
-
         categoryAssessments.category1ToAnswer(isTraderNiphlAuthorised = false) mustBe categoryAssessments
       }
     }
 
-    "category2answer" - {
-      "must filter out assessment with no answers" in {
-        val categoryAssessments: Seq[CategoryAssessment] = Seq(
+    "category2ToAnswer" - {
+
+      "must include assessment with no answers if trader is NOT Nirms authorised" in {
+        val categoryAssessments = Seq(
           CategoryAssessment("1", 2, Seq.empty, "description", None)
         )
-
-        categoryAssessments.category2ToAnswer(isTraderNirmsAuthorised = false) mustBe Seq.empty
+        categoryAssessments.category2ToAnswer(isTraderNirmsAuthorised = false) mustBe categoryAssessments
       }
 
-      "must filter out NIRMS assessment if trader is authorised" in {
-
-        val exemptions = Seq(OtherExemption(NirmsCode, NirmsCode, "description"))
-
-        val categoryAssessments: Seq[CategoryAssessment] = Seq(
-          CategoryAssessment("1", 2, exemptions, "description", None)
+      "must filter out assessment with no answers if trader IS Nirms authorised" in {
+        val categoryAssessments = Seq(
+          CategoryAssessment("1", 2, Seq.empty, "description", None)
         )
-
         categoryAssessments.category2ToAnswer(isTraderNirmsAuthorised = true) mustBe Seq.empty
       }
 
-      "must filter out NIRMS assessment if trader is not authorised and only NIRMS exemption available" in {
-
+      "must filter out NIRMS-only assessment if trader IS authorised" in {
         val exemptions = Seq(OtherExemption(NirmsCode, NirmsCode, "description"))
-
-        val categoryAssessments: Seq[CategoryAssessment] = Seq(
+        val categoryAssessments = Seq(
           CategoryAssessment("1", 2, exemptions, "description", None)
         )
+        categoryAssessments.category2ToAnswer(isTraderNirmsAuthorised = true) mustBe Seq.empty
+      }
 
+      "must filter out NIRMS-only assessment if trader NOT authorised" in {
+        val exemptions = Seq(OtherExemption(NirmsCode, NirmsCode, "description"))
+        val categoryAssessments = Seq(
+          CategoryAssessment("1", 2, exemptions, "description", None)
+        )
         categoryAssessments.category2ToAnswer(isTraderNirmsAuthorised = false) mustBe Seq.empty
       }
 
-      "must not filter out NIRMS assessment if trader is not authorised and there is other available exemptions" in {
-
-        val exemptions =
-          Seq(OtherExemption(NiphlCode, NiphlCode, "description"), Certificate("Y123", "Y123", "description"))
-
-        val categoryAssessments: Seq[CategoryAssessment] = Seq(
+      "must NOT filter out assessment with NIRMS and other exemptions if trader NOT authorised" in {
+        val exemptions = Seq(
+          OtherExemption(NiphlCode, NiphlCode, "description"),
+          Certificate("Y123", "Y123", "description")
+        )
+        val categoryAssessments = Seq(
           CategoryAssessment("1", 2, exemptions, "description", None)
         )
-
         categoryAssessments.category2ToAnswer(isTraderNirmsAuthorised = false) mustBe categoryAssessments
       }
     }
+
+    "empty inputs" - {
+      "category1ToAnswer returns empty for empty input" in {
+        Seq.empty[CategoryAssessment].category1ToAnswer(isTraderNiphlAuthorised = true) mustBe empty
+      }
+      "category2ToAnswer returns empty for empty input" in {
+        Seq.empty[CategoryAssessment].category2ToAnswer(isTraderNirmsAuthorised = true) mustBe empty
+      }
+    }
   }
+
   "CategoryAssessment.needsAnswerEvenIfNoExemptions" - {
 
     val niphlExemption = OtherExemption(NiphlCode, NiphlCode, "desc")
     val nirmsExemption = OtherExemption(NirmsCode, NirmsCode, "desc")
     val otherExemption = Certificate("Y123", "Y123", "desc")
 
-    "should return true if exemptions exist" in {
+    "returns true if exemptions exist regardless of trader authorisation" in {
       val assessment = CategoryAssessment("1", 1, Seq(otherExemption), "desc", None)
       assessment.needsAnswerEvenIfNoExemptions(isTraderNiphl = true, isTraderNirms = true) mustBe true
       assessment.needsAnswerEvenIfNoExemptions(isTraderNiphl = false, isTraderNirms = false) mustBe true
     }
 
-    "should return true for Category1 with no exemptions and trader NOT Niphl authorised" in {
+    "returns true for Category1 with no exemptions if trader NOT Niphl authorised" in {
       val assessment = CategoryAssessment("1", 1, Seq.empty, "desc", None)
       assessment.needsAnswerEvenIfNoExemptions(isTraderNiphl = false, isTraderNirms = false) mustBe true
     }
 
-    "should return false for Category1 with no exemptions and trader IS Niphl authorised" in {
+    "returns false for Category1 with no exemptions if trader IS Niphl authorised" in {
       val assessment = CategoryAssessment("1", 1, Seq.empty, "desc", None)
       assessment.needsAnswerEvenIfNoExemptions(isTraderNiphl = true, isTraderNirms = false) mustBe false
     }
 
-    "should return true for Category2 with no exemptions and trader NOT Nirms authorised" in {
+    "returns true for Category2 with no exemptions if trader NOT Nirms authorised" in {
       val assessment = CategoryAssessment("2", 2, Seq.empty, "desc", None)
       assessment.needsAnswerEvenIfNoExemptions(isTraderNiphl = false, isTraderNirms = false) mustBe true
     }
 
-    "should return false for Category2 with no exemptions and trader IS Nirms authorised" in {
+    "returns false for Category2 with no exemptions if trader IS Nirms authorised" in {
       val assessment = CategoryAssessment("2", 2, Seq.empty, "desc", None)
       assessment.needsAnswerEvenIfNoExemptions(isTraderNiphl = false, isTraderNirms = true) mustBe false
     }
 
-    "should return true for Category1 with Niphl exemption and trader NOT authorised" in {
+    "returns true for Category1 with Niphl exemption if trader NOT authorised" in {
       val assessment = CategoryAssessment("1", 1, Seq(niphlExemption), "desc", None)
       assessment.needsAnswerEvenIfNoExemptions(isTraderNiphl = false, isTraderNirms = false) mustBe true
     }
 
-    "should return false for Category1 with Niphl exemption and trader authorised" in {
+    "returns false for Category1 with Niphl exemption if trader authorised" in {
       val assessment = CategoryAssessment("1", 1, Seq(niphlExemption), "desc", None)
       assessment.needsAnswerEvenIfNoExemptions(isTraderNiphl = true, isTraderNirms = false) mustBe false
     }
 
-    "should return true for Category2 with Nirms exemption and trader NOT authorised" in {
+    "returns true for Category2 with Nirms exemption if trader NOT authorised" in {
       val assessment = CategoryAssessment("2", 2, Seq(nirmsExemption), "desc", None)
       assessment.needsAnswerEvenIfNoExemptions(isTraderNiphl = false, isTraderNirms = false) mustBe true
     }
 
-    "should return false for Category2 with Nirms exemption and trader authorised" in {
+    "returns false for Category2 with Nirms exemption if trader authorised" in {
       val assessment = CategoryAssessment("2", 2, Seq(nirmsExemption), "desc", None)
       assessment.needsAnswerEvenIfNoExemptions(isTraderNiphl = false, isTraderNirms = true) mustBe false
     }
 
-    "must return empty on empty input for category1ToAnswer" in {
-      val emptySeq = Seq.empty[CategoryAssessment]
-      emptySeq.category1ToAnswer(isTraderNiphlAuthorised = true) mustBe empty
-    }
-
-    "must return empty on empty input for category2ToAnswer" in {
-      val emptySeq = Seq.empty[CategoryAssessment]
-      emptySeq.category2ToAnswer(isTraderNirmsAuthorised = true) mustBe empty
-    }
-
-    "needsAnswerEvenIfNoExemptions returns false for non-category 1 or 2 with no exemptions" in {
+    "returns false for non-category 1 or 2 with no exemptions" in {
       val assessment = CategoryAssessment("id", 3, Seq.empty, "desc", None)
       assessment.needsAnswerEvenIfNoExemptions(isTraderNiphl = false, isTraderNirms = false) mustBe false
     }
-
-    "needsAnswerEvenIfNoExemptions returns true if exemptions exist regardless of trader authorization" in {
-      val exemptions = Seq(OtherExemption("X", "X", "desc"))
-      val assessment = CategoryAssessment("id", 1, exemptions, "desc", None)
-      assessment.needsAnswerEvenIfNoExemptions(isTraderNiphl = true, isTraderNirms = true) mustBe true
-    }
-
   }
-
 }

@@ -43,19 +43,32 @@ final case class CategoryAssessment(
   def isNiphlAnswer: Boolean   = isCategory1 && exemptions.exists(exemption => exemption.id == NiphlCode)
   def isNirmsAnswer: Boolean   = isCategory2 && exemptions.exists(exemption => exemption.id == NirmsCode)
 
-  def onlyContainsNiphlAnswer: Boolean = isNiphlAnswer && exemptions.size == 1
-  def onlyContainsNirmsAnswer: Boolean = isNirmsAnswer && exemptions.size == 1
+  def onlyContainsNiphlAnswer: Boolean =
+    exemptions.nonEmpty && exemptions.forall(_.code == NiphlCode)
 
-  def isNiphlAsessmentAndTraderAuthorised(isAuthorised: Boolean): Boolean = isNiphlAnswer && isAuthorised
-  def isNirmsAsessmentAndTraderAuthorised(isAuthorised: Boolean): Boolean = isNirmsAnswer && isAuthorised
+  def onlyContainsNirmsAnswer: Boolean =
+    exemptions.nonEmpty && exemptions.forall(_.code == NirmsCode)
+
 
   def needsAnswerEvenIfNoExemptions(isTraderNiphl: Boolean, isTraderNirms: Boolean): Boolean = {
-    hasExemptions || (
-      isCategory1 && !isNiphlAsessmentAndTraderAuthorised(isTraderNiphl)
-      ) || (
-      isCategory2 && !isNirmsAsessmentAndTraderAuthorised(isTraderNirms)
-      )
+    if (exemptions.nonEmpty) {
+      val containsOnlyNiphl = exemptions.forall(_.code == NiphlCode)
+      val containsOnlyNirms = exemptions.forall(_.code == NirmsCode)
+
+      (category == 1 && isTraderNiphl && containsOnlyNiphl) match {
+        case true => false
+        case false =>
+          (category == 2 && isTraderNirms && containsOnlyNirms) match {
+            case true => false
+            case false => true
+          }
+      }
+    } else {
+      // If no exemptions, then depends on trader authorisation
+      (category == 1 && !isTraderNiphl) || (category == 2 && !isTraderNirms)
+    }
   }
+
 
 }
 

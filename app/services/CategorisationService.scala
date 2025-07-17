@@ -32,11 +32,11 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Success, Try}
 
 class CategorisationService @Inject() (
-  ottConnector: OttConnector,
-  profileConnector: TraderProfileConnector,
-  sessionRepository: SessionRepository
-)(implicit ec: ExecutionContext)
-    extends Logging {
+                                        ottConnector: OttConnector,
+                                        profileConnector: TraderProfileConnector,
+                                        sessionRepository: SessionRepository
+                                      )(implicit ec: ExecutionContext)
+  extends Logging {
 
   def existsUnansweredCat1Questions(userAnswers: UserAnswers, recordId: String): Boolean =
     userAnswers.get(LongerCategorisationDetailsQuery(recordId)).exists { catInfo =>
@@ -49,12 +49,7 @@ class CategorisationService @Inject() (
     }
 
   def reorderRecategorisationAnswers(originalUserAnswers: UserAnswers, recordId: String): Future[UserAnswers] =
-    // Required when recategorising, the user said none to a cat 2 question, and there are no cat 1 assessments to answer.
-    // The order OTT provides them in may be different to the order the user answered them and CYA expects.
-    // ---
-    // Partitions answered and unanswered ReassessmentAnswers into two lists
-    // Uses and reorders both those and their category assessments in LongerCatQuery so that answered questions come first on CYA
-    // Sets the answers in reverse so .set cleanups happen and CYA won't throw unanswered validation errors.
+
     for {
       longerCatQuery                 <- Future.fromTry(Try(originalUserAnswers.get(LongerCategorisationDetailsQuery(recordId)).get))
       assessmentsThatNeedAnswers      = longerCatQuery.categoryAssessmentsThatNeedAnswers
@@ -77,21 +72,21 @@ class CategorisationService @Inject() (
       updatedUserAnswers             <-
         Future.fromTry(originalUserAnswers.set(LongerCategorisationDetailsQuery(recordId), newLongerCatQuery))
       updatedUserAnswers             <- Future.fromTry(Try {
-                                          reorderedAnswers.zipWithIndex.reverse.foldLeft(updatedUserAnswers) {
-                                            case (answers, (answerWithIndex, newIndex)) =>
-                                              answers.set(ReassessmentPage(recordId, newIndex), answerWithIndex._1).get
-                                          }
-                                        })
+        reorderedAnswers.zipWithIndex.reverse.foldLeft(updatedUserAnswers) {
+          case (answers, (answerWithIndex, newIndex)) =>
+            answers.set(ReassessmentPage(recordId, newIndex), answerWithIndex._1).get
+        }
+      })
       _                              <- sessionRepository.set(updatedUserAnswers)
     } yield updatedUserAnswers
 
   def getCategorisationInfo(
-    request: DataRequest[_],
-    commodityCode: String,
-    country: String,
-    recordId: String,
-    longerCode: Boolean = false
-  )(implicit hc: HeaderCarrier): Future[CategorisationInfo] =
+                             request: DataRequest[_],
+                             commodityCode: String,
+                             country: String,
+                             recordId: String,
+                             longerCode: Boolean = false
+                           )(implicit hc: HeaderCarrier): Future[CategorisationInfo] =
     profileConnector.getTraderProfile.flatMap { profile =>
       ottConnector
         .getCategorisationInfo(
@@ -103,22 +98,23 @@ class CategorisationService @Inject() (
           LocalDate.now()
         )
         .flatMap { response =>
-          CategorisationInfo.build(response, country, commodityCode, profile, longerCode) match {
-            case Some(categorisationInfo) =>
+          CategorisationInfo.build(response, country, commodityCode, profile) match {  // <--- use country here
+            case Right(categorisationInfo) =>
               Future.successful(categorisationInfo)
 
-            case None =>
-              logger.error("Could not build categorisation info")
+            case Left(error) =>
+              logger.error(s"Could not build categorisation info: $error")
               Future.failed(new RuntimeException("Could not build categorisation info"))
           }
         }
     }
 
+
   def calculateResult(
-    categorisationInfo: CategorisationInfo,
-    userAnswers: UserAnswers,
-    recordId: String
-  ): Scenario = {
+                       categorisationInfo: CategorisationInfo,
+                       userAnswers: UserAnswers,
+                       recordId: String
+                     ): Scenario = {
 
     val getFirstNo = categorisationInfo
       .getAnswersForQuestions(userAnswers, recordId)
@@ -150,11 +146,11 @@ class CategorisationService @Inject() (
   }
 
   def updatingAnswersForRecategorisation(
-    userAnswers: UserAnswers,
-    recordId: String,
-    oldCommodityCategorisation: CategorisationInfo,
-    newCommodityCategorisation: CategorisationInfo
-  ): Try[UserAnswers] = {
+                                          userAnswers: UserAnswers,
+                                          recordId: String,
+                                          oldCommodityCategorisation: CategorisationInfo,
+                                          newCommodityCategorisation: CategorisationInfo
+                                        ): Try[UserAnswers] = {
     val oldAssessments = oldCommodityCategorisation.categoryAssessmentsThatNeedAnswers
     val newAssessments = newCommodityCategorisation.categoryAssessmentsThatNeedAnswers
 
@@ -169,8 +165,6 @@ class CategorisationService @Inject() (
         }
     }
 
-    // Avoid it getting upset if answers have moved too far
-    // This is needed as stored as Json array
     val uaWithPlaceholders = newAssessments.zipWithIndex.foldLeft[Try[UserAnswers]](Success(userAnswers)) {
       (currentAnswers, newAssessment) =>
         currentAnswers.flatMap(
@@ -179,8 +173,6 @@ class CategorisationService @Inject() (
     }
 
     val answersToKeepSortedByNewIndex = listOfAnswersToKeep.toSeq.sortBy(_._1)
-    // Apply them backwards
-    // That way, a NoExemption being set will do the automatic cleanup required by CYA and delete any answers afterwards
     answersToKeepSortedByNewIndex.reverse.foldLeft[Try[UserAnswers]](uaWithPlaceholders) {
       (currentAnswers, answerToKeep) =>
         val assessmentIndex     = answerToKeep._1

@@ -17,19 +17,38 @@
 package models
 
 package object ott {
-  implicit class CategoryAssessmentSeqOps(assessments: Seq[CategoryAssessment]) {
+  implicit class CategoryAssessmentSeqOps(val assessments: Seq[CategoryAssessment]) extends AnyVal {
 
-    def category1ToAnswer(isTraderNiphlAuthorised: Boolean): Seq[CategoryAssessment] =
-      assessments
-        .filter(_.isCategory1)
-        .filter(assessment => assessment.needsAnswerEvenIfNoExemptions(isTraderNiphl = isTraderNiphlAuthorised, isTraderNirms = false))
-        .filterNot(_.onlyContainsNiphlAnswer)
+    def category1ToAnswer(isTraderNiphlAuthorised: Boolean): Seq[CategoryAssessment] = {
+      assessments.filter { assessment =>
+        if (isTraderNiphlAuthorised) {
+          // When trader is authorised, exclude assessments with no exemptions
+          // and exclude assessments with only Niphl exemptions
+          assessment.needsAnswerEvenIfNoExemptions(isTraderNiphl = true, isTraderNirms = false) &&
+            !assessment.onlyContainsNiphlAnswer
+        } else {
+          // When trader NOT authorised, include assessments with no exemptions or
+          // those that have Niphl + other exemptions, but exclude those only with Niphl exemptions
+          assessment.needsAnswerEvenIfNoExemptions(isTraderNiphl = false, isTraderNirms = false) &&
+            !assessment.onlyContainsNiphlAnswer
+        }
+      }
+    }
 
-    def category2ToAnswer(isTraderNirmsAuthorised: Boolean): Seq[CategoryAssessment] =
-      assessments
-        .filter(_.isCategory2)
-        .filter(assessment => assessment.needsAnswerEvenIfNoExemptions(isTraderNiphl = false, isTraderNirms = isTraderNirmsAuthorised))
-        .filterNot(_.onlyContainsNirmsAnswer)
-
+    def category2ToAnswer(isTraderNirmsAuthorised: Boolean): Seq[CategoryAssessment] = {
+      assessments.filter { assessment =>
+        if (isTraderNirmsAuthorised) {
+          // When trader is authorised, exclude assessments with no exemptions
+          // and exclude assessments with only Nirms exemptions
+          assessment.needsAnswerEvenIfNoExemptions(isTraderNiphl = false, isTraderNirms = true) &&
+            !assessment.onlyContainsNirmsAnswer
+        } else {
+          // When trader NOT authorised, include assessments with no exemptions or
+          // those that have Nirms + other exemptions, but exclude those only with Nirms exemptions
+          assessment.needsAnswerEvenIfNoExemptions(isTraderNiphl = false, isTraderNirms = false) &&
+            !assessment.onlyContainsNirmsAnswer
+        }
+      }
+    }
   }
 }

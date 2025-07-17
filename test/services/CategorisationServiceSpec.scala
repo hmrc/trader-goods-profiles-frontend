@@ -43,6 +43,7 @@ import utils.Constants.{countryOfOriginKey, goodsDescriptionKey}
 import java.time.Instant
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import java.time.Instant
 
 class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Generators {
 
@@ -51,6 +52,13 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
   private val mockOttConnector                = mock[OttConnector]
   private val mockGoodsRecordsConnector       = mock[GoodsRecordConnector]
   private val mockTraderProfileConnector      = mock[TraderProfileConnector]
+  val invalidOttResponse: OttResponse = OttResponse(
+    goodsNomenclature = GoodsNomenclatureResponse("someId", "someCode", None, Instant.EPOCH, None, List()),
+    categoryAssessmentRelationships = Seq(CategoryAssessmentRelationship("assessmentIdMissing")),
+    includedElements = Seq(), // missing assessments and exemptions intentionally
+    descendents = Seq()
+  )
+
 
   private def mockOttResponse(comCode: String = "1234567890") = OttResponse(
     GoodsNomenclatureResponse("some id", comCode, Some("Weight, in kilograms"), Instant.EPOCH, None, List("test")),
@@ -109,22 +117,25 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
     new CategorisationService(mockOttConnector, mockTraderProfileConnector, mockSessionRepository)
   private val mockDataRequest                       = mock[DataRequest[AnyContent]]
 
+
   override def beforeEach(): Unit = {
     super.beforeEach()
+
     when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
+
+    // Mock without parameters for getTraderProfile
+    when(mockTraderProfileConnector.getTraderProfile)
+      .thenReturn(Future.successful(testTraderProfileResponseWithoutNiphl))
+
     when(mockOttConnector.getCategorisationInfo(any(), any(), any(), any(), any(), any())(any()))
       .thenReturn(Future.successful(mockOttResponse()))
+
     when(mockGoodsRecordsConnector.getRecord(any())(any())).thenReturn(Future.successful(mockGoodsRecordResponse))
-    when(mockTraderProfileConnector.getTraderProfile(any()))
-      .thenReturn(Future.successful(testTraderProfileResponseWithoutNiphl))
+
     when(mockDataRequest.eori).thenReturn("eori")
     when(mockDataRequest.affinityGroup).thenReturn(AffinityGroup.Individual)
   }
 
-  override def afterEach(): Unit = {
-    super.afterEach()
-    reset(mockSessionRepository, mockGoodsRecordsConnector, mockOttConnector, mockTraderProfileConnector)
-  }
 
   "getCategorisationInfo" - {
     "create a categorisation info record for the given commodity code" in {
@@ -189,31 +200,25 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
     }
 
     "should return future failed when categorisation info does not build" in {
-      val mockOttResponseThatIsBroken = OttResponse(
-        GoodsNomenclatureResponse(
-          "some id",
-          "brokenComCode",
-          Some("Weight, in kilograms"),
-          Instant.EPOCH,
-          None,
-          List("test")
-        ),
-        categoryAssessmentRelationships = Seq(CategoryAssessmentRelationship("assessmentId1")),
-        Seq[IncludedElement](),
-        Seq[Descendant]()
-      )
-      when(mockOttConnector.getCategorisationInfo(any(), any(), any(), any(), any(), any())(any()))
-        .thenReturn(Future.successful(mockOttResponseThatIsBroken))
+      // Ensure correct arguments passed to match stub
+      when(mockDataRequest.eori).thenReturn("eori")
+      when(mockDataRequest.affinityGroup).thenReturn(AffinityGroup.Individual)
 
-      val mockDataRequest = mock[DataRequest[AnyContent]]
-      when(mockDataRequest.userAnswers).thenReturn(emptyUserAnswers)
+      // Setup: Force OTT to return an invalid response that will fail to build
+      when(mockOttConnector.getCategorisationInfo(
+        eqTo("invalidCode"),
+        eqTo("eori"),
+        eqTo(AffinityGroup.Individual),
+        any(), eqTo("BV"), any()
+      )(any())).thenReturn(Future.successful(invalidOttResponse))
 
-      val actualException = intercept[RuntimeException] {
-        val result = categorisationService.getCategorisationInfo(mockDataRequest, "comCode", "DE", testRecordId)
-        await(result)
+      val caught = intercept[RuntimeException] {
+        await(categorisationService.getCategorisationInfo(mockDataRequest, "invalidCode", "BV", testRecordId))
       }
-      actualException.getMessage mustEqual "Could not build categorisation info"
+
+      caught.getMessage must include("Could not build categorisation info")
     }
+
   }
 
   "calculateResult" - {
