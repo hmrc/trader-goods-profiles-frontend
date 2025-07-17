@@ -21,8 +21,8 @@ import models.ott.response.{AdditionalCodeResponse, CategoryAssessmentResponse, 
 import models.{AnsweredQuestions, TraderProfile, UserAnswers}
 import pages.categorisation.{AssessmentPage, ReassessmentPage}
 import play.api.libs.json.{Json, OFormat}
-import utils.Constants.minimumLengthOfCommodityCode
-import models.ott.response.{ExemptionType => ResponseExemptionType}
+import utils.Constants.{NiphlCode, minimumLengthOfCommodityCode}
+import models.ott.response.ExemptionType as ResponseExemptionType
 
 import java.time.temporal.ChronoUnit
 import java.time.{Instant, ZoneId, ZonedDateTime}
@@ -102,7 +102,9 @@ object CategorisationInfo {
              traderProfile: TraderProfile
            ): Either[Error, CategorisationInfo] = {
 
-    val allAssessments: Seq[CategoryAssessment] = parseCategoryAssessments(response)
+    val isTraderNiphlAuthorised = traderProfile.niphlNumber.isDefined
+    val allAssessments: Seq[CategoryAssessment] = parseCategoryAssessments(response, isTraderNiphlAuthorised)
+
 
     // Use traderProfile's authorization flags directly
     val category1NeedingAnswers: Seq[CategoryAssessment] =
@@ -141,7 +143,7 @@ object CategorisationInfo {
   }
 
   // Placeholder method, replace with your actual parsing logic for CategoryAssessments
-  def parseCategoryAssessments(response: OttResponse): Seq[CategoryAssessment] = {
+  def parseCategoryAssessments(response: OttResponse, isTraderNiphlAuthorised: Boolean): Seq[CategoryAssessment] = {
     val categoryAssessmentResponses = response.includedElements.collect {
       case c: CategoryAssessmentResponse => c
     }
@@ -159,7 +161,7 @@ object CategorisationInfo {
     }.toMap
 
     val legalActsByRegulationId: Map[String, LegalActResponse] = response.includedElements.collect {
-      case l @ LegalActResponse(Some(regId), _, _) => regId -> l
+      case l@LegalActResponse(Some(regId), _, _) => regId -> l
     }.toMap
 
     categoryAssessmentResponses.map { assessmentResp =>
@@ -175,7 +177,9 @@ object CategorisationInfo {
           case _ =>
             None
         }
-      }
+      }.filterNot(exemption =>
+        !isTraderNiphlAuthorised && exemption.code == NiphlCode
+      ) // <-- filter out NIPHL exemptions if trader not authorised
 
       val legalActUrl = legalActsByRegulationId.get(assessmentResp.regulationId).flatMap(_.regulationUrl)
 
@@ -186,8 +190,6 @@ object CategorisationInfo {
         themeDescription = theme.theme,
         regulationUrl = legalActUrl
       )
-
-
     }.sortBy(assessment => (assessment.category, assessment.exemptions.length))
   }
 

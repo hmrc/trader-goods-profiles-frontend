@@ -17,18 +17,22 @@
 package services
 
 import base.SpecBase
+
+import scala.concurrent.Future
+import scala.util.{Failure, Success}
 import base.TestConstants.{NiphlCode, NirmsCode, testRecordId}
 import connectors.{GoodsRecordConnector, OttConnector, TraderProfileConnector}
 import generators.Generators
 import models.*
 import models.DeclarableStatus.NotReadyForUse
-import models.ott.response.{CategoryAssessmentRelationship, ExemptionType => ResponseExemptionType, *}
+import models.ott.response.{CategoryAssessmentRelationship, ExemptionType as ResponseExemptionType, *}
 import models.ott.*
 import models.requests.DataRequest
 import models.router.responses.GetGoodsRecordResponse
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import org.mockito.Mockito.*
 import org.scalatest.BeforeAndAfterEach
+import org.scalatest.RecoverMethods.recoverToExceptionIf
 import org.scalatest.matchers.should.Matchers.shouldBe
 import org.scalatestplus.mockito.MockitoSugar.mock
 import pages.categorisation.{AssessmentPage, ReassessmentPage}
@@ -200,11 +204,9 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
     }
 
     "should return future failed when categorisation info does not build" in {
-      // Ensure correct arguments passed to match stub
       when(mockDataRequest.eori).thenReturn("eori")
       when(mockDataRequest.affinityGroup).thenReturn(AffinityGroup.Individual)
 
-      // Setup: Force OTT to return an invalid response that will fail to build
       when(mockOttConnector.getCategorisationInfo(
         eqTo("invalidCode"),
         eqTo("eori"),
@@ -212,13 +214,15 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
         any(), eqTo("BV"), any()
       )(any())).thenReturn(Future.successful(invalidOttResponse))
 
-      val caught = intercept[RuntimeException] {
-        await(categorisationService.getCategorisationInfo(mockDataRequest, "invalidCode", "BV", testRecordId))
+      val futureResult = categorisationService.getCategorisationInfo(mockDataRequest, "invalidCode", "BV", testRecordId)
+
+      // Use ScalaTest's recoverToExceptionIf to test failed future exceptions asynchronously:
+      recoverToExceptionIf[RuntimeException] {
+        futureResult
+      }.map { ex =>
+        ex.getMessage must include("Could not build categorisation info")
       }
-
-      caught.getMessage must include("Could not build categorisation info")
     }
-
   }
 
   "calculateResult" - {
@@ -408,7 +412,17 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
           Some("regulationUrl1")
         )
 
-        val categorisationInfo = CategorisationInfo("1234567890", "BV", None, Seq(assessment1), Seq.empty, None, 1)
+        val categorisationInfo = CategorisationInfo(
+          "1234567890",
+          "BV",
+          None,
+          Seq(assessment1),
+          Seq.empty,
+          None,
+          1,
+          isTraderNiphlAuthorised = false, // Trader is NOT authorised
+          isTraderNirmsAuthorised = false
+        )
 
         val userAnswers = emptyUserAnswers
           .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)

@@ -52,12 +52,24 @@ object GoodsNomenclatureResponse {
     }
   }
 
-  implicit lazy val reads: Reads[GoodsNomenclatureResponse] = (
-    (__ \ "data" \ "id").read[String] and
-      (__ \ "data" \ "attributes" \ "goods_nomenclature_item_id").read[String] and
-      (__ \ "data" \ "attributes" \ "supplementary_measure_unit").readNullable[String] and
-      (__ \ "data" \ "attributes" \ "validity_start_date").read[Instant] and
-      (__ \ "data" \ "attributes" \ "validity_end_date").readNullable[Instant] and
-      __.read[JsValue].map(extractDescriptions)
-  )(GoodsNomenclatureResponse.apply _)
+  implicit lazy val reads: Reads[GoodsNomenclatureResponse] = new Reads[GoodsNomenclatureResponse] {
+    def reads(json: JsValue): JsResult[GoodsNomenclatureResponse] = {
+      for {
+        id <- (json \ "data" \ "id").validate[String]
+        commodityCode <- (json \ "data" \ "attributes" \ "goods_nomenclature_item_id").validate[String]
+        measurementUnit <- (json \ "data" \ "attributes" \ "supplementary_measure_unit").validateOpt[String]
+        validityStartDate <- (json \ "data" \ "attributes" \ "validity_start_date").validate[Instant]
+        validityEndDate <- (json \ "data" \ "attributes" \ "validity_end_date").validateOpt[Instant]
+        descriptions = extractDescriptions(json)
+      } yield GoodsNomenclatureResponse(
+        id,
+        commodityCode,
+        measurementUnit,
+        validityStartDate,
+        validityEndDate,
+        descriptions
+      )
+    }
+  }
+
 }
