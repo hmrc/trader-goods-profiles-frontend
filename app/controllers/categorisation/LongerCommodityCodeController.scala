@@ -60,11 +60,11 @@ class LongerCommodityCodeController @Inject() (
   def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData) { implicit request =>
       val shortComcodeOpt = getShortCommodityCodeOpt(recordId, request.userAnswers)
-      val preparedForm    = prepareForm(LongerCommodityCodePage(recordId), form)
+      val preparedForm = prepareForm(LongerCommodityCodePage(recordId), form)
       shortComcodeOpt match {
         case Some(shortComcode) if shortComcode.length == minimumLengthOfCommodityCode =>
           Ok(view(preparedForm, mode, shortComcode, recordId))
-        case _                                                                         =>
+        case _ =>
           navigator.journeyRecovery()
       }
     }
@@ -87,64 +87,72 @@ class LongerCommodityCodeController @Inject() (
                   shortComcode
                 )
             )
-        case _                                                                         =>
+        case _ =>
           Future.successful(navigator.journeyRecovery())
       }
     }
 
   private def getShortCommodityCodeOpt(
-    recordId: String,
-    userAnswers: UserAnswers
-  ): Option[String] =
+                                        recordId: String,
+                                        userAnswers: UserAnswers
+                                      ): Option[String] =
     userAnswers
       .get(CategorisationDetailsQuery(recordId))
       .map(_.getMinimalCommodityCode)
 
   private def validateAndUpdateAnswer(
-    mode: Mode,
-    recordId: String,
-    value: String,
-    shortCode: String
-  )(implicit request: DataRequest[AnyContent]) = {
-    val longerCode   = shortCode + value
-    val todayInstant = LocalDate.now(ZoneId.of("UTC")).atStartOfDay(ZoneId.of("UTC")).toInstant
-    (for {
-      record    <- goodsRecordConnector.getRecord(recordId)
-      commodity <- ottConnector.getCommodityCode(
-                     longerCode,
-                     request.eori,
-                     request.affinityGroup,
-                     UpdateRecordJourney,
-                     record.countryOfOrigin,
-                     Some(recordId)
-                   )
-      result    <-
-        if (
-          todayInstant.isBefore(commodity.validityStartDate) || commodity.validityEndDate.exists(todayInstant.isAfter)
-        ) {
-          val formWithErrors = createFormWithErrors(form, value, "commodityCode.error.expired")
-          Future.successful(BadRequest(view(formWithErrors, mode, shortCode, recordId)))
-        } else {
-          for {
-            updatedAnswers          <- Future.fromTry(request.userAnswers.set(LongerCommodityCodePage(recordId), value))
-            updatedAnswersWithQuery <-
-              Future.fromTry(
-                updatedAnswers.set(LongerCommodityQuery(recordId), commodity.copy(commodityCode = longerCode))
+                                       mode: Mode,
+                                       recordId: String,
+                                       value: String,
+                                       shortCode: String
+                                     )(implicit request: DataRequest[AnyContent]) = {
+    val longerCode = shortCode + value
+
+    // Reject longer codes ending with "00" to avoid loops
+    if (longerCode.endsWith("00")) {
+      val formWithErrors = createFormWithErrors(form, value, "longerCommodityCode.error.invalidSuffix")
+      Future.successful(BadRequest(view(formWithErrors, mode, shortCode, recordId)))
+    } else {
+      val todayInstant = LocalDate.now(ZoneId.of("UTC")).atStartOfDay(ZoneId.of("UTC")).toInstant
+      (for {
+        record <- goodsRecordConnector.getRecord(recordId)
+        commodity <- ottConnector.getCommodityCode(
+          longerCode,
+          request.eori,
+          request.affinityGroup,
+          UpdateRecordJourney,
+          record.countryOfOrigin,
+          Some(recordId)
+        )
+        result <-
+          if (
+            todayInstant.isBefore(commodity.validityStartDate) || commodity.validityEndDate.exists(todayInstant.isAfter)
+          ) {
+            val formWithErrors = createFormWithErrors(form, value, "commodityCode.error.expired")
+            Future.successful(BadRequest(view(formWithErrors, mode, shortCode, recordId)))
+          } else {
+            for {
+              updatedAnswers <- Future.fromTry(request.userAnswers.set(LongerCommodityCodePage(recordId), value))
+              updatedAnswersWithQuery <-
+                Future.fromTry(
+                  updatedAnswers.set(LongerCommodityQuery(recordId), commodity.copy(commodityCode = longerCode))
+                )
+              _ <- sessionRepository.set(updatedAnswersWithQuery)
+            } yield Redirect(
+              navigator.nextPage(
+                LongerCommodityCodePage(recordId),
+                mode,
+                updatedAnswersWithQuery
               )
-            _                       <- sessionRepository.set(updatedAnswersWithQuery)
-          } yield Redirect(
-            navigator.nextPage(
-              LongerCommodityCodePage(recordId),
-              mode,
-              updatedAnswersWithQuery
             )
-          )
-        }
-    } yield result).recover { case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
-      val formWithApiErrors =
-        form.copy(errors = Seq(FormError("value", getMessage("longerCommodityCode.error.invalid"))))
-      BadRequest(view(formWithApiErrors, mode, shortCode, recordId))
+          }
+      } yield result).recover { case UpstreamErrorResponse(_, NOT_FOUND, _, _) =>
+        val formWithApiErrors =
+          form.copy(errors = Seq(FormError("value", getMessage("longerCommodityCode.error.invalid"))))
+        BadRequest(view(formWithApiErrors, mode, shortCode, recordId))
+      }
     }
   }
+
 
 }
