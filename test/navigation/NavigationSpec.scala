@@ -94,7 +94,7 @@ class NavigationSpec extends SpecBase with BeforeAndAfterEach {
                 .startLongerCategorisation(NormalMode, testRecordId)
           }
 
-          "to categorisation preparation page when answer is yes and the longer commodity code is same as short commodity code" in {
+          "to longer commodity code page when answer is yes and the longer commodity code is same as short commodity code" in {
             val userAnswers = emptyUserAnswers
               .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
               .success
@@ -110,8 +110,26 @@ class NavigationSpec extends SpecBase with BeforeAndAfterEach {
               .value
 
             navigator.nextPage(HasCorrectGoodsLongerCommodityCodePage(testRecordId), NormalMode, userAnswers) mustEqual
-              controllers.categorisation.routes.CategorisationPreparationController
-                .startLongerCategorisation(NormalMode, testRecordId)
+              controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId)
+          }
+
+          "to categorisation preparation page when answer is yes and the longer commodity code is different from short commodity code" in {
+            val userAnswers = emptyUserAnswers
+              .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
+              .success
+              .value
+              .set(CategorisationDetailsQuery(testRecordId), categorisationInfo.copy(commodityCode = "123456"))
+              .success
+              .value
+              .set(
+                LongerCommodityQuery(testRecordId),
+                Commodity("12345678", List("Different description"), Instant.now, None)
+              )
+              .success
+              .value
+
+            navigator.nextPage(HasCorrectGoodsLongerCommodityCodePage(testRecordId), NormalMode, userAnswers) mustEqual
+              controllers.categorisation.routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId)
           }
 
           "to longer commodity page when answer is no" in {
