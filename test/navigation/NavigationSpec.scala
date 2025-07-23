@@ -94,25 +94,6 @@ class NavigationSpec extends SpecBase with BeforeAndAfterEach {
                 .startLongerCategorisation(NormalMode, testRecordId)
           }
 
-          "to longer commodity code page when answer is yes and the longer commodity code is same as short commodity code" in {
-            val userAnswers = emptyUserAnswers
-              .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
-              .success
-              .value
-              .set(CategorisationDetailsQuery(testRecordId), categorisationInfo.copy(commodityCode = "123456"))
-              .success
-              .value
-              .set(
-                LongerCommodityQuery(testRecordId),
-                Commodity("1234560000", List("Description", "Other"), Instant.now, None)
-              )
-              .success
-              .value
-
-            navigator.nextPage(HasCorrectGoodsLongerCommodityCodePage(testRecordId), NormalMode, userAnswers) mustEqual
-              controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId)
-          }
-
           "to categorisation preparation page when answer is yes and the longer commodity code is different from short commodity code" in {
             val userAnswers = emptyUserAnswers
               .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
@@ -151,24 +132,6 @@ class NavigationSpec extends SpecBase with BeforeAndAfterEach {
               controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId)
           }
 
-          "to longer commodity code page when the longer commodity code is same as short commodity code" in {
-            val userAnswers = emptyUserAnswers
-              .set(HasCorrectGoodsLongerCommodityCodePage(testRecordId), true)
-              .success
-              .value
-              .set(CategorisationDetailsQuery(testRecordId), categorisationInfo.copy(commodityCode = "123456"))
-              .success
-              .value
-              .set(
-                LongerCommodityQuery(testRecordId),
-                Commodity("1234560", List("Description", "Other"), Instant.now, None)
-              )
-              .success
-              .value
-
-            navigator.nextPage(HasCorrectGoodsLongerCommodityCodePage(testRecordId), NormalMode, userAnswers) mustEqual
-              controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId)
-          }
         }
 
         "to journey recovery page" - {

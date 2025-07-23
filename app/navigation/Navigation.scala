@@ -108,31 +108,27 @@ class Navigation @Inject() (categorisationService: CategorisationService) extend
       .getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
 
   private def navigateFromHasCorrectGoodsLongerCommodityCode(
-                                                              recordId: String,
-                                                              answers: UserAnswers,
-                                                              mode: Mode
-                                                            ): Call = {
-
+    recordId: String,
+    answers: UserAnswers,
+    mode: Mode
+  ): Call =
     (for {
       categorisationInfo <- answers.get(CategorisationDetailsQuery(recordId))
-      commodity <- answers.get(LongerCommodityQuery(recordId))
+      commodity          <- answers.get(LongerCommodityQuery(recordId))
     } yield {
-      val shortenedCommodityCode = getShortenedCommodityCode(commodity)
-      val userAddedNoMeaningfulChange = categorisationInfo.commodityCode == shortenedCommodityCode
 
       answers.get(HasCorrectGoodsLongerCommodityCodePage(recordId)) match {
-        case Some(true) if !userAddedNoMeaningfulChange =>
+        case Some(true)  =>
           controllers.categorisation.routes.CategorisationPreparationController
             .startLongerCategorisation(mode, recordId)
-        case Some(false) | Some(true) =>
+        case Some(false)                   =>
           controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(mode, recordId)
-        case None =>
+        case None                                       =>
           controllers.problem.routes.JourneyRecoveryController.onPageLoad()
       }
     }).getOrElse(
       controllers.problem.routes.JourneyRecoveryController.onPageLoad()
     )
-  }
 
   private def getShortenedCommodityCode(commodity: Commodity) =
     commodity.commodityCode.reverse
