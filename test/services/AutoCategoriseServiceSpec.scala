@@ -110,7 +110,6 @@ class AutoCategoriseServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
 
   "autoCategoriseRecord(recordId, userAnswers)" - {
 
-
     "return None when the record is already categorised" in {
       val categorisationInfo: CategorisationInfo = CategorisationInfo(
         commodityCode = "1234567890",

@@ -16,29 +16,28 @@
 
 package models.ott
 
-import cats.implicits.toTraverseOps
-import models.ott.response.{AdditionalCodeResponse, CategoryAssessmentResponse, CertificateResponse, LegalActResponse, OttResponse, ThemeResponse}
+import models.ott.response._
 import models.{AnsweredQuestions, TraderProfile, UserAnswers}
 import pages.categorisation.{AssessmentPage, ReassessmentPage}
 import play.api.libs.json.{Json, OFormat}
 import utils.Constants.{NiphlCode, minimumLengthOfCommodityCode}
-import models.ott.response.ExemptionType as ResponseExemptionType
+import models.ott.response.{ExemptionType => ResponseExemptionType}
 
 import java.time.temporal.ChronoUnit
 import java.time.{Instant, ZoneId, ZonedDateTime}
 
 final case class CategorisationInfo(
-                                     commodityCode: String,
-                                     countryOfOrigin: String,
-                                     comcodeEffectiveToDate: Option[Instant],
-                                     categoryAssessments: Seq[CategoryAssessment],
-                                     categoryAssessmentsThatNeedAnswers: Seq[CategoryAssessment],
-                                     measurementUnit: Option[String],
-                                     descendantCount: Int,
-                                     longerCode: Boolean = false,
-                                     isTraderNiphlAuthorised: Boolean = false,
-                                     isTraderNirmsAuthorised: Boolean = false
-                                   ) {
+  commodityCode: String,
+  countryOfOrigin: String,
+  comcodeEffectiveToDate: Option[Instant],
+  categoryAssessments: Seq[CategoryAssessment],
+  categoryAssessmentsThatNeedAnswers: Seq[CategoryAssessment],
+  measurementUnit: Option[String],
+  descendantCount: Int,
+  longerCode: Boolean = false,
+  isTraderNiphlAuthorised: Boolean = false,
+  isTraderNirmsAuthorised: Boolean = false
+) {
 
   def isAutoCategorisable: Boolean = categoryAssessments.exists(_.hasNoExemptions)
 
@@ -47,9 +46,9 @@ final case class CategorisationInfo(
     else Some(categoryAssessmentsThatNeedAnswers(index))
 
   def getAnswersForQuestions(
-                              userAnswers: UserAnswers,
-                              recordId: String
-                            ): Seq[AnsweredQuestions] =
+    userAnswers: UserAnswers,
+    recordId: String
+  ): Seq[AnsweredQuestions] =
     if (longerCode) getAnswersForReassessmentQuestions(userAnswers, recordId)
     else {
       categoryAssessmentsThatNeedAnswers.zipWithIndex.map { case (assessment, index) =>
@@ -96,15 +95,14 @@ final case class CategorisationInfo(
 object CategorisationInfo {
 
   def build(
-             response: OttResponse,
-             traderScheme: String,
-             commodityCode: String,
-             traderProfile: TraderProfile
-           ): Either[Error, CategorisationInfo] = {
+    response: OttResponse,
+    traderScheme: String,
+    commodityCode: String,
+    traderProfile: TraderProfile
+  ): Either[Error, CategorisationInfo] = {
 
-    val isTraderNiphlAuthorised = traderProfile.niphlNumber.isDefined
+    val isTraderNiphlAuthorised                 = traderProfile.niphlNumber.isDefined
     val allAssessments: Seq[CategoryAssessment] = parseCategoryAssessments(response, isTraderNiphlAuthorised)
-
 
     // Use traderProfile's authorization flags directly
     val category1NeedingAnswers: Seq[CategoryAssessment] =
@@ -125,7 +123,6 @@ object CategorisationInfo {
       else
         category2NeedingAnswers.distinctBy(_.id)
 
-
     Right(
       CategorisationInfo(
         commodityCode = commodityCode,
@@ -144,12 +141,12 @@ object CategorisationInfo {
 
   // Placeholder method, replace with your actual parsing logic for CategoryAssessments
   def parseCategoryAssessments(response: OttResponse, isTraderNiphlAuthorised: Boolean): Seq[CategoryAssessment] = {
-    val categoryAssessmentResponses = response.includedElements.collect {
-      case c: CategoryAssessmentResponse => c
+    val categoryAssessmentResponses = response.includedElements.collect { case c: CategoryAssessmentResponse =>
+      c
     }
 
-    val themesById: Map[String, ThemeResponse] = response.includedElements.collect {
-      case t: ThemeResponse => t.id -> t
+    val themesById: Map[String, ThemeResponse] = response.includedElements.collect { case t: ThemeResponse =>
+      t.id -> t
     }.toMap
 
     val certificatesById: Map[String, CertificateResponse] = response.includedElements.collect {
@@ -161,38 +158,43 @@ object CategorisationInfo {
     }.toMap
 
     val legalActsByRegulationId: Map[String, LegalActResponse] = response.includedElements.collect {
-      case l@LegalActResponse(Some(regId), _, _) => regId -> l
+      case l @ LegalActResponse(Some(regId), _, _) => regId -> l
     }.toMap
 
-    categoryAssessmentResponses.map { assessmentResp =>
-      val theme = themesById.getOrElse(assessmentResp.themeId,
-        throw new RuntimeException(s"Missing theme for id ${assessmentResp.themeId}"))
+    categoryAssessmentResponses
+      .map { assessmentResp =>
+        val theme = themesById.getOrElse(
+          assessmentResp.themeId,
+          throw new RuntimeException(s"Missing theme for id ${assessmentResp.themeId}")
+        )
 
-      val exemptions = assessmentResp.exemptions.flatMap { exResp =>
-        exResp.exemptionType match {
-          case ResponseExemptionType.Certificate =>
-            certificatesById.get(exResp.id).map(c => Certificate(c.id, c.code, c.description))
-          case ResponseExemptionType.AdditionalCode =>
-            additionalCodesById.get(exResp.id).map(a => AdditionalCode(a.id, a.code, a.description))
-          case _ =>
-            None
-        }
-      }.filterNot(exemption =>
-        !isTraderNiphlAuthorised && exemption.code == NiphlCode
-      ) // <-- filter out NIPHL exemptions if trader not authorised
+        val exemptions = assessmentResp.exemptions
+          .flatMap { exResp =>
+            exResp.exemptionType match {
+              case ResponseExemptionType.Certificate    =>
+                certificatesById.get(exResp.id).map(c => Certificate(c.id, c.code, c.description))
+              case ResponseExemptionType.AdditionalCode =>
+                additionalCodesById.get(exResp.id).map(a => AdditionalCode(a.id, a.code, a.description))
+              case _                                    =>
+                None
+            }
+          }
+          .filterNot(exemption =>
+            !isTraderNiphlAuthorised && exemption.code == NiphlCode
+          ) // <-- filter out NIPHL exemptions if trader not authorised
 
-      val legalActUrl = legalActsByRegulationId.get(assessmentResp.regulationId).flatMap(_.regulationUrl)
+        val legalActUrl = legalActsByRegulationId.get(assessmentResp.regulationId).flatMap(_.regulationUrl)
 
-      CategoryAssessment(
-        id = assessmentResp.id,
-        category = theme.category,
-        exemptions = exemptions,
-        themeDescription = theme.theme,
-        regulationUrl = legalActUrl
-      )
-    }.sortBy(assessment => (assessment.category, assessment.exemptions.length))
+        CategoryAssessment(
+          id = assessmentResp.id,
+          category = theme.category,
+          exemptions = exemptions,
+          themeDescription = theme.theme,
+          regulationUrl = legalActUrl
+        )
+      }
+      .sortBy(assessment => (assessment.category, assessment.exemptions.length))
   }
-
 
   implicit lazy val format: OFormat[CategorisationInfo] = Json.format
 }

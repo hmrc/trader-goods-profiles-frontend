@@ -28,9 +28,7 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.AuditService
 import uk.gov.hmrc.http.UpstreamErrorResponse
-import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import views.html.goodsProfile.RemoveGoodsRecordView
-
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 

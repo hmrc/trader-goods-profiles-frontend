@@ -16,7 +16,6 @@
 
 package models.ott.response
 
-import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
 import java.time.Instant
@@ -53,14 +52,14 @@ object GoodsNomenclatureResponse {
   }
 
   implicit lazy val reads: Reads[GoodsNomenclatureResponse] = new Reads[GoodsNomenclatureResponse] {
-    def reads(json: JsValue): JsResult[GoodsNomenclatureResponse] = {
+    def reads(json: JsValue): JsResult[GoodsNomenclatureResponse] =
       for {
-        id <- (json \ "data" \ "id").validate[String]
-        commodityCode <- (json \ "data" \ "attributes" \ "goods_nomenclature_item_id").validate[String]
-        measurementUnit <- (json \ "data" \ "attributes" \ "supplementary_measure_unit").validateOpt[String]
+        id                <- (json \ "data" \ "id").validate[String]
+        commodityCode     <- (json \ "data" \ "attributes" \ "goods_nomenclature_item_id").validate[String]
+        measurementUnit   <- (json \ "data" \ "attributes" \ "supplementary_measure_unit").validateOpt[String]
         validityStartDate <- (json \ "data" \ "attributes" \ "validity_start_date").validate[Instant]
-        validityEndDate <- (json \ "data" \ "attributes" \ "validity_end_date").validateOpt[Instant]
-        descriptions = extractDescriptions(json)
+        validityEndDate   <- (json \ "data" \ "attributes" \ "validity_end_date").validateOpt[Instant]
+        descriptions       = extractDescriptions(json)
       } yield GoodsNomenclatureResponse(
         id,
         commodityCode,
@@ -69,7 +68,6 @@ object GoodsNomenclatureResponse {
         validityEndDate,
         descriptions
       )
-    }
   }
 
 }

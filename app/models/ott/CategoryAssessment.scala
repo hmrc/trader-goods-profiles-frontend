@@ -19,8 +19,7 @@ package models.ott
 import cats.implicits.toTraverseOps
 import models.ott.response.{ExemptionType, OttResponse}
 import play.api.libs.json.{Json, OFormat}
-import utils.Constants.{Category1AsInt, Category2AsInt, NiphlCode, NirmsCode}
-
+import utils.Constants._
 final case class CategoryAssessment(
   id: String,
   category: Int,
@@ -49,33 +48,29 @@ final case class CategoryAssessment(
   def onlyContainsNiphlAnswer: Boolean =
     exemptions.nonEmpty && exemptions.forall {
       case Certificate(code, _, _) => code == NiphlCode
-      case _ => false
-    }  
+      case _                       => false
+    }
 
-  def onlyContainsNirmsAnswer: Boolean = {
+  def onlyContainsNirmsAnswer: Boolean =
     exemptions.nonEmpty && exemptions.forall(e => e.code == NirmsCode)
-  }
 
-
-  def needsAnswerEvenIfNoExemptions(isTraderNiphl: Boolean, isTraderNirms: Boolean): Boolean = {
+  def needsAnswerEvenIfNoExemptions(isTraderNiphl: Boolean, isTraderNirms: Boolean): Boolean =
     if (exemptions.nonEmpty) {
       val containsOnlyNiphl = exemptions.forall(_.code == NiphlCode)
       val containsOnlyNirms = exemptions.forall(_.code == NirmsCode)
 
-      (category == 1 && isTraderNiphl && containsOnlyNiphl) match {
-        case true => false
+      category == 1 && isTraderNiphl && containsOnlyNiphl match {
+        case true  => false
         case false =>
-          (category == 2 && isTraderNirms && containsOnlyNirms) match {
-            case true => false
-            case false => true
+          if (category == 2 && isTraderNirms && containsOnlyNirms) {
+            false
+          } else {
+            true
           }
       }
     } else {
-      // If no exemptions, then depends on trader authorisation
       (category == 1 && !isTraderNiphl) || (category == 2 && !isTraderNirms)
     }
-  }
-
 
 }
 

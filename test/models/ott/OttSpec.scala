@@ -41,7 +41,7 @@ class OttSpec extends AnyFreeSpec with Matchers {
       }
 
       "must filter out NIPHL-only assessment if trader IS authorised" in {
-        val exemptions = Seq(OtherExemption(NiphlCode, NiphlCode, "description"))
+        val exemptions          = Seq(OtherExemption(NiphlCode, NiphlCode, "description"))
         val categoryAssessments = Seq(
           CategoryAssessment("1", 1, exemptions, "description", None)
         )
@@ -49,7 +49,7 @@ class OttSpec extends AnyFreeSpec with Matchers {
       }
 
       "must filter out NIPHL-only assessment if trader NOT authorised" in {
-        val exemptions = Seq(OtherExemption(NiphlCode, NiphlCode, "description"))
+        val exemptions          = Seq(OtherExemption(NiphlCode, NiphlCode, "description"))
         val categoryAssessments = Seq(
           CategoryAssessment("1", 1, exemptions, "description", None)
         )
@@ -57,7 +57,7 @@ class OttSpec extends AnyFreeSpec with Matchers {
       }
 
       "must NOT filter out assessment with NIPHL and other exemptions if trader NOT authorised" in {
-        val exemptions = Seq(
+        val exemptions          = Seq(
           OtherExemption(NiphlCode, NiphlCode, "description"),
           Certificate("Y123", "Y123", "description")
         )
@@ -85,7 +85,7 @@ class OttSpec extends AnyFreeSpec with Matchers {
       }
 
       "must filter out NIRMS-only assessment if trader IS authorised" in {
-        val exemptions = Seq(OtherExemption(NirmsCode, NirmsCode, "description"))
+        val exemptions          = Seq(OtherExemption(NirmsCode, NirmsCode, "description"))
         val categoryAssessments = Seq(
           CategoryAssessment("1", 2, exemptions, "description", None)
         )
@@ -93,7 +93,7 @@ class OttSpec extends AnyFreeSpec with Matchers {
       }
 
       "must filter out NIRMS-only assessment if trader NOT authorised" in {
-        val exemptions = Seq(OtherExemption(NirmsCode, NirmsCode, "description"))
+        val exemptions          = Seq(OtherExemption(NirmsCode, NirmsCode, "description"))
         val categoryAssessments = Seq(
           CategoryAssessment("1", 2, exemptions, "description", None)
         )
@@ -101,7 +101,7 @@ class OttSpec extends AnyFreeSpec with Matchers {
       }
 
       "must NOT filter out assessment with NIRMS and other exemptions if trader NOT authorised" in {
-        val exemptions = Seq(
+        val exemptions          = Seq(
           OtherExemption(NiphlCode, NiphlCode, "description"),
           Certificate("Y123", "Y123", "description")
         )

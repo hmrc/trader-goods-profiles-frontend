@@ -32,11 +32,11 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Success, Try}
 
 class CategorisationService @Inject() (
-                                        ottConnector: OttConnector,
-                                        profileConnector: TraderProfileConnector,
-                                        sessionRepository: SessionRepository
-                                      )(implicit ec: ExecutionContext)
-  extends Logging {
+  ottConnector: OttConnector,
+  profileConnector: TraderProfileConnector,
+  sessionRepository: SessionRepository
+)(implicit ec: ExecutionContext)
+    extends Logging {
 
   def existsUnansweredCat1Questions(userAnswers: UserAnswers, recordId: String): Boolean =
     userAnswers.get(LongerCategorisationDetailsQuery(recordId)).exists { catInfo =>
@@ -49,7 +49,6 @@ class CategorisationService @Inject() (
     }
 
   def reorderRecategorisationAnswers(originalUserAnswers: UserAnswers, recordId: String): Future[UserAnswers] =
-
     for {
       longerCatQuery                 <- Future.fromTry(Try(originalUserAnswers.get(LongerCategorisationDetailsQuery(recordId)).get))
       assessmentsThatNeedAnswers      = longerCatQuery.categoryAssessmentsThatNeedAnswers
@@ -72,21 +71,21 @@ class CategorisationService @Inject() (
       updatedUserAnswers             <-
         Future.fromTry(originalUserAnswers.set(LongerCategorisationDetailsQuery(recordId), newLongerCatQuery))
       updatedUserAnswers             <- Future.fromTry(Try {
-        reorderedAnswers.zipWithIndex.reverse.foldLeft(updatedUserAnswers) {
-          case (answers, (answerWithIndex, newIndex)) =>
-            answers.set(ReassessmentPage(recordId, newIndex), answerWithIndex._1).get
-        }
-      })
+                                          reorderedAnswers.zipWithIndex.reverse.foldLeft(updatedUserAnswers) {
+                                            case (answers, (answerWithIndex, newIndex)) =>
+                                              answers.set(ReassessmentPage(recordId, newIndex), answerWithIndex._1).get
+                                          }
+                                        })
       _                              <- sessionRepository.set(updatedUserAnswers)
     } yield updatedUserAnswers
 
   def getCategorisationInfo(
-                             request: DataRequest[_],
-                             commodityCode: String,
-                             country: String,
-                             recordId: String,
-                             longerCode: Boolean = false
-                           )(implicit hc: HeaderCarrier): Future[CategorisationInfo] =
+    request: DataRequest[_],
+    commodityCode: String,
+    country: String,
+    recordId: String,
+    longerCode: Boolean = false
+  )(implicit hc: HeaderCarrier): Future[CategorisationInfo] =
     profileConnector.getTraderProfile.flatMap { profile =>
       ottConnector
         .getCategorisationInfo(
@@ -98,7 +97,7 @@ class CategorisationService @Inject() (
           LocalDate.now()
         )
         .flatMap { response =>
-          CategorisationInfo.build(response, country, commodityCode, profile) match {  // <--- use country here
+          CategorisationInfo.build(response, country, commodityCode, profile) match {
             case Right(categorisationInfo) =>
               Future.successful(categorisationInfo)
 
@@ -109,12 +108,11 @@ class CategorisationService @Inject() (
         }
     }
 
-
   def calculateResult(
-                       categorisationInfo: CategorisationInfo,
-                       userAnswers: UserAnswers,
-                       recordId: String
-                     ): Scenario = {
+    categorisationInfo: CategorisationInfo,
+    userAnswers: UserAnswers,
+    recordId: String
+  ): Scenario = {
 
     val getFirstNo = categorisationInfo
       .getAnswersForQuestions(userAnswers, recordId)
@@ -122,44 +120,39 @@ class CategorisationService @Inject() (
 
     val shouldBeCategory1NoExemption: Boolean = categorisationInfo.categoryAssessments.exists { ass =>
       ass.isCategory1 &&
-        (
-          ass.hasNoExemptions ||
-            (!categorisationInfo.isTraderNiphlAuthorised && ass.onlyContainsNiphlAnswer)
-          )
+      (
+        ass.hasNoExemptions ||
+          (!categorisationInfo.isTraderNiphlAuthorised && ass.onlyContainsNiphlAnswer)
+      )
     }
 
     val shouldBeCategory2NoExemption: Boolean = categorisationInfo.categoryAssessments.exists { ass =>
       ass.isCategory2 &&
-        (
-          ass.hasNoExemptions ||
-            (!categorisationInfo.isTraderNirmsAuthorised && ass.onlyContainsNirmsAnswer)
-          )
+      (
+        ass.hasNoExemptions ||
+          (!categorisationInfo.isTraderNirmsAuthorised && ass.onlyContainsNirmsAnswer)
+      )
     }
-
-    println(s"isTraderNirmsAuthorised: ${categorisationInfo.isTraderNirmsAuthorised}")
-    println(s"categoryAssessments: ${categorisationInfo.categoryAssessments}")
-    println(s"shouldBeCategory2NoExemption: $shouldBeCategory2NoExemption")
 
     if (categorisationInfo.categoryAssessments.isEmpty) {
       StandardGoodsNoAssessmentsScenario
     } else {
       getFirstNo match {
-        case None if shouldBeCategory1NoExemption => Category1NoExemptionsScenario
-        case None if shouldBeCategory2NoExemption => Category2NoExemptionsScenario
-        case None => StandardGoodsScenario
+        case None if shouldBeCategory1NoExemption          => Category1NoExemptionsScenario
+        case None if shouldBeCategory2NoExemption          => Category2NoExemptionsScenario
+        case None                                          => StandardGoodsScenario
         case Some(details) if details.question.isCategory2 => Category2Scenario
-        case _ => Category1Scenario
+        case _                                             => Category1Scenario
       }
     }
   }
 
-
   def updatingAnswersForRecategorisation(
-                                          userAnswers: UserAnswers,
-                                          recordId: String,
-                                          oldCommodityCategorisation: CategorisationInfo,
-                                          newCommodityCategorisation: CategorisationInfo
-                                        ): Try[UserAnswers] = {
+    userAnswers: UserAnswers,
+    recordId: String,
+    oldCommodityCategorisation: CategorisationInfo,
+    newCommodityCategorisation: CategorisationInfo
+  ): Try[UserAnswers] = {
     val oldAssessments = oldCommodityCategorisation.categoryAssessmentsThatNeedAnswers
     val newAssessments = newCommodityCategorisation.categoryAssessmentsThatNeedAnswers
 

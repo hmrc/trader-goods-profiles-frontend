@@ -19,23 +19,19 @@ package models
 package object ott {
   implicit class CategoryAssessmentSeqOps(val assessments: Seq[CategoryAssessment]) extends AnyVal {
 
-    def category1ToAnswer(isTraderNiphlAuthorised: Boolean): Seq[CategoryAssessment] = {
+    def category1ToAnswer(isTraderNiphlAuthorised: Boolean): Seq[CategoryAssessment] =
       assessments.filter { assessment =>
         assessment.needsAnswerEvenIfNoExemptions(
           isTraderNiphl = isTraderNiphlAuthorised,
           isTraderNirms = false
         ) &&
-          !assessment.containsOnlyNiphlCode // new method here
-      }
-    }
-
-
-    def category2ToAnswer(isTraderNirmsAuthorised: Boolean): Seq[CategoryAssessment] = {
-        assessments.filter { assessment =>
-          assessment.needsAnswerEvenIfNoExemptions(isTraderNiphl = false, isTraderNirms = isTraderNirmsAuthorised) &&
-            !assessment.onlyContainsNirmsAnswer
-        }
+        !assessment.containsOnlyNiphlCode
       }
 
-    }
+    def category2ToAnswer(isTraderNirmsAuthorised: Boolean): Seq[CategoryAssessment] =
+      assessments.filter { assessment =>
+        assessment.needsAnswerEvenIfNoExemptions(isTraderNiphl = false, isTraderNirms = isTraderNirmsAuthorised) &&
+        !assessment.onlyContainsNirmsAnswer
+      }
+  }
 }

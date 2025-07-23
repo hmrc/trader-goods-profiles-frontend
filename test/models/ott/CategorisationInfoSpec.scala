@@ -61,13 +61,13 @@ class CategorisationInfoSpec extends SpecBase {
       result.isRight shouldBe true
       val categorisationInfo = result.toOption.get
 
-      categorisationInfo.commodityCode shouldBe "1234567890"
-      categorisationInfo.countryOfOrigin shouldBe "BV"
-      categorisationInfo.comcodeEffectiveToDate should contain (Instant.parse("2024-01-01T00:00:00Z"))
-      categorisationInfo.measurementUnit should contain ("unit")
+      categorisationInfo.commodityCode           shouldBe "1234567890"
+      categorisationInfo.countryOfOrigin         shouldBe "BV"
+      categorisationInfo.comcodeEffectiveToDate    should contain(Instant.parse("2024-01-01T00:00:00Z"))
+      categorisationInfo.measurementUnit           should contain("unit")
       categorisationInfo.isTraderNiphlAuthorised shouldBe true
       categorisationInfo.isTraderNirmsAuthorised shouldBe true
-      categorisationInfo.categoryAssessments should not be empty
+      categorisationInfo.categoryAssessments       should not be empty
     }
   }
 }

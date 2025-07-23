@@ -36,9 +36,7 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.AuditService
-import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import views.html.goodsProfile.RemoveGoodsRecordView
-
 import java.time.Instant
 import scala.concurrent.Future
 

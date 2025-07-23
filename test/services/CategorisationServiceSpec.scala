@@ -17,22 +17,20 @@
 package services
 
 import base.SpecBase
-
-import scala.concurrent.Future
-import scala.util.{Failure, Success}
-import base.TestConstants.{NiphlCode, NirmsCode, testRecordId}
+import base.TestConstants._
 import connectors.{GoodsRecordConnector, OttConnector, TraderProfileConnector}
 import generators.Generators
 import models.*
 import models.DeclarableStatus.NotReadyForUse
-import models.ott.response.{CategoryAssessmentRelationship, ExemptionType as ResponseExemptionType, *}
 import models.ott.*
+import models.ott.response.{CategoryAssessmentRelationship, ExemptionType => ResponseExemptionType, *}
 import models.requests.DataRequest
 import models.router.responses.GetGoodsRecordResponse
-import org.mockito.ArgumentMatchers.{any, eq as eqTo}
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.*
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.RecoverMethods.recoverToExceptionIf
+import org.scalatest.matchers.must.Matchers
 import org.scalatest.matchers.should.Matchers.shouldBe
 import org.scalatestplus.mockito.MockitoSugar.mock
 import pages.categorisation.{AssessmentPage, ReassessmentPage}
@@ -47,12 +45,6 @@ import utils.Constants.{countryOfOriginKey, goodsDescriptionKey}
 import java.time.Instant
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import java.time.Instant
-import org.scalatestplus.mockito.MockitoSugar.{mock => mockSugar}
-import org.scalatest.wordspec.AnyWordSpec
-import org.scalatest.matchers.must.Matchers
-import org.scalatestplus.mockito.MockitoSugar.{mock => mockSugar}
-import org.mockito.Mockito.when
 
 class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Generators with Matchers {
 
@@ -61,13 +53,12 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
   private val mockOttConnector                = mock[OttConnector]
   private val mockGoodsRecordsConnector       = mock[GoodsRecordConnector]
   private val mockTraderProfileConnector      = mock[TraderProfileConnector]
-  val invalidOttResponse: OttResponse = OttResponse(
+  val invalidOttResponse: OttResponse         = OttResponse(
     goodsNomenclature = GoodsNomenclatureResponse("someId", "someCode", None, Instant.EPOCH, None, List()),
     categoryAssessmentRelationships = Seq(CategoryAssessmentRelationship("assessmentIdMissing")),
-    includedElements = Seq(), // missing assessments and exemptions intentionally
+    includedElements = Seq(),
     descendents = Seq()
   )
-
 
   private def mockOttResponse(comCode: String = "1234567890") = OttResponse(
     GoodsNomenclatureResponse("some id", comCode, Some("Weight, in kilograms"), Instant.EPOCH, None, List("test")),
@@ -102,16 +93,15 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
         "assessmentNiphlOnly",
         "themeId1",
         Seq(
-          ExemptionResponse("niphlExemptionId", ResponseExemptionType.Certificate) // NIPHL certificate only
+          ExemptionResponse("niphlExemptionId", ResponseExemptionType.Certificate)
         ),
         "regulationId1"
       ),
-      CertificateResponse("niphlExemptionId", NiphlCode, "NIPHL Certificate Description"), // Use proper NiphlCode here
+      CertificateResponse("niphlExemptionId", NiphlCode, "NIPHL Certificate Description"),
       LegalActResponse(Some("regulationId1"), Some("regulationUrl1"), Some("description1"))
     ),
     descendents = Seq.empty[Descendant]
   )
-
 
   private val mockGoodsRecordResponse = GetGoodsRecordResponse(
     "recordId",
@@ -146,7 +136,6 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
     new CategorisationService(mockOttConnector, mockTraderProfileConnector, mockSessionRepository)
   private val mockDataRequest                       = mock[DataRequest[AnyContent]]
 
-
   override def beforeEach(): Unit = {
     super.beforeEach()
 
@@ -163,7 +152,6 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
     when(mockDataRequest.eori).thenReturn("eori")
     when(mockDataRequest.affinityGroup).thenReturn(AffinityGroup.Individual)
   }
-
 
   "getCategorisationInfo" - {
     "create a categorisation info record for the given commodity code" in {
@@ -231,16 +219,19 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
       when(mockDataRequest.eori).thenReturn("eori")
       when(mockDataRequest.affinityGroup).thenReturn(AffinityGroup.Individual)
 
-      when(mockOttConnector.getCategorisationInfo(
-        eqTo("invalidCode"),
-        eqTo("eori"),
-        eqTo(AffinityGroup.Individual),
-        any(), eqTo("BV"), any()
-      )(any())).thenReturn(Future.successful(invalidOttResponse))
+      when(
+        mockOttConnector.getCategorisationInfo(
+          eqTo("invalidCode"),
+          eqTo("eori"),
+          eqTo(AffinityGroup.Individual),
+          any(),
+          eqTo("BV"),
+          any()
+        )(any())
+      ).thenReturn(Future.successful(invalidOttResponse))
 
       val futureResult = categorisationService.getCategorisationInfo(mockDataRequest, "invalidCode", "BV", testRecordId)
 
-      // Use ScalaTest's recoverToExceptionIf to test failed future exceptions asynchronously:
       recoverToExceptionIf[RuntimeException] {
         futureResult
       }.map { ex =>
@@ -433,16 +424,15 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
       "if NIPHL is not authorised and has a NIPHL assessment without other possible exemptions" in {
         val assessment1 = CategoryAssessment(
           id = "ass1",
-          category = 1, // Category 1
-          exemptions = Seq(Certificate(NiphlCode, "cert1code", "cert1desc")), // Only NIPHL exemption
+          category = 1,
+          exemptions = Seq(Certificate(NiphlCode, "cert1code", "cert1desc")),
           themeDescription = "theme description",
           regulationUrl = Some("regulationUrl1")
         )
 
-        // Sanity checks to ensure it matches condition
         assert(assessment1.isCategory1)
         assert(assessment1.onlyContainsNiphlAnswer)
-        assert(!assessment1.hasNoExemptions) // Has one exemption
+        assert(!assessment1.hasNoExemptions)
 
         val categorisationInfo = CategorisationInfo(
           commodityCode = "1234567890",
@@ -451,9 +441,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
           categoryAssessments = Seq(assessment1),
           categoryAssessmentsThatNeedAnswers = Seq.empty,
           measurementUnit = None,
-          descendantCount = 1,
-          isTraderNiphlAuthorised = false, // <- Trader NOT authorised for NIPHL
-          isTraderNirmsAuthorised = false
+          descendantCount = 1
         )
 
         val userAnswers = emptyUserAnswers
@@ -919,7 +907,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
           val assessment1 = CategoryAssessment(
             "ass1",
             1,
-            Seq(Certificate(NiphlCode, NiphlCode, "cert1desc")), // ← must use NiphlCode
+            Seq(Certificate(NiphlCode, NiphlCode, "cert1desc")),
             "theme description",
             Some("regulationUrl1")
           )
@@ -927,11 +915,10 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
           val assessment2 = CategoryAssessment(
             "ass2",
             1,
-            Seq(Certificate(NiphlCode, NiphlCode, "cert2desc")), // ← must use NiphlCode
+            Seq(Certificate(NiphlCode, NiphlCode, "cert2desc")),
             "theme description",
             Some("regulationUrl2")
           )
-
 
           val assessment3        = CategoryAssessment("ass3", 2, Seq.empty, "theme description", Some("regulationUrl3"))
           val categorisationInfo = CategorisationInfo(
@@ -1054,10 +1041,8 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
 
       ".NIRMS" - {
         "is not authorised and has a NIRMS assessment, category 1 assessment and category 2 assessment when all are answered yes" in {
-          // Define NIRMS exemption certificate
           val nirmsCert = Certificate(NirmsCode, NirmsCode, "NIRMS exemption description")
 
-          // Category 1 assessment with a normal exemption
           val category1Assessment = CategoryAssessment(
             "ass1",
             1,
@@ -1066,7 +1051,6 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
             Some("regulationUrl1")
           )
 
-          // Category 2 assessment with a normal exemption
           val category2Assessment = CategoryAssessment(
             "ass2",
             2,
@@ -1075,7 +1059,6 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
             Some("regulationUrl2")
           )
 
-          // The special NIRMS assessment (category 2)
           val nirmsAssessment = CategoryAssessment(
             "nirmsAss",
             2,
@@ -1084,7 +1067,6 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
             Some("regulationUrlNirms")
           )
 
-          // Build categorisation info including all 3 assessments
           val categorisationInfo = CategorisationInfo(
             commodityCode = "1234567890",
             countryOfOrigin = "BV",
@@ -1094,21 +1076,23 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
             measurementUnit = None,
             descendantCount = 1,
             isTraderNiphlAuthorised = false,
-            isTraderNirmsAuthorised = false // Trader NOT authorised for NIRMS
+            isTraderNirmsAuthorised = false
           )
 
-          // User answers align with assessments by index and match exemptions exactly
           val userAnswers = emptyUserAnswers
             .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
-            .success.value
-            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq(NirmsCode))) // NIRMS exemption
-            .success.value
-            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("cert1code"))) // Cat 1 exemption
-            .success.value
-            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("cert2code"))) // Cat 2 exemption
-            .success.value
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq(NirmsCode)))
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("cert1code")))
+            .success
+            .value
+            .set(AssessmentPage(testRecordId, 2), AssessmentAnswer.Exemption(Seq("cert2code")))
+            .success
+            .value
 
-          // Assert the expected scenario is returned
           categorisationService.calculateResult(
             categorisationInfo,
             userAnswers,
@@ -1116,9 +1100,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
           ) mustEqual Category2NoExemptionsScenario
         }
 
-
-
-      "is authorised and has a NIRMS assessment, no category 1 assessment and category 2 with no exemptions" in {
+        "is authorised and has a NIRMS assessment, no category 1 assessment and category 2 with no exemptions" in {
           val category2Exemption = CategoryAssessment(
             "1azbfb-1-dfsdaf-32",
             2,
@@ -1353,7 +1335,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
             val assessment2 = CategoryAssessment(
               "ass2",
               2,
-              Seq(nirmsCert), // Use NirmsCode here exactly
+              Seq(nirmsCert),
               "theme description",
               Some("regulationUrl2")
             )
@@ -1367,16 +1349,19 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
               measurementUnit = None,
               descendantCount = 1,
               isTraderNiphlAuthorised = false,
-              isTraderNirmsAuthorised = false // Trader NOT authorised for NIRMS
+              isTraderNirmsAuthorised = false
             )
 
             val userAnswers = emptyUserAnswers
               .set(CategorisationDetailsQuery(testRecordId), categorisationInfo)
-              .success.value
+              .success
+              .value
               .set(AssessmentPage(testRecordId, 0), AssessmentAnswer.Exemption(Seq("Y903")))
-              .success.value
+              .success
+              .value
               .set(AssessmentPage(testRecordId, 1), AssessmentAnswer.Exemption(Seq("Y903")))
-              .success.value
+              .success
+              .value
 
             categorisationService.calculateResult(
               categorisationInfo,
