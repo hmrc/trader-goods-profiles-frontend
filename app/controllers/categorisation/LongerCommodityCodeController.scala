@@ -40,20 +40,20 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class LongerCommodityCodeController @Inject() (
-                                                override val messagesApi: MessagesApi,
-                                                sessionRepository: SessionRepository,
-                                                navigator: CategorisationNavigator,
-                                                identify: IdentifierAction,
-                                                getData: DataRetrievalAction,
-                                                requireData: DataRequiredAction,
-                                                profileAuth: ProfileAuthenticateAction,
-                                                formProvider: LongerCommodityCodeFormProvider,
-                                                ottConnector: OttConnector,
-                                                val controllerComponents: MessagesControllerComponents,
-                                                view: LongerCommodityCodeView,
-                                                goodsRecordConnector: GoodsRecordConnector
-                                              )(implicit ec: ExecutionContext, appConfig: FrontendAppConfig)
-  extends BaseController {
+  override val messagesApi: MessagesApi,
+  sessionRepository: SessionRepository,
+  navigator: CategorisationNavigator,
+  identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
+  profileAuth: ProfileAuthenticateAction,
+  formProvider: LongerCommodityCodeFormProvider,
+  ottConnector: OttConnector,
+  val controllerComponents: MessagesControllerComponents,
+  view: LongerCommodityCodeView,
+  goodsRecordConnector: GoodsRecordConnector
+)(implicit ec: ExecutionContext, appConfig: FrontendAppConfig)
+    extends BaseController {
 
   private val form = formProvider()
 
@@ -93,31 +93,31 @@ class LongerCommodityCodeController @Inject() (
     }
 
   private def getShortCommodityCodeOpt(
-                                        recordId: String,
-                                        userAnswers: UserAnswers
-                                      ): Option[String] =
+    recordId: String,
+    userAnswers: UserAnswers
+  ): Option[String] =
     userAnswers
       .get(CategorisationDetailsQuery(recordId))
       .map(_.getMinimalCommodityCode)
 
   private def validateAndUpdateAnswer(
-                                       mode: Mode,
-                                       recordId: String,
-                                       value: String,
-                                       shortCode: String
-                                     )(implicit request: DataRequest[AnyContent]) = {
+    mode: Mode,
+    recordId: String,
+    value: String,
+    shortCode: String
+  )(implicit request: DataRequest[AnyContent]) = {
     val longerCode   = shortCode + value
     val todayInstant = LocalDate.now(ZoneId.of("UTC")).atStartOfDay(ZoneId.of("UTC")).toInstant
     (for {
       record    <- goodsRecordConnector.getRecord(recordId)
       commodity <- ottConnector.getCommodityCode(
-        longerCode,
-        request.eori,
-        request.affinityGroup,
-        UpdateRecordJourney,
-        record.countryOfOrigin,
-        Some(recordId)
-      )
+                     longerCode,
+                     request.eori,
+                     request.affinityGroup,
+                     UpdateRecordJourney,
+                     record.countryOfOrigin,
+                     Some(recordId)
+                   )
       result    <-
         if (
           todayInstant.isBefore(commodity.validityStartDate) || commodity.validityEndDate.exists(todayInstant.isAfter)
