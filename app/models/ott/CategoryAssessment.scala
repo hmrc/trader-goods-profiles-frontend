@@ -43,11 +43,18 @@ final case class CategoryAssessment(
   def isNiphlAnswer: Boolean   = isCategory1 && exemptions.exists(exemption => exemption.id == NiphlCode)
   def isNirmsAnswer: Boolean   = isCategory2 && exemptions.exists(exemption => exemption.id == NirmsCode)
 
-  def onlyContainsNiphlAnswer: Boolean =
+  def containsOnlyNiphlCode: Boolean =
     exemptions.nonEmpty && exemptions.forall(_.code == NiphlCode)
 
-  def onlyContainsNirmsAnswer: Boolean =
-    exemptions.nonEmpty && exemptions.forall(_.code == NirmsCode)
+  def onlyContainsNiphlAnswer: Boolean =
+    exemptions.nonEmpty && exemptions.forall {
+      case Certificate(code, _, _) => code == NiphlCode
+      case _ => false
+    }  
+
+  def onlyContainsNirmsAnswer: Boolean = {
+    exemptions.nonEmpty && exemptions.forall(e => e.code == NirmsCode)
+  }
 
 
   def needsAnswerEvenIfNoExemptions(isTraderNiphl: Boolean, isTraderNirms: Boolean): Boolean = {

@@ -21,34 +21,21 @@ package object ott {
 
     def category1ToAnswer(isTraderNiphlAuthorised: Boolean): Seq[CategoryAssessment] = {
       assessments.filter { assessment =>
-        if (isTraderNiphlAuthorised) {
-          // When trader is authorised, exclude assessments with no exemptions
-          // and exclude assessments with only Niphl exemptions
-          assessment.needsAnswerEvenIfNoExemptions(isTraderNiphl = true, isTraderNirms = false) &&
-            !assessment.onlyContainsNiphlAnswer
-        } else {
-          // When trader NOT authorised, include assessments with no exemptions or
-          // those that have Niphl + other exemptions, but exclude those only with Niphl exemptions
-          assessment.needsAnswerEvenIfNoExemptions(isTraderNiphl = false, isTraderNirms = false) &&
-            !assessment.onlyContainsNiphlAnswer
-        }
+        assessment.needsAnswerEvenIfNoExemptions(
+          isTraderNiphl = isTraderNiphlAuthorised,
+          isTraderNirms = false
+        ) &&
+          !assessment.containsOnlyNiphlCode // new method here
       }
     }
 
+
     def category2ToAnswer(isTraderNirmsAuthorised: Boolean): Seq[CategoryAssessment] = {
-      assessments.filter { assessment =>
-        if (isTraderNirmsAuthorised) {
-          // When trader is authorised, exclude assessments with no exemptions
-          // and exclude assessments with only Nirms exemptions
-          assessment.needsAnswerEvenIfNoExemptions(isTraderNiphl = false, isTraderNirms = true) &&
-            !assessment.onlyContainsNirmsAnswer
-        } else {
-          // When trader NOT authorised, include assessments with no exemptions or
-          // those that have Nirms + other exemptions, but exclude those only with Nirms exemptions
-          assessment.needsAnswerEvenIfNoExemptions(isTraderNiphl = false, isTraderNirms = false) &&
+        assessments.filter { assessment =>
+          assessment.needsAnswerEvenIfNoExemptions(isTraderNiphl = false, isTraderNirms = isTraderNirmsAuthorised) &&
             !assessment.onlyContainsNirmsAnswer
         }
       }
+
     }
-  }
 }

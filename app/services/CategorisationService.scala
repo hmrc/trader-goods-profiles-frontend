@@ -120,30 +120,39 @@ class CategorisationService @Inject() (
       .getAnswersForQuestions(userAnswers, recordId)
       .find(x => x.answer.contains(AssessmentAnswer.NoExemption))
 
-    val shouldBeCategory1NoExemption: Boolean = categorisationInfo.categoryAssessments.exists(ass =>
-      ass.isCategory1 && ass.hasNoExemptions
-    ) || categorisationInfo.categoryAssessments.exists(ass =>
-      ass.onlyContainsNiphlAnswer && !categorisationInfo.isTraderNiphlAuthorised
-    )
+    val shouldBeCategory1NoExemption: Boolean = categorisationInfo.categoryAssessments.exists { ass =>
+      ass.isCategory1 &&
+        (
+          ass.hasNoExemptions ||
+            (!categorisationInfo.isTraderNiphlAuthorised && ass.onlyContainsNiphlAnswer)
+          )
+    }
 
-    val shouldBeCategory2NoExemption: Boolean = categorisationInfo.categoryAssessments.exists(ass =>
-      ass.isCategory2 && ass.hasNoExemptions
-    ) || categorisationInfo.categoryAssessments.exists(ass =>
-      ass.onlyContainsNirmsAnswer && !categorisationInfo.isTraderNirmsAuthorised
-    )
+    val shouldBeCategory2NoExemption: Boolean = categorisationInfo.categoryAssessments.exists { ass =>
+      ass.isCategory2 &&
+        (
+          ass.hasNoExemptions ||
+            (!categorisationInfo.isTraderNirmsAuthorised && ass.onlyContainsNirmsAnswer)
+          )
+    }
+
+    println(s"isTraderNirmsAuthorised: ${categorisationInfo.isTraderNirmsAuthorised}")
+    println(s"categoryAssessments: ${categorisationInfo.categoryAssessments}")
+    println(s"shouldBeCategory2NoExemption: $shouldBeCategory2NoExemption")
 
     if (categorisationInfo.categoryAssessments.isEmpty) {
       StandardGoodsNoAssessmentsScenario
     } else {
       getFirstNo match {
-        case None if shouldBeCategory1NoExemption          => Category1NoExemptionsScenario
-        case None if shouldBeCategory2NoExemption          => Category2NoExemptionsScenario
-        case None                                          => StandardGoodsScenario
+        case None if shouldBeCategory1NoExemption => Category1NoExemptionsScenario
+        case None if shouldBeCategory2NoExemption => Category2NoExemptionsScenario
+        case None => StandardGoodsScenario
         case Some(details) if details.question.isCategory2 => Category2Scenario
-        case _                                             => Category1Scenario
+        case _ => Category1Scenario
       }
     }
   }
+
 
   def updatingAnswersForRecategorisation(
                                           userAnswers: UserAnswers,
