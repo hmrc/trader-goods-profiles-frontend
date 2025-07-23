@@ -110,7 +110,8 @@ class NavigationSpec extends SpecBase with BeforeAndAfterEach {
               .value
 
             navigator.nextPage(HasCorrectGoodsLongerCommodityCodePage(testRecordId), NormalMode, userAnswers) mustEqual
-              controllers.categorisation.routes.CategorisationPreparationController.startLongerCategorisation(NormalMode, testRecordId)
+              controllers.categorisation.routes.CategorisationPreparationController
+                .startLongerCategorisation(NormalMode, testRecordId)
           }
 
           "to longer commodity page when answer is no" in {

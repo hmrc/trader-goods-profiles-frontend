@@ -115,17 +115,14 @@ class Navigation @Inject() (categorisationService: CategorisationService) extend
     (for {
       categorisationInfo <- answers.get(CategorisationDetailsQuery(recordId))
       commodity          <- answers.get(LongerCommodityQuery(recordId))
-    } yield {
-
-      answers.get(HasCorrectGoodsLongerCommodityCodePage(recordId)) match {
-        case Some(true)  =>
-          controllers.categorisation.routes.CategorisationPreparationController
-            .startLongerCategorisation(mode, recordId)
-        case Some(false)                   =>
-          controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(mode, recordId)
-        case None                                       =>
-          controllers.problem.routes.JourneyRecoveryController.onPageLoad()
-      }
+    } yield answers.get(HasCorrectGoodsLongerCommodityCodePage(recordId)) match {
+      case Some(true)  =>
+        controllers.categorisation.routes.CategorisationPreparationController
+          .startLongerCategorisation(mode, recordId)
+      case Some(false) =>
+        controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(mode, recordId)
+      case None        =>
+        controllers.problem.routes.JourneyRecoveryController.onPageLoad()
     }).getOrElse(
       controllers.problem.routes.JourneyRecoveryController.onPageLoad()
     )
