@@ -43,5 +43,28 @@ class ScenarioSpec extends SpecBase {
       Scenario.getResultAsInt(Category1NoExemptionsScenario) mustBe Category1AsInt
     }
 
+    ".fromInt" - {
+
+      "must return Some(StandardGoodsScenario) for StandardGoodsAsInt" in {
+        Scenario.fromInt(Some(StandardGoodsAsInt)) mustBe Some(StandardGoodsScenario)
+      }
+
+      "must return Some(Category1Scenario) for Category1AsInt" in {
+        Scenario.fromInt(Some(Category1AsInt)) mustBe Some(Category1Scenario)
+      }
+
+      "must return Some(Category2Scenario) for Category2AsInt" in {
+        Scenario.fromInt(Some(Category2AsInt)) mustBe Some(Category2Scenario)
+      }
+
+      "must return None for unknown integer" in {
+        Scenario.fromInt(Some(999)) mustBe None
+      }
+
+      "must return None for None input" in {
+        Scenario.fromInt(None) mustBe None
+      }
+    }
+
   }
 }

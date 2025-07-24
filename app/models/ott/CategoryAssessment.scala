@@ -39,15 +39,17 @@ final case class CategoryAssessment(
   def isCategory2: Boolean     = category == Category2AsInt
   def hasNoExemptions: Boolean = exemptions.isEmpty
   def hasExemptions: Boolean   = exemptions.nonEmpty
-  def isNiphlAnswer: Boolean   = isCategory1 && exemptions.exists(exemption => exemption.id == NiphlCode)
-  def isNirmsAnswer: Boolean   = isCategory2 && exemptions.exists(exemption => exemption.id == NirmsCode)
+
+  def isNiphlAnswer: Boolean = isCategory1 && exemptions.exists(_.code == NiphlCode)
+
+  def isNirmsAnswer: Boolean = isCategory2 && exemptions.exists(exemption => exemption.code == NirmsCode)
 
   def containsOnlyNiphlCode: Boolean =
     exemptions.nonEmpty && exemptions.forall(_.code == NiphlCode)
 
   def onlyContainsNiphlAnswer: Boolean =
     exemptions.nonEmpty && exemptions.forall {
-      case Certificate(code, _, _) => code == NiphlCode
+      case Certificate(_, code, _) => code == NiphlCode
       case _                       => false
     }
 

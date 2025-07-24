@@ -309,7 +309,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
         val assessment1 = CategoryAssessment(
           "ass1",
           1,
-          Seq(Certificate(NiphlCode, "cert1code", "cert1desc"), Certificate("cert2", "cert2code", "cert2desc")),
+          Seq(Certificate("cert1code", NiphlCode, "cert1desc"), Certificate("cert2", "cert2code", "cert2desc")),
           "theme description",
           Some("regulationUrl1")
         )
@@ -425,7 +425,7 @@ class CategorisationServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
         val assessment1 = CategoryAssessment(
           id = "ass1",
           category = 1,
-          exemptions = Seq(Certificate(NiphlCode, "cert1code", "cert1desc")),
+          exemptions = Seq(Certificate("cert1code", NiphlCode, "cert1desc")),
           themeDescription = "theme description",
           regulationUrl = Some("regulationUrl1")
         )

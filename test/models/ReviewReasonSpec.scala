@@ -93,6 +93,24 @@ class ReviewReasonSpec extends SpecBase {
           )
         }
 
+        "Commodity.setAdditionalContent fallback" in {
+          Commodity.setAdditionalContent(isCategorised = true, AdviceRequestWithdrawn) mustBe None
+        }
+
+        "Inadequate.url with AdviceReceived" in {
+          val url = Inadequate.url("recordId", AdviceReceived).value.url
+          url mustBe controllers.goodsRecord.goodsDescription.routes.HasGoodsDescriptionChangeController
+            .onPageLoad(NormalMode, "recordId")
+            .url
+        }
+
+        "Unclear.url with AdviceReceived" in {
+          val url = Unclear.url("recordId", AdviceReceived).value.url
+          url mustBe controllers.goodsRecord.goodsDescription.routes.HasGoodsDescriptionChangeController
+            .onPageLoad(NormalMode, "recordId")
+            .url
+        }
+
         "is categorised, and advice status is NotRequested" in {
           Commodity.messageKey mustBe "singleRecord.commodityReviewReason"
           Commodity.linkKey mustBe Some("singleRecord.commodityReviewReason.linkText")
