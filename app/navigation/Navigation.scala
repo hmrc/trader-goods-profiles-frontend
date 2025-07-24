@@ -111,26 +111,21 @@ class Navigation @Inject() (categorisationService: CategorisationService) extend
     recordId: String,
     answers: UserAnswers,
     mode: Mode
-  ): Call = {
-    for {
+  ): Call =
+    (for {
       categorisationInfo <- answers.get(CategorisationDetailsQuery(recordId))
       commodity          <- answers.get(LongerCommodityQuery(recordId))
-    } yield
-      if (
-        categorisationInfo.commodityCode == getShortenedCommodityCode(commodity)
-        && !commodity.commodityCode.endsWith("0000")
-      ) {
+    } yield answers.get(HasCorrectGoodsLongerCommodityCodePage(recordId)) match {
+      case Some(true)  =>
+        controllers.categorisation.routes.CategorisationPreparationController
+          .startLongerCategorisation(mode, recordId)
+      case Some(false) =>
         controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(mode, recordId)
-      } else {
-        answers.get(HasCorrectGoodsLongerCommodityCodePage(recordId)) match {
-          case Some(true)  =>
-            controllers.categorisation.routes.CategorisationPreparationController
-              .startLongerCategorisation(mode, recordId)
-          case Some(false) => controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(mode, recordId)
-          case None        => controllers.problem.routes.JourneyRecoveryController.onPageLoad()
-        }
-      }
-  }.getOrElse(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
+      case None        =>
+        controllers.problem.routes.JourneyRecoveryController.onPageLoad()
+    }).getOrElse(
+      controllers.problem.routes.JourneyRecoveryController.onPageLoad()
+    )
 
   private def getShortenedCommodityCode(commodity: Commodity) =
     commodity.commodityCode.reverse

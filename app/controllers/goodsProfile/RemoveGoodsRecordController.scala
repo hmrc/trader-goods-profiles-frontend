@@ -21,6 +21,7 @@ import controllers.BaseController
 import controllers.actions.*
 import forms.goodsProfile.RemoveGoodsRecordFormProvider
 import models.GoodsRecordsPagination.firstPage
+import models.requests.DataRequest
 import models.{GoodsProfileLocation, Location}
 import navigation.GoodsProfileNavigator
 import pages.goodsRecord.ProductReferenceUpdatePage
@@ -53,79 +54,69 @@ class RemoveGoodsRecordController @Inject() (
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       auditService.auditStartRemoveGoodsRecord(request.eori, request.affinityGroup, recordId)
 
-      val productReference = request.userAnswers.get(ProductReferenceUpdatePage(recordId))
-
-      productReference match {
-        case Some(productRef) =>
-          Future.successful(Ok(view(form, recordId, location, productRef)))
-        case None             =>
-          goodsRecordConnector
-            .getRecord(recordId)
-            .map { record =>
-              val productRef = record.traderRef
-              Ok(view(form, recordId, location, productRef))
-            }
-            .recover { case ex =>
-              logger.error(s"Failed to fetch record for ID $recordId: ${ex.getMessage}", ex)
-              Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
-            }
-      }
+      getProductReference(recordId)
+        .map { productRef =>
+          Ok(view(form, recordId, location, productRef))
+        }
+        .recover {
+          case e: UpstreamErrorResponse if e.statusCode == 404 =>
+            Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
+          case ex                                              =>
+            logger.error(s"[RemoveGoodsRecordController][onPageLoad] Failed to fetch record $recordId", ex)
+            Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
+        }
     }
 
   def onSubmit(recordId: String, location: Location): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val maybeProductRef = request.userAnswers.get(ProductReferenceUpdatePage(recordId))
-
-      def processForm(productRef: String): Future[Result] =
-        form
-          .bindFromRequest()
-          .fold(
-            formWithErrors => Future.successful(BadRequest(view(formWithErrors, recordId, location, productRef))),
-            {
-              case true  =>
-                goodsRecordConnector
-                  .removeGoodsRecord(recordId)
-                  .map { removed =>
-                    auditService.auditFinishRemoveGoodsRecord(request.eori, request.affinityGroup, recordId)
-                    if (removed) {
-                      Redirect(navigator.nextPageAfterRemoveGoodsRecord(request.userAnswers, location))
-                    } else {
-                      Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
-                    }
-                  }
-                  .recover {
-                    case e: UpstreamErrorResponse if e.statusCode == 404 =>
-                      Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
-                    case e: Exception                                    =>
-                      logger.error(s"Error removing record $recordId: ${e.getMessage}", e)
-                      Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
-                  }
-              case false =>
-                val redirectCall = location match {
-                  case GoodsProfileLocation =>
-                    controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage)
-                  case _                    =>
-                    controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId)
-                }
-                Future.successful(Redirect(redirectCall))
-            }
-          )
-
-      maybeProductRef match {
-        case Some(productRef) =>
-          processForm(productRef)
-        case None             =>
-          goodsRecordConnector
-            .getRecord(recordId)
-            .flatMap { record =>
-              val productRef = record.traderRef
-              processForm(productRef)
-            }
-            .recover { case ex =>
-              logger.error(s"Failed to fetch record for ID $recordId: ${ex.getMessage}", ex)
-              Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
-            }
-      }
+      getProductReference(recordId)
+        .flatMap { productRef =>
+          form
+            .bindFromRequest()
+            .fold(
+              formWithErrors => Future.successful(BadRequest(view(formWithErrors, recordId, location, productRef))),
+              {
+                case true  => handleRemove(recordId, location)
+                case false => Future.successful(Redirect(getCancelRedirect(location, recordId)))
+              }
+            )
+        }
+        .recover { case ex =>
+          logger.error(s"[RemoveGoodsRecordController][onSubmit] Failed processing form for record $recordId", ex)
+          Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
+        }
     }
 
+  private def getProductReference(recordId: String)(implicit request: DataRequest[_]): Future[String] =
+    request.userAnswers.get(ProductReferenceUpdatePage(recordId)) match {
+      case Some(productRef) => Future.successful(productRef)
+      case None             => goodsRecordConnector.getRecord(recordId).map(_.traderRef)
+    }
+
+  private def handleRemove(recordId: String, location: Location)(implicit request: DataRequest[_]): Future[Result] =
+    goodsRecordConnector
+      .removeGoodsRecord(recordId)
+      .flatMap { removed =>
+        auditService.auditFinishRemoveGoodsRecord(request.eori, request.affinityGroup, recordId).map { _ =>
+          if (removed)
+            Redirect(navigator.nextPageAfterRemoveGoodsRecord(request.userAnswers, location))
+          else
+            Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
+        }
+      }
+      .recover {
+        case e: UpstreamErrorResponse if e.statusCode == 404 =>
+          Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
+        case e: Exception                                    =>
+          logger.error(s"Error removing record $recordId: ${e.getMessage}", e)
+          Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
+      }
+
+  private def getCancelRedirect(location: Location, recordId: String): play.api.mvc.Call =
+    location match {
+      case GoodsProfileLocation =>
+        controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage)
+      case _                    =>
+        controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId)
+    }
 }
