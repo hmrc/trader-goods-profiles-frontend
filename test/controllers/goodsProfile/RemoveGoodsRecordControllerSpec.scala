@@ -37,7 +37,6 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.AuditService
 import uk.gov.hmrc.http.UpstreamErrorResponse
-import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import views.html.goodsProfile.RemoveGoodsRecordView
 
 import java.time.Instant

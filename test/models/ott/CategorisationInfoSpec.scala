@@ -30,9 +30,6 @@ class CategorisationInfoSpec extends SpecBase {
 
   private val testTraderProfileResponseWithoutNiphlAndNirms: TraderProfile =
     TraderProfile("actorId", "ukims number", None, None, eoriChanged = false)
-  private val certificate: Exemption                                       = Certificate("cert-id", "cert-code", "cert-description")
-  private val additionalCode: Exemption                                    = AdditionalCode("add-id", "add-code", "add-description")
-  private val otherExemption: Exemption                                    = OtherExemption("oth-id", "oth-code", "oth-description")
 
   "CategorisationInfo#isAutoCategorisable" - {
 
