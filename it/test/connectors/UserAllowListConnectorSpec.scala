@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
-import com.github.tomakehurst.wiremock.http.Fault
 import models.CheckRequest
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
@@ -30,32 +29,34 @@ import play.api.test.Helpers.AUTHORIZATION
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.test.WireMockSupport
 
-private class UserAllowListConnectorSpec
-    extends AnyFreeSpec
+import scala.concurrent.ExecutionContext
+
+class UserAllowListConnectorSpec
+  extends AnyFreeSpec
     with Matchers
     with WireMockSupport
     with ScalaFutures
     with IntegrationPatience {
 
-  private lazy val app: Application =
-    new GuiceApplicationBuilder()
-      .configure(
-        "microservice.services.user-allow-list.port" -> wireMockPort,
-        "internal-auth.token"                        -> "token"
-      )
-      .build()
+  implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.global
+  implicit val hc: HeaderCarrier = HeaderCarrier()
+
+  private lazy val app: Application = new GuiceApplicationBuilder()
+    .configure(
+      "microservice.services.user-allow-list.port" -> wireMockPort,
+      "internal-auth.token"                        -> "token"
+    )
+    .build()
 
   private lazy val connector = app.injector.instanceOf[UserAllowListConnector]
 
-  implicit private lazy val hc: HeaderCarrier = HeaderCarrier()
-
-  "check allow list" - {
+  "UserAllowListConnector#check" - {
 
     val feature = "private-beta"
-    val url     = s"/user-allow-list/$feature/check"
+    val url     = s"/user-allow-list/trader-goods-profiles/$feature/check"
     val request = CheckRequest("value")
 
-    "return true when the given EORI is found" in {
+    "returns true when the server responds OK (200)" in {
       wireMockServer.stubFor(
         post(urlEqualTo(url))
           .withHeader(AUTHORIZATION, equalTo("token"))
@@ -66,7 +67,7 @@ private class UserAllowListConnectorSpec
       connector.check(feature, request.value).futureValue mustBe true
     }
 
-    "must return false when the server responds NOT_FOUND" in {
+    "returns false when the server responds NOT_FOUND (404)" in {
       wireMockServer.stubFor(
         post(urlEqualTo(url))
           .withHeader(AUTHORIZATION, equalTo("token"))
@@ -77,7 +78,7 @@ private class UserAllowListConnectorSpec
       connector.check(feature, request.value).futureValue mustBe false
     }
 
-    "must fail when the server responds with any other status" in {
+    "fails with UnexpectedResponseException for any other status" in {
       wireMockServer.stubFor(
         post(urlEqualTo(url))
           .withHeader(AUTHORIZATION, equalTo("token"))
@@ -85,30 +86,8 @@ private class UserAllowListConnectorSpec
           .willReturn(aResponse().withStatus(INTERNAL_SERVER_ERROR))
       )
 
-      connector.check(feature, request.value).failed.futureValue
-    }
-
-    "must fail when the connection fails" in {
-      wireMockServer.stubFor(
-        post(urlEqualTo(url))
-          .withHeader(AUTHORIZATION, equalTo("token"))
-          .withRequestBody(equalToJson(Json.stringify(Json.toJson(request))))
-          .willReturn(aResponse().withFault(Fault.RANDOM_DATA_THEN_CLOSE))
-      )
-
-      connector.check(feature, request.value).failed.futureValue
-    }
-
-    "must fail with UnexpectedResponseException containing status code" in {
-      wireMockServer.stubFor(
-        post(urlEqualTo(url))
-          .withHeader(AUTHORIZATION, equalTo("token"))
-          .withRequestBody(equalToJson(Json.stringify(Json.toJson(request))))
-          .willReturn(aResponse().withStatus(INTERNAL_SERVER_ERROR))
-      )
-
-      val ex = connector.check(feature, request.value).failed.futureValue
-      ex match {
+      val exception = connector.check(feature, request.value).failed.futureValue
+      exception match {
         case e: UserAllowListConnector.UnexpectedResponseException =>
           e.status mustBe INTERNAL_SERVER_ERROR
         case _ =>
@@ -116,5 +95,16 @@ private class UserAllowListConnectorSpec
       }
     }
 
+    "fails if connection is interrupted" in {
+      wireMockServer.stubFor(
+        post(urlEqualTo(url))
+          .withHeader(AUTHORIZATION, equalTo("token"))
+          .withRequestBody(equalToJson(Json.stringify(Json.toJson(request))))
+          .willReturn(aResponse().withFault(com.github.tomakehurst.wiremock.http.Fault.RANDOM_DATA_THEN_CLOSE))
+      )
+
+      connector.check(feature, request.value).failed.futureValue
+    }
+    
   }
 }
