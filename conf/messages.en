@@ -642,7 +642,6 @@ goodsRecordSearchResult.p4 = Status:
 goodsRecordSearchResult.p5 = Search term: ‘{0}’
 goodsRecordSearchResult.p6 = Country:
 
-
 goodsRecordSearchResultEmptyView.title = There are no matching results
 goodsRecordSearchResultEmptyView.h1 = There are no matching results
 goodsRecordSearchResultEmptyView.p1 = You searched for the term ‘{0}’.
