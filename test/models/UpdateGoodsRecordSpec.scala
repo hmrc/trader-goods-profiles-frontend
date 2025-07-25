@@ -63,6 +63,42 @@ class UpdateGoodsRecordSpec extends AnyFreeSpec with Matchers with TryValues wit
 
       }
 
+      "return errors when HasCommodityCodeChangePage returns errors and isCategorised is true" in {
+        val answers = UserAnswers(userAnswersId)
+
+        val result = UpdateGoodsRecord.validateCommodityCode(
+          answers,
+          testRecordId,
+          isCategorised = true,
+          isCommCodeExpired = false
+        )
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain only PageMissing(HasCommodityCodeChangePage(testRecordId))
+        }
+      }
+
+      "return errors when CommodityUpdateQuery returns errors" in {
+        val answers = UserAnswers(userAnswersId)
+          .set(CommodityCodeUpdatePage(testRecordId), "170490")
+          .success
+          .value
+          .set(HasCorrectGoodsCommodityCodeUpdatePage(testRecordId), true)
+          .success
+          .value
+
+        val result = UpdateGoodsRecord.validateCommodityCode(
+          answers,
+          testRecordId,
+          isCategorised = false,
+          isCommCodeExpired = false
+        )
+
+        inside(result) { case Left(errors) =>
+          errors.toChain.toList must contain only PageMissing(CommodityUpdateQuery(testRecordId))
+        }
+      }
+
       "and all product reference data is present" in {
         val answers =
           UserAnswers(userAnswersId).set(ProductReferenceUpdatePage(testRecordId), "product reference").success.value

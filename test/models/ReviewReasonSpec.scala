@@ -180,6 +180,105 @@ class ReviewReasonSpec extends SpecBase {
         Mismatch.url("recordId", NotRequested) mustBe None
         Mismatch.setAdditionalContent(isCategorised = false, NotRequested) mustBe None
       }
+
+      "Commodity.setAdditionalContent fallback" in {
+        Commodity.setAdditionalContent(isCategorised = true, AdviceRequestWithdrawn) mustBe None
+      }
+
+      "Inadequate.url with AdviceReceived" in {
+        val url = Inadequate.url("recordId", AdviceReceived).value.url
+        url mustBe controllers.goodsRecord.goodsDescription.routes.HasGoodsDescriptionChangeController
+          .onPageLoad(NormalMode, "recordId")
+          .url
+      }
+
+      "Unclear.url with AdviceReceived" in {
+        val url = Unclear.url("recordId", AdviceReceived).value.url
+        url mustBe controllers.goodsRecord.goodsDescription.routes.HasGoodsDescriptionChangeController
+          .onPageLoad(NormalMode, "recordId")
+          .url
+      }
+
+      "is categorised, and advice status is NotRequested" in {
+        Commodity.messageKey mustBe "singleRecord.commodityReviewReason"
+        Commodity.linkKey mustBe Some("singleRecord.commodityReviewReason.linkText")
+        Commodity
+          .url("recordId", NotRequested)
+          .value
+          .url mustBe
+          controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangedController
+            .onPageLoad(NormalMode, "recordId")
+            .url
+        Commodity.setAdditionalContent(isCategorised = true, NotRequested) mustBe Some(
+          ("singleRecord.commodityReviewReason.categorised", "singleRecord.commodityReviewReason.tagText")
+        )
+      }
+      "is not categorised, and advice status is AdviceReceived" in {
+        Commodity.messageKey mustBe "singleRecord.commodityReviewReason"
+        Commodity.linkKey mustBe Some("singleRecord.commodityReviewReason.linkText")
+        Commodity
+          .url("recordId", NotRequested)
+          .value
+          .url mustBe
+          controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangedController
+            .onPageLoad(NormalMode, "recordId")
+            .url
+        Commodity.setAdditionalContent(isCategorised = false, AdviceReceived) mustBe Some(
+          ("singleRecord.commodityReviewReason.adviceReceived", "singleRecord.commodityReviewReason.tagText")
+        )
+      }
+      "is not categorised, and advice status is not AdviceReceived" in {
+        Commodity.messageKey mustBe "singleRecord.commodityReviewReason"
+        Commodity.linkKey mustBe Some("singleRecord.commodityReviewReason.linkText")
+        Commodity
+          .url("recordId", NotRequested)
+          .value
+          .url mustBe
+          controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangedController
+            .onPageLoad(NormalMode, "recordId")
+            .url
+        Commodity.setAdditionalContent(isCategorised = false, AdviceRequestWithdrawn) mustBe Some(
+          ("singleRecord.commodityReviewReason.notCategorised.noAdvice", "singleRecord.commodityReviewReason.tagText")
+        )
+      }
+    }
+    "when Inadequate" in {
+      Inadequate.messageKey mustBe "singleRecord.inadequateReviewReason"
+      Inadequate.linkKey mustBe Some("singleRecord.inadequateReviewReason.linkText")
+      Inadequate
+        .url("recordId", NotRequested)
+        .value
+        .url mustBe
+        controllers.goodsRecord.goodsDescription.routes.UpdateGoodsDescriptionController
+          .onPageLoad(NormalMode, "recordId")
+          .url
+      Inadequate.setAdditionalContent(isCategorised = false, NotRequested) mustBe None
+    }
+    "when Unclear" in {
+      Unclear.messageKey mustBe "singleRecord.unclearReviewReason"
+      Unclear.linkKey mustBe Some("singleRecord.unclearReviewReason.linkText")
+      Unclear
+        .url("recordId", NotRequested)
+        .value
+        .url mustBe
+        controllers.goodsRecord.goodsDescription.routes.UpdateGoodsDescriptionController
+          .onPageLoad(NormalMode, "recordId")
+          .url
+      Unclear.setAdditionalContent(isCategorised = false, NotRequested) mustBe None
+    }
+    "when Measure" in {
+      Measure.messageKey mustBe "singleRecord.measureReviewReason"
+      Measure.linkKey mustBe Some("singleRecord.measureReviewReason.linkText")
+      Measure.url("recordId", NotRequested).value.url mustBe controllers.routes.ValidateCommodityCodeController
+        .changeCategory("recordId")
+        .url
+      Measure.setAdditionalContent(isCategorised = false, NotRequested) mustBe None
+    }
+    "when Mismatch" in {
+      Mismatch.messageKey mustBe "singleRecord.mismatchReviewReason"
+      Mismatch.linkKey mustBe None
+      Mismatch.url("recordId", NotRequested) mustBe None
+      Mismatch.setAdditionalContent(isCategorised = false, NotRequested) mustBe None
     }
   }
 

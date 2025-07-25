@@ -99,5 +99,22 @@ private class UserAllowListConnectorSpec
       connector.check(feature, request.value).failed.futureValue
     }
 
+    "must fail with UnexpectedResponseException containing status code" in {
+      wireMockServer.stubFor(
+        post(urlEqualTo(url))
+          .withHeader(AUTHORIZATION, equalTo("token"))
+          .withRequestBody(equalToJson(Json.stringify(Json.toJson(request))))
+          .willReturn(aResponse().withStatus(INTERNAL_SERVER_ERROR))
+      )
+
+      val ex = connector.check(feature, request.value).failed.futureValue
+      ex match {
+        case e: UserAllowListConnector.UnexpectedResponseException =>
+          e.status mustBe INTERNAL_SERVER_ERROR
+        case _ =>
+          fail("Expected UnexpectedResponseException")
+      }
+    }
+
   }
 }

@@ -78,14 +78,6 @@ class AutoCategoriseServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
     Instant.now()
   )
 
-  private val categoryAssessmentWithoutExemptions = CategoryAssessment(
-    id = "assessmentId",
-    category = 1,
-    exemptions = Seq.empty, // ✅ Important: no exemptions
-    themeDescription = "Test theme",
-    regulationUrl = None
-  )
-
   private val traderProfileWithAuthorisation =
     TraderProfile("actorId", "ukims number", Some("NIPHL"), Some("NIRMS"), eoriChanged = false)
   private val autoCategorisationService      =
@@ -117,6 +109,7 @@ class AutoCategoriseServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
   )
 
   "autoCategoriseRecord(recordId, userAnswers)" - {
+
     "return None when the record is already categorised" in {
       val categorisationInfo: CategorisationInfo = CategorisationInfo(
         commodityCode = "1234567890",
@@ -166,11 +159,19 @@ class AutoCategoriseServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
     }
 
     "return the scenario if update completed" in {
-      val categorisationInfo = CategorisationInfo(
+      val categoryAssessment = CategoryAssessment(
+        id = "assessmentId",
+        category = 1,
+        exemptions = Seq.empty,
+        themeDescription = "some theme",
+        None
+      )
+
+      val categorisationInfo: CategorisationInfo = CategorisationInfo(
         commodityCode = "1234567890",
         countryOfOrigin = "GB",
         comcodeEffectiveToDate = None,
-        categoryAssessments = Seq(categoryAssessmentWithoutExemptions),
+        categoryAssessments = Seq(categoryAssessment), // <-- must not be empty!
         categoryAssessmentsThatNeedAnswers = Seq.empty,
         measurementUnit = None,
         descendantCount = 0
@@ -246,11 +247,19 @@ class AutoCategoriseServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
     }
 
     "return the scenario if update completed" in {
-      val categorisationInfo = CategorisationInfo(
+      val categoryAssessment = CategoryAssessment(
+        id = "assessmentId",
+        category = 1,
+        exemptions = Seq.empty,
+        themeDescription = "some theme",
+        None
+      )
+
+      val categorisationInfo: CategorisationInfo = CategorisationInfo(
         commodityCode = "1234567890",
         countryOfOrigin = "GB",
         comcodeEffectiveToDate = None,
-        categoryAssessments = Seq(categoryAssessmentWithoutExemptions),
+        categoryAssessments = Seq(categoryAssessment),
         categoryAssessmentsThatNeedAnswers = Seq.empty,
         measurementUnit = None,
         descendantCount = 0

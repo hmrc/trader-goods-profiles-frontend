@@ -311,5 +311,145 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar with Be
         redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
       }
     }
+
+    "must return OK and the correct view when product reference is missing in user answers but connector returns record" in {
+      when(mockAuditService.auditStartRemoveGoodsRecord(any(), any(), any())(any())).thenReturn(Future.successful(Done))
+      when(mockConnector.getRecord(eqTo(testRecordId))(any())).thenReturn(Future.successful(testRecord))
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)) // no productRef in userAnswers
+        .overrides(
+          bind[GoodsRecordConnector].toInstance(mockConnector),
+          bind[AuditService].toInstance(mockAuditService)
+        )
+        .build()
+
+      running(application) {
+        val request = FakeRequest(GET, removeGoodsRecordRoute)
+        val result  = route(application, request).value
+        val view    = application.injector.instanceOf[RemoveGoodsRecordView]
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(form, testRecordId, GoodsRecordLocation, testRecord.traderRef)(
+          request,
+          messages(application)
+        ).toString
+        verify(mockAuditService).auditStartRemoveGoodsRecord(any(), any(), any())(any())
+      }
+    }
+
+    "must redirect to Journey Recovery when product reference missing and getRecord fails" in {
+      when(mockAuditService.auditStartRemoveGoodsRecord(any(), any(), any())(any())).thenReturn(Future.successful(Done))
+      when(mockConnector.getRecord(eqTo(testRecordId))(any()))
+        .thenReturn(Future.failed(new RuntimeException("Connector failure")))
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[GoodsRecordConnector].toInstance(mockConnector),
+          bind[AuditService].toInstance(mockAuditService)
+        )
+        .build()
+
+      running(application) {
+        val request = FakeRequest(GET, removeGoodsRecordRoute)
+        val result  = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
+        verify(mockAuditService).auditStartRemoveGoodsRecord(any(), any(), any())(any())
+      }
+    }
+
+    "must redirect to RecordNotFoundController when removeGoodsRecord returns 404 UpstreamErrorResponse" in {
+      when(mockConnector.getRecord(eqTo(testRecordId))(any())).thenReturn(Future.successful(testRecord))
+      when(mockConnector.removeGoodsRecord(eqTo(testRecordId))(any()))
+        .thenReturn(Future.failed(UpstreamErrorResponse("Not Found", 404)))
+
+      val application = applicationBuilder(userAnswers = Some(userAnswersWithProductRef))
+        .overrides(
+          bind[GoodsProfileNavigator].toInstance(new FakeGoodsProfileNavigator(onwardRoute)),
+          bind[GoodsRecordConnector].toInstance(mockConnector),
+          bind[AuditService].toInstance(mockAuditService)
+        )
+        .build()
+
+      running(application) {
+        val request = FakeRequest(POST, removeGoodsRecordRoute).withFormUrlEncodedBody(("value", "true"))
+        val result  = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.problem.routes.RecordNotFoundController.onPageLoad().url
+
+        verify(mockConnector).removeGoodsRecord(eqTo(testRecordId))(any())
+      }
+    }
+
+    "must redirect to JourneyRecoveryController on removeGoodsRecord exception other than 404" in {
+      when(mockConnector.getRecord(eqTo(testRecordId))(any())).thenReturn(Future.successful(testRecord))
+      when(mockConnector.removeGoodsRecord(eqTo(testRecordId))(any()))
+        .thenReturn(Future.failed(new RuntimeException("Unexpected error")))
+
+      val application = applicationBuilder(userAnswers = Some(userAnswersWithProductRef))
+        .overrides(
+          bind[GoodsRecordConnector].toInstance(mockConnector),
+          bind[AuditService].toInstance(mockAuditService),
+          bind[GoodsProfileNavigator].toInstance(new FakeGoodsProfileNavigator(onwardRoute))
+        )
+        .build()
+
+      running(application) {
+        val request = FakeRequest(POST, removeGoodsRecordRoute).withFormUrlEncodedBody(("value", "true"))
+        val result  = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
+        verify(mockConnector).removeGoodsRecord(eqTo(testRecordId))(any())
+      }
+    }
+
+    "must redirect to SingleRecordController when No is submitted and location is not GoodsProfileLocation" in {
+      when(mockConnector.getRecord(eqTo(testRecordId))(any())).thenReturn(Future.successful(testRecord))
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[GoodsProfileNavigator].toInstance(new FakeGoodsProfileNavigator(onwardRoute)),
+          bind[GoodsRecordConnector].toInstance(mockConnector)
+        )
+        .build()
+
+      val location = GoodsRecordLocation // non-GoodsProfileLocation location
+      val request  = FakeRequest(POST, routes.RemoveGoodsRecordController.onSubmit(testRecordId, location).url)
+        .withFormUrlEncodedBody(("value", "false"))
+
+      running(application) {
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.goodsRecord.routes.SingleRecordController
+          .onPageLoad(testRecordId)
+          .url
+
+        verify(mockConnector, never()).removeGoodsRecord(any())(any())
+      }
+    }
+
+    "must redirect to Journey Recovery for POST if getRecord fails when productRef is missing" in {
+      when(mockConnector.getRecord(eqTo(testRecordId))(any()))
+        .thenReturn(Future.failed(new RuntimeException("DB failure")))
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[GoodsRecordConnector].toInstance(mockConnector),
+          bind[AuditService].toInstance(mockAuditService)
+        )
+        .build()
+
+      running(application) {
+        val request = FakeRequest(POST, removeGoodsRecordRoute).withFormUrlEncodedBody(("value", "true"))
+        val result  = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
   }
 }

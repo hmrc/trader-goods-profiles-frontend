@@ -16,11 +16,35 @@
 
 package models.ott.response
 
+import base.TestConstants.NiphlCode
+import models.ott.{Certificate, OtherExemption}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import play.api.libs.json.{JsSuccess, Json}
 
+import java.time.Instant
+
 class CategoryAssessmentResponseSpec extends AnyFreeSpec with Matchers {
+
+  val niphlExemption = Certificate("niphlId", NiphlCode, "Some Niphl Description")
+  val nirmsExemption = Certificate("nirmsId", "NIRMS", "Some Nirms Description")
+  val otherExemption = OtherExemption("otherId", "OTHER", "Other description")
+
+  val validOttResponse = OttResponse(
+    goodsNomenclature = GoodsNomenclatureResponse("id", "code", None, Instant.EPOCH, None, List()),
+    categoryAssessmentRelationships = Seq(CategoryAssessmentRelationship("assessment1")),
+    includedElements = Seq(
+      CategoryAssessmentResponse(
+        id = "assessment1",
+        themeId = "theme1",
+        exemptions = Seq(ExemptionResponse("exemption1", models.ott.response.ExemptionType.Certificate)),
+        regulationId = "reg1"
+      ),
+      ThemeResponse(id = "theme1", category = 1, theme = "Theme 1 Description"),
+      CertificateResponse(id = "exemption1", code = NiphlCode, description = "NIPHL exemption")
+    ),
+    descendents = Seq.empty
+  )
 
   ".reads" - {
 
