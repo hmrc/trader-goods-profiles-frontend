@@ -78,6 +78,14 @@ class AutoCategoriseServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
     Instant.now()
   )
 
+  private val categoryAssessmentWithoutExemptions = CategoryAssessment(
+    id = "assessmentId",
+    category = 1,
+    exemptions = Seq.empty, // ✅ Important: no exemptions
+    themeDescription = "Test theme",
+    regulationUrl = None
+  )
+
   private val traderProfileWithAuthorisation =
     TraderProfile("actorId", "ukims number", Some("NIPHL"), Some("NIRMS"), eoriChanged = false)
   private val autoCategorisationService      =
@@ -158,11 +166,11 @@ class AutoCategoriseServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
     }
 
     "return the scenario if update completed" in {
-      val categorisationInfo: CategorisationInfo = CategorisationInfo(
+      val categorisationInfo = CategorisationInfo(
         commodityCode = "1234567890",
         countryOfOrigin = "GB",
         comcodeEffectiveToDate = None,
-        categoryAssessments = Seq.empty,
+        categoryAssessments = Seq(categoryAssessmentWithoutExemptions),
         categoryAssessmentsThatNeedAnswers = Seq.empty,
         measurementUnit = None,
         descendantCount = 0
@@ -238,11 +246,11 @@ class AutoCategoriseServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
     }
 
     "return the scenario if update completed" in {
-      val categorisationInfo: CategorisationInfo = CategorisationInfo(
+      val categorisationInfo = CategorisationInfo(
         commodityCode = "1234567890",
         countryOfOrigin = "GB",
         comcodeEffectiveToDate = None,
-        categoryAssessments = Seq.empty,
+        categoryAssessments = Seq(categoryAssessmentWithoutExemptions),
         categoryAssessmentsThatNeedAnswers = Seq.empty,
         measurementUnit = None,
         descendantCount = 0
