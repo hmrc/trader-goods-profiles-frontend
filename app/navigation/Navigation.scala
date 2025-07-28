@@ -127,13 +127,6 @@ class Navigation @Inject() (categorisationService: CategorisationService) extend
       controllers.problem.routes.JourneyRecoveryController.onPageLoad()
     )
 
-  private def getShortenedCommodityCode(commodity: Commodity) =
-    commodity.commodityCode.reverse
-      .dropWhile(char => char == '0')
-      .reverse
-      .padTo(minimumLengthOfCommodityCode, '0')
-      .mkString
-
   private def shouldGoToSupplementaryUnitFromPrepPage(catInfo: CategorisationInfo, scenario: Scenario) =
     catInfo.measurementUnit.isDefined && getResultAsInt(scenario) == Category2AsInt
 

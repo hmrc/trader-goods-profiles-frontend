@@ -109,6 +109,7 @@ class AutoCategoriseServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
   )
 
   "autoCategoriseRecord(recordId, userAnswers)" - {
+
     "return None when the record is already categorised" in {
       val categorisationInfo: CategorisationInfo = CategorisationInfo(
         commodityCode = "1234567890",
@@ -158,11 +159,19 @@ class AutoCategoriseServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
     }
 
     "return the scenario if update completed" in {
+      val categoryAssessment = CategoryAssessment(
+        id = "assessmentId",
+        category = 1,
+        exemptions = Seq.empty,
+        themeDescription = "some theme",
+        None
+      )
+
       val categorisationInfo: CategorisationInfo = CategorisationInfo(
         commodityCode = "1234567890",
         countryOfOrigin = "GB",
         comcodeEffectiveToDate = None,
-        categoryAssessments = Seq.empty,
+        categoryAssessments = Seq(categoryAssessment), // <-- must not be empty!
         categoryAssessmentsThatNeedAnswers = Seq.empty,
         measurementUnit = None,
         descendantCount = 0
@@ -238,11 +247,19 @@ class AutoCategoriseServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
     }
 
     "return the scenario if update completed" in {
+      val categoryAssessment = CategoryAssessment(
+        id = "assessmentId",
+        category = 1,
+        exemptions = Seq.empty,
+        themeDescription = "some theme",
+        None
+      )
+
       val categorisationInfo: CategorisationInfo = CategorisationInfo(
         commodityCode = "1234567890",
         countryOfOrigin = "GB",
         comcodeEffectiveToDate = None,
-        categoryAssessments = Seq.empty,
+        categoryAssessments = Seq(categoryAssessment),
         categoryAssessmentsThatNeedAnswers = Seq.empty,
         measurementUnit = None,
         descendantCount = 0
