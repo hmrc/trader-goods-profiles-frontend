@@ -18,7 +18,6 @@ package repositories
 
 import config.FrontendAppConfig
 import models.{Country, CountryCodeCache}
-import org.mongodb.scala.SingleObservableFuture
 import org.mongodb.scala.model.*
 import play.api.libs.json.Format
 import uk.gov.hmrc.mongo.MongoComponent
