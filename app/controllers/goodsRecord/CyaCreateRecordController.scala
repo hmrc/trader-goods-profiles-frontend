@@ -92,7 +92,6 @@ class CyaCreateRecordController @Inject() (
     implicit request =>
       GoodsRecord.build(request.userAnswers, request.eori) match {
         case Right(model) =>
-          // Extract category record from userAnswers
           val categoryRecordOpt = CategoryRecord
             .build(request.userAnswers, request.eori, request.userAnswers.id, categorisationService)
             .toOption
