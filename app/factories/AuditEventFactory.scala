@@ -20,14 +20,14 @@ import models.audits.*
 import models.helper.{CategorisationUpdate, GoodsDetailsUpdate, Journey, SupplementaryUnitUpdate, UpdateSection}
 import models.ott.CategorisationInfo
 import models.ott.response.OttResponse
-import models.{AdviceRequest, CategoryRecord, GoodsRecord, Scenario, SearchForm, SupplementaryRequest, TraderProfile, UpdateGoodsRecord}
+import models._
 import play.api.http.Status.OK
 import play.api.libs.json.Json
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.AuditExtensions.auditHeaderCarrier
 import uk.gov.hmrc.play.audit.model.{DataEvent, ExtendedDataEvent}
-import utils.Constants.{StandardGoodsAsInt, commodityCodeKey, countryOfOriginKey, goodsDescriptionKey, productReferenceKey}
+import utils.Constants._
 import utils.HttpStatusCodeDescriptions.codeDescriptions
 
 import java.time.Instant
@@ -95,7 +95,6 @@ case class AuditEventFactory() {
       writeOptional(commodityCodeKey, commodity.map(_.commodityCode)) ++
       writeOptional(countryOfOriginKey, commodity.map(_.countryOfOrigin)) ++
       writeOptional("descendants", commodity.map(_.descendantCount.toString)) ++
-      // How many pages COULD be shown to the user
       writeOptional("categoryAssessments", commodity.map(_.categoryAssessmentsThatNeedAnswers.size.toString))
 
     DataEvent(
@@ -107,20 +106,14 @@ case class AuditEventFactory() {
 
   }
 
-  /*All autocategorised goods will be 'StandardGoodsAsInt'. Therefore, to maintain the performance of the audit below, the following val defines the category when autocategorisation
-  is applied will be StandardGoodsAsInt. If not applied it'll be an empty string (no category yet).*/
-  private val autoCategory: String = if (CategorisationUpdate.toString.isEmpty) {
-    ""
-  } else {
-    StandardGoodsAsInt.toString
-  }
-
   def createSubmitGoodsRecordEventForCreateRecord(
     affinityGroup: AffinityGroup,
     journey: Journey,
-    goodsRecord: GoodsRecord
+    goodsRecord: GoodsRecord,
+    categoryRecordOpt: Option[CategoryRecord] = None
   )(implicit hc: HeaderCarrier): DataEvent = {
-    val auditDetails = Map(
+
+    val baseAuditDetails = Map(
       "eori"                       -> goodsRecord.eori,
       "affinityGroup"              -> affinityGroup.toString,
       "journey"                    -> journey.toString,
@@ -134,10 +127,20 @@ case class AuditEventFactory() {
       commodityCodeKey             -> goodsRecord.commodity.commodityCode,
       "commodityDescription"       -> goodsRecord.commodity.descriptions.headOption.getOrElse("null"),
       "commodityCodeEffectiveFrom" -> goodsRecord.commodity.validityStartDate.toString,
-      "commodityCodeEffectiveTo"   -> goodsRecord.commodity.validityEndDate.map(_.toString).getOrElse("null"),
-      "updateSection"              -> CategorisationUpdate.toString,
-      "category"                   -> autoCategory
+      "commodityCodeEffectiveTo"   -> goodsRecord.commodity.validityEndDate.map(_.toString).getOrElse("null")
     )
+
+    val categoryAuditDetails = categoryRecordOpt match {
+      case Some(categoryRecord) =>
+        Map(
+          "category"      -> Scenario.getResultAsInt(categoryRecord.category).toString,
+          "updateSection" -> CategorisationUpdate.toString
+        )
+      case None                 =>
+        Map.empty[String, String]
+    }
+
+    val auditDetails = baseAuditDetails ++ categoryAuditDetails
 
     createSubmitGoodsRecordEvent(auditDetails)
   }

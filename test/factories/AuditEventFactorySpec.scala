@@ -18,20 +18,34 @@ package factories
 
 import base.SpecBase
 import base.TestConstants.{testEori, testRecordId}
-import models.audits._
-import models.helper.{CategorisationUpdate, CreateRecordJourney, RequestAdviceJourney, UpdateRecordJourney}
-import models.ott.response._
-import models._
+import models.audits.*
+import models.helper.*
+import models.ott.response.*
+import models.*
 import play.api.http.Status.{NOT_FOUND, OK}
 import play.api.libs.json.Json
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.Constants.{commodityCodeKey, countryOfOriginKey, goodsDescriptionKey, productReferenceKey}
+import utils.Constants.*
 
 import java.time.{Instant, LocalDate}
 
 class AuditEventFactorySpec extends SpecBase {
   implicit private lazy val hc: HeaderCarrier = HeaderCarrier()
+  val categoryRecord: CategoryRecord          = CategoryRecord(
+    eori = "testEori",
+    recordId = "record-1",
+    finalComCode = "1234567890",
+    category = StandardGoodsScenario,
+    measurementUnit = Some("KG"),
+    supplementaryUnit = None,
+    initialCategoryInfo = categorisationInfo,
+    assessmentsAnswered = 1,
+    wasSupplementaryUnitAsked = false,
+    longerCategoryInfo = None,
+    longerAssessmentsAnswered = None,
+    answersCopiedOverFromShortToLong = None
+  )
 
   "audit event factory" - {
 
@@ -177,7 +191,7 @@ class AuditEventFactorySpec extends SpecBase {
           result.tags.isEmpty mustBe false
 
           val auditDetails = result.detail
-          auditDetails.size mustBe 12
+          auditDetails.size mustBe 10
           auditDetails("journey") mustBe "CreateRecord"
           auditDetails("eori") mustBe testEori
           auditDetails("affinityGroup") mustBe "Organisation"
@@ -222,7 +236,7 @@ class AuditEventFactorySpec extends SpecBase {
           result.tags.isEmpty mustBe false
 
           val auditDetails = result.detail
-          auditDetails.size mustBe 12
+          auditDetails.size mustBe 10
           auditDetails("journey") mustBe "CreateRecord"
           auditDetails("eori") mustBe testEori
           auditDetails("affinityGroup") mustBe "Organisation"
@@ -1056,5 +1070,62 @@ class AuditEventFactorySpec extends SpecBase {
       auditDetails("outboundLinkText") mustBe "linkText"
       auditDetails("outboundClickPage") mustBe "outboundClickPage"
     }
+
+    "createSubmitGoodsRecordEventForCreateRecord" - {
+
+      "includes category audit details when categoryRecordOpt is Some" in {
+        val affinityGroup = AffinityGroup.Individual
+        val journey       = CreateRecordJourney
+
+        val goodsRecord = GoodsRecord(
+          eori = testEori,
+          traderRef = "product reference",
+          commodity = testCommodity,
+          goodsDescription = "goods description",
+          countryOfOrigin = "PF"
+        )
+
+        val result = AuditEventFactory().createSubmitGoodsRecordEventForCreateRecord(
+          affinityGroup,
+          journey,
+          goodsRecord,
+          Some(categoryRecord)
+        )
+
+        val details = result.detail
+
+        details must contain key "category"
+        details("category") mustBe Scenario.getResultAsInt(categoryRecord.category).toString
+
+        details must contain key "updateSection"
+        details("updateSection") mustBe CategorisationUpdate.toString
+      }
+
+      "does not include category audit details when categoryRecordOpt is None" in {
+        val affinityGroup = AffinityGroup.Individual
+        val journey       = CreateRecordJourney
+
+        val goodsRecord = GoodsRecord(
+          eori = testEori,
+          traderRef = "product reference",
+          commodity = testCommodity,
+          goodsDescription = "goods description",
+          countryOfOrigin = "PF"
+        )
+
+        val result = AuditEventFactory().createSubmitGoodsRecordEventForCreateRecord(
+          affinityGroup,
+          journey,
+          goodsRecord,
+          None
+        )
+
+        val details = result.detail
+
+        details must not contain key("category")
+        details must not contain key("updateSection")
+      }
+    }
+
   }
 }
