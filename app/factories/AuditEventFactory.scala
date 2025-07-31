@@ -95,7 +95,6 @@ case class AuditEventFactory() {
       writeOptional(commodityCodeKey, commodity.map(_.commodityCode)) ++
       writeOptional(countryOfOriginKey, commodity.map(_.countryOfOrigin)) ++
       writeOptional("descendants", commodity.map(_.descendantCount.toString)) ++
-      // How many pages COULD be shown to the user
       writeOptional("categoryAssessments", commodity.map(_.categoryAssessmentsThatNeedAnswers.size.toString))
 
     DataEvent(
@@ -110,9 +109,11 @@ case class AuditEventFactory() {
   def createSubmitGoodsRecordEventForCreateRecord(
     affinityGroup: AffinityGroup,
     journey: Journey,
-    goodsRecord: GoodsRecord
+    goodsRecord: GoodsRecord,
+    categoryRecordOpt: Option[CategoryRecord] = None
   )(implicit hc: HeaderCarrier): DataEvent = {
-    val auditDetails = Map(
+
+    val baseAuditDetails = Map(
       "eori"                       -> goodsRecord.eori,
       "affinityGroup"              -> affinityGroup.toString,
       "journey"                    -> journey.toString,
@@ -128,6 +129,18 @@ case class AuditEventFactory() {
       "commodityCodeEffectiveFrom" -> goodsRecord.commodity.validityStartDate.toString,
       "commodityCodeEffectiveTo"   -> goodsRecord.commodity.validityEndDate.map(_.toString).getOrElse("null")
     )
+
+    val categoryAuditDetails = categoryRecordOpt match {
+      case Some(categoryRecord) =>
+        Map(
+          "category"      -> Scenario.getResultAsInt(categoryRecord.category).toString,
+          "updateSection" -> CategorisationUpdate.toString
+        )
+      case None                 =>
+        Map.empty[String, String]
+    }
+
+    val auditDetails = baseAuditDetails ++ categoryAuditDetails
 
     createSubmitGoodsRecordEvent(auditDetails)
   }

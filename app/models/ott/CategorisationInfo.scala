@@ -18,7 +18,7 @@ package models.ott
 
 import cats.implicits.toTraverseOps
 import models.ott.response.OttResponse
-import models.{AnsweredQuestions, TraderProfile, UserAnswers}
+import models._
 import pages.categorisation.{AssessmentPage, ReassessmentPage}
 import play.api.libs.json.{Json, OFormat}
 import utils.Constants.minimumLengthOfCommodityCode

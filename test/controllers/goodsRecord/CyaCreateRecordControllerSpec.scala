@@ -20,7 +20,7 @@ import base.SpecBase
 import base.TestConstants.testEori
 import connectors.{GoodsRecordConnector, OttConnector}
 import models.helper.CreateRecordJourney
-import models.{Country, GoodsRecord, UserAnswers}
+import models.{CategoryRecord, Country, GoodsRecord, UserAnswers}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{atLeastOnce, never, verify, when}
@@ -28,7 +28,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import play.api.Application
 import play.api.inject.bind
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import queries.CountriesQuery
 import repositories.SessionRepository
 import services.AuditService
@@ -155,7 +155,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             .thenReturn(Future.successful("test"))
 
           val mockAuditService  = mock[AuditService]
-          when(mockAuditService.auditFinishCreateGoodsRecord(any(), any(), any())(any()))
+          when(mockAuditService.auditFinishCreateGoodsRecord(any(), any(), any(), any())(any()))
             .thenReturn(Future.successful(Done))
           val sessionRepository = mock[SessionRepository]
           when(sessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
@@ -186,7 +186,12 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
             withClue("must call the audit connector with the supplied details") {
               verify(mockAuditService, atLeastOnce())
-                .auditFinishCreateGoodsRecord(eqTo(testEori), eqTo(AffinityGroup.Individual), eqTo(userAnswers))(any())
+                .auditFinishCreateGoodsRecord(
+                  eqTo(testEori),
+                  eqTo(AffinityGroup.Individual),
+                  eqTo(userAnswers),
+                  any[Option[CategoryRecord]]
+                )(any())
             }
             withClue("must cleanse the user answers data") {
               verify(sessionRepository, atLeastOnce()).clearData(eqTo(userAnswers.id), eqTo(CreateRecordJourney))
@@ -221,7 +226,8 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             verify(mockConnector, never()).submitGoodsRecord(any())(any())
 
             withClue("must not try and submit an audit") {
-              verify(mockAuditService, never()).auditFinishCreateGoodsRecord(any(), any(), any())(any())
+              when(mockAuditService.auditFinishCreateGoodsRecord(any(), any(), any(), any())(any()))
+                .thenReturn(Future.successful(Done))
             }
             withClue("must cleanse the user answers data") {
               verify(sessionRepository).clearData(eqTo(emptyUserAnswers.id), eqTo(CreateRecordJourney))
@@ -257,7 +263,12 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           }
           withClue("must call the audit connector with the supplied details") {
             verify(mockAuditService)
-              .auditFinishCreateGoodsRecord(eqTo(testEori), eqTo(AffinityGroup.Individual), eqTo(userAnswers))(any())
+              .auditFinishCreateGoodsRecord(
+                eqTo(testEori),
+                eqTo(AffinityGroup.Individual),
+                eqTo(userAnswers),
+                any[Option[CategoryRecord]]
+              )(any())
           }
           withClue("must not cleanse the user answers data when connector fails") {
             verify(sessionRepository, never()).clearData(eqTo(userAnswers.id), eqTo(CreateRecordJourney))

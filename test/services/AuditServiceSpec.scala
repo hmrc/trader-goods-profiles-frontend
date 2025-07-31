@@ -181,16 +181,20 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
   }
 
   "auditFinishCreateGoodsRecord" - {
+
     "return Done when built up an audit event and submitted it" in {
       when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
 
       val fakeAuditEvent = DataEvent("source", "type")
-      when(mockAuditFactory.createSubmitGoodsRecordEventForCreateRecord(any(), any(), any())(any()))
+      when(mockAuditFactory.createSubmitGoodsRecordEventForCreateRecord(any(), any(), any(), any())(any()))
         .thenReturn(fakeAuditEvent)
 
       val userAnswers         = generateUserAnswersForFinishCreateGoodsTest
       val expectedGoodsRecord = GoodsRecord(testEori, "product reference", testCommodity, "goods description", "PF")
-      val result              = await(auditService.auditFinishCreateGoodsRecord(testEori, AffinityGroup.Individual, userAnswers))
+
+      val result = await(
+        auditService.auditFinishCreateGoodsRecord(testEori, AffinityGroup.Individual, userAnswers, None)
+      )
 
       result mustBe Done
 
@@ -199,7 +203,8 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
           .createSubmitGoodsRecordEventForCreateRecord(
             eqTo(AffinityGroup.Individual),
             eqTo(CreateRecordJourney),
-            eqTo(expectedGoodsRecord)
+            eqTo(expectedGoodsRecord),
+            eqTo(None)
           )(any())
       }
 
@@ -213,12 +218,15 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(auditFailure))
 
       val fakeAuditEvent = DataEvent("source", "type")
-      when(mockAuditFactory.createSubmitGoodsRecordEventForCreateRecord(any(), any(), any())(any()))
+      when(mockAuditFactory.createSubmitGoodsRecordEventForCreateRecord(any(), any(), any(), any())(any()))
         .thenReturn(fakeAuditEvent)
 
       val userAnswers         = generateUserAnswersForFinishCreateGoodsTest
       val expectedGoodsRecord = GoodsRecord(testEori, "product reference", testCommodity, "goods description", "PF")
-      val result              = await(auditService.auditFinishCreateGoodsRecord(testEori, AffinityGroup.Individual, userAnswers))
+
+      val result = await(
+        auditService.auditFinishCreateGoodsRecord(testEori, AffinityGroup.Individual, userAnswers, None)
+      )
 
       result mustBe Done
 
@@ -227,7 +235,8 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
           .createSubmitGoodsRecordEventForCreateRecord(
             eqTo(AffinityGroup.Individual),
             eqTo(CreateRecordJourney),
-            eqTo(expectedGoodsRecord)
+            eqTo(expectedGoodsRecord),
+            eqTo(None)
           )(any())
       }
 
@@ -245,7 +254,8 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
           auditService.auditFinishCreateGoodsRecord(
             testEori,
             AffinityGroup.Individual,
-            generateUserAnswersForFinishCreateGoodsTest
+            generateUserAnswersForFinishCreateGoodsTest,
+            None
           )
         )
       }
@@ -253,16 +263,18 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
 
     "return Done when user answers are not sufficient to generate event" in {
       val userAnswers = emptyUserAnswers
-      val result      = await(auditService.auditFinishCreateGoodsRecord(testEori, AffinityGroup.Individual, userAnswers))
+      val result      = await(
+        auditService.auditFinishCreateGoodsRecord(testEori, AffinityGroup.Individual, userAnswers, None)
+      )
 
       result mustBe Done
 
       withClue("Should not have tried to create the event as the details were invalid") {
-        verify(mockAuditFactory, never()).createSubmitGoodsRecordEventForCreateRecord(any, any, any)(any())
+        verify(mockAuditFactory, never()).createSubmitGoodsRecordEventForCreateRecord(any(), any(), any(), any())(any())
       }
 
       withClue("Should not have tried to submit an event to the audit connector") {
-        verify(mockAuditConnector, never()).sendEvent(any)(any(), any())
+        verify(mockAuditConnector, never()).sendEvent(any())(any(), any())
       }
     }
   }

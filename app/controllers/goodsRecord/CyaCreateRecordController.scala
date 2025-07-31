@@ -23,14 +23,14 @@ import controllers.BaseController
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
 import models.helper.CreateRecordJourney
 import models.requests.DataRequest
-import models.{Country, GoodsRecord, NormalMode, UserAnswers, ValidationError}
+import models.{CategoryRecord, Country, GoodsRecord, NormalMode, UserAnswers, ValidationError}
 import navigation.GoodsRecordNavigator
 import pages.goodsRecord.CyaCreateRecordPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.*
 import queries.CountriesQuery
 import repositories.SessionRepository
-import services.{AuditService, DataCleansingService}
+import services.{AuditService, CategorisationService, DataCleansingService}
 import viewmodels.checkAnswers.goodsRecord.{CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, ProductReferenceSummary}
 import viewmodels.govuk.summarylist.*
 import views.html.goodsRecord.CyaCreateRecordView
@@ -49,6 +49,7 @@ class CyaCreateRecordController @Inject() (
   goodsRecordConnector: GoodsRecordConnector,
   ottConnector: OttConnector,
   dataCleansingService: DataCleansingService,
+  categorisationService: CategorisationService,
   sessionRepository: SessionRepository,
   auditService: AuditService,
   navigator: GoodsRecordNavigator
@@ -91,7 +92,17 @@ class CyaCreateRecordController @Inject() (
     implicit request =>
       GoodsRecord.build(request.userAnswers, request.eori) match {
         case Right(model) =>
-          auditService.auditFinishCreateGoodsRecord(request.eori, request.affinityGroup, request.userAnswers)
+          // Extract category record from userAnswers
+          val categoryRecordOpt = CategoryRecord
+            .build(request.userAnswers, request.eori, request.userAnswers.id, categorisationService)
+            .toOption
+
+          auditService.auditFinishCreateGoodsRecord(
+            request.eori,
+            request.affinityGroup,
+            request.userAnswers,
+            categoryRecordOpt
+          )
           for {
             recordId <- goodsRecordConnector.submitGoodsRecord(model)
             _        <- dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
