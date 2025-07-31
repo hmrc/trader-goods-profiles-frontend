@@ -32,7 +32,7 @@ import java.time.{Instant, LocalDate}
 
 class AuditEventFactorySpec extends SpecBase {
   implicit private lazy val hc: HeaderCarrier = HeaderCarrier()
-  val categoryRecord: CategoryRecord = CategoryRecord(
+  val categoryRecord: CategoryRecord          = CategoryRecord(
     eori = "testEori",
     recordId = "record-1",
     finalComCode = "1234567890",
