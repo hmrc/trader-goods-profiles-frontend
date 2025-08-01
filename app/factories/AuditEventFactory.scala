@@ -17,7 +17,7 @@
 package factories
 
 import models.audits.*
-import models.helper.{CategorisationUpdate, GoodsDetailsUpdate, Journey, SupplementaryUnitUpdate, UpdateSection}
+import models.helper._
 import models.ott.CategorisationInfo
 import models.ott.response.OttResponse
 import models._

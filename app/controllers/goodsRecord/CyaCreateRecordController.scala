@@ -20,10 +20,10 @@ import cats.data.NonEmptyChain
 import com.google.inject.Inject
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.BaseController
-import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
+import controllers.actions.*
 import models.helper.CreateRecordJourney
 import models.requests.DataRequest
-import models.{CategoryRecord, Country, GoodsRecord, NormalMode, UserAnswers, ValidationError}
+import models.*
 import navigation.GoodsRecordNavigator
 import pages.goodsRecord.CyaCreateRecordPage
 import play.api.i18n.MessagesApi
@@ -31,8 +31,8 @@ import play.api.mvc.*
 import queries.CountriesQuery
 import repositories.SessionRepository
 import services.{AuditService, CategorisationService, DataCleansingService}
-import viewmodels.checkAnswers.goodsRecord.{CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, ProductReferenceSummary}
-import viewmodels.govuk.summarylist.*
+import viewmodels.checkAnswers.goodsRecord.*
+import viewmodels.govuk.all.SummaryListViewModel
 import views.html.goodsRecord.CyaCreateRecordView
 
 import scala.annotation.unused
@@ -88,28 +88,28 @@ class CyaCreateRecordController @Inject() (
     Ok(view(list))
   }
 
-  def onSubmit(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData).async {
-    implicit request =>
+  def onSubmit(): Action[AnyContent] =
+    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       GoodsRecord.build(request.userAnswers, request.eori) match {
         case Right(model) =>
-          val categoryRecordOpt = CategoryRecord
-            .build(request.userAnswers, request.eori, request.userAnswers.id, categorisationService)
-            .toOption
-
-          auditService.auditFinishCreateGoodsRecord(
-            request.eori,
-            request.affinityGroup,
-            request.userAnswers,
-            categoryRecordOpt
-          )
           for {
-            recordId <- goodsRecordConnector.submitGoodsRecord(model)
-            _        <- dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
+            recordId         <- goodsRecordConnector.submitGoodsRecord(model)
+            categoryRecordOpt = CategoryRecord
+                                  .build(request.userAnswers, request.eori, recordId, categorisationService)
+                                  .toOption
+            _                <- auditService.auditFinishCreateGoodsRecord(
+                                  request.eori,
+                                  request.affinityGroup,
+                                  request.userAnswers,
+                                  categoryRecordOpt
+                                )
+            _                <- dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
           } yield Redirect(navigator.nextPage(CyaCreateRecordPage(recordId), NormalMode, request.userAnswers))
+
         case Left(errors) =>
           handleBuildErrors(request, errors)
       }
-  }
+    }
 
   private def handleBuildErrors(request: DataRequest[AnyContent], errors: NonEmptyChain[ValidationError]) = {
     dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)

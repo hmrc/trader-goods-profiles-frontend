@@ -18,11 +18,11 @@ package services
 
 import com.google.inject.Inject
 import factories.AuditEventFactory
-import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, OttAuditData}
+import models.audits._
 import models.helper._
 import models.ott.CategorisationInfo
 import models.ott.response.OttResponse
-import models.{AdviceRequest, CategoryRecord, GoodsRecord, SearchForm, SupplementaryRequest, TraderProfile, UpdateGoodsRecord, UserAnswers}
+import models._
 import org.apache.pekko.Done
 import play.api.Logging
 import uk.gov.hmrc.auth.core.AffinityGroup

@@ -35,7 +35,7 @@ import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import viewmodels.checkAnswers.goodsRecord.{CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, ProductReferenceSummary}
+import viewmodels.checkAnswers.goodsRecord._
 import viewmodels.govuk.SummaryListFluency
 import views.html.goodsRecord.CyaCreateRecordView
 
@@ -261,16 +261,12 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           intercept[RuntimeException] {
             await(route(application, request).value)
           }
-          withClue("must call the audit connector with the supplied details") {
-            verify(mockAuditService)
-              .auditFinishCreateGoodsRecord(
-                eqTo(testEori),
-                eqTo(AffinityGroup.Individual),
-                eqTo(userAnswers),
-                any[Option[CategoryRecord]]
-              )(any())
+
+          withClue("must NOT call the audit connector when connector fails") {
+            verify(mockAuditService, never()).auditFinishCreateGoodsRecord(any(), any(), any(), any())(any())
           }
-          withClue("must not cleanse the user answers data when connector fails") {
+
+          withClue("must NOT cleanse the user answers data when connector fails") {
             verify(sessionRepository, never()).clearData(eqTo(userAnswers.id), eqTo(CreateRecordJourney))
           }
         }
