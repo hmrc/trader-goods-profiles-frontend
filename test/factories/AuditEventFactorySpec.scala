@@ -193,7 +193,7 @@ class AuditEventFactorySpec extends SpecBase {
           result.tags.isEmpty mustBe false
 
           val auditDetails = result.detail
-          auditDetails.size mustBe 11
+          auditDetails.size mustBe 10
           auditDetails("journey") mustBe "CreateRecord"
           auditDetails("eori") mustBe testEori
           auditDetails("affinityGroup") mustBe "Organisation"
@@ -240,7 +240,7 @@ class AuditEventFactorySpec extends SpecBase {
           result.tags.isEmpty mustBe false
 
           val auditDetails = result.detail
-          auditDetails.size mustBe 11
+          auditDetails.size mustBe 10
           auditDetails("journey") mustBe "CreateRecord"
           auditDetails("eori") mustBe testEori
           auditDetails("affinityGroup") mustBe "Organisation"

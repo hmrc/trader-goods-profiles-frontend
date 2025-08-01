@@ -131,21 +131,21 @@ case class AuditEventFactory() {
       "commodityCodeEffectiveTo"   -> goodsRecord.commodity.validityEndDate.map(_.toString).getOrElse("null")
     )
 
-    val categoryAuditDetails = categoryRecordOpt match {
-      case Some(categoryRecord) =>
-        Map(
-          "category"      -> Scenario.getResultAsInt(categoryRecord.category).toString,
-          "updateSection" -> CategorisationUpdate.toString
-        )
-      case None                 =>
-        Map.empty[String, String]
+    val categoryAuditDetails = if (isAutoCategorised) {
+      categoryRecordOpt match {
+        case Some(categoryRecord) =>
+          Map(
+            "category"      -> Scenario.getResultAsInt(categoryRecord.category).toString,
+            "updateSection" -> CategorisationUpdate.toString
+          )
+        case None                 =>
+          Map.empty[String, String]
+      }
+    } else {
+      Map.empty[String, String]
     }
 
-    val autoCategorisationAuditDetails = Map(
-      "isAutoCategorised" -> isAutoCategorised.toString
-    )
-
-    val auditDetails = baseAuditDetails ++ categoryAuditDetails ++ autoCategorisationAuditDetails
+    val auditDetails = baseAuditDetails ++ categoryAuditDetails
 
     createSubmitGoodsRecordEvent(auditDetails)
   }

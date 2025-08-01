@@ -96,15 +96,12 @@ class CyaCreateRecordController @Inject() (
           for {
             recordId <- goodsRecordConnector.submitGoodsRecord(model)
 
-            // Call autoCategoriseRecord to update session repository and category
             maybeScenario <- autoCategoriseService.autoCategoriseRecord(recordId, request.userAnswers)
 
-            // Now load updated UserAnswers from session repo (assumes it's stored there)
             updatedUserAnswersOpt <- sessionRepository.get(request.userAnswers.id)
 
             updatedUserAnswers = updatedUserAnswersOpt.getOrElse(request.userAnswers) // fallback to old if not found
 
-            // Build category record from updated answers
             categoryRecordOpt =
               CategoryRecord.build(updatedUserAnswers, request.eori, recordId, categorisationService).toOption
 
