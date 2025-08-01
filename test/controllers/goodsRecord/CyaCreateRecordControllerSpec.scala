@@ -17,10 +17,11 @@
 package controllers.goodsRecord
 
 import base.SpecBase
-import base.TestConstants.testEori
+import base.TestConstants.testRecordId
 import connectors.{GoodsRecordConnector, OttConnector}
 import models.helper.CreateRecordJourney
-import models.{CategoryRecord, Country, GoodsRecord, UserAnswers}
+import models.requests.DataRequest
+import models.{Country, UserAnswers}
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{atLeastOnce, never, verify, when}
@@ -31,13 +32,13 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import queries.CountriesQuery
 import repositories.SessionRepository
-import services.AuditService
-import uk.gov.hmrc.auth.core.AffinityGroup
+import services.{AuditService, AutoCategoriseService, DataCleansingService}
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import viewmodels.checkAnswers.goodsRecord._
+import viewmodels.checkAnswers.goodsRecord.*
 import viewmodels.govuk.SummaryListFluency
 import views.html.goodsRecord.CyaCreateRecordView
+import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
@@ -148,56 +149,68 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
 
     "for a POST" - {
       "when user answers can create a valid goods record" - {
+
         "must submit the goods record and redirect to the CreateRecordSuccessController and cleanse userAnswers" in {
-          val userAnswers   = mandatoryRecordUserAnswers
-          val mockConnector = mock[GoodsRecordConnector]
+          val userAnswers               = mandatoryRecordUserAnswers
+          val mockConnector             = mock[GoodsRecordConnector]
+          val mockAutoCategoriseService = mock[AutoCategoriseService]
+          val mockSessionRepository     = mock[SessionRepository]
+          val mockAuditService          = mock[AuditService]
+          val mockDataCleansingService  = mock[DataCleansingService]
+
           when(mockConnector.submitGoodsRecord(any())(any()))
-            .thenReturn(Future.successful("test"))
+            .thenReturn(Future.successful(testRecordId))
 
-          val mockAuditService  = mock[AuditService]
-          when(mockAuditService.auditFinishCreateGoodsRecord(any(), any(), any(), any())(any()))
+          when(
+            mockAutoCategoriseService.autoCategoriseRecord(
+              eqTo(testRecordId),
+              eqTo(userAnswers)
+            )(any[DataRequest[_]], any[HeaderCarrier])
+          ).thenReturn(Future.successful(None))
+
+          when(mockSessionRepository.get(eqTo(userAnswers.id)))
+            .thenReturn(Future.successful(Some(userAnswers)))
+
+          when(mockAuditService.auditFinishCreateGoodsRecord(any(), any(), any(), any(), any())(any()))
             .thenReturn(Future.successful(Done))
-          val sessionRepository = mock[SessionRepository]
-          when(sessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
 
-          val application =
-            applicationBuilder(userAnswers = Some(userAnswers))
-              .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
-              .overrides(bind[AuditService].toInstance(mockAuditService))
-              .overrides(bind[SessionRepository].toInstance(sessionRepository))
-              .build()
+          when(mockDataCleansingService.deleteMongoData(eqTo(userAnswers.id), eqTo(CreateRecordJourney)))
+            .thenReturn(Future.successful(true))
+
+          val application = applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(
+              bind[GoodsRecordConnector].toInstance(mockConnector),
+              bind[AutoCategoriseService].toInstance(mockAutoCategoriseService),
+              bind[SessionRepository].toInstance(mockSessionRepository),
+              bind[AuditService].toInstance(mockAuditService),
+              bind[DataCleansingService].toInstance(mockDataCleansingService)
+            )
+            .build()
 
           running(application) {
-            val request         = FakeRequest(POST, controllers.goodsRecord.routes.CyaCreateRecordController.onPageLoad().url)
-            val result          = route(application, request).value
-            val expectedPayload = GoodsRecord(
-              testEori,
-              "123",
-              testCommodity,
-              "DESCRIPTION",
-              "1"
-            )
+            val request = FakeRequest(POST, controllers.goodsRecord.routes.CyaCreateRecordController.onSubmit().url)
+            val result  = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual controllers.goodsRecord.routes.CreateRecordSuccessController
-              .onPageLoad("test")
-              .url
-            verify(mockConnector, atLeastOnce()).submitGoodsRecord(eqTo(expectedPayload))(any())
 
-            withClue("must call the audit connector with the supplied details") {
-              verify(mockAuditService, atLeastOnce())
-                .auditFinishCreateGoodsRecord(
-                  eqTo(testEori),
-                  eqTo(AffinityGroup.Individual),
-                  eqTo(userAnswers),
-                  any[Option[CategoryRecord]]
-                )(any())
-            }
-            withClue("must cleanse the user answers data") {
-              verify(sessionRepository, atLeastOnce()).clearData(eqTo(userAnswers.id), eqTo(CreateRecordJourney))
-            }
+            redirectLocation(result).value mustEqual controllers.goodsRecord.routes.CreateRecordSuccessController
+              .onPageLoad(testRecordId)
+              .url
+
+            verify(mockConnector, atLeastOnce()).submitGoodsRecord(any())(any())
+            verify(mockAutoCategoriseService, atLeastOnce()).autoCategoriseRecord(
+              eqTo(testRecordId),
+              eqTo(userAnswers)
+            )(any[DataRequest[_]], any[HeaderCarrier])
+            verify(mockSessionRepository, atLeastOnce()).get(eqTo(userAnswers.id))
+            verify(mockAuditService, atLeastOnce()).auditFinishCreateGoodsRecord(any(), any(), any(), any(), any())(
+              any()
+            )
+            verify(mockDataCleansingService, atLeastOnce())
+              .deleteMongoData(eqTo(userAnswers.id), eqTo(CreateRecordJourney))
           }
         }
+
       }
 
       "when user answers cannot create a goods record" - {
@@ -226,7 +239,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
             verify(mockConnector, never()).submitGoodsRecord(any())(any())
 
             withClue("must not try and submit an audit") {
-              when(mockAuditService.auditFinishCreateGoodsRecord(any(), any(), any(), any())(any()))
+              when(mockAuditService.auditFinishCreateGoodsRecord(any(), any(), any(), any(), any())(any()))
                 .thenReturn(Future.successful(Done))
             }
             withClue("must cleanse the user answers data") {
@@ -263,7 +276,7 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
           }
 
           withClue("must NOT call the audit connector when connector fails") {
-            verify(mockAuditService, never()).auditFinishCreateGoodsRecord(any(), any(), any(), any())(any())
+            verify(mockAuditService, never()).auditFinishCreateGoodsRecord(any(), any(), any(), any(), any())(any())
           }
 
           withClue("must NOT cleanse the user answers data when connector fails") {

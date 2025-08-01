@@ -30,7 +30,6 @@ final case class CategoryRecord(
   category: Scenario,
   measurementUnit: Option[String],
   supplementaryUnit: Option[String],
-  //The below stuff is just for audits
   initialCategoryInfo: CategorisationInfo,
   assessmentsAnswered: Int,
   wasSupplementaryUnitAsked: Boolean,
@@ -46,42 +45,48 @@ object CategoryRecord {
     eori: String,
     recordId: String,
     categorisationService: CategorisationService
-  ): EitherNec[ValidationError, CategoryRecord] =
-    (
-      getInitialCategoryInfo(userAnswers, recordId),
-      userAnswers.getOptionalPageValueForOptionalBooleanPage(
-        userAnswers,
-        HasSupplementaryUnitPage(recordId),
-        SupplementaryUnitPage(recordId)
-      )
-    ).parMapN { (initialCategorisationInfo, supplementaryUnit) =>
-      val longerCategoryInfo      = userAnswers.get(LongerCategorisationDetailsQuery(recordId))
-      val finalCategorisationInfo = longerCategoryInfo.getOrElse(initialCategorisationInfo)
-      val longerCategoryAnswers   =
-        longerCategoryInfo.map(_.getAnswersForQuestions(userAnswers, recordId))
+  ): EitherNec[ValidationError, CategoryRecord] = {
+
+    val initialCategoryInfoEither = getInitialCategoryInfo(userAnswers, recordId)
+
+    val supplementaryUnitOpt = userAnswers.getOptionalPageValueForOptionalBooleanPage(
+      userAnswers,
+      HasSupplementaryUnitPage(recordId),
+      SupplementaryUnitPage(recordId)
+    )
+
+    val longerCategoryInfoOpt = userAnswers.get(LongerCategorisationDetailsQuery(recordId))
+
+    (initialCategoryInfoEither, supplementaryUnitOpt).parMapN { (initialCategorisationInfo, supplementaryUnit) =>
+      val finalCategorisationInfo = longerCategoryInfoOpt.getOrElse(initialCategorisationInfo)
+      val category                = categorisationService.calculateResult(finalCategorisationInfo, userAnswers, recordId)
 
       CategoryRecord(
         eori,
         recordId,
         finalCategorisationInfo.commodityCode,
-        categorisationService.calculateResult(finalCategorisationInfo, userAnswers, recordId),
+        category,
         finalCategorisationInfo.measurementUnit,
         supplementaryUnit,
         initialCategorisationInfo,
         initialCategorisationInfo.getAnswersForQuestions(userAnswers, recordId).count(_.isAnswered),
         userAnswers.get(HasSupplementaryUnitPage(recordId)).isDefined,
-        longerCategoryInfo,
-        longerCategoryAnswers.map(_.count(_.isAnswered)),
-        longerCategoryAnswers.map(_.count(_.wasCopiedFromInitialAssessment))
+        longerCategoryInfoOpt,
+        longerCategoryInfoOpt.map(_.getAnswersForQuestions(userAnswers, recordId).count(_.isAnswered)),
+        longerCategoryInfoOpt.map(
+          _.getAnswersForQuestions(userAnswers, recordId).count(_.wasCopiedFromInitialAssessment)
+        )
       )
     }
+  }
 
-  private def getInitialCategoryInfo(userAnswers: UserAnswers, recordId: String) =
-    userAnswers
-      .getPageValue(CategorisationDetailsQuery(recordId))
+  private def getInitialCategoryInfo(userAnswers: UserAnswers, recordId: String) = {
+    val result = userAnswers.getPageValue(CategorisationDetailsQuery(recordId))
+    if (result.isLeft) {}
+    result
       .map(Right(_))
       .getOrElse(
         Left(NonEmptyChain.one(NoCategorisationDetailsForRecordId(CategorisationDetailsQuery(recordId), recordId)))
       )
-
+  }
 }

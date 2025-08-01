@@ -183,15 +183,17 @@ class AuditEventFactorySpec extends SpecBase {
               commodity,
               "goods description",
               "AG"
-            )
-          )
+            ),
+            categoryRecordOpt = None,
+            isAutoCategorised = false
+          )(hc)
 
           result.auditSource mustBe "trader-goods-profiles-frontend"
           result.auditType mustBe "SubmitGoodsRecord"
           result.tags.isEmpty mustBe false
 
           val auditDetails = result.detail
-          auditDetails.size mustBe 10
+          auditDetails.size mustBe 11
           auditDetails("journey") mustBe "CreateRecord"
           auditDetails("eori") mustBe testEori
           auditDetails("affinityGroup") mustBe "Organisation"
@@ -226,22 +228,24 @@ class AuditEventFactorySpec extends SpecBase {
               testEori,
               "product reference",
               commodity,
-              "DESCRIPTION",
+              "goods description",
               "AG"
-            )
-          )
+            ),
+            categoryRecordOpt = None,
+            isAutoCategorised = false
+          )(hc)
 
           result.auditSource mustBe "trader-goods-profiles-frontend"
           result.auditType mustBe "SubmitGoodsRecord"
           result.tags.isEmpty mustBe false
 
           val auditDetails = result.detail
-          auditDetails.size mustBe 10
+          auditDetails.size mustBe 11
           auditDetails("journey") mustBe "CreateRecord"
           auditDetails("eori") mustBe testEori
           auditDetails("affinityGroup") mustBe "Organisation"
           auditDetails(productReferenceKey) mustBe "product reference"
-          auditDetails(goodsDescriptionKey) mustBe "DESCRIPTION"
+          auditDetails(goodsDescriptionKey) mustBe "goods description"
           auditDetails(countryOfOriginKey) mustBe "AG"
           auditDetails(commodityCodeKey) mustBe "030821"
           auditDetails("commodityDescription") mustBe "Sea urchins"
@@ -1073,9 +1077,7 @@ class AuditEventFactorySpec extends SpecBase {
 
     "createSubmitGoodsRecordEventForCreateRecord" - {
 
-      "includes category audit details when categoryRecordOpt is Some" in {
-        val affinityGroup = AffinityGroup.Individual
-        val journey       = CreateRecordJourney
+      "includes category audit details when categoryRecordOpt is Some and isCategorised is true" in {
 
         val goodsRecord = GoodsRecord(
           eori = testEori,
@@ -1086,10 +1088,11 @@ class AuditEventFactorySpec extends SpecBase {
         )
 
         val result = AuditEventFactory().createSubmitGoodsRecordEventForCreateRecord(
-          affinityGroup,
-          journey,
+          AffinityGroup.Organisation,
+          CreateRecordJourney,
           goodsRecord,
-          Some(categoryRecord)
+          Some(categoryRecord),
+          true
         )
 
         val details = result.detail
@@ -1102,8 +1105,6 @@ class AuditEventFactorySpec extends SpecBase {
       }
 
       "does not include category audit details when categoryRecordOpt is None" in {
-        val affinityGroup = AffinityGroup.Individual
-        val journey       = CreateRecordJourney
 
         val goodsRecord = GoodsRecord(
           eori = testEori,
@@ -1114,11 +1115,12 @@ class AuditEventFactorySpec extends SpecBase {
         )
 
         val result = AuditEventFactory().createSubmitGoodsRecordEventForCreateRecord(
-          affinityGroup,
-          journey,
+          AffinityGroup.Organisation,
+          CreateRecordJourney,
           goodsRecord,
-          None
-        )
+          categoryRecordOpt = None,
+          isAutoCategorised = false
+        )(hc)
 
         val details = result.detail
 

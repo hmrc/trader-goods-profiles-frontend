@@ -28,9 +28,9 @@ import play.api.Logging
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import cats.implicits.catsSyntaxTuple4Parallel
 import java.time.Instant
 import scala.concurrent.{ExecutionContext, Future}
+import cats.implicits.catsSyntaxTuple5Parallel
 
 class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory: AuditEventFactory)(implicit
   ec: ExecutionContext
@@ -107,14 +107,16 @@ class AuditService @Inject() (auditConnector: AuditConnector, auditEventFactory:
     eori: String,
     affinityGroup: AffinityGroup,
     userAnswers: UserAnswers,
-    categoryRecordOpt: Option[CategoryRecord]
+    categoryRecordOpt: Option[CategoryRecord],
+    isAutoCategorised: Boolean
   )(implicit hc: HeaderCarrier): Future[Done] = {
 
     val buildEvent = (
       Right(affinityGroup),
       Right(CreateRecordJourney),
       GoodsRecord.build(userAnswers, eori),
-      Right(categoryRecordOpt)
+      Right(categoryRecordOpt),
+      Right(isAutoCategorised)
     ).parMapN(auditEventFactory.createSubmitGoodsRecordEventForCreateRecord)
 
     buildEvent match {

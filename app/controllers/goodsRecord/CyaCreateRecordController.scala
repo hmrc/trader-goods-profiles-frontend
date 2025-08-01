@@ -30,7 +30,7 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.*
 import queries.CountriesQuery
 import repositories.SessionRepository
-import services.{AuditService, CategorisationService, DataCleansingService}
+import services.{AuditService, AutoCategoriseService, CategorisationService, DataCleansingService}
 import viewmodels.checkAnswers.goodsRecord.*
 import viewmodels.govuk.all.SummaryListViewModel
 import views.html.goodsRecord.CyaCreateRecordView
@@ -51,6 +51,7 @@ class CyaCreateRecordController @Inject() (
   dataCleansingService: DataCleansingService,
   categorisationService: CategorisationService,
   sessionRepository: SessionRepository,
+  autoCategoriseService: AutoCategoriseService,
   auditService: AuditService,
   navigator: GoodsRecordNavigator
 )(implicit @unused ec: ExecutionContext)
@@ -93,18 +94,32 @@ class CyaCreateRecordController @Inject() (
       GoodsRecord.build(request.userAnswers, request.eori) match {
         case Right(model) =>
           for {
-            recordId         <- goodsRecordConnector.submitGoodsRecord(model)
-            categoryRecordOpt = CategoryRecord
-                                  .build(request.userAnswers, request.eori, recordId, categorisationService)
-                                  .toOption
-            _                <- auditService.auditFinishCreateGoodsRecord(
-                                  request.eori,
-                                  request.affinityGroup,
-                                  request.userAnswers,
-                                  categoryRecordOpt
-                                )
-            _                <- dataCleansingService.deleteMongoData(request.userAnswers.id, CreateRecordJourney)
-          } yield Redirect(navigator.nextPage(CyaCreateRecordPage(recordId), NormalMode, request.userAnswers))
+            recordId <- goodsRecordConnector.submitGoodsRecord(model)
+
+            // Call autoCategoriseRecord to update session repository and category
+            maybeScenario <- autoCategoriseService.autoCategoriseRecord(recordId, request.userAnswers)
+
+            // Now load updated UserAnswers from session repo (assumes it's stored there)
+            updatedUserAnswersOpt <- sessionRepository.get(request.userAnswers.id)
+
+            updatedUserAnswers = updatedUserAnswersOpt.getOrElse(request.userAnswers) // fallback to old if not found
+
+            // Build category record from updated answers
+            categoryRecordOpt =
+              CategoryRecord.build(updatedUserAnswers, request.eori, recordId, categorisationService).toOption
+
+            isAutoCategorised = categoryRecordOpt.isDefined
+
+            _ <- auditService.auditFinishCreateGoodsRecord(
+                   request.eori,
+                   request.affinityGroup,
+                   updatedUserAnswers,
+                   categoryRecordOpt,
+                   isAutoCategorised
+                 )
+
+            _ <- dataCleansingService.deleteMongoData(updatedUserAnswers.id, CreateRecordJourney)
+          } yield Redirect(navigator.nextPage(CyaCreateRecordPage(recordId), NormalMode, updatedUserAnswers))
 
         case Left(errors) =>
           handleBuildErrors(request, errors)

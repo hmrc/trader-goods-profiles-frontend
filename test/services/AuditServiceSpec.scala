@@ -17,19 +17,19 @@
 package services
 
 import base.SpecBase
-import base.TestConstants.{page, testEori, testRecordId, withdrawReason}
+import base.TestConstants._
 import factories.AuditEventFactory
-import models.audits.{AuditGetCategorisationAssessment, AuditValidateCommodityCode, OttAuditData}
-import models.helper._
-import models.ott.response._
-import models.{AdviceRequest, Category1Scenario, CategoryRecord, GoodsRecord, SearchForm, SupplementaryRequest, TraderProfile, UpdateGoodsRecord}
+import models.audits._
+import models.helper.*
+import models.ott.response.*
+import models._
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{never, reset, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
-import pages._
-import pages.goodsRecord.{CommodityCodePage, CountryOfOriginPage, GoodsDescriptionPage, ProductReferencePage}
+import pages.*
+import pages.goodsRecord._
 import play.api.http.Status.OK
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import queries.CommodityQuery
@@ -40,7 +40,7 @@ import uk.gov.hmrc.play.audit.model.{DataEvent, ExtendedDataEvent}
 
 import java.time.{Instant, LocalDate}
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
 
@@ -67,21 +67,28 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
   }
 
   "auditProfileSetUp" - {
+
     "return Done when built up an audit event and submitted it" in {
-      when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
+      when(mockAuditConnector.sendEvent(any[DataEvent]())(any[HeaderCarrier](), any[ExecutionContext]()))
+        .thenReturn(Future.successful(AuditResult.Success))
+
       val fakeAuditEvent = DataEvent("source", "type")
-      when(mockAuditFactory.createSetUpProfileEvent(any(), any())(any())).thenReturn(fakeAuditEvent)
+
+      when(mockAuditFactory.createSetUpProfileEvent(any[TraderProfile](), any[AffinityGroup]())(any()))
+        .thenReturn(fakeAuditEvent)
 
       val traderProfile = TraderProfile(testEori, "", None, None, eoriChanged = false)
-      val result        = await(auditService.auditProfileSetUp(traderProfile, AffinityGroup.Individual))
+
+      val result = await(auditService.auditProfileSetUp(traderProfile, AffinityGroup.Individual))
 
       result mustBe Done
 
       withClue("Should have supplied the trader profile and affinity group to the factory to create the event") {
         verify(mockAuditFactory).createSetUpProfileEvent(eqTo(traderProfile), eqTo(AffinityGroup.Individual))(any())
       }
+
       withClue("Should have submitted the created event to the audit connector") {
-        verify(mockAuditConnector).sendEvent(eqTo(fakeAuditEvent))(any(), any())
+        verify(mockAuditConnector).sendEvent(eqTo(fakeAuditEvent))(any[HeaderCarrier](), any[ExecutionContext]())
       }
     }
 
@@ -186,14 +193,14 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
 
       val fakeAuditEvent = DataEvent("source", "type")
-      when(mockAuditFactory.createSubmitGoodsRecordEventForCreateRecord(any(), any(), any(), any())(any()))
+      when(mockAuditFactory.createSubmitGoodsRecordEventForCreateRecord(any(), any(), any(), any(), any())(any()))
         .thenReturn(fakeAuditEvent)
 
       val userAnswers         = generateUserAnswersForFinishCreateGoodsTest
       val expectedGoodsRecord = GoodsRecord(testEori, "product reference", testCommodity, "goods description", "PF")
 
       val result = await(
-        auditService.auditFinishCreateGoodsRecord(testEori, AffinityGroup.Individual, userAnswers, None)
+        auditService.auditFinishCreateGoodsRecord(testEori, AffinityGroup.Individual, userAnswers, None, false)
       )
 
       result mustBe Done
@@ -204,8 +211,10 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
             eqTo(AffinityGroup.Individual),
             eqTo(CreateRecordJourney),
             eqTo(expectedGoodsRecord),
-            eqTo(None)
+            eqTo(None),
+            eqTo(false)
           )(any())
+
       }
 
       withClue("Should have submitted the created event to the audit connector") {
@@ -218,14 +227,14 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
       when(mockAuditConnector.sendEvent(any())(any(), any())).thenReturn(Future.successful(auditFailure))
 
       val fakeAuditEvent = DataEvent("source", "type")
-      when(mockAuditFactory.createSubmitGoodsRecordEventForCreateRecord(any(), any(), any(), any())(any()))
+      when(mockAuditFactory.createSubmitGoodsRecordEventForCreateRecord(any(), any(), any(), any(), any())(any()))
         .thenReturn(fakeAuditEvent)
 
       val userAnswers         = generateUserAnswersForFinishCreateGoodsTest
       val expectedGoodsRecord = GoodsRecord(testEori, "product reference", testCommodity, "goods description", "PF")
 
       val result = await(
-        auditService.auditFinishCreateGoodsRecord(testEori, AffinityGroup.Individual, userAnswers, None)
+        auditService.auditFinishCreateGoodsRecord(testEori, AffinityGroup.Individual, userAnswers, None, false)
       )
 
       result mustBe Done
@@ -236,7 +245,8 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
             eqTo(AffinityGroup.Individual),
             eqTo(CreateRecordJourney),
             eqTo(expectedGoodsRecord),
-            eqTo(None)
+            eqTo(None),
+            eqTo(false)
           )(any())
       }
 
@@ -255,7 +265,8 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
             testEori,
             AffinityGroup.Individual,
             generateUserAnswersForFinishCreateGoodsTest,
-            None
+            None,
+            false
           )
         )
       }
@@ -264,13 +275,14 @@ class AuditServiceSpec extends SpecBase with BeforeAndAfterEach {
     "return Done when user answers are not sufficient to generate event" in {
       val userAnswers = emptyUserAnswers
       val result      = await(
-        auditService.auditFinishCreateGoodsRecord(testEori, AffinityGroup.Individual, userAnswers, None)
+        auditService.auditFinishCreateGoodsRecord(testEori, AffinityGroup.Individual, userAnswers, None, false)
       )
 
       result mustBe Done
 
       withClue("Should not have tried to create the event as the details were invalid") {
-        verify(mockAuditFactory, never()).createSubmitGoodsRecordEventForCreateRecord(any(), any(), any(), any())(any())
+        verify(mockAuditFactory, never())
+          .createSubmitGoodsRecordEventForCreateRecord(any(), any(), any(), any(), any())(any())
       }
 
       withClue("Should not have tried to submit an event to the audit connector") {

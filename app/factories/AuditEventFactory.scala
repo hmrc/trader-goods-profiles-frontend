@@ -110,7 +110,8 @@ case class AuditEventFactory() {
     affinityGroup: AffinityGroup,
     journey: Journey,
     goodsRecord: GoodsRecord,
-    categoryRecordOpt: Option[CategoryRecord] = None
+    categoryRecordOpt: Option[CategoryRecord] = None,
+    isAutoCategorised: Boolean
   )(implicit hc: HeaderCarrier): DataEvent = {
 
     val baseAuditDetails = Map(
@@ -140,7 +141,11 @@ case class AuditEventFactory() {
         Map.empty[String, String]
     }
 
-    val auditDetails = baseAuditDetails ++ categoryAuditDetails
+    val autoCategorisationAuditDetails = Map(
+      "isAutoCategorised" -> isAutoCategorised.toString
+    )
+
+    val auditDetails = baseAuditDetails ++ categoryAuditDetails ++ autoCategorisationAuditDetails
 
     createSubmitGoodsRecordEvent(auditDetails)
   }
@@ -161,9 +166,7 @@ case class AuditEventFactory() {
       commodityCodeKey              -> categoryRecord.initialCategoryInfo.commodityCode,
       countryOfOriginKey            -> categoryRecord.initialCategoryInfo.countryOfOrigin,
       "descendants"                 -> categoryRecord.initialCategoryInfo.descendantCount.toString,
-      // How many pages COULD have been shown to the user
       "categoryAssessments"         -> categoryRecord.initialCategoryInfo.categoryAssessmentsThatNeedAnswers.size.toString,
-      // How many pages were answered (i.e. actually shown to the user)
       "categoryAssessmentsAnswered" -> categoryRecord.assessmentsAnswered.toString,
       "reassessmentNeeded"          -> categoryRecord.longerCategoryInfo.isDefined.toString,
       "category"                    -> Scenario.getResultAsInt(categoryRecord.category).toString,
@@ -202,10 +205,7 @@ case class AuditEventFactory() {
 
         Map(
           "reassessmentCommodityCode"                  -> catInfo.commodityCode,
-          // How many pages COULD have been shown to the user, including those already answered first time around
           "reassessmentCategoryAssessments"            -> catInfo.categoryAssessmentsThatNeedAnswers.size.toString,
-          // How many pages were answered (i.e. actually shown to the user)
-          // Hence excluding those answers copied over
           "reassessmentCategoryAssessmentsAnswered"    -> howManyPagesShownSecondTime.toString,
           "reassessmentCategoryAssessmentsCarriedOver" -> howManyAnswersCopiedOver.toString
         )
@@ -369,7 +369,6 @@ case class AuditEventFactory() {
         errorMessage
       ),
       commodityDetails.flatMap(_.goodsNomenclature.descriptions.headOption),
-      // If commodityDetails are defined and no endDate then we got sent a null for this so pass it on.
       commodityDetails.map(_.goodsNomenclature.validityEndDate.map(_.toString).getOrElse("null")),
       commodityDetails.map(_.goodsNomenclature.validityStartDate.toString)
     )
