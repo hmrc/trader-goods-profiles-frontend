@@ -19,11 +19,147 @@ import models.GoodsRecordsPagination.firstPage
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{OptionValues, TryValues}
+import play.api.libs.json.{JsSuccess, Json}
 import uk.gov.hmrc.govukfrontend.views.Aliases.Pagination
 import uk.gov.hmrc.govukfrontend.views.viewmodels.pagination.{PaginationItem, PaginationLink}
 
 class GoodsRecordsPaginationSpec extends AnyFreeSpec with Matchers with TryValues with OptionValues {
   private val pageSize = 10
+
+  "GoodsRecordsPagination JSON serialization" - {
+    val pagination = GoodsRecordsPagination(
+      totalRecords = 100,
+      currentPage = 2,
+      totalPages = 10,
+      nextPage = Some(3),
+      prevPage = Some(1)
+    )
+
+    val json = Json.obj(
+      "totalRecords" -> 100,
+      "currentPage"  -> 2,
+      "totalPages"   -> 10,
+      "nextPage"     -> 3,
+      "prevPage"     -> 1
+    )
+
+    "must serialize to JSON" in {
+      Json.toJson(pagination) mustBe json
+    }
+
+    "must deserialize from JSON" in {
+      Json.fromJson[GoodsRecordsPagination](json) mustBe JsSuccess(pagination)
+    }
+  }
+
+  "getFirstRecordIndex" - {
+    val pageSize = 10
+
+    "return 0 if totalRecords is 0" in {
+      val p = GoodsRecordsPagination(0, 1, 1, None, None)
+      GoodsRecordsPagination.getFirstRecordIndex(p, pageSize) mustBe 0
+    }
+
+    "return 0 if currentPage > totalPages" in {
+      val p = GoodsRecordsPagination(50, 6, 5, None, None)
+      GoodsRecordsPagination.getFirstRecordIndex(p, pageSize) mustBe 0
+    }
+
+    "return 0 if currentPage > 1 and pageSize >= totalRecords" in {
+      val p = GoodsRecordsPagination(10, 2, 1, None, None)
+      GoodsRecordsPagination.getFirstRecordIndex(p, 10) mustBe 0
+    }
+
+    "return correct first record index otherwise" in {
+      val p = GoodsRecordsPagination(100, 3, 10, None, None)
+      GoodsRecordsPagination.getFirstRecordIndex(p, pageSize) mustBe 21
+    }
+  }
+
+  "getLastRecordIndex" - {
+    "return 0 if firstRecordIndex is 0" in {
+      GoodsRecordsPagination.getLastRecordIndex(0, 10) mustBe 0
+    }
+
+    "return correct last record index" in {
+      GoodsRecordsPagination.getLastRecordIndex(21, 10) mustBe 30
+    }
+  }
+
+  private def validatePaginationItems(pagination: Pagination, currentPage: Int): Unit = {
+    val items = pagination.items.getOrElse(Seq.empty)
+    items.map(_.number.get.toInt) must contain(currentPage)
+
+    items.foreach { item =>
+      val pageNum          = item.number.get.toInt
+      val expectedEllipsis = pageNum < currentPage - 1 || pageNum > currentPage + 1
+      item.ellipsis.get mustBe expectedEllipsis
+    }
+  }
+
+  "getPagination" - {
+    "return empty Pagination if currentPage or totalPages invalid" in {
+      val empty = Pagination(None, None, None)
+      GoodsRecordsPagination.getPagination(0, 5) mustBe empty
+      GoodsRecordsPagination.getPagination(1, 0) mustBe empty
+      GoodsRecordsPagination.getPagination(6, 5) mustBe empty
+    }
+
+    "return Pagination with correct links and items" in {
+      val currentPage = 4
+      val totalPages  = 10
+      val pagination  = GoodsRecordsPagination.getPagination(currentPage, totalPages)
+
+      pagination.items    must not be empty
+      pagination.previous must not be empty
+      pagination.next     must not be empty
+
+      validatePaginationItems(pagination, currentPage)
+
+      pagination.previous.foreach { prev =>
+        prev.href must include(s"?page=${currentPage - 1}")
+      }
+      pagination.next.foreach { next =>
+        next.href must include(s"?page=${currentPage + 1}")
+      }
+    }
+  }
+
+  "getSearchPagination" - {
+    "return Pagination with search result URLs" in {
+      val currentPage = 3
+      val totalPages  = 7
+      val pagination  = GoodsRecordsPagination.getSearchPagination(currentPage, totalPages)
+
+      pagination.items    must not be empty
+      pagination.previous must not be empty
+      pagination.next     must not be empty
+
+      validatePaginationItems(pagination, currentPage)
+
+      pagination.items.get.foreach { item =>
+        item.href must include("search-results")
+      }
+    }
+  }
+
+  "getSearchPaginationFilter" - {
+    "return Pagination with filtered URLs" in {
+      val currentPage = 2
+      val totalPages  = 5
+      val pagination  = GoodsRecordsPagination.getSearchPaginationFilter(currentPage, totalPages)
+
+      pagination.items    must not be empty
+      pagination.previous must not be empty
+      pagination.next     must not be empty
+
+      validatePaginationItems(pagination, currentPage)
+
+      pagination.items.get.foreach { item =>
+        item.href must include("search-results")
+      }
+    }
+  }
 
   ".getPagination" - {
 

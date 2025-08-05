@@ -56,17 +56,17 @@ class CommodityCodeCyaControllerSpec
   private lazy val journeyRecoveryContinueUrl =
     controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId).url
 
-  private val mockCommodityService         = mock[CommodityService]
-  private val mockGoodsRecordUpdateService = mock[GoodsRecordUpdateService]
-  private val mockAuditService             = mock[AuditService]
-  private val mockGoodsRecordConnector     = mock[GoodsRecordConnector]
-  private val mockOttConnector             = mock[OttConnector]
-  private val mockSessionRepository        = mock[SessionRepository]
-  private val mockAutoCategoriseService    = mock[AutoCategoriseService]
-  implicit val hc: HeaderCarrier           = HeaderCarrier()
-  val effectiveFrom: Instant               = Instant.now
-  val effectiveTo: Instant                 = effectiveFrom.plusSeconds(1)
-  private val commodity                    =
+  private val mockCommodityService          = mock[CommodityService]
+  private val mockGoodsRecordUpdateService  = mock[GoodsRecordUpdateService]
+  private val mockAuditService              = mock[AuditService]
+  private val mockGoodsRecordConnector      = mock[GoodsRecordConnector]
+  private val mockOttConnector              = mock[OttConnector]
+  private val mockSessionRepository         = mock[SessionRepository]
+  private val mockAutoCategoriseService     = mock[AutoCategoriseService]
+  implicit val hc: HeaderCarrier            = HeaderCarrier()
+  val effectiveFrom: Instant                = Instant.now
+  val effectiveTo: Instant                  = effectiveFrom.plusSeconds(1)
+  private val commodity                     =
     Commodity(
       "1704900000",
       List(

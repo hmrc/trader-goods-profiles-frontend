@@ -17,16 +17,18 @@
 package navigation
 
 import base.SpecBase
-import base.TestConstants.{testRecordId, userAnswersId}
 import controllers.routes
-import models._
+import models.*
+import models.ott.{CategorisationInfo, CategoryAssessment}
 import org.mockito.Mockito.reset
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
-import pages._
+import pages.*
+import pages.categorisation.ReassessmentPage
+import pages.download.RequestDataPage
 import pages.goodsRecord.{CommodityCodePage, CommodityCodeUpdatePage}
 import play.api.http.Status.SEE_OTHER
-import queries.{CategorisationDetailsQuery, LongerCommodityQuery}
+import queries.{CategorisationDetailsQuery, LongerCategorisationDetailsQuery, LongerCommodityQuery}
 import services.CategorisationService
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 
@@ -37,6 +39,32 @@ class NavigationSpec extends SpecBase with BeforeAndAfterEach {
   private val mockCategorisationService = mock[CategorisationService]
   private val navigator                 = new Navigation(mockCategorisationService)
 
+  private val testRecordId  = "test-record-id"
+  private val userAnswersId = "user-answers-id"
+
+  val dummyCategoryAssessment: CategoryAssessment = CategoryAssessment(
+    id = "assessment1",
+    category = 1,
+    exemptions = Seq.empty,
+    themeDescription = "Test Theme",
+    regulationUrl = None
+  )
+
+  val catInfo: CategorisationInfo = CategorisationInfo(
+    commodityCode = "123456",
+    countryOfOrigin = "GB",
+    comcodeEffectiveToDate = None,
+    categoryAssessments = Seq.empty,
+    categoryAssessmentsThatNeedAnswers = Seq(dummyCategoryAssessment),
+    measurementUnit = None,
+    descendantCount = 0,
+    longerCode = false,
+    isTraderNiphlAuthorised = false,
+    isTraderNirmsAuthorised = false
+  )
+
+  private val emptyUserAnswers = UserAnswers(userAnswersId)
+
   override def beforeEach(): Unit = {
     reset(mockCategorisationService)
     super.beforeEach()
@@ -44,6 +72,114 @@ class NavigationSpec extends SpecBase with BeforeAndAfterEach {
 
   "Navigator" - {
     "in Normal mode" - {
+
+      "must go from LongerCommodityCodePage to LongerCommodityCodeController" in {
+        val page = new LongerCommodityCodePage(testRecordId)
+
+        navigator.normalRoutes(page)(emptyUserAnswers) mustBe
+          controllers.commodityCodeResult.routes.LongerCommodityCodeController.onPageLoad(NormalMode, testRecordId)
+      }
+
+      "must go from RecategorisationPreparationPage" - {
+
+        "to AssessmentController when reassessment answer is empty or copiedFromPreviousAssessment = false" in {
+          val catInfo = CategorisationInfo(
+            commodityCode = "123456",
+            countryOfOrigin = "GB",
+            comcodeEffectiveToDate = None,
+            categoryAssessments = Seq.empty,
+            categoryAssessmentsThatNeedAnswers = Seq(
+              CategoryAssessment(
+                id = "id1",
+                category = 1,
+                exemptions = Seq.empty,
+                themeDescription = "desc",
+                regulationUrl = None
+              )
+            ),
+            measurementUnit = None,
+            descendantCount = 0
+          )
+
+          val reassessmentAnswer = ReassessmentAnswer(
+            answer = AssessmentAnswer.NoExemption,
+            isAnswerCopiedFromPreviousAssessment = false
+          )
+
+          val userAnswers = emptyUserAnswers
+            .set(LongerCategorisationDetailsQuery(testRecordId), catInfo)
+            .success
+            .value
+            .set(ReassessmentPage(testRecordId, 0), reassessmentAnswer)
+            .success
+            .value
+
+          navigator.normalRoutes(RecategorisationPreparationPage(testRecordId))(userAnswers) mustBe
+            controllers.categorisation.routes.AssessmentController
+              .onPageLoadReassessment(NormalMode, testRecordId, 1)
+
+        }
+
+        "to navigateFromReassessment when copiedFromPreviousAssessment = true" in {
+          val catInfo = CategorisationInfo(
+            commodityCode = "123456",
+            countryOfOrigin = "GB",
+            comcodeEffectiveToDate = None,
+            categoryAssessments = Seq.empty,
+            categoryAssessmentsThatNeedAnswers = Seq(
+              CategoryAssessment(
+                id = "id1",
+                category = 1,
+                exemptions = Seq.empty,
+                themeDescription = "desc",
+                regulationUrl = None
+              )
+            ),
+            measurementUnit = None,
+            descendantCount = 0
+          )
+
+          val reassessmentAnswer = ReassessmentAnswer(
+            answer = AssessmentAnswer.Exemption(Seq("someExemptionCode")),
+            isAnswerCopiedFromPreviousAssessment = true
+          )
+
+          val userAnswers = emptyUserAnswers
+            .set(LongerCategorisationDetailsQuery(testRecordId), catInfo)
+            .success
+            .value
+            .set(ReassessmentPage(testRecordId, 0), reassessmentAnswer)
+            .success
+            .value
+
+          val expectedCall = controllers.categorisation.routes.CyaCategorisationController
+            .onPageLoad(testRecordId)
+
+          navigator
+            .normalRoutes(RecategorisationPreparationPage(testRecordId))(userAnswers)
+            .toString mustBe expectedCall.toString
+        }
+
+        "to JourneyRecoveryController when no CategorisationInfo found" in {
+          val userAnswers = emptyUserAnswers // no LongerCategorisationDetailsQuery set
+
+          navigator.normalRoutes(RecategorisationPreparationPage(testRecordId))(userAnswers) mustBe
+            controllers.problem.routes.JourneyRecoveryController.onPageLoad()
+        }
+      }
+
+      "must go from RequestDataPage to DownloadRequestSuccessController" in {
+        navigator.normalRoutes(RequestDataPage)(emptyUserAnswers) mustBe
+          controllers.download.routes.DownloadRequestSuccessController.onPageLoad()
+      }
+
+      "must go to IndexController for unknown page" in {
+        case object UnknownPage extends Page
+
+        navigator.normalRoutes(UnknownPage)(emptyUserAnswers) mustBe
+          controllers.routes.IndexController.onPageLoad()
+      }
+
       "must go from a page that doesn't exist in the route map to Index" in {
         case object UnknownPage extends Page
         navigator.nextPage(UnknownPage, NormalMode, emptyUserAnswers) mustBe routes.IndexController.onPageLoad()

@@ -87,13 +87,18 @@ class UserAllowListConnectorSpec
       )
 
       val exception = connector.check(feature, request.value).failed.futureValue
+
       exception match {
         case e: UserAllowListConnector.UnexpectedResponseException =>
           e.status mustBe INTERNAL_SERVER_ERROR
+
+          e.getMessage must include("Unexpected status: 500")
+
         case _ =>
           fail("Expected UnexpectedResponseException")
       }
     }
+
 
     "fails if connection is interrupted" in {
       wireMockServer.stubFor(

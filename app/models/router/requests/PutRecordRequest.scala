@@ -69,7 +69,7 @@ object PutRecordRequest {
       oldRecord.assessments,
       supplementaryUnit = supplementaryUnitRequest.supplementaryUnit match {
         case s if s.nonEmpty => convertToBigDecimal(supplementaryUnitRequest.supplementaryUnit)
-        //API don't support removing supplementaryUnit, so setting it to zero here
+        // API don't support removing supplementaryUnit, so setting it to zero here
         case _               => Some(0)
       },
       measurementUnit = supplementaryUnitRequest.measurementUnit,

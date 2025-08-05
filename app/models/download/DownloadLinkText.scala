@@ -44,7 +44,7 @@ case class DownloadLinkText(
   val downloadLinkContent: Html = if (isLink) {
     Html(
       s"""<p class="govuk-body"><a href="${controllers.download.routes.FileManagementController
-        .onPageLoad()}" class="govuk-link">${messages(messageKey)}</a></p>"""
+          .onPageLoad()}" class="govuk-link">${messages(messageKey)}</a></p>"""
     )
   } else {
     Html(s"""<p class="govuk-body">${messages(messageKey)}</p>""")

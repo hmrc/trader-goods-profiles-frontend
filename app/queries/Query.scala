@@ -37,3 +37,7 @@ trait Settable[A] extends Query {
   ): Try[UserAnswers] =
     Success(updatedUserAnswers)
 }
+
+case object TestQuery extends Gettable[String] {
+  override val path: JsPath = JsPath \ "test"
+}

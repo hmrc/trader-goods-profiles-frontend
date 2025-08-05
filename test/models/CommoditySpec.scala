@@ -23,7 +23,7 @@ import java.time.Instant
 
 class CommoditySpec extends SpecBase {
 
-  extension(instant: Instant) {
+  extension (instant: Instant) {
     def daysToSeconds(days: Int): Int = days * 24 * 60 * 60
     def minusDays(days: Int): Instant = instant.minusSeconds(daysToSeconds(days))
     def plusDays(days: Int): Instant  = instant.plusSeconds(daysToSeconds(days))

@@ -34,7 +34,7 @@ class AccreditationConnector @Inject() (config: Configuration, httpClient: HttpC
 
   private val dataStoreBaseUrl: Service = config.get[Service]("microservice.services.trader-goods-profiles-data-store")
 
-  private val clientIdAndAcceptHeaders           =
+  private val clientIdAndAcceptHeaders =
     Seq("X-Client-ID" -> "tgp-frontend", "Accept" -> "application/vnd.hmrc.1.0+json")
 
   private def accreditationUrl(recordId: String) =

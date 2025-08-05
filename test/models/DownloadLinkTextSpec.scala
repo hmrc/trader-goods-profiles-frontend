@@ -85,14 +85,14 @@ class DownloadLinkTextSpec extends SpecBase with Generators {
           val downloadLinkText = DownloadLinkText(Seq.empty, doesGoodsRecordExist = true, verifiedEmail = true)
           downloadLinkText.downloadLinkContent.toString mustBe
             s"""<p class="govuk-body"><a href="${controllers.download.routes.FileManagementController
-              .onPageLoad()}" class="govuk-link">${message(downloadLinkText.messageKey)}</a></p>"""
+                .onPageLoad()}" class="govuk-link">${message(downloadLinkText.messageKey)}</a></p>"""
         }
 
         "when isLink is false" in {
           val downloadLinkText = DownloadLinkText(Seq.empty, doesGoodsRecordExist = false, verifiedEmail = false)
           downloadLinkText.downloadLinkContent.toString mustBe s"""<p class="govuk-body">${message(
-            downloadLinkText.messageKey
-          )}</p>"""
+              downloadLinkText.messageKey
+            )}</p>"""
         }
       }
     }

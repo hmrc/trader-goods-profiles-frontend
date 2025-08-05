@@ -87,7 +87,7 @@ class CyaSupplementaryUnitController @Inject() (
 
           val finalSuppUnitBD = convertToBigDecimal(finalSuppUnitOpt)
 
-          //if supplementary unit is zero, we consider it removed. This needs to be re-factored when API starts supporting null for removing objects
+          // if supplementary unit is zero, we consider it removed. This needs to be re-factored when API starts supporting null for removing objects
           val isSuppUnitRemoved =
             (initialHasSuppUnitOpt
               .contains(true) && finalHasSuppUnitOpt.contains(false)) || finalSuppUnitBD.contains(BigDecimal(0))
