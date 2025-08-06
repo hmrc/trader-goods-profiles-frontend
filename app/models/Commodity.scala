@@ -78,7 +78,7 @@ object Commodity {
           Json.obj("data" -> Json.obj("attributes" -> Json.obj("description" -> desc)))
         }
         .getOrElse(Json.obj())
-      val included = {
+      val included    = {
         val heading = descriptions.lift(1).map { desc =>
           Json.obj(
             "type"       -> "heading",

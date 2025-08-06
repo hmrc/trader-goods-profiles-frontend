@@ -64,6 +64,9 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
             case _  => Seq.empty
           }
         }
+        .recover { case _: UpstreamErrorResponse =>
+          Seq.empty
+        }
     } else {
       Future.successful(Seq.empty)
     }
@@ -78,6 +81,9 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
             case OK => response.json.as[Seq[DownloadData]]
             case _  => Seq.empty
           }
+        }
+        .recover { case _: UpstreamErrorResponse =>
+          Seq.empty
         }
     } else {
       Future.successful(Seq.empty)

@@ -125,12 +125,11 @@ object CategorisationAnswers {
   private def ensureNoExemptionIsOnlyFinalAnswer(
     answeredQuestionsOnly: Seq[AnsweredQuestions],
     recordId: String
-  ): EitherNec[ValidationError, Done]             =
+  ): EitherNec[ValidationError, Done] =
     if (answeredQuestionsOnly.isEmpty) {
       Right(Done)
     } else {
 
-      //Last answer can be a NoExemption. Others can't
       val allExceptLastAnswer          = answeredQuestionsOnly.reverse.tail
       val noExemptionsBeforeLastAnswer =
         allExceptLastAnswer.filter(ass => ass.answer.contains(AssessmentAnswer.NoExemption))

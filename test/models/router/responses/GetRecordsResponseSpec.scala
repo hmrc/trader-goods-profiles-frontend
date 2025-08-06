@@ -38,7 +38,7 @@ class GetRecordsResponseSpec extends SpecBase {
   private val assessmentJson: JsObject =
     Json.obj("assessmentId" -> "1234", "primaryCategory" -> 100, "condition" -> conditionJson)
 
-  private val getGoodsRecordResponse   = GetGoodsRecordResponse(
+  private val getGoodsRecordResponse = GetGoodsRecordResponse(
     recordId = "recordId",
     eori = "eori",
     actorId = "actorId",

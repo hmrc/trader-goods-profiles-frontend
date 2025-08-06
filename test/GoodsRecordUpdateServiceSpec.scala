@@ -39,10 +39,9 @@ class GoodsRecordUpdateServiceSpec extends AnyWordSpec with Matchers with Mockit
   val service                             = new GoodsRecordUpdateService(mockConnector)
 
   val recordId = "record-123"
-  val oldValue = "Old".toString
-  val newValue = "New".toString
+  val oldValue = "Old"
+  val newValue = "New"
 
-  // Example dummy data, replace with actual as needed
   val updateGoodsRecord: UpdateGoodsRecord = UpdateGoodsRecord(
     eori = "GB123456789000",
     recordId = recordId,

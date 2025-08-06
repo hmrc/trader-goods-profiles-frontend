@@ -444,7 +444,7 @@ case class AuditEventFactory() {
     booleanFlagDescription: String,
     valueDescription: String,
     optionalValue: Option[String]
-  )                                                                                  =
+  ) =
     optionalValue
       .map { value =>
         Map(booleanFlagDescription -> "true", valueDescription -> value)

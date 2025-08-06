@@ -131,7 +131,6 @@ class UpdateCountryOfOriginController @Inject() (
                 }
 
                 for {
-                  // Store the new updated country for this record
                   updatedAnswers <- Future.fromTry(request.userAnswers.set(CountryOfOriginUpdatePage(recordId), value))
 
                   _ <- sessionRepository.set(updatedAnswers)

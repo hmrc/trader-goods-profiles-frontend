@@ -109,9 +109,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
         .value
         .set(OriginalCountryOfOriginPage(testRecordId), recordForTestingSummaryRows.countryOfOrigin)
         .success
-        .value // ✅ Add this
+        .value
 
-      // Mock responses
       when(mockGoodsRecordConnector.getRecord(any())(any()))
         .thenReturn(Future.successful(recordForTestingSummaryRows))
       when(mockSessionRepository.set(any()))
@@ -136,7 +135,6 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
         val result  = route(application, request).value
         val content = contentAsString(result)
 
-        // ✅ Assertions
         withClue("Should return 200 OK") {
           status(result) mustEqual OK
         }
@@ -683,7 +681,6 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           val record   = goodsRecordResponseWithReviewReason(reviewReason = reviewReason)
           val toReview = true
 
-          // 🔑 Build expected UserAnswers to include OriginalCountryOfOriginPage
           val expectedUserAnswers = UserAnswers(userAnswersId)
             .set(ProductReferenceUpdatePage(record.recordId), record.traderRef)
             .success

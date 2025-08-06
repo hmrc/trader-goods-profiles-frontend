@@ -17,7 +17,7 @@
 package connectors
 
 import base.TestConstants.testEori
-import com.github.tomakehurst.wiremock.client.WireMock._
+import com.github.tomakehurst.wiremock.client.WireMock.*
 import generators.StatusCodeGenerators
 import models.DownloadDataStatus.FileInProgress
 import models.{DownloadData, DownloadDataSummary, Email}
@@ -26,11 +26,12 @@ import org.scalatest.OptionValues
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
+import org.scalatest.matchers.should.Matchers.shouldBe
 import play.api.Application
-import play.api.http.Status.ACCEPTED
+import play.api.http.Status._
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.http.test.WireMockSupport
 import utils.GetRecordsResponseUtil
 
@@ -71,6 +72,18 @@ class DownloadDataConnectorSpec
 
   ".requestDownloadData" - {
 
+    "must fail future when response status is unexpected (e.g. 400)" in {
+      wireMockServer.stubFor(
+        post(urlEqualTo(downloadDataUrl))
+          .withHeader(xClientIdName, equalTo(xClientId))
+          .willReturn(status(400).withBody("Bad Request"))
+      )
+
+      val ex = connector.requestDownloadData.failed.futureValue
+      ex shouldBe a[UpstreamErrorResponse]
+      ex.asInstanceOf[UpstreamErrorResponse].statusCode shouldBe 400
+    }
+
     "must request download data and return true if successful" in {
 
       wireMockServer.stubFor(
@@ -82,18 +95,57 @@ class DownloadDataConnectorSpec
       connector.requestDownloadData.futureValue mustEqual Done
     }
 
-    "must return a failed future when anything but Accepted is returned" in {
+    ".requestDownloadData" - {
 
+      "must request download data and return Done if successful" in {
+        wireMockServer.stubFor(
+          post(urlEqualTo("/trader-goods-profiles-data-store/traders/download-data"))
+            .withHeader("X-Client-ID", equalTo("tgp-frontend"))
+            .willReturn(aResponse().withStatus(202)) // ACCEPTED = 202
+        )
+
+        val result = connector.requestDownloadData.futureValue
+
+        result mustBe Done
+
+        wireMockServer.verify(
+          postRequestedFor(urlEqualTo("/trader-goods-profiles-data-store/traders/download-data"))
+            .withHeader("X-Client-ID", equalTo("tgp-frontend"))
+        )
+      }
+
+      "must fail if response status is not ACCEPTED" in {
+        val errorStatus = 500
+
+        wireMockServer.stubFor(
+          post(urlEqualTo("/trader-goods-profiles-data-store/traders/download-data"))
+            .withHeader("X-Client-ID", equalTo("tgp-frontend"))
+            .willReturn(aResponse().withStatus(errorStatus).withBody("error"))
+        )
+
+        val result = connector.requestDownloadData
+
+        val ex = result.failed.futureValue
+        ex shouldBe a[UpstreamErrorResponse]
+        ex.asInstanceOf[UpstreamErrorResponse].statusCode shouldBe errorStatus
+
+        wireMockServer.verify(
+          postRequestedFor(urlEqualTo("/trader-goods-profiles-data-store/traders/download-data"))
+            .withHeader("X-Client-ID", equalTo("tgp-frontend"))
+        )
+      }
+    }
+
+
+    "must return Seq.empty when response status is unexpected" in {
       wireMockServer.stubFor(
-        post(urlEqualTo(downloadDataUrl))
-          .withHeader(xClientIdName, equalTo(xClientId))
-          .willReturn(status(errorResponses.sample.value))
+        get(urlEqualTo(downloadDataSummaryUrl))
+          .willReturn(aResponse().withStatus(204))
       )
 
-      val result = connector.requestDownloadData
-
-      result.failed.futureValue
+      connector.getDownloadDataSummary.futureValue mustBe Seq.empty
     }
+
 
     "must return a failed future when the server returns an error" in {
 
@@ -106,17 +158,171 @@ class DownloadDataConnectorSpec
       connector.requestDownloadData.failed.futureValue
     }
 
+    "must return Seq.empty when status is unexpected" in {
+      wireMockServer.stubFor(
+        get(urlEqualTo(downloadDataSummaryUrl))
+          .willReturn(forbidden())
+      )
+
+      connector.getDownloadDataSummary.futureValue mustBe Seq.empty
+    }
+
+
   }
+
+  ".getDownloadDataSummary" - {
+
+    "must return data when status is OK" in {
+      val downloadDataSummary = Seq(DownloadDataSummary("id", testEori, FileInProgress, Instant.now(), Instant.now(), None))
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(downloadDataSummaryUrl))
+          .willReturn(ok().withBody(Json.toJson(downloadDataSummary).toString))
+      )
+
+      connector.getDownloadDataSummary.futureValue mustBe downloadDataSummary
+    }
+
+    "must return empty Seq when status is not OK" in {
+      wireMockServer.stubFor(
+        get(urlEqualTo(downloadDataSummaryUrl))
+          .willReturn(status(404))
+      )
+
+      connector.getDownloadDataSummary.futureValue mustBe Seq.empty
+    }
+
+    "must return empty Seq on UpstreamErrorResponse" in {
+      wireMockServer.stubFor(
+        get(urlEqualTo(downloadDataSummaryUrl))
+          .willReturn(serverError())
+      )
+
+      connector.getDownloadDataSummary.futureValue mustBe Seq.empty
+    }
+
+    "must return empty Seq when feature flag is disabled" in {
+      val appNoDownload = new GuiceApplicationBuilder()
+        .configure("features.download-file-enabled" -> false)
+        .build()
+
+      val connectorNoDownload = appNoDownload.injector.instanceOf[DownloadDataConnector]
+
+      connectorNoDownload.getDownloadDataSummary.futureValue mustBe Seq.empty
+    }
+  }
+
+  ".getEmail" - {
+
+    val emailUrl = "/trader-goods-profiles-data-store/traders/email"
+    val testEmail = Email("test@example.com", Instant.now())
+
+    "must fail future when response status is unexpected (e.g. 500)" in {
+      wireMockServer.stubFor(
+        get(urlEqualTo(emailUrl))
+          .willReturn(status(500).withBody("Server Error"))
+      )
+
+      val ex = connector.getEmail.failed.futureValue
+      ex shouldBe a[UpstreamErrorResponse]
+      ex.asInstanceOf[UpstreamErrorResponse].statusCode shouldBe 500
+    }
+
+    "must return Some(email) when status is OK" in {
+      wireMockServer.stubFor(
+        get(urlEqualTo(emailUrl))
+          .willReturn(ok().withBody(Json.toJson(testEmail).toString))
+      )
+
+      connector.getEmail.futureValue mustBe Some(testEmail)
+    }
+
+    "must return None when status is NOT_FOUND" in {
+      wireMockServer.stubFor(
+        get(urlEqualTo(emailUrl))
+          .willReturn(notFound())
+      )
+
+      connector.getEmail.futureValue mustBe None
+    }
+
+    "must fail with UpstreamErrorResponse on unexpected error status" in {
+      wireMockServer.stubFor(
+        get(urlEqualTo(emailUrl))
+          .willReturn(status(500).withBody("internal error"))
+      )
+
+      val ex = connector.getEmail.failed.futureValue
+      ex shouldBe a[UpstreamErrorResponse]
+      ex.asInstanceOf[UpstreamErrorResponse].statusCode shouldBe 500
+    }
+
+    "must return None when UpstreamErrorResponse with NOT_FOUND is thrown" in {
+      wireMockServer.stubFor(
+        get(urlEqualTo(emailUrl))
+          .willReturn(aResponse().withStatus(NOT_FOUND))
+      )
+
+      connector.getEmail.futureValue mustBe None
+    }
+  }
+
+  ".updateSeenStatus" - {
+
+    val updateUrl = "/trader-goods-profiles-data-store/traders/download-data-summary"
+
+    ".updateSeenStatus" - {
+      "must fail future when response status is unexpected (e.g. 404)" in {
+        wireMockServer.stubFor(
+          patch(urlEqualTo(downloadDataSummaryUrl))
+            .willReturn(status(404).withBody("Not Found"))
+        )
+
+        val ex = connector.updateSeenStatus.failed.futureValue
+        ex shouldBe a[UpstreamErrorResponse]
+        ex.asInstanceOf[UpstreamErrorResponse].statusCode shouldBe 404
+      }
+    }
+
+
+    "must return Done when response status is NO_CONTENT (204)" in {
+      wireMockServer.stubFor(
+        patch(urlEqualTo(updateUrl))
+          .willReturn(noContent())
+      )
+
+      connector.updateSeenStatus.futureValue mustBe Done
+    }
+
+    "must fail with UpstreamErrorResponse when response status is not NO_CONTENT" in {
+      wireMockServer.stubFor(
+        patch(urlEqualTo(updateUrl))
+          .willReturn(status(500).withBody("server error"))
+      )
+
+      val ex = connector.updateSeenStatus.failed.futureValue
+      ex shouldBe a[UpstreamErrorResponse]
+      ex.asInstanceOf[UpstreamErrorResponse].statusCode shouldBe 500
+    }
+  }
+
 
   ".getDownloadData" - {
 
-    "must get download data data" in {
+    ".getDownloadData" - {
+      "must return empty seq on non-OK (e.g. 403 Forbidden)" in {
+        wireMockServer.stubFor(
+          get(urlEqualTo(downloadDataUrl))
+            .willReturn(status(403))
+        )
 
-      val downloadURL  = "downloadURL"
-      val fileName     = "fileName"
-      val fileSize     = 600
-      val metadata     = Seq.empty
-      val downloadData = Seq(DownloadData(downloadURL, fileName, fileSize, metadata))
+        connector.getDownloadData.futureValue mustBe Seq.empty
+      }
+    }
+
+
+    "must return data when status is OK" in {
+      val downloadData = Seq(DownloadData("downloadURL", "fileName", 600, Seq.empty))
 
       wireMockServer.stubFor(
         get(urlEqualTo(downloadDataUrl))
@@ -126,132 +332,32 @@ class DownloadDataConnectorSpec
       connector.getDownloadData.futureValue mustBe downloadData
     }
 
-    "must return Seq.empty" - {
-      "if status code is internal server error" in {
+    "must return empty Seq when status is not OK" in {
+      wireMockServer.stubFor(
+        get(urlEqualTo(downloadDataUrl))
+          .willReturn(status(400))
+      )
 
-        wireMockServer.stubFor(
-          get(urlEqualTo(downloadDataUrl))
-            .willReturn(serverError())
-        )
-
-        connector.getDownloadData.failed.futureValue
-      }
-
-      "if feature flag for downloading data is disabled" in {
-
-        val appNoDownload = new GuiceApplicationBuilder()
-          .configure("microservice.services.trader-goods-profiles-data-store.port" -> wireMockPort)
-          .configure("features.download-file-enabled" -> false)
-          .build()
-
-        val connectorNoDownload = appNoDownload.injector.instanceOf[DownloadDataConnector]
-
-        wireMockServer.stubFor(
-          get(urlEqualTo(downloadDataUrl))
-            .willReturn(ok())
-        )
-
-        connectorNoDownload.getDownloadData.futureValue mustBe Seq.empty
-      }
+      connector.getDownloadData.futureValue mustBe Seq.empty
     }
 
-    ".getDownloadDataSummary" - {
+    "must return empty Seq on UpstreamErrorResponse" in {
+      wireMockServer.stubFor(
+        get(urlEqualTo(downloadDataUrl))
+          .willReturn(serverError())
+      )
 
-      val downloadDataSummary =
-        Seq(DownloadDataSummary("id", testEori, FileInProgress, Instant.now(), Instant.now(), None))
-
-      "must get download data summary" in {
-
-        wireMockServer.stubFor(
-          get(urlEqualTo(downloadDataSummaryUrl))
-            .willReturn(ok().withBody(Json.toJson(downloadDataSummary).toString))
-        )
-
-        connector.getDownloadDataSummary.futureValue mustBe downloadDataSummary
-      }
-
-      "must return Seq.empty" - {
-
-        "if feature flag for downloading data is disabled" in {
-
-          val appNoDownload = new GuiceApplicationBuilder()
-            .configure("microservice.services.trader-goods-profiles-data-store.port" -> wireMockPort)
-            .configure("features.download-file-enabled" -> false)
-            .build()
-
-          val connectorNoDownload = appNoDownload.injector.instanceOf[DownloadDataConnector]
-
-          wireMockServer.stubFor(
-            get(urlEqualTo(downloadDataSummaryUrl))
-              .withHeader(xClientIdName, equalTo(xClientId))
-              .willReturn(ok())
-          )
-
-          connectorNoDownload.getDownloadDataSummary.futureValue mustBe Seq.empty
-        }
-
-      }
+      connector.getDownloadData.futureValue mustBe Seq.empty
     }
 
-    ".getEmail" - {
-      val emailUrl =
-        s"/trader-goods-profiles-data-store/traders/email"
+    "must return empty Seq when feature flag is disabled" in {
+      val appNoDownload = new GuiceApplicationBuilder()
+        .configure("features.download-file-enabled" -> false)
+        .build()
 
-      val address   = "somebody@email.com"
-      val timestamp = Instant.now
-      val email     = Email(address, timestamp)
-      "must get email" in {
+      val connectorNoDownload = appNoDownload.injector.instanceOf[DownloadDataConnector]
 
-        wireMockServer.stubFor(
-          get(urlEqualTo(emailUrl))
-            .willReturn(ok().withBody(Json.toJson(email).toString))
-        )
-
-        connector.getEmail.futureValue mustBe Some(email)
-      }
-
-      "must return a failed future when the server returns an error" in {
-
-        wireMockServer.stubFor(
-          get(urlEqualTo(emailUrl))
-            .willReturn(serverError())
-        )
-
-        connector.getEmail.failed.futureValue
-      }
-
-      "must return None when the email isn't found" in {
-
-        wireMockServer.stubFor(
-          get(urlEqualTo(emailUrl))
-            .willReturn(notFound())
-        )
-
-        connector.getEmail.futureValue mustBe None
-      }
-    }
-
-    ".updateSeenStatus" - {
-
-      "must return Done on NO_CONTENT" in {
-
-        wireMockServer.stubFor(
-          patch(urlEqualTo(downloadDataSummaryUrl))
-            .willReturn(noContent())
-        )
-
-        connector.updateSeenStatus.futureValue mustBe Done
-      }
-
-      "must return exception on 4xx+ responses" in {
-
-        wireMockServer.stubFor(
-          patch(urlEqualTo(downloadDataSummaryUrl))
-            .willReturn(status(errorResponses.sample.value))
-        )
-
-        connector.updateSeenStatus.failed.futureValue
-      }
+      connectorNoDownload.getDownloadData.futureValue mustBe Seq.empty
     }
   }
 }

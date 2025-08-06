@@ -77,28 +77,21 @@ class CyaSupplementaryUnitController @Inject() (
         case Right(model) =>
           val initialHasSuppUnitOpt = request.session.get(initialValueOfHasSuppUnit).map(_.toBoolean)
           val initialSuppUnitOpt    = request.session.get(initialValueOfSuppUnit)
-
-          val finalHasSuppUnitOpt = model.hasSupplementaryUnit
-          val finalSuppUnitOpt    = model.supplementaryUnit
-
-          val isValueChanged =
+          val finalHasSuppUnitOpt   = model.hasSupplementaryUnit
+          val finalSuppUnitOpt      = model.supplementaryUnit
+          val isValueChanged        =
             initialHasSuppUnitOpt != finalHasSuppUnitOpt ||
               compareSupplementaryUnits(initialSuppUnitOpt, finalSuppUnitOpt)
-
-          val finalSuppUnitBD = convertToBigDecimal(finalSuppUnitOpt)
-
-          //if supplementary unit is zero, we consider it removed. This needs to be re-factored when API starts supporting null for removing objects
-          val isSuppUnitRemoved =
+          val finalSuppUnitBD       = convertToBigDecimal(finalSuppUnitOpt)
+          val isSuppUnitRemoved     =
             (initialHasSuppUnitOpt
               .contains(true) && finalHasSuppUnitOpt.contains(false)) || finalSuppUnitBD.contains(BigDecimal(0))
-
           auditService.auditFinishUpdateSupplementaryUnitGoodsRecord(
             recordId,
             request.affinityGroup,
             model
           )
-
-          val result = for {
+          val result                = for {
             oldRecord <- goodsRecordConnector.getRecord(recordId)
             _         <- goodsRecordConnector.updateSupplementaryUnitForGoodsRecord(recordId, model, oldRecord)
           } yield {
@@ -108,9 +101,7 @@ class CyaSupplementaryUnitController @Inject() (
               .addingToSession(dataRemoved -> isSuppUnitRemoved.toString)
               .addingToSession(pageUpdated -> supplementaryUnit)
           }
-
           result
-
         case Left(errors) =>
           dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
           Future.successful(

@@ -20,7 +20,6 @@ import base.TestConstants.{testEori, testRecordId}
 import com.github.tomakehurst.wiremock.client.WireMock.*
 import models.{Commodity, Country, CountryCodeCache}
 import models.helper.CreateRecordJourney
-import models.ott.response.CountriesResponse
 import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, verify, when}
@@ -49,7 +48,7 @@ class OttConnectorSpec
     with ScalaFutures
     with IntegrationPatience {
 
-  private val auditService = mock[AuditService]
+  private val auditService        = mock[AuditService]
   private val mockCacheRepository = mock[CountryRepository]
 
   private lazy val app: Application =
@@ -250,8 +249,9 @@ class OttConnectorSpec
     "when cache is available" - {
       "must return cached countries without calling the API" in {
         val cachedCountries = Seq(Country("CN", "China"), Country("UK", "United Kingdom"))
-        when(mockCacheRepository.get()).thenReturn(Future.successful(Some(CountryCodeCache("ott_country_codes", cachedCountries, Instant.now()))))
-        val result = connector.getCountries.futureValue
+        when(mockCacheRepository.get())
+          .thenReturn(Future.successful(Some(CountryCodeCache("ott_country_codes", cachedCountries, Instant.now()))))
+        val result          = connector.getCountries.futureValue
         result mustBe cachedCountries.sortWith(_.description < _.description)
         wireMockServer.verify(0, getRequestedFor(urlEqualTo("/xi/api/v2/geographical_areas/countries")))
       }
@@ -260,12 +260,14 @@ class OttConnectorSpec
     "when cache is not available" - {
       "must call the API and cache the response" in {
         val apiCountries = Seq(Country("CN", "China"), Country("UK", "United Kingdom"))
-        val jsonResponse = Json.obj(
-          "data" -> Json.arr(
-            Json.obj("attributes" -> Json.obj("id" -> "CN", "description" -> "China")),
-            Json.obj("attributes" -> Json.obj("id" -> "UK", "description" -> "United Kingdom"))
+        val jsonResponse = Json
+          .obj(
+            "data" -> Json.arr(
+              Json.obj("attributes" -> Json.obj("id" -> "CN", "description" -> "China")),
+              Json.obj("attributes" -> Json.obj("id" -> "UK", "description" -> "United Kingdom"))
+            )
           )
-        ).toString()
+          .toString()
 
         wireMockServer.stubFor(
           get(urlEqualTo("/xi/api/v2/geographical_areas/countries"))
@@ -291,12 +293,14 @@ class OttConnectorSpec
     }
 
     "must correctly parse and sort countries from the API" in {
-      val jsonResponse = Json.obj(
-        "data" -> Json.arr(
-          Json.obj("attributes" -> Json.obj("id" -> "UK", "description" -> "United Kingdom")),
-          Json.obj("attributes" -> Json.obj("id" -> "CN", "description" -> "China"))
+      val jsonResponse = Json
+        .obj(
+          "data" -> Json.arr(
+            Json.obj("attributes" -> Json.obj("id" -> "UK", "description" -> "United Kingdom")),
+            Json.obj("attributes" -> Json.obj("id" -> "CN", "description" -> "China"))
+          )
         )
-      ).toString()
+        .toString()
 
       wireMockServer.stubFor(
         get(urlEqualTo("/xi/api/v2/geographical_areas/countries"))
@@ -521,11 +525,4 @@ class OttConnectorSpec
     )
   }
 
-    private def stubCountriesApi(countries: Seq[Country]) = {
-      val body = Json.toJson(CountriesResponse(countries)).toString()
-      wireMockServer.stubFor(
-        get(urlEqualTo("/xi/api/v2/geographical_areas/countries"))
-          .willReturn(ok().withBody(body))
-      )
-    }
-  }
+}

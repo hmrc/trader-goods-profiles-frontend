@@ -56,17 +56,17 @@ class CommodityCodeCyaControllerSpec
   private lazy val journeyRecoveryContinueUrl =
     controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId).url
 
-  private val mockCommodityService         = mock[CommodityService]
-  private val mockGoodsRecordUpdateService = mock[GoodsRecordUpdateService]
-  private val mockAuditService             = mock[AuditService]
-  private val mockGoodsRecordConnector     = mock[GoodsRecordConnector]
-  private val mockOttConnector             = mock[OttConnector]
-  private val mockSessionRepository        = mock[SessionRepository]
-  private val mockAutoCategoriseService    = mock[AutoCategoriseService]
-  implicit val hc: HeaderCarrier           = HeaderCarrier()
-  val effectiveFrom: Instant               = Instant.now
-  val effectiveTo: Instant                 = effectiveFrom.plusSeconds(1)
-  private val commodity                    =
+  private val mockCommodityService          = mock[CommodityService]
+  private val mockGoodsRecordUpdateService  = mock[GoodsRecordUpdateService]
+  private val mockAuditService              = mock[AuditService]
+  private val mockGoodsRecordConnector      = mock[GoodsRecordConnector]
+  private val mockOttConnector              = mock[OttConnector]
+  private val mockSessionRepository         = mock[SessionRepository]
+  private val mockAutoCategoriseService     = mock[AutoCategoriseService]
+  implicit val hc: HeaderCarrier            = HeaderCarrier()
+  val effectiveFrom: Instant                = Instant.now
+  val effectiveTo: Instant                  = effectiveFrom.plusSeconds(1)
+  private val commodity                     =
     Commodity(
       "1704900000",
       List(
@@ -284,11 +284,9 @@ class CommodityCodeCyaControllerSpec
             .success
             .value
 
-          // Mock audit service
           when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any()))
             .thenReturn(Future.successful(Done))
 
-          // Mock OttConnector getCountries
           when(mockOttConnector.getCountries)
             .thenReturn(
               Future.successful(
@@ -299,20 +297,17 @@ class CommodityCodeCyaControllerSpec
               )
             )
 
-          // Mock session repository set
           when(mockSessionRepository.set(any()))
             .thenReturn(Future.successful(true))
 
-          // Mock GoodsRecordConnector methods
           when(mockGoodsRecordConnector.putGoodsRecord(any(), any())(any()))
             .thenReturn(Future.successful(Done))
 
           when(mockGoodsRecordConnector.getRecord(any())(any()))
-            .thenReturn(Future.successful(record)) // avoids real HTTP call
+            .thenReturn(Future.successful(record))
 
-          // Mock AutoCategoriseService to return Future[Option[UserAnswers]]
           when(mockAutoCategoriseService.autoCategoriseRecord(any[String], any[UserAnswers])(any(), any()))
-            .thenReturn(Future.successful(Some(emptyUserAnswers))) // <-- return Some(UserAnswers) wrapped in Future
+            .thenReturn(Future.successful(Some(emptyUserAnswers)))
 
           val application = applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
@@ -452,7 +447,6 @@ class CommodityCodeCyaControllerSpec
             .success
             .value
 
-          // Mock necessary dependencies
           when(mockGoodsRecordConnector.getRecord(any())(any()))
             .thenReturn(Future.successful(record))
 
@@ -480,7 +474,7 @@ class CommodityCodeCyaControllerSpec
               bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
               bind[AuditService].toInstance(mockAuditService),
               bind[CommodityService].toInstance(mockCommodityService),
-              bind[OttConnector].toInstance(mockOttConnector), // ✅ important for fixing 401
+              bind[OttConnector].toInstance(mockOttConnector),
               bind[SessionRepository].toInstance(mockSessionRepository),
               bind[AutoCategoriseService].toInstance(mockAutoCategoriseService)
             )

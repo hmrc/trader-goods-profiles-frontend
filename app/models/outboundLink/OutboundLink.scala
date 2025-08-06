@@ -119,7 +119,6 @@ object OutboundLink {
     val linkTextKey: String = "helpAndSupport.p13.linkText"
   }
 
-  // Country of Origin Page
   case class CountryOfOrigin(mode: Mode, recordId: Option[String]) extends OutboundLink {
     val link: String            = "https://www.gov.uk/guidance/check-your-goods-meet-the-rules-of-origin"
     val linkTextKey: String     = "countryOfOrigin.p2.linkText"
@@ -130,7 +129,6 @@ object OutboundLink {
     }
   }
 
-  // Commodity Code Page
   case class FindCommodity(mode: Mode, recordId: Option[String]) extends OutboundLink {
     val link: String            = "https://www.trade-tariff.service.gov.uk/xi/find_commodity"
     val linkTextKey: String     = "commodityCode.p1.linkText"
@@ -141,7 +139,6 @@ object OutboundLink {
     }
   }
 
-  // Longer Commodity Code Page
   case class FindLongCommodity(mode: Mode, recordId: String, commodityCode: String)(implicit
     appConfig: FrontendAppConfig
   ) extends OutboundLink {
@@ -151,7 +148,6 @@ object OutboundLink {
       controllers.categorisation.routes.LongerCommodityCodeController.onPageLoad(mode, recordId).url
   }
 
-  // Has Correct Goods Page
   case class FindCommodityHasCorrectGoods(mode: Mode, recordId: Option[String], commodityCode: String)(implicit
     frontendAppConfig: FrontendAppConfig
   ) extends OutboundLink {
@@ -164,7 +160,6 @@ object OutboundLink {
     }
   }
 
-  // Assessment Page
   case class FindCommodityAssessments(
     mode: Mode,
     recordId: String,
@@ -190,7 +185,6 @@ object OutboundLink {
     val originatingPage: String = originatingPage(mode, recordId, assessmentNumber, isReassessment)
   }
 
-  // Has Nirms Page
   case class RetailMovement(mode: Mode, isCreateJourney: Boolean) extends OutboundLink {
     val link: String            =
       "https://www.gov.uk/government/publications/retail-movement-scheme-how-the-scheme-will-work/retail-movement-scheme-how-the-scheme-will-work#product-eligibility"
@@ -202,7 +196,6 @@ object OutboundLink {
     }
   }
 
-  // Has Niphl Page
   case class MovingPlants(mode: Mode, isCreateJourney: Boolean) extends OutboundLink {
     val link: String            = "https://www.gov.uk/guidance/moving-plants-from-great-britain-to-northern-ireland"
     val linkTextKey: String     = "hasNiphl.p2.linkText"
@@ -213,7 +206,6 @@ object OutboundLink {
     }
   }
 
-  // Profile Setup Page
   case object ApplyForAuth extends ProfileSetupLink {
     val link: String        =
       "https://www.gov.uk/guidance/apply-for-authorisation-for-the-uk-internal-market-scheme-if-you-bring-goods-into-northern-ireland"
@@ -231,7 +223,6 @@ object OutboundLink {
     val linkTextKey: String = "profileSetup.p9.linkText"
   }
 
-  // Advice Start Page
   case class ApplyBinding(recordId: String) extends OutboundLink {
     val link: String            = "https://www.gov.uk/guidance/apply-for-a-binding-tariff-information-decision"
     val linkTextKey: String     = "adviceStart.p2.linkText"

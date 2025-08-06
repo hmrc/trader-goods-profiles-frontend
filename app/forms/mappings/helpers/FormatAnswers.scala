@@ -22,7 +22,7 @@ object FormatAnswers {
   def removeWhitespace(original: String): String                     = original.filterNot(_.isWhitespace)
   def toUppercaseAndRemoveSpacesAndHyphens(original: String): String =
     original.toUpperCase.replaceAll(" ", "").replaceAll("-", "")
-  def addHyphensToNirms(original: String): String = {
+  def addHyphensToNirms(original: String): String                    = {
     val hyphenPos1 = 3
     val hyphenPos2 = 5
     val bite1      = original.slice(0, hyphenPos1)

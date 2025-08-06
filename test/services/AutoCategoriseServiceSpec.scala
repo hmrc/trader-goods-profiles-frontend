@@ -171,7 +171,7 @@ class AutoCategoriseServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
         commodityCode = "1234567890",
         countryOfOrigin = "GB",
         comcodeEffectiveToDate = None,
-        categoryAssessments = Seq(categoryAssessment), // <-- must not be empty!
+        categoryAssessments = Seq(categoryAssessment),
         categoryAssessmentsThatNeedAnswers = Seq.empty,
         measurementUnit = None,
         descendantCount = 0

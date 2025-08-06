@@ -17,25 +17,33 @@
 package connectors
 
 import base.TestConstants.testEori
-import com.github.tomakehurst.wiremock.client.WireMock._
+import com.github.tomakehurst.wiremock.client.WireMock.*
 import generators.StatusCodeGenerators
 import models.ott.CategorisationInfo
 import models.router.requests.{CreateRecordRequest, PatchRecordRequest, PutRecordRequest}
 import models.router.responses.{GetGoodsRecordResponse, GetRecordsResponse}
 import models.{Category1Scenario, CategoryRecord, Commodity, GoodsRecord, RecordsSummary, SupplementaryRequest, UpdateGoodsRecord}
 import org.scalatest.OptionValues
+import org.scalatest.RecoverMethods.recoverToExceptionIf
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
+import org.scalatest.matchers.should.Matchers.{should, shouldBe}
 import play.api.Application
-import play.api.http.Status.ACCEPTED
+import play.api.http.Status.{ACCEPTED, INTERNAL_SERVER_ERROR, NOT_FOUND, OK}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
-import uk.gov.hmrc.http.HeaderCarrier
+import play.api.test.Helpers.await
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.http.test.WireMockSupport
 import utils.GetRecordsResponseUtil
+import play.api.test.Helpers.defaultAwaitTimeout
+import scala.concurrent.ExecutionContext.Implicits.global
 
+import java.net.URLEncoder
+import java.util.regex.Pattern
 import java.time.Instant
+import scala.concurrent.Future
 
 class GoodsRecordConnectorSpec
     extends AnyFreeSpec
@@ -237,6 +245,52 @@ class GoodsRecordConnectorSpec
 
   private val instant = Instant.now
 
+  "filterSearchRecordsUrl" - {
+
+    "return matching records when all filters are applied" in {
+      val responseBody =
+        Json.obj(
+          "goodsItemRecords" -> Json.arr(),
+          "pagination" -> Json.obj(
+            "totalPages" -> 0,
+            "currentPage" -> 2,
+            "totalRecords" -> 0
+          )
+        )
+
+      stubFor(
+        get(
+          urlMatching(
+            """.*searchTerm=special\+%26\+term.*countryOfOrigin=UK\+%26\+Ireland.*IMMIReady=true.*notReadyForIMMI=false.*actionNeeded=true.*pageOpt=2.*sizeOpt=50.*"""
+          )
+        )
+          .willReturn(
+            aResponse()
+              .withStatus(200)
+              .withHeader("Content-Type", "application/json")
+              .withBody(responseBody.toString())
+          )
+      )
+
+      val result: Future[Option[GetRecordsResponse]] = connector.searchRecords(
+        eori = "GB123456789000",
+        searchTerm = Some("special & term"),
+        exactMatch = false,
+        countryOfOrigin = Some("UK & Ireland"),
+        IMMIReady = Some(true),
+        notReadyForIMMI = Some(false),
+        actionNeeded = Some(true),
+        page = 2,
+        size = 50
+      )(HeaderCarrier())
+
+      whenReady(result) { maybeResponse =>
+        maybeResponse mustBe defined
+        maybeResponse.get.goodsItemRecords mustBe empty
+      }
+    }
+  }
+
   ".submitGoodsRecord" - {
 
     val createGoodsRecordUrl = s"/trader-goods-profiles-data-store/traders/records"
@@ -290,6 +344,42 @@ class GoodsRecordConnectorSpec
 
     val removeRecordUrl = s"/trader-goods-profiles-data-store/traders/records/$testRecordId"
 
+    "fail with UpstreamErrorResponse when unexpected error occurs (e.g. 500)" in {
+      stubFor(
+        delete(urlEqualTo("/trader-goods-profiles-data-store/traders/records/some-record-id"))
+          .willReturn(
+            aResponse()
+              .withStatus(INTERNAL_SERVER_ERROR)
+              .withBody("Internal server error occurred")
+          )
+      )
+
+
+      val result = connector.removeGoodsRecord("some-record-id")
+
+      whenReady(result.failed) {
+        case ex: UpstreamErrorResponse =>
+          ex.statusCode shouldBe INTERNAL_SERVER_ERROR
+          ex.getMessage should include("Internal server error occurred")
+        case other =>
+          fail(s"Expected UpstreamErrorResponse but got $other")
+      }
+    }
+
+
+    "return false when record is not found (404)" in {
+      stubFor(
+        delete(urlEqualTo("/trader-goods-profiles-data-store/traders/records/delete/some-record-id"))
+          .willReturn(
+            aResponse()
+              .withStatus(NOT_FOUND)
+          )
+      )
+      val result = await(connector.removeGoodsRecord("some-record-id"))
+      result shouldBe false
+    }
+
+
     "must return true when goods record is removed" in {
 
       wireMockServer.stubFor(
@@ -301,6 +391,34 @@ class GoodsRecordConnectorSpec
       connector.removeGoodsRecord(testRecordId).futureValue mustBe true
     }
 
+    "must return false when DELETE returns 404 Not Found" in {
+      stubFor(
+        delete(urlEqualTo(s"/your-endpoint/$testRecordId"))
+          .willReturn(aResponse().withStatus(NOT_FOUND))
+      )
+
+      connector.removeGoodsRecord(testRecordId).futureValue mustBe false
+    }
+
+    "must fail when DELETE returns an unexpected error (e.g. 500)" in {
+      val stubUrl = s"/trader-goods-profiles-data-store/traders/records/$testRecordId"
+
+      wireMockServer.stubFor(
+        delete(urlEqualTo(stubUrl))
+          .willReturn(
+            aResponse()
+              .withStatus(INTERNAL_SERVER_ERROR)
+              .withBody("Internal Server Error")
+          )
+      )
+
+      val result = connector.removeGoodsRecord(testRecordId)
+
+      whenReady(result.failed) { ex =>
+        ex mustBe an[UpstreamErrorResponse]
+      }
+    }
+
     "must return a false when anything, but NO_CONTENT is returned" in {
 
       wireMockServer.stubFor(
@@ -310,6 +428,7 @@ class GoodsRecordConnectorSpec
       )
 
       connector.removeGoodsRecord(testRecordId).failed.futureValue
+
     }
 
     "must return a failed future when the server returns an error" in {
@@ -640,6 +759,29 @@ class GoodsRecordConnectorSpec
 
     val pagedGoodsRecordsUrl = s"/trader-goods-profiles-data-store/traders/records?page=1&size=3"
 
+    "fail with UpstreamErrorResponse when unexpected error occurs (e.g. 500)" in {
+      stubFor(
+        get(urlPathEqualTo("/trader-goods-profiles-data-store/traders/records"))
+          .withQueryParam("page", equalTo("1"))
+          .withQueryParam("size", equalTo("10"))
+          .willReturn(
+            aResponse()
+              .withStatus(INTERNAL_SERVER_ERROR)
+              .withBody("Internal server error")
+          )
+      )
+
+      val result = connector.getRecords(1, 10)
+
+      whenReady(result.failed) { ex =>
+        ex shouldBe a[UpstreamErrorResponse]
+        val ue = ex.asInstanceOf[UpstreamErrorResponse]
+        ue.statusCode shouldBe INTERNAL_SERVER_ERROR
+        ue.getMessage should include("Internal server error")
+      }
+    }
+
+
     "must get a page of goods records" in {
 
       wireMockServer.stubFor(
@@ -698,8 +840,39 @@ class GoodsRecordConnectorSpec
 
   ".filterRecordsByField" - {
 
+    "fail with UpstreamErrorResponse when response status is unexpected (e.g. 500)" in {
+      val eori = "someEori"
+      val searchTerm = "searchTermValue"
+      val field = "fieldName"
+
+      stubFor(
+        get(urlPathEqualTo(s"/trader-goods-profiles-data-store/traders/$eori/records/filter"))
+          .withQueryParam("searchTerm", equalTo(searchTerm))
+          .withQueryParam("field", equalTo(field))
+          .willReturn(
+            aResponse()
+              .withStatus(INTERNAL_SERVER_ERROR)
+              .withBody("Internal server error occurred")
+          )
+      )
+
+      val result = connector.filterRecordsByField(eori, searchTerm, field)
+
+      whenReady(result.failed) {
+        case ex: UpstreamErrorResponse =>
+          ex.statusCode shouldBe INTERNAL_SERVER_ERROR
+          ex.getMessage should include("Internal server error occurred")
+        case other =>
+          fail(s"Expected UpstreamErrorResponse but got $other")
+      }
+    }
+
     val filterRecordsUrl =
       s"/trader-goods-profiles-data-store/traders/$testEori/records/filter?searchTerm=TOM001001&field=traderRef"
+
+
+
+
 
     "must get a page of goods records" in {
 
@@ -760,8 +933,8 @@ class GoodsRecordConnectorSpec
 
   ".searchRecords" - {
 
-    val searchString               = "banana"
-    val exactMatch                 = false
+    val searchString = "banana"
+    val exactMatch = false
     val pagedGoodsRecordsSearchUrl =
       s"/trader-goods-profiles-data-store/traders/$testEori/records/filter?searchTerm=$searchString&exactMatch=$exactMatch&page=1&size=3"
 
@@ -803,6 +976,85 @@ class GoodsRecordConnectorSpec
           .futureValue
           .value mustBe getRecordsResponse.as[GetRecordsResponse]
       }
+
+      "must include properly encoded countryOfOrigin in URL" in {
+        val countryOfOrigin = "UK & Ireland"
+        val encoded = java.net.URLEncoder.encode(countryOfOrigin, "UTF-8")
+        val regexEncoded = Pattern.quote(encoded)
+
+        wireMockServer.stubFor(
+          get(urlMatching(s"/trader-goods-profiles-data-store/traders/records/filter\\?countryOfOrigin=$regexEncoded.*"))
+            .willReturn(
+              aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody(getRecordsResponse.toString)
+            )
+        )
+
+        val future = connector.searchRecords(
+          eori = "someEori",
+          searchTerm = None,
+          exactMatch = false,
+          countryOfOrigin = Some(countryOfOrigin),
+          IMMIReady = None,
+          notReadyForIMMI = None,
+          actionNeeded = None,
+          page = 1,
+          size = 10
+        )(hc)
+
+        future.futureValue mustBe defined
+
+        wireMockServer.verify(getRequestedFor(urlMatching(s".*countryOfOrigin=$regexEncoded.*")))
+      }
+
+      "fail with UpstreamErrorResponse when unexpected error occurs (e.g. 500)" in {
+        val eori = "some-eori"
+        val searchTerm = Some("banana")
+        val exactMatch = false
+        val countryOfOrigin = Some("UK")
+        val IMMIReady = Some(true)
+        val notReadyForIMMI = None
+        val actionNeeded = None
+        val page = 1
+        val size = 10
+
+        val baseUrl = "/trader-goods-profiles-data-store/trader-goods-profiles-data-store/traders/records/filter"
+
+        val queryParams = Map("pageOpt" -> page.toString, "sizeOpt" -> size.toString)
+
+        val queryParamsSeq = Seq(
+          searchTerm.map(term => s"searchTerm=${URLEncoder.encode(term, "UTF-8")}"),
+          countryOfOrigin.filter(_.nonEmpty).map(origin => s"countryOfOrigin=${URLEncoder.encode(origin, "UTF-8")}"),
+          IMMIReady.map(ready => s"IMMIReady=$ready"),
+          notReadyForIMMI.map(notReady => s"notReadyForIMMI=$notReady"),
+          actionNeeded.map(needed => s"actionNeeded=$needed")
+        ).flatten ++ queryParams.map { case (k, v) =>
+          s"${URLEncoder.encode(k, "UTF-8")}=${URLEncoder.encode(v, "UTF-8")}"
+        }
+
+        val queryString = queryParamsSeq.mkString("&")
+        val fullUrlPath = s"$baseUrl?$queryString"
+
+        stubFor(
+          get(urlEqualTo(fullUrlPath))
+            .willReturn(
+              aResponse()
+                .withStatus(500)
+                .withBody("Internal server error occurred")
+            )
+        )
+
+        recoverToExceptionIf[UpstreamErrorResponse] {
+          connector.searchRecords(eori, searchTerm, exactMatch, countryOfOrigin, IMMIReady, notReadyForIMMI, actionNeeded, page, size)
+        } map { ex =>
+          ex.statusCode shouldBe 500
+          ex.getMessage should include("Internal server error occurred")
+        }
+      }
+
+
 
       "must return done when the status is ACCEPTED" in {
 
@@ -1041,6 +1293,41 @@ class GoodsRecordConnectorSpec
   ".getRecordsSummary" - {
 
     val recordsSummary = RecordsSummary(testEori, None, instant)
+
+    "return false and log warning if 'isUnique' field is missing or invalid" in {
+      stubFor(
+        get(urlPathEqualTo("/trader-goods-profiles-data-store/traders/records/is-trader-reference-unique"))
+          .willReturn(
+            aResponse()
+              .withStatus(OK)
+              .withBody("""{ "unexpectedField": true }""")
+          )
+      )
+
+      val result = connector.isProductReferenceUnique("some-ref")
+
+      whenReady(result) { res =>
+        res shouldBe false
+      }
+    }
+
+    "return false and log warning when HTTP call fails" in {
+      stubFor(
+        get(urlPathEqualTo("/trader-goods-profiles-data-store/traders/records/is-trader-reference-unique"))
+          .willReturn(
+            aResponse()
+              .withStatus(INTERNAL_SERVER_ERROR)
+              .withBody("Internal Server Error")
+          )
+      )
+
+      val result = connector.isProductReferenceUnique("some-ref")
+
+      whenReady(result) { res =>
+        res shouldBe false
+      }
+    }
+
 
     "must get a records summary" in {
 

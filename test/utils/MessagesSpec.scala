@@ -28,7 +28,6 @@ class MessagesSpec extends SpecBase {
   lazy val english: Map[String, String] = loadMessages("en")
   lazy val welsh: Map[String, String]   = loadMessages("cy")
 
-  // Used to search for instances of keys in files to check for usage
   lazy val appFiles: List[java.nio.file.Path] =
     Files
       .walk(Paths.get("app"))
@@ -38,7 +37,6 @@ class MessagesSpec extends SpecBase {
       .asScala
       .toList
 
-  // Loaded via file because the MessagesAPI sometimes adds some extra keys not present in the messages files
   private def loadMessages(language: String): Map[String, String] = {
     val messagesPath = Paths.get(s"conf/messages.$language")
     if (Files.exists(messagesPath)) {
@@ -66,7 +64,6 @@ class MessagesSpec extends SpecBase {
       }
     }
 
-  // Currently prints instead of failing because further welsh may be added. Can't use log.warn because the logging level of tests is set to OFF.
   private def failAndShowKeys(message: String, keys: Set[String]): Unit =
     if (keys.nonEmpty) {
       val sortedKeys  = keys.toSeq.sortBy(_.charAt(0))

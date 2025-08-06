@@ -167,7 +167,7 @@ class UpdateCommodityCodeResultController @Inject() (
         Redirect(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
           .addingToSession(pageUpdated -> commodityCode)(request)
           .addingToSession(dataUpdated -> request.session.get(dataUpdated).contains("true").toString)(request)
-          .addingToSession("showCommodityCodeChangeBanner" -> hasChanged.toString)(request) // ✅ banner flag
+          .addingToSession("showCommodityCodeChangeBanner" -> hasChanged.toString)(request)
       } else {
         Redirect(controllers.goodsRecord.commodityCode.routes.UpdatedCommodityCodeController.onPageLoad(recordId))
       }

@@ -49,12 +49,6 @@ class CategorisationService @Inject() (
     }
 
   def reorderRecategorisationAnswers(originalUserAnswers: UserAnswers, recordId: String): Future[UserAnswers] =
-    // Required when recategorising, the user said none to a cat 2 question, and there are no cat 1 assessments to answer.
-    // The order OTT provides them in may be different to the order the user answered them and CYA expects.
-    // ---
-    // Partitions answered and unanswered ReassessmentAnswers into two lists
-    // Uses and reorders both those and their category assessments in LongerCatQuery so that answered questions come first on CYA
-    // Sets the answers in reverse so .set cleanups happen and CYA won't throw unanswered validation errors.
     for {
       longerCatQuery                 <- Future.fromTry(Try(originalUserAnswers.get(LongerCategorisationDetailsQuery(recordId)).get))
       assessmentsThatNeedAnswers      = longerCatQuery.categoryAssessmentsThatNeedAnswers

@@ -44,10 +44,10 @@ class CreateRecordSuccessController @Inject() (
     extends BaseController {
 
   def onPageLoad(recordId: String): Action[AnyContent] =
-    (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      if (recordId.isEmpty) {
-        Future.successful(BadRequest("Invalid record ID"))
-      } else {
+    if (recordId.isEmpty) {
+      Action(BadRequest("Invalid record ID"))
+    } else {
+      (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
         autoCategoriseService.autoCategoriseRecord(recordId, request.userAnswers).flatMap { _ =>
           goodsRecordConnector.getRecord(recordId).map { record =>
             val scenario = Scenario.fromInt(record.category)
@@ -57,7 +57,7 @@ class CreateRecordSuccessController @Inject() (
       }
     }
 
-  private def renderView(recordId: String, scenario: Option[Scenario], record: GetGoodsRecordResponse)(implicit
+  def renderView(recordId: String, scenario: Option[Scenario], record: GetGoodsRecordResponse)(implicit
     request: Request[_],
     messages: Messages
   ): Result =

@@ -17,6 +17,7 @@
 package services
 
 import base.SpecBase
+import config.Service
 import connectors.{GoodsRecordConnector, OttConnector}
 import generators.Generators
 import models.DeclarableStatus.ImmiReady
@@ -130,6 +131,15 @@ class OttServiceSpec extends SpecBase with BeforeAndAfterEach with Generators {
 
       val result = await(ottService.getMeasurementUnit(mockDataRequest, "recordId"))
       result shouldBe None
+    }
+
+    "Service implicit convertToString" - {
+      "convert Service to its baseUrl string representation" in {
+        val service     = Service("localhost", "9000", "http")
+        val url: String = service
+
+        url shouldBe "http://localhost:9000"
+      }
     }
   }
 }
