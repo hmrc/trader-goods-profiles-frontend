@@ -26,8 +26,9 @@ import org.scalatest.OptionValues
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
+import org.scalatest.matchers.should.Matchers.shouldBe
 import play.api.Application
-import play.api.http.Status.{ACCEPTED, NOT_FOUND}
+import play.api.http.Status._
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
@@ -83,16 +84,19 @@ class DownloadDataConnectorSpec
     }
 
     "must return a failed future when anything but Accepted is returned" in {
+      val errorStatus = INTERNAL_SERVER_ERROR
 
       wireMockServer.stubFor(
         post(urlEqualTo(downloadDataUrl))
           .withHeader(xClientIdName, equalTo(xClientId))
-          .willReturn(status(errorResponses.sample.value))
+          .willReturn(aResponse().withStatus(errorStatus).withBody("error"))
       )
 
       val result = connector.requestDownloadData
 
-      result.failed.futureValue
+      val ex = result.failed.futureValue
+      ex shouldBe a[UpstreamErrorResponse]
+      ex.asInstanceOf[UpstreamErrorResponse].statusCode shouldBe errorStatus
     }
 
     "must return Seq.empty when response status is unexpected" in {
@@ -146,16 +150,46 @@ class DownloadDataConnectorSpec
       connector.getDownloadData.futureValue mustBe downloadData
     }
 
+    "must return empty list when BAD_REQUEST is returned" in {
+      val statusCode = BAD_REQUEST
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(downloadDataSummaryUrl))
+          .willReturn(aResponse().withStatus(statusCode).withBody("invalid"))
+      )
+
+      val result = connector.getDownloadDataSummary.futureValue
+
+      result mustBe Seq.empty
+    }
+
+    "must return empty list when INTERNAL_SERVER_ERROR is returned" in {
+      val statusCode = INTERNAL_SERVER_ERROR
+
+      wireMockServer.stubFor(
+        get(urlEqualTo(downloadDataUrl))
+          .willReturn(aResponse().withStatus(statusCode).withBody("something went wrong"))
+      )
+
+      val result = connector.getDownloadData.futureValue
+
+      result mustBe Seq.empty
+    }
+
+
     "must return Seq.empty" - {
-      "if status code is internal server error" in {
+      "must return empty list when server returns INTERNAL_SERVER_ERROR" in {
 
         wireMockServer.stubFor(
           get(urlEqualTo(downloadDataUrl))
             .willReturn(serverError())
         )
 
-        connector.getDownloadData.failed.futureValue
+        val result = connector.getDownloadData.futureValue
+
+        result mustBe empty
       }
+
 
       "if feature flag for downloading data is disabled" in {
 

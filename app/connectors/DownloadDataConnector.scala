@@ -61,11 +61,11 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
         .map { response =>
           response.status match {
             case OK => response.json.as[Seq[DownloadDataSummary]]
-            case _  => Seq.empty
+            case _ => Seq.empty
           }
         }
-        .recover { case _: UpstreamErrorResponse =>
-          Seq.empty
+        .recover {
+          case _: UpstreamErrorResponse => Seq.empty
         }
     } else {
       Future.successful(Seq.empty)
@@ -79,12 +79,16 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
         .map { response =>
           response.status match {
             case OK => response.json.as[Seq[DownloadData]]
-            case _  => Seq.empty
+            case _ => Seq.empty
           }
+        }
+        .recover {
+          case _: UpstreamErrorResponse => Seq.empty
         }
     } else {
       Future.successful(Seq.empty)
     }
+
 
   def getEmail(implicit hc: HeaderCarrier): Future[Option[Email]] =
     httpClient
