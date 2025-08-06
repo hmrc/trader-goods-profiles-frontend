@@ -43,7 +43,7 @@ class CreateRecordSuccessController @Inject() (
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
-  def onPageLoad(recordId: String): Action[AnyContent] = {
+  def onPageLoad(recordId: String): Action[AnyContent] =
     if (recordId.isEmpty) {
       Action(BadRequest("Invalid record ID"))
     } else {
@@ -56,8 +56,6 @@ class CreateRecordSuccessController @Inject() (
         }
       }
     }
-  }
-
 
   def renderView(recordId: String, scenario: Option[Scenario], record: GetGoodsRecordResponse)(implicit
     request: Request[_],

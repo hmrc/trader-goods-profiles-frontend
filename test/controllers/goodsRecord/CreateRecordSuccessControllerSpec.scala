@@ -48,8 +48,9 @@ class CreateRecordSuccessControllerSpec extends SpecBase with BeforeAndAfterEach
 
   override def beforeEach(): Unit = super.beforeEach()
 
-  val mockAutoCategorisationView: CreateRecordAutoCategorisationSuccessView = mock[CreateRecordAutoCategorisationSuccessView]
-  val mockDefaultView: CreateRecordSuccessView = mock[CreateRecordSuccessView]
+  val mockAutoCategorisationView: CreateRecordAutoCategorisationSuccessView =
+    mock[CreateRecordAutoCategorisationSuccessView]
+  val mockDefaultView: CreateRecordSuccessView                              = mock[CreateRecordSuccessView]
 
   // Dummy messages instance
   val messages: Messages = MessagesImpl(play.api.i18n.Lang("en"), stubMessagesApi())
@@ -57,7 +58,10 @@ class CreateRecordSuccessControllerSpec extends SpecBase with BeforeAndAfterEach
   // Instantiate controller with mocks (some params can be null or mocks if unused)
   val controller = new CreateRecordSuccessController(
     messagesApi = stubMessagesApi(),
-    identify = null, getData = null, requireData = null, profileAuth = null,
+    identify = null,
+    getData = null,
+    requireData = null,
+    profileAuth = null,
     controllerComponents = stubMessagesControllerComponents(),
     autoCategoriseService = null,
     goodsRecordConnector = null,
@@ -87,7 +91,7 @@ class CreateRecordSuccessControllerSpec extends SpecBase with BeforeAndAfterEach
 
       running(application) {
         val controller = application.injector.instanceOf[CreateRecordSuccessController]
-        val result = controller.onPageLoad("").apply(FakeRequest(GET, "/"))
+        val result     = controller.onPageLoad("").apply(FakeRequest(GET, "/"))
 
         status(result) mustEqual BAD_REQUEST
         contentAsString(result) must include("Invalid record ID")
@@ -129,9 +133,10 @@ class CreateRecordSuccessControllerSpec extends SpecBase with BeforeAndAfterEach
       val application = applicationWithMocks
 
       running(application) {
-        val request = FakeRequest(GET, controllers.goodsRecord.routes.CreateRecordSuccessController.onPageLoad("test").url)
-        val result = route(application, request).value
-        val view = application.injector.instanceOf[CreateRecordSuccessView]
+        val request =
+          FakeRequest(GET, controllers.goodsRecord.routes.CreateRecordSuccessController.onPageLoad("test").url)
+        val result  = route(application, request).value
+        val view    = application.injector.instanceOf[CreateRecordSuccessView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view("test", None)(request, messages(application)).toString
@@ -178,13 +183,19 @@ class CreateRecordSuccessControllerSpec extends SpecBase with BeforeAndAfterEach
       val application = applicationWithMocks
 
       running(application) {
-        val request = FakeRequest(GET, controllers.goodsRecord.routes.CreateRecordSuccessController.onPageLoad(TestConstants.testRecordId).url)
-        val result = route(application, request).value
-        val view = application.injector.instanceOf[CreateRecordAutoCategorisationSuccessView]
+        val request = FakeRequest(
+          GET,
+          controllers.goodsRecord.routes.CreateRecordSuccessController.onPageLoad(TestConstants.testRecordId).url
+        )
+        val result  = route(application, request).value
+        val view    = application.injector.instanceOf[CreateRecordAutoCategorisationSuccessView]
         val tagText = messages(application)("declarableStatus.immiReady")
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(TestConstants.testRecordId, true, tagText)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(TestConstants.testRecordId, true, tagText)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 
@@ -229,13 +240,19 @@ class CreateRecordSuccessControllerSpec extends SpecBase with BeforeAndAfterEach
       val application = applicationWithMocks
 
       running(application) {
-        val request = FakeRequest(GET, controllers.goodsRecord.routes.CreateRecordSuccessController.onPageLoad(TestConstants.testRecordId).url)
-        val result = route(application, request).value
-        val view = application.injector.instanceOf[CreateRecordAutoCategorisationSuccessView]
+        val request = FakeRequest(
+          GET,
+          controllers.goodsRecord.routes.CreateRecordSuccessController.onPageLoad(TestConstants.testRecordId).url
+        )
+        val result  = route(application, request).value
+        val view    = application.injector.instanceOf[CreateRecordAutoCategorisationSuccessView]
         val tagText = messages(application)("declarableStatus.notReadyForImmi")
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(TestConstants.testRecordId, false, tagText)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(TestConstants.testRecordId, false, tagText)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 
@@ -280,12 +297,18 @@ class CreateRecordSuccessControllerSpec extends SpecBase with BeforeAndAfterEach
       val application = applicationWithMocks
 
       running(application) {
-        val request = FakeRequest(GET, controllers.goodsRecord.routes.CreateRecordSuccessController.onPageLoad(TestConstants.testRecordId).url)
-        val result = route(application, request).value
-        val view = application.injector.instanceOf[CreateRecordSuccessView]
+        val request = FakeRequest(
+          GET,
+          controllers.goodsRecord.routes.CreateRecordSuccessController.onPageLoad(TestConstants.testRecordId).url
+        )
+        val result  = route(application, request).value
+        val view    = application.injector.instanceOf[CreateRecordSuccessView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(TestConstants.testRecordId, Some(StandardGoodsScenario))(request, messages(application)).toString
+        contentAsString(result) mustEqual view(TestConstants.testRecordId, Some(StandardGoodsScenario))(
+          request,
+          messages(application)
+        ).toString
       }
     }
 
@@ -330,186 +353,190 @@ class CreateRecordSuccessControllerSpec extends SpecBase with BeforeAndAfterEach
       val application = applicationWithMocks
 
       running(application) {
-        val request = FakeRequest(GET, controllers.goodsRecord.routes.CreateRecordSuccessController.onPageLoad(TestConstants.testRecordId).url)
-        val result = route(application, request).value
-        val view = application.injector.instanceOf[CreateRecordSuccessView]
+        val request = FakeRequest(
+          GET,
+          controllers.goodsRecord.routes.CreateRecordSuccessController.onPageLoad(TestConstants.testRecordId).url
+        )
+        val result  = route(application, request).value
+        val view    = application.injector.instanceOf[CreateRecordSuccessView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(TestConstants.testRecordId, None)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(TestConstants.testRecordId, None)(
+          request,
+          messages(application)
+        ).toString
       }
     }
   }
 
+  "renderView" - {
 
-    "renderView" - {
+    "render autoCategorisationView with isImmiReady = true when declarable is ImmiReady" in {
+      val record = GetGoodsRecordResponse(
+        recordId = "id",
+        eori = "eori",
+        actorId = "actor",
+        traderRef = "ref",
+        comcode = "code",
+        adviceStatus = AdviceStatus.NotRequested,
+        goodsDescription = "desc",
+        countryOfOrigin = "GB",
+        category = Some(StandardGoodsAsInt),
+        assessments = None,
+        supplementaryUnit = None,
+        measurementUnit = None,
+        comcodeEffectiveFromDate = Instant.now(),
+        comcodeEffectiveToDate = None,
+        version = 1,
+        active = true,
+        toReview = false,
+        reviewReason = None,
+        declarable = DeclarableStatus.ImmiReady,
+        ukimsNumber = None,
+        nirmsNumber = None,
+        niphlNumber = None,
+        createdDateTime = Instant.now(),
+        updatedDateTime = Instant.now()
+      )
 
-      "render autoCategorisationView with isImmiReady = true when declarable is ImmiReady" in {
-        val record = GetGoodsRecordResponse(
-          recordId = "id",
-          eori = "eori",
-          actorId = "actor",
-          traderRef = "ref",
-          comcode = "code",
-          adviceStatus = AdviceStatus.NotRequested,
-          goodsDescription = "desc",
-          countryOfOrigin = "GB",
-          category = Some(StandardGoodsAsInt),
-          assessments = None,
-          supplementaryUnit = None,
-          measurementUnit = None,
-          comcodeEffectiveFromDate = Instant.now(),
-          comcodeEffectiveToDate = None,
-          version = 1,
-          active = true,
-          toReview = false,
-          reviewReason = None,
-          declarable = DeclarableStatus.ImmiReady,
-          ukimsNumber = None,
-          nirmsNumber = None,
-          niphlNumber = None,
-          createdDateTime = Instant.now(),
-          updatedDateTime = Instant.now()
-        )
+      when(mockAutoCategorisationView.apply(any(), anyBoolean(), any())(any(), any()))
+        .thenReturn(Html("AutoCategorisationViewRendered"))
 
-        when(mockAutoCategorisationView.apply(any(), anyBoolean(), any())(any(), any()))
-          .thenReturn(Html("AutoCategorisationViewRendered"))
+      val result: Result = controller.renderView("test", Some(StandardGoodsScenario), record)(request, messages)
 
-        val result: Result = controller.renderView("test", Some(StandardGoodsScenario), record)(request, messages)
+      status(Future.successful(result)) mustBe OK
+      contentAsString(Future.successful(result)) must include("AutoCategorisationViewRendered")
 
-        status(Future.successful(result)) mustBe OK
-        contentAsString(Future.successful(result)) must include("AutoCategorisationViewRendered")
-
-
-        verify(mockAutoCategorisationView).apply("test", true, messages(record.declarable.messageKey))(request, messages)
-      }
-
-      "render autoCategorisationView with isImmiReady = false when declarable is NotReadyForImmi" in {
-        val record = GetGoodsRecordResponse(
-          recordId = "id",
-          eori = "eori",
-          actorId = "actor",
-          traderRef = "ref",
-          comcode = "code",
-          adviceStatus = AdviceStatus.NotRequested,
-          goodsDescription = "desc",
-          countryOfOrigin = "GB",
-          category = Some(StandardGoodsAsInt),
-          assessments = None,
-          supplementaryUnit = None,
-          measurementUnit = None,
-          comcodeEffectiveFromDate = Instant.now(),
-          comcodeEffectiveToDate = None,
-          version = 1,
-          active = true,
-          toReview = false,
-          reviewReason = None,
-          declarable = DeclarableStatus.NotReadyForImmi,
-          ukimsNumber = None,
-          nirmsNumber = None,
-          niphlNumber = None,
-          createdDateTime = Instant.now(),
-          updatedDateTime = Instant.now()
-        )
-        when(mockAutoCategorisationView.apply(any(), anyBoolean(), any())(any(), any()))
-          .thenReturn(Html("AutoCategorisationViewRendered"))
-
-        val result: Result = controller.renderView("test", Some(StandardGoodsScenario), record)(request, messages)
-
-        status(Future.successful(result)) mustBe OK
-        contentAsString(Future.successful(result)) must include("AutoCategorisationViewRendered")
-
-        verify(mockAutoCategorisationView).apply(
-          eqTo("test"),
-          eqTo(false),
-          eqTo("declarableStatus.notReadyForImmi")
-        )(eqTo(request), eqTo(messages))
-      }
-
-      "render defaultView when declarable is NotReadyForUse" in {
-        val record = GetGoodsRecordResponse(
-          recordId = "id",
-          eori = "eori",
-          actorId = "actor",
-          traderRef = "ref",
-          comcode = "code",
-          adviceStatus = AdviceStatus.NotRequested,
-          goodsDescription = "desc",
-          countryOfOrigin = "GB",
-          category = Some(StandardGoodsAsInt),
-          assessments = None,
-          supplementaryUnit = None,
-          measurementUnit = None,
-          comcodeEffectiveFromDate = Instant.now(),
-          comcodeEffectiveToDate = None,
-          version = 1,
-          active = true,
-          toReview = false,
-          reviewReason = None,
-          declarable = DeclarableStatus.NotReadyForUse,
-          ukimsNumber = None,
-          nirmsNumber = None,
-          niphlNumber = None,
-          createdDateTime = Instant.now(),
-          updatedDateTime = Instant.now()
-        )
-
-        // Stub the default view (not autoCategorisationView)
-        when(mockDefaultView.apply(any(), any())(any(), any()))
-          .thenReturn(Html("DefaultViewRendered"))
-
-        val result = controller.renderView("id", Some(StandardGoodsScenario), record)(request, messages)
-
-        status(Future.successful(result)) mustBe OK
-        contentAsString(Future.successful(result)) must include("DefaultViewRendered")
-
-        verify(mockDefaultView).apply(
-          eqTo("id"),
-          eqTo(Some(StandardGoodsScenario))
-        )(eqTo(request), eqTo(messages))
-      }
-
-      "render defaultView when scenario is None" in {
-        val record = GetGoodsRecordResponse(
-          recordId = "id",
-          eori = "eori",
-          actorId = "actor",
-          traderRef = "ref",
-          comcode = "code",
-          adviceStatus = AdviceStatus.NotRequested,
-          goodsDescription = "desc",
-          countryOfOrigin = "GB",
-          category = Some(StandardGoodsAsInt),
-          assessments = None,
-          supplementaryUnit = None,
-          measurementUnit = None,
-          comcodeEffectiveFromDate = Instant.now(),
-          comcodeEffectiveToDate = None,
-          version = 1,
-          active = true,
-          toReview = false,
-          reviewReason = None,
-          declarable = DeclarableStatus.ImmiReady, // Still renders defaultView if scenario is None
-          ukimsNumber = None,
-          nirmsNumber = None,
-          niphlNumber = None,
-          createdDateTime = Instant.now(),
-          updatedDateTime = Instant.now()
-        )
-
-        // Return Html, not Result!
-        when(mockDefaultView.apply(any(), any())(any(), any()))
-          .thenReturn(Html("DefaultViewRendered"))
-
-        val result: Result = controller.renderView("id", None, record)(request, messages)
-
-        status(Future.successful(result)) mustBe OK
-        contentAsString(Future.successful(result)) must include("DefaultViewRendered")
-
-        verify(mockDefaultView).apply(
-          eqTo("id"),
-          eqTo(None)
-        )(eqTo(request), eqTo(messages))
-      }
+      verify(mockAutoCategorisationView).apply("test", true, messages(record.declarable.messageKey))(request, messages)
     }
+
+    "render autoCategorisationView with isImmiReady = false when declarable is NotReadyForImmi" in {
+      val record = GetGoodsRecordResponse(
+        recordId = "id",
+        eori = "eori",
+        actorId = "actor",
+        traderRef = "ref",
+        comcode = "code",
+        adviceStatus = AdviceStatus.NotRequested,
+        goodsDescription = "desc",
+        countryOfOrigin = "GB",
+        category = Some(StandardGoodsAsInt),
+        assessments = None,
+        supplementaryUnit = None,
+        measurementUnit = None,
+        comcodeEffectiveFromDate = Instant.now(),
+        comcodeEffectiveToDate = None,
+        version = 1,
+        active = true,
+        toReview = false,
+        reviewReason = None,
+        declarable = DeclarableStatus.NotReadyForImmi,
+        ukimsNumber = None,
+        nirmsNumber = None,
+        niphlNumber = None,
+        createdDateTime = Instant.now(),
+        updatedDateTime = Instant.now()
+      )
+      when(mockAutoCategorisationView.apply(any(), anyBoolean(), any())(any(), any()))
+        .thenReturn(Html("AutoCategorisationViewRendered"))
+
+      val result: Result = controller.renderView("test", Some(StandardGoodsScenario), record)(request, messages)
+
+      status(Future.successful(result)) mustBe OK
+      contentAsString(Future.successful(result)) must include("AutoCategorisationViewRendered")
+
+      verify(mockAutoCategorisationView).apply(
+        eqTo("test"),
+        eqTo(false),
+        eqTo("declarableStatus.notReadyForImmi")
+      )(eqTo(request), eqTo(messages))
+    }
+
+    "render defaultView when declarable is NotReadyForUse" in {
+      val record = GetGoodsRecordResponse(
+        recordId = "id",
+        eori = "eori",
+        actorId = "actor",
+        traderRef = "ref",
+        comcode = "code",
+        adviceStatus = AdviceStatus.NotRequested,
+        goodsDescription = "desc",
+        countryOfOrigin = "GB",
+        category = Some(StandardGoodsAsInt),
+        assessments = None,
+        supplementaryUnit = None,
+        measurementUnit = None,
+        comcodeEffectiveFromDate = Instant.now(),
+        comcodeEffectiveToDate = None,
+        version = 1,
+        active = true,
+        toReview = false,
+        reviewReason = None,
+        declarable = DeclarableStatus.NotReadyForUse,
+        ukimsNumber = None,
+        nirmsNumber = None,
+        niphlNumber = None,
+        createdDateTime = Instant.now(),
+        updatedDateTime = Instant.now()
+      )
+
+      // Stub the default view (not autoCategorisationView)
+      when(mockDefaultView.apply(any(), any())(any(), any()))
+        .thenReturn(Html("DefaultViewRendered"))
+
+      val result = controller.renderView("id", Some(StandardGoodsScenario), record)(request, messages)
+
+      status(Future.successful(result)) mustBe OK
+      contentAsString(Future.successful(result)) must include("DefaultViewRendered")
+
+      verify(mockDefaultView).apply(
+        eqTo("id"),
+        eqTo(Some(StandardGoodsScenario))
+      )(eqTo(request), eqTo(messages))
+    }
+
+    "render defaultView when scenario is None" in {
+      val record = GetGoodsRecordResponse(
+        recordId = "id",
+        eori = "eori",
+        actorId = "actor",
+        traderRef = "ref",
+        comcode = "code",
+        adviceStatus = AdviceStatus.NotRequested,
+        goodsDescription = "desc",
+        countryOfOrigin = "GB",
+        category = Some(StandardGoodsAsInt),
+        assessments = None,
+        supplementaryUnit = None,
+        measurementUnit = None,
+        comcodeEffectiveFromDate = Instant.now(),
+        comcodeEffectiveToDate = None,
+        version = 1,
+        active = true,
+        toReview = false,
+        reviewReason = None,
+        declarable = DeclarableStatus.ImmiReady, // Still renders defaultView if scenario is None
+        ukimsNumber = None,
+        nirmsNumber = None,
+        niphlNumber = None,
+        createdDateTime = Instant.now(),
+        updatedDateTime = Instant.now()
+      )
+
+      // Return Html, not Result!
+      when(mockDefaultView.apply(any(), any())(any(), any()))
+        .thenReturn(Html("DefaultViewRendered"))
+
+      val result: Result = controller.renderView("id", None, record)(request, messages)
+
+      status(Future.successful(result)) mustBe OK
+      contentAsString(Future.successful(result)) must include("DefaultViewRendered")
+
+      verify(mockDefaultView).apply(
+        eqTo("id"),
+        eqTo(None)
+      )(eqTo(request), eqTo(messages))
+    }
+  }
 
 }
