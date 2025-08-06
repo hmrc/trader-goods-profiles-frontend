@@ -147,28 +147,34 @@
     }
 
 @if(toReview && !recordLocked) {
-    @reviewReason.map { reviewReason =>
-        @(reviewReason.linkKey, reviewReason.url(recordId, adviceStatus)) match {
-            case (Some(linkKey), Some(url)) => {
-                @{
-                 val additionalPara = reviewReason.setAdditionalContent(isCategorised, adviceStatus)
-                 additionalPara.map { case (paragraphText, tagText) =>
-                   paragraphBody(messages(paragraphText, tag(messages(tagText), "govuk-tag--grey")))
-                }
-              }
-              @paragraphBody(messages(
-                  reviewReason.messageKey,
-                      link(
-                          text = messages(linkKey),
-                          call = url,
-                          id = None
+    @reviewReason.map { reason =>
+     @(reason.linkKey, reason.url(recordId, adviceStatus)) match {
+          case (Some(linkKey), Some(url)) => {
+              @defining(reason.setAdditionalContent(isCategorised, adviceStatus)) { additionalContentOpt =>
+                @additionalContentOpt.map { additionalList =>
+                    @for((paragraphText, tagText) <- additionalList) {
+                        @paragraphBody(
+                            messages(paragraphText) +
+                            tag(messages(tagText), "govuk-tag--grey").toString
                         )
-                    ))
+                    }
+                }
+              @paragraphBody(
+                HtmlFormat.fill(Seq(
+                  Html(messages(reason.messageKey)),
+                  link(
+                    text = messages(linkKey),
+                    call = url,
+                     id = None
+                  )
+                )).toString
+              )
             }
-            case _ => {
-                @paragraphBody(message = messages(reviewReason.messageKey))
-            }
-        }
+          }
+          case _ => {
+            @paragraphBody(messages(reason.messageKey))
+          }
+       }
     }
 }
 
