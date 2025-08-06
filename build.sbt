@@ -8,10 +8,23 @@ lazy val appName: String = "trader-goods-profiles-frontend"
 ThisBuild / majorVersion := 0
 ThisBuild / scalaVersion := "3.3.6"
 
+val baseScalacOptions = Seq(
+  "-encoding",
+  "UTF-8",
+  "-deprecation",
+  "-feature",
+  "-unchecked",
+  "-release",
+  "11",
+  "-Wconf:src=routes/.*:s",
+  "-Wconf:src=html/.*:s"
+)
+
+
 lazy val microservice = (project in file("."))
   .enablePlugins(PlayScala, SbtDistributablesPlugin)
-  .disablePlugins(JUnitXmlReportPlugin) //Required to prevent https://github.com/scalatest/scalatest/issues/1427
-  .settings(inConfig(Test)(testSettings) *)
+  .disablePlugins(JUnitXmlReportPlugin) // Required to prevent https://github.com/scalatest/scalatest/issues/1427
+  .settings(inConfig(Test)(testSettings)*)
   .settings(ThisBuild / useSuperShell := false)
   .settings(
     name := appName,
@@ -37,11 +50,7 @@ lazy val microservice = (project in file("."))
     ScoverageKeys.coverageMinimumStmtTotal := 90,
     ScoverageKeys.coverageFailOnMinimum := true,
     ScoverageKeys.coverageHighlighting := true,
-    scalacOptions ++= Seq(
-      "-feature",
-      "-Wconf:src=routes/.*:s",
-      "-Wconf:src=html/.*:s",
-    ),
+    scalacOptions := (scalacOptions.value ++ baseScalacOptions).distinct,
     Test / scalacOptions := scalacOptions.value,
     libraryDependencies ++= AppDependencies(),
     retrieveManaged := true,
@@ -66,7 +75,6 @@ lazy val it =
   (project in file("it"))
     .enablePlugins(PlayScala)
     .dependsOn(microservice % "test->test")
-
 
 addCommandAlias("testAndCoverage", ";clean;coverage;test;it/test;coverageReport")
 addCommandAlias("prePR", ";scalafmt;test:scalafmt;testAndCoverage")
