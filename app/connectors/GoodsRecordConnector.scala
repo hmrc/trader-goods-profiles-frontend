@@ -111,11 +111,10 @@ class GoodsRecordConnector @Inject() (
           case NOT_FOUND  => Future.successful(false)
           case _          =>
             Future.failed(
-              new UpstreamErrorResponse(
+              UpstreamErrorResponse(
                 message = response.body,
                 statusCode = response.status,
-                reportAs = response.status,
-                headers = Map.empty
+                reportAs = response.status
               )
             )
         }
