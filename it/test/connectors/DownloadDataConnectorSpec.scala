@@ -248,7 +248,7 @@ class DownloadDataConnectorSpec
 
     val updateUrl = "/trader-goods-profiles-data-store/traders/download-data-summary"
 
-    "must return Done when status is NO_CONTENT" in {
+    "must return Done when response status is NO_CONTENT (204)" in {
       wireMockServer.stubFor(
         patch(urlEqualTo(updateUrl))
           .willReturn(noContent())
@@ -257,10 +257,10 @@ class DownloadDataConnectorSpec
       connector.updateSeenStatus.futureValue mustBe Done
     }
 
-    "must fail with UpstreamErrorResponse on unexpected status" in {
+    "must fail with UpstreamErrorResponse when response status is not NO_CONTENT" in {
       wireMockServer.stubFor(
         patch(urlEqualTo(updateUrl))
-          .willReturn(status(500).withBody("error"))
+          .willReturn(status(500).withBody("server error"))
       )
 
       val ex = connector.updateSeenStatus.failed.futureValue
