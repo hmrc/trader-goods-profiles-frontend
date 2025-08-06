@@ -100,7 +100,7 @@ class CyaCreateRecordController @Inject() (
 
             updatedUserAnswersOpt <- sessionRepository.get(request.userAnswers.id)
 
-            updatedUserAnswers = updatedUserAnswersOpt.getOrElse(request.userAnswers) // fallback to old if not found
+            updatedUserAnswers = updatedUserAnswersOpt.getOrElse(request.userAnswers)
 
             categoryRecordOpt =
               CategoryRecord.build(updatedUserAnswers, request.eori, recordId, categorisationService).toOption

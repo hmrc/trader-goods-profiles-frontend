@@ -69,7 +69,6 @@ object PutRecordRequest {
       oldRecord.assessments,
       supplementaryUnit = supplementaryUnitRequest.supplementaryUnit match {
         case s if s.nonEmpty => convertToBigDecimal(supplementaryUnitRequest.supplementaryUnit)
-        // API don't support removing supplementaryUnit, so setting it to zero here
         case _               => Some(0)
       },
       measurementUnit = supplementaryUnitRequest.measurementUnit,
@@ -81,10 +80,9 @@ object PutRecordRequest {
     value.flatMap(v => Try(BigDecimal(v)).toOption)
 
   def mapFromUpdateGoodsRecord(update: UpdateGoodsRecord, oldRecord: GetGoodsRecordResponse): PutRecordRequest = {
-    // If update.commodityCode is Option[Commodity], extract commodityCode string
     val comcodeString: String = update.commodityCode match {
-      case Some(commodity) => commodity.commodityCode // extract string from Commodity
-      case None            => oldRecord.comcode // fallback to old string code
+      case Some(commodity) => commodity.commodityCode
+      case None            => oldRecord.comcode
     }
 
     PutRecordRequest(

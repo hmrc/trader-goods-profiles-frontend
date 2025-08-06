@@ -23,7 +23,6 @@ import play.api.mvc.JavascriptLiteral
 
 class ScenarioSpec extends SpecBase {
 
-  // Minimal Messages implementation for testing
   given testMessages: Messages with
     def apply(key: String, args: Any*): String = key
 

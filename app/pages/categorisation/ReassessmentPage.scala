@@ -38,7 +38,6 @@ case class ReassessmentPage(
       (for {
         categorisationInfo <- updatedUserAnswers.get(LongerCategorisationDetailsQuery(recordId))
         count               = categorisationInfo.categoryAssessmentsThatNeedAnswers.size
-        // Go backwards to avoid recursion issues
         rangeToRemove       = ((index + 1) to count).reverse
       } yield rangeToRemove.foldLeft[Try[UserAnswers]](Success(updatedUserAnswers)) { (acc, currentIndexToRemove) =>
         acc.flatMap(_.remove(ReassessmentPage(recordId, currentIndexToRemove)))

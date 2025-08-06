@@ -315,7 +315,7 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar with Be
       when(mockAuditService.auditStartRemoveGoodsRecord(any(), any(), any())(any())).thenReturn(Future.successful(Done))
       when(mockConnector.getRecord(eqTo(testRecordId))(any())).thenReturn(Future.successful(testRecord))
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)) // no productRef in userAnswers
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
           bind[GoodsRecordConnector].toInstance(mockConnector),
           bind[AuditService].toInstance(mockAuditService)
@@ -415,7 +415,7 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar with Be
         )
         .build()
 
-      val location = GoodsRecordLocation // non-GoodsProfileLocation location
+      val location = GoodsRecordLocation
       val request  = FakeRequest(POST, routes.RemoveGoodsRecordController.onSubmit(testRecordId, location).url)
         .withFormUrlEncodedBody(("value", "false"))
 

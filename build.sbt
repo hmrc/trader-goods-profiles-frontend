@@ -45,7 +45,6 @@ lazy val microservice = (project in file("."))
     Test / scalacOptions := scalacOptions.value,
     libraryDependencies ++= AppDependencies(),
     retrieveManaged := true,
-    // concatenate js
     Concat.groups := Seq(
       "javascripts/application.js" ->
         group(

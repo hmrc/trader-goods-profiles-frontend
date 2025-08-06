@@ -51,7 +51,7 @@ class ProductReferenceCyaController @Inject() (
   goodsRecordConnector: GoodsRecordConnector,
   sessionRepository: SessionRepository,
   navigator: GoodsRecordNavigator,
-  goodsRecordUpdateService: GoodsRecordUpdateService // <-- Inject service here
+  goodsRecordUpdateService: GoodsRecordUpdateService
 )(implicit ec: ExecutionContext)
     extends BaseController
     with GoodsRecordRecovery {

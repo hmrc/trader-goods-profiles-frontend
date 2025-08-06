@@ -51,7 +51,6 @@ class SearchFormSpec extends SpecBase {
     }
   }
 
-  // Test the JSON format for SearchForm
   "SearchForm JSON format" - {
 
     "serialize to JSON" in {

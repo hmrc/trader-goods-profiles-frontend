@@ -106,8 +106,7 @@ if (typeof accessibleAutocomplete != 'undefined' && document.querySelector('.aut
         }
 
         holdSubmit = false;
-        //parentForm.submit();
-        HTMLFormElement.prototype.submit.call(parentForm); // because submit buttons have id of "submit" which masks the form's natural form.submit() function
+        HTMLFormElement.prototype.submit.call(parentForm);
       }
     })
 

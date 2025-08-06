@@ -33,7 +33,6 @@ class Module extends AbstractModule {
     bind(classOf[EoriCheckAction]).to(classOf[EoriCheckActionImpl]).asEagerSingleton()
     bind(classOf[ProfileAuthenticateAction]).to(classOf[ProfileAuthenticateActionImpl]).asEagerSingleton()
 
-    // For session based storage instead of cred based, change to SessionIdentifierAction
     bind(classOf[IdentifierAction]).to(classOf[AuthenticatedIdentifierAction]).asEagerSingleton()
 
     bind(classOf[Clock]).toInstance(Clock.systemDefaultZone.withZone(ZoneOffset.UTC))

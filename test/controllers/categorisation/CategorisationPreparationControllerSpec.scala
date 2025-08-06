@@ -637,7 +637,6 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
           withClue("must update User Answers with Categorisation Info") {
             val uaArgCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-            // Capture from here because this routine is mocked and returns stubbed data
             verify(mockCategorisationService)
               .updatingAnswersForRecategorisation(uaArgCaptor.capture(), any(), any(), any())
 
@@ -737,7 +736,6 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
           withClue("must update User Answers with Categorisation Info") {
             val uaArgCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-            // Capture from here because this routine is mocked and returns stubbed data
             verify(mockCategorisationService)
               .updatingAnswersForRecategorisation(uaArgCaptor.capture(), any(), any(), any())
 
@@ -982,7 +980,6 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
           withClue("must remove supplementary unit from answer") {
             val uaArgCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-            // Capture from here because this routine is mocked and returns stubbed data
             verify(mockCategorisationService)
               .updatingAnswersForRecategorisation(uaArgCaptor.capture(), any(), any(), any())
 
@@ -1048,7 +1045,6 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
 
           withClue("must remove supplementary unit from answer") {
             val uaArgCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-            // Capture from here because this routine is mocked and returns stubbed data
             verify(mockCategorisationService)
               .updatingAnswersForRecategorisation(uaArgCaptor.capture(), any(), any(), any())
 

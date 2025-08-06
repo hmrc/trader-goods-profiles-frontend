@@ -161,7 +161,7 @@ class NavigationSpec extends SpecBase with BeforeAndAfterEach {
         }
 
         "to JourneyRecoveryController when no CategorisationInfo found" in {
-          val userAnswers = emptyUserAnswers // no LongerCategorisationDetailsQuery set
+          val userAnswers = emptyUserAnswers
 
           navigator.normalRoutes(RecategorisationPreparationPage(testRecordId))(userAnswers) mustBe
             controllers.problem.routes.JourneyRecoveryController.onPageLoad()

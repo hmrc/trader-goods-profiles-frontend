@@ -279,7 +279,6 @@ class CountryOfOriginCyaControllerSpec
         when(mockSessionRepository.set(any()))
           .thenReturn(Future.successful(true))
 
-        // Mock the overload with (String, UserAnswers) explicitly:
         when(mockAutoCategoriseService.autoCategoriseRecord(any[String], any[UserAnswers])(any(), any()))
           .thenReturn(Future.successful(None))
 
