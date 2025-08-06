@@ -33,9 +33,12 @@ import java.net.{URL, URLEncoder}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpClientV2)(implicit
-  ec: ExecutionContext
-) extends LegacyRawReads {
+class GoodsRecordConnector @Inject() (
+  config: Configuration,
+  httpClient: HttpClientV2
+)(implicit ec: ExecutionContext)
+    extends LegacyRawReads {
+
   private val dataStoreBaseUrl: Service = config.get[Service]("microservice.services.trader-goods-profiles-data-store")
   private val clientIdHeader            = ("X-Client-ID", "tgp-frontend")
 
@@ -57,10 +60,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
   private def recordsSummaryUrl =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/records-summary"
 
-  private def filterRecordsUrl(
-    eori: String,
-    queryParams: Map[String, String]
-  ) =
+  private def filterRecordsUrl(eori: String, queryParams: Map[String, String]) =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/filter?$queryParams"
 
   private def isProductReferenceUniqueUrl(productReference: String) = {
@@ -76,7 +76,6 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     actionNeeded: Option[Boolean],
     queryParams: Map[String, String]
   ): URL = {
-
     val queryParamsSeq = Seq(
       searchTerm.map(term => s"searchTerm=${URLEncoder.encode(term, "UTF-8")}"),
       countryOfOrigin.filter(_.nonEmpty).map(origin => s"countryOfOrigin=${URLEncoder.encode(origin, "UTF-8")}"),
@@ -88,16 +87,12 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     }
 
     val queryString = queryParamsSeq.mkString("&")
-
-    val urlString = s"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/records/filter?$queryString"
+    val urlString   = s"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/records/filter?$queryString"
 
     new URL(urlString)
-
   }
 
-  def submitGoodsRecord(goodsRecord: GoodsRecord)(implicit
-    hc: HeaderCarrier
-  ): Future[String] =
+  def submitGoodsRecord(goodsRecord: GoodsRecord)(implicit hc: HeaderCarrier): Future[String] =
     httpClient
       .post(createGoodsRecordUrl)
       .setHeader(clientIdHeader)
@@ -105,9 +100,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .execute[HttpResponse]
       .map(response => response.body)
 
-  def removeGoodsRecord(recordId: String)(implicit
-    hc: HeaderCarrier
-  ): Future[Boolean] =
+  def removeGoodsRecord(recordId: String)(implicit hc: HeaderCarrier): Future[Boolean] =
     httpClient
       .delete(deleteGoodsRecordUrl(recordId))
       .setHeader(clientIdHeader)
@@ -116,7 +109,15 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
         response.status match {
           case NO_CONTENT => Future.successful(true)
           case NOT_FOUND  => Future.successful(false)
-          case _          => Future.failed(UpstreamErrorResponse(response.body, response.status))
+          case _          =>
+            Future.failed(
+              new UpstreamErrorResponse(
+                message = response.body,
+                statusCode = response.status,
+                reportAs = response.status,
+                headers = Map.empty
+              )
+            )
         }
       }
       .recover {
@@ -124,9 +125,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
           false
       }
 
-  def patchGoodsRecord(updateGoodsRecord: UpdateGoodsRecord)(implicit
-    hc: HeaderCarrier
-  ): Future[Done] =
+  def patchGoodsRecord(updateGoodsRecord: UpdateGoodsRecord)(implicit hc: HeaderCarrier): Future[Done] =
     httpClient
       .patch(goodsRecordUrl(updateGoodsRecord.recordId))
       .setHeader(clientIdHeader)
@@ -134,9 +133,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .execute[HttpResponse]
       .map(_ => Done)
 
-  def putGoodsRecord(updateGoodsRecord: PutRecordRequest, recordId: String)(implicit
-    hc: HeaderCarrier
-  ): Future[Done] =
+  def putGoodsRecord(updateGoodsRecord: PutRecordRequest, recordId: String)(implicit hc: HeaderCarrier): Future[Done] =
     httpClient
       .put(goodsRecordUrl(recordId))
       .setHeader(clientIdHeader)
@@ -148,9 +145,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     recordId: String,
     categoryRecord: CategoryRecord,
     oldRecord: GetGoodsRecordResponse
-  )(implicit
-    hc: HeaderCarrier
-  ): Future[Done] =
+  )(implicit hc: HeaderCarrier): Future[Done] =
     httpClient
       .put(goodsRecordUrl(recordId))
       .setHeader(clientIdHeader)
@@ -162,9 +157,7 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     recordId: String,
     supplementaryRequest: SupplementaryRequest,
     oldRecord: GetGoodsRecordResponse
-  )(implicit
-    hc: HeaderCarrier
-  ): Future[Done] =
+  )(implicit hc: HeaderCarrier): Future[Done] =
     httpClient
       .put(goodsRecordUrl(recordId))
       .setHeader(clientIdHeader)
@@ -172,26 +165,15 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
       .execute[HttpResponse]
       .map(_ => Done)
 
-  def getRecord(recordId: String)(implicit
-    hc: HeaderCarrier
-  ): Future[GetGoodsRecordResponse] =
+  def getRecord(recordId: String)(implicit hc: HeaderCarrier): Future[GetGoodsRecordResponse] =
     httpClient
       .get(singleGoodsRecordUrl(recordId))
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
       .map(response => response.json.as[GetGoodsRecordResponse])
 
-  def getRecords(
-    page: Int,
-    size: Int
-  )(implicit
-    hc: HeaderCarrier
-  ): Future[Option[GetRecordsResponse]] = {
-
-    val queryParams = Map(
-      "page" -> page.toString,
-      "size" -> size.toString
-    )
+  def getRecords(page: Int, size: Int)(implicit hc: HeaderCarrier): Future[Option[GetRecordsResponse]] = {
+    val queryParams = Map("page" -> page.toString, "size" -> size.toString)
 
     httpClient
       .get(goodsRecordsQueryParamasUrl(queryParams))
@@ -201,7 +183,15 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
         response.status match {
           case OK       => Future.successful(Some(response.json.as[GetRecordsResponse]))
           case ACCEPTED => Future.successful(None)
-          case _        => Future.failed(UpstreamErrorResponse(response.body, response.status))
+          case _        =>
+            Future.failed(
+              new UpstreamErrorResponse(
+                message = response.body,
+                statusCode = response.status,
+                reportAs = response.status,
+                headers = Map.empty
+              )
+            )
         }
       }
   }
@@ -235,14 +225,9 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     eori: String,
     searchTerm: String,
     field: String
-  )(implicit
-    hc: HeaderCarrier
-  ): Future[Option[GetRecordsResponse]] = {
+  )(implicit hc: HeaderCarrier): Future[Option[GetRecordsResponse]] = {
 
-    val queryParams = Map(
-      "searchTerm" -> searchTerm,
-      "field"      -> field
-    )
+    val queryParams = Map("searchTerm" -> searchTerm, "field" -> field)
 
     httpClient
       .get(filterRecordsUrl(eori, queryParams))
@@ -252,7 +237,15 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
         response.status match {
           case OK       => Future.successful(Some(response.json.as[GetRecordsResponse]))
           case ACCEPTED => Future.successful(None)
-          case _        => Future.failed(UpstreamErrorResponse(response.body, response.status))
+          case _        =>
+            Future.failed(
+              new UpstreamErrorResponse(
+                message = response.body,
+                statusCode = response.status,
+                reportAs = response.status,
+                headers = Map.empty
+              )
+            )
         }
       }
   }
@@ -267,31 +260,26 @@ class GoodsRecordConnector @Inject() (config: Configuration, httpClient: HttpCli
     actionNeeded: Option[Boolean] = None,
     page: Int,
     size: Int
-  )(implicit
-    hc: HeaderCarrier
-  ): Future[Option[GetRecordsResponse]] = {
-    val queryParams = Map(
-      "pageOpt" -> page.toString,
-      "sizeOpt" -> size.toString
-    )
+  )(implicit hc: HeaderCarrier): Future[Option[GetRecordsResponse]] = {
+    val queryParams = Map("pageOpt" -> page.toString, "sizeOpt" -> size.toString)
+
     httpClient
-      .get(
-        filterSearchRecordsUrl(
-          searchTerm,
-          countryOfOrigin,
-          IMMIReady,
-          notReadyForIMMI,
-          actionNeeded,
-          queryParams
-        )
-      )
+      .get(filterSearchRecordsUrl(searchTerm, countryOfOrigin, IMMIReady, notReadyForIMMI, actionNeeded, queryParams))
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
       .flatMap { response =>
         response.status match {
           case OK       => Future.successful(Some(response.json.as[GetRecordsResponse]))
           case ACCEPTED => Future.successful(None)
-          case _        => Future.failed(UpstreamErrorResponse(response.body, response.status))
+          case _        =>
+            Future.failed(
+              new UpstreamErrorResponse(
+                message = response.body,
+                statusCode = response.status,
+                reportAs = response.status,
+                headers = Map.empty
+              )
+            )
         }
       }
   }

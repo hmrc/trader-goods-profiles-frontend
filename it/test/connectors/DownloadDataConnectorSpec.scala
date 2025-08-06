@@ -17,7 +17,7 @@
 package connectors
 
 import base.TestConstants.testEori
-import com.github.tomakehurst.wiremock.client.WireMock._
+import com.github.tomakehurst.wiremock.client.WireMock.*
 import generators.StatusCodeGenerators
 import models.DownloadDataStatus.FileInProgress
 import models.{DownloadData, DownloadDataSummary, Email}
@@ -27,10 +27,10 @@ import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import play.api.Application
-import play.api.http.Status.ACCEPTED
+import play.api.http.Status.{ACCEPTED, NOT_FOUND}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.http.test.WireMockSupport
 import utils.GetRecordsResponseUtil
 
@@ -95,6 +95,16 @@ class DownloadDataConnectorSpec
       result.failed.futureValue
     }
 
+    "must return Seq.empty when response status is unexpected" in {
+      wireMockServer.stubFor(
+        get(urlEqualTo(downloadDataSummaryUrl))
+          .willReturn(aResponse().withStatus(204))
+      )
+
+      connector.getDownloadDataSummary.futureValue mustBe Seq.empty
+    }
+
+
     "must return a failed future when the server returns an error" in {
 
       wireMockServer.stubFor(
@@ -105,6 +115,16 @@ class DownloadDataConnectorSpec
 
       connector.requestDownloadData.failed.futureValue
     }
+
+    "must return Seq.empty when status is unexpected" in {
+      wireMockServer.stubFor(
+        get(urlEqualTo(downloadDataSummaryUrl))
+          .willReturn(forbidden())
+      )
+
+      connector.getDownloadDataSummary.futureValue mustBe Seq.empty
+    }
+
 
   }
 
@@ -229,9 +249,54 @@ class DownloadDataConnectorSpec
 
         connector.getEmail.futureValue mustBe None
       }
+
+      "must fail when email endpoint returns unexpected status" in {
+        wireMockServer.stubFor(
+          get(urlEqualTo(emailUrl))
+            .willReturn(aResponse().withStatus(500).withBody("internal error"))
+        )
+
+        whenReady(connector.getEmail.failed) { ex =>
+          ex mustBe a[UpstreamErrorResponse]
+          ex.asInstanceOf[UpstreamErrorResponse].statusCode mustBe 500
+        }
+      }
+
+
+      "must return None when UpstreamErrorResponse with NOT_FOUND is thrown" in {
+        wireMockServer.stubFor(
+          get(urlEqualTo("/trader-goods-profiles-data-store/traders/email"))
+            .willReturn(aResponse().withStatus(NOT_FOUND).withBody("Not Found"))
+        )
+
+        connector.getEmail.futureValue mustBe None
+      }
+
+      "must fail when unexpected status code is returned" in {
+        wireMockServer.stubFor(
+          get(urlEqualTo("/trader-goods-profiles-data-store/traders/email"))
+            .willReturn(forbidden().withBody("Forbidden"))
+        )
+
+        connector.getEmail.failed.futureValue mustBe a[UpstreamErrorResponse]
+      }
+
     }
 
     ".updateSeenStatus" - {
+
+      "must fail when updateSeenStatus returns unexpected status" in {
+        wireMockServer.stubFor(
+          patch(urlEqualTo(downloadDataSummaryUrl))
+            .willReturn(aResponse().withStatus(500).withBody("something broke"))
+        )
+
+        whenReady(connector.updateSeenStatus.failed) { ex =>
+          ex mustBe a[UpstreamErrorResponse]
+          ex.asInstanceOf[UpstreamErrorResponse].statusCode mustBe 500
+        }
+      }
+
 
       "must return Done on NO_CONTENT" in {
 

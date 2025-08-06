@@ -17,7 +17,7 @@
 package connectors
 
 import base.TestConstants.testEori
-import com.github.tomakehurst.wiremock.client.WireMock._
+import com.github.tomakehurst.wiremock.client.WireMock.*
 import generators.StatusCodeGenerators
 import models.ott.CategorisationInfo
 import models.router.requests.{CreateRecordRequest, PatchRecordRequest, PutRecordRequest}
@@ -28,10 +28,10 @@ import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import play.api.Application
-import play.api.http.Status.ACCEPTED
+import play.api.http.Status.{ACCEPTED, INTERNAL_SERVER_ERROR, NOT_FOUND}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.http.test.WireMockSupport
 import utils.GetRecordsResponseUtil
 
@@ -301,6 +301,34 @@ class GoodsRecordConnectorSpec
       connector.removeGoodsRecord(testRecordId).futureValue mustBe true
     }
 
+    "must return false when DELETE returns 404 Not Found" in {
+      stubFor(
+        delete(urlEqualTo(s"/your-endpoint/$testRecordId"))
+          .willReturn(aResponse().withStatus(NOT_FOUND))
+      )
+
+      connector.removeGoodsRecord(testRecordId).futureValue mustBe false
+    }
+
+    "must fail when DELETE returns an unexpected error (e.g. 500)" in {
+      val stubUrl = s"/trader-goods-profiles-data-store/traders/records/$testRecordId"
+
+      wireMockServer.stubFor(
+        delete(urlEqualTo(stubUrl))
+          .willReturn(
+            aResponse()
+              .withStatus(INTERNAL_SERVER_ERROR)
+              .withBody("Internal Server Error")
+          )
+      )
+
+      val result = connector.removeGoodsRecord(testRecordId)
+
+      whenReady(result.failed) { ex =>
+        ex mustBe an[UpstreamErrorResponse]
+      }
+    }
+
     "must return a false when anything, but NO_CONTENT is returned" in {
 
       wireMockServer.stubFor(
@@ -310,6 +338,7 @@ class GoodsRecordConnectorSpec
       )
 
       connector.removeGoodsRecord(testRecordId).failed.futureValue
+
     }
 
     "must return a failed future when the server returns an error" in {
