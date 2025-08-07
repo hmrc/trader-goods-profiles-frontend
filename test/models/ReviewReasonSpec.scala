@@ -88,7 +88,7 @@ class ReviewReasonSpec extends SpecBase {
           Commodity.setAdditionalContent(isCategorised = true, AdviceReceived) mustBe Some(
             (
               "singleRecord.commodityReviewReason.categorised.adviceReceived",
-              "singleRecord.commodityReviewReason.tagText"
+              "singleRecord.reviewReason.tagText"
             )
           )
         }
@@ -104,7 +104,7 @@ class ReviewReasonSpec extends SpecBase {
               .onPageLoad(NormalMode, "recordId")
               .url
           Commodity.setAdditionalContent(isCategorised = true, NotRequested) mustBe Some(
-            ("singleRecord.commodityReviewReason.categorised", "singleRecord.commodityReviewReason.tagText")
+            ("singleRecord.commodityReviewReason.categorised", "singleRecord.reviewReason.tagText")
           )
         }
 
@@ -119,7 +119,7 @@ class ReviewReasonSpec extends SpecBase {
               .onPageLoad(NormalMode, "recordId")
               .url
           Commodity.setAdditionalContent(isCategorised = false, AdviceReceived) mustBe Some(
-            ("singleRecord.commodityReviewReason.adviceReceived", "singleRecord.commodityReviewReason.tagText")
+            ("singleRecord.commodityReviewReason.adviceReceived", "singleRecord.reviewReason.tagText")
           )
         }
 
@@ -134,7 +134,7 @@ class ReviewReasonSpec extends SpecBase {
               .onPageLoad(NormalMode, "recordId")
               .url
           Commodity.setAdditionalContent(isCategorised = false, AdviceRequestWithdrawn) mustBe Some(
-            ("singleRecord.commodityReviewReason.notCategorised.noAdvice", "singleRecord.commodityReviewReason.tagText")
+            ("singleRecord.commodityReviewReason.notCategorised.noAdvice", "singleRecord.reviewReason.tagText")
           )
         }
       }
@@ -210,7 +210,7 @@ class ReviewReasonSpec extends SpecBase {
             .onPageLoad(NormalMode, "recordId")
             .url
         Commodity.setAdditionalContent(isCategorised = true, NotRequested) mustBe Some(
-          ("singleRecord.commodityReviewReason.categorised", "singleRecord.commodityReviewReason.tagText")
+          ("singleRecord.commodityReviewReason.categorised", "singleRecord.reviewReason.tagText")
         )
       }
       "is not categorised, and advice status is AdviceReceived" in {
@@ -224,7 +224,7 @@ class ReviewReasonSpec extends SpecBase {
             .onPageLoad(NormalMode, "recordId")
             .url
         Commodity.setAdditionalContent(isCategorised = false, AdviceReceived) mustBe Some(
-          ("singleRecord.commodityReviewReason.adviceReceived", "singleRecord.commodityReviewReason.tagText")
+          ("singleRecord.commodityReviewReason.adviceReceived", "singleRecord.reviewReason.tagText")
         )
       }
       "is not categorised, and advice status is not AdviceReceived" in {
@@ -238,7 +238,7 @@ class ReviewReasonSpec extends SpecBase {
             .onPageLoad(NormalMode, "recordId")
             .url
         Commodity.setAdditionalContent(isCategorised = false, AdviceRequestWithdrawn) mustBe Some(
-          ("singleRecord.commodityReviewReason.notCategorised.noAdvice", "singleRecord.commodityReviewReason.tagText")
+          ("singleRecord.commodityReviewReason.notCategorised.noAdvice", "singleRecord.reviewReason.tagText")
         )
       }
     }

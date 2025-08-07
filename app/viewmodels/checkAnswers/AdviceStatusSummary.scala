@@ -31,7 +31,7 @@ object AdviceStatusSummary {
     implicit messages: Messages
   ): SummaryListRow = {
 
-    val tagValue = messages("singleRecord.commodityReviewReason.tagText")
+    val tagValue = messages("singleRecord.reviewReason.tagText")
 
     val viewModel =
       if (isReviewReasonCommodity && adviceStatus == AdviceReceived) {

@@ -88,7 +88,7 @@ object CategorySummary {
   }
 
   private def createCommodityViewModel(value: String)(implicit messages: Messages): Value = {
-    val tagValue = messages("singleRecord.commodityReviewReason.tagText")
+    val tagValue = messages("singleRecord.reviewReason.tagText")
     ValueViewModel(HtmlContent(s"<strong class='govuk-tag govuk-tag--grey'>$tagValue</strong> ${messages(value)}"))
   }
 
