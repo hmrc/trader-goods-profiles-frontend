@@ -81,21 +81,20 @@ object ReviewReason {
                                        adviceStatus: AdviceStatus
                                      ): Option[List[(String, String)]] = {
       val tagText = "singleRecord.reviewReason.tagText"
-      val linkText = "singleRecord.countryReviewReason.categoris" +
-        "ed.linkText" // fixed here
+      val linkText = "singleRecord.countryReviewReason.categorised.linkText"
       (isCategorised, adviceStatus) match {
         case (true, _) =>
           Some(
             List(
               ("singleRecord.countryReviewReason.categorised.paragraph", tagText),
-              ("singleRecord.countryReviewReason.paragraph2", linkText)
+              ("singleRecord.reviewReason.paragraph2", linkText)
             )
           )
         case (false, _) =>
           Some(
             List(
               ("singleRecord.countryReviewReason.notCategorised.paragraph", tagText),
-              ("singleRecord.countryReviewReason.paragraph2", linkText)
+              ("singleRecord.reviewReason.paragraph2", linkText)
             )
           )
       }

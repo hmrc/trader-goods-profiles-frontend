@@ -123,12 +123,22 @@
     <p class="govuk-body">@messages("singleRecord.p1.prefix", productReference)</p>
     <h2 class="govuk-heading-m">@messages("singleRecord.h2")</h2>
 
-    <p class="govuk-body">
-        @messages("singleRecord.status")
-        <strong class="govuk-tag govuk-!-display-inline @declarableStatus.paragraphTagColour">
-            @messages(declarableStatus.messageKey)
-        </strong>
-    </p>
+    @defining(toReview && reviewReason.exists(_.toString.equalsIgnoreCase("country"))) { isInvalidCountry =>
+
+        <p class="govuk-body">
+            @messages("singleRecord.status")
+            @if(isInvalidCountry) {
+                <strong class="govuk-tag govuk-tag--red govuk-!-display-inline">
+                    @messages("goodsProfile.actionNeeded")
+                </strong>
+            } else {
+                <strong class="govuk-tag govuk-!-display-inline @declarableStatus.paragraphTagColour">
+                    @messages(declarableStatus.messageKey)
+                </strong>
+            }
+        </p>
+
+    }
 
     @if(!recordLocked && declarableStatus == DeclarableStatus.NotReadyForUse && !isCategorised && !reviewReason.contains(ReviewReason.Commodity)) {
         @paragraphBody(message = messages(declarableStatus.paragraphKey,
