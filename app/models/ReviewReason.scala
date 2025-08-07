@@ -42,7 +42,7 @@ object ReviewReason {
       )
 
     override def setAdditionalContent(isCategorised: Boolean, adviceStatus: AdviceStatus): Option[List[(String, String)]] = {
-      val tagText = "singleRecord.commodityReviewReason.tagText"
+      val tagText = "singleRecord.reviewReason.tagText"
       (isCategorised, adviceStatus) match {
         case (true, AdviceStatus.AdviceReceived)                                  =>
           Some(List(
@@ -81,20 +81,19 @@ object ReviewReason {
                                        adviceStatus: AdviceStatus
                                      ): Option[List[(String, String)]] = {
       val tagText = "singleRecord.reviewReason.tagText"
-      val linkText = "singleRecord.countryReviewReason.categorised.linkText"
+      val linkText = "singleRecord.countryReviewReason.linkText"
       (isCategorised, adviceStatus) match {
         case (true, _) =>
           Some(
             List(
               ("singleRecord.countryReviewReason.categorised.paragraph", tagText),
-              ("singleRecord.reviewReason.paragraph2", linkText)
             )
           )
         case (false, _) =>
           Some(
             List(
               ("singleRecord.countryReviewReason.notCategorised.paragraph", tagText),
-              ("singleRecord.reviewReason.paragraph2", linkText)
+              ("singleRecord.reviewReason.paragraph", linkText)
             )
           )
       }

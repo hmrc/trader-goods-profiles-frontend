@@ -123,24 +123,29 @@
     <p class="govuk-body">@messages("singleRecord.p1.prefix", productReference)</p>
     <h2 class="govuk-heading-m">@messages("singleRecord.h2")</h2>
 
-    @defining(toReview && reviewReason.exists(_.toString.equalsIgnoreCase("country"))) { isInvalidCountry =>
+@defining(toReview && reviewReason.exists(_.toString.equalsIgnoreCase("country"))) { isInvalidCountry =>
 
-        <p class="govuk-body">
-            @messages("singleRecord.status")
-            @if(isInvalidCountry) {
-                <strong class="govuk-tag govuk-tag--red govuk-!-display-inline">
-                    @messages("goodsProfile.actionNeeded")
-                </strong>
-            } else {
-                <strong class="govuk-tag govuk-!-display-inline @declarableStatus.paragraphTagColour">
-                    @messages(declarableStatus.messageKey)
-                </strong>
-            }
-        </p>
+@if(isInvalidCountry) {
+<p class="govuk-body">
+    @Html(
+    messages(
+    "singleRecord.countryReviewReason.countryOfOrigin.message",
+    tag("No longer valid", "govuk-tag govuk-tag--red govuk-!-display-inline").toString
+    )
+    )
+</p>
+} else {
+<p class="govuk-body">
+    @messages("singleRecord.status")
+    <strong class="govuk-tag govuk-!-display-inline @declarableStatus.paragraphTagColour">
+        @messages(declarableStatus.messageKey)
+    </strong>
+</p>
+}
+}
 
-    }
 
-    @if(!recordLocked && declarableStatus == DeclarableStatus.NotReadyForUse && !isCategorised && !reviewReason.contains(ReviewReason.Commodity)) {
+@if(!recordLocked && declarableStatus == DeclarableStatus.NotReadyForUse && !isCategorised && !reviewReason.contains(ReviewReason.Commodity)) {
         @paragraphBody(message = messages(declarableStatus.paragraphKey,
         link(
             text = messages("declarableStatus.notReadyForUse.paragraph.linkText"),
@@ -158,33 +163,37 @@
 
 @if(toReview && !recordLocked) {
     @reviewReason.map { reason =>
-     @(reason.linkKey, reason.url(recordId, adviceStatus)) match {
-          case (Some(linkKey), Some(url)) => {
-              @defining(reason.setAdditionalContent(isCategorised, adviceStatus)) { additionalContentOpt =>
-                @additionalContentOpt.map { additionalList =>
-                    @for((paragraphText, tagText) <- additionalList) {
+        @(reason.linkKey, reason.url(recordId, adviceStatus)) match {
+            case (Some(linkKey), Some(url)) => {
+                @defining(reason.setAdditionalContent(isCategorised, adviceStatus)) { additionalContentOpt =>
+                    @additionalContentOpt.map { additionalList =>
+                          @for((paragraphText, tagText) <- additionalList) {
+                                @paragraphBody(
+                                    Html(
+                                        messages(paragraphText,
+                                        tag(messages(tagText), "govuk-tag--grey").toString
+                                    )
+                                )
+                            )
+                          }
+                       }
                         @paragraphBody(
-                            messages(paragraphText) +
-                            tag(messages(tagText), "govuk-tag--grey").toString
+                          messages(
+                            reason.messageKey,
+                            link(
+                              text = messages(linkKey),
+                              call = url,
+                              id = None
+                            ).toString
+                          )
                         )
+
+                        }
                     }
-                }
-              @paragraphBody(
-                HtmlFormat.fill(Seq(
-                  Html(messages(reason.messageKey)),
-                  link(
-                    text = messages(linkKey),
-                    call = url,
-                     id = None
-                  )
-                )).toString
-              )
+            case _ => {
+              @paragraphBody(messages(reason.messageKey))
+              }
             }
-          }
-          case _ => {
-            @paragraphBody(messages(reason.messageKey))
-          }
-       }
     }
 }
 
