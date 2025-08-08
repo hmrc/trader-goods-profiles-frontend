@@ -20,7 +20,7 @@ import models.AdviceStatus.AdviceReceived
 import models.DeclarableStatus.NotReadyForUse
 import models.ReviewReason.Mismatch
 import models.router.responses.GetGoodsRecordResponse
-import models.{CheckMode, Mode, UserAnswers}
+import models.{CheckMode, Mode, ReviewReason, UserAnswers}
 import pages.goodsRecord.CommodityCodePage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
@@ -31,17 +31,27 @@ import viewmodels.implicits.*
 
 object CommodityCodeSummary {
 
-  def row(answers: UserAnswers)(implicit messages: Messages): Option[SummaryListRow] =
+  def row(answers: UserAnswers, reviewReason: Option[ReviewReason])(implicit messages: Messages): Option[SummaryListRow] =
     answers.get(CommodityCodePage).map { answer =>
+      val valueHtml = reviewReason match {
+        case Some(ReviewReason.Commodity) =>
+          val tagValue = messages("singleRecord.reviewReason.tagText")
+          HtmlContent(s"""<div style="display: flex; align-items: center;">
+                           <strong class="govuk-tag govuk-tag--grey" style="margin-right: 8px;">$tagValue</strong>
+                           ${HtmlFormat.escape(answer).toString}
+                         </div>""")
+        case _ =>
+          HtmlContent(HtmlFormat.escape(answer).toString)
+      }
+
       SummaryListRowViewModel(
         key = "commodityCode.checkYourAnswersLabel",
-        value = ValueViewModel(HtmlFormat.escape(answer).toString),
+        value = ValueViewModel(valueHtml),
         actions = Seq(
           ActionItemViewModel(
             "site.change",
             controllers.goodsRecord.commodityCode.routes.CreateCommodityCodeController.onPageLoad(CheckMode).url
-          )
-            .withVisuallyHiddenText(messages("commodityCode.change.hidden"))
+          ).withVisuallyHiddenText(messages("commodityCode.change.hidden"))
         )
       )
     }
@@ -60,40 +70,46 @@ object CommodityCodeSummary {
   }
 
   def rowUpdate(
-    record: GetGoodsRecordResponse,
-    recordId: String,
-    mode: Mode,
-    recordLocked: Boolean
-  )(implicit
-    messages: Messages
-  ): SummaryListRow = {
+                 record: GetGoodsRecordResponse,
+                 recordId: String,
+                 mode: Mode,
+                 recordLocked: Boolean,
+                 reviewReason: Option[ReviewReason]
+               )(implicit messages: Messages): SummaryListRow = {
+
     val changeLink = if (record.category.isDefined || record.adviceStatus == AdviceReceived) {
+      println(s"n\n\n\nDEBUG: reviewReason = $reviewReason, declarable = ${record.declarable}\n\n\n")
+
       controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangedController.onPageLoad(mode, recordId).url
     } else {
       controllers.goodsRecord.commodityCode.routes.UpdateCommodityCodeController.onPageLoad(mode, recordId).url
     }
 
+    val tagHtml: String = (reviewReason, record.declarable) match {
+      case (Some(Mismatch), NotReadyForUse) =>
+        val tagText = messages("commodityCode.mismatch")
+        s"""<strong class="govuk-tag govuk-tag--grey" style="margin-right: 8px;">$tagText</strong>"""
+      case (Some(ReviewReason.Commodity), _) =>
+        val tagValue = messages("singleRecord.reviewReason.tagText")
+        s"""<strong class="govuk-tag govuk-tag--grey" style="margin-right: 8px;">$tagValue</strong>"""
+      case _ => ""
+    }
+
+    val description = HtmlFormat.escape(record.comcode).toString
+
+    val valueHtml = HtmlContent(
+      s"""<div style="display: flex; align-items: center;">$tagHtml$description</div>"""
+    )
+
     SummaryListRowViewModel(
       key = "commodityCode.checkYourAnswersLabel",
-      value = {
-        val tagTextOpt: Option[String] = record.reviewReason match {
-          case Some(Mismatch) if record.declarable == NotReadyForUse => Some(messages("commodityCode.mismatch"))
-          case _                                                     => None
-        }
-        val tagHtml: String            =
-          tagTextOpt.map(text => s"""<strong class="govuk-tag govuk-tag--grey">$text</strong> """).getOrElse("")
-        val description                = HtmlFormat.escape(record.comcode).toString
-
-        ValueViewModel(HtmlContent(HtmlFormat.raw(tagHtml + description)))
-      },
-      actions = if (recordLocked) {
-        Seq.empty
-      } else {
-        Seq(
-          ActionItemViewModel("site.change", changeLink)
-            .withVisuallyHiddenText(messages("commodityCode.change.hidden"))
-        )
-      }
+      value = ValueViewModel(valueHtml),
+      actions = if (recordLocked) Seq.empty else Seq(
+        ActionItemViewModel("site.change", changeLink)
+          .withVisuallyHiddenText(messages("commodityCode.change.hidden"))
+      )
     )
   }
+
+
 }

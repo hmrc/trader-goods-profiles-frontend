@@ -17,13 +17,13 @@
 package viewmodels.checkAnswers
 
 import models.ReviewReason
-import models.ReviewReason.{Commodity, Measure}
+import models.ReviewReason.{Commodity, Country, Measure}
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.Aliases.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{ActionItem, SummaryListRow, Value}
-import viewmodels.govuk.summarylist._
-import viewmodels.implicits._
+import viewmodels.govuk.summarylist.*
+import viewmodels.implicits.*
 
 object CategorySummary {
 
@@ -63,6 +63,11 @@ object CategorySummary {
       case Some(Commodity) =>
         val viewModel = createCommodityViewModel(value)
         SummaryListRowViewModel(key = "singleRecord.category.row", value = viewModel)
+      case Some(Country) =>
+        val viewModel = createCountryViewModel(value)
+        SummaryListRowViewModel(key = "singleRecord.category.row", value = viewModel)
+
+
       case _               =>
         val escapedValue = ValueViewModel(HtmlFormat.escape(messages(value)).toString)
         SummaryListRowViewModel(
@@ -91,6 +96,12 @@ object CategorySummary {
     val tagValue = messages("singleRecord.reviewReason.tagText")
     ValueViewModel(HtmlContent(s"<strong class='govuk-tag govuk-tag--grey'>$tagValue</strong> ${messages(value)}"))
   }
+
+  private def createCountryViewModel(value: String)(implicit messages: Messages): Value = {
+    val tagValue = messages("singleRecord.reviewReason.tagText")
+    ValueViewModel(HtmlContent(s"<strong class='govuk-tag govuk-tag--grey'>$tagValue</strong> ${messages(value)}"))
+  }
+
 
   private def handleUncategorisedRow(
     value: String,

@@ -148,10 +148,13 @@ id = None
 <p class="govuk-inset-text">@messages("singleRecord.recordLocked")</p>
 }
 
+@* Updated reviewReason section *@
 @if(toReview && !recordLocked) {
 @reviewReason.map { rr =>
-@for((paragraphText, tagText) <- rr.setAdditionalContent(isCategorised, adviceStatus).getOrElse(Nil)) {
-@paragraphBody(message = s"${messages(paragraphText)} ${tag(messages(tagText), "govuk-tag--grey").toString}")
+@rr.setAdditionalContent(isCategorised, adviceStatus).map { paragraphs =>
+@for(paragraph <- paragraphs) {
+<p class="govuk-body">@Html(paragraph)</p>
+}
 }
 
 @defining((rr.linkKey, rr.url(recordId, adviceStatus))) { linkAndUrl =>
@@ -213,4 +216,4 @@ paragraphBody(message = messages(rr.messageKey))
 </p>
 }
 }
-}
+} 

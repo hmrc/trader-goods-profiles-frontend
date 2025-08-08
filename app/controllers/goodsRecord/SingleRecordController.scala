@@ -155,13 +155,14 @@ class SingleRecordController @Inject() (
     }
 
     val detailsList = SummaryListViewModel(
-      rows = Seq(
-        ProductReferenceSummary.row(record.traderRef, recordId, NormalMode, recordIsLocked),
-        GoodsDescriptionSummary.rowUpdate(record, recordId, NormalMode, recordIsLocked),
-        CountryOfOriginSummary.rowUpdate(record, recordId, NormalMode, recordIsLocked, countries),
-        CommodityCodeSummary.rowUpdate(record, recordId, NormalMode, recordIsLocked)
+        rows = Seq(
+          ProductReferenceSummary.row(record.traderRef, recordId, NormalMode, recordIsLocked),
+          GoodsDescriptionSummary.rowUpdate(record, recordId, NormalMode, recordIsLocked),
+          CountryOfOriginSummary.rowUpdate(record, recordId, NormalMode, recordIsLocked, countries, record.reviewReason),
+          CommodityCodeSummary.rowUpdate(record, recordId, NormalMode, recordIsLocked, record.reviewReason)
       )
     )
+
 
     val categoryValue = record.category match {
       case None        => if (recordIsLocked) "singleRecord.notCategorised.recordLocked" else "singleRecord.categoriseThisGood"

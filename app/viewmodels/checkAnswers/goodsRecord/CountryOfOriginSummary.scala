@@ -17,29 +17,43 @@
 package viewmodels.checkAnswers.goodsRecord
 
 import models.router.responses.GetGoodsRecordResponse
-import models.{CheckMode, Country, Mode, UserAnswers}
+import models.{CheckMode, Country, Mode, ReviewReason, UserAnswers}
 import pages.goodsRecord.CountryOfOriginPage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
-import viewmodels.govuk.summarylist._
-import viewmodels.implicits._
+import viewmodels.govuk.summarylist.*
+import viewmodels.implicits.*
 
 object CountryOfOriginSummary {
 
-  def row(answers: UserAnswers, countries: Seq[Country])(implicit messages: Messages): Option[SummaryListRow] =
+  def row(
+    answers: UserAnswers,
+    countries: Seq[Country],
+    reviewReason: Option[ReviewReason]
+  )(implicit messages: Messages): Option[SummaryListRow] =
     answers.get(CountryOfOriginPage).map { answer =>
-      val country = countries.find(country => country.id == answer).map(_.description).getOrElse(answer)
+      val country = countries.find(_.id == answer).map(_.description).getOrElse(answer)
+
+      val valueHtml = reviewReason match {
+        case Some(ReviewReason.Country) =>
+          val tagValue = messages("singleRecord.reviewReason.tagText")
+          HtmlContent(
+            s"<strong class='govuk-tag govuk-tag--grey'>$tagValue</strong> <div lang='en'>${HtmlFormat.escape(country).toString}</div>"
+          )
+        case _                          =>
+          HtmlContent(s"<div lang='en'>${HtmlFormat.escape(country).toString}</div>")
+      }
+
       SummaryListRowViewModel(
         key = "countryOfOrigin.checkYourAnswersLabel",
-        value = ValueViewModel(HtmlContent(s"<div lang='en'>${HtmlFormat.escape(country).toString}</div>")),
+        value = ValueViewModel(valueHtml),
         actions = Seq(
           ActionItemViewModel(
             "site.change",
             controllers.goodsRecord.countryOfOrigin.routes.CreateCountryOfOriginController.onPageLoad(CheckMode).url
-          )
-            .withVisuallyHiddenText(messages("countryOfOrigin.change.hidden"))
+          ).withVisuallyHiddenText(messages("countryOfOrigin.change.hidden"))
         )
       )
     }
@@ -62,21 +76,33 @@ object CountryOfOriginSummary {
     recordId: String,
     mode: Mode,
     recordLocked: Boolean,
-    countries: Seq[Country]
+    countries: Seq[Country],
+    reviewReason: Option[ReviewReason] // <-- add this parameter
   )(implicit
     messages: Messages
   ): SummaryListRow = {
 
     val countryName = getCountryName(record.countryOfOrigin, countries)
 
+    val tagHtml = reviewReason match {
+      case Some(ReviewReason.Country) =>
+        val tagValue = messages("singleRecord.reviewReason.tagText")
+        s"""<strong class='govuk-tag govuk-tag--grey'>$tagValue</strong> """
+      case _                          => ""
+    }
+
     val changeLink = if (record.category.isDefined) {
       controllers.goodsRecord.countryOfOrigin.routes.HasCountryOfOriginChangeController.onPageLoad(mode, recordId).url
     } else {
       controllers.goodsRecord.countryOfOrigin.routes.UpdateCountryOfOriginController.onPageLoad(mode, recordId).url
     }
+
     SummaryListRowViewModel(
       key = "countryOfOrigin.checkYourAnswersLabel",
-      value = ValueViewModel(HtmlContent(s"<div lang='en'>${HtmlFormat.escape(countryName).toString}</div>")),
+      value =
+        ValueViewModel(HtmlContent(s"""<div lang="en" style="display: flex; align-items: center;">$tagHtml${HtmlFormat
+            .escape(countryName)
+            .toString}</div>""")),
       actions = if (recordLocked) {
         Seq.empty
       } else {
