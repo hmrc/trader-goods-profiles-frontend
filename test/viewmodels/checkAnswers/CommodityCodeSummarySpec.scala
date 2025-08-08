@@ -87,11 +87,28 @@ class CommodityCodeSummarySpec extends SpecBase {
     }
 
     "must render a 'Does not match' tag when reviewReason is Mismatch and declarable is NotReadyForUse" in {
-      val record = recordForTestingSummaryRows.copy(reviewReason = Some(Mismatch), declarable = NotReadyForUse)
-      val row    = CommodityCodeSummary.rowUpdate(record, testRecordId, NormalMode, recordLocked = false, None)
-      row.value.content.toString must include("""<strong class="govuk-tag govuk-tag--grey">""")
-      row.value.content.toString must include(messages("commodityCode.mismatch"))
-      row.value.content.toString must include(record.comcode)
+      val record = recordForTestingSummaryRows.copy(declarable = NotReadyForUse)
+
+      val row = CommodityCodeSummary.rowUpdate(
+        record,
+        testRecordId,
+        NormalMode,
+        recordLocked = false,
+        Some(Mismatch)
+      )
+
+      import uk.gov.hmrc.govukfrontend.views.Aliases.HtmlContent
+
+      val html = row.value.content match {
+        case hc: HtmlContent => hc.value.toString
+        case other           => fail(s"Expected HtmlContent but got: $other")
+      }
+
+
+      html must include("""<strong class="govuk-tag govuk-tag--grey""")
+      html must include(messages("commodityCode.mismatch"))
+      html must include(record.comcode)
     }
+
   }
 }
