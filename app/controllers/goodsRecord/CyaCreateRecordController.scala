@@ -25,7 +25,6 @@ import models.helper.CreateRecordJourney
 import models.requests.DataRequest
 import models.*
 import navigation.GoodsRecordNavigator
-import pages.ReviewReasonPage
 import pages.goodsRecord.CyaCreateRecordPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.*

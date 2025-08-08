@@ -27,7 +27,7 @@ import services.AutoCategoriseService
 import views.html.goodsRecord.{CreateRecordAutoCategorisationSuccessView, CreateRecordSuccessView}
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 class CreateRecordSuccessController @Inject() (
   override val messagesApi: MessagesApi,

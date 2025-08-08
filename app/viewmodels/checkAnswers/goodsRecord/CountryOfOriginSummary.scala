@@ -29,10 +29,10 @@ import viewmodels.implicits.*
 object CountryOfOriginSummary {
 
   def row(
-    answers: UserAnswers,
-    countries: Seq[Country],
-    reviewReason: Option[ReviewReason]
-  )(implicit messages: Messages): Option[SummaryListRow] =
+           answers: UserAnswers,
+           countries: Seq[Country],
+           reviewReason: Option[ReviewReason]
+         )(implicit messages: Messages): Option[SummaryListRow] =
     answers.get(CountryOfOriginPage).map { answer =>
       val country = countries.find(_.id == answer).map(_.description).getOrElse(answer)
 
@@ -42,7 +42,7 @@ object CountryOfOriginSummary {
           HtmlContent(
             s"<strong class='govuk-tag govuk-tag--grey'>$tagValue</strong> <div lang='en'>${HtmlFormat.escape(country).toString}</div>"
           )
-        case _                          =>
+        case _ =>
           HtmlContent(s"<div lang='en'>${HtmlFormat.escape(country).toString}</div>")
       }
 
@@ -72,24 +72,16 @@ object CountryOfOriginSummary {
   }
 
   def rowUpdate(
-    record: GetGoodsRecordResponse,
-    recordId: String,
-    mode: Mode,
-    recordLocked: Boolean,
-    countries: Seq[Country],
-    reviewReason: Option[ReviewReason] // <-- add this parameter
-  )(implicit
-    messages: Messages
-  ): SummaryListRow = {
+                 record: GetGoodsRecordResponse,
+                 recordId: String,
+                 mode: Mode,
+                 recordLocked: Boolean,
+                 countries: Seq[Country],
+                 reviewReason: Option[ReviewReason]
+               )(implicit messages: Messages): SummaryListRow = {
 
     val countryName = getCountryName(record.countryOfOrigin, countries)
-
-    val tagHtml = reviewReason match {
-      case Some(ReviewReason.Country) =>
-        val tagValue = messages("singleRecord.reviewReason.tagText")
-        s"""<strong class='govuk-tag govuk-tag--grey'>$tagValue</strong> """
-      case _                          => ""
-    }
+    val isCountryInvalid = reviewReason.contains(ReviewReason.Country)
 
     val changeLink = if (record.category.isDefined) {
       controllers.goodsRecord.countryOfOrigin.routes.HasCountryOfOriginChangeController.onPageLoad(mode, recordId).url
@@ -97,21 +89,53 @@ object CountryOfOriginSummary {
       controllers.goodsRecord.countryOfOrigin.routes.UpdateCountryOfOriginController.onPageLoad(mode, recordId).url
     }
 
+    val tagHtml =
+      if (isCountryInvalid) {
+        val tagValue = messages("singleRecord.reviewReason.tagText")
+        s"""<strong class="govuk-tag govuk-tag--grey" style="margin-right:8px;">$tagValue</strong>"""
+      } else {
+        ""
+      }
+
+    val valueHtml = HtmlContent(
+      s"""<div style="display:flex; align-items:center;">
+         |  $tagHtml<div lang="en">${HtmlFormat.escape(countryName)}</div>
+         |</div>""".stripMargin
+    )
+
     SummaryListRowViewModel(
       key = "countryOfOrigin.checkYourAnswersLabel",
-      value =
-        ValueViewModel(HtmlContent(s"""<div lang="en" style="display: flex; align-items: center;">$tagHtml${HtmlFormat
-            .escape(countryName)
-            .toString}</div>""")),
-      actions = if (recordLocked) {
-        Seq.empty
-      } else {
-        Seq(
+      value = ValueViewModel(valueHtml),
+      actions =
+        if (recordLocked) Seq.empty
+        else Seq(
           ActionItemViewModel("site.change", changeLink)
             .withVisuallyHiddenText(messages("countryOfOrigin.change.hidden"))
         )
-      }
     )
+  }
+
+  /**
+   * Returns an optional category row with a message about needing to update the country of origin,
+   * only when the record is not categorised and review reason is Country.
+   */
+  def categoryRowForCountryReview(
+                                   record: GetGoodsRecordResponse,
+                                   reviewReason: Option[ReviewReason],
+                                   recordLocked: Boolean
+                                 )(implicit messages: Messages): Option[SummaryListRow] = {
+
+    if (reviewReason.contains(ReviewReason.Country) && record.category.isEmpty) {
+      Some(
+        SummaryListRowViewModel(
+          key = "category.checkYourAnswersLabel",
+          value = ValueViewModel(messages("singleRecord.countryReviewReason.categorise")),
+          actions = if (recordLocked) Seq.empty else Seq.empty
+        )
+      )
+    } else {
+      None
+    }
   }
 
   private def getCountryName(countryOfOrigin: String, countries: Seq[Country]) =
