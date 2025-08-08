@@ -104,7 +104,6 @@ class CommodityCodeSummarySpec extends SpecBase {
         case other           => fail(s"Expected HtmlContent but got: $other")
       }
 
-
       html must include("""<strong class="govuk-tag govuk-tag--grey""")
       html must include(messages("commodityCode.mismatch"))
       html must include(record.comcode)

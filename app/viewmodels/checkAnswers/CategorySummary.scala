@@ -63,12 +63,11 @@ object CategorySummary {
       case Some(Commodity) =>
         val viewModel = createCommodityViewModel(value)
         SummaryListRowViewModel(key = "singleRecord.category.row", value = viewModel)
-      case Some(Country) =>
+      case Some(Country)   =>
         val viewModel = createCountryViewModel(value)
         SummaryListRowViewModel(key = "singleRecord.category.row", value = viewModel)
 
-
-      case _               =>
+      case _ =>
         val escapedValue = ValueViewModel(HtmlFormat.escape(messages(value)).toString)
         SummaryListRowViewModel(
           key = "singleRecord.category.row",
@@ -101,7 +100,6 @@ object CategorySummary {
     val tagValue = messages("singleRecord.reviewReason.tagText")
     ValueViewModel(HtmlContent(s"<strong class='govuk-tag govuk-tag--grey'>$tagValue</strong> ${messages(value)}"))
   }
-
 
   private def handleUncategorisedRow(
     value: String,

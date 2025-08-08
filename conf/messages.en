@@ -532,20 +532,18 @@ singleRecord.countryReviewReason.notCategorised.paragraph = The country of origi
 singleRecord.countryReviewReason.categorised.paragraph = The country of origin is {0} which means the category is also no longer valid.
 singleRecord.countryReviewReason.linkText = change the country of origin
 
-singleRecord.countryReviewReason.countryOfOrigin.message = The country of origin is {0} which means the category is also no longer valid.
-
 singleRecord.reviewReason.tagText = No longer valid
 singleRecord.reviewReason = You need to {0} and then categorise this record to see if you can use it on an Internal Market Movement Information (IMMI).
 
 singleRecord.commodityReviewReason.linkText = change the commodity code
 singleRecord.commodityReviewReason.categorised.adviceReceived = The commodity code has expired which means the commodity code, category and advice are shown as: {0}
+
 singleRecord.commodityReviewReason.categorised = The commodity code has expired which means the commodity code and category are shown as: {0}
 singleRecord.commodityReviewReason.adviceReceived = The commodity code has expired which means the commodity code and advice are shown as: {0}
 singleRecord.commodityReviewReason.notCategorised.noAdvice = The commodity code has expired which means the commodity code is shown as:
 
 singleRecord.category.row.commodityReviewReason.notCategorised = You will not be able to categorise this record until you update the commodity code
 singleRecord.autoCategorisation.completed = Your goods have been automatically categorised to
-
 
 AdviceReceived.messageKey = advice.status.received
 advice.status.received = Advice received

@@ -93,7 +93,6 @@ class CyaCreateRecordController @Inject() (
     Ok(view(list))
   }
 
-
   def onSubmit(): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       GoodsRecord.build(request.userAnswers, request.eori) match {

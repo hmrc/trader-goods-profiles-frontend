@@ -28,20 +28,18 @@ import play.api.test.Helpers.*
 implicit val messagesApi: MessagesApi = new DefaultMessagesApi()
 implicit val lang: Lang               = Lang("en")
 
-
 class ReviewReasonSpec extends SpecBase {
-
 
   "ReviewReason" - {
     implicit val messages: Messages = {
       val messagesApi = stubMessagesApi(
         Map(
           "en" -> Map(
-            "singleRecord.reviewReason.tagText" -> "No longer valid",
-            "singleRecord.countryReviewReason.categorised.paragraph" -> "The country of origin is {0} which means the category is also no longer valid.",
+            "singleRecord.reviewReason.tagText"                         -> "No longer valid",
+            "singleRecord.countryReviewReason.categorised.paragraph"    -> "The country of origin is {0} which means the category is also no longer valid.",
             "singleRecord.countryReviewReason.notCategorised.paragraph" -> "The country of origin is: {0}",
-            "singleRecord.reviewReason.paragraph" -> "You need to {0} and then categorise this record to see if you can use it on an Internal Market Movement Information (IMMI).",
-            "singleRecord.countryReviewReason.linkText" -> "change the country of origin"
+            "singleRecord.reviewReason.paragraph"                       -> "You need to {0} and then categorise this record to see if you can use it on an Internal Market Movement Information (IMMI).",
+            "singleRecord.countryReviewReason.linkText"                 -> "change the country of origin"
           )
         )
       )
@@ -305,8 +303,6 @@ class ReviewReasonSpec extends SpecBase {
       Mismatch.setAdditionalContent(isCategorised = false, NotRequested) mustBe None
     }
 
-
-
     "Country ReviewReason" - {
 
       "have correct messageKey and linkKey" in {
@@ -324,10 +320,12 @@ class ReviewReasonSpec extends SpecBase {
       "setAdditionalContent when categorised" in {
         val expectedTagHtml = """<span class="govuk-tag govuk-tag--grey">No longer valid</span>"""
         val result          = Country.setAdditionalContent(isCategorised = true, AdviceReceived)
-        result mustBe Some(List(
+        result mustBe Some(
+          List(
             "The country of origin is {0} which means the category is also no longer valid."
               .replace("{0}", expectedTagHtml)
-          ))
+          )
+        )
       }
 
       "setAdditionalContent when not categorised" in {
