@@ -88,7 +88,7 @@ class ReviewReasonSpec extends SpecBase {
       }
 
       "when Unclear" in {
-        Json.toJson(Unclear: ReviewReason) mustBe JsString("unclear")
+        Json.toJson(Unclear: ReviewReason) mustBe JsString("Unclear")
       }
 
       "when Measure" in {

@@ -169,7 +169,7 @@ object ReviewReason {
     case Commodity  => JsString("commodity")
     case Country    => JsString("country")
     case Inadequate => JsString("inadequate")
-    case Unclear    => JsString("unclear")
+    case Unclear    => JsString("Unclear")
     case Measure    => JsString("measure")
     case Mismatch   => JsString("mismatch")
   }
