@@ -78,7 +78,6 @@ object CommodityCodeSummary {
                )(implicit messages: Messages): SummaryListRow = {
 
     val changeLink = if (record.category.isDefined || record.adviceStatus == AdviceReceived) {
-      println(s"n\n\n\nDEBUG: reviewReason = $reviewReason, declarable = ${record.declarable}\n\n\n")
 
       controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangedController.onPageLoad(mode, recordId).url
     } else {

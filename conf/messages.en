@@ -546,6 +546,10 @@ singleRecord.commodityReviewReason.notCategorised.noAdvice = The commodity code 
 singleRecord.category.row.commodityReviewReason.notCategorised = You will not be able to categorise this record until you update the commodity code
 singleRecord.autoCategorisation.completed = Your goods have been automatically categorised to
 
+
+AdviceReceived.messageKey = advice.status.received
+advice.status.received = Advice received
+
 hasCountryOfOriginChange.title = Changing the country of origin
 hasCountryOfOriginChange.h1 = Changing the country of origin
 hasCountryOfOriginChange.p1 = You’ll need to recategorise this goods record if you change the country of origin

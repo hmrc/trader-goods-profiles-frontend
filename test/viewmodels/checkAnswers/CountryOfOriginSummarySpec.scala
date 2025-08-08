@@ -35,7 +35,8 @@ class CountryOfOriginSummarySpec extends SpecBase {
       testRecordId,
       NormalMode,
       recordLocked = true,
-      countries
+      countries,
+      None
     )
     row.actions mustBe Some(Actions("", List()))
   }
@@ -47,7 +48,8 @@ class CountryOfOriginSummarySpec extends SpecBase {
         testRecordId,
         NormalMode,
         recordLocked = false,
-        countries
+        countries,
+        None
       )
       row.actions mustBe defined
       row.actions.value.items.head.href mustEqual controllers.goodsRecord.countryOfOrigin.routes.HasCountryOfOriginChangeController
@@ -62,7 +64,8 @@ class CountryOfOriginSummarySpec extends SpecBase {
         testRecordId,
         NormalMode,
         recordLocked = false,
-        countries
+        countries,
+        None
       )
       row.actions mustBe defined
       row.actions.value.items.head.href mustEqual controllers.goodsRecord.countryOfOrigin.routes.UpdateCountryOfOriginController
@@ -77,7 +80,8 @@ class CountryOfOriginSummarySpec extends SpecBase {
         testRecordId,
         NormalMode,
         recordLocked = false,
-        countries
+        countries,
+        None
       )
       row.value.content.asHtml.toString() must include(testCountryName)
       row.actions mustBe defined

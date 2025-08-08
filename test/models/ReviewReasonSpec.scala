@@ -20,6 +20,12 @@ import base.SpecBase
 import models.AdviceStatus.{AdviceReceived, AdviceRequestWithdrawn, NotRequested}
 import models.ReviewReason._
 import play.api.libs.json._
+import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
+import play.api.i18n.DefaultMessagesApi
+
+implicit val messagesApi: MessagesApi = new DefaultMessagesApi()
+implicit val lang: Lang = Lang("en")
+implicit val messages: Messages = MessagesImpl(lang, messagesApi)
 
 class ReviewReasonSpec extends SpecBase {
 
@@ -59,7 +65,7 @@ class ReviewReasonSpec extends SpecBase {
       }
 
       "when Unclear" in {
-        Json.toJson(Unclear: ReviewReason) mustBe JsString("Unclear")
+        Json.toJson(Unclear: ReviewReason) mustBe JsString("unclear")
       }
 
       "when Measure" in {
@@ -76,7 +82,7 @@ class ReviewReasonSpec extends SpecBase {
       "when Commodity and" - {
 
         "is categorised, and advice status is AdviceReceived" in {
-          Commodity.messageKey mustBe "singleRecord.commodityReviewReason"
+          Commodity.messageKey mustBe "singleRecord.reviewReason"
           Commodity.linkKey mustBe Some("singleRecord.commodityReviewReason.linkText")
           Commodity
             .url("recordId", NotRequested)
@@ -94,7 +100,7 @@ class ReviewReasonSpec extends SpecBase {
         }
 
         "is categorised, and advice status is NotRequested" in {
-          Commodity.messageKey mustBe "singleRecord.commodityReviewReason"
+          Commodity.messageKey mustBe "singleRecord.reviewReason"
           Commodity.linkKey mustBe Some("singleRecord.commodityReviewReason.linkText")
           Commodity
             .url("recordId", NotRequested)
@@ -103,13 +109,13 @@ class ReviewReasonSpec extends SpecBase {
             controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangedController
               .onPageLoad(NormalMode, "recordId")
               .url
-          Commodity.setAdditionalContent(isCategorised = true, NotRequested) mustBe Some(
+          Commodity.setAdditionalContent(isCategorised = true, adviceStatus = NotRequested) mustBe Some(
             ("singleRecord.commodityReviewReason.categorised", "singleRecord.reviewReason.tagText")
           )
         }
 
         "is not categorised, and advice status is AdviceReceived" in {
-          Commodity.messageKey mustBe "singleRecord.commodityReviewReason"
+          Commodity.messageKey mustBe "singleRecord.reviewReason"
           Commodity.linkKey mustBe Some("singleRecord.commodityReviewReason.linkText")
           Commodity
             .url("recordId", NotRequested)
@@ -124,7 +130,7 @@ class ReviewReasonSpec extends SpecBase {
         }
 
         "is not categorised, and advice status is not AdviceReceived" in {
-          Commodity.messageKey mustBe "singleRecord.commodityReviewReason"
+          Commodity.messageKey mustBe "singleRecord.reviewReason"
           Commodity.linkKey mustBe Some("singleRecord.commodityReviewReason.linkText")
           Commodity
             .url("recordId", NotRequested)
@@ -200,7 +206,7 @@ class ReviewReasonSpec extends SpecBase {
       }
 
       "is categorised, and advice status is NotRequested" in {
-        Commodity.messageKey mustBe "singleRecord.commodityReviewReason"
+        Commodity.messageKey mustBe "singleRecord.reviewReason"
         Commodity.linkKey mustBe Some("singleRecord.commodityReviewReason.linkText")
         Commodity
           .url("recordId", NotRequested)
@@ -214,7 +220,7 @@ class ReviewReasonSpec extends SpecBase {
         )
       }
       "is not categorised, and advice status is AdviceReceived" in {
-        Commodity.messageKey mustBe "singleRecord.commodityReviewReason"
+        Commodity.messageKey mustBe "singleRecord.reviewReason"
         Commodity.linkKey mustBe Some("singleRecord.commodityReviewReason.linkText")
         Commodity
           .url("recordId", NotRequested)
@@ -228,7 +234,7 @@ class ReviewReasonSpec extends SpecBase {
         )
       }
       "is not categorised, and advice status is not AdviceReceived" in {
-        Commodity.messageKey mustBe "singleRecord.commodityReviewReason"
+        Commodity.messageKey mustBe "singleRecord.reviewReason"
         Commodity.linkKey mustBe Some("singleRecord.commodityReviewReason.linkText")
         Commodity
           .url("recordId", NotRequested)
