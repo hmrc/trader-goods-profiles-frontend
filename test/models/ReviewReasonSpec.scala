@@ -17,18 +17,43 @@
 package models
 
 import base.SpecBase
+import base.TestConstants.testRecordId
+import controllers.goodsRecord.countryOfOrigin.routes
 import models.AdviceStatus.{AdviceReceived, AdviceRequestWithdrawn, NotRequested}
-import models.ReviewReason._
-import play.api.libs.json._
+import models.ReviewReason.{Country, *}
+import play.api.i18n.*
+import play.api.libs.json.*
+import play.api.mvc.Call
+import play.api.test.Helpers.*
+implicit val messagesApi: MessagesApi = new DefaultMessagesApi()
+implicit val lang: Lang               = Lang("en")
 
 class ReviewReasonSpec extends SpecBase {
 
   "ReviewReason" - {
+    implicit val messages: Messages = {
+      val messagesApi = stubMessagesApi(
+        Map(
+          "en" -> Map(
+            "singleRecord.reviewReason.tagText"                         -> "No longer valid",
+            "singleRecord.countryReviewReason.categorised.paragraph"    -> "The country of origin is {0} which means the category is also no longer valid.",
+            "singleRecord.countryReviewReason.notCategorised.paragraph" -> "The country of origin is: {0}",
+            "singleRecord.reviewReason.paragraph"                       -> "You need to {0} and then categorise this record to see if you can use it on an Internal Market Movement Information (IMMI).",
+            "singleRecord.countryReviewReason.linkText"                 -> "change the country of origin"
+          )
+        )
+      )
+      MessagesImpl(Lang("en"), messagesApi)
+    }
 
     "must deserialize from json" - {
 
       "when Commodity" in {
         Json.fromJson[ReviewReason](JsString("commodity")) mustBe JsSuccess(Commodity)
+      }
+
+      "when Country" in {
+        Json.fromJson[ReviewReason](JsString("country")) mustBe JsSuccess(Country)
       }
 
       "when Inadequate" in {
@@ -54,6 +79,10 @@ class ReviewReasonSpec extends SpecBase {
         Json.toJson(Commodity: ReviewReason) mustBe JsString("commodity")
       }
 
+      "when Country" in {
+        Json.toJson(Country: ReviewReason) mustBe JsString("country")
+      }
+
       "when Inadequate" in {
         Json.toJson(Inadequate: ReviewReason) mustBe JsString("inadequate")
       }
@@ -76,7 +105,7 @@ class ReviewReasonSpec extends SpecBase {
       "when Commodity and" - {
 
         "is categorised, and advice status is AdviceReceived" in {
-          Commodity.messageKey mustBe "singleRecord.commodityReviewReason"
+          Commodity.messageKey mustBe "singleRecord.reviewReason"
           Commodity.linkKey mustBe Some("singleRecord.commodityReviewReason.linkText")
           Commodity
             .url("recordId", NotRequested)
@@ -85,16 +114,13 @@ class ReviewReasonSpec extends SpecBase {
             controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangedController
               .onPageLoad(NormalMode, "recordId")
               .url
-          Commodity.setAdditionalContent(isCategorised = true, AdviceReceived) mustBe Some(
-            (
-              "singleRecord.commodityReviewReason.categorised.adviceReceived",
-              "singleRecord.commodityReviewReason.tagText"
-            )
-          )
+          Commodity.setAdditionalContent(isCategorised = true, AdviceReceived) mustBe
+            Some(List("singleRecord.commodityReviewReason.categorised.adviceReceived"))
+
         }
 
         "is categorised, and advice status is NotRequested" in {
-          Commodity.messageKey mustBe "singleRecord.commodityReviewReason"
+          Commodity.messageKey mustBe "singleRecord.reviewReason"
           Commodity.linkKey mustBe Some("singleRecord.commodityReviewReason.linkText")
           Commodity
             .url("recordId", NotRequested)
@@ -103,13 +129,13 @@ class ReviewReasonSpec extends SpecBase {
             controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangedController
               .onPageLoad(NormalMode, "recordId")
               .url
-          Commodity.setAdditionalContent(isCategorised = true, NotRequested) mustBe Some(
-            ("singleRecord.commodityReviewReason.categorised", "singleRecord.commodityReviewReason.tagText")
-          )
+          Commodity.setAdditionalContent(isCategorised = true, adviceStatus = NotRequested) mustBe
+            Some(List("singleRecord.commodityReviewReason.categorised"))
+
         }
 
         "is not categorised, and advice status is AdviceReceived" in {
-          Commodity.messageKey mustBe "singleRecord.commodityReviewReason"
+          Commodity.messageKey mustBe "singleRecord.reviewReason"
           Commodity.linkKey mustBe Some("singleRecord.commodityReviewReason.linkText")
           Commodity
             .url("recordId", NotRequested)
@@ -118,13 +144,12 @@ class ReviewReasonSpec extends SpecBase {
             controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangedController
               .onPageLoad(NormalMode, "recordId")
               .url
-          Commodity.setAdditionalContent(isCategorised = false, AdviceReceived) mustBe Some(
-            ("singleRecord.commodityReviewReason.adviceReceived", "singleRecord.commodityReviewReason.tagText")
-          )
+          Commodity.setAdditionalContent(isCategorised = false, AdviceReceived) mustBe
+            Some(List("singleRecord.commodityReviewReason.adviceReceived"))
         }
 
         "is not categorised, and advice status is not AdviceReceived" in {
-          Commodity.messageKey mustBe "singleRecord.commodityReviewReason"
+          Commodity.messageKey mustBe "singleRecord.reviewReason"
           Commodity.linkKey mustBe Some("singleRecord.commodityReviewReason.linkText")
           Commodity
             .url("recordId", NotRequested)
@@ -133,9 +158,8 @@ class ReviewReasonSpec extends SpecBase {
             controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangedController
               .onPageLoad(NormalMode, "recordId")
               .url
-          Commodity.setAdditionalContent(isCategorised = false, AdviceRequestWithdrawn) mustBe Some(
-            ("singleRecord.commodityReviewReason.notCategorised.noAdvice", "singleRecord.commodityReviewReason.tagText")
-          )
+          Commodity.setAdditionalContent(isCategorised = false, AdviceRequestWithdrawn) mustBe
+            Some(List("singleRecord.commodityReviewReason.notCategorised.noAdvice"))
         }
       }
 
@@ -200,7 +224,7 @@ class ReviewReasonSpec extends SpecBase {
       }
 
       "is categorised, and advice status is NotRequested" in {
-        Commodity.messageKey mustBe "singleRecord.commodityReviewReason"
+        Commodity.messageKey mustBe "singleRecord.reviewReason"
         Commodity.linkKey mustBe Some("singleRecord.commodityReviewReason.linkText")
         Commodity
           .url("recordId", NotRequested)
@@ -209,12 +233,12 @@ class ReviewReasonSpec extends SpecBase {
           controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangedController
             .onPageLoad(NormalMode, "recordId")
             .url
-        Commodity.setAdditionalContent(isCategorised = true, NotRequested) mustBe Some(
-          ("singleRecord.commodityReviewReason.categorised", "singleRecord.commodityReviewReason.tagText")
-        )
+        Commodity.setAdditionalContent(isCategorised = true, NotRequested) mustBe
+          Some(List("singleRecord.commodityReviewReason.categorised"))
       }
+
       "is not categorised, and advice status is AdviceReceived" in {
-        Commodity.messageKey mustBe "singleRecord.commodityReviewReason"
+        Commodity.messageKey mustBe "singleRecord.reviewReason"
         Commodity.linkKey mustBe Some("singleRecord.commodityReviewReason.linkText")
         Commodity
           .url("recordId", NotRequested)
@@ -223,12 +247,11 @@ class ReviewReasonSpec extends SpecBase {
           controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangedController
             .onPageLoad(NormalMode, "recordId")
             .url
-        Commodity.setAdditionalContent(isCategorised = false, AdviceReceived) mustBe Some(
-          ("singleRecord.commodityReviewReason.adviceReceived", "singleRecord.commodityReviewReason.tagText")
-        )
+        Commodity.setAdditionalContent(isCategorised = false, AdviceReceived) mustBe
+          Some(List("singleRecord.commodityReviewReason.adviceReceived"))
       }
       "is not categorised, and advice status is not AdviceReceived" in {
-        Commodity.messageKey mustBe "singleRecord.commodityReviewReason"
+        Commodity.messageKey mustBe "singleRecord.reviewReason"
         Commodity.linkKey mustBe Some("singleRecord.commodityReviewReason.linkText")
         Commodity
           .url("recordId", NotRequested)
@@ -237,9 +260,8 @@ class ReviewReasonSpec extends SpecBase {
           controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangedController
             .onPageLoad(NormalMode, "recordId")
             .url
-        Commodity.setAdditionalContent(isCategorised = false, AdviceRequestWithdrawn) mustBe Some(
-          ("singleRecord.commodityReviewReason.notCategorised.noAdvice", "singleRecord.commodityReviewReason.tagText")
-        )
+        Commodity.setAdditionalContent(isCategorised = false, AdviceRequestWithdrawn) mustBe
+          Some(List("singleRecord.commodityReviewReason.notCategorised.noAdvice"))
       }
     }
     "when Inadequate" in {
@@ -280,6 +302,43 @@ class ReviewReasonSpec extends SpecBase {
       Mismatch.url("recordId", NotRequested) mustBe None
       Mismatch.setAdditionalContent(isCategorised = false, NotRequested) mustBe None
     }
-  }
 
+    "Country ReviewReason" - {
+
+      "have correct messageKey and linkKey" in {
+        Country.messageKey mustBe "singleRecord.reviewReason"
+        Country.linkKey mustBe Some("singleRecord.countryReviewReason.linkText")
+      }
+
+      "return correct url" in {
+        val expectedUrl: Call =
+          routes.HasCountryOfOriginChangeController.onPageLoad(NormalMode, testRecordId)
+        Country.url(testRecordId, NotRequested) mustBe Some(expectedUrl)
+        Country.url(testRecordId, AdviceReceived) mustBe Some(expectedUrl)
+      }
+
+      "setAdditionalContent when categorised" in {
+        val expectedTagHtml = """<span class="govuk-tag govuk-tag--grey">No longer valid</span>"""
+        val result          = Country.setAdditionalContent(isCategorised = true, AdviceReceived)
+        result mustBe Some(
+          List(
+            "The country of origin is {0} which means the category is also no longer valid."
+              .replace("{0}", expectedTagHtml)
+          )
+        )
+      }
+
+      "setAdditionalContent when not categorised" in {
+        val expectedTagHtml = """<span class="govuk-tag govuk-tag--grey">No longer valid</span>"""
+        val expectedList    = List(
+          s"The country of origin is: $expectedTagHtml",
+          "You need to change the country of origin and then categorise this record to see if you can use it on an Internal Market Movement Information (IMMI)."
+        )
+        val result          = Country.setAdditionalContent(isCategorised = false, NotRequested)
+        result mustBe Some(expectedList)
+      }
+
+    }
+
+  }
 }

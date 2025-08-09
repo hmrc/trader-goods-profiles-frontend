@@ -158,8 +158,8 @@ class SingleRecordController @Inject() (
       rows = Seq(
         ProductReferenceSummary.row(record.traderRef, recordId, NormalMode, recordIsLocked),
         GoodsDescriptionSummary.rowUpdate(record, recordId, NormalMode, recordIsLocked),
-        CountryOfOriginSummary.rowUpdate(record, recordId, NormalMode, recordIsLocked, countries),
-        CommodityCodeSummary.rowUpdate(record, recordId, NormalMode, recordIsLocked)
+        CountryOfOriginSummary.rowUpdate(record, recordId, NormalMode, recordIsLocked, countries, record.reviewReason),
+        CommodityCodeSummary.rowUpdate(record, recordId, NormalMode, recordIsLocked, record.reviewReason)
       )
     )
 

@@ -387,14 +387,25 @@ singleRecord.mismatchReviewReason = Nid yw disgrifiad y nwyddau’n cyd-fynd â�
 singleRecord.measureReviewReason = Mae’r eithriadau o ran categoreiddio neu’r uned atodol wedi newid ac mae angen i chi {0} i weld a allwch ei ddefnyddio ar Wybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI).
 singleRecord.measureReviewReason.linkText = gategoreiddio’r cofnod nwyddau hwn
 
-singleRecord.commodityReviewReason = Mae angen i chi {0} ac yna categoreiddio’r cofnod hwn i weld a allwch ei ddefnyddio ar Wybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI).
+singleRecord.measureReviewReason = Mae’r eithriadau o ran categoreiddio neu’r uned atodol wedi newid ac mae angen i chi {0} i weld a allwch ei ddefnyddio ar Wybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI).
+singleRecord.measureReviewReason.linkText = gategoreiddio’r cofnod nwyddau hwn
+
+singleRecord.countryReviewReason.categorise = Ni fyddwch yn gallu categoreiddio’r cofnod hwn nes i chi ddiweddaru’r wlad tarddiad.
+singleRecord.countryReviewReason.notCategorised.paragraph = Nid yw’r wlad tarddiad:  {0}
+singleRecord.countryReviewReason.categorised.paragraph = Nid yw’r wlad tarddiad {0} sydd hefyd yn golygu nad yw’r categori yn ddilys mwyach.
+singleRecord.countryReviewReason.linkText = newid y wlad tarddiad ac yna categoreiddio’r cofnod
+
+
+singleRecord.reviewReason.tagText = Nid yw’n ddilys mwyach
+singleRecord.reviewReason = Mae angen i chi {0} ac yna categoreiddio’r cofnod hwn i weld a allwch ei ddefnyddio ar Wybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI).
+
 singleRecord.commodityReviewReason.linkText = newid y cod nwyddau
 singleRecord.commodityReviewReason.categorised.adviceReceived = Mae’r cod nwyddau wedi dod i ben, sy’n golygu bod y cod nwyddau, y categori a’r cyngor yn dangos fel a ganlyn: {0}
-singleRecord.commodityReviewReason.categorised = Mae’r cod nwyddau wedi dod i ben, sy’n golygu bod y cod nwyddau a’r categori yn dangos fel a ganlyn: {0}
-singleRecord.commodityReviewReason.adviceReceived = Mae’r cod nwyddau wedi dod i ben, sy’n golygu bod y cod nwyddau a’r cyngor yn dangos fel a ganlyn: {0}
-singleRecord.commodityReviewReason.notCategorised.noAdvice = Mae’r cod nwyddau wedi dod i ben, sy’n golygu bod y cod nwyddau’n dangos fel a ganlyn: {0}
-singleRecord.commodityReviewReason.tagText = Nid yw’n ddilys mwyach
-singleRecord.category.row.commodityReviewReason.notCategorised = Ni fyddwch yn gallu categoreiddio’r cofnod hwn nes i chi ddiweddaru’r cod nwyddau.
+
+singleRecord.commodityReviewReason.categorised =  Mae’r cod nwyddau wedi dod i ben, sy’n golygu bod y cod nwyddau, y categori a’r cyngor yn dangos fel a ganlyn: {0}
+singleRecord.commodityReviewReason.adviceReceived = Mae’r cod nwyddau wedi dod i ben, sy’n golygu bod y cod nwyddau, y categori a’r cyngor yn dangos fel a ganlyn: {0}
+singleRecord.commodityReviewReason.notCategorised.noAdvice = Mae'r cod nwyddau wedi dod i ben sy'n golygu bod y cod nwyddau yn cael ei ddangos fel:
+
 singleRecord.category.row.commodityReviewReason.notCategorised = Ni fyddwch yn gallu categoreiddio’r cofnod hwn nes i chi ddiweddaru’r cod nwyddau.
 singleRecord.autoCategorisation.completed = Mae eich nwyddau wedi'u categoreiddio'n awtomatig i
 successBanner.commodityCode = Rydych chi wedi diweddaru’r cod nwyddau. Rydym wedi categoreiddio’r cofnod gan nad oes esemptiadau ar gael
@@ -513,8 +524,6 @@ unauthorisedCdsEnrolment.cdsLink = Mae’n rhaid i chi fod wedi tanysgrifio i CD
 unauthorisedCdsEnrolment.p2.part1 = Os ydych wedi tanysgrifio i CDS,
 unauthorisedCdsEnrolment.p2.linkText = allgofnodwch
 unauthorisedCdsEnrolment.p2.part2 = ac yna mewngofnodwch gan ddefnyddio’r manylion cywir.
-
-
 
 requestData.title = Gwneud cais i lawrlwytho’ch data TGP
 requestData.heading = Gwneud cais i lawrlwytho’ch data TGP

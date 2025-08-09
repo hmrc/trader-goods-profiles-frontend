@@ -49,8 +49,8 @@ class CyaCreateRecordControllerSpec extends SpecBase with SummaryListFluency wit
       rows = Seq(
         ProductReferenceSummary.row(userAnswers)(messages(app)),
         GoodsDescriptionSummary.row(userAnswers)(messages(app)),
-        CountryOfOriginSummary.row(userAnswers, Seq(Country("CN", "China")))(messages(app)),
-        CommodityCodeSummary.row(userAnswers)(messages(app))
+        CountryOfOriginSummary.row(userAnswers, Seq(Country("CN", "China")), None)(messages(app)),
+        CommodityCodeSummary.row(userAnswers, None)(messages(app))
       ).flatten
     )
 

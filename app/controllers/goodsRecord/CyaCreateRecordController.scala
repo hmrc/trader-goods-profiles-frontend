@@ -78,14 +78,18 @@ class CyaCreateRecordController @Inject() (
   }
 
   private def displayView(userAnswers: UserAnswers, countries: Seq[Country])(implicit request: Request[_]): Result = {
+
+    val reviewReason: Option[ReviewReason] = None
+
     val list = SummaryListViewModel(
       rows = Seq(
         ProductReferenceSummary.row(userAnswers),
         GoodsDescriptionSummary.row(userAnswers),
-        CountryOfOriginSummary.row(userAnswers, countries),
-        CommodityCodeSummary.row(userAnswers)
+        CountryOfOriginSummary.row(userAnswers, countries, reviewReason),
+        CommodityCodeSummary.row(userAnswers, reviewReason)
       ).flatten
     )
+
     Ok(view(list))
   }
 

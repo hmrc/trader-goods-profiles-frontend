@@ -20,8 +20,8 @@ import base.{SpecBase, TestConstants}
 import connectors.GoodsRecordConnector
 import models.requests.DataRequest
 import models.router.responses.GetGoodsRecordResponse
-import models.{AdviceStatus, DeclarableStatus, Scenario, StandardGoodsScenario, UserAnswers}
-import org.mockito.ArgumentMatchers.{any, anyBoolean, eq as eqTo}
+import models._
+import org.mockito.ArgumentMatchers.{any, anyBoolean, eq => eqTo}
 import org.mockito.Mockito.{reset, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar.mock
@@ -34,7 +34,6 @@ import services.AutoCategoriseService
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Constants.StandardGoodsAsInt
 import views.html.goodsRecord.{CreateRecordAutoCategorisationSuccessView, CreateRecordSuccessView}
-import play.api.mvc.Results.Ok
 import play.twirl.api.Html
 
 import scala.concurrent.ExecutionContext.Implicits.global

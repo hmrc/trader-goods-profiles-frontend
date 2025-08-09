@@ -527,26 +527,26 @@ singleRecord.adviceParagraph.inProgress = HMRC has started to look at your goods
 singleRecord.adviceParagraph.informationRequested = HMRC have asked you for some information
 singleRecord.adviceParagraph.adviceReceived = HMRC have agreed that the commodity code and goods description match
 
-singleRecord.inadequateReviewReason = The goods description does not have enough detail to describe the goods. You need to {0} before you can use it on an Internal Market Movement Information (IMMI).
-singleRecord.inadequateReviewReason.linkText = change the goods description
+singleRecord.countryReviewReason.categorise = You will not be able to categorise this record until you update the country of origin
+singleRecord.countryReviewReason.notCategorised.paragraph = The country of origin is: {0}
+singleRecord.countryReviewReason.categorised.paragraph = The country of origin is {0} which means the category is also no longer valid.
+singleRecord.countryReviewReason.linkText = change the country of origin
 
-singleRecord.measureReviewReason = The categorisation exemptions or supplementary unit have changed and you need to {0} to see if you can use it on an Internal Market Movement Information (IMMI).
-singleRecord.measureReviewReason.linkText = categorise this goods record
+singleRecord.reviewReason.tagText = No longer valid
+singleRecord.reviewReason = You need to {0} and then categorise this record to see if you can use it on an Internal Market Movement Information (IMMI).
 
-singleRecord.unclearReviewReason = The goods description is not clear. You’ll need to {0} before you can use it on an Internal Market Movement Information (IMMI).
-singleRecord.unclearReviewReason.linkText = change the goods description
-
-singleRecord.mismatchReviewReason = The goods description does not match the commodity code. You need to change the goods description or commodity code before you can use it on an Internal Market Movement Information (IMMI).
-
-singleRecord.commodityReviewReason = You need to {0} and then categorise this record to see if you can use it on an Internal Market Movement Information (IMMI).
 singleRecord.commodityReviewReason.linkText = change the commodity code
 singleRecord.commodityReviewReason.categorised.adviceReceived = The commodity code has expired which means the commodity code, category and advice are shown as: {0}
+
 singleRecord.commodityReviewReason.categorised = The commodity code has expired which means the commodity code and category are shown as: {0}
 singleRecord.commodityReviewReason.adviceReceived = The commodity code has expired which means the commodity code and advice are shown as: {0}
-singleRecord.commodityReviewReason.notCategorised.noAdvice = The commodity code has expired which means the commodity code is shown as: {0}
-singleRecord.commodityReviewReason.tagText = No longer valid
+singleRecord.commodityReviewReason.notCategorised.noAdvice = The commodity code has expired which means the commodity code is shown as:
+
 singleRecord.category.row.commodityReviewReason.notCategorised = You will not be able to categorise this record until you update the commodity code
 singleRecord.autoCategorisation.completed = Your goods have been automatically categorised to
+
+AdviceReceived.messageKey = advice.status.received
+advice.status.received = Advice received
 
 hasCountryOfOriginChange.title = Changing the country of origin
 hasCountryOfOriginChange.h1 = Changing the country of origin

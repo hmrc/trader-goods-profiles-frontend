@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package models
 
 import models.AdviceStatus.{AdviceNotProvided, AdviceRequestWithdrawn}
+import play.api.i18n.Messages
 import play.api.libs.json.*
 import play.api.mvc.Call
 
@@ -25,15 +26,18 @@ sealed trait ReviewReason {
   val linkKey: Option[String]
 
   def url(recordId: String, adviceStatus: AdviceStatus): Option[Call]
-  def setAdditionalContent(isCategorised: Boolean, adviceStatus: AdviceStatus): Option[(String, String)]
+
+  def setAdditionalContent(isCategorised: Boolean, adviceStatus: AdviceStatus)(implicit
+    messages: Messages
+  ): Option[List[String]]
 }
 
 object ReviewReason {
 
-  val values: Seq[ReviewReason] = Seq(Commodity, Inadequate, Unclear, Measure, Mismatch)
+  val values: Seq[ReviewReason] = Seq(Commodity, Country, Inadequate, Unclear, Measure, Mismatch)
 
   case object Commodity extends ReviewReason {
-    val messageKey: String      = "singleRecord.commodityReviewReason"
+    val messageKey: String      = "singleRecord.reviewReason"
     val linkKey: Option[String] = Some("singleRecord.commodityReviewReason.linkText")
 
     override def url(recordId: String, adviceStatus: AdviceStatus): Option[Call] =
@@ -41,22 +45,52 @@ object ReviewReason {
         controllers.goodsRecord.commodityCode.routes.HasCommodityCodeChangedController.onPageLoad(NormalMode, recordId)
       )
 
-    override def setAdditionalContent(isCategorised: Boolean, adviceStatus: AdviceStatus): Option[(String, String)] = {
-      val tagText = "singleRecord.commodityReviewReason.tagText"
+    override def setAdditionalContent(isCategorised: Boolean, adviceStatus: AdviceStatus)(implicit
+      messages: Messages
+    ): Option[List[String]] = {
+      val tagHtml = s"""<span class="govuk-tag govuk-tag--grey">${messages(
+          "singleRecord.reviewReason.tagText"
+        )}</span>"""
       (isCategorised, adviceStatus) match {
         case (true, AdviceStatus.AdviceReceived)                                  =>
-          Some(
-            ("singleRecord.commodityReviewReason.categorised.adviceReceived", tagText)
-          )
-        case (true, adviceStatus) if adviceStatus == AdviceStatus.NotRequested    =>
-          Some(("singleRecord.commodityReviewReason.categorised", tagText))
-        case (_, adviceStatus) if adviceStatus == AdviceStatus.AdviceReceived     =>
-          Some(("singleRecord.commodityReviewReason.adviceReceived", tagText))
+          Some(List(messages("singleRecord.commodityReviewReason.categorised.adviceReceived", tagHtml)))
+        case (true, AdviceStatus.NotRequested)                                    =>
+          Some(List(messages("singleRecord.commodityReviewReason.categorised", tagHtml)))
+        case (_, AdviceStatus.AdviceReceived)                                     =>
+          Some(List(messages("singleRecord.commodityReviewReason.adviceReceived", tagHtml)))
         case (false, adviceStatus) if adviceStatus != AdviceStatus.AdviceReceived =>
+          Some(List(messages("singleRecord.commodityReviewReason.notCategorised.noAdvice", tagHtml)))
+        case _                                                                    => None
+      }
+    }
+  }
+
+  case object Country extends ReviewReason {
+    val messageKey: String      = "singleRecord.reviewReason"
+    val linkKey: Option[String] = Some("singleRecord.countryReviewReason.linkText")
+
+    override def url(recordId: String, adviceStatus: AdviceStatus): Option[Call] =
+      Some(
+        controllers.goodsRecord.countryOfOrigin.routes.HasCountryOfOriginChangeController
+          .onPageLoad(NormalMode, recordId)
+      )
+
+    override def setAdditionalContent(isCategorised: Boolean, adviceStatus: AdviceStatus)(implicit
+      messages: Messages
+    ): Option[List[String]] = {
+      val tagHtml = s"""<span class="govuk-tag govuk-tag--grey">${messages(
+          "singleRecord.reviewReason.tagText"
+        )}</span>"""
+      (isCategorised, adviceStatus) match {
+        case (true, _)  =>
+          Some(List(messages("singleRecord.countryReviewReason.categorised.paragraph", tagHtml)))
+        case (false, _) =>
           Some(
-            ("singleRecord.commodityReviewReason.notCategorised.noAdvice", tagText)
+            List(
+              messages("singleRecord.countryReviewReason.notCategorised.paragraph", tagHtml),
+              messages("singleRecord.reviewReason.paragraph", messages("singleRecord.countryReviewReason.linkText"))
+            )
           )
-        case (_, _)                                                               => None
       }
     }
   }
@@ -78,8 +112,9 @@ object ReviewReason {
         }
       }
 
-    override def setAdditionalContent(isCategorised: Boolean, adviceStatus: AdviceStatus): Option[(String, String)] =
-      None
+    override def setAdditionalContent(isCategorised: Boolean, adviceStatus: AdviceStatus)(implicit
+      messages: Messages
+    ): Option[List[String]] = None
   }
 
   case object Unclear extends ReviewReason {
@@ -99,8 +134,9 @@ object ReviewReason {
         }
       }
 
-    override def setAdditionalContent(isCategorised: Boolean, adviceStatus: AdviceStatus): Option[(String, String)] =
-      None
+    override def setAdditionalContent(isCategorised: Boolean, adviceStatus: AdviceStatus)(implicit
+      messages: Messages
+    ): Option[List[String]] = None
   }
 
   case object Measure extends ReviewReason {
@@ -112,8 +148,9 @@ object ReviewReason {
         controllers.routes.ValidateCommodityCodeController.changeCategory(recordId)
       )
 
-    override def setAdditionalContent(isCategorised: Boolean, adviceStatus: AdviceStatus): Option[(String, String)] =
-      None
+    override def setAdditionalContent(isCategorised: Boolean, adviceStatus: AdviceStatus)(implicit
+      messages: Messages
+    ): Option[List[String]] = None
   }
 
   case object Mismatch extends ReviewReason {
@@ -122,12 +159,15 @@ object ReviewReason {
 
     override def url(recordId: String, adviceStatus: AdviceStatus): Option[Call] = None
 
-    override def setAdditionalContent(isCategorised: Boolean, adviceStatus: AdviceStatus): Option[(String, String)] =
-      None
+    override def setAdditionalContent(isCategorised: Boolean, adviceStatus: AdviceStatus)(implicit
+      messages: Messages
+    ): Option[List[String]] = None
   }
 
+  // JSON serialization / deserialization
   implicit val writes: Writes[ReviewReason] = Writes[ReviewReason] {
     case Commodity  => JsString("commodity")
+    case Country    => JsString("country")
     case Inadequate => JsString("inadequate")
     case Unclear    => JsString("Unclear")
     case Measure    => JsString("measure")
@@ -135,12 +175,16 @@ object ReviewReason {
   }
 
   implicit val reads: Reads[ReviewReason] = Reads[ReviewReason] {
-    case JsString("commodity")  => JsSuccess(Commodity)
-    case JsString("inadequate") => JsSuccess(Inadequate)
-    case JsString("Unclear")    => JsSuccess(Unclear)
-    case JsString("unclear")    => JsSuccess(Unclear)
-    case JsString("measure")    => JsSuccess(Measure)
-    case JsString("mismatch")   => JsSuccess(Mismatch)
-    case other                  => JsError(s"[ReviewReason] Reads unknown ReviewReason: $other")
+    case JsString(s) =>
+      s.toLowerCase match {
+        case "commodity"  => JsSuccess(Commodity)
+        case "inadequate" => JsSuccess(Inadequate)
+        case "unclear"    => JsSuccess(Unclear)
+        case "measure"    => JsSuccess(Measure)
+        case "mismatch"   => JsSuccess(Mismatch)
+        case "country"    => JsSuccess(Country)
+        case other        => JsError(s"[ReviewReason] Reads unknown ReviewReason: $other")
+      }
+    case other       => JsError(s"[ReviewReason] Reads unknown ReviewReason: $other")
   }
 }
