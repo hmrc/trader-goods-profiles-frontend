@@ -43,8 +43,7 @@ final case class CategorisationInfo(
     categoryAssessments.isEmpty || (
       categoryAssessmentsThatNeedAnswers.isEmpty &&
         categoryAssessments.forall(_.hasNoExemptions)
-      )
-
+    )
 
   def getAssessmentFromIndex(index: Int): Option[CategoryAssessment] =
     if (index + 1 > categoryAssessmentsThatNeedAnswers.size) {
