@@ -33,7 +33,7 @@ class CategorisationInfoSpec extends SpecBase {
 
   "CategorisationInfo#isAutoCategorisable" - {
 
-    "return true when at least one CategoryAssessment has no exemptions" in {
+    "return true when there is one CategoryAssessment with no exemptions" in {
       val assessmentWithoutExemptions = CategoryAssessment(
         id = "a1",
         category = 1,
@@ -55,7 +55,7 @@ class CategorisationInfoSpec extends SpecBase {
       info.isAutoCategorisable shouldBe true
     }
 
-    "return false when all CategoryAssessments have at least one exemption" in {
+    "return false when 1 CategoryAssessments has one exemption" in {
       val certificate = Certificate("cert-id", "cert-code", "cert-description")
 
       val assessmentWithExemption = CategoryAssessment(
@@ -79,7 +79,7 @@ class CategorisationInfoSpec extends SpecBase {
       info.isAutoCategorisable shouldBe false
     }
 
-    "return false when there are no CategoryAssessments" in {
+    "return true when there are no CategoryAssessments" in {
       val info = CategorisationInfo(
         commodityCode = "1234567890",
         countryOfOrigin = "GB",
@@ -90,8 +90,31 @@ class CategorisationInfoSpec extends SpecBase {
         descendantCount = 0
       )
 
+      info.isAutoCategorisable shouldBe true
+    }
+
+    "return false when there are CategoryAssessments that need answers" in {
+      val assessmentWithoutExemptions = CategoryAssessment(
+        id = "a3",
+        category = 1,
+        exemptions = Seq.empty,
+        themeDescription = "Theme",
+        regulationUrl = None
+      )
+
+      val info = CategorisationInfo(
+        commodityCode = "1234567890",
+        countryOfOrigin = "GB",
+        comcodeEffectiveToDate = None,
+        categoryAssessments = Seq(assessmentWithoutExemptions),
+        categoryAssessmentsThatNeedAnswers = Seq(assessmentWithoutExemptions),
+        measurementUnit = None,
+        descendantCount = 0
+      )
+
       info.isAutoCategorisable shouldBe false
     }
+
   }
 
   ".build" - {

@@ -39,7 +39,11 @@ final case class CategorisationInfo(
   isTraderNirmsAuthorised: Boolean = false
 ) {
 
-  def isAutoCategorisable: Boolean = categoryAssessments.exists(_.hasNoExemptions)
+  def isAutoCategorisable: Boolean =
+    categoryAssessments.isEmpty || (
+      categoryAssessmentsThatNeedAnswers.isEmpty &&
+        categoryAssessments.forall(_.hasNoExemptions)
+    )
 
   def getAssessmentFromIndex(index: Int): Option[CategoryAssessment] =
     if (index + 1 > categoryAssessmentsThatNeedAnswers.size) {
