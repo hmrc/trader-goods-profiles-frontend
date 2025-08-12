@@ -92,6 +92,29 @@ class CategorisationInfoSpec extends SpecBase {
 
       info.isAutoCategorisable shouldBe true
     }
+
+    "return false when there are CategoryAssessments that need answers" in {
+      val assessmentWithoutExemptions = CategoryAssessment(
+        id = "a3",
+        category = 1,
+        exemptions = Seq.empty,
+        themeDescription = "Theme",
+        regulationUrl = None
+      )
+
+      val info = CategorisationInfo(
+        commodityCode = "1234567890",
+        countryOfOrigin = "GB",
+        comcodeEffectiveToDate = None,
+        categoryAssessments = Seq(assessmentWithoutExemptions),
+        categoryAssessmentsThatNeedAnswers = Seq(assessmentWithoutExemptions),
+        measurementUnit = None,
+        descendantCount = 0
+      )
+
+      info.isAutoCategorisable shouldBe false
+    }
+
   }
 
   ".build" - {
