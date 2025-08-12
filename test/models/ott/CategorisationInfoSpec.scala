@@ -33,7 +33,7 @@ class CategorisationInfoSpec extends SpecBase {
 
   "CategorisationInfo#isAutoCategorisable" - {
 
-    "return true when at one CategoryAssessment has no exemptions" in {
+    "return true when there is one CategoryAssessment with no exemptions" in {
       val assessmentWithoutExemptions = CategoryAssessment(
         id = "a1",
         category = 1,
