@@ -120,50 +120,51 @@ class CountryOfOriginCyaController @Inject() (
       (for {
         oldRecord <- goodsRecordConnector.getRecord(recordId)
 
-        originalCountryOfOrigin <- request.userAnswers
-          .get(OriginalCountryOfOriginPage(recordId))
-          .map(Future.successful)
-          .getOrElse(Future.failed(new Exception(s"Original country of origin not found in session for $recordId")))
+        originalCountryOfOrigin <-
+          request.userAnswers
+            .get(OriginalCountryOfOriginPage(recordId))
+            .map(Future.successful)
+            .getOrElse(Future.failed(new Exception(s"Original country of origin not found in session for $recordId")))
 
         countryOfOrigin <- handleValidateError(
-          UpdateGoodsRecord.validateCountryOfOrigin(
-            request.userAnswers,
-            recordId,
-            oldRecord.category.isDefined
-          )
-        )
+                             UpdateGoodsRecord.validateCountryOfOrigin(
+                               request.userAnswers,
+                               recordId,
+                               oldRecord.category.isDefined
+                             )
+                           )
 
         oldVal = if (oldRecord.countryOfOrigin != null) oldRecord.countryOfOrigin.trim.toUpperCase else ""
         newVal = countryOfOrigin.trim.toUpperCase
 
         updateGoodsRecord = UpdateGoodsRecord(
-          eori = request.eori,
-          recordId = recordId,
-          countryOfOrigin = Some(countryOfOrigin)
-        )
+                              eori = request.eori,
+                              recordId = recordId,
+                              countryOfOrigin = Some(countryOfOrigin)
+                            )
 
         _ = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
 
         _ <- goodsRecordUpdateService.updateIfChanged(
-          oldValue = oldVal,
-          newValue = newVal,
-          updateGoodsRecord = updateGoodsRecord,
-          oldRecord = oldRecord,
-          patch = true
-        )
+               oldValue = oldVal,
+               newValue = newVal,
+               updateGoodsRecord = updateGoodsRecord,
+               oldRecord = oldRecord,
+               patch = true
+             )
 
         updatedAnswers <- Future.fromTry(
-          request.userAnswers
-            .set(OriginalCountryOfOriginPage(recordId), countryOfOrigin)
-        )
-        _ <- sessionRepository.set(updatedAnswers)
+                            request.userAnswers
+                              .set(OriginalCountryOfOriginPage(recordId), countryOfOrigin)
+                          )
+        _              <- sessionRepository.set(updatedAnswers)
 
         cleanedAnswers <- Future.fromTry(
-          updatedAnswers
-            .remove(HasCountryOfOriginChangePage(recordId))
-            .flatMap(_.remove(CountryOfOriginUpdatePage(recordId)))
-        )
-        _ <- sessionRepository.set(cleanedAnswers)
+                            updatedAnswers
+                              .remove(HasCountryOfOriginChangePage(recordId))
+                              .flatMap(_.remove(CountryOfOriginUpdatePage(recordId)))
+                          )
+        _              <- sessionRepository.set(cleanedAnswers)
 
         autoCategoriseScenario <- autoCategoriseService.autoCategoriseRecord(recordId, cleanedAnswers)
 
