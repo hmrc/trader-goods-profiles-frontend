@@ -132,14 +132,17 @@ tag: components.Tag
         </strong>
     </p>
 
-    @if(!recordLocked && declarableStatus == NotReadyForUse && !isCategorised && !reviewReason.contains(ReviewReason.Commodity)) {
+    @if(!recordLocked && declarableStatus == NotReadyForUse && !isCategorised && !reviewReason.contains(ReviewReason.Commodity) && !reviewReason.contains(ReviewReason.Country)) {
+
+         {
         @paragraphBody(message = messages(declarableStatus.paragraphKey,
         link(
             text = messages("declarableStatus.notReadyForUse.paragraph.linkText"),
             call = controllers.routes.ValidateCommodityCodeController.changeCategory(recordId),
             id = None
             )
-        ))
+           ))
+        }
         } else if(declarableStatus != NotReadyForUse && !toReview) {
          <p class="govuk-body">@messages(declarableStatus.paragraphKey)</p>
     }
@@ -148,7 +151,6 @@ tag: components.Tag
         <p class="govuk-inset-text">@messages("singleRecord.recordLocked")</p>
     }
 
-    @* Updated reviewReason section *@
         @if(toReview && !recordLocked) {
             @reviewReason.map { rr =>
                 @rr.setAdditionalContent(isCategorised, adviceStatus).map { paragraphs =>
@@ -177,8 +179,8 @@ tag: components.Tag
         }
     }
 
-<h2 class="govuk-heading-m">@messages("singleRecord.h2.goodsDetails")</h2>
-@govukSummaryList(detailsList)
+    <h2 class="govuk-heading-m">@messages("singleRecord.h2.goodsDetails")</h2>
+    @govukSummaryList(detailsList)
 
     <h2 class="govuk-heading-m">@messages("singleRecord.h2.categorisation")</h2>
         @govukSummaryList(categorisationList)
