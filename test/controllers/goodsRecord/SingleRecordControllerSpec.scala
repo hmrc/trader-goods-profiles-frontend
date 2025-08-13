@@ -377,7 +377,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
             notCategorisedLockedRecord.adviceStatus,
             notCategorisedLockedRecord.recordId,
             recordIsLocked,
-            isReviewReasonCommodity = false
+            isReviewReasonCommodityOrCountry = false
           )
         )
       )
@@ -622,7 +622,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
             recordForTestingSummaryRows.adviceStatus,
             testRecordId,
             recordLocked,
-            isReviewReasonCommodity = false
+            isReviewReasonCommodityOrCountry = false
           )
 
           row.actions mustBe defined
@@ -641,7 +641,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
             recordForTestingSummaryRows.adviceStatus,
             testRecordId,
             recordLocked,
-            isReviewReasonCommodity = false
+            isReviewReasonCommodityOrCountry = false
           )
 
           row.actions mustBe defined
@@ -660,7 +660,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
             recordForTestingSummaryRowsWithAdviceProvided.adviceStatus,
             testRecordId,
             recordLocked,
-            isReviewReasonCommodity = false
+            isReviewReasonCommodityOrCountry = false
           )
 
           row.actions mustBe Some(Actions("", List()))

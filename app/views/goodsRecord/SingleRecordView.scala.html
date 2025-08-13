@@ -183,7 +183,24 @@ tag: components.Tag
     @govukSummaryList(detailsList)
 
     <h2 class="govuk-heading-m">@messages("singleRecord.h2.categorisation")</h2>
-        @govukSummaryList(categorisationList)
+        @if(isCategorised) {
+            @govukSummaryList(categorisationList)
+        } else {
+            @govukSummaryList(
+                SummaryListViewModel(
+                    rows = Seq(
+                        SummaryListRow(
+                            key = Key(Text(messages("singleRecord.category.row"))),
+                            value = Value(
+                                HtmlContent(
+                                    s"<p class='govuk-body'>${messages("singleRecord.countryReviewReason.categorise")}</p>"
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        }
 
     @if(supplementaryUnitList != SummaryListViewModel(rows = Seq.empty)) {
         <h2 class="govuk-heading-m">@messages("singleRecord.h2.supplementaryUnit")</h2>
