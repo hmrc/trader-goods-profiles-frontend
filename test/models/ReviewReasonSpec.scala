@@ -331,8 +331,7 @@ class ReviewReasonSpec extends SpecBase {
       "setAdditionalContent when not categorised" in {
         val expectedTagHtml = """<span class="govuk-tag govuk-tag--grey">No longer valid</span>"""
         val expectedList    = List(
-          s"The country of origin is: $expectedTagHtml",
-          "You need to change the country of origin and then categorise this record to see if you can use it on an Internal Market Movement Information (IMMI)."
+          s"The country of origin is: $expectedTagHtml"
         )
         val result          = Country.setAdditionalContent(isCategorised = false, NotRequested)
         result mustBe Some(expectedList)

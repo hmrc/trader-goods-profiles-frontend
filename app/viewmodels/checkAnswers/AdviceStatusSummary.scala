@@ -27,14 +27,19 @@ import viewmodels.implicits._
 
 object AdviceStatusSummary {
 
-  def row(adviceStatus: AdviceStatus, recordId: String, recordLocked: Boolean, isReviewReasonCommodity: Boolean)(
-    implicit messages: Messages
+  def row(
+    adviceStatus: AdviceStatus,
+    recordId: String,
+    recordLocked: Boolean,
+    isReviewReasonCommodityOrCountry: Boolean
+  )(implicit
+    messages: Messages
   ): SummaryListRow = {
 
     val tagValue = messages("singleRecord.reviewReason.tagText")
 
     val viewModel =
-      if (isReviewReasonCommodity && adviceStatus == AdviceReceived) {
+      if (isReviewReasonCommodityOrCountry && adviceStatus == AdviceReceived) {
         ValueViewModel(
           HtmlContent(
             s"<strong class='govuk-tag govuk-tag--grey'>$tagValue</strong> ${messages(adviceStatus.messageKey)}"

@@ -87,8 +87,7 @@ object ReviewReason {
         case (false, _) =>
           Some(
             List(
-              messages("singleRecord.countryReviewReason.notCategorised.paragraph", tagHtml),
-              messages("singleRecord.reviewReason.paragraph", messages("singleRecord.countryReviewReason.linkText"))
+              messages("singleRecord.countryReviewReason.notCategorised.paragraph", tagHtml)
             )
           )
       }

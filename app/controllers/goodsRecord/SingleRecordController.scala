@@ -141,10 +141,11 @@ class SingleRecordController @Inject() (
     countryOfOriginUpdated: Boolean,
     showCommodityCodeBanner: Boolean
   )(implicit request: DataRequest[_]): Result = {
-    val recordIsLocked          = record.adviceStatus.isRecordLocked
-    val isCategorised           = record.category.isDefined
-    val isReviewReasonCommodity = (record.toReview, record.reviewReason) match {
+    val recordIsLocked                   = record.adviceStatus.isRecordLocked
+    val isCategorised                    = record.category.isDefined
+    val isReviewReasonCommodityOrCountry = (record.toReview, record.reviewReason) match {
       case (true, Some(ReviewReason.Commodity)) => true
+      case (true, Some(ReviewReason.Country))   => true
       case _                                    => false
     }
 
@@ -189,7 +190,7 @@ class SingleRecordController @Inject() (
 
     val adviceList = SummaryListViewModel(
       rows = Seq(
-        AdviceStatusSummary.row(record.adviceStatus, recordId, recordIsLocked, isReviewReasonCommodity)
+        AdviceStatusSummary.row(record.adviceStatus, recordId, recordIsLocked, isReviewReasonCommodityOrCountry)
       )
     )
 
