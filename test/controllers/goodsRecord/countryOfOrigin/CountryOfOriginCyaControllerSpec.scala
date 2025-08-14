@@ -22,7 +22,7 @@ import connectors.{GoodsRecordConnector, OttConnector}
 import models.*
 import models.router.responses.GetGoodsRecordResponse
 import org.apache.pekko.Done
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import org.mockito.Mockito.*
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
@@ -33,7 +33,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import queries.CountriesQuery
 import repositories.SessionRepository
-import services.{AuditService, AutoCategoriseService, CommodityService}
+import services.{AuditService, AutoCategoriseService, CommodityService, GoodsRecordUpdateService}
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.http.HeaderCarrier
@@ -55,15 +55,16 @@ class CountryOfOriginCyaControllerSpec
   private lazy val journeyRecoveryContinueUrl =
     controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId).url
 
-  private val mockCommodityService      = mock[CommodityService]
-  private val mockAuditService          = mock[AuditService]
-  private val mockGoodsRecordConnector  = mock[GoodsRecordConnector]
-  private val mockOttConnector          = mock[OttConnector]
-  private val mockSessionRepository     = mock[SessionRepository]
-  private val mockAutoCategoriseService = mock[AutoCategoriseService]
-  implicit val hc: HeaderCarrier        = HeaderCarrier()
-  val effectiveFrom: Instant            = Instant.now
-  val effectiveTo: Instant              = effectiveFrom.plusSeconds(1)
+  private val mockCommodityService         = mock[CommodityService]
+  private val mockAuditService             = mock[AuditService]
+  private val mockGoodsRecordConnector     = mock[GoodsRecordConnector]
+  private val mockOttConnector             = mock[OttConnector]
+  private val mockSessionRepository        = mock[SessionRepository]
+  private val mockGoodsRecordUpdateService = mock[GoodsRecordUpdateService]
+  private val mockAutoCategoriseService    = mock[AutoCategoriseService]
+  implicit val hc: HeaderCarrier           = HeaderCarrier()
+  val effectiveFrom: Instant               = Instant.now
+  val effectiveTo: Instant                 = effectiveFrom.plusSeconds(1)
 
   override protected def beforeEach(): Unit = {
     super.beforeEach()
@@ -270,7 +271,15 @@ class CountryOfOriginCyaControllerSpec
         when(mockGoodsRecordConnector.getRecord(eqTo(testRecordId))(any()))
           .thenReturn(Future.successful(record))
 
-        when(mockGoodsRecordConnector.putGoodsRecord(any(), any())(any()))
+        when(
+          mockGoodsRecordUpdateService.updateIfChanged(
+            any[String],
+            any[String],
+            any[UpdateGoodsRecord],
+            any[GetGoodsRecordResponse],
+            any[Boolean]
+          )(any())
+        )
           .thenReturn(Future.successful(Done))
 
         when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any()))
@@ -285,6 +294,7 @@ class CountryOfOriginCyaControllerSpec
         val application = applicationBuilder(userAnswers = Some(userAnswers))
           .overrides(
             bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+            bind[GoodsRecordUpdateService].toInstance(mockGoodsRecordUpdateService),
             bind[SessionRepository].toInstance(mockSessionRepository),
             bind[AuditService].toInstance(mockAuditService),
             bind[AutoCategoriseService].toInstance(mockAutoCategoriseService)
@@ -301,9 +311,19 @@ class CountryOfOriginCyaControllerSpec
               .onPageLoad(testRecordId)
               .url
 
-          verify(mockGoodsRecordConnector).putGoodsRecord(any(), any())(any())
-          verify(mockSessionRepository).set(any())
+          // Verify the service was called instead of putGoodsRecord
+          verify(mockGoodsRecordUpdateService).updateIfChanged(
+            any[String],
+            any[String],
+            any[UpdateGoodsRecord],
+            any[GetGoodsRecordResponse],
+            any[Boolean]
+          )(any())
 
+          // Verify session updates
+          verify(mockSessionRepository, times(2)).set(any())
+
+          // Verify audit
           withClue("must call the audit connector with the supplied details") {
             verify(mockAuditService).auditFinishUpdateGoodsRecord(
               eqTo(testRecordId),
@@ -313,7 +333,6 @@ class CountryOfOriginCyaControllerSpec
           }
         }
       }
-
       "when user answers cannot create an update goods record" - {
         "must not submit anything, and redirect to Journey Recovery" in {
           val userAnswersWithCountryOrigin = emptyUserAnswers
