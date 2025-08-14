@@ -133,8 +133,6 @@ tag: components.Tag
     </p>
 
     @if(!recordLocked && declarableStatus == NotReadyForUse && !isCategorised && !reviewReason.contains(ReviewReason.Commodity) && !reviewReason.contains(ReviewReason.Country)) {
-
-         {
         @paragraphBody(message = messages(declarableStatus.paragraphKey,
         link(
             text = messages("declarableStatus.notReadyForUse.paragraph.linkText"),
@@ -142,7 +140,6 @@ tag: components.Tag
             id = None
             )
            ))
-        }
         } else if(declarableStatus != NotReadyForUse && !toReview) {
          <p class="govuk-body">@messages(declarableStatus.paragraphKey)</p>
     }
