@@ -19,6 +19,7 @@ package controllers.goodsProfile
 import connectors.GoodsRecordConnector
 import controllers.BaseController
 import controllers.actions.*
+import exceptions.RecordNotFoundException
 import forms.goodsProfile.RemoveGoodsRecordFormProvider
 import models.GoodsRecordsPagination.firstPage
 import models.requests.DataRequest
@@ -60,9 +61,9 @@ class RemoveGoodsRecordController @Inject() (
           Ok(view(form, recordId, location, productRef))
         }
         .recover {
-          case e: UpstreamErrorResponse if e.statusCode == 404 =>
+          case _: RecordNotFoundException =>
             Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
-          case ex                                              =>
+          case ex                         =>
             logger.error(s"[RemoveGoodsRecordController][onPageLoad] Failed to fetch record $recordId", ex)
             Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
         }

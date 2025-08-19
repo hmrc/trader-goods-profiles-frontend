@@ -19,6 +19,7 @@ package controllers.goodsProfile
 import base.SpecBase
 import base.TestConstants.testRecordId
 import connectors.GoodsRecordConnector
+import exceptions.RecordNotFoundException
 import forms.goodsProfile.RemoveGoodsRecordFormProvider
 import models.DeclarableStatus.ImmiReady
 import models.GoodsRecordsPagination.firstPage
@@ -26,7 +27,7 @@ import models.router.responses.GetGoodsRecordResponse
 import models.{AdviceStatus, GoodsProfileLocation, GoodsRecordLocation}
 import navigation.{FakeGoodsProfileNavigator, GoodsProfileNavigator}
 import org.apache.pekko.Done
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import org.mockito.Mockito.{never, reset, times, verify, verifyNoMoreInteractions, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
@@ -145,16 +146,7 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar with Be
 
     "must redirect to Record Not Found when user clicks back after record is deleted" in {
       when(mockConnector.getRecord(eqTo(testRecordId))(any()))
-        .thenReturn(
-          Future.failed(
-            new UpstreamErrorResponse(
-              "Not found",
-              404,
-              404,
-              Map.empty[String, Seq[String]]
-            )
-          )
-        )
+        .thenReturn(Future.failed(RecordNotFoundException(testRecordId)))
 
       val application = applicationBuilder(userAnswers = Some(userAnswersWithProductRef))
         .overrides(
