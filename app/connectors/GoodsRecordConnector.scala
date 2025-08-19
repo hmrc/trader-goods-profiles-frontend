@@ -17,9 +17,10 @@
 package connectors
 
 import config.Service
+import exceptions.RecordNotFoundException
 import models.router.requests.{CreateRecordRequest, PatchRecordRequest, PutRecordRequest}
 import models.router.responses.{GetGoodsRecordResponse, GetRecordsResponse}
-import models._
+import models.*
 import org.apache.pekko.Done
 import play.api.Configuration
 import play.api.http.Status.{ACCEPTED, NOT_FOUND, NO_CONTENT, OK}
@@ -169,7 +170,20 @@ class GoodsRecordConnector @Inject() (
       .get(singleGoodsRecordUrl(recordId))
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
-      .map(response => response.json.as[GetGoodsRecordResponse])
+      .flatMap { response =>
+        response.status match {
+          case OK        => Future.successful(response.json.as[GetGoodsRecordResponse])
+          case NOT_FOUND => Future.failed(RecordNotFoundException(recordId))
+          case _         =>
+            Future.failed(
+              UpstreamErrorResponse(
+                message = response.body,
+                statusCode = response.status,
+                reportAs = response.status
+              )
+            )
+        }
+      }
 
   def getRecords(page: Int, size: Int)(implicit hc: HeaderCarrier): Future[Option[GetRecordsResponse]] = {
     val queryParams = Map("page" -> page.toString, "size" -> size.toString)

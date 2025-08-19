@@ -19,6 +19,7 @@ package controllers.goodsRecord
 import base.SpecBase
 import base.TestConstants.{testRecordId, userAnswersId}
 import connectors.{GoodsRecordConnector, OttConnector, TraderProfileConnector}
+import exceptions.RecordNotFoundException
 import models.AdviceStatus.Requested
 import models.AdviceStatusMessage.RequestedParagraph
 import models.DeclarableStatus.NotReadyForUse
@@ -26,7 +27,7 @@ import models.helper.SupplementaryUnitUpdateJourney
 import models.router.responses.GetGoodsRecordResponse
 import models.{AdviceStatus, Country, NormalMode, ReviewReason, UserAnswers}
 import org.mockito.ArgumentCaptor
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
@@ -729,7 +730,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
     "redirect to RecordNotFound page when record does not exist (404)" in {
       when(mockGoodsRecordConnector.getRecord(eqTo(testRecordId))(any()))
-        .thenReturn(Future.failed(UpstreamErrorResponse("Record not found", NOT_FOUND, NOT_FOUND)))
+        .thenReturn(Future.failed(RecordNotFoundException(testRecordId)))
       when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
       when(mockSessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
 

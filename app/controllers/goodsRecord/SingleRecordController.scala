@@ -19,6 +19,7 @@ package controllers.goodsRecord
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.BaseController
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
+import exceptions.RecordNotFoundException
 import models.helper.{CategorisationJourney, RequestAdviceJourney, SupplementaryUnitUpdateJourney, WithdrawAdviceJourney}
 import models.requests.DataRequest
 import models.router.responses.GetGoodsRecordResponse
@@ -28,7 +29,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import queries.CountriesQuery
 import repositories.SessionRepository
 import services.{AutoCategoriseService, DataCleansingService}
-import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
+import uk.gov.hmrc.http.HeaderCarrier
 import utils.SessionData.*
 import viewmodels.checkAnswers.*
 import viewmodels.checkAnswers.goodsRecord.{CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, ProductReferenceSummary}
@@ -90,9 +91,9 @@ class SingleRecordController @Inject() (
           )
         }
         .recover {
-          case e: UpstreamErrorResponse if e.statusCode == 404 =>
+          case _: RecordNotFoundException =>
             Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
-          case e: Exception                                    =>
+          case e: Exception               =>
             logger.error(s"Error: ${e.getMessage}")
             Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
         }
