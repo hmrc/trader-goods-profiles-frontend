@@ -26,7 +26,7 @@ govukPhaseBanner: GovukPhaseBanner,
 govukNotificationBanner: GovukNotificationBanner
 )
 
-@(downloadReady: Boolean = false, downloadLinkText: DownloadLinkText, ukimsNumberChanged: Boolean = false, doesGoodsRecordExist: Boolean, eoriNumber: String, viewUpdateGoodsRecordsLink: String)(implicit request: Request[_], messages: Messages)
+@(downloadReady: Boolean = false, downloadFailed: Boolean = false, downloadLinkText: DownloadLinkText, ukimsNumberChanged: Boolean = false, doesGoodsRecordExist: Boolean, eoriNumber: String, viewUpdateGoodsRecordsLink: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = s"${messages("homepage.title")} - ${messages("site.govuk")}", showBackLink = false, headerShouldHaveServiceLink = false, isFullWidth = true) {
 
@@ -49,6 +49,19 @@ govukNotificationBanner: GovukNotificationBanner
             <p class='govuk-notification-banner__heading'>
                 ${messages("homepage.downloadBanner.content")}
                 <a href="${controllers.download.routes.FileManagementController.onPageLoad().url}" class='govuk-notification-banner__link'>${messages("homepage.downloadBanner.linkText")}</a>.
+            </p>"""),
+            role = Some("alert"))
+        )
+    }
+
+    @if(downloadFailed) {
+        @govukNotificationBanner(NotificationBanner(
+            title = Text(messages("homepage.downloadBanner.important")),
+            content = HtmlContent(
+                f"""
+            <p class='govuk-notification-banner__heading'>
+                ${messages("homepage.downloadBanner.failed.content")}
+                <a href="${controllers.download.routes.FileManagementController.onPageLoad().url}" class='govuk-notification-banner__link'>${messages("homepage.downloadBanner.failed.linkText")}</a>.
             </p>"""),
             role = Some("alert"))
         )

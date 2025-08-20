@@ -68,6 +68,7 @@ class HomePageController @Inject() (
         Ok(
           view(
             downloadReady = downloadReady(downloadDataSummary),
+            downloadFailed = downloadFailed(downloadDataSummary, request.session.get("downloadRequested")),
             downloadLinkText = downloadLinkText,
             ukimsNumberChanged = showNewUkimsBanner,
             doesGoodsRecordExist = doesGoodsRecordExist,
@@ -85,6 +86,12 @@ class HomePageController @Inject() (
         case summary if summary.status == FileReadyUnseen => true
       }
       .getOrElse(false)
+
+  private def downloadFailed(
+    downloadDataSummary: Seq[DownloadDataSummary],
+    downloadRequested: Option[String]
+  ): Boolean =
+    downloadDataSummary.isEmpty && downloadRequested.isDefined
 
   private def getViewUpdateRecordsLink(historicProfileData: Option[HistoricProfileData]): String =
     historicProfileData match {
