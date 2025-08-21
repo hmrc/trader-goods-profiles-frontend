@@ -24,6 +24,7 @@ import models.GoodsRecordsPagination.firstPage
 import models.download.DownloadLinkText
 import models.router.responses.{GetGoodsRecordResponse, GetRecordsResponse}
 import models.{DownloadDataSummary, Email, FileInfo, GoodsRecordsPagination, HistoricProfileData}
+import org.apache.pekko.Done
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{atLeastOnce, never, reset, verify, when}
 import org.scalatest.BeforeAndAfterEach
@@ -78,6 +79,7 @@ class HomePageControllerSpec extends SpecBase with BeforeAndAfterEach {
           Some(historicProfileData)
         )
         when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(downloadDataSummary)
+        when(mockDownloadDataConnector.markExpiredSummaries(any())) thenReturn Future.successful(Done)
         when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(
           Some(Email("address", Instant.now()))
         )
@@ -159,57 +161,6 @@ class HomePageControllerSpec extends SpecBase with BeforeAndAfterEach {
 
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
-            downloadReady = false,
-            downloadLinkText = DownloadLinkText(
-              downloadDataSummary,
-              doesGoodsRecordExist = true,
-              verifiedEmail = true
-            ),
-            ukimsNumberChanged = false,
-            doesGoodsRecordExist = true,
-            eoriNumber = testEori,
-            viewUpdateGoodsRecordsLink =
-              controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url
-          )(request, messages(application)).toString
-
-          verify(mockTraderProfileConnector, never()).checkTraderProfile(any())(any())
-          verify(mockGoodsRecordConnector, atLeastOnce()).getRecords(any(), any())(any())
-          verify(mockDownloadDataConnector, atLeastOnce()).getDownloadDataSummary(any())
-        }
-      }
-
-      "must return OK and the correct view when download fails with recent download request" in {
-        val downloadDataSummary = Seq.empty[DownloadDataSummary]
-
-        when(mockTraderProfileConnector.checkTraderProfile(any())(any())) thenReturn Future.successful(true)
-        when(mockTraderProfileConnector.getHistoricProfileData(any())(any())) thenReturn Future.successful(
-          Some(historicProfileData)
-        )
-        when(mockDownloadDataConnector.getDownloadDataSummary(any())) thenReturn Future.successful(downloadDataSummary)
-        when(mockDownloadDataConnector.getEmail(any())) thenReturn Future.successful(
-          Some(Email("address", Instant.now()))
-        )
-        when(mockGoodsRecordConnector.getRecords(any(), any())(any())) thenReturn Future.successful(Some(goodsResponse))
-
-        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(
-            bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-            bind[DownloadDataConnector].toInstance(mockDownloadDataConnector),
-            bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector)
-          )
-          .build()
-
-        running(application) {
-          val request = FakeRequest(GET, routes.HomePageController.onPageLoad().url)
-            .withSession("downloadRequested" -> "true")
-          val result  = route(application, request).value
-          val view    = application.injector.instanceOf[HomePageView]
-
-          implicit val message: Messages = messages(application)
-
-          status(result) mustEqual OK
-          contentAsString(result) mustEqual view(
-            downloadFailed = true,
             downloadLinkText = DownloadLinkText(
               downloadDataSummary,
               doesGoodsRecordExist = true,
@@ -258,13 +209,11 @@ class HomePageControllerSpec extends SpecBase with BeforeAndAfterEach {
 
             status(result) mustEqual OK
             contentAsString(result) mustEqual view(
-              downloadReady = false,
               downloadLinkText = DownloadLinkText(
                 Seq.empty,
                 doesGoodsRecordExist = true,
                 verifiedEmail = true
               ),
-              ukimsNumberChanged = false,
               doesGoodsRecordExist = true,
               eoriNumber = testEori,
               viewUpdateGoodsRecordsLink =
@@ -419,13 +368,11 @@ class HomePageControllerSpec extends SpecBase with BeforeAndAfterEach {
 
             status(result) mustEqual OK
             contentAsString(result) mustEqual view(
-              downloadReady = false,
               downloadLinkText = DownloadLinkText(
                 downloadDataSummary,
                 doesGoodsRecordExist = true,
                 verifiedEmail = true
               ),
-              ukimsNumberChanged = false,
               doesGoodsRecordExist = true,
               eoriNumber = testEori,
               viewUpdateGoodsRecordsLink =
@@ -469,13 +416,11 @@ class HomePageControllerSpec extends SpecBase with BeforeAndAfterEach {
 
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
-            downloadReady = false,
             downloadLinkText = DownloadLinkText(
               Seq.empty,
               doesGoodsRecordExist = false,
               verifiedEmail = true
             ),
-            ukimsNumberChanged = false,
             doesGoodsRecordExist = false,
             eoriNumber = testEori,
             viewUpdateGoodsRecordsLink =
@@ -544,13 +489,11 @@ class HomePageControllerSpec extends SpecBase with BeforeAndAfterEach {
 
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
-            downloadReady = false,
             downloadLinkText = DownloadLinkText(
               Seq.empty,
               doesGoodsRecordExist = false,
               verifiedEmail = false
             ),
-            ukimsNumberChanged = false,
             doesGoodsRecordExist = false,
             eoriNumber = testEori,
             viewUpdateGoodsRecordsLink =
@@ -593,13 +536,11 @@ class HomePageControllerSpec extends SpecBase with BeforeAndAfterEach {
 
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
-            downloadReady = false,
             downloadLinkText = DownloadLinkText(
               Seq.empty,
               doesGoodsRecordExist = false,
               verifiedEmail = true
             ),
-            ukimsNumberChanged = false,
             doesGoodsRecordExist = false,
             eoriNumber = testEori,
             viewUpdateGoodsRecordsLink =
@@ -640,7 +581,6 @@ class HomePageControllerSpec extends SpecBase with BeforeAndAfterEach {
 
           status(result) mustEqual OK
           contentAsString(result) mustEqual view(
-            downloadReady = false,
             downloadLinkText = DownloadLinkText(
               Seq.empty,
               doesGoodsRecordExist = false,

@@ -131,3 +131,48 @@ case class PendingFilesTable(pendingFileRows: Seq[Seq[TableRow]])(implicit messa
     }
   override val rows: Seq[Seq[TableRow]] = pendingFileRows
 }
+
+object FailedFilesTable {
+  def apply(
+    failedFiles: Option[Seq[DownloadDataSummary]]
+  )(implicit
+    messages: Messages,
+    fileManagementTableComponentHelper: FileManagementTableComponentHelper
+  ): Option[FailedFilesTable] = {
+
+    val failedFilesRows = failedFiles.map {
+      _.map { failedFile =>
+        val fileCreated = DateTimeFormats.convertToDateTimeString(failedFile.createdAt)
+        val fileLink    =
+          fileManagementTableComponentHelper.createWarningTag(messages("fileManagement.failedFiles.fileText"))
+
+        Seq(
+          TableRow(
+            content = Text(fileCreated)
+          ),
+          TableRow(
+            content = fileLink
+          )
+        )
+      }
+    }
+
+    failedFilesRows.map { tableRows =>
+      new FailedFilesTable(tableRows)
+    }
+  }
+}
+
+case class FailedFilesTable(FailedFileRows: Seq[Seq[TableRow]])(implicit messages: Messages)
+    extends FileManagementTable {
+  override val caption: String          = messages("fileManagement.failedFiles.table.caption")
+  override val body: Option[String]     = Some(messages("fileManagement.failedFiles.table.body"))
+  override val headRows: Seq[HeadCell]  =
+    Seq(
+      messages("fileManagement.failedFiles.table.header1"),
+      messages("fileManagement.failedFiles.table.header2")
+    ).map { content =>
+      HeadCell(content = Text(content))
+    }
+  override val rows: Seq[Seq[TableRow]] = FailedFileRows
+}

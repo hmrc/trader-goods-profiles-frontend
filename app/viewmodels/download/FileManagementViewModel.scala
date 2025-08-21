@@ -18,7 +18,7 @@ package viewmodels.download
 
 import connectors.{DownloadDataConnector, GoodsRecordConnector}
 import helpers.FileManagementTableComponentHelper
-import models.DownloadDataStatus.{FileInProgress, FileReadySeen, FileReadyUnseen}
+import models.DownloadDataStatus.{FileFailedSeen, FileFailedUnseen, FileInProgress, FileReadySeen, FileReadyUnseen}
 import models.download._
 import play.api.i18n.Messages
 import uk.gov.hmrc.http.HeaderCarrier
@@ -30,6 +30,7 @@ import models.SeqOps
 case class FileManagementViewModel(
   availableFilesTable: Option[AvailableFilesTable],
   pendingFilesTable: Option[PendingFilesTable],
+  failedFilesTable: Option[FailedFilesTable],
   doesGoodsRecordExist: Boolean
 )(implicit messages: Messages) {
 
@@ -66,9 +67,10 @@ object FileManagementViewModel {
         downloadDataSummary <- downloadDataConnector.getDownloadDataSummary
         downloadData        <- downloadDataConnector.getDownloadData
 
-        availableDataSummaries = downloadDataSummary.filterToOption(summary =>
-                                   summary.status == FileReadySeen || summary.status == FileReadyUnseen
-                                 )
+        availableDataSummaries =
+          downloadDataSummary.filterToOption(summary =>
+            summary.status == FileReadySeen || summary.status == FileReadyUnseen || summary.status == FileFailedUnseen || summary.status == FileFailedSeen
+          )
 
         availableFiles = availableDataSummaries.flatMap { availableFilesSeq =>
                            val files = for {
@@ -82,6 +84,10 @@ object FileManagementViewModel {
 
         pendingFiles = downloadDataSummary.filterToOption(_.status == FileInProgress)
 
+        failedFiles = downloadDataSummary.filterToOption(summary =>
+                        summary.status == FileFailedUnseen || summary.status == FileFailedSeen
+                      )
+
         goodsRecords        <- goodsRecordConnector.getRecords(1, 1)
         doesGoodsRecordExist = goodsRecords.exists(_.goodsItemRecords.nonEmpty)
 
@@ -92,8 +98,9 @@ object FileManagementViewModel {
 
         val availableFilesTable = AvailableFilesTable(availableFiles)
         val pendingFilesTable   = PendingFilesTable(pendingFiles)
+        val failedFilesTable    = FailedFilesTable(failedFiles)
 
-        new FileManagementViewModel(availableFilesTable, pendingFilesTable, doesGoodsRecordExist)
+        new FileManagementViewModel(availableFilesTable, pendingFilesTable, failedFilesTable, doesGoodsRecordExist)
       }
     }
   }

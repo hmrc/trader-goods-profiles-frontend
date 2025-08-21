@@ -18,7 +18,7 @@ package controllers
 
 import connectors.{DownloadDataConnector, GoodsRecordConnector, TraderProfileConnector}
 import controllers.actions.*
-import models.DownloadDataStatus.FileReadyUnseen
+import models.DownloadDataStatus.{FileFailedUnseen, FileReadyUnseen}
 import models.GoodsRecordsPagination.firstPage
 import models.download.DownloadLinkText
 import models.{DownloadDataSummary, HistoricProfileData}
@@ -46,6 +46,7 @@ class HomePageController @Inject() (
 
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getOrCreate).async { implicit request =>
     for {
+      _                   <- downloadDataConnector.markExpiredSummaries
       downloadDataSummary <- downloadDataConnector.getDownloadDataSummary
       verifiedEmail       <- downloadDataConnector.getEmail.map {
                                case Some(_) => true
@@ -68,7 +69,7 @@ class HomePageController @Inject() (
         Ok(
           view(
             downloadReady = downloadReady(downloadDataSummary),
-            downloadFailed = downloadFailed(downloadDataSummary, request.session.get("downloadRequested")),
+            downloadFailed = downloadFailed(downloadDataSummary),
             downloadLinkText = downloadLinkText,
             ukimsNumberChanged = showNewUkimsBanner,
             doesGoodsRecordExist = doesGoodsRecordExist,
@@ -87,11 +88,12 @@ class HomePageController @Inject() (
       }
       .getOrElse(false)
 
-  private def downloadFailed(
-    downloadDataSummary: Seq[DownloadDataSummary],
-    downloadRequested: Option[String]
-  ): Boolean =
-    downloadDataSummary.isEmpty && downloadRequested.isDefined
+  private def downloadFailed(downloadDataSummary: Seq[DownloadDataSummary]): Boolean =
+    downloadDataSummary
+      .collectFirst {
+        case summary if summary.status == FileFailedUnseen => true
+      }
+      .getOrElse(false)
 
   private def getViewUpdateRecordsLink(historicProfileData: Option[HistoricProfileData]): String =
     historicProfileData match {
