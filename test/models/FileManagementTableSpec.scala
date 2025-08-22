@@ -126,6 +126,7 @@ class FileManagementTableSpec extends SpecBase with Generators {
       "must return correct headRows" in {
         table.headRows mustBe Seq(
           HeadCell(content = Text("Date and time requested")),
+          HeadCell(content = Text("Expiry date")),
           HeadCell(content = Text("File"))
         )
       }
@@ -137,27 +138,26 @@ class FileManagementTableSpec extends SpecBase with Generators {
           }
 
           "when populated with DownloadDataSummary" in {
-
-            val instant = Instant.parse("2024-04-22T10:05:00Z")
-
+            val createdInstant      = Instant.parse("2024-04-22T10:05:00Z")
+            val expiryInstant       = Instant.parse("2024-05-22T10:05:00Z") // Fixed expiry date
             val downloadDataSummary =
-              DownloadDataSummary("id", "testEori", FileInProgress, instant, Instant.now(), None)
+              DownloadDataSummary("id", "testEori", FileInProgress, createdInstant, expiryInstant, None)
+            val tableParameter      = Some(Seq(downloadDataSummary))
 
-            val tableParameter = Some(Seq(downloadDataSummary))
-
-            val dateTime = "22 April 2024 10:05am"
-            val file     = fileManagementTableComponentHelper.createTag("File not ready")
+            val dateTime   = "22 April 2024 10:05am"
+            val expiryDate = "22 May 2024 10:05am" // Formatted expiry date
+            val file       = fileManagementTableComponentHelper.createTag("File not ready")
 
             val tableRows = Seq(
               Seq(
-                TableRow(
-                  content = Text(dateTime)
-                ),
-                TableRow(
-                  content = file
-                )
+                TableRow(content = Text(dateTime), classes = ""),
+                TableRow(content = Text(expiryDate), classes = ""),
+                TableRow(content = file, classes = "")
               )
             )
+
+            // Debug input
+            println(s"tableParameter: $tableParameter")
 
             PendingFilesTable(tableParameter).value.pendingFileRows mustBe tableRows
           }

@@ -107,8 +107,7 @@ object PendingFilesTable {
             content = Text(fileCreated)
           ),
           TableRow(
-            content = Text(fileExpirationDate),
-            classes = "custom-col-width-2"
+            content = Text(fileExpirationDate)
           ),
           TableRow(
             content = fileLink
@@ -159,8 +158,7 @@ object FailedFilesTable {
             content = Text(fileCreated)
           ),
           TableRow(
-            content = Text(fileExpirationDate),
-            classes = "custom-col-width-2"
+            content = Text(fileExpirationDate)
           ),
           TableRow(
             content = fileLink
