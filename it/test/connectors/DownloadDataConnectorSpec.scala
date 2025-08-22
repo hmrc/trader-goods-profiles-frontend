@@ -306,7 +306,6 @@ class DownloadDataConnectorSpec
     }
   }
 
-
   ".getDownloadData" - {
 
     ".getDownloadData" - {

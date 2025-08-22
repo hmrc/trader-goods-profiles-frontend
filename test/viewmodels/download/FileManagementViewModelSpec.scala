@@ -18,9 +18,10 @@ import base.SpecBase
 import connectors.{DownloadDataConnector, GoodsRecordConnector}
 import helpers.FileManagementTableComponentHelper
 import models.*
-import models.DownloadDataStatus.{FileInProgress, FileReadySeen, FileReadyUnseen}
+import models.DownloadDataStatus.{FileFailedUnseen, FileInProgress, FileReadySeen, FileReadyUnseen}
 import models.router.responses.GetRecordsResponse
 import org.mockito.Mockito.*
+import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
 import play.api.test.Helpers.{await, defaultAwaitTimeout, stubMessagesApi}
@@ -30,7 +31,7 @@ import viewmodels.download.FileManagementViewModel.FileManagementViewModelProvid
 import java.time.Instant
 import scala.concurrent.{ExecutionContext, Future}
 
-class FileManagementViewModelProviderSpec extends SpecBase with MockitoSugar {
+class FileManagementViewModelProviderSpec extends SpecBase with MockitoSugar with BeforeAndAfterEach {
 
   val messagesApi: MessagesApi    = stubMessagesApi()
   implicit val messages: Messages = MessagesImpl(Lang("en"), messagesApi)
@@ -45,14 +46,20 @@ class FileManagementViewModelProviderSpec extends SpecBase with MockitoSugar {
     prevPage = None
   )
 
-  "FileManagementViewModelProvider" - {
+  val downloadDataConnector: DownloadDataConnector                           = mock[DownloadDataConnector]
+  val goodsRecordConnector: GoodsRecordConnector                             = mock[GoodsRecordConnector]
+  val fileManagementTableComponentHelper: FileManagementTableComponentHelper = mock[FileManagementTableComponentHelper]
 
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    reset(downloadDataConnector, goodsRecordConnector, fileManagementTableComponentHelper)
+  }
+
+  "FileManagementViewModelProvider" - {
     "when there are available files" - {
       "should create a FileManagementViewModel with available files table" in {
-        val downloadDataConnector              = mock[DownloadDataConnector]
-        val goodsRecordConnector               = mock[GoodsRecordConnector]
-        val fileManagementTableComponentHelper = mock[FileManagementTableComponentHelper]
-        implicit val hc: HeaderCarrier         = HeaderCarrier()
+
+        implicit val hc: HeaderCarrier = HeaderCarrier()
 
         when(downloadDataConnector.getDownloadDataSummary).thenReturn(
           Future.successful(
@@ -98,10 +105,8 @@ class FileManagementViewModelProviderSpec extends SpecBase with MockitoSugar {
 
     "when there are pending files" - {
       "should create a FileManagementViewModel with pending files table" in {
-        val downloadDataConnector              = mock[DownloadDataConnector]
-        val goodsRecordConnector               = mock[GoodsRecordConnector]
-        val fileManagementTableComponentHelper = mock[FileManagementTableComponentHelper]
-        implicit val hc: HeaderCarrier         = HeaderCarrier()
+
+        implicit val hc: HeaderCarrier = HeaderCarrier()
 
         when(downloadDataConnector.getDownloadDataSummary).thenReturn(
           Future.successful(
@@ -136,12 +141,49 @@ class FileManagementViewModelProviderSpec extends SpecBase with MockitoSugar {
       }
     }
 
+    "when there are failed files" - {
+      "should create a FileManagementViewModel with failed files table" in {
+
+        implicit val hc: HeaderCarrier = HeaderCarrier()
+
+        when(downloadDataConnector.getDownloadDataSummary).thenReturn(
+          Future.successful(
+            Seq(
+              DownloadDataSummary(
+                "id1",
+                "EORI123",
+                FileFailedUnseen,
+                Instant.now().minusSeconds(3600),
+                Instant.now().minusSeconds(5),
+                Some(FileInfo("file1.csv", 100, "30"))
+              )
+            )
+          )
+        )
+        when(downloadDataConnector.getDownloadData).thenReturn(
+          Future.successful(
+            Seq(
+              DownloadData("url1", "file1.csv", 100, Seq())
+            )
+          )
+        )
+        when(goodsRecordConnector.getRecords(1, 1))
+          .thenReturn(Future.successful(Some(GetRecordsResponse(Seq.empty, defaultPagination))))
+
+        val provider = new FileManagementViewModelProvider(fileManagementTableComponentHelper, goodsRecordConnector)
+        val result   = await(provider.apply(downloadDataConnector))
+
+        result.availableFilesTable mustBe None
+        result.pendingFilesTable mustBe None
+        result.failedFilesTable.isDefined mustBe true
+        result.doesGoodsRecordExist mustBe false
+      }
+    }
+
     "when there are no files" - {
       "should create a FileManagementViewModel with no files" in {
-        val downloadDataConnector              = mock[DownloadDataConnector]
-        val goodsRecordConnector               = mock[GoodsRecordConnector]
-        val fileManagementTableComponentHelper = mock[FileManagementTableComponentHelper]
-        implicit val hc: HeaderCarrier         = HeaderCarrier()
+
+        implicit val hc: HeaderCarrier = HeaderCarrier()
 
         when(downloadDataConnector.getDownloadDataSummary).thenReturn(Future.successful(Seq.empty))
         when(downloadDataConnector.getDownloadData).thenReturn(Future.successful(Seq.empty))
