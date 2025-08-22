@@ -61,7 +61,7 @@ govukNotificationBanner: GovukNotificationBanner
                 f"""
             <p class='govuk-notification-banner__heading'>
                 ${messages("homepage.downloadBanner.failed.content")}
-                <a href="${controllers.download.routes.FileManagementController.onPageLoad().url}" class='govuk-notification-banner__link'>${messages("homepage.downloadBanner.failed.linkText")}</a>.
+                <a href="${controllers.download.routes.RequestDataController.onPageLoad().url}" class='govuk-notification-banner__link'>${messages("homepage.downloadBanner.failed.linkText")}</a>.
             </p>"""),
             role = Some("alert"))
         )

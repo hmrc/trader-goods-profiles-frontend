@@ -139,13 +139,13 @@ class FileManagementTableSpec extends SpecBase with Generators {
 
           "when populated with DownloadDataSummary" in {
             val createdInstant      = Instant.parse("2024-04-22T10:05:00Z")
-            val expiryInstant       = Instant.parse("2024-05-22T10:05:00Z") // Fixed expiry date
+            val expiryInstant       = Instant.parse("2024-05-22T10:05:00Z")
             val downloadDataSummary =
               DownloadDataSummary("id", "testEori", FileInProgress, createdInstant, expiryInstant, None)
             val tableParameter      = Some(Seq(downloadDataSummary))
 
             val dateTime   = "22 April 2024 10:05am"
-            val expiryDate = "22 May 2024 10:05am" // Formatted expiry date
+            val expiryDate = "22 May 2024 10:05am"
             val file       = fileManagementTableComponentHelper.createTag("File not ready")
 
             val tableRows = Seq(
@@ -155,9 +155,6 @@ class FileManagementTableSpec extends SpecBase with Generators {
                 TableRow(content = file, classes = "")
               )
             )
-
-            // Debug input
-            println(s"tableParameter: $tableParameter")
 
             PendingFilesTable(tableParameter).value.pendingFileRows mustBe tableRows
           }
