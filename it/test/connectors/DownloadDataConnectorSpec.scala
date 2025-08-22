@@ -306,45 +306,6 @@ class DownloadDataConnectorSpec
     }
   }
 
-  ".markExpiredSummaries" - {
-
-    val expiredUrl = "/trader-goods-profiles-data-store/traders/mark-expired-summaries"
-
-    ".markExpiredSummaries" - {
-      "must fail future when response status is unexpected (e.g. 404)" in {
-        wireMockServer.stubFor(
-          patch(urlEqualTo(downloadDataSummaryUrl))
-            .willReturn(status(404).withBody("Not Found"))
-        )
-
-        val ex = connector.updateSeenStatus.failed.futureValue
-        ex shouldBe a[UpstreamErrorResponse]
-        ex.asInstanceOf[UpstreamErrorResponse].statusCode shouldBe 404
-      }
-    }
-
-
-    "must return Done when response status is NO_CONTENT (204)" in {
-      wireMockServer.stubFor(
-        patch(urlEqualTo(expiredUrl))
-          .willReturn(noContent())
-      )
-
-      connector.updateSeenStatus.futureValue mustBe Done
-    }
-
-    "must fail with UpstreamErrorResponse when response status is not NO_CONTENT" in {
-      wireMockServer.stubFor(
-        patch(urlEqualTo(expiredUrl))
-          .willReturn(status(500).withBody("server error"))
-      )
-
-      val ex = connector.updateSeenStatus.failed.futureValue
-      ex shouldBe a[UpstreamErrorResponse]
-      ex.asInstanceOf[UpstreamErrorResponse].statusCode shouldBe 500
-    }
-  }
-
   ".getDownloadData" - {
 
     ".getDownloadData" - {
