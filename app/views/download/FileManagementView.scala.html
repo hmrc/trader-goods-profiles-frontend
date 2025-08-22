@@ -66,7 +66,11 @@ govukTable: GovukTable
         @viewModel.failedFilesTable.map { (table: FileManagementTable) =>
             <h2 class="govuk-heading-m">@table.caption</h2>
         @table.body.map{ body =>
-            <p class="govuk-body">@body</p>
+            <p class="govuk-body">@body
+                <a href="@controllers.download.routes.RequestDataController.onPageLoad().url" class="govuk-link">
+                    @messages("fileManagement.failedFiles.table.body.link")
+                </a>
+            </p>
         }
         @govukTable(Table(
             caption = Some(table.caption),

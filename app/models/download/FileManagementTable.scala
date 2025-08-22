@@ -98,12 +98,17 @@ object PendingFilesTable {
 
     val pendingFilesRows = pendingFiles.map {
       _.map { pendingFile =>
-        val fileCreated = DateTimeFormats.convertToDateTimeString(pendingFile.createdAt)
-        val fileLink    = fileManagementTableComponentHelper.createTag(messages("fileManagement.pendingFiles.fileText"))
+        val fileCreated        = DateTimeFormats.convertToDateTimeString(pendingFile.createdAt)
+        val fileExpirationDate = DateTimeFormats.convertToDateTimeString(pendingFile.expiresAt)
+        val fileLink           = fileManagementTableComponentHelper.createTag(messages("fileManagement.pendingFiles.fileText"))
 
         Seq(
           TableRow(
             content = Text(fileCreated)
+          ),
+          TableRow(
+            content = Text(fileExpirationDate),
+            classes = "custom-col-width-2"
           ),
           TableRow(
             content = fileLink
@@ -125,7 +130,8 @@ case class PendingFilesTable(pendingFileRows: Seq[Seq[TableRow]])(implicit messa
   override val headRows: Seq[HeadCell]  =
     Seq(
       messages("fileManagement.pendingFiles.table.header1"),
-      messages("fileManagement.pendingFiles.table.header2")
+      messages("fileManagement.pendingFiles.table.header2"),
+      messages("fileManagement.pendingFiles.table.header3")
     ).map { content =>
       HeadCell(content = Text(content))
     }
@@ -142,13 +148,19 @@ object FailedFilesTable {
 
     val failedFilesRows = failedFiles.map {
       _.map { failedFile =>
-        val fileCreated = DateTimeFormats.convertToDateTimeString(failedFile.createdAt)
-        val fileLink    =
+        val fileCreated        = DateTimeFormats.convertToDateTimeString(failedFile.createdAt)
+        val fileExpirationDate = DateTimeFormats.convertToDateTimeString(failedFile.expiresAt)
+
+        val fileLink =
           fileManagementTableComponentHelper.createWarningTag(messages("fileManagement.failedFiles.fileText"))
 
         Seq(
           TableRow(
             content = Text(fileCreated)
+          ),
+          TableRow(
+            content = Text(fileExpirationDate),
+            classes = "custom-col-width-2"
           ),
           TableRow(
             content = fileLink
@@ -170,7 +182,8 @@ case class FailedFilesTable(FailedFileRows: Seq[Seq[TableRow]])(implicit message
   override val headRows: Seq[HeadCell]  =
     Seq(
       messages("fileManagement.failedFiles.table.header1"),
-      messages("fileManagement.failedFiles.table.header2")
+      messages("fileManagement.failedFiles.table.header2"),
+      messages("fileManagement.failedFiles.table.header3")
     ).map { content =>
       HeadCell(content = Text(content))
     }
