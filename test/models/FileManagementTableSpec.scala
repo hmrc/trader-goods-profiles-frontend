@@ -19,8 +19,8 @@ package models
 import base.SpecBase
 import generators.Generators
 import helpers.FileManagementTableComponentHelper
-import models.DownloadDataStatus.{FileInProgress, FileReadyUnseen}
-import models.download._
+import models.DownloadDataStatus.{FileFailedSeen, FileInProgress, FileReadyUnseen}
+import models.download.*
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.{HeadCell, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.table.TableRow
@@ -157,6 +157,58 @@ class FileManagementTableSpec extends SpecBase with Generators {
             )
 
             PendingFilesTable(tableParameter).value.pendingFileRows mustBe tableRows
+          }
+        }
+      }
+
+      "FailedFilesTable" - {
+        val table = FailedFilesTable(tableRows)
+
+        "must return correct caption" in {
+          table.caption mustEqual "Failed files"
+        }
+
+        "must return correct body" in {
+          table.body mustBe Some(
+            "The request has failed as there has been a problem. You need to"
+          )
+        }
+
+        "must return correct headRows" in {
+          table.headRows mustBe Seq(
+            HeadCell(content = Text("Date and time requested")),
+            HeadCell(content = Text("Expiry date")),
+            HeadCell(content = Text("File"))
+          )
+        }
+
+        ".apply" - {
+          "must return convert Option[Seq[(DownloadDataSummary]] into correct table rows" - {
+            "when None" in {
+              FailedFilesTable(None) mustBe None
+            }
+
+            "when populated with DownloadDataSummary" in {
+              val createdInstant      = Instant.parse("2024-04-22T10:05:00Z")
+              val expiryInstant       = Instant.parse("2024-05-22T10:05:00Z")
+              val downloadDataSummary =
+                DownloadDataSummary("id", "testEori", FileFailedSeen, createdInstant, expiryInstant, None)
+              val tableParameter      = Some(Seq(downloadDataSummary))
+
+              val dateTime   = "22 April 2024 10:05am"
+              val expiryDate = "22 May 2024 10:05am"
+              val file       = fileManagementTableComponentHelper.createWarningTag("File request failed")
+
+              val tableRows = Seq(
+                Seq(
+                  TableRow(content = Text(dateTime), classes = ""),
+                  TableRow(content = Text(expiryDate), classes = ""),
+                  TableRow(content = file, classes = "")
+                )
+              )
+
+              FailedFilesTable(tableParameter).value.FailedFileRows mustBe tableRows
+            }
           }
         }
       }

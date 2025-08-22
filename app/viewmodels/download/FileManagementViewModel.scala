@@ -69,7 +69,7 @@ object FileManagementViewModel {
 
         availableDataSummaries =
           downloadDataSummary.filterToOption(summary =>
-            summary.status == FileReadySeen || summary.status == FileReadyUnseen || summary.status == FileFailedUnseen || summary.status == FileFailedSeen
+            summary.status == FileReadySeen || summary.status == FileReadyUnseen
           )
 
         availableFiles = availableDataSummaries.flatMap { availableFilesSeq =>
