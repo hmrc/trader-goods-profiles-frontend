@@ -307,11 +307,10 @@ class CountryOfOriginCyaControllerSpec
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual
-            controllers.goodsRecord.countryOfOrigin.routes.UpdatedCountryOfOriginController
+            controllers.goodsRecord.routes.SingleRecordController
               .onPageLoad(testRecordId)
               .url
 
-          // Verify the service was called instead of putGoodsRecord
           verify(mockGoodsRecordUpdateService).updateIfChanged(
             any[String],
             any[String],
@@ -320,10 +319,8 @@ class CountryOfOriginCyaControllerSpec
             any[Boolean]
           )(any())
 
-          // Verify session updates
           verify(mockSessionRepository, times(2)).set(any())
 
-          // Verify audit
           withClue("must call the audit connector with the supplied details") {
             verify(mockAuditService).auditFinishUpdateGoodsRecord(
               eqTo(testRecordId),
