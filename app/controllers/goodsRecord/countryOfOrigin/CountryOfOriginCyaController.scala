@@ -170,16 +170,13 @@ class CountryOfOriginCyaController @Inject() (
 
       } yield {
         val hasChanged = oldVal != newVal
+        val isAutoCategorised = oldRecord.category.isDefined || autoCategoriseScenario.isDefined
 
-        if (autoCategoriseScenario.isDefined && hasChanged) {
-          Redirect(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
-            .addingToSession("countryOfOriginChanged" -> hasChanged.toString)
-            .removingFromSession(dataUpdated)
-        } else if (hasChanged) {
+        if (hasChanged && !isAutoCategorised) {
           Redirect(controllers.goodsRecord.countryOfOrigin.routes.UpdatedCountryOfOriginController.onPageLoad(recordId))
         } else {
           Redirect(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
-            .addingToSession("countryOfOriginChanged" -> "false")
+            .addingToSession("countryOfOriginChanged" -> hasChanged.toString)
             .removingFromSession(dataUpdated)
         }
       }).recover(handleRecover(recordId))
