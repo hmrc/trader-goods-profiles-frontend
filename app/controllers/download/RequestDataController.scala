@@ -45,7 +45,9 @@ class RequestDataController @Inject() (
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData).async {
     implicit request =>
       downloadDataConnector.getEmail.map {
-        case Some(email) => Ok(view(email.address))
+        case Some(email) =>
+          downloadDataConnector.updateSeenStatus
+          Ok(view(email.address))
         case _           =>
           logErrorsAndContinue(
             "Email was not found",
