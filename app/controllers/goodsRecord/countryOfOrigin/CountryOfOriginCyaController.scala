@@ -169,7 +169,7 @@ class CountryOfOriginCyaController @Inject() (
         autoCategoriseScenario <- autoCategoriseService.autoCategoriseRecord(recordId, cleanedAnswers)
 
       } yield {
-        val hasChanged = oldVal != newVal
+        val hasChanged        = oldVal != newVal
         val isAutoCategorised = oldRecord.category.isDefined || autoCategoriseScenario.isDefined
 
         if (hasChanged && !isAutoCategorised) {
