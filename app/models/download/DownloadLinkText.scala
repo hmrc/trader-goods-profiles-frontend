@@ -16,7 +16,7 @@
 
 package models.download
 
-import models.DownloadDataSummary
+import models.{DownloadDataStatus, DownloadDataSummary}
 import play.api.i18n.Messages
 import play.twirl.api.Html
 
@@ -26,15 +26,28 @@ case class DownloadLinkText(
   verifiedEmail: Boolean
 )(implicit messages: Messages) {
 
-  val messageKey: String = if (verifiedEmail) {
-    doesGoodsRecordExist match {
-      case true if downloadDataSummaries.nonEmpty  => "homepage.downloadLinkText.filesRequested"
-      case true if downloadDataSummaries.isEmpty   => "homepage.downloadLinkText.noFilesRequested"
-      case false if downloadDataSummaries.nonEmpty => "homepage.downloadLinkText.downloadRecords"
-      case _                                       => "homepage.downloadLinkText.noGoodsRecords"
+  val messageKey: String = if (!verifiedEmail) {
+    "homepage.downloadLinkText.unverifiedEmail"
+  } else if (downloadDataSummaries.isEmpty) {
+    if (doesGoodsRecordExist) {
+      "homepage.downloadLinkText.noFilesRequested"
+    } else {
+      "homepage.downloadLinkText.noGoodsRecords"
     }
   } else {
-    "homepage.downloadLinkText.unverifiedEmail"
+    val hasReady = downloadDataSummaries.exists { summary =>
+      summary.status == DownloadDataStatus.FileReadySeen ||
+      summary.status == DownloadDataStatus.FileReadyUnseen
+    }
+    if (hasReady) {
+      if (doesGoodsRecordExist) {
+        "homepage.downloadLinkText.filesRequested"
+      } else {
+        "homepage.downloadLinkText.downloadRecords"
+      }
+    } else {
+      "homepage.downloadLinkText.filesFailed"
+    }
   }
 
   val nonLinks: Seq[String]   =
