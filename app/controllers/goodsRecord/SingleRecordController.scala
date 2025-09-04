@@ -41,23 +41,23 @@ import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 
 class SingleRecordController @Inject() (
-  val controllerComponents: MessagesControllerComponents,
-  goodsRecordConnector: GoodsRecordConnector,
-  sessionRepository: SessionRepository,
-  autoCategoriseService: AutoCategoriseService,
-  dataCleansingService: DataCleansingService,
-  identify: IdentifierAction,
-  profileAuth: ProfileAuthenticateAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
-  ottConnector: OttConnector,
-  view: SingleRecordView
-)(implicit @unused ec: ExecutionContext)
-    extends BaseController {
+                                         val controllerComponents: MessagesControllerComponents,
+                                         goodsRecordConnector: GoodsRecordConnector,
+                                         sessionRepository: SessionRepository,
+                                         autoCategoriseService: AutoCategoriseService,
+                                         dataCleansingService: DataCleansingService,
+                                         identify: IdentifierAction,
+                                         profileAuth: ProfileAuthenticateAction,
+                                         getData: DataRetrievalAction,
+                                         requireData: DataRequiredAction,
+                                         ottConnector: OttConnector,
+                                         view: SingleRecordView
+                                       )(implicit @unused ec: ExecutionContext)
+  extends BaseController {
 
   def onPageLoad(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val countryOfOriginUpdated           = request.session.get("countryOfOriginChanged").contains("true")
+      val countryOfOriginUpdated = request.session.get("countryOfOriginChanged").contains("true")
       val showCommodityCodeBanner: Boolean = request.session.get("showCommodityCodeChangeBanner").contains("true")
       goodsRecordConnector
         .getRecord(recordId)
@@ -70,16 +70,16 @@ class SingleRecordController @Inject() (
             countries              <- retrieveAndStoreCountries
             updatedAnswers         <- updateUserAnswers(recordId, initialRecord)
             autoCategoriseScenario <- if (shouldAutoCategorise(initialRecord)) {
-                                        autoCategoriseService.autoCategoriseRecord(initialRecord, updatedAnswers)
-                                      } else {
-                                        Future.successful(None)
-                                      }
+              autoCategoriseService.autoCategoriseRecord(initialRecord, updatedAnswers)
+            } else {
+              Future.successful(None)
+            }
             _                      <- sessionRepository.set(updatedAnswers)
             finalRecord            <- if (autoCategoriseScenario.isDefined) {
-                                        goodsRecordConnector.getRecord(recordId)
-                                      } else {
-                                        Future.successful(initialRecord)
-                                      }
+              goodsRecordConnector.getRecord(recordId)
+            } else {
+              Future.successful(initialRecord)
+            }
           } yield renderView(
             recordId,
             finalRecord,
@@ -103,7 +103,7 @@ class SingleRecordController @Inject() (
     record.category.isEmpty && !record.adviceStatus.isRecordLocked
 
   private def updateUserAnswers(recordId: String, record: GetGoodsRecordResponse)(implicit
-    request: DataRequest[_]
+                                                                                  request: DataRequest[_]
   ): Future[UserAnswers] = {
     val baseTry =
       request.userAnswers
@@ -134,14 +134,14 @@ class SingleRecordController @Inject() (
     }
 
   private def renderView(
-    recordId: String,
-    record: GetGoodsRecordResponse,
-    backLink: String,
-    countries: Seq[Country],
-    autoCategoriseScenario: Option[Scenario],
-    countryOfOriginUpdated: Boolean,
-    showCommodityCodeBanner: Boolean
-  )(implicit request: DataRequest[_]): Result = {
+                          recordId: String,
+                          record: GetGoodsRecordResponse,
+                          backLink: String,
+                          countries: Seq[Country],
+                          autoCategoriseScenario: Option[Scenario],
+                          countryOfOriginUpdated: Boolean,
+                          showCommodityCodeBanner: Boolean
+                        )(implicit request: DataRequest[_]): Result = {
     val recordIsLocked                   = record.adviceStatus.isRecordLocked
     val isCategorised                    = record.category.isDefined
     val isReviewReasonCommodityOrCountry = (record.toReview, record.reviewReason) match {
@@ -165,15 +165,21 @@ class SingleRecordController @Inject() (
       )
     )
 
-    val categoryValue = record.category match {
-      case None        => if (recordIsLocked) "singleRecord.notCategorised.recordLocked" else "singleRecord.categoriseThisGood"
-      case Some(value) =>
-        value match {
-          case 1 => "singleRecord.cat1"
-          case 2 => "singleRecord.cat2"
-          case 3 => "singleRecord.standardGoods"
-        }
+    val categoryValue = if (countryOfOriginUpdated) {
+      "singleRecord.categoriseThisGood"
+    } else {
+      record.category match {
+        case None        => if (recordIsLocked) "singleRecord.notCategorised.recordLocked" else "singleRecord.categoriseThisGood"
+        case Some(value) =>
+          value match {
+            case 1 => "singleRecord.cat1"
+            case 2 => "singleRecord.cat2"
+            case 3 => "singleRecord.standardGoods" // auto-categorised
+          }
+      }
     }
+
+
 
     val categorisationList = SummaryListViewModel(
       rows = Seq(
@@ -231,11 +237,11 @@ class SingleRecordController @Inject() (
         showCommodityCodeBanner
       )
     ).removingFromSession(
-      initialValueOfHasSuppUnit,
-      initialValueOfSuppUnit,
-      goodsDescriptionOriginal,
-      "countryOfOriginChanged",
-      "showCommodityCodeChangeBanner"
-    )
+        initialValueOfHasSuppUnit,
+        initialValueOfSuppUnit,
+        goodsDescriptionOriginal,
+        "countryOfOriginChanged",
+        "showCommodityCodeChangeBanner"
+      )
   }
 }

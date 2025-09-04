@@ -220,7 +220,8 @@ class CategorisationPreparationController @Inject() (
     hasLongComCode: Boolean
   ): Boolean =
     couldGoToLongerCommodityCode(catInfo, hasLongComCode) &&
-      getResultAsInt(scenario) == Category2AsInt
+      getResultAsInt(scenario).contains(Category2AsInt)
+
 
   private def couldGoToLongerCommodityCode(catInfo: CategorisationInfo, hasLongComCode: Boolean): Boolean =
     !hasLongComCode &&
@@ -233,7 +234,8 @@ class CategorisationPreparationController @Inject() (
     recordId: String
   ) = {
     val scenario = categorisationService.calculateResult(catInfo, updatedUserAnswers, recordId)
-    catInfo.measurementUnit.isDefined && getResultAsInt(scenario) == Category2AsInt
+    catInfo.measurementUnit.isDefined && getResultAsInt(scenario).contains(Category2AsInt)
+
   }
 
   private def updateReassessmentAnswers(

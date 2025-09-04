@@ -179,27 +179,46 @@ tag: components.Tag
     <h2 class="govuk-heading-m">@messages("singleRecord.h2.goodsDetails")</h2>
     @govukSummaryList(detailsList)
 
-    <h2 class="govuk-heading-m">@messages("singleRecord.h2.categorisation")</h2>
-        @if(isCategorised | !reviewReason.contains(ReviewReason.Country)) {
-            @govukSummaryList(categorisationList)
-                } else {
-            @govukSummaryList(
-                SummaryListViewModel(
-                    rows = Seq(
-                        SummaryListRow(
-                            key = Key(Text(messages("singleRecord.category.row"))),
-                            value = Value(
-                                HtmlContent(
-                                    s"<p class='govuk-body'>${messages("singleRecord.countryReviewReason.categorise")}</p>"
-                                )
-                            )
-                        )
-                    )
-                )
-            )
-        }
+<h2 class="govuk-heading-m">@messages("singleRecord.h2.categorisation")</h2>
 
-    @if(supplementaryUnitList != SummaryListViewModel(rows = Seq.empty)) {
+@if(isCategorised) {
+@govukSummaryList(categorisationList)
+} else if(reviewReason.contains(ReviewReason.Country)) {
+@govukSummaryList(
+SummaryListViewModel(
+rows = Seq(
+SummaryListRow(
+key = Key(Text(messages("singleRecord.category.row"))),
+value = Value(
+HtmlContent(
+s"<a class='govuk-link' href='@controllers.routes.ValidateCommodityCodeController.changeCategory(recordId)'>${messages("singleRecord.countryReviewReason.categorise")}</a>"
+)
+)
+)
+)
+)
+)
+} else {
+@govukSummaryList(
+SummaryListViewModel(
+rows = Seq(
+SummaryListRow(
+key = Key(Text(messages("singleRecord.category.row"))),
+value = Value(
+HtmlContent(
+s"""<a class="govuk-link" href="${controllers.routes.ValidateCommodityCodeController.changeCategory(recordId).url}">
+    ${messages("singleRecord.categoriseThisGood")}
+</a>"""
+)
+)
+)
+)
+)
+)
+}
+
+
+@if(supplementaryUnitList != SummaryListViewModel(rows = Seq.empty)) {
         <h2 class="govuk-heading-m">@messages("singleRecord.h2.supplementaryUnit")</h2>
         @govukSummaryList(supplementaryUnitList)
     }
@@ -232,4 +251,4 @@ tag: components.Tag
             </p>
         }
     }
-} 
+}
