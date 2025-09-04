@@ -67,6 +67,7 @@ homepage.downloadBanner.failed.linkText = Gwneud cais am ffeil cofnodion TGP new
 homepage.h2.3 = Lawrlwytho data TGP
 homepage.downloadLinkText.noGoodsRecords = Nid oes gennych unrhyw gofnodion nwyddau TGP i’w lawrlwytho.
 homepage.downloadLinkText.noFilesRequested = Cael eich ffeil cofnodion TGP
+homepage.downloadLinkText.filesFailed = Cael eich ffeil cofnodion TGP
 homepage.downloadLinkText.filesRequested = Cael neu lawrlwytho’ch ffeil cofnodion TGP
 homepage.downloadLinkText.downloadRecords = Lawrlwythwch eich ffeil cofnodion TGP
 homepage.downloadLinkText.unverifiedEmail = Mewngofnodwch i Ddynodydd Defnyddiwr (ID) gweinyddwr ar gyfer Porth y Llywodraeth i lawrlwytho’ch data o ran Proffil Nwyddau Masnachwyr (TGP).
