@@ -235,6 +235,7 @@ homepage.downloadBanner.failed.content = There’s been a problem which means we
 homepage.downloadBanner.failed.linkText = Request a new TGP records file
 homepage.downloadLinkText.noGoodsRecords = You do not have TGP goods records to download.
 homepage.downloadLinkText.noFilesRequested = Get your TGP records file
+homepage.downloadLinkText.filesFailed = Get your TGP records file
 homepage.downloadLinkText.filesRequested = Get or download your TGP records file
 homepage.downloadLinkText.downloadRecords = Download your TGP records file
 homepage.downloadLinkText.unverifiedEmail = Sign in to an administrator Government Gateway user ID to download your TGP data.

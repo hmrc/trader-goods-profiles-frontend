@@ -34,7 +34,7 @@ case class FileManagementViewModel(
   doesGoodsRecordExist: Boolean
 )(implicit messages: Messages) {
 
-  val isFiles: Boolean = availableFilesTable.isDefined || pendingFilesTable.isDefined
+  val isFiles: Boolean = availableFilesTable.isDefined || pendingFilesTable.isDefined || failedFilesTable.isDefined
 
   val title: String   = messages("fileManagement.title")
   val heading: String = messages("fileManagement.heading")
