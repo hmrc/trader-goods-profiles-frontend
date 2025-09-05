@@ -165,20 +165,23 @@ class SingleRecordController @Inject() (
       )
     )
 
-    val categoryValue = if (countryOfOriginUpdated) {
-      "singleRecord.categoriseThisGood"
-    } else {
-      record.category match {
-        case None        => if (recordIsLocked) "singleRecord.notCategorised.recordLocked" else "singleRecord.categoriseThisGood"
-        case Some(value) =>
-          value match {
-            case 1 => "singleRecord.cat1"
-            case 2 => "singleRecord.cat2"
-            case 3 => "singleRecord.standardGoods" // auto-categorised
-          }
+    val categoryValue =
+      if (countryOfOriginUpdated && record.category.isEmpty) {
+        // Manual category was dropped → ask user to categorise again
+        "singleRecord.categoriseThisGood"
+      } else {
+        record.category match {
+          case None =>
+            if (recordIsLocked) "singleRecord.notCategorised.recordLocked"
+            else "singleRecord.categoriseThisGood"
+          case Some(value) =>
+            value match {
+              case 1 => "singleRecord.cat1"
+              case 2 => "singleRecord.cat2"
+              case 3 => "singleRecord.standardGoods" // auto-categorised
+            }
+        }
       }
-    }
-
 
 
     val categorisationList = SummaryListViewModel(
