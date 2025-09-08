@@ -16,8 +16,9 @@
 
 package controllers.goodsProfile
 
+import connectors.DownloadDataConnector
 import controllers.BaseController
-import controllers.actions._
+import controllers.actions.*
 import models.NormalMode
 import navigation.GoodsProfileNavigator
 import pages.goodsProfile.PreviousMovementRecordsPage
@@ -34,11 +35,13 @@ class PreviousMovementRecordsController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
+  downloadDataConnector: DownloadDataConnector,
   view: PreviousMovementRecordsView,
   navigator: GoodsProfileNavigator
 ) extends BaseController {
 
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth) { implicit request =>
+    downloadDataConnector.updateSeenStatus
     Ok(view())
   }
 

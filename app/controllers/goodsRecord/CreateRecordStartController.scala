@@ -16,8 +16,9 @@
 
 package controllers.goodsRecord
 
+import connectors.DownloadDataConnector
 import controllers.BaseController
-import controllers.actions._
+import controllers.actions.*
 import models.NormalMode
 import navigation.GoodsRecordNavigator
 import pages.goodsRecord.CreateRecordStartPage
@@ -37,11 +38,13 @@ class CreateRecordStartController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: CreateRecordStartView,
   navigator: GoodsRecordNavigator,
-  auditService: AuditService
+  auditService: AuditService,
+  downloadDataConnector: DownloadDataConnector
 ) extends BaseController {
 
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
     implicit request =>
+      downloadDataConnector.updateSeenStatus
       Ok(view())
   }
 

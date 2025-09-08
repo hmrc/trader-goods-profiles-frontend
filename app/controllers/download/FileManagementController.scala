@@ -44,6 +44,7 @@ class FileManagementController @Inject() (
 
   def onPageLoad(): Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData).async {
     implicit request =>
+      downloadDataConnector.updateSeenStatus
       if (config.downloadFileEnabled) {
         downloadDataConnector.getEmail.flatMap {
           case Some(_) => viewModelProvider(downloadDataConnector).map(viewModel => Ok(view(viewModel)))

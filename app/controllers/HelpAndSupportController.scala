@@ -16,7 +16,9 @@
 
 package controllers
 
-import controllers.actions._
+import connectors.DownloadDataConnector
+import controllers.actions.*
+
 import javax.inject.Inject
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -29,11 +31,13 @@ class HelpAndSupportController @Inject() (
   requireData: DataRequiredAction,
   profileAuth: ProfileAuthenticateAction,
   val controllerComponents: MessagesControllerComponents,
+  downloadDataConnector: DownloadDataConnector,
   view: HelpAndSupportView
 ) extends BaseController {
 
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getData andThen requireData) {
     implicit request =>
+      downloadDataConnector.updateSeenStatus
       Ok(view())
   }
 }

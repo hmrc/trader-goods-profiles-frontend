@@ -16,7 +16,7 @@
 
 package controllers.profile
 
-import connectors.TraderProfileConnector
+import connectors.{DownloadDataConnector, TraderProfileConnector}
 import controllers.BaseController
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
 import models.{NormalMode, UserAnswers}
@@ -28,8 +28,8 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import queries.TraderProfileQuery
 import repositories.SessionRepository
 import utils.SessionData.{dataAdded, dataRemoved, dataUpdated, pageUpdated}
-import viewmodels.checkAnswers.profile._
-import viewmodels.govuk.summarylist._
+import viewmodels.checkAnswers.profile.*
+import viewmodels.govuk.summarylist.*
 import views.html.profile.ProfileView
 
 import javax.inject.Inject
@@ -43,6 +43,7 @@ class ProfileController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   profileAuth: ProfileAuthenticateAction,
+  downloadDataConnector: DownloadDataConnector,
   val controllerComponents: MessagesControllerComponents,
   view: ProfileView
 )(implicit ec: ExecutionContext)
@@ -50,6 +51,8 @@ class ProfileController @Inject() (
 
   def onPageLoad(): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
+      downloadDataConnector.updateSeenStatus
+
       cleanseProfileData(request.userAnswers).flatMap { _ =>
         traderProfileConnector.getTraderProfile.map { profile =>
           val detailsList = SummaryListViewModel(

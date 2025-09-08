@@ -16,11 +16,11 @@
 
 package controllers.goodsProfile
 
-import connectors.{GoodsRecordConnector, OttConnector}
+import connectors.{DownloadDataConnector, GoodsRecordConnector, OttConnector}
 import controllers.BaseController
-import controllers.actions._
+import controllers.actions.*
 import forms.goodsProfile.GoodsRecordsFormProvider
-import models.GoodsRecordsPagination._
+import models.GoodsRecordsPagination.*
 import models.SearchForm
 import models.requests.DataRequest
 import models.router.responses.GetRecordsResponse
@@ -52,6 +52,7 @@ class GoodsRecordsController @Inject() (
   goodsRecordConnector: GoodsRecordConnector,
   ottConnector: OttConnector,
   navigator: GoodsProfileNavigator,
+  downloadDataConnector: DownloadDataConnector,
   auditService: AuditService
 )(implicit ec: ExecutionContext)
     extends BaseController {
@@ -62,6 +63,8 @@ class GoodsRecordsController @Inject() (
 
   def onPageLoad(page: Int): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
+      downloadDataConnector.updateSeenStatus
+
       if (page < 1) {
         Future.successful(navigator.journeyRecovery())
       } else {
