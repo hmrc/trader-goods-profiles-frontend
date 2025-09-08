@@ -136,15 +136,35 @@ class CountryOfOriginCyaController @Inject() (
           )
         )
 
-        oldVal = Option(oldRecord.countryOfOrigin).map(_.trim.toUpperCase).getOrElse("")
-        newVal = countryOfOrigin.trim.toUpperCase
+        oldVal = Option(oldRecord.countryOfOrigin).map(_.trim).getOrElse("")
+        newVal = countryOfOrigin.trim
         hasChanged = oldVal != newVal
 
+        // Prepare update payload
+        updateGoodsRecord = UpdateGoodsRecord(
+          eori = request.eori,
+          recordId = recordId,
+          countryOfOrigin = Some(countryOfOrigin)
+        )
+
+        _ = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
+
+        // PATCH backend first
+        _ <- goodsRecordUpdateService.updateIfChanged(
+          oldValue = oldVal,
+          newValue = newVal,
+          updateGoodsRecord = updateGoodsRecord,
+          oldRecord = oldRecord,
+          patch = true
+        )
+
         // Update session with new country
-        updatedAnswers <- Future.fromTry(request.userAnswers.set(OriginalCountryOfOriginPage(recordId), countryOfOrigin))
+        updatedAnswers <- Future.fromTry(
+          request.userAnswers.set(OriginalCountryOfOriginPage(recordId), countryOfOrigin)
+        )
         _ <- sessionRepository.set(updatedAnswers)
 
-        // Clean session
+        // Clean temporary session pages
         cleanedAnswers <- Future.fromTry(
           updatedAnswers
             .remove(HasCountryOfOriginChangePage(recordId))
@@ -154,29 +174,6 @@ class CountryOfOriginCyaController @Inject() (
 
         // Attempt auto-categorisation
         autoCategoriseScenario <- autoCategoriseService.autoCategoriseRecord(recordId, cleanedAnswers)
-
-        // Determine category to send
-        categoryToSend: Option[Int] =
-          if (!autoCategoriseScenario.isDefined && hasChanged) None // manual -> remove
-          else oldRecord.category // preserve auto or empty
-
-        updateGoodsRecord = UpdateGoodsRecord(
-          eori = request.eori,
-          recordId = recordId,
-          countryOfOrigin = Some(countryOfOrigin),
-          category = categoryToSend
-        )
-
-        _ = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
-
-        // Update backend if country changed
-        _ <- goodsRecordUpdateService.updateIfChanged(
-          oldValue = oldVal,
-          newValue = newVal,
-          updateGoodsRecord = updateGoodsRecord,
-          oldRecord = oldRecord,
-          patch = true
-        )
 
         // Remove manual category if required
         _ <- if (!autoCategoriseScenario.isDefined && hasChanged) {

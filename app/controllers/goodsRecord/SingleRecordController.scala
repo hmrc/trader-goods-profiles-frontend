@@ -59,44 +59,51 @@ class SingleRecordController @Inject() (
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       val countryOfOriginUpdated = request.session.get("countryOfOriginChanged").contains("true")
       val showCommodityCodeBanner: Boolean = request.session.get("showCommodityCodeChangeBanner").contains("true")
-      goodsRecordConnector
-        .getRecord(recordId)
-        .flatMap { initialRecord =>
-          val backLink = request.headers
-            .get("Referer")
-            .filter(_.contains("page"))
-            .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url)
-          for {
-            countries              <- retrieveAndStoreCountries
-            updatedAnswers         <- updateUserAnswers(recordId, initialRecord)
-            autoCategoriseScenario <- if (shouldAutoCategorise(initialRecord)) {
-              autoCategoriseService.autoCategoriseRecord(initialRecord, updatedAnswers)
-            } else {
-              Future.successful(None)
-            }
-            _                      <- sessionRepository.set(updatedAnswers)
-            finalRecord            <- if (autoCategoriseScenario.isDefined) {
-              goodsRecordConnector.getRecord(recordId)
-            } else {
-              Future.successful(initialRecord)
-            }
-          } yield renderView(
-            recordId,
-            finalRecord,
-            backLink,
-            countries,
-            autoCategoriseScenario,
-            countryOfOriginUpdated,
-            showCommodityCodeBanner
-          )
-        }
-        .recover {
-          case _: RecordNotFoundException =>
-            Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
-          case e: Exception               =>
-            logger.error(s"Error: ${e.getMessage}")
-            Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
-        }
+
+      goodsRecordConnector.getRecord(recordId).flatMap { initialRecord =>
+        val backLink = request.headers
+          .get("Referer")
+          .filter(_.contains("page"))
+          .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url)
+
+        // Prefer session-stored country if available
+        val countryFromSession: Option[String] =
+          request.userAnswers.get(OriginalCountryOfOriginPage(recordId))
+
+        val recordToDisplay = initialRecord.copy(
+          countryOfOrigin = countryFromSession.orElse(Option(initialRecord.countryOfOrigin)).getOrElse("")
+        )
+
+        for {
+          countries <- retrieveAndStoreCountries
+          updatedAnswers <- updateUserAnswers(recordId, recordToDisplay)
+          autoCategoriseScenario <- if (shouldAutoCategorise(recordToDisplay)) {
+            autoCategoriseService.autoCategoriseRecord(recordToDisplay, updatedAnswers)
+          } else {
+            Future.successful(None)
+          }
+          _ <- sessionRepository.set(updatedAnswers)
+          finalRecord <- if (autoCategoriseScenario.isDefined) {
+            goodsRecordConnector.getRecord(recordId)
+          } else {
+            Future.successful(recordToDisplay)
+          }
+        } yield renderView(
+          recordId,
+          finalRecord,
+          backLink,
+          countries,
+          autoCategoriseScenario,
+          countryOfOriginUpdated,
+          showCommodityCodeBanner
+        )
+      }.recover {
+        case _: RecordNotFoundException =>
+          Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
+        case e: Exception =>
+          logger.error(s"Error loading goods record: ${e.getMessage}")
+          Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
+      }
     }
 
   private def shouldAutoCategorise(record: GetGoodsRecordResponse): Boolean =
