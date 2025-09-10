@@ -181,7 +181,7 @@ class CountryOfOriginCyaController @Inject() (
         // Check if auto-categorisable
         isAutoCategorisable = categorisationInfoOpt.exists(_.isAutoCategorisable)
 
-        // Remove manual category ONLY if the country truly changed AND record is not auto-categorisable
+        // Remove manual category ONLY if the country truly changed AND record is NOT auto-categorisable
         _ <- if (countryHasChanged && !isAutoCategorisable) {
           goodsRecordUpdateService.removeManualCategory(request.eori, recordId, oldRecord)
         } else Future.successful(Done)
@@ -190,9 +190,10 @@ class CountryOfOriginCyaController @Inject() (
         // Decide redirect
         val redirect =
           if (!countryHasChanged) {
+            // Country unchanged -> back to single record
             controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId)
           } else if (isAutoCategorisable) {
-            // Country changed + auto-categorisable -> go straight to SingleRecord
+            // Country changed + auto-categorisable -> go straight to single record
             controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId)
           } else {
             // Country changed + not auto-categorisable -> UpdatedCountry page
@@ -200,10 +201,12 @@ class CountryOfOriginCyaController @Inject() (
           }
 
         // Banner flag: only show if country changed AND auto-categorisable
-        val showCountryAutoCatBanner = countryHasChanged && isAutoCategorisable
+        val showAutoCatBanner = countryHasChanged && isAutoCategorisable
 
         Redirect(redirect)
-          .addingToSession("countryOfOriginChanged" -> showCountryAutoCatBanner.toString)
+          .addingToSession(
+            "showCommodityCodeChangeBanner" -> showAutoCatBanner.toString
+          )
           .removingFromSession(dataUpdated)
       }).recover(handleRecover(recordId))
     }
