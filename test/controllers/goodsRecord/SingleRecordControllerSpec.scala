@@ -92,26 +92,29 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
   }
 
   "SingleRecord Controller" - {
-    "must return OK and the correct view for a GET and set up userAnswers when record is categorised" in {
+    "must return OK and the correct view for a GET and set up userAnswers when record is auto-categorised" in {
+      // Make the test record auto-categorised so banner logic in the view triggers
+      val autoCategorisedRecord = recordForTestingSummaryRows.copy(category = Some(3))
+
       val expectedUserAnswers = UserAnswers(userAnswersId)
-        .set(ProductReferenceUpdatePage(testRecordId), recordForTestingSummaryRows.traderRef)
+        .set(ProductReferenceUpdatePage(testRecordId), autoCategorisedRecord.traderRef)
         .success
         .value
-        .set(GoodsDescriptionUpdatePage(testRecordId), recordForTestingSummaryRows.goodsDescription)
+        .set(GoodsDescriptionUpdatePage(testRecordId), autoCategorisedRecord.goodsDescription)
         .success
         .value
-        .set(CountryOfOriginUpdatePage(testRecordId), recordForTestingSummaryRows.countryOfOrigin)
+        .set(CountryOfOriginUpdatePage(testRecordId), autoCategorisedRecord.countryOfOrigin)
         .success
         .value
-        .set(CommodityCodeUpdatePage(testRecordId), recordForTestingSummaryRows.comcode)
+        .set(CommodityCodeUpdatePage(testRecordId), autoCategorisedRecord.comcode)
         .success
         .value
-        .set(OriginalCountryOfOriginPage(testRecordId), recordForTestingSummaryRows.countryOfOrigin)
+        .set(OriginalCountryOfOriginPage(testRecordId), autoCategorisedRecord.countryOfOrigin)
         .success
         .value
 
       when(mockGoodsRecordConnector.getRecord(any())(any()))
-        .thenReturn(Future.successful(recordForTestingSummaryRows))
+        .thenReturn(Future.successful(autoCategorisedRecord))
       when(mockSessionRepository.set(any()))
         .thenReturn(Future.successful(true))
       when(mockSessionRepository.clearData(any(), any()))
@@ -131,7 +134,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
         val request = FakeRequest(GET, singleRecordRoute)
           .withSession("countryOfOriginChanged" -> "true")
 
-        val result  = route(application, request).value
+        val result = route(application, request).value
         val content = contentAsString(result)
 
         withClue("Should return 200 OK") {
@@ -148,10 +151,10 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
         }
 
         withClue("Should display all expected record details") {
-          content must include(recordForTestingSummaryRows.traderRef)
-          content must include(recordForTestingSummaryRows.goodsDescription)
-          content must include(recordForTestingSummaryRows.countryOfOrigin)
-          content must include(recordForTestingSummaryRows.comcode)
+          content must include(autoCategorisedRecord.traderRef)
+          content must include(autoCategorisedRecord.goodsDescription)
+          content must include(autoCategorisedRecord.countryOfOrigin)
+          content must include(autoCategorisedRecord.comcode)
         }
 
         val uaCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])

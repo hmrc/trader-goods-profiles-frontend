@@ -27,6 +27,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.apache.pekko.Done
 import services.GoodsRecordUpdateService
 import uk.gov.hmrc.http.HeaderCarrier
+import scala.concurrent.ExecutionContext.Implicits.global
 
 import java.time.Instant
 import scala.concurrent.Future
