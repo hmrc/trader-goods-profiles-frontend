@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package services
 
 import connectors.GoodsRecordConnector
 import logging.Logging
+import models.ott.CategorisationInfo
 import models.requests.DataRequest
 import models.router.responses.GetGoodsRecordResponse
 import models.{CategoryRecord, CategoryRecordBuildFailure, Scenario, UserAnswers, UserAnswersSetFailure}
@@ -30,49 +31,43 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
 
 class AutoCategoriseService @Inject() (
-  categorisationService: CategorisationService,
-  goodsRecordsConnector: GoodsRecordConnector,
-  sessionRepository: SessionRepository
-)(implicit ec: ExecutionContext)
-    extends Logging {
+                                        categorisationService: CategorisationService,
+                                        goodsRecordsConnector: GoodsRecordConnector,
+                                        sessionRepository: SessionRepository
+                                      )(implicit ec: ExecutionContext)
+  extends Logging {
 
+  /** Auto-categorise a record and return Scenario if successful */
   def autoCategoriseRecord(
-    recordId: String,
-    userAnswers: UserAnswers
-  )(implicit request: DataRequest[_], hc: HeaderCarrier): Future[Option[Scenario]] =
+                            recordId: String,
+                            userAnswers: UserAnswers
+                          )(implicit request: DataRequest[_], hc: HeaderCarrier): Future[Option[Scenario]] =
     goodsRecordsConnector.getRecord(recordId).flatMap { record =>
       autoCategoriseRecord(record, userAnswers)
     }
 
   def autoCategoriseRecord(
-    record: GetGoodsRecordResponse,
-    userAnswers: UserAnswers
-  )(implicit
-    request: DataRequest[_],
-    hc: HeaderCarrier
-  ): Future[Option[Scenario]] =
+                            record: GetGoodsRecordResponse,
+                            userAnswers: UserAnswers
+                          )(implicit request: DataRequest[_], hc: HeaderCarrier): Future[Option[Scenario]] =
     categorisationService
       .getCategorisationInfo(request, record.comcode, record.countryOfOrigin, record.recordId)
       .flatMap { categorisationInfo =>
         if (categorisationInfo.isAutoCategorisable && record.category.isEmpty) {
 
-          val updatedUserAnswers =
-            userAnswers.set(CategorisationDetailsQuery(record.recordId), categorisationInfo) match {
-              case Success(userAnswers) =>
-                sessionRepository.set(userAnswers).map(_ => userAnswers)
-              case Failure(exception)   => Future.failed(UserAnswersSetFailure(exception.getMessage))
-            }
+          // Update session with CategorisationInfo
+          val updatedUserAnswersFut: Future[UserAnswers] = userAnswers.set(CategorisationDetailsQuery(record.recordId), categorisationInfo) match {
+            case Success(updated) => sessionRepository.set(updated).map(_ => updated)
+            case Failure(exception) => Future.failed(UserAnswersSetFailure(exception.getMessage))
+          }
 
-          updatedUserAnswers.flatMap { updatedUserAnswers =>
+          updatedUserAnswersFut.flatMap { updatedUserAnswers =>
             CategoryRecord.build(updatedUserAnswers, record.eori, record.recordId, categorisationService) match {
-              case Right(record) =>
+              case Right(categoryRecord) =>
                 for {
-                  oldRecord <-
-                    goodsRecordsConnector.getRecord(
-                      record.recordId
-                    )
-                  _         <- goodsRecordsConnector.updateCategoryAndComcodeForGoodsRecord(record.recordId, record, oldRecord)
-                } yield Some(record.category)
+                  oldRecord <- goodsRecordsConnector.getRecord(categoryRecord.recordId)
+                  _ <- goodsRecordsConnector.updateCategoryAndComcodeForGoodsRecord(categoryRecord.recordId, categoryRecord, oldRecord)
+                } yield Some(categoryRecord.category) // ✅ return Some(Scenario)
 
               case Left(errors) =>
                 val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
@@ -84,4 +79,18 @@ class AutoCategoriseService @Inject() (
         }
       }
 
+  /** Helper method to get CategorisationInfo for controller logic (CYA redirect) */
+  def getCategorisationInfoForRecord(
+                                      recordId: String,
+                                      userAnswers: UserAnswers
+                                    )(implicit request: DataRequest[_], hc: HeaderCarrier): Future[Option[CategorisationInfo]] =
+    goodsRecordsConnector.getRecord(recordId).flatMap { record =>
+      categorisationService
+        .getCategorisationInfo(request, record.comcode, record.countryOfOrigin, record.recordId)
+        .map(Some(_))
+        .recover { case ex =>
+          logger.error(s"[getCategorisationInfoForRecord] failed for recordId=$recordId", ex)
+          None
+        }
+    }
 }

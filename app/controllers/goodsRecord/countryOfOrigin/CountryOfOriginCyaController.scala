@@ -125,7 +125,9 @@ class CountryOfOriginCyaController @Inject() (
         originalCountryOfOrigin <- request.userAnswers
           .get(OriginalCountryOfOriginPage(recordId))
           .map(Future.successful)
-          .getOrElse(Future.failed(new Exception(s"Original country of origin not found in session for $recordId")))
+          .getOrElse(
+            Future.failed(new Exception(s"Original country of origin not found in session for $recordId"))
+          )
 
         // Validate new country of origin
         countryOfOrigin <- handleValidateError(
@@ -136,7 +138,7 @@ class CountryOfOriginCyaController @Inject() (
           )
         )
 
-        oldVal = Option(oldRecord.countryOfOrigin).map(_.trim).getOrElse("")
+        oldVal = oldRecord.countryOfOrigin.trim
         newVal = countryOfOrigin.trim
         hasChanged = oldVal != newVal
 
@@ -172,25 +174,26 @@ class CountryOfOriginCyaController @Inject() (
         )
         _ <- sessionRepository.set(cleanedAnswers)
 
-        // Attempt auto-categorisation
-        autoCategoriseScenario <- autoCategoriseService.autoCategoriseRecord(recordId, cleanedAnswers)
+        // Get categorisation info for redirect decision
+        categorisationInfoOpt <- autoCategoriseService.getCategorisationInfoForRecord(recordId, cleanedAnswers)
 
-        // Remove manual category if required
-        _ <- if (!autoCategoriseScenario.isDefined && hasChanged) {
+        // Remove manual category if needed
+        _ <- if (!categorisationInfoOpt.exists(_.isAutoCategorisable) && hasChanged) {
           goodsRecordUpdateService.removeManualCategory(request.eori, recordId, oldRecord)
         } else Future.successful(Done)
 
       } yield {
-        // Navigation logic
-        val redirect = if (!hasChanged) {
-          controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId)
-        } else if (!autoCategoriseScenario.isDefined && hasChanged) {
-          // Manual + country changed -> country updated page
-          controllers.goodsRecord.countryOfOrigin.routes.UpdatedCountryOfOriginController.onPageLoad(recordId)
-        } else {
-          // Auto-categorised or uncategorised -> go to single record
-          controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId)
-        }
+        // Decide redirect
+        val redirect =
+          if (!hasChanged) {
+            controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId)
+          } else if (categorisationInfoOpt.exists(_.isAutoCategorisable)) {
+            // Country changed + auto-categorisable -> go straight to SingleRecord
+            controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId)
+          } else {
+            // Country changed + not auto-categorisable -> UpdatedCountry page
+            controllers.goodsRecord.countryOfOrigin.routes.UpdatedCountryOfOriginController.onPageLoad(recordId)
+          }
 
         Redirect(redirect)
           .addingToSession("countryOfOriginChanged" -> hasChanged.toString)
