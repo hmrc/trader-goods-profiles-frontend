@@ -23,7 +23,7 @@ import models.*
 import models.GoodsRecordsPagination.firstPage
 import org.scalatest.BeforeAndAfterEach
 import pages.Page
-import pages.goodsProfile.{GoodsRecordsPage, PreviousMovementRecordsPage, RemoveGoodsRecordPage}
+import pages.goodsProfile.{GoodsRecordsPage, RemoveGoodsRecordPage}
 
 class GoodsProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
 
@@ -49,11 +49,6 @@ class GoodsProfileNavigatorSpec extends SpecBase with BeforeAndAfterEach {
         navigator.nextPage(RemoveGoodsRecordPage, NormalMode, emptyUserAnswers) mustEqual
           controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage)
       }
-    }
-
-    "must go from PreviousMovementsRecordsPage to page 1 of the GoodsRecordController" in {
-      navigator.nextPage(PreviousMovementRecordsPage, NormalMode, emptyUserAnswers) mustEqual
-        controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage)
     }
 
     "return IndexController.onPageLoad for other pages in normalRoutes" in {

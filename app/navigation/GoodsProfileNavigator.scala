@@ -20,7 +20,7 @@ import controllers.routes
 import models.GoodsRecordsPagination.firstPage
 import models.{Location, UserAnswers}
 import pages.Page
-import pages.goodsProfile.{GoodsRecordsPage, PreviousMovementRecordsPage, RemoveGoodsRecordPage}
+import pages.goodsProfile.{GoodsRecordsPage, RemoveGoodsRecordPage}
 import play.api.mvc.Call
 
 import javax.inject.{Inject, Singleton}
@@ -29,11 +29,9 @@ import javax.inject.{Inject, Singleton}
 class GoodsProfileNavigator @Inject() extends Navigator {
 
   val normalRoutes: Page => UserAnswers => Call = {
-    case PreviousMovementRecordsPage =>
-      _ => controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage)
-    case RemoveGoodsRecordPage       =>
+    case RemoveGoodsRecordPage =>
       answers => navigateFromRemoveGoodsRecordPage(answers)
-    case _                           =>
+    case _                     =>
       _ => routes.IndexController.onPageLoad()
   }
 
