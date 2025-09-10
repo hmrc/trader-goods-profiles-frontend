@@ -23,13 +23,13 @@ import models.ott.CategorisationInfo
 import models.requests.DataRequest
 import models.router.responses.GetGoodsRecordResponse
 import org.apache.pekko.Done
-import org.mockito.ArgumentMatchers.{any, eq as eqTo}
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.*
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import pages.goodsRecord.*
 import play.api.inject.bind
-import play.api.mvc.{AnyContent, AnyContentAsEmpty}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import queries.CountriesQuery
@@ -71,9 +71,6 @@ class CountryOfOriginCyaControllerSpec
   val countryName  = "China"
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(POST, controllers.goodsRecord.countryOfOrigin.routes.CountryOfOriginCyaController.onSubmit(testRecordId).url)
 
-
-
-  // Implicit HeaderCarrier
   implicit val hc: HeaderCarrier = HeaderCarrier()
   val recordAutoCategorised: GetGoodsRecordResponse = goodsRecordResponse(
     Instant.parse("2025-01-01T00:00:00Z"),
@@ -140,23 +137,20 @@ class CountryOfOriginCyaControllerSpec
 
       "must update, audit, set session and redirect to SingleRecord when country did not change" in {
 
-        // --- Setup UserAnswers with old country = new country ---
         val userAnswers = emptyUserAnswers
           .set(CountryOfOriginUpdatePage(testRecordId), "US").success.value
           .set(OriginalCountryOfOriginPage(testRecordId), "US").success.value
           .set(HasCountryOfOriginChangePage(testRecordId), true).success.value
 
-        // --- Existing record ---
         val record = recordAutoCategorised.copy(category = Some(1), countryOfOrigin = "US")
 
-        // --- Mocks ---
         when(mockGoodsRecordConnector.getRecord(any())(any()))
           .thenReturn(Future.successful(record))
 
         when(mockAutoCategoriseService.getCategorisationInfoForRecord(
           any[String], any[UserAnswers]
         )(any[DataRequest[_]], any[HeaderCarrier]))
-          .thenReturn(Future.successful(None)) // Not auto-categorisable
+          .thenReturn(Future.successful(None))
 
         when(mockGoodsRecordUpdateService.updateIfChanged(
           any[String], any[String], any[UpdateGoodsRecord], any[GetGoodsRecordResponse], any[Boolean]
@@ -166,7 +160,6 @@ class CountryOfOriginCyaControllerSpec
         when(mockAuditService.auditFinishUpdateGoodsRecord(any[String], any[AffinityGroup], any[UpdateGoodsRecord])
           (any[HeaderCarrier])).thenReturn(Future.successful(Done))
 
-        // --- Build application ---
         val application = applicationBuilder(userAnswers = Some(userAnswers))
           .overrides(
             bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
@@ -181,23 +174,12 @@ class CountryOfOriginCyaControllerSpec
           val controller = application.injector.instanceOf[CountryOfOriginCyaController]
           val request = FakeRequest(POST, controllers.goodsRecord.countryOfOrigin.routes.CountryOfOriginCyaController.onSubmit(testRecordId).url)
 
-          // --- Call controller and await result ---
           val result = await(controller.onSubmit(testRecordId).apply(request))
 
-          // --- Debug prints ---
-          println("[DEBUG] --- POST test: country did not change ---")
-          println(s"[DEBUG] UserAnswers OriginalCountry: ${userAnswers.get(OriginalCountryOfOriginPage(testRecordId)).getOrElse("none")}")
-          println(s"[DEBUG] UserAnswers UpdatedCountry: ${userAnswers.get(CountryOfOriginUpdatePage(testRecordId)).getOrElse("none")}")
-          println(s"[DEBUG] Record countryOfOrigin: ${record.countryOfOrigin}")
-          println(s"[DEBUG] Result status: ${result.header.status}")
-          println(s"[DEBUG] Redirect Location: ${result.header.headers.get("Location").getOrElse("none")}")
-
-          // --- Assertions ---
           result.header.status mustEqual SEE_OTHER
           result.header.headers("Location") mustEqual
             controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId).url
 
-          // --- Verify audit & session ---
           verify(mockAuditService).auditFinishUpdateGoodsRecord(
             any[String], any[AffinityGroup], any[UpdateGoodsRecord]
           )(any[HeaderCarrier])
@@ -210,33 +192,23 @@ class CountryOfOriginCyaControllerSpec
       }
 
       "must update, audit, set session and redirect to SingleRecord when auto-categorisable and country changed" in {
-
-        // --- Setup UserAnswers ---
         val userAnswers = emptyUserAnswers
           .set(CountryOfOriginUpdatePage(testRecordId), "US").success.value
           .set(OriginalCountryOfOriginPage(testRecordId), "CN").success.value
           .set(HasCountryOfOriginChangePage(testRecordId), true).success.value
 
-        // --- Existing record (original country CN) ---
         val record = recordAutoCategorised.copy(category = Some(1), countryOfOrigin = "CN")
 
-        // --- Mock CategorisationInfo properly ---
-        val categorisationInfo = CategorisationInfo(
-          category = 1,
-          // fill any required fields that the controller uses; adjust as needed
-          effectiveFrom = Instant.now(),
-          effectiveTo = Instant.now().plusSeconds(3600)
-        )
-
-        // --- Mocks ---
+        val categorisationInfo = CategorisationInfo.empty.copy(countryOfOrigin = "US")
         when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(record))
         when(mockAutoCategoriseService.getCategorisationInfoForRecord(any[String], any[UserAnswers])(any(), any()))
-          .thenReturn(Future.successful(Some(categorisationInfo))) // Correct type
-        when(mockGoodsRecordUpdateService.updateIfChanged(any(), any(), any(), any(), any())(any())).thenReturn(Future.successful(Done))
+          .thenReturn(Future.successful(Some(categorisationInfo)))
+        when(mockGoodsRecordUpdateService.updateIfChanged(any(), any(), any(), any(), any())(any()))
+          .thenReturn(Future.successful(Done))
         when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
-        when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any())).thenReturn(Future.successful(Done))
+        when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any()))
+          .thenReturn(Future.successful(Done))
 
-        // --- Build application ---
         val application = applicationBuilder(userAnswers = Some(userAnswers))
           .overrides(
             bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
@@ -249,43 +221,51 @@ class CountryOfOriginCyaControllerSpec
         running(application) {
           val controller = application.injector.instanceOf[CountryOfOriginCyaController]
           val request = FakeRequest(POST, controllers.goodsRecord.countryOfOrigin.routes.CountryOfOriginCyaController.onSubmit(testRecordId).url)
-
-          // --- Call controller ---
           val result = await(controller.onSubmit(testRecordId).apply(request))
 
-          // --- Debug prints ---
-          println("[DEBUG] --- POST test: auto-categorisable, country changed ---")
-          println(s"[DEBUG] Original country: ${userAnswers.get(OriginalCountryOfOriginPage(testRecordId)).getOrElse("none")}")
-          println(s"[DEBUG] New country: ${userAnswers.get(CountryOfOriginUpdatePage(testRecordId)).getOrElse("none")}")
-          println(s"[DEBUG] Result status: ${result.header.status}")
-          println(s"[DEBUG] Redirect Location: ${result.header.headers.get("Location")}")
-
-          // --- Assertions ---
           result.header.status mustEqual SEE_OTHER
           result.header.headers("Location") mustEqual controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId).url
 
-          // --- Verify interactions ---
           verify(mockAuditService).auditFinishUpdateGoodsRecord(any(), any(), any())(any())
           verify(mockSessionRepository, times(2)).set(any())
           verify(mockGoodsRecordUpdateService).updateIfChanged(any(), any(), any(), any(), any())(any())
         }
       }
 
+      "must update, audit, set session and redirect to SingleRecord when country changed but NOT auto-categorisable" in {
 
-      "must update, audit, set session and redirect to UpdatedCountryOfOrigin when not auto-categorisable and country changed" in {
         val userAnswers = emptyUserAnswers
           .set(CountryOfOriginUpdatePage(testRecordId), "US").success.value
           .set(OriginalCountryOfOriginPage(testRecordId), "CN").success.value
           .set(HasCountryOfOriginChangePage(testRecordId), true).success.value
 
-        val record = recordAutoCategorised.copy(category = None, countryOfOrigin = "CN") // Not auto-categorisable
+        val record = recordAutoCategorised.copy(category = Some(1), countryOfOrigin = "CN")
 
-        when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(record))
+        when(mockGoodsRecordConnector.getRecord(any())(any()))
+          .thenReturn(Future.successful(record))
+
         when(mockAutoCategoriseService.getCategorisationInfoForRecord(any[String], any[UserAnswers])(any(), any()))
-          .thenReturn(Future.successful(None)) // Not auto-categorisable
-        when(mockGoodsRecordUpdateService.updateIfChanged(any(), any(), any(), any(), any())(any())).thenReturn(Future.successful(Done))
+          .thenReturn(Future.successful(None))
+
+        when(mockGoodsRecordUpdateService.updateIfChanged(
+          any[String],
+          any[String],
+          any[UpdateGoodsRecord],
+          any[GetGoodsRecordResponse],
+          any[Boolean]
+        )(any[HeaderCarrier]))
+          .thenReturn(Future.successful(Done))
+
+        when(mockGoodsRecordUpdateService.removeManualCategory(
+          any[String],
+          any[String],
+          any[GetGoodsRecordResponse]
+        )(any[HeaderCarrier]))
+          .thenReturn(Future.successful(Done))
+
         when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
-        when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any())).thenReturn(Future.successful(Done))
+        when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any()))
+          .thenReturn(Future.successful(Done))
 
         val application = applicationBuilder(userAnswers = Some(userAnswers))
           .overrides(
@@ -301,18 +281,26 @@ class CountryOfOriginCyaControllerSpec
           val request = FakeRequest(POST, controllers.goodsRecord.countryOfOrigin.routes.CountryOfOriginCyaController.onSubmit(testRecordId).url)
           val result = await(controller.onSubmit(testRecordId).apply(request))
 
-          println(s"[DEBUG] Redirect Location: ${result.header.headers.get("Location")}")
-          result.header.status mustEqual SEE_OTHER
+
           result.header.headers("Location") mustEqual
             controllers.goodsRecord.countryOfOrigin.routes.UpdatedCountryOfOriginController.onPageLoad(testRecordId).url
 
           verify(mockAuditService).auditFinishUpdateGoodsRecord(any(), any(), any())(any())
           verify(mockSessionRepository, times(2)).set(any())
-          verify(mockGoodsRecordUpdateService).updateIfChanged(any(), any(), any(), any(), any())(any())
+          verify(mockGoodsRecordUpdateService).updateIfChanged(
+            any[String],
+            any[String],
+            any[UpdateGoodsRecord],
+            any[GetGoodsRecordResponse],
+            any[Boolean]
+          )(any[HeaderCarrier])
+          verify(mockGoodsRecordUpdateService).removeManualCategory(
+            any[String],
+            any[String],
+            any[GetGoodsRecordResponse]
+          )(any[HeaderCarrier])
         }
       }
-
-
 
     }
   }
