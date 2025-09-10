@@ -151,7 +151,7 @@ class CountryOfOriginCyaController @Inject() (
 
         _ = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
 
-        // PATCH backend first
+        // PATCH backend if needed
         _ <- goodsRecordUpdateService.updateIfChanged(
           oldValue = oldVal,
           newValue = newVal,
@@ -195,8 +195,11 @@ class CountryOfOriginCyaController @Inject() (
             controllers.goodsRecord.countryOfOrigin.routes.UpdatedCountryOfOriginController.onPageLoad(recordId)
           }
 
+        // Banner flag: show only if country really changed AND auto-categorisable
+        val showCountryAutoCatBanner = (oldVal != newVal) && categorisationInfoOpt.exists(_.isAutoCategorisable)
+
         Redirect(redirect)
-          .addingToSession("countryOfOriginChanged" -> hasChanged.toString)
+          .addingToSession("countryOfOriginChanged" -> showCountryAutoCatBanner.toString)
           .removingFromSession(dataUpdated)
       }).recover(handleRecover(recordId))
     }
