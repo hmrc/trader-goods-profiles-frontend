@@ -41,76 +41,79 @@ import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 
 class SingleRecordController @Inject() (
-                                         val controllerComponents: MessagesControllerComponents,
-                                         goodsRecordConnector: GoodsRecordConnector,
-                                         sessionRepository: SessionRepository,
-                                         autoCategoriseService: AutoCategoriseService,
-                                         dataCleansingService: DataCleansingService,
-                                         identify: IdentifierAction,
-                                         profileAuth: ProfileAuthenticateAction,
-                                         getData: DataRetrievalAction,
-                                         requireData: DataRequiredAction,
-                                         ottConnector: OttConnector,
-                                         view: SingleRecordView
-                                       )(implicit @unused ec: ExecutionContext)
-  extends BaseController {
+  val controllerComponents: MessagesControllerComponents,
+  goodsRecordConnector: GoodsRecordConnector,
+  sessionRepository: SessionRepository,
+  autoCategoriseService: AutoCategoriseService,
+  dataCleansingService: DataCleansingService,
+  identify: IdentifierAction,
+  profileAuth: ProfileAuthenticateAction,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
+  ottConnector: OttConnector,
+  view: SingleRecordView
+)(implicit @unused ec: ExecutionContext)
+    extends BaseController {
 
   def onPageLoad(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val countryOfOriginUpdated = request.session.get("countryOfOriginChanged").contains("true")
+      val countryOfOriginUpdated           = request.session.get("countryOfOriginChanged").contains("true")
       val showCommodityCodeBanner: Boolean = request.session.get("showCommodityCodeChangeBanner").contains("true")
 
-      goodsRecordConnector.getRecord(recordId).flatMap { initialRecord =>
-        val backLink = request.headers
-          .get("Referer")
-          .filter(_.contains("page"))
-          .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url)
+      goodsRecordConnector
+        .getRecord(recordId)
+        .flatMap { initialRecord =>
+          val backLink = request.headers
+            .get("Referer")
+            .filter(_.contains("page"))
+            .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url)
 
-        // Prefer session-stored country if available
-        val countryFromSession: Option[String] =
-          request.userAnswers.get(OriginalCountryOfOriginPage(recordId))
+          // Prefer session-stored country if available
+          val countryFromSession: Option[String] =
+            request.userAnswers.get(OriginalCountryOfOriginPage(recordId))
 
-        val recordToDisplay = initialRecord.copy(
-          countryOfOrigin = countryFromSession.orElse(Option(initialRecord.countryOfOrigin)).getOrElse("")
-        )
+          val recordToDisplay = initialRecord.copy(
+            countryOfOrigin = countryFromSession.orElse(Option(initialRecord.countryOfOrigin)).getOrElse("")
+          )
 
-        for {
-          countries <- retrieveAndStoreCountries
-          updatedAnswers <- updateUserAnswers(recordId, recordToDisplay)
-          autoCategoriseScenario <- if (shouldAutoCategorise(recordToDisplay)) {
-            autoCategoriseService.autoCategoriseRecord(recordToDisplay, updatedAnswers)
-          } else {
-            Future.successful(None)
-          }
-          _ <- sessionRepository.set(updatedAnswers)
-          finalRecord <- if (autoCategoriseScenario.isDefined) {
-            goodsRecordConnector.getRecord(recordId)
-          } else {
-            Future.successful(recordToDisplay)
-          }
-        } yield renderView(
-          recordId,
-          finalRecord,
-          backLink,
-          countries,
-          autoCategoriseScenario,
-          countryOfOriginUpdated,
-          showCommodityCodeBanner
-        )
-      }.recover {
-        case _: RecordNotFoundException =>
-          Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
-        case e: Exception =>
-          logger.error(s"Error loading goods record: ${e.getMessage}")
-          Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
-      }
+          for {
+            countries              <- retrieveAndStoreCountries
+            updatedAnswers         <- updateUserAnswers(recordId, recordToDisplay)
+            autoCategoriseScenario <- if (shouldAutoCategorise(recordToDisplay)) {
+                                        autoCategoriseService.autoCategoriseRecord(recordToDisplay, updatedAnswers)
+                                      } else {
+                                        Future.successful(None)
+                                      }
+            _                      <- sessionRepository.set(updatedAnswers)
+            finalRecord            <- if (autoCategoriseScenario.isDefined) {
+                                        goodsRecordConnector.getRecord(recordId)
+                                      } else {
+                                        Future.successful(recordToDisplay)
+                                      }
+          } yield renderView(
+            recordId,
+            finalRecord,
+            backLink,
+            countries,
+            autoCategoriseScenario,
+            countryOfOriginUpdated,
+            showCommodityCodeBanner
+          )
+        }
+        .recover {
+          case _: RecordNotFoundException =>
+            Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
+          case e: Exception               =>
+            logger.error(s"Error loading goods record: ${e.getMessage}")
+            Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
+        }
     }
 
   private def shouldAutoCategorise(record: GetGoodsRecordResponse): Boolean =
     record.category.isEmpty && !record.adviceStatus.isRecordLocked
 
   private def updateUserAnswers(recordId: String, record: GetGoodsRecordResponse)(implicit
-                                                                                  request: DataRequest[_]
+    request: DataRequest[_]
   ): Future[UserAnswers] = {
     val baseTry =
       request.userAnswers
@@ -141,14 +144,14 @@ class SingleRecordController @Inject() (
     }
 
   private def renderView(
-                          recordId: String,
-                          record: GetGoodsRecordResponse,
-                          backLink: String,
-                          countries: Seq[Country],
-                          autoCategoriseScenario: Option[Scenario],
-                          countryOfOriginUpdated: Boolean,
-                          showCommodityCodeBanner: Boolean
-                        )(implicit request: DataRequest[_]): Result = {
+    recordId: String,
+    record: GetGoodsRecordResponse,
+    backLink: String,
+    countries: Seq[Country],
+    autoCategoriseScenario: Option[Scenario],
+    countryOfOriginUpdated: Boolean,
+    showCommodityCodeBanner: Boolean
+  )(implicit request: DataRequest[_]): Result = {
     val recordIsLocked                   = record.adviceStatus.isRecordLocked
     val isCategorised                    = record.category.isDefined
     val isReviewReasonCommodityOrCountry = (record.toReview, record.reviewReason) match {
@@ -178,7 +181,7 @@ class SingleRecordController @Inject() (
         "singleRecord.categoriseThisGood"
       } else {
         record.category match {
-          case None =>
+          case None        =>
             if (recordIsLocked) "singleRecord.notCategorised.recordLocked"
             else "singleRecord.categoriseThisGood"
           case Some(value) =>
@@ -189,7 +192,6 @@ class SingleRecordController @Inject() (
             }
         }
       }
-
 
     val categorisationList = SummaryListViewModel(
       rows = Seq(
@@ -247,11 +249,11 @@ class SingleRecordController @Inject() (
         showCommodityCodeBanner
       )
     ).removingFromSession(
-        initialValueOfHasSuppUnit,
-        initialValueOfSuppUnit,
-        goodsDescriptionOriginal,
-        "countryOfOriginChanged",
-        "showCommodityCodeChangeBanner"
-      )
+      initialValueOfHasSuppUnit,
+      initialValueOfSuppUnit,
+      goodsDescriptionOriginal,
+      "countryOfOriginChanged",
+      "showCommodityCodeChangeBanner"
+    )
   }
 }

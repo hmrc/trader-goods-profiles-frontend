@@ -31,42 +31,45 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
 
 class AutoCategoriseService @Inject() (
-                                        categorisationService: CategorisationService,
-                                        goodsRecordsConnector: GoodsRecordConnector,
-                                        sessionRepository: SessionRepository
-                                      )(implicit ec: ExecutionContext)
-  extends Logging {
+  categorisationService: CategorisationService,
+  goodsRecordsConnector: GoodsRecordConnector,
+  sessionRepository: SessionRepository
+)(implicit ec: ExecutionContext)
+    extends Logging {
 
   /** Auto-categorise a record and return Scenario if successful */
   def autoCategoriseRecord(
-                            recordId: String,
-                            userAnswers: UserAnswers
-                          )(implicit request: DataRequest[_], hc: HeaderCarrier): Future[Option[Scenario]] =
+    recordId: String,
+    userAnswers: UserAnswers
+  )(implicit request: DataRequest[_], hc: HeaderCarrier): Future[Option[Scenario]] =
     goodsRecordsConnector.getRecord(recordId).flatMap { record =>
       autoCategoriseRecord(record, userAnswers)
     }
 
   def autoCategoriseRecord(
-                            record: GetGoodsRecordResponse,
-                            userAnswers: UserAnswers
-                          )(implicit request: DataRequest[_], hc: HeaderCarrier): Future[Option[Scenario]] =
+    record: GetGoodsRecordResponse,
+    userAnswers: UserAnswers
+  )(implicit request: DataRequest[_], hc: HeaderCarrier): Future[Option[Scenario]] =
     categorisationService
       .getCategorisationInfo(request, record.comcode, record.countryOfOrigin, record.recordId)
       .flatMap { categorisationInfo =>
         if (categorisationInfo.isAutoCategorisable && record.category.isEmpty) {
 
           // Update session with CategorisationInfo
-          val updatedUserAnswersFut: Future[UserAnswers] = userAnswers.set(CategorisationDetailsQuery(record.recordId), categorisationInfo) match {
-            case Success(updated) => sessionRepository.set(updated).map(_ => updated)
-            case Failure(exception) => Future.failed(UserAnswersSetFailure(exception.getMessage))
-          }
+          val updatedUserAnswersFut: Future[UserAnswers] =
+            userAnswers.set(CategorisationDetailsQuery(record.recordId), categorisationInfo) match {
+              case Success(updated)   => sessionRepository.set(updated).map(_ => updated)
+              case Failure(exception) => Future.failed(UserAnswersSetFailure(exception.getMessage))
+            }
 
           updatedUserAnswersFut.flatMap { updatedUserAnswers =>
             CategoryRecord.build(updatedUserAnswers, record.eori, record.recordId, categorisationService) match {
               case Right(categoryRecord) =>
                 for {
                   oldRecord <- goodsRecordsConnector.getRecord(categoryRecord.recordId)
-                  _ <- goodsRecordsConnector.updateCategoryAndComcodeForGoodsRecord(categoryRecord.recordId, categoryRecord, oldRecord)
+                  _         <-
+                    goodsRecordsConnector
+                      .updateCategoryAndComcodeForGoodsRecord(categoryRecord.recordId, categoryRecord, oldRecord)
                 } yield Some(categoryRecord.category) // ✅ return Some(Scenario)
 
               case Left(errors) =>
@@ -81,9 +84,9 @@ class AutoCategoriseService @Inject() (
 
   /** Helper method to get CategorisationInfo for controller logic (CYA redirect) */
   def getCategorisationInfoForRecord(
-                                      recordId: String,
-                                      userAnswers: UserAnswers
-                                    )(implicit request: DataRequest[_], hc: HeaderCarrier): Future[Option[CategorisationInfo]] =
+    recordId: String,
+    userAnswers: UserAnswers
+  )(implicit request: DataRequest[_], hc: HeaderCarrier): Future[Option[CategorisationInfo]] =
     goodsRecordsConnector.getRecord(recordId).flatMap { record =>
       categorisationService
         .getCategorisationInfo(request, record.comcode, record.countryOfOrigin, record.recordId)

@@ -130,7 +130,6 @@ class Navigation @Inject() (categorisationService: CategorisationService) extend
   private def shouldGoToSupplementaryUnitFromPrepPage(catInfo: CategorisationInfo, scenario: Scenario) =
     catInfo.measurementUnit.isDefined && getResultAsInt(scenario).contains(Category2AsInt)
 
-
   private def navigateFromReassessmentPrep(
     reasessmentPrep: RecategorisationPreparationPage
   )(answers: UserAnswers): Call = {

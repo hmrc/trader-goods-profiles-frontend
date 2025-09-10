@@ -365,7 +365,6 @@ class CategorisationNavigator @Inject() (categorisationService: CategorisationSe
   private def shouldGoToSupplementaryUnitFromPrepPage(catInfo: CategorisationInfo, scenario: Scenario) =
     catInfo.measurementUnit.isDefined && getResultAsInt(scenario).contains(Category2AsInt)
 
-
   private def shouldGoToLongerCommodityCodeWhenCategory2(
     categorisationInfo: CategorisationInfo,
     assessmentQuestion: CategoryAssessment,

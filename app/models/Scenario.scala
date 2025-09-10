@@ -21,7 +21,7 @@ import utils.Constants._
 
 // Base trait for all scenarios
 sealed trait Scenario {
-  def isAutoCategorised: Boolean = false
+  def isAutoCategorised: Boolean   = false
   def isManualCategorised: Boolean = false
 }
 
@@ -62,9 +62,9 @@ object Scenario {
   def getResultAsInt(scenario: Scenario): Option[Int] =
     scenario match {
       case StandardGoodsScenario | StandardGoodsNoAssessmentsScenario => Some(StandardGoodsAsInt)
-      case Category1Scenario | Category1NoExemptionsScenario         => Some(Category1AsInt)
-      case Category2Scenario | Category2NoExemptionsScenario         => Some(Category2AsInt)
-      case EmptyScenario                                             => None
+      case Category1Scenario | Category1NoExemptionsScenario          => Some(Category1AsInt)
+      case Category2Scenario | Category2NoExemptionsScenario          => Some(Category2AsInt)
+      case EmptyScenario                                              => None
     }
 
   // Convert Option[Int] back to Scenario
@@ -79,12 +79,12 @@ object Scenario {
 
   // JS literal for frontend
   implicit val jsLiteral: JavascriptLiteral[Scenario] = {
-    case StandardGoodsScenario               => "Standard"
-    case Category1Scenario                   => "Category1"
-    case Category2Scenario                   => "Category2"
+    case StandardGoodsScenario              => "Standard"
+    case Category1Scenario                  => "Category1"
+    case Category2Scenario                  => "Category2"
     case StandardGoodsNoAssessmentsScenario => "StandardNoAssessments"
     case Category1NoExemptionsScenario      => "Category1NoExemptions"
     case Category2NoExemptionsScenario      => "Category2NoExemptions"
-    case EmptyScenario                       => ""
+    case EmptyScenario                      => ""
   }
 }

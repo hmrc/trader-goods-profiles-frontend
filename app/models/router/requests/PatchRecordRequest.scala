@@ -72,7 +72,6 @@ object PatchRecordRequest {
       oldRecord.comcodeEffectiveToDate
     )
 
-
   def mapFromSupplementary(supplementaryUnitRequest: SupplementaryRequest): PatchRecordRequest =
     PatchRecordRequest(
       supplementaryUnitRequest.eori,

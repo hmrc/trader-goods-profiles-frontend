@@ -41,10 +41,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import java.time.Instant
 import scala.concurrent.Future
 
-class CountryOfOriginCyaControllerSpec
-  extends SpecBase
-    with MockitoSugar
-    with BeforeAndAfterEach {
+class CountryOfOriginCyaControllerSpec extends SpecBase with MockitoSugar with BeforeAndAfterEach {
 
   private val mockAuditService             = mock[AuditService]
   private val mockGoodsRecordConnector     = mock[GoodsRecordConnector]
@@ -65,19 +62,22 @@ class CountryOfOriginCyaControllerSpec
     )
   }
 
-  val testRecordId = "record-123"
-  val testEori     = "eori-123"
-  val answer       = "CN"
-  val countryName  = "China"
-  val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(POST, controllers.goodsRecord.countryOfOrigin.routes.CountryOfOriginCyaController.onSubmit(testRecordId).url)
+  val testRecordId                                     = "record-123"
+  val testEori                                         = "eori-123"
+  val answer                                           = "CN"
+  val countryName                                      = "China"
+  val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(
+    POST,
+    controllers.goodsRecord.countryOfOrigin.routes.CountryOfOriginCyaController.onSubmit(testRecordId).url
+  )
 
-  implicit val hc: HeaderCarrier = HeaderCarrier()
+  implicit val hc: HeaderCarrier                    = HeaderCarrier()
   val recordAutoCategorised: GetGoodsRecordResponse = goodsRecordResponse(
     Instant.parse("2025-01-01T00:00:00Z"),
     Instant.parse("2025-01-01T00:00:00Z")
   ).copy(recordId = testRecordId, eori = testEori, category = Some(3), countryOfOrigin = "CN")
 
-  val page: CountryOfOriginUpdatePage = CountryOfOriginUpdatePage(testRecordId)
+  val page: CountryOfOriginUpdatePage           = CountryOfOriginUpdatePage(testRecordId)
   val warningPage: HasCountryOfOriginChangePage = HasCountryOfOriginChangePage(testRecordId)
 
   "CountryOfOriginCyaController" - {
@@ -86,9 +86,15 @@ class CountryOfOriginCyaControllerSpec
 
       "must return OK with view when country exists in session" in {
         val userAnswers = emptyUserAnswers
-          .set(page, answer).success.value
-          .set(warningPage, true).success.value
-          .set(CountriesQuery, Seq(Country("CN", "China"))).success.value
+          .set(page, answer)
+          .success
+          .value
+          .set(warningPage, true)
+          .success
+          .value
+          .set(CountriesQuery, Seq(Country("CN", "China")))
+          .success
+          .value
 
         when(mockGoodsRecordConnector.getRecord(any())(any()))
           .thenReturn(Future.successful(recordAutoCategorised))
@@ -98,11 +104,15 @@ class CountryOfOriginCyaControllerSpec
             bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
             bind[OttConnector].toInstance(mockOttConnector),
             bind[AuditService].toInstance(mockAuditService)
-          ).build()
+          )
+          .build()
 
         running(application) {
           val controller = application.injector.instanceOf[CountryOfOriginCyaController]
-          val request = FakeRequest(GET, controllers.goodsRecord.countryOfOrigin.routes.CountryOfOriginCyaController.onPageLoad(testRecordId).url)
+          val request    = FakeRequest(
+            GET,
+            controllers.goodsRecord.countryOfOrigin.routes.CountryOfOriginCyaController.onPageLoad(testRecordId).url
+          )
 
           val result = controller.onPageLoad(testRecordId).apply(request)
           status(result) mustEqual OK
@@ -124,11 +134,16 @@ class CountryOfOriginCyaControllerSpec
 
         running(application) {
           val controller = application.injector.instanceOf[CountryOfOriginCyaController]
-          val request = FakeRequest(GET, controllers.goodsRecord.countryOfOrigin.routes.CountryOfOriginCyaController.onPageLoad(testRecordId).url)
+          val request    = FakeRequest(
+            GET,
+            controllers.goodsRecord.countryOfOrigin.routes.CountryOfOriginCyaController.onPageLoad(testRecordId).url
+          )
 
           val result = controller.onPageLoad(testRecordId).apply(request)
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value must include(controllers.problem.routes.JourneyRecoveryController.onPageLoad().url)
+          redirectLocation(result).value must include(
+            controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
+          )
         }
       }
     }
@@ -138,27 +153,45 @@ class CountryOfOriginCyaControllerSpec
       "must update, audit, set session and redirect to SingleRecord when country did not change" in {
 
         val userAnswers = emptyUserAnswers
-          .set(CountryOfOriginUpdatePage(testRecordId), "US").success.value
-          .set(OriginalCountryOfOriginPage(testRecordId), "US").success.value
-          .set(HasCountryOfOriginChangePage(testRecordId), true).success.value
+          .set(CountryOfOriginUpdatePage(testRecordId), "US")
+          .success
+          .value
+          .set(OriginalCountryOfOriginPage(testRecordId), "US")
+          .success
+          .value
+          .set(HasCountryOfOriginChangePage(testRecordId), true)
+          .success
+          .value
 
         val record = recordAutoCategorised.copy(category = Some(1), countryOfOrigin = "US")
 
         when(mockGoodsRecordConnector.getRecord(any())(any()))
           .thenReturn(Future.successful(record))
 
-        when(mockAutoCategoriseService.getCategorisationInfoForRecord(
-          any[String], any[UserAnswers]
-        )(any[DataRequest[_]], any[HeaderCarrier]))
+        when(
+          mockAutoCategoriseService.getCategorisationInfoForRecord(
+            any[String],
+            any[UserAnswers]
+          )(any[DataRequest[_]], any[HeaderCarrier])
+        )
           .thenReturn(Future.successful(None))
 
-        when(mockGoodsRecordUpdateService.updateIfChanged(
-          any[String], any[String], any[UpdateGoodsRecord], any[GetGoodsRecordResponse], any[Boolean]
-        )(any[HeaderCarrier])).thenReturn(Future.successful(Done))
+        when(
+          mockGoodsRecordUpdateService.updateIfChanged(
+            any[String],
+            any[String],
+            any[UpdateGoodsRecord],
+            any[GetGoodsRecordResponse],
+            any[Boolean]
+          )(any[HeaderCarrier])
+        ).thenReturn(Future.successful(Done))
 
         when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
-        when(mockAuditService.auditFinishUpdateGoodsRecord(any[String], any[AffinityGroup], any[UpdateGoodsRecord])
-          (any[HeaderCarrier])).thenReturn(Future.successful(Done))
+        when(
+          mockAuditService.auditFinishUpdateGoodsRecord(any[String], any[AffinityGroup], any[UpdateGoodsRecord])(
+            any[HeaderCarrier]
+          )
+        ).thenReturn(Future.successful(Done))
 
         val application = applicationBuilder(userAnswers = Some(userAnswers))
           .overrides(
@@ -172,7 +205,10 @@ class CountryOfOriginCyaControllerSpec
 
         running(application) {
           val controller = application.injector.instanceOf[CountryOfOriginCyaController]
-          val request = FakeRequest(POST, controllers.goodsRecord.countryOfOrigin.routes.CountryOfOriginCyaController.onSubmit(testRecordId).url)
+          val request    = FakeRequest(
+            POST,
+            controllers.goodsRecord.countryOfOrigin.routes.CountryOfOriginCyaController.onSubmit(testRecordId).url
+          )
 
           val result = await(controller.onSubmit(testRecordId).apply(request))
 
@@ -181,21 +217,33 @@ class CountryOfOriginCyaControllerSpec
             controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId).url
 
           verify(mockAuditService).auditFinishUpdateGoodsRecord(
-            any[String], any[AffinityGroup], any[UpdateGoodsRecord]
+            any[String],
+            any[AffinityGroup],
+            any[UpdateGoodsRecord]
           )(any[HeaderCarrier])
 
           verify(mockSessionRepository, times(2)).set(any())
           verify(mockGoodsRecordUpdateService).updateIfChanged(
-            any[String], any[String], any[UpdateGoodsRecord], any[GetGoodsRecordResponse], any[Boolean]
+            any[String],
+            any[String],
+            any[UpdateGoodsRecord],
+            any[GetGoodsRecordResponse],
+            any[Boolean]
           )(any[HeaderCarrier])
         }
       }
 
       "must update, audit, set session and redirect to SingleRecord when auto-categorisable and country changed" in {
         val userAnswers = emptyUserAnswers
-          .set(CountryOfOriginUpdatePage(testRecordId), "US").success.value
-          .set(OriginalCountryOfOriginPage(testRecordId), "CN").success.value
-          .set(HasCountryOfOriginChangePage(testRecordId), true).success.value
+          .set(CountryOfOriginUpdatePage(testRecordId), "US")
+          .success
+          .value
+          .set(OriginalCountryOfOriginPage(testRecordId), "CN")
+          .success
+          .value
+          .set(HasCountryOfOriginChangePage(testRecordId), true)
+          .success
+          .value
 
         val record = recordAutoCategorised.copy(category = Some(1), countryOfOrigin = "CN")
 
@@ -216,15 +264,21 @@ class CountryOfOriginCyaControllerSpec
             bind[SessionRepository].toInstance(mockSessionRepository),
             bind[AutoCategoriseService].toInstance(mockAutoCategoriseService),
             bind[GoodsRecordUpdateService].toInstance(mockGoodsRecordUpdateService)
-          ).build()
+          )
+          .build()
 
         running(application) {
           val controller = application.injector.instanceOf[CountryOfOriginCyaController]
-          val request = FakeRequest(POST, controllers.goodsRecord.countryOfOrigin.routes.CountryOfOriginCyaController.onSubmit(testRecordId).url)
-          val result = await(controller.onSubmit(testRecordId).apply(request))
+          val request    = FakeRequest(
+            POST,
+            controllers.goodsRecord.countryOfOrigin.routes.CountryOfOriginCyaController.onSubmit(testRecordId).url
+          )
+          val result     = await(controller.onSubmit(testRecordId).apply(request))
 
           result.header.status mustEqual SEE_OTHER
-          result.header.headers("Location") mustEqual controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId).url
+          result.header.headers("Location") mustEqual controllers.goodsRecord.routes.SingleRecordController
+            .onPageLoad(testRecordId)
+            .url
 
           verify(mockAuditService).auditFinishUpdateGoodsRecord(any(), any(), any())(any())
           verify(mockSessionRepository, times(2)).set(any())
@@ -235,9 +289,15 @@ class CountryOfOriginCyaControllerSpec
       "must update, audit, set session and redirect to SingleRecord when country changed but NOT auto-categorisable" in {
 
         val userAnswers = emptyUserAnswers
-          .set(CountryOfOriginUpdatePage(testRecordId), "US").success.value
-          .set(OriginalCountryOfOriginPage(testRecordId), "CN").success.value
-          .set(HasCountryOfOriginChangePage(testRecordId), true).success.value
+          .set(CountryOfOriginUpdatePage(testRecordId), "US")
+          .success
+          .value
+          .set(OriginalCountryOfOriginPage(testRecordId), "CN")
+          .success
+          .value
+          .set(HasCountryOfOriginChangePage(testRecordId), true)
+          .success
+          .value
 
         val record = recordAutoCategorised.copy(category = Some(1), countryOfOrigin = "CN")
 
@@ -247,20 +307,24 @@ class CountryOfOriginCyaControllerSpec
         when(mockAutoCategoriseService.getCategorisationInfoForRecord(any[String], any[UserAnswers])(any(), any()))
           .thenReturn(Future.successful(None))
 
-        when(mockGoodsRecordUpdateService.updateIfChanged(
-          any[String],
-          any[String],
-          any[UpdateGoodsRecord],
-          any[GetGoodsRecordResponse],
-          any[Boolean]
-        )(any[HeaderCarrier]))
+        when(
+          mockGoodsRecordUpdateService.updateIfChanged(
+            any[String],
+            any[String],
+            any[UpdateGoodsRecord],
+            any[GetGoodsRecordResponse],
+            any[Boolean]
+          )(any[HeaderCarrier])
+        )
           .thenReturn(Future.successful(Done))
 
-        when(mockGoodsRecordUpdateService.removeManualCategory(
-          any[String],
-          any[String],
-          any[GetGoodsRecordResponse]
-        )(any[HeaderCarrier]))
+        when(
+          mockGoodsRecordUpdateService.removeManualCategory(
+            any[String],
+            any[String],
+            any[GetGoodsRecordResponse]
+          )(any[HeaderCarrier])
+        )
           .thenReturn(Future.successful(Done))
 
         when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
@@ -274,13 +338,16 @@ class CountryOfOriginCyaControllerSpec
             bind[SessionRepository].toInstance(mockSessionRepository),
             bind[AutoCategoriseService].toInstance(mockAutoCategoriseService),
             bind[GoodsRecordUpdateService].toInstance(mockGoodsRecordUpdateService)
-          ).build()
+          )
+          .build()
 
         running(application) {
           val controller = application.injector.instanceOf[CountryOfOriginCyaController]
-          val request = FakeRequest(POST, controllers.goodsRecord.countryOfOrigin.routes.CountryOfOriginCyaController.onSubmit(testRecordId).url)
-          val result = await(controller.onSubmit(testRecordId).apply(request))
-
+          val request    = FakeRequest(
+            POST,
+            controllers.goodsRecord.countryOfOrigin.routes.CountryOfOriginCyaController.onSubmit(testRecordId).url
+          )
+          val result     = await(controller.onSubmit(testRecordId).apply(request))
 
           result.header.headers("Location") mustEqual
             controllers.goodsRecord.countryOfOrigin.routes.UpdatedCountryOfOriginController.onPageLoad(testRecordId).url
@@ -304,7 +371,5 @@ class CountryOfOriginCyaControllerSpec
 
     }
   }
-
-
 
 }

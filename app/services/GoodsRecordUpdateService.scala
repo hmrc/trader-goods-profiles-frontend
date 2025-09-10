@@ -30,12 +30,12 @@ import scala.concurrent.{ExecutionContext, Future}
 class GoodsRecordUpdateService @Inject() (connector: GoodsRecordConnector)(implicit ec: ExecutionContext) {
 
   def updateIfChanged(
-                       oldValue: String,
-                       newValue: String,
-                       updateGoodsRecord: UpdateGoodsRecord,
-                       oldRecord: GetGoodsRecordResponse,
-                       patch: Boolean = true
-                     )(implicit hc: HeaderCarrier): Future[Done] =
+    oldValue: String,
+    newValue: String,
+    updateGoodsRecord: UpdateGoodsRecord,
+    oldRecord: GetGoodsRecordResponse,
+    patch: Boolean = true
+  )(implicit hc: HeaderCarrier): Future[Done] =
     if (oldValue != newValue) {
       if (patch) {
         connector.patchGoodsRecord(updateGoodsRecord)
@@ -48,10 +48,10 @@ class GoodsRecordUpdateService @Inject() (connector: GoodsRecordConnector)(impli
     }
 
   def removeManualCategory(
-                            eori: String,
-                            recordId: String,
-                            oldRecord: GetGoodsRecordResponse
-                          )(implicit hc: HeaderCarrier): Future[Done] = {
+    eori: String,
+    recordId: String,
+    oldRecord: GetGoodsRecordResponse
+  )(implicit hc: HeaderCarrier): Future[Done] = {
 
     val emptyCategoryRecord = CategoryRecord(
       eori = eori,
@@ -68,5 +68,3 @@ class GoodsRecordUpdateService @Inject() (connector: GoodsRecordConnector)(impli
     connector.updateCategoryAndComcodeForGoodsRecord(recordId, emptyCategoryRecord, oldRecord)
   }
 }
-
-

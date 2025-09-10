@@ -80,8 +80,8 @@ class ScenarioSpec extends SpecBase {
       Scenario.fromInt(Some(999)) mustBe None
     }
 
-    "must return None for None input" in {
-      Scenario.fromInt(None) mustBe None
+    "must return Empyy Scenario for None input" in {
+      Scenario.fromInt(None) mustBe Some(EmptyScenario)
     }
   }
 
