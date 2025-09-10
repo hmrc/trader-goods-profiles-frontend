@@ -96,7 +96,7 @@ tag: components.Tag
         bannerType = Some("success"),
         role = Some("alert")
         ))
-    } else if(countryOfOriginUpdated && !recordLocked) {
+} else if(showCommodityCodeBanner && !recordLocked) {
         @govukNotificationBanner(NotificationBanner(
             title = Text(messages("successBanner.title")),
             content = HtmlContent(Html(

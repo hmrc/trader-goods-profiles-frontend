@@ -118,30 +118,24 @@ class CountryOfOriginCyaController @Inject() (
   def onSubmit(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       (for {
-        // Fetch the existing record
+        // Fetch existing record
         oldRecord <- goodsRecordConnector.getRecord(recordId)
 
         // Get original country from session
-        originalCountryOfOrigin <- request.userAnswers
+        originalCountry <- request.userAnswers
           .get(OriginalCountryOfOriginPage(recordId))
           .map(Future.successful)
-          .getOrElse(
-            Future.failed(new Exception(s"Original country of origin not found in session for $recordId"))
-          )
+          .getOrElse(Future.failed(new Exception(s"Original country of origin not found in session for $recordId")))
 
         // Validate new country of origin
         countryOfOrigin <- handleValidateError(
-          UpdateGoodsRecord.validateCountryOfOrigin(
-            request.userAnswers,
-            recordId,
-            oldRecord.category.isDefined
-          )
+          UpdateGoodsRecord.validateCountryOfOrigin(request.userAnswers, recordId, oldRecord.category.isDefined)
         )
 
-        // Normalize old/new values
-        oldValNormalized = Option(oldRecord.countryOfOrigin).map(_.trim).getOrElse("")
+        // Normalize values
+        oldValNormalized = Option(originalCountry).map(_.trim).getOrElse("")
         newValNormalized = countryOfOrigin.trim
-        countryHasChanged = oldValNormalized != newValNormalized
+        countryHasReallyChanged = oldValNormalized != newValNormalized
 
         // Prepare update payload
         updateGoodsRecord = UpdateGoodsRecord(
@@ -154,7 +148,7 @@ class CountryOfOriginCyaController @Inject() (
 
         // PATCH backend if needed
         _ <- goodsRecordUpdateService.updateIfChanged(
-          oldValue = oldValNormalized,
+          oldValue = oldRecord.countryOfOrigin.trim,
           newValue = newValNormalized,
           updateGoodsRecord = updateGoodsRecord,
           oldRecord = oldRecord,
@@ -162,9 +156,7 @@ class CountryOfOriginCyaController @Inject() (
         )
 
         // Update session with new country
-        updatedAnswers <- Future.fromTry(
-          request.userAnswers.set(OriginalCountryOfOriginPage(recordId), countryOfOrigin)
-        )
+        updatedAnswers <- Future.fromTry(request.userAnswers.set(OriginalCountryOfOriginPage(recordId), countryOfOrigin))
         _ <- sessionRepository.set(updatedAnswers)
 
         // Clean temporary session pages
@@ -177,35 +169,34 @@ class CountryOfOriginCyaController @Inject() (
 
         // Get categorisation info
         categorisationInfoOpt <- autoCategoriseService.getCategorisationInfoForRecord(recordId, cleanedAnswers)
-
-        // Check if auto-categorisable
         isAutoCategorisable = categorisationInfoOpt.exists(_.isAutoCategorisable)
 
-        // Remove manual category ONLY if the country truly changed AND record is NOT auto-categorisable
-        _ <- if (countryHasChanged && !isAutoCategorisable) {
+        // Remove manual category ONLY if country actually changed AND record is not auto-categorisable
+        _ <- if (countryHasReallyChanged && !isAutoCategorisable) {
           goodsRecordUpdateService.removeManualCategory(request.eori, recordId, oldRecord)
         } else Future.successful(Done)
 
       } yield {
-        // Decide redirect
+        // Redirect logic
         val redirect =
-          if (!countryHasChanged) {
-            // Country unchanged -> back to single record
+          if (!countryHasReallyChanged) {
+            // Country did not change -> go to SingleRecord
             controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId)
           } else if (isAutoCategorisable) {
-            // Country changed + auto-categorisable -> go straight to single record
+            // Auto-categorisable -> SingleRecord
             controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId)
           } else {
-            // Country changed + not auto-categorisable -> UpdatedCountry page
+            // Manual & country changed -> UpdatedCountry page
             controllers.goodsRecord.countryOfOrigin.routes.UpdatedCountryOfOriginController.onPageLoad(recordId)
           }
 
-        // Banner flag: only show if country changed AND auto-categorisable
-        val showAutoCatBanner = countryHasChanged && isAutoCategorisable
+        // Banner only for auto-categorised + country changed
+        val showBanner = countryHasReallyChanged && isAutoCategorisable
 
         Redirect(redirect)
           .addingToSession(
-            "showCommodityCodeChangeBanner" -> showAutoCatBanner.toString
+            "countryOfOriginChanged" -> countryHasReallyChanged.toString,
+            "showCommodityCodeChangeBanner" -> showBanner.toString
           )
           .removingFromSession(dataUpdated)
       }).recover(handleRecover(recordId))
