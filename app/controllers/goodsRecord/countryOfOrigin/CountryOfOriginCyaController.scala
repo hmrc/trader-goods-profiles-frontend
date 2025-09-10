@@ -133,8 +133,12 @@ class CountryOfOriginCyaController @Inject() (
         )
 
         // Normalize values
-        oldValNormalized = Option(originalCountry).map(_.trim).getOrElse("")
-        newValNormalized = countryOfOrigin.trim
+        oldValNormalized = 
+         println("\n\nx = " + Option(originalCountry).map(_.trim).getOrElse(""))
+          Option(originalCountry).map(_.trim).getOrElse("")
+        newValNormalized = 
+          println("\n\nnewcountry = " +  countryOfOrigin.trim+  "\n\n")
+          countryOfOrigin.trim
         countryHasReallyChanged = oldValNormalized != newValNormalized
 
         // Prepare update payload
