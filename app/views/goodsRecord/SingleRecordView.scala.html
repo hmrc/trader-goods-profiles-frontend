@@ -48,7 +48,8 @@ tag: components.Tag
     countryOfOriginUpdated: Boolean,
     productReference: String,
     isAutoCategorised: Boolean,
-    showCommodityCodeBanner: Boolean
+    showCommodityCodeBanner: Boolean,
+    bannerMessageKey: Option[String]
 )(implicit request: Request[_], messages: Messages)
 
 @bannerContentForUpdate(page: String, dataRemoved: Boolean) = {
@@ -89,39 +90,33 @@ tag: components.Tag
         pageTitle = titleNoForm(messages("singleRecord.title", productReference))
     ) {
 
-    @if(showCommodityCodeChangeBanner && isCategorised && !recordLocked) {
-        @govukNotificationBanner(NotificationBanner(
-            title = Text(messages("successBanner.title")),
-            content = HtmlContent(bannerContentForUpdate("commodityCode", dataRemoved)),
-            bannerType = Some("success"),
-            role = Some("alert")
-        ))
-    } else if(showCommodityCodeBanner && !recordLocked) {
-        @govukNotificationBanner(NotificationBanner(
-            title = Text(messages("successBanner.title")),
-            content = HtmlContent(Html(
-                s"""
-                |<p class="govuk-body">${messages("successBanner.countryOfOrigin")}</p>
-                |<p class="govuk-body">${messages("successBanner.para2")}
-                    |  <strong class="govuk-tag govuk-!-display-inline ${declarableStatus.paragraphTagColour}">
-                        |    ${messages(declarableStatus.messageKey)}</strong>.
-                    |</p>
-                """.stripMargin
-            )),
-            bannerType = Some("success"),
-            role = Some("alert")
-            ))
-            } else if(changesMade && declarableStatus != NotReadyForUse && !recordLocked &&
-                (changedPage == "productReference" || changedPage == "goodsDescription")) {
+    @defining(
+        if (countryOfOriginUpdated) "successBanner.countryOfOrigin"
+            else if (showCommodityCodeBanner) "successBanner.commodityCode"
+            else if (changesMade && changedPage.nonEmpty) s"successBanner.$changedPage"
+            else ""
+            ) { successBannerKey =>
+
+            @if(successBannerKey.nonEmpty && isCategorised && !recordLocked) {
                 @govukNotificationBanner(NotificationBanner(
                     title = Text(messages("successBanner.title")),
-                    content = HtmlContent(bannerContentForUpdate(changedPage, dataRemoved)),
+                    content = HtmlContent(Html(
+                    s"""
+                    |<p class="govuk-body">${messages(successBannerKey)}</p>
+                    |<p class="govuk-body">${messages("successBanner.para2")}
+                        |  <strong class="govuk-tag govuk-!-display-inline ${declarableStatus.paragraphTagColour}">
+                            |    ${messages(declarableStatus.messageKey)}</strong>.
+                        |</p>
+                    """.stripMargin
+                    )),
                     bannerType = Some("success"),
                     role = Some("alert")
-        ))
+            ))
+        }
     }
 
-    <h1 class="govuk-heading-l">@messages("singleRecord.h1")</h1>
+
+<h1 class="govuk-heading-l">@messages("singleRecord.h1")</h1>
     <p class="govuk-body">@messages("singleRecord.p1.prefix", productReference)</p>
     <h2 class="govuk-heading-m">@messages("singleRecord.h2")</h2>
 

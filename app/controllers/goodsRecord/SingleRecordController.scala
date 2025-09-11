@@ -212,11 +212,18 @@ class SingleRecordController @Inject() (
       )
     )
 
-    val changesMade       = request.session.get(dataUpdated).contains("true")
-    val pageRemoved       = request.session.get(dataRemoved).contains("true")
-    val changedPage       = request.session.get(pageUpdated).getOrElse("")
-    val para              = AdviceStatusMessage.fromString(record.adviceStatus)
-    val isAutoCategorised = autoCategoriseScenario.isDefined
+    val changesMade                      = request.session.get(dataUpdated).contains("true")
+    val pageRemoved                      = request.session.get(dataRemoved).contains("true")
+    val changedPage                      = request.session.get(pageUpdated).getOrElse("")
+    val para                             = AdviceStatusMessage.fromString(record.adviceStatus)
+    val isAutoCategorised                = autoCategoriseScenario.isDefined
+    val bannerMessageKey: Option[String] =
+      if (isAutoCategorised && countryOfOriginUpdated)
+        Some("successBanner.countryOfOrigin")
+      else if (isAutoCategorised && showCommodityCodeBanner)
+        Some("successBanner.commodityCode")
+      else
+        None
 
     dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
     dataCleansingService.deleteMongoData(request.userAnswers.id, RequestAdviceJourney)
@@ -245,7 +252,8 @@ class SingleRecordController @Inject() (
         countryOfOriginUpdated,
         record.traderRef,
         isAutoCategorised,
-        showCommodityCodeBanner
+        showCommodityCodeBanner,
+        bannerMessageKey
       )
     ).removingFromSession(
       initialValueOfHasSuppUnit,

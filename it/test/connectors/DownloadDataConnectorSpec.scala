@@ -101,7 +101,7 @@ class DownloadDataConnectorSpec
         wireMockServer.stubFor(
           post(urlEqualTo("/trader-goods-profiles-data-store/traders/download-data"))
             .withHeader("X-Client-ID", equalTo("tgp-frontend"))
-            .willReturn(aResponse().withStatus(202)) // ACCEPTED = 202
+            .willReturn(aResponse().withStatus(202))
         )
 
         val result = connector.requestDownloadData.futureValue

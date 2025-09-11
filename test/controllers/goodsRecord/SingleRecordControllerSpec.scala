@@ -339,7 +339,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           false,
           recordForTestingSummaryRows.traderRef,
           true,
-          true
+          true,
+          None
         )(request, messages(application)).toString
         val uaCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
         verify(mockSessionRepository, times(2)).set(uaCaptor.capture)
