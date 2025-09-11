@@ -145,13 +145,13 @@ class CountryOfOriginCyaController @Inject() (
 
         _ = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
 
-        _              <- goodsRecordUpdateService.updateIfChanged(
-                            oldValue = oldRecord.countryOfOrigin.trim,
-                            newValue = newValNormalized,
-                            updateGoodsRecord = updateGoodsRecord,
-                            oldRecord = oldRecord,
-                            patch = true
-                          )
+        _ <- goodsRecordUpdateService.updateIfChanged(
+               oldValue = oldRecord.countryOfOrigin.trim,
+               newValue = newValNormalized,
+               updateGoodsRecord = updateGoodsRecord,
+               oldRecord = oldRecord,
+               patch = true
+             )
 
         updatedAnswers <-
           Future.fromTry(request.userAnswers.set(OriginalCountryOfOriginPage(recordId), countryOfOrigin))
