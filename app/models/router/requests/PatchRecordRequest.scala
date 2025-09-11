@@ -16,6 +16,7 @@
 
 package models.router.requests
 
+import models.router.responses.GetGoodsRecordResponse
 import models.{CategoryRecord, Scenario, SupplementaryRequest, UpdateGoodsRecord}
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json.Format.GenericFormat
@@ -56,15 +57,19 @@ object PatchRecordRequest {
       goodsRecord.commodityCodeEndDate
     )
 
-  def mapFromCategoryAndComcode(categoryRecord: CategoryRecord): PatchRecordRequest =
-    PatchRecordRequest(
+  def mapFromCategoryAndComcode(categoryRecord: CategoryRecord, oldRecord: GetGoodsRecordResponse): PutRecordRequest =
+    PutRecordRequest(
       categoryRecord.eori,
-      categoryRecord.recordId,
-      categoryRecord.eori,
-      category = Some(Scenario.getResultAsInt(categoryRecord.category)),
-      comcode = Some(categoryRecord.finalComCode),
-      supplementaryUnit = convertToBigDecimal(categoryRecord.supplementaryUnit),
-      measurementUnit = categoryRecord.measurementUnit
+      oldRecord.traderRef,
+      categoryRecord.finalComCode,
+      oldRecord.goodsDescription,
+      oldRecord.countryOfOrigin,
+      Scenario.getResultAsInt(categoryRecord.category), // <-- FIX: no Some()
+      oldRecord.assessments,
+      convertToBigDecimal(categoryRecord.supplementaryUnit),
+      categoryRecord.measurementUnit,
+      oldRecord.comcodeEffectiveFromDate,
+      oldRecord.comcodeEffectiveToDate
     )
 
   def mapFromSupplementary(supplementaryUnitRequest: SupplementaryRequest): PatchRecordRequest =

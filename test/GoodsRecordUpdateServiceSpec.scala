@@ -54,7 +54,7 @@ class GoodsRecordUpdateServiceSpec extends AnyWordSpec with Matchers with Mockit
     commodityCodeEndDate = None
   )
 
-  val oldRecord = GetGoodsRecordResponse(
+  val oldRecord: GetGoodsRecordResponse = GetGoodsRecordResponse(
     recordId = recordId,
     eori = "GB123456789000",
     actorId = "actor-1",

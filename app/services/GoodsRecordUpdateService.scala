@@ -18,9 +18,10 @@ package services
 
 import com.google.inject.Inject
 import connectors.GoodsRecordConnector
-import models.UpdateGoodsRecord
+import models.ott.CategorisationInfo
 import models.router.requests.PutRecordRequest
 import models.router.responses.GetGoodsRecordResponse
+import models.{CategoryRecord, EmptyScenario, UpdateGoodsRecord}
 import org.apache.pekko.Done
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -45,4 +46,25 @@ class GoodsRecordUpdateService @Inject() (connector: GoodsRecordConnector) {
     } else {
       Future.successful(Done)
     }
+
+  def removeManualCategory(
+    eori: String,
+    recordId: String,
+    oldRecord: GetGoodsRecordResponse
+  )(implicit hc: HeaderCarrier): Future[Done] = {
+
+    val emptyCategoryRecord = CategoryRecord(
+      eori = eori,
+      recordId = recordId,
+      finalComCode = oldRecord.comcode,
+      category = EmptyScenario,
+      measurementUnit = oldRecord.measurementUnit,
+      supplementaryUnit = oldRecord.supplementaryUnit.map(_.toString),
+      initialCategoryInfo = CategorisationInfo.empty,
+      assessmentsAnswered = 0,
+      wasSupplementaryUnitAsked = false
+    )
+
+    connector.updateCategoryAndComcodeForGoodsRecord(recordId, emptyCategoryRecord, oldRecord)
+  }
 }

@@ -239,7 +239,7 @@ class CategorisationNavigator @Inject() (categorisationService: CategorisationSe
     hasLongComCode: Boolean
   ): Boolean =
     couldGoToLongerCommodityCode(catInfo, hasLongComCode) &&
-      getResultAsInt(scenario) == Category2AsInt
+      getResultAsInt(scenario).contains(Category2AsInt)
 
   private def couldGoToLongerCommodityCode(catInfo: CategorisationInfo, hasLongComCode: Boolean): Boolean =
     !hasLongComCode &&
@@ -363,7 +363,7 @@ class CategorisationNavigator @Inject() (categorisationService: CategorisationSe
     assessmentQuestion.category == Category2AsInt && categorisationInfo.measurementUnit.isDefined
 
   private def shouldGoToSupplementaryUnitFromPrepPage(catInfo: CategorisationInfo, scenario: Scenario) =
-    catInfo.measurementUnit.isDefined && getResultAsInt(scenario) == Category2AsInt
+    catInfo.measurementUnit.isDefined && getResultAsInt(scenario).contains(Category2AsInt)
 
   private def shouldGoToLongerCommodityCodeWhenCategory2(
     categorisationInfo: CategorisationInfo,

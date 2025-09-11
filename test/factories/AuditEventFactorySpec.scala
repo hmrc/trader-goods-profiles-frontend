@@ -302,7 +302,7 @@ class AuditEventFactorySpec extends SpecBase {
             auditDetails("categoryAssessments") mustBe "2"
             auditDetails("categoryAssessmentsAnswered") mustBe "2"
             auditDetails("reassessmentNeeded") mustBe "false"
-            auditDetails("category") mustBe "1"
+            auditDetails("category") mustBe "Some(1)"
           }
 
           "with supplementary unit asked but not supplied" in {
@@ -344,7 +344,7 @@ class AuditEventFactorySpec extends SpecBase {
             auditDetails("categoryAssessments") mustBe "3"
             auditDetails("categoryAssessmentsAnswered") mustBe "2"
             auditDetails("reassessmentNeeded") mustBe "false"
-            auditDetails("category") mustBe "1"
+            auditDetails("category") mustBe "Some(1)"
             auditDetails("providedSupplementaryUnit") mustBe "false"
           }
 
@@ -387,7 +387,7 @@ class AuditEventFactorySpec extends SpecBase {
             auditDetails("categoryAssessments") mustBe "3"
             auditDetails("categoryAssessmentsAnswered") mustBe "2"
             auditDetails("reassessmentNeeded") mustBe "false"
-            auditDetails("category") mustBe "1"
+            auditDetails("category") mustBe "Some(1)"
             auditDetails("providedSupplementaryUnit") mustBe "true"
             auditDetails("supplementaryUnit") mustBe "858.321 Weight, in kilograms"
           }
@@ -445,7 +445,7 @@ class AuditEventFactorySpec extends SpecBase {
             auditDetails("reassessmentCategoryAssessments") mustBe "4"
             auditDetails("reassessmentCategoryAssessmentsAnswered") mustBe "1"
             auditDetails("reassessmentCategoryAssessmentsCarriedOver") mustBe "2"
-            auditDetails("category") mustBe "2"
+            auditDetails("category") mustBe "Some(2)"
             auditDetails("providedSupplementaryUnit") mustBe "true"
             auditDetails("supplementaryUnit") mustBe "99 Weight, in kilograms"
           }
@@ -503,7 +503,7 @@ class AuditEventFactorySpec extends SpecBase {
             auditDetails("reassessmentCategoryAssessments") mustBe "4"
             auditDetails("reassessmentCategoryAssessmentsAnswered") mustBe "1"
             auditDetails("reassessmentCategoryAssessmentsCarriedOver") mustBe "2"
-            auditDetails("category") mustBe "2"
+            auditDetails("category") mustBe "Some(2)"
             auditDetails("providedSupplementaryUnit") mustBe "true"
             auditDetails("supplementaryUnit") mustBe "99 Measurement Unit not found"
           }

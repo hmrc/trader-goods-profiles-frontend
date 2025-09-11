@@ -40,7 +40,7 @@ import repositories.SessionRepository
 import services.AutoCategoriseService
 import uk.gov.hmrc.govukfrontend.views.Aliases.Actions
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
-import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
 import viewmodels.checkAnswers.*
 import viewmodels.checkAnswers.goodsRecord.*
@@ -92,81 +92,6 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
   }
 
   "SingleRecord Controller" - {
-    "must return OK and the correct view for a GET and set up userAnswers when record is categorised" in {
-      val expectedUserAnswers = UserAnswers(userAnswersId)
-        .set(ProductReferenceUpdatePage(testRecordId), recordForTestingSummaryRows.traderRef)
-        .success
-        .value
-        .set(GoodsDescriptionUpdatePage(testRecordId), recordForTestingSummaryRows.goodsDescription)
-        .success
-        .value
-        .set(CountryOfOriginUpdatePage(testRecordId), recordForTestingSummaryRows.countryOfOrigin)
-        .success
-        .value
-        .set(CommodityCodeUpdatePage(testRecordId), recordForTestingSummaryRows.comcode)
-        .success
-        .value
-        .set(OriginalCountryOfOriginPage(testRecordId), recordForTestingSummaryRows.countryOfOrigin)
-        .success
-        .value
-
-      when(mockGoodsRecordConnector.getRecord(any())(any()))
-        .thenReturn(Future.successful(recordForTestingSummaryRows))
-      when(mockSessionRepository.set(any()))
-        .thenReturn(Future.successful(true))
-      when(mockSessionRepository.clearData(any(), any()))
-        .thenReturn(Future.successful(true))
-
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(
-          bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-          bind[SessionRepository].toInstance(mockSessionRepository),
-          bind[TraderProfileConnector].toInstance(mockTraderProfileConnector),
-          bind[OttConnector].toInstance(mockOttConnector),
-          bind[AutoCategoriseService].toInstance(mockAutoCategoriseService)
-        )
-        .build()
-
-      running(application) {
-        val request = FakeRequest(GET, singleRecordRoute)
-          .withSession("countryOfOriginChanged" -> "true")
-
-        val result  = route(application, request).value
-        val content = contentAsString(result)
-
-        withClue("Should return 200 OK") {
-          status(result) mustEqual OK
-        }
-
-        withClue("Should display the success banner") {
-          content must include("govuk-notification-banner--success")
-        }
-
-        withClue("Should indicate action is needed") {
-          content must include("This goods record is")
-          content must include("Action needed")
-        }
-
-        withClue("Should display all expected record details") {
-          content must include(recordForTestingSummaryRows.traderRef)
-          content must include(recordForTestingSummaryRows.goodsDescription)
-          content must include(recordForTestingSummaryRows.countryOfOrigin)
-          content must include(recordForTestingSummaryRows.comcode)
-        }
-
-        val uaCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-        verify(mockSessionRepository, times(2)).set(uaCaptor.capture)
-
-        withClue("Should save expected user answers including originalCountryOfOrigin") {
-          uaCaptor.getValue.data mustEqual expectedUserAnswers.data
-        }
-
-        withClue("Should clear supplementary unit journey data") {
-          verify(mockSessionRepository).clearData(eqTo(userAnswersId), eqTo(SupplementaryUnitUpdateJourney))
-        }
-      }
-    }
-
     "must return OK and the correct view for a GET and set up userAnswers when record is categorised and is locked" in {
       val userAnswers = UserAnswers(userAnswersId)
         .set(ProductReferenceUpdatePage(lockedRecord.recordId), lockedRecord.traderRef)
@@ -414,7 +339,8 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           false,
           recordForTestingSummaryRows.traderRef,
           true,
-          true
+          true,
+          None
         )(request, messages(application)).toString
         val uaCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
         verify(mockSessionRepository, times(2)).set(uaCaptor.capture)

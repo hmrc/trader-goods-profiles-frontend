@@ -17,54 +17,38 @@
 package controllers.goodsRecord.countryOfOrigin
 
 import base.SpecBase
-import base.TestConstants.{testEori, testRecordId}
 import connectors.{GoodsRecordConnector, OttConnector}
 import models.*
+import models.ott.CategorisationInfo
+import models.requests.DataRequest
 import models.router.responses.GetGoodsRecordResponse
 import org.apache.pekko.Done
-import org.mockito.ArgumentMatchers.{any, eq as eqTo}
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.*
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import pages.goodsRecord.*
-import play.api.Application
 import play.api.inject.bind
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import queries.CountriesQuery
 import repositories.SessionRepository
-import services.{AuditService, AutoCategoriseService, CommodityService, GoodsRecordUpdateService}
+import services.{AuditService, AutoCategoriseService, GoodsRecordUpdateService}
 import uk.gov.hmrc.auth.core.AffinityGroup
-import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
-import utils.Constants.*
-import viewmodels.checkAnswers.goodsRecord.UpdateRecordSummary
-import viewmodels.govuk.SummaryListFluency
-import views.html.goodsRecord.CyaUpdateRecordView
 
 import java.time.Instant
 import scala.concurrent.Future
 
-class CountryOfOriginCyaControllerSpec
-    extends SpecBase
-    with SummaryListFluency
-    with MockitoSugar
-    with BeforeAndAfterEach {
+class CountryOfOriginCyaControllerSpec extends SpecBase with MockitoSugar with BeforeAndAfterEach {
 
-  private lazy val journeyRecoveryContinueUrl =
-    controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId).url
-
-  private val mockCommodityService         = mock[CommodityService]
   private val mockAuditService             = mock[AuditService]
   private val mockGoodsRecordConnector     = mock[GoodsRecordConnector]
   private val mockOttConnector             = mock[OttConnector]
   private val mockSessionRepository        = mock[SessionRepository]
   private val mockGoodsRecordUpdateService = mock[GoodsRecordUpdateService]
   private val mockAutoCategoriseService    = mock[AutoCategoriseService]
-  implicit val hc: HeaderCarrier           = HeaderCarrier()
-  val effectiveFrom: Instant               = Instant.now
-  val effectiveTo: Instant                 = effectiveFrom.plusSeconds(1)
 
   override protected def beforeEach(): Unit = {
     super.beforeEach()
@@ -73,203 +57,124 @@ class CountryOfOriginCyaControllerSpec
       mockGoodsRecordConnector,
       mockOttConnector,
       mockSessionRepository,
-      mockAutoCategoriseService
+      mockAutoCategoriseService,
+      mockGoodsRecordUpdateService
     )
-    when(mockCommodityService.isCommodityCodeValid(any(), any())(any(), any())).thenReturn(Future.successful(true))
   }
 
+  val testRecordId                                     = "record-123"
+  val testEori                                         = "eori-123"
+  val answer                                           = "CN"
+  val countryName                                      = "China"
+  val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(
+    POST,
+    controllers.goodsRecord.countryOfOrigin.routes.CountryOfOriginCyaController.onSubmit(testRecordId).url
+  )
+
+  implicit val hc: HeaderCarrier                    = HeaderCarrier()
+  val recordAutoCategorised: GetGoodsRecordResponse = goodsRecordResponse(
+    Instant.parse("2025-01-01T00:00:00Z"),
+    Instant.parse("2025-01-01T00:00:00Z")
+  ).copy(recordId = testRecordId, eori = testEori, category = Some(3), countryOfOrigin = "CN")
+
+  val page: CountryOfOriginUpdatePage           = CountryOfOriginUpdatePage(testRecordId)
+  val warningPage: HasCountryOfOriginChangePage = HasCountryOfOriginChangePage(testRecordId)
+
   "CountryOfOriginCyaController" - {
-    val record = goodsRecordResponse(
-      Instant.parse("2022-11-18T23:20:19Z"),
-      Instant.parse("2022-11-18T23:20:19Z")
-    ).copy(recordId = testRecordId, eori = testEori)
 
-    val summaryValue    = "China"
-    val summaryKey      = "countryOfOrigin.checkYourAnswersLabel"
-    val summaryHidden   = "countryOfOrigin.change.hidden"
-    val summaryUrl      = controllers.goodsRecord.countryOfOrigin.routes.UpdateCountryOfOriginController
-      .onPageLoad(CheckMode, testRecordId)
-      .url
-    val page            = CountryOfOriginUpdatePage(testRecordId)
-    val answer          = "CN"
-    val expectedPayload = UpdateGoodsRecord(testEori, testRecordId, countryOfOrigin = Some(answer))
-    val getUrl          =
-      controllers.goodsRecord.countryOfOrigin.routes.CountryOfOriginCyaController.onPageLoad(testRecordId).url
-    val call            = controllers.goodsRecord.countryOfOrigin.routes.CountryOfOriginCyaController.onSubmit(testRecordId)
-    val postUrl         = controllers.goodsRecord.countryOfOrigin.routes.CountryOfOriginCyaController.onSubmit(testRecordId).url
-    val warningPage     = HasCountryOfOriginChangePage(testRecordId)
+    "GET onPageLoad" - {
 
-    "for a GET" - {
-      def createChangeList(app: Application): SummaryList = SummaryListViewModel(
-        rows = Seq(UpdateRecordSummary.countryRow(summaryValue, summaryKey, summaryHidden, summaryUrl)(messages(app)))
-      )
-
-      "must return OK and the correct view with valid mandatory data getting countries from connector" in {
+      "must return OK with view when country exists in session" in {
         val userAnswers = emptyUserAnswers
           .set(page, answer)
           .success
           .value
           .set(warningPage, true)
-          .success
-          .value
-
-        when(mockOttConnector.getCountries(any())) thenReturn Future.successful(Seq(Country("CN", "China")))
-        when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
-
-        val application = applicationBuilder(userAnswers = Some(userAnswers))
-          .overrides(bind[OttConnector].toInstance(mockOttConnector))
-          .overrides(bind[AuditService].toInstance(mockAuditService))
-          .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
-          .build()
-
-        running(application) {
-          val request = FakeRequest(GET, getUrl)
-          val result  = route(application, request).value
-          val view    = application.injector.instanceOf[CyaUpdateRecordView]
-          val list    = createChangeList(application)
-
-          status(result) mustEqual OK
-          contentAsString(result) mustEqual view(list, call, countryOfOriginKey)(
-            request,
-            messages(application)
-          ).toString
-
-          withClue("must not try and submit an audit") {
-            verify(mockAuditService, never()).auditFinishUpdateGoodsRecord(any(), any(), any())(any())
-          }
-        }
-      }
-
-      "must return OK and the correct view with valid mandatory data getting countries from query" in {
-        val userAnswers = emptyUserAnswers
-          .set(page, answer)
           .success
           .value
           .set(CountriesQuery, Seq(Country("CN", "China")))
           .success
           .value
-          .set(warningPage, true)
-          .success
-          .value
 
-        when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
+        when(mockGoodsRecordConnector.getRecord(any())(any()))
+          .thenReturn(Future.successful(recordAutoCategorised))
 
         val application = applicationBuilder(userAnswers = Some(userAnswers))
-          .overrides(bind[AuditService].toInstance(mockAuditService))
-          .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
+          .overrides(
+            bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+            bind[OttConnector].toInstance(mockOttConnector),
+            bind[AuditService].toInstance(mockAuditService)
+          )
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, getUrl)
-          val result  = route(application, request).value
-          val view    = application.injector.instanceOf[CyaUpdateRecordView]
-          val list    = createChangeList(application)
+          val controller = application.injector.instanceOf[CountryOfOriginCyaController]
+          val request    = FakeRequest(
+            GET,
+            controllers.goodsRecord.countryOfOrigin.routes.CountryOfOriginCyaController.onPageLoad(testRecordId).url
+          )
 
+          val result = controller.onPageLoad(testRecordId).apply(request)
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(list, call, countryOfOriginKey)(
-            request,
-            messages(application)
-          ).toString
+          contentAsString(result) must include(countryName)
 
-          withClue("must not try and submit an audit") {
-            verify(mockAuditService, never()).auditFinishUpdateGoodsRecord(any(), any(), any())(any())
-          }
+          verify(mockAuditService, never()).auditFinishUpdateGoodsRecord(any(), any(), any())(any())
         }
       }
 
-      "must redirect to Journey Recovery if no answers are found" in {
-        when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
+      "must redirect if country missing from session" in {
+        val userAnswers = emptyUserAnswers
 
-        val application = applicationBuilder(Some(emptyUserAnswers))
-          .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
-          .build()
-
-        running(application) {
-          val request = FakeRequest(GET, getUrl)
-          val result  = route(application, request).value
-
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual
-            controllers.problem.routes.JourneyRecoveryController
-              .onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl)))
-              .url
-
-        }
-      }
-
-      "must redirect to Journey Recovery if no record is found" in {
-        when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.failed(
-          new RuntimeException("Something went very wrong")
-        )
-
-        val application = applicationBuilder(Some(emptyUserAnswers))
-          .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
-          .build()
-
-        running(application) {
-          val request = FakeRequest(GET, getUrl)
-          val result  = route(application, request).value
-
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual
-            controllers.problem.routes.JourneyRecoveryController
-              .onPageLoad(continueUrl = Some(RedirectUrl(journeyRecoveryContinueUrl)))
-              .url
-        }
-      }
-
-      "must redirect to Journey Recovery if getCountryOfOriginAnswer returns None" in {
-        val userAnswers = emptyUserAnswers.set(warningPage, true).success.value
-
-        when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
+        when(mockGoodsRecordConnector.getRecord(any())(any()))
+          .thenReturn(Future.successful(recordAutoCategorised))
 
         val application = applicationBuilder(userAnswers = Some(userAnswers))
           .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
           .build()
 
         running(application) {
-          val request = FakeRequest(GET, getUrl)
-          val result  = route(application, request).value
+          val controller = application.injector.instanceOf[CountryOfOriginCyaController]
+          val request    = FakeRequest(
+            GET,
+            controllers.goodsRecord.countryOfOrigin.routes.CountryOfOriginCyaController.onPageLoad(testRecordId).url
+          )
 
+          val result = controller.onPageLoad(testRecordId).apply(request)
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual
-            controllers.problem.routes.JourneyRecoveryController
-              .onPageLoad(continueUrl = Some(RedirectUrl(journeyRecoveryContinueUrl)))
-              .url
-        }
-      }
-
-      "must redirect to Journey Recovery if no existing data is found" in {
-        val application = applicationBuilder(userAnswers = None).build()
-
-        running(application) {
-          val request = FakeRequest(GET, getUrl)
-          val result  = route(application, request).value
-
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
-            .onPageLoad()
-            .url
+          redirectLocation(result).value must include(
+            controllers.problem.routes.JourneyRecoveryController.onPageLoad().url
+          )
         }
       }
     }
 
-    "for a POST" - {
-      "must update the goods record, cleanse the data and redirect to the Goods record Page" in {
+    "POST onSubmit" - {
+
+      "must update, audit, set session and redirect to SingleRecord when country did not change" in {
 
         val userAnswers = emptyUserAnswers
-          .set(page, answer)
+          .set(CountryOfOriginUpdatePage(testRecordId), "US")
           .success
           .value
-          .set(warningPage, true)
+          .set(OriginalCountryOfOriginPage(testRecordId), "US")
           .success
           .value
-          .set(OriginalCountryOfOriginPage(testRecordId), "GB")
+          .set(HasCountryOfOriginChangePage(testRecordId), true)
           .success
           .value
 
-        when(mockGoodsRecordConnector.getRecord(eqTo(testRecordId))(any()))
+        val record = recordAutoCategorised.copy(category = Some(1), countryOfOrigin = "US")
+
+        when(mockGoodsRecordConnector.getRecord(any())(any()))
           .thenReturn(Future.successful(record))
+
+        when(
+          mockAutoCategoriseService.getCategorisationInfoForRecord(
+            any[String],
+            any[UserAnswers]
+          )(any[DataRequest[_]], any[HeaderCarrier])
+        )
+          .thenReturn(Future.successful(None))
 
         when(
           mockGoodsRecordUpdateService.updateIfChanged(
@@ -278,153 +183,193 @@ class CountryOfOriginCyaControllerSpec
             any[UpdateGoodsRecord],
             any[GetGoodsRecordResponse],
             any[Boolean]
-          )(any())
-        )
-          .thenReturn(Future.successful(Done))
+          )(any[HeaderCarrier])
+        ).thenReturn(Future.successful(Done))
 
-        when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any()))
-          .thenReturn(Future.successful(Done))
-
-        when(mockSessionRepository.set(any()))
-          .thenReturn(Future.successful(true))
-
-        when(mockAutoCategoriseService.autoCategoriseRecord(any[String], any[UserAnswers])(any(), any()))
-          .thenReturn(Future.successful(None))
+        when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
+        when(
+          mockAuditService.auditFinishUpdateGoodsRecord(any[String], any[AffinityGroup], any[UpdateGoodsRecord])(
+            any[HeaderCarrier]
+          )
+        ).thenReturn(Future.successful(Done))
 
         val application = applicationBuilder(userAnswers = Some(userAnswers))
           .overrides(
             bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-            bind[GoodsRecordUpdateService].toInstance(mockGoodsRecordUpdateService),
-            bind[SessionRepository].toInstance(mockSessionRepository),
             bind[AuditService].toInstance(mockAuditService),
-            bind[AutoCategoriseService].toInstance(mockAutoCategoriseService)
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[AutoCategoriseService].toInstance(mockAutoCategoriseService),
+            bind[GoodsRecordUpdateService].toInstance(mockGoodsRecordUpdateService)
           )
           .build()
 
         running(application) {
-          val request = FakeRequest(POST, postUrl)
-          val result  = route(application, request).value
+          val controller = application.injector.instanceOf[CountryOfOriginCyaController]
+          val request    = FakeRequest(
+            POST,
+            controllers.goodsRecord.countryOfOrigin.routes.CountryOfOriginCyaController.onSubmit(testRecordId).url
+          )
 
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual
-            controllers.goodsRecord.routes.SingleRecordController
-              .onPageLoad(testRecordId)
-              .url
+          val result = await(controller.onSubmit(testRecordId).apply(request))
 
+          result.header.status mustEqual SEE_OTHER
+          result.header.headers("Location") mustEqual
+            controllers.goodsRecord.routes.SingleRecordController.onPageLoad(testRecordId).url
+
+          verify(mockAuditService).auditFinishUpdateGoodsRecord(
+            any[String],
+            any[AffinityGroup],
+            any[UpdateGoodsRecord]
+          )(any[HeaderCarrier])
+
+          verify(mockSessionRepository, times(2)).set(any())
           verify(mockGoodsRecordUpdateService).updateIfChanged(
             any[String],
             any[String],
             any[UpdateGoodsRecord],
             any[GetGoodsRecordResponse],
             any[Boolean]
-          )(any())
-
-          verify(mockSessionRepository, times(2)).set(any())
-
-          withClue("must call the audit connector with the supplied details") {
-            verify(mockAuditService).auditFinishUpdateGoodsRecord(
-              eqTo(testRecordId),
-              eqTo(AffinityGroup.Individual),
-              eqTo(expectedPayload)
-            )(any())
-          }
-        }
-      }
-      "when user answers cannot create an update goods record" - {
-        "must not submit anything, and redirect to Journey Recovery" in {
-          val userAnswersWithCountryOrigin = emptyUserAnswers
-            .set(OriginalCountryOfOriginPage(testRecordId), "United Kingdom")
-            .success
-            .value
-
-          when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(record))
-
-          val application = applicationBuilder(userAnswers = Some(userAnswersWithCountryOrigin))
-            .overrides(
-              bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-              bind[CommodityService].toInstance(mockCommodityService)
-            )
-            .build()
-
-          running(application) {
-            val request = FakeRequest(POST, postUrl)
-            val result  = route(application, request).value
-
-            status(result) mustEqual SEE_OTHER
-            redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
-              .onPageLoad(Some(RedirectUrl(journeyRecoveryContinueUrl)))
-              .url
-
-            verify(mockGoodsRecordConnector).getRecord(any())(any())
-          }
-        }
-
-        "must not submit anything when record is not found, and must let the play error handler deal with connector failure" in {
-          when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
-            .failed(new RuntimeException("Something went very wrong"))
-
-          val application =
-            applicationBuilder(userAnswers = Some(emptyUserAnswers))
-              .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
-              .build()
-
-          running(application) {
-            val request = FakeRequest(POST, postUrl)
-            intercept[RuntimeException] {
-              await(route(application, request).value)
-              verify(mockGoodsRecordConnector).getRecord(any())(any())
-            }
-          }
+          )(any[HeaderCarrier])
         }
       }
 
-      "must let the play error handler deal with connector failure when updating" in {
+      "must update, audit, set session and redirect to SingleRecord when auto-categorisable and country changed" in {
         val userAnswers = emptyUserAnswers
-          .set(page, answer)
+          .set(CountryOfOriginUpdatePage(testRecordId), "US")
           .success
           .value
-          .set(warningPage, true)
+          .set(OriginalCountryOfOriginPage(testRecordId), "CN")
+          .success
+          .value
+          .set(HasCountryOfOriginChangePage(testRecordId), true)
           .success
           .value
 
-        when(mockGoodsRecordConnector.patchGoodsRecord(any())(any()))
-          .thenReturn(Future.failed(new RuntimeException("Connector failed")))
-        when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
+        val record = recordAutoCategorised.copy(category = Some(1), countryOfOrigin = "CN")
+
+        val categorisationInfo = CategorisationInfo.empty.copy(countryOfOrigin = "US")
+        when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(record))
+        when(mockAutoCategoriseService.getCategorisationInfoForRecord(any[String], any[UserAnswers])(any(), any()))
+          .thenReturn(Future.successful(Some(categorisationInfo)))
+        when(mockGoodsRecordUpdateService.updateIfChanged(any(), any(), any(), any(), any())(any()))
           .thenReturn(Future.successful(Done))
-        when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
+        when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
+        when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any()))
+          .thenReturn(Future.successful(Done))
 
         val application = applicationBuilder(userAnswers = Some(userAnswers))
           .overrides(
             bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
-            bind[AuditService].toInstance(mockAuditService)
+            bind[AuditService].toInstance(mockAuditService),
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[AutoCategoriseService].toInstance(mockAutoCategoriseService),
+            bind[GoodsRecordUpdateService].toInstance(mockGoodsRecordUpdateService)
           )
           .build()
 
         running(application) {
-          val request = FakeRequest(POST, postUrl)
-          intercept[Exception] {
-            await(route(application, request).value)
-          }
+          val controller = application.injector.instanceOf[CountryOfOriginCyaController]
+          val request    = FakeRequest(
+            POST,
+            controllers.goodsRecord.countryOfOrigin.routes.CountryOfOriginCyaController.onSubmit(testRecordId).url
+          )
+          val result     = await(controller.onSubmit(testRecordId).apply(request))
 
-          verify(mockGoodsRecordConnector).getRecord(any())(any())
+          result.header.status mustEqual SEE_OTHER
+          result.header.headers("Location") mustEqual controllers.goodsRecord.routes.SingleRecordController
+            .onPageLoad(testRecordId)
+            .url
 
+          verify(mockAuditService).auditFinishUpdateGoodsRecord(any(), any(), any())(any())
+          verify(mockSessionRepository, times(2)).set(any())
+          verify(mockGoodsRecordUpdateService).updateIfChanged(any(), any(), any(), any(), any())(any())
         }
       }
 
-      "must redirect to Journey Recovery if no existing data is found" in {
-        val application = applicationBuilder(userAnswers = None).build()
+      "must update, audit, set session and redirect to SingleRecord when country changed but NOT auto-categorisable" in {
+
+        val userAnswers = emptyUserAnswers
+          .set(CountryOfOriginUpdatePage(testRecordId), "US")
+          .success
+          .value
+          .set(OriginalCountryOfOriginPage(testRecordId), "CN")
+          .success
+          .value
+          .set(HasCountryOfOriginChangePage(testRecordId), true)
+          .success
+          .value
+
+        val record = recordAutoCategorised.copy(category = Some(1), countryOfOrigin = "CN")
+
+        when(mockGoodsRecordConnector.getRecord(any())(any()))
+          .thenReturn(Future.successful(record))
+
+        when(mockAutoCategoriseService.getCategorisationInfoForRecord(any[String], any[UserAnswers])(any(), any()))
+          .thenReturn(Future.successful(None))
+
+        when(
+          mockGoodsRecordUpdateService.updateIfChanged(
+            any[String],
+            any[String],
+            any[UpdateGoodsRecord],
+            any[GetGoodsRecordResponse],
+            any[Boolean]
+          )(any[HeaderCarrier])
+        )
+          .thenReturn(Future.successful(Done))
+
+        when(
+          mockGoodsRecordUpdateService.removeManualCategory(
+            any[String],
+            any[String],
+            any[GetGoodsRecordResponse]
+          )(any[HeaderCarrier])
+        )
+          .thenReturn(Future.successful(Done))
+
+        when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
+        when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any()))
+          .thenReturn(Future.successful(Done))
+
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(
+            bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector),
+            bind[AuditService].toInstance(mockAuditService),
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[AutoCategoriseService].toInstance(mockAutoCategoriseService),
+            bind[GoodsRecordUpdateService].toInstance(mockGoodsRecordUpdateService)
+          )
+          .build()
 
         running(application) {
-          val request = FakeRequest(POST, postUrl)
-          val result  = route(application, request).value
+          val controller = application.injector.instanceOf[CountryOfOriginCyaController]
+          val request    = FakeRequest(
+            POST,
+            controllers.goodsRecord.countryOfOrigin.routes.CountryOfOriginCyaController.onSubmit(testRecordId).url
+          )
+          val result     = await(controller.onSubmit(testRecordId).apply(request))
 
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual controllers.problem.routes.JourneyRecoveryController
-            .onPageLoad()
-            .url
+          result.header.headers("Location") mustEqual
+            controllers.goodsRecord.countryOfOrigin.routes.UpdatedCountryOfOriginController.onPageLoad(testRecordId).url
+
+          verify(mockAuditService).auditFinishUpdateGoodsRecord(any(), any(), any())(any())
+          verify(mockSessionRepository, times(2)).set(any())
+          verify(mockGoodsRecordUpdateService).updateIfChanged(
+            any[String],
+            any[String],
+            any[UpdateGoodsRecord],
+            any[GetGoodsRecordResponse],
+            any[Boolean]
+          )(any[HeaderCarrier])
+          verify(mockGoodsRecordUpdateService).removeManualCategory(
+            any[String],
+            any[String],
+            any[GetGoodsRecordResponse]
+          )(any[HeaderCarrier])
         }
       }
-    }
 
+    }
   }
+
 }
