@@ -433,11 +433,6 @@ longerCommodityCode.error.invalidFormat = Enter a commodity code in the correct 
 longerCommodityCode.error.invalid = Enter a valid commodity code
 longerCommodityCode.change.hidden = LongerCommodityCode
 
-previousMovementRecords.title = Previous movement records
-previousMovementRecords.h1 = Previous movement records
-previousMovementRecords.p1 = Trader Goods Profile (TGP) has your previous movement information from 1 April 2023 to 19 June 2024 saved as individual records. HMRC have removed any duplicate records. You may want to check record information is correct before using them on a movement.
-previousMovementRecords.p2 = TGP has created product references from information we already have. You can change the product reference to anything to help you identify the record.
-
 goodsRecords.error.required = Enter your search term
 goodsRecords.error.length = Search term must be 100 characters or less
 goodsRecords.title = Goods profile

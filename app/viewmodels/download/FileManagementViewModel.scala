@@ -92,7 +92,7 @@ object FileManagementViewModel {
         doesGoodsRecordExist = goodsRecords.exists(_.goodsItemRecords.nonEmpty)
 
       } yield {
-        if (availableFiles.isDefined) {
+        if (availableFiles.isDefined || failedFiles.isDefined) {
           downloadDataConnector.updateSeenStatus
         }
 

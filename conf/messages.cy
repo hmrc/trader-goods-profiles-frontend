@@ -805,11 +805,6 @@ reasonForWithdrawAdvice.error.length = Mae’n rhaid i’r rheswm fod yn 512 o g
 singleRecord.recordLocked = Mae’r cofnod hwn wedi’i gloi gan eich bod wedi gofyn i CThEF a yw’n gywir. Ni allwch wneud unrhyw newidiadau na dileu’r cofnod hwn hyd nes y bydd CThEF wedi gwneud penderfyniad, neu eich bod yn tynnu’ch cais yn ôl.
 singleRecord.notCategorised.recordLocked = Mae’r cofnod hwn wedi’i gloi gan eich bod wedi gofyn i CThEF am gyngor. Ni fyddwch yn gallu categoreiddio’r nwydd hwn nes bo CThEF yn gwneud penderfyniad neu eich bod yn tynnu’ch cais yn ôl.
 
-previousMovementRecords.title = Cofnodion symud blaenorol
-previousMovementRecords.h1 = Cofnodion symud blaenorol
-previousMovementRecords.p1 = Mae gan Broffil Nwyddau Masnachwr (TGP) eich gwybodaeth symud flaenorol o 1 Ebrill 2023 i 19 Mehefin 2024 wedi’i chadw fel cofnodion unigol. Mae CThEF wedi tynnu unrhyw gofnodion dyblyg. Mae’n bosibl y byddwch am wirio bod gwybodaeth y cofnod yn gywir cyn eu defnyddio ar symudiad.
-previousMovementRecords.p2 = Mae Proffil Nwyddau Masnachwyr (TGP) wedi creu cyfeirnodau cynnyrch o wybodaeth sydd gennym eisoes. Gallwch newid cyfeirnod y cynnyrch i unrhyw beth i’ch helpu chi i adnabod y cofnod.
-
 hasSupplementaryUnit.title = Uned atodol
 hasSupplementaryUnit.h1 = Uned atodol
 hasSupplementaryUnit.h2 = A ydych am ychwanegu’r uned atodol?

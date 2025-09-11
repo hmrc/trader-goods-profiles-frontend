@@ -112,7 +112,7 @@ class HomePageControllerSpec extends SpecBase with BeforeAndAfterEach {
             doesGoodsRecordExist = true,
             eoriNumber = testEori,
             viewUpdateGoodsRecordsLink =
-              controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url
+              controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url
           )(request, messages(application)).toString
 
           verify(mockTraderProfileConnector, never()).checkTraderProfile(any())(any())
@@ -169,7 +169,7 @@ class HomePageControllerSpec extends SpecBase with BeforeAndAfterEach {
             doesGoodsRecordExist = true,
             eoriNumber = testEori,
             viewUpdateGoodsRecordsLink =
-              controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url
+              controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url
           )(request, messages(application)).toString
 
           verify(mockTraderProfileConnector, never()).checkTraderProfile(any())(any())
@@ -217,7 +217,7 @@ class HomePageControllerSpec extends SpecBase with BeforeAndAfterEach {
               doesGoodsRecordExist = true,
               eoriNumber = testEori,
               viewUpdateGoodsRecordsLink =
-                controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url
+                controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url
             )(request, messages(application)).toString
 
             verify(mockTraderProfileConnector, never()).checkTraderProfile(any())(any())
@@ -270,7 +270,7 @@ class HomePageControllerSpec extends SpecBase with BeforeAndAfterEach {
               doesGoodsRecordExist = true,
               eoriNumber = testEori,
               viewUpdateGoodsRecordsLink =
-                controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url
+                controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url
             )(request, messages(application)).toString
 
             verify(mockTraderProfileConnector, never()).checkTraderProfile(any())(any())
@@ -325,7 +325,7 @@ class HomePageControllerSpec extends SpecBase with BeforeAndAfterEach {
               doesGoodsRecordExist = true,
               eoriNumber = testEori,
               viewUpdateGoodsRecordsLink =
-                controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url
+                controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url
             )(request, messages(application)).toString
           }
         }
@@ -374,7 +374,7 @@ class HomePageControllerSpec extends SpecBase with BeforeAndAfterEach {
               doesGoodsRecordExist = true,
               eoriNumber = testEori,
               viewUpdateGoodsRecordsLink =
-                controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url
+                controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url
             )(request, messages(application)).toString
 
             verify(mockTraderProfileConnector, never()).checkTraderProfile(any())(any())
@@ -428,7 +428,7 @@ class HomePageControllerSpec extends SpecBase with BeforeAndAfterEach {
               doesGoodsRecordExist = true,
               eoriNumber = testEori,
               viewUpdateGoodsRecordsLink =
-                controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url
+                controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url
             )(request, messages(application)).toString
           }
         }
@@ -477,7 +477,7 @@ class HomePageControllerSpec extends SpecBase with BeforeAndAfterEach {
               doesGoodsRecordExist = true,
               eoriNumber = testEori,
               viewUpdateGoodsRecordsLink =
-                controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url
+                controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url
             )(request, messages(application)).toString
 
             verify(mockTraderProfileConnector, never()).checkTraderProfile(any())(any())
@@ -533,7 +533,7 @@ class HomePageControllerSpec extends SpecBase with BeforeAndAfterEach {
               doesGoodsRecordExist = true,
               eoriNumber = testEori,
               viewUpdateGoodsRecordsLink =
-                controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url
+                controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url
             )(request, messages(application)).toString
           }
         }
