@@ -187,7 +187,7 @@ class SingleRecordController @Inject() (
             value match {
               case 1 => "singleRecord.cat1"
               case 2 => "singleRecord.cat2"
-              case 3 => "singleRecord.standardGoods" // auto-categorised
+              case 3 => "singleRecord.standardGoods"
             }
         }
       }

@@ -19,13 +19,11 @@ package models
 import play.api.mvc.JavascriptLiteral
 import utils.Constants._
 
-// Base trait for all scenarios
 sealed trait Scenario {
   def isAutoCategorised: Boolean   = false
   def isManualCategorised: Boolean = false
 }
 
-// Auto-categorised scenarios
 sealed trait ScenarioAuto extends Scenario {
   override val isAutoCategorised: Boolean = true
 }
@@ -39,7 +37,6 @@ case object Category2Scenario extends ScenarioAuto with ScenarioCategorised {
   override def messageKey: String = "singleRecord.cat2"
 }
 
-// Manual-categorised scenarios
 sealed trait ScenarioManual extends Scenario {
   override val isManualCategorised: Boolean = true
 }
@@ -53,12 +50,10 @@ case object Category2NoExemptionsScenario extends ScenarioManual with ScenarioCa
   override def messageKey: String = "singleRecord.cat2"
 }
 
-// Represents no category
 case object EmptyScenario extends Scenario
 
 object Scenario {
 
-  // Return Option[Int] for any scenario
   def getResultAsInt(scenario: Scenario): Option[Int] =
     scenario match {
       case StandardGoodsScenario | StandardGoodsNoAssessmentsScenario => Some(StandardGoodsAsInt)
@@ -67,7 +62,6 @@ object Scenario {
       case EmptyScenario                                              => None
     }
 
-  // Convert Option[Int] back to Scenario
   def fromInt(optInt: Option[Int]): Option[Scenario] =
     optInt match {
       case Some(StandardGoodsAsInt) => Some(StandardGoodsScenario)
@@ -77,7 +71,6 @@ object Scenario {
       case _                        => None
     }
 
-  // JS literal for frontend
   implicit val jsLiteral: JavascriptLiteral[Scenario] = {
     case StandardGoodsScenario              => "Standard"
     case Category1Scenario                  => "Category1"
