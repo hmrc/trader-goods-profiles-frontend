@@ -37,7 +37,6 @@ class AutoCategoriseService @Inject() (
 )(implicit ec: ExecutionContext)
     extends Logging {
 
-  /** Auto-categorise a record and return Scenario if successful */
   def autoCategoriseRecord(
     recordId: String,
     userAnswers: UserAnswers
@@ -82,7 +81,6 @@ class AutoCategoriseService @Inject() (
         }
       }
 
-  /** Helper method to get CategorisationInfo for controller logic (CYA redirect) */
   def getCategorisationInfoForRecord(
     recordId: String,
     userAnswers: UserAnswers

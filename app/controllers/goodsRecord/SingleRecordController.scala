@@ -18,12 +18,12 @@ package controllers.goodsRecord
 
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.BaseController
-import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, ProfileAuthenticateAction}
+import controllers.actions._
 import exceptions.RecordNotFoundException
-import models.helper.{CategorisationJourney, RequestAdviceJourney, SupplementaryUnitUpdateJourney, WithdrawAdviceJourney}
+import models.helper._
 import models.requests.DataRequest
 import models.router.responses.GetGoodsRecordResponse
-import models.{AdviceStatusMessage, Country, DeclarableStatus, NormalMode, ReviewReason, Scenario, UserAnswers}
+import models._
 import pages.goodsRecord.*
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import queries.CountriesQuery
@@ -32,7 +32,7 @@ import services.{AutoCategoriseService, DataCleansingService}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.SessionData.*
 import viewmodels.checkAnswers.*
-import viewmodels.checkAnswers.goodsRecord.{CommodityCodeSummary, CountryOfOriginSummary, GoodsDescriptionSummary, ProductReferenceSummary}
+import viewmodels.checkAnswers.goodsRecord._
 import viewmodels.govuk.summarylist.*
 import views.html.goodsRecord.SingleRecordView
 
@@ -68,7 +68,6 @@ class SingleRecordController @Inject() (
             .filter(_.contains("page"))
             .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url)
 
-          // Prefer session-stored country if available
           val countryFromSession: Option[String] =
             request.userAnswers.get(OriginalCountryOfOriginPage(recordId))
 
@@ -123,10 +122,11 @@ class SingleRecordController @Inject() (
         .flatMap(_.set(CommodityCodeUpdatePage(recordId), record.comcode))
 
     val withOriginal =
-      if (!record.adviceStatus.isRecordLocked)
+      if (!record.adviceStatus.isRecordLocked) {
         baseTry.flatMap(_.set(OriginalCountryOfOriginPage(recordId), record.countryOfOrigin))
-      else
+      } else {
         baseTry
+      }
 
     Future.fromTry(withOriginal)
   }
@@ -177,7 +177,6 @@ class SingleRecordController @Inject() (
 
     val categoryValue =
       if (countryOfOriginUpdated && record.category.isEmpty) {
-        // Manual category was dropped → ask user to categorise again
         "singleRecord.categoriseThisGood"
       } else {
         record.category match {

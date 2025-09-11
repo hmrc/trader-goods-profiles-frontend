@@ -25,9 +25,9 @@ import models.{CategoryRecord, EmptyScenario, UpdateGoodsRecord}
 import org.apache.pekko.Done
 import uk.gov.hmrc.http.HeaderCarrier
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-class GoodsRecordUpdateService @Inject() (connector: GoodsRecordConnector)(implicit ec: ExecutionContext) {
+class GoodsRecordUpdateService @Inject() (connector: GoodsRecordConnector) {
 
   def updateIfChanged(
     oldValue: String,
