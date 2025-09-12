@@ -33,86 +33,87 @@ class CategorisationInfoSpec extends SpecBase {
 
   "CategorisationInfo#isAutoCategorisable" - {
 
-    "return true when there is one CategoryAssessment with no exemptions" in {
-      val assessmentWithoutExemptions = CategoryAssessment(
-        id = "a1",
-        category = 1,
-        exemptions = Seq.empty,
-        themeDescription = "Some theme",
-        regulationUrl = None
-      )
+    "CategorisationInfo.isAutoCategorisable" - {
 
-      val info = CategorisationInfo(
-        commodityCode = "1234567890",
-        countryOfOrigin = "GB",
-        comcodeEffectiveToDate = None,
-        categoryAssessments = Seq(assessmentWithoutExemptions),
-        categoryAssessmentsThatNeedAnswers = Seq.empty,
-        measurementUnit = None,
-        descendantCount = 0
-      )
+      "return true when there are no category assessments" in {
+        val info = CategorisationInfo(
+          commodityCode = "1234567890",
+          countryOfOrigin = "GB",
+          comcodeEffectiveToDate = None,
+          categoryAssessments = Seq.empty,
+          categoryAssessmentsThatNeedAnswers = Seq.empty,
+          measurementUnit = None,
+          descendantCount = 0
+        )
 
-      info.isAutoCategorisable shouldBe true
-    }
+        info.isAutoCategorisable shouldBe true
+      }
 
-    "return false when 1 CategoryAssessments has one exemption" in {
-      val certificate = Certificate("cert-id", "cert-code", "cert-description")
+      "return true when category assessments exist but none need answers" in {
+        val assessmentWithExemption = CategoryAssessment(
+          id = "a1",
+          category = 1,
+          exemptions = Seq(Certificate("id", "code", "desc")),
+          themeDescription = "Theme",
+          regulationUrl = None
+        )
 
-      val assessmentWithExemption = CategoryAssessment(
-        id = "a2",
-        category = 1,
-        exemptions = Seq(certificate),
-        themeDescription = "Another theme",
-        regulationUrl = None
-      )
+        val info = CategorisationInfo(
+          commodityCode = "1234567890",
+          countryOfOrigin = "GB",
+          comcodeEffectiveToDate = None,
+          categoryAssessments = Seq(assessmentWithExemption),
+          categoryAssessmentsThatNeedAnswers = Seq.empty, // no answers needed
+          measurementUnit = None,
+          descendantCount = 0
+        )
 
-      val info = CategorisationInfo(
-        commodityCode = "1234567890",
-        countryOfOrigin = "GB",
-        comcodeEffectiveToDate = None,
-        categoryAssessments = Seq(assessmentWithExemption),
-        categoryAssessmentsThatNeedAnswers = Seq.empty,
-        measurementUnit = None,
-        descendantCount = 0
-      )
+        info.isAutoCategorisable shouldBe true
+      }
 
-      info.isAutoCategorisable shouldBe false
-    }
+      "return true when all category assessments have no exemptions" in {
+        val assessmentWithoutExemptions = CategoryAssessment(
+          id = "a2",
+          category = 1,
+          exemptions = Seq.empty,
+          themeDescription = "Theme",
+          regulationUrl = None
+        )
 
-    "return true when there are no CategoryAssessments" in {
-      val info = CategorisationInfo(
-        commodityCode = "1234567890",
-        countryOfOrigin = "GB",
-        comcodeEffectiveToDate = None,
-        categoryAssessments = Seq.empty,
-        categoryAssessmentsThatNeedAnswers = Seq.empty,
-        measurementUnit = None,
-        descendantCount = 0
-      )
+        val info = CategorisationInfo(
+          commodityCode = "1234567890",
+          countryOfOrigin = "GB",
+          comcodeEffectiveToDate = None,
+          categoryAssessments = Seq(assessmentWithoutExemptions),
+          categoryAssessmentsThatNeedAnswers = Seq(assessmentWithoutExemptions),
+          measurementUnit = None,
+          descendantCount = 0
+        )
 
-      info.isAutoCategorisable shouldBe true
-    }
+        info.isAutoCategorisable shouldBe true
+      }
 
-    "return false when there are CategoryAssessments that need answers" in {
-      val assessmentWithoutExemptions = CategoryAssessment(
-        id = "a3",
-        category = 1,
-        exemptions = Seq.empty,
-        themeDescription = "Theme",
-        regulationUrl = None
-      )
+      "return false when there are category assessments with exemptions AND some need answers" in {
+        val assessmentWithExemption = CategoryAssessment(
+          id = "a3",
+          category = 1,
+          exemptions = Seq(Certificate("id", "code", "desc")),
+          themeDescription = "Theme",
+          regulationUrl = None
+        )
 
-      val info = CategorisationInfo(
-        commodityCode = "1234567890",
-        countryOfOrigin = "GB",
-        comcodeEffectiveToDate = None,
-        categoryAssessments = Seq(assessmentWithoutExemptions),
-        categoryAssessmentsThatNeedAnswers = Seq(assessmentWithoutExemptions),
-        measurementUnit = None,
-        descendantCount = 0
-      )
+        val info = CategorisationInfo(
+          commodityCode = "1234567890",
+          countryOfOrigin = "GB",
+          comcodeEffectiveToDate = None,
+          categoryAssessments = Seq(assessmentWithExemption),
+          categoryAssessmentsThatNeedAnswers = Seq(assessmentWithExemption),
+          measurementUnit = None,
+          descendantCount = 0
+        )
 
-      info.isAutoCategorisable shouldBe false
+        info.isAutoCategorisable shouldBe false
+      }
     }
 
   }
