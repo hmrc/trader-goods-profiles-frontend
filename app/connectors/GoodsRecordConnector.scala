@@ -27,8 +27,10 @@ import play.api.http.Status.{ACCEPTED, NOT_FOUND, NO_CONTENT, OK}
 import play.api.i18n.Lang.logger
 import play.api.libs.json.Json
 import play.api.libs.ws.WSBodyWritables.writeableOf_JsValue
+import play.api.mvc.Results.Redirect
 import uk.gov.hmrc.http.*
 import uk.gov.hmrc.http.client.HttpClientV2
+import views.html.problem.RecordNotFoundView
 
 import java.net.{URL, URLEncoder}
 import javax.inject.Inject
@@ -173,7 +175,7 @@ class GoodsRecordConnector @Inject() (
       .flatMap { response =>
         response.status match {
           case OK        => Future.successful(response.json.as[GetGoodsRecordResponse])
-          case NOT_FOUND => Future.failed(RecordNotFoundException(recordId))
+          case NOT_FOUND => Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
           case _         =>
             Future.failed(
               UpstreamErrorResponse(
