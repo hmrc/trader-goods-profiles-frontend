@@ -120,7 +120,7 @@ class RemoveGoodsRecordController @Inject() (
         case e: UpstreamErrorResponse if e.statusCode == 404 =>
           Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
         case e: Exception                                    =>
-          logger.error(s"Error removing record $recordId: ${e.getMessage}", e)git
+          logger.error(s"Error removing record $recordId: ${e.getMessage}", e)
           Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
       }
 
