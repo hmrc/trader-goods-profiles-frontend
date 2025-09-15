@@ -94,12 +94,11 @@ class RemoveGoodsRecordController @Inject() (
   private def getProductReference(recordId: String)(implicit request: DataRequest[_]): Future[String] =
     request.userAnswers.get(ProductReferenceUpdatePage(recordId)) match {
       case Some(productRef) => Future.successful(productRef)
-      case None =>
-        goodsRecordConnector.getRecord(recordId).map(_.traderRef).recover {
-          case _: RecordNotFoundException => "Unknown product"
+      case None             =>
+        goodsRecordConnector.getRecord(recordId).map(_.traderRef).recover { case _: RecordNotFoundException =>
+          "Unknown product"
         }
     }
-
 
   private def handleRemove(recordId: String, location: Location)(implicit request: DataRequest[_]): Future[Result] =
     goodsRecordConnector
@@ -120,11 +119,10 @@ class RemoveGoodsRecordController @Inject() (
       .recover {
         case e: UpstreamErrorResponse if e.statusCode == 404 =>
           Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
-        case e: Exception =>
-          logger.error(s"Error removing record $recordId: ${e.getMessage}", e)
+        case e: Exception                                    =>
+          logger.error(s"Error removing record $recordId: ${e.getMessage}", e)git
           Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
       }
-
 
   private def getCancelRedirect(location: Location, recordId: String): play.api.mvc.Call =
     location match {

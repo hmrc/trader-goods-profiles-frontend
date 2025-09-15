@@ -58,8 +58,8 @@ class ProfileSetupController @Inject() (
       if (config.getHistoricProfileEnabled) {
         for {
           historicProfileData <- traderProfileConnector.getHistoricProfileData(request.eori)
-          updatedUserAnswers <- updateUserAnswersWithProfileData(request.userAnswers, historicProfileData)
-          _ <- sessionRepository.set(updatedUserAnswers)
+          updatedUserAnswers  <- updateUserAnswersWithProfileData(request.userAnswers, historicProfileData)
+          _                   <- sessionRepository.set(updatedUserAnswers)
         } yield Redirect(navigator.nextPage(ProfileSetupPage, NormalMode, updatedUserAnswers))
       } else {
         sessionRepository
