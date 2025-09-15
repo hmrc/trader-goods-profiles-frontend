@@ -846,7 +846,7 @@ adviceStatus.adviceRequestWithdrawn = Cais am gyngor wedi’i dynnu yn ôl
 
 declarableStatus.status = Statws
 declarableStatus.immiReady = Yn barod ar gyfer IMMI
-declarableStatus.notReadyForImmi = Ddim yn barod ar gyfer IMMI
+declarableStatus.notReadyForImmi = Nid yw’n barod ar gyfer IMMI
 declarableStatus.notReadyForUse = Angen cymryd camau
 
 declarableStatus.immiReady.paragraph = Gallwch ddefnyddio’r cofnod hwn i lenwi’r Wybodaeth am Symud Nwyddau yn y Farchnad Fewnol (IMMI).
