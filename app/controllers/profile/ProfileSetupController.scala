@@ -53,18 +53,20 @@ class ProfileSetupController @Inject() (
     Ok(view())
   }
 
-  def onSubmit: Action[AnyContent] = (identify andThen checkProfile andThen getData andThen requireData).async {
-    implicit request =>
+  def onSubmit: Action[AnyContent] =
+    (identify andThen checkProfile andThen getData andThen requireData).async { implicit request =>
       if (config.getHistoricProfileEnabled) {
         for {
           historicProfileData <- traderProfileConnector.getHistoricProfileData(request.eori)
-          updatedUserAnswers  <- updateUserAnswersWithProfileData(request.userAnswers, historicProfileData)
-          _                   <- sessionRepository.set(updatedUserAnswers)
+          updatedUserAnswers <- updateUserAnswersWithProfileData(request.userAnswers, historicProfileData)
+          _ <- sessionRepository.set(updatedUserAnswers)
         } yield Redirect(navigator.nextPage(ProfileSetupPage, NormalMode, updatedUserAnswers))
       } else {
-        Future.successful(Redirect(navigator.nextPage(ProfileSetupPage, NormalMode, request.userAnswers)))
+        sessionRepository
+          .set(request.userAnswers)
+          .map(_ => Redirect(navigator.nextPage(ProfileSetupPage, NormalMode, request.userAnswers)))
       }
-  }
+    }
 
   private def updateUserAnswersWithProfileData(
     userAnswers: UserAnswers,

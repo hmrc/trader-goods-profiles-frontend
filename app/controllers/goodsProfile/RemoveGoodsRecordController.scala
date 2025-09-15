@@ -28,6 +28,7 @@ import navigation.GoodsProfileNavigator
 import pages.goodsRecord.ProductReferenceUpdatePage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import views.html.goodsProfile.RemoveGoodsRecordView
@@ -43,6 +44,7 @@ class RemoveGoodsRecordController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   profileAuth: ProfileAuthenticateAction,
+  sessionRepository: SessionRepository,
   formProvider: RemoveGoodsRecordFormProvider,
   auditService: AuditService,
   val controllerComponents: MessagesControllerComponents,
@@ -92,27 +94,37 @@ class RemoveGoodsRecordController @Inject() (
   private def getProductReference(recordId: String)(implicit request: DataRequest[_]): Future[String] =
     request.userAnswers.get(ProductReferenceUpdatePage(recordId)) match {
       case Some(productRef) => Future.successful(productRef)
-      case None             => goodsRecordConnector.getRecord(recordId).map(_.traderRef)
+      case None =>
+        goodsRecordConnector.getRecord(recordId).map(_.traderRef).recover {
+          case _: RecordNotFoundException => "Unknown product"
+        }
     }
+
 
   private def handleRemove(recordId: String, location: Location)(implicit request: DataRequest[_]): Future[Result] =
     goodsRecordConnector
       .removeGoodsRecord(recordId)
       .flatMap { removed =>
         auditService.auditFinishRemoveGoodsRecord(request.eori, request.affinityGroup, recordId).map { _ =>
-          if (removed)
-            Redirect(navigator.nextPageAfterRemoveGoodsRecord(request.userAnswers, location))
-          else
+          if (removed) {
+            val updatedAnswers = request.userAnswers
+              .remove(ProductReferenceUpdatePage(recordId))
+              .getOrElse(request.userAnswers)
+
+            Redirect(navigator.nextPageAfterRemoveGoodsRecord(updatedAnswers, location))
+          } else {
             Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
+          }
         }
       }
       .recover {
         case e: UpstreamErrorResponse if e.statusCode == 404 =>
           Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
-        case e: Exception                                    =>
+        case e: Exception =>
           logger.error(s"Error removing record $recordId: ${e.getMessage}", e)
           Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
       }
+
 
   private def getCancelRedirect(location: Location, recordId: String): play.api.mvc.Call =
     location match {
