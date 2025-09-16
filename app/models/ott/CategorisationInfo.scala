@@ -41,7 +41,7 @@ final case class CategorisationInfo(
 
   def isAutoCategorisable: Boolean =
     categoryAssessments.isEmpty || (
-      categoryAssessmentsThatNeedAnswers.isEmpty &&
+      categoryAssessmentsThatNeedAnswers.isEmpty ||
         categoryAssessments.forall(_.hasNoExemptions)
     )
 
