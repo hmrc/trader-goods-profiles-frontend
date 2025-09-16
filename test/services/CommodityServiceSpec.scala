@@ -124,7 +124,7 @@ class CommodityServiceSpec extends SpecBase with BeforeAndAfterEach with Generat
 
         commodityService
           .fetchRecordValues(mockGoodsRecordResponse.recordId)(request, hc)
-          .futureValue mustBe (mockGoodsRecordResponse.comcode, mockGoodsRecordResponse.countryOfOrigin)
+          .futureValue mustBe Some((mockGoodsRecordResponse.comcode, mockGoodsRecordResponse.countryOfOrigin))
       }
     }
     "fetchCommodity" - {
