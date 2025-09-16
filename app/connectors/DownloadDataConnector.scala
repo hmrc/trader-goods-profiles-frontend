@@ -41,6 +41,9 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
   private def emailUrl =
     url"${config.dataStoreBaseUrl}/trader-goods-profiles-data-store/traders/email"
 
+  private def markExpiredSummariesUrl =
+    url"${config.dataStoreBaseUrl}/trader-goods-profiles-data-store/traders/mark-expired-summaries"
+
   def requestDownloadData(implicit hc: HeaderCarrier): Future[Done] =
     httpClient
       .post(downloadDataUrl)
@@ -110,6 +113,18 @@ class DownloadDataConnector @Inject() (config: FrontendAppConfig, httpClient: Ht
   def updateSeenStatus(implicit hc: HeaderCarrier): Future[Done] =
     httpClient
       .patch(downloadDataSummaryUrl)
+      .setHeader(clientIdHeader)
+      .execute[HttpResponse]
+      .flatMap { response =>
+        response.status match {
+          case NO_CONTENT => Future.successful(Done)
+          case _          => Future.failed(UpstreamErrorResponse(response.body, response.status))
+        }
+      }
+
+  def markExpiredSummaries(implicit hc: HeaderCarrier): Future[Done] =
+    httpClient
+      .patch(markExpiredSummariesUrl)
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
       .flatMap { response =>

@@ -26,7 +26,7 @@ govukPhaseBanner: GovukPhaseBanner,
 govukNotificationBanner: GovukNotificationBanner
 )
 
-@(downloadReady: Boolean = false, downloadLinkText: DownloadLinkText, ukimsNumberChanged: Boolean = false, doesGoodsRecordExist: Boolean, eoriNumber: String, viewUpdateGoodsRecordsLink: String)(implicit request: Request[_], messages: Messages)
+@(downloadReady: Boolean = false, downloadFailed: Boolean = false, downloadLinkText: DownloadLinkText, ukimsNumberChanged: Boolean = false, doesGoodsRecordExist: Boolean, eoriNumber: String, viewUpdateGoodsRecordsLink: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = s"${messages("homepage.title")} - ${messages("site.govuk")}", showBackLink = false, headerShouldHaveServiceLink = false, isFullWidth = true) {
 
@@ -54,6 +54,19 @@ govukNotificationBanner: GovukNotificationBanner
         )
     }
 
+    @if(downloadFailed) {
+        @govukNotificationBanner(NotificationBanner(
+            title = Text(messages("homepage.downloadBanner.important")),
+            content = HtmlContent(
+                f"""
+            <p class='govuk-notification-banner__heading'>
+                ${messages("homepage.downloadBanner.failed.content")}
+                <a href="${controllers.download.routes.RequestDataController.onPageLoad().url}" class='govuk-notification-banner__link'>${messages("homepage.downloadBanner.failed.linkText")}</a>.
+            </p>"""),
+            role = Some("alert"))
+        )
+    }
+
     <h1 class="govuk-heading-l govuk-!-margin-bottom-0">@messages("homepage.h1")</h1>
     <p class="govuk-body govuk-!-margin-bottom-8">@messages("homepage.eori", eoriNumber)</p>
 
@@ -64,7 +77,7 @@ govukNotificationBanner: GovukNotificationBanner
                     <h2 class="govuk-summary-card__title govuk-!-margin-bottom-8">@messages("homepage.h2.1")</h2>
                 </div>
                 <div class="govuk-summary-card__content">
-                    @if(doesGoodsRecordExist == false) {
+                    @if(!doesGoodsRecordExist) {
                     <p class="govuk-body">@messages("homepage.noRecords")</p>
                     <p class="govuk-body">
                         @messages("homepage.p3")

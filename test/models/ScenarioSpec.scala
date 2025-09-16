@@ -42,23 +42,23 @@ class ScenarioSpec extends SpecBase {
   ".getResult" - {
 
     "must return 3 for standard goods scenario" in {
-      Scenario.getResultAsInt(StandardGoodsScenario) mustBe StandardGoodsAsInt
+      Scenario.getResultAsInt(StandardGoodsScenario).value mustBe StandardGoodsAsInt
     }
 
     "must return 3 for standard goods no assessment scenario" in {
-      Scenario.getResultAsInt(StandardGoodsNoAssessmentsScenario) mustBe StandardGoodsAsInt
+      Scenario.getResultAsInt(StandardGoodsNoAssessmentsScenario).value mustBe StandardGoodsAsInt
     }
 
     "must return 2 for category 2 scenario" in {
-      Scenario.getResultAsInt(Category2Scenario) mustBe Category2AsInt
+      Scenario.getResultAsInt(Category2Scenario).value mustBe Category2AsInt
     }
 
     "must return 1 for category 1 scenario" in {
-      Scenario.getResultAsInt(Category1Scenario) mustBe Category1AsInt
+      Scenario.getResultAsInt(Category1Scenario).value mustBe Category1AsInt
     }
 
     "must return 1 for category 1 no exemptions scenario" in {
-      Scenario.getResultAsInt(Category1NoExemptionsScenario) mustBe Category1AsInt
+      Scenario.getResultAsInt(Category1NoExemptionsScenario).value mustBe Category1AsInt
     }
   }
 
@@ -80,8 +80,8 @@ class ScenarioSpec extends SpecBase {
       Scenario.fromInt(Some(999)) mustBe None
     }
 
-    "must return None for None input" in {
-      Scenario.fromInt(None) mustBe None
+    "must return Empyy Scenario for None input" in {
+      Scenario.fromInt(None) mustBe Some(EmptyScenario)
     }
   }
 

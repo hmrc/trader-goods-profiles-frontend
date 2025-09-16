@@ -18,10 +18,10 @@ package controllers
 
 import connectors.{DownloadDataConnector, GoodsRecordConnector, TraderProfileConnector}
 import controllers.actions.*
-import models.DownloadDataStatus.FileReadyUnseen
+import models.DownloadDataStatus.{FileFailedUnseen, FileReadyUnseen}
 import models.GoodsRecordsPagination.firstPage
 import models.download.DownloadLinkText
-import models.{DownloadDataSummary, HistoricProfileData}
+import models.DownloadDataSummary
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
@@ -46,6 +46,7 @@ class HomePageController @Inject() (
 
   def onPageLoad: Action[AnyContent] = (identify andThen profileAuth andThen getOrCreate).async { implicit request =>
     for {
+      _                   <- downloadDataConnector.markExpiredSummaries
       downloadDataSummary <- downloadDataConnector.getDownloadDataSummary
       verifiedEmail       <- downloadDataConnector.getEmail.map {
                                case Some(_) => true
@@ -63,16 +64,17 @@ class HomePageController @Inject() (
       } else {
         val downloadLinkText            = DownloadLinkText(downloadDataSummary, doesGoodsRecordExist, verifiedEmail)
         val showNewUkimsBanner: Boolean = request.session.get(pageUpdated).contains(newUkimsNumberPage)
-        val viewUpdateGoodsRecordsLink  = getViewUpdateRecordsLink(historicProfileData)
 
         Ok(
           view(
             downloadReady = downloadReady(downloadDataSummary),
+            downloadFailed = downloadFailed(downloadDataSummary),
             downloadLinkText = downloadLinkText,
             ukimsNumberChanged = showNewUkimsBanner,
             doesGoodsRecordExist = doesGoodsRecordExist,
             eoriNumber = request.eori,
-            viewUpdateGoodsRecordsLink = viewUpdateGoodsRecordsLink
+            viewUpdateGoodsRecordsLink =
+              controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url
           )
         )
           .removingFromSession(pageUpdated)
@@ -86,9 +88,11 @@ class HomePageController @Inject() (
       }
       .getOrElse(false)
 
-  private def getViewUpdateRecordsLink(historicProfileData: Option[HistoricProfileData]): String =
-    historicProfileData match {
-      case Some(_) => controllers.goodsProfile.routes.PreviousMovementRecordsController.onPageLoad().url
-      case _       => controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url
-    }
+  private def downloadFailed(downloadDataSummary: Seq[DownloadDataSummary]): Boolean =
+    downloadDataSummary
+      .collectFirst {
+        case summary if summary.status == FileFailedUnseen => true
+      }
+      .getOrElse(false)
+
 }

@@ -41,7 +41,7 @@ final case class CategorisationInfo(
 
   def isAutoCategorisable: Boolean =
     categoryAssessments.isEmpty || (
-      categoryAssessmentsThatNeedAnswers.isEmpty &&
+      categoryAssessmentsThatNeedAnswers.isEmpty ||
         categoryAssessments.forall(_.hasNoExemptions)
     )
 
@@ -101,6 +101,19 @@ final case class CategorisationInfo(
 }
 
 object CategorisationInfo {
+
+  val empty: CategorisationInfo = CategorisationInfo(
+    commodityCode = "",
+    countryOfOrigin = "",
+    comcodeEffectiveToDate = None,
+    categoryAssessments = Seq.empty,
+    categoryAssessmentsThatNeedAnswers = Seq.empty,
+    measurementUnit = None,
+    descendantCount = 0,
+    longerCode = false,
+    isTraderNiphlAuthorised = false,
+    isTraderNirmsAuthorised = false
+  )
 
   def build(
     ott: OttResponse,

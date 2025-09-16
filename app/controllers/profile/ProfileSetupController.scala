@@ -62,7 +62,9 @@ class ProfileSetupController @Inject() (
           _                   <- sessionRepository.set(updatedUserAnswers)
         } yield Redirect(navigator.nextPage(ProfileSetupPage, NormalMode, updatedUserAnswers))
       } else {
-        Future.successful(Redirect(navigator.nextPage(ProfileSetupPage, NormalMode, request.userAnswers)))
+        sessionRepository
+          .set(request.userAnswers)
+          .map(_ => Redirect(navigator.nextPage(ProfileSetupPage, NormalMode, request.userAnswers)))
       }
   }
 

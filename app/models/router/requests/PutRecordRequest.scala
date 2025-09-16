@@ -47,7 +47,7 @@ object PutRecordRequest {
       categoryRecord.finalComCode,
       oldRecord.goodsDescription,
       oldRecord.countryOfOrigin,
-      Some(Scenario.getResultAsInt(categoryRecord.category)),
+      Scenario.getResultAsInt(categoryRecord.category),
       oldRecord.assessments,
       convertToBigDecimal(categoryRecord.supplementaryUnit),
       categoryRecord.measurementUnit,
