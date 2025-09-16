@@ -113,7 +113,6 @@ class RemoveGoodsRecordController @Inject() (
             _ <- sessionRepository.set(updatedAnswers)
             _ <- auditService.auditFinishRemoveGoodsRecord(request.eori, request.affinityGroup, recordId)
           } yield Redirect(navigator.nextPageAfterRemoveGoodsRecord(updatedAnswers, location))
-
         } else {
           auditService.auditFinishRemoveGoodsRecord(request.eori, request.affinityGroup, recordId).map { _ =>
             Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
