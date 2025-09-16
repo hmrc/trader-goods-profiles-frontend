@@ -19,7 +19,6 @@ package controllers.goodsRecord
 import base.SpecBase
 import base.TestConstants.{testRecordId, userAnswersId}
 import connectors.{GoodsRecordConnector, OttConnector, TraderProfileConnector}
-import exceptions.RecordNotFoundException
 import models.AdviceStatus.Requested
 import models.AdviceStatusMessage.RequestedParagraph
 import models.DeclarableStatus.NotReadyForUse

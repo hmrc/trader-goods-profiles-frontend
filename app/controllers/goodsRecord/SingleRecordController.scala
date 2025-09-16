@@ -19,7 +19,6 @@ package controllers.goodsRecord
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.BaseController
 import controllers.actions._
-import exceptions.RecordNotFoundException
 import models.helper._
 import models.requests.DataRequest
 import models.router.responses.GetGoodsRecordResponse

@@ -19,7 +19,6 @@ package controllers.goodsProfile
 import connectors.GoodsRecordConnector
 import controllers.BaseController
 import controllers.actions.*
-import exceptions.RecordNotFoundException
 import forms.goodsProfile.RemoveGoodsRecordFormProvider
 import models.GoodsRecordsPagination.firstPage
 import models.requests.DataRequest

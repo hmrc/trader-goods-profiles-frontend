@@ -17,7 +17,6 @@
 package connectors
 
 import config.Service
-import exceptions.RecordNotFoundException
 import models.router.requests.{CreateRecordRequest, PatchRecordRequest, PutRecordRequest}
 import models.router.responses.{GetGoodsRecordResponse, GetRecordsResponse}
 import models.*
