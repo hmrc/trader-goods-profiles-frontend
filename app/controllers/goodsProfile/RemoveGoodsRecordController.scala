@@ -63,10 +63,7 @@ class RemoveGoodsRecordController @Inject() (
           Ok(view(form, recordId, location, productRef))
         }
         .recover {
-          case _: RecordNotFoundException =>
-            Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
-          case ex                         =>
-            logger.error(s"[RemoveGoodsRecordController][onPageLoad] Failed to fetch record $recordId", ex)
+          case ex: Exception =>
             Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
         }
     }
@@ -86,7 +83,6 @@ class RemoveGoodsRecordController @Inject() (
             )
         }
         .recover { case ex =>
-          logger.error(s"[RemoveGoodsRecordController][onSubmit] Failed processing form for record $recordId", ex)
           Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
         }
     }
@@ -95,8 +91,9 @@ class RemoveGoodsRecordController @Inject() (
     request.userAnswers.get(ProductReferenceUpdatePage(recordId)) match {
       case Some(productRef) => Future.successful(productRef)
       case None             =>
-        goodsRecordConnector.getRecord(recordId).map(_.traderRef).recover { case _: RecordNotFoundException =>
-          "Unknown product"
+        goodsRecordConnector.getRecord(recordId).map {
+          case Some(record) => record.traderRef
+          case None => "Unknown product"
         }
     }
 
@@ -117,10 +114,7 @@ class RemoveGoodsRecordController @Inject() (
         }
       }
       .recover {
-        case e: UpstreamErrorResponse if e.statusCode == 404 =>
-          Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
         case e: Exception                                    =>
-          logger.error(s"Error removing record $recordId: ${e.getMessage}", e)
           Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
       }
 

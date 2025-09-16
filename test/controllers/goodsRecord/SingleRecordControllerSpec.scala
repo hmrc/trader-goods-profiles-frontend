@@ -656,7 +656,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
 
     "redirect to RecordNotFound page when record does not exist (404)" in {
       when(mockGoodsRecordConnector.getRecord(eqTo(testRecordId))(any()))
-        .thenReturn(Future.failed(RecordNotFoundException(testRecordId)))
+        .thenReturn(Future.successful(None)
       when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
       when(mockSessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
 

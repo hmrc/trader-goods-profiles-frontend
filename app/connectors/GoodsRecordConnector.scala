@@ -165,15 +165,15 @@ class GoodsRecordConnector @Inject() (
       .execute[HttpResponse]
       .map(_ => Done)
 
-  def getRecord(recordId: String)(implicit hc: HeaderCarrier): Future[GetGoodsRecordResponse] =
+  def getRecord(recordId: String)(implicit hc: HeaderCarrier): Future[Option[GetGoodsRecordResponse]] =
     httpClient
       .get(singleGoodsRecordUrl(recordId))
       .setHeader(clientIdHeader)
       .execute[HttpResponse]
       .flatMap { response =>
         response.status match {
-          case OK        => Future.successful(response.json.as[GetGoodsRecordResponse])
-          case NOT_FOUND => Future.failed(RecordNotFoundException(recordId))
+          case OK        => Future.successful(Some(response.json.as[GetGoodsRecordResponse]))
+          case NOT_FOUND => Future.successful(None)
           case _         =>
             Future.failed(
               UpstreamErrorResponse(

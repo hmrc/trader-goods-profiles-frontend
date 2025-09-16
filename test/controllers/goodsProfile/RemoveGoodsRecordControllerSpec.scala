@@ -146,7 +146,7 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar with Be
 
     "must redirect to Record Not Found when user clicks back after record is deleted" in {
       when(mockConnector.getRecord(eqTo(testRecordId))(any()))
-        .thenReturn(Future.failed(RecordNotFoundException(testRecordId)))
+        .thenReturn(Future.successful(None))
 
       val application = applicationBuilder(userAnswers = Some(userAnswersWithProductRef))
         .overrides(

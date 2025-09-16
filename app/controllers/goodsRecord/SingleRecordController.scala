@@ -57,52 +57,57 @@ class SingleRecordController @Inject() (
 
   def onPageLoad(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val countryOfOriginUpdated           = request.session.get("countryOfOriginChanged").contains("true")
+      val countryOfOriginUpdated = request.session.get("countryOfOriginChanged").contains("true")
       val showCommodityCodeBanner: Boolean = request.session.get("showCommodityCodeChangeBanner").contains("true")
 
       goodsRecordConnector
         .getRecord(recordId)
-        .flatMap { initialRecord =>
-          val backLink = request.headers
-            .get("Referer")
-            .filter(_.contains("page"))
-            .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url)
+        .flatMap {
+          case None =>
+            Future.successful(Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad()))
+          case Some(initialRecord) =>
+            val backLink = request.headers
+              .get("Referer")
+              .filter(_.contains("page"))
+              .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url)
 
-          val countryFromSession: Option[String] =
-            request.userAnswers.get(OriginalCountryOfOriginPage(recordId))
+            val countryFromSession: Option[String] =
+              request.userAnswers.get(OriginalCountryOfOriginPage(recordId))
 
-          val recordToDisplay = initialRecord.copy(
-            countryOfOrigin = countryFromSession.orElse(Option(initialRecord.countryOfOrigin)).getOrElse("")
-          )
+            val recordToDisplay = initialRecord.copy(
+              countryOfOrigin = countryFromSession.orElse(Option(initialRecord.countryOfOrigin)).getOrElse("")
+            )
 
-          for {
-            countries              <- retrieveAndStoreCountries
-            updatedAnswers         <- updateUserAnswers(recordId, recordToDisplay)
-            autoCategoriseScenario <- if (shouldAutoCategorise(recordToDisplay)) {
-                                        autoCategoriseService.autoCategoriseRecord(recordToDisplay, updatedAnswers)
-                                      } else {
-                                        Future.successful(None)
-                                      }
-            _                      <- sessionRepository.set(updatedAnswers)
-            finalRecord            <- if (autoCategoriseScenario.isDefined) {
-                                        goodsRecordConnector.getRecord(recordId)
-                                      } else {
-                                        Future.successful(recordToDisplay)
-                                      }
-          } yield renderView(
-            recordId,
-            finalRecord,
-            backLink,
-            countries,
-            autoCategoriseScenario,
-            countryOfOriginUpdated,
-            showCommodityCodeBanner
-          )
+            for {
+              countries <- retrieveAndStoreCountries
+              updatedAnswers <- updateUserAnswers(recordId, recordToDisplay)
+              autoCategoriseScenario <- if (shouldAutoCategorise(recordToDisplay)) {
+                autoCategoriseService.autoCategoriseRecord(recordToDisplay, updatedAnswers)
+              } else {
+                Future.successful(None)
+              }
+              _ <- sessionRepository.set(updatedAnswers)
+              finalRecord <- if (autoCategoriseScenario.isDefined) {
+                goodsRecordConnector.getRecord(recordId).map {
+                  case Some(record) => record
+                  case None =>
+                    throw new IllegalStateException(s"Record $recordId not found after auto-categorisation")
+                }
+              } else {
+                Future.successful(recordToDisplay)
+              }
+            } yield renderView(
+              recordId,
+              finalRecord,
+              backLink,
+              countries,
+              autoCategoriseScenario,
+              countryOfOriginUpdated,
+              showCommodityCodeBanner
+            )
         }
         .recover {
-          case _: RecordNotFoundException =>
-            Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
-          case e: Exception               =>
+          case e: Exception =>
             logger.error(s"Error loading goods record: ${e.getMessage}")
             Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
         }
