@@ -104,14 +104,18 @@ class RemoveGoodsRecordController @Inject() (
     goodsRecordConnector
       .removeGoodsRecord(recordId)
       .flatMap { removed =>
-        auditService.auditFinishRemoveGoodsRecord(request.eori, request.affinityGroup, recordId).map { _ =>
-          if (removed) {
-            val updatedAnswers = request.userAnswers
-              .remove(ProductReferenceUpdatePage(recordId))
-              .getOrElse(request.userAnswers)
+        if (removed) {
+          val updatedAnswers = request.userAnswers
+            .remove(ProductReferenceUpdatePage(recordId))
+            .getOrElse(request.userAnswers)
 
-            Redirect(navigator.nextPageAfterRemoveGoodsRecord(updatedAnswers, location))
-          } else {
+          for {
+            _ <- sessionRepository.set(updatedAnswers)
+            _ <- auditService.auditFinishRemoveGoodsRecord(request.eori, request.affinityGroup, recordId)
+          } yield Redirect(navigator.nextPageAfterRemoveGoodsRecord(updatedAnswers, location))
+
+        } else {
+          auditService.auditFinishRemoveGoodsRecord(request.eori, request.affinityGroup, recordId).map { _ =>
             Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
           }
         }
