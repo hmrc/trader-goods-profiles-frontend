@@ -82,7 +82,7 @@ class UpdateProductReferenceController @Inject() (
               case Some(oldRecord) =>
                 for {
                   isProductReferenceUnique <- goodsRecordConnector.isProductReferenceUnique(value)
-                  updatedAnswers <- Future.fromTry(request.userAnswers.set(ProductReferenceUpdatePage(recordId), value))
+                  updatedAnswers           <- Future.fromTry(request.userAnswers.set(ProductReferenceUpdatePage(recordId), value))
                 } yield
                   if (isProductReferenceUnique || oldRecord.traderRef == value) {
                     sessionRepository.set(updatedAnswers)
@@ -94,7 +94,7 @@ class UpdateProductReferenceController @Inject() (
                       createFormWithErrors(form, value, "productReference.error.traderRefNotUnique")
                     BadRequest(view(formWithApiErrors, onSubmitAction))
                   }
-              case None =>
+              case None            =>
                 Future.successful(Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad()))
             }
         )

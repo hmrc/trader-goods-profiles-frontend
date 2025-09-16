@@ -82,7 +82,7 @@ class OttServiceSpec extends SpecBase with BeforeAndAfterEach with Generators {
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    when(mockGoodsRecordsConnector.getRecord(any())(any())).thenReturn(Future.successful(mockGoodsRecordResponse))
+    when(mockGoodsRecordsConnector.getRecord(any())(any())).thenReturn(Future.successful(Some(mockGoodsRecordResponse)))
     when(mockOttConnector.getCategorisationInfo(any(), any(), any(), any(), any(), any())(any()))
       .thenReturn(Future.successful(mockOttResponse()))
   }

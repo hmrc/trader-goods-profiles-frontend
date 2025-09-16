@@ -103,7 +103,8 @@ class CommodityServiceSpec extends SpecBase with BeforeAndAfterEach with Generat
       }
 
       "must return the correct value when passed a recordId" in {
-        when(mockGoodsRecordsConnector.getRecord(any())(any())).thenReturn(Future.successful(mockGoodsRecordResponse))
+        when(mockGoodsRecordsConnector.getRecord(any())(any()))
+          .thenReturn(Future.successful(Some(mockGoodsRecordResponse)))
         when(mockOttConnector.getCommodityCode(any(), any(), any(), any(), any(), any())(any()))
           .thenReturn(Future.successful(validCommodity))
 
@@ -111,7 +112,8 @@ class CommodityServiceSpec extends SpecBase with BeforeAndAfterEach with Generat
       }
 
       "must return false when passed a recordId and NOT_FOUND is returned" in {
-        when(mockGoodsRecordsConnector.getRecord(any())(any())).thenReturn(Future.successful(mockGoodsRecordResponse))
+        when(mockGoodsRecordsConnector.getRecord(any())(any()))
+          .thenReturn(Future.successful(Some(mockGoodsRecordResponse)))
         when(mockOttConnector.getCommodityCode(any(), any(), any(), any(), any(), any())(any()))
           .thenReturn(Future.failed(UpstreamErrorResponse("not found", NOT_FOUND)))
 
@@ -120,7 +122,8 @@ class CommodityServiceSpec extends SpecBase with BeforeAndAfterEach with Generat
     }
     "fetchRecordValues" - {
       "must return commodity code and country of origin from a goods record" in {
-        when(mockGoodsRecordsConnector.getRecord(any())(any())).thenReturn(Future.successful(mockGoodsRecordResponse))
+        when(mockGoodsRecordsConnector.getRecord(any())(any()))
+          .thenReturn(Future.successful(Some(mockGoodsRecordResponse)))
 
         commodityService
           .fetchRecordValues(mockGoodsRecordResponse.recordId)(request, hc)

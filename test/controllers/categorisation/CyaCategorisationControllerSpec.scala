@@ -560,7 +560,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
             val mockConnector = mock[GoodsRecordConnector]
             when(mockConnector.getRecord(any())(any())) thenReturn Future
-              .successful(record)
+              .successful(Some(record))
             when(mockConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any())(any()))
               .thenReturn(Future.successful(Done))
 
@@ -625,7 +625,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
             val mockConnector = mock[GoodsRecordConnector]
             when(mockConnector.getRecord(any())(any())) thenReturn Future
-              .successful(record)
+              .successful(Some(record))
             when(mockConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any())(any()))
               .thenReturn(Future.successful(Done))
 
@@ -682,7 +682,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
 
           val sessionRepository = mock[SessionRepository]
           when(sessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
-          when(mockConnector.getRecord(any())(any())).thenReturn(Future.successful(goodsRecordWithLongCommCode))
+          when(mockConnector.getRecord(any())(any())).thenReturn(Future.successful(Some(goodsRecordWithLongCommCode)))
 
           val application =
             applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -721,7 +721,7 @@ class CyaCategorisationControllerSpec extends SpecBase with SummaryListFluency w
         when(mockConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any())(any()))
           .thenReturn(Future.failed(new RuntimeException("Connector failed")))
         when(mockConnector.getRecord(any())(any()))
-          .thenReturn(Future.successful(goodsRecordWithLongCommCode))
+          .thenReturn(Future.successful(Some(goodsRecordWithLongCommCode)))
         val sessionRepository = mock[SessionRepository]
         when(sessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
 

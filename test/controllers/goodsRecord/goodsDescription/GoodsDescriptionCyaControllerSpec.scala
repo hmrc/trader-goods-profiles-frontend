@@ -164,7 +164,7 @@ class GoodsDescriptionCyaControllerSpec
 
           val userAnswers = emptyUserAnswers.set(page, answer).success.value
 
-          when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(record))
+          when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(Some(record)))
           when(mockGoodsRecordConnector.patchGoodsRecord(any())(any())).thenReturn(Future.successful(Done))
           when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
             .thenReturn(Future.successful(Done))
@@ -202,7 +202,7 @@ class GoodsDescriptionCyaControllerSpec
         "when future fails with openAccreditationError redirect to the record is locked page" in {
           val userAnswers = emptyUserAnswers.set(page, answer).success.value
 
-          when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(record))
+          when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(Some(record)))
           when(mockGoodsRecordConnector.patchGoodsRecord(any())(any()))
             .thenReturn(Future.failed(UpstreamErrorResponse(openAccreditationErrorCode, BAD_REQUEST)))
           when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))

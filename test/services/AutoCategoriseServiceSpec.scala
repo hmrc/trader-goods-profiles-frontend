@@ -88,7 +88,7 @@ class AutoCategoriseServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
     super.beforeEach()
 
     when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
-    when(mockGoodsRecordsConnector.getRecord(any())(any())).thenReturn(Future.successful(mockGoodsRecordResponse))
+    when(mockGoodsRecordsConnector.getRecord(any())(any())).thenReturn(Future.successful(Some(mockGoodsRecordResponse)))
     when(mockTraderProfileConnector.getTraderProfile(any()))
       .thenReturn(Future.successful(traderProfileWithAuthorisation))
     when(mockDataRequest.eori).thenReturn("eori")
@@ -126,7 +126,7 @@ class AutoCategoriseServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
       when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any()))
         .thenReturn(Future.successful(categorisationInfo))
       when(mockGoodsRecordsConnector.getRecord(any())(any()))
-        .thenReturn(Future.successful(mockGoodsRecordResponse.copy(category = Some(1))))
+        .thenReturn(Future.successful(Some(mockGoodsRecordResponse.copy(category = Some(1)))))
 
       val result =
         autoCategorisationService.autoCategoriseRecord("recordId", userAnswers)(mockDataRequest, hc).futureValue
@@ -150,7 +150,7 @@ class AutoCategoriseServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
       when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any()))
         .thenReturn(Future.successful(categorisationInfo))
       when(mockGoodsRecordsConnector.getRecord(any())(any()))
-        .thenReturn(Future.successful(mockGoodsRecordResponse.copy(category = None)))
+        .thenReturn(Future.successful(Some(mockGoodsRecordResponse.copy(category = None))))
 
       val result =
         autoCategorisationService.autoCategoriseRecord(testRecordId, userAnswers)(mockDataRequest, hc).futureValue
@@ -184,7 +184,7 @@ class AutoCategoriseServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
       when(mockCategorisationService.calculateResult(any(), any(), any()))
         .thenReturn(StandardGoodsNoAssessmentsScenario)
       when(mockGoodsRecordsConnector.getRecord(any())(any()))
-        .thenReturn(Future.successful(mockGoodsRecordResponse.copy(category = None)))
+        .thenReturn(Future.successful(Some(mockGoodsRecordResponse.copy(category = None))))
       when(mockGoodsRecordsConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any())(any()))
         .thenReturn(Future.successful(Done))
 
@@ -212,7 +212,7 @@ class AutoCategoriseServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
       when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any()))
         .thenReturn(Future.successful(categorisationInfo))
       when(mockGoodsRecordsConnector.getRecord(any())(any()))
-        .thenReturn(Future.successful(mockGoodsRecordResponse.copy(category = Some(1))))
+        .thenReturn(Future.successful(Some(mockGoodsRecordResponse.copy(category = Some(1)))))
 
       val result = autoCategorisationService
         .autoCategoriseRecord(mockGoodsRecordResponse.copy(category = Some(1)), userAnswers)(mockDataRequest, hc)
@@ -237,7 +237,7 @@ class AutoCategoriseServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
       when(mockCategorisationService.getCategorisationInfo(any(), any(), any(), any(), any())(any()))
         .thenReturn(Future.successful(categorisationInfo))
       when(mockGoodsRecordsConnector.getRecord(any())(any()))
-        .thenReturn(Future.successful(mockGoodsRecordResponse.copy(category = None)))
+        .thenReturn(Future.successful(Some(mockGoodsRecordResponse.copy(category = None))))
 
       val result = autoCategorisationService
         .autoCategoriseRecord(mockGoodsRecordResponse, userAnswers)(mockDataRequest, hc)
@@ -272,7 +272,7 @@ class AutoCategoriseServiceSpec extends SpecBase with BeforeAndAfterEach with Ge
       when(mockCategorisationService.calculateResult(any(), any(), any()))
         .thenReturn(StandardGoodsNoAssessmentsScenario)
       when(mockGoodsRecordsConnector.getRecord(any())(any()))
-        .thenReturn(Future.successful(mockGoodsRecordResponse.copy(category = None)))
+        .thenReturn(Future.successful(Some(mockGoodsRecordResponse.copy(category = None))))
       when(mockGoodsRecordsConnector.updateCategoryAndComcodeForGoodsRecord(any(), any(), any())(any()))
         .thenReturn(Future.successful(Done))
 

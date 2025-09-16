@@ -33,7 +33,7 @@ class OttService @Inject() (
 
   def getMeasurementUnit(request: DataRequest[_], recordId: String)(implicit
     hc: HeaderCarrier
-  ): Future[Option[String]] = {
+  ): Future[Option[String]] =
     goodsRecordsConnector.getRecord(recordId).flatMap {
       case Some(getGoodsRecordResponse) =>
         ottConnector
@@ -50,9 +50,8 @@ class OttService @Inject() (
             logger.error(s"Error occurred while fetching measurement unit for recordId: $recordId", ex)
             None
           }
-      case None =>
+      case None                         =>
         logger.info(s"Record not found for recordId: $recordId")
         Future.successful(None)
     }
-  }
 }

@@ -90,23 +90,28 @@ class ProductReferenceCyaController @Inject() (
 
   def onSubmit(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      goodsRecordConnector.getRecord(recordId).flatMap {
-        case Some(oldRecord) =>
-          for {
-            productReference <- handleValidateError(UpdateGoodsRecord.validateproductReference(request.userAnswers, recordId))
-            updateGoodsRecord <- Future.successful(UpdateGoodsRecord(request.eori, recordId, productReference = Some(productReference)))
-            _ = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
-            _ <- goodsRecordUpdateService.updateIfChanged(
-              oldValue = oldRecord.traderRef,
-              newValue = productReference,
-              updateGoodsRecord = updateGoodsRecord,
-              oldRecord = oldRecord
-            )
-            updatedAnswers <- Future.fromTry(request.userAnswers.remove(ProductReferenceUpdatePage(recordId)))
-            _ <- sessionRepository.set(updatedAnswers)
-          } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers))
-        case None =>
-          Future.successful(Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad()))
-      }.recover(handleRecover(recordId))
+      goodsRecordConnector
+        .getRecord(recordId)
+        .flatMap {
+          case Some(oldRecord) =>
+            for {
+              productReference  <-
+                handleValidateError(UpdateGoodsRecord.validateproductReference(request.userAnswers, recordId))
+              updateGoodsRecord <-
+                Future.successful(UpdateGoodsRecord(request.eori, recordId, productReference = Some(productReference)))
+              _                  = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
+              _                 <- goodsRecordUpdateService.updateIfChanged(
+                                     oldValue = oldRecord.traderRef,
+                                     newValue = productReference,
+                                     updateGoodsRecord = updateGoodsRecord,
+                                     oldRecord = oldRecord
+                                   )
+              updatedAnswers    <- Future.fromTry(request.userAnswers.remove(ProductReferenceUpdatePage(recordId)))
+              _                 <- sessionRepository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(CyaUpdateRecordPage(recordId), NormalMode, updatedAnswers))
+          case None            =>
+            Future.successful(Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad()))
+        }
+        .recover(handleRecover(recordId))
     }
 }

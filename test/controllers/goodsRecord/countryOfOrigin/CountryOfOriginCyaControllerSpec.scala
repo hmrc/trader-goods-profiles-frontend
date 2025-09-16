@@ -97,7 +97,7 @@ class CountryOfOriginCyaControllerSpec extends SpecBase with MockitoSugar with B
           .value
 
         when(mockGoodsRecordConnector.getRecord(any())(any()))
-          .thenReturn(Future.successful(recordAutoCategorised))
+          .thenReturn(Future.successful(Some(recordAutoCategorised)))
 
         val application = applicationBuilder(userAnswers = Some(userAnswers))
           .overrides(
@@ -126,7 +126,7 @@ class CountryOfOriginCyaControllerSpec extends SpecBase with MockitoSugar with B
         val userAnswers = emptyUserAnswers
 
         when(mockGoodsRecordConnector.getRecord(any())(any()))
-          .thenReturn(Future.successful(recordAutoCategorised))
+          .thenReturn(Future.successful(Some(recordAutoCategorised)))
 
         val application = applicationBuilder(userAnswers = Some(userAnswers))
           .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
@@ -166,7 +166,7 @@ class CountryOfOriginCyaControllerSpec extends SpecBase with MockitoSugar with B
         val record = recordAutoCategorised.copy(category = Some(1), countryOfOrigin = "US")
 
         when(mockGoodsRecordConnector.getRecord(any())(any()))
-          .thenReturn(Future.successful(record))
+          .thenReturn(Future.successful(Some(record)))
 
         when(
           mockAutoCategoriseService.getCategorisationInfoForRecord(
@@ -248,7 +248,7 @@ class CountryOfOriginCyaControllerSpec extends SpecBase with MockitoSugar with B
         val record = recordAutoCategorised.copy(category = Some(1), countryOfOrigin = "CN")
 
         val categorisationInfo = CategorisationInfo.empty.copy(countryOfOrigin = "US")
-        when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(record))
+        when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(Some(record)))
         when(mockAutoCategoriseService.getCategorisationInfoForRecord(any[String], any[UserAnswers])(any(), any()))
           .thenReturn(Future.successful(Some(categorisationInfo)))
         when(mockGoodsRecordUpdateService.updateIfChanged(any(), any(), any(), any(), any())(any()))
@@ -302,7 +302,7 @@ class CountryOfOriginCyaControllerSpec extends SpecBase with MockitoSugar with B
         val record = recordAutoCategorised.copy(category = Some(1), countryOfOrigin = "CN")
 
         when(mockGoodsRecordConnector.getRecord(any())(any()))
-          .thenReturn(Future.successful(record))
+          .thenReturn(Future.successful(Some(record)))
 
         when(mockAutoCategoriseService.getCategorisationInfoForRecord(any[String], any[UserAnswers])(any(), any()))
           .thenReturn(Future.successful(None))

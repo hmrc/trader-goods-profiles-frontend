@@ -31,27 +31,27 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
 
 class AutoCategoriseService @Inject() (
-                                        categorisationService: CategorisationService,
-                                        goodsRecordsConnector: GoodsRecordConnector,
-                                        sessionRepository: SessionRepository
-                                      )(implicit ec: ExecutionContext)
-  extends Logging {
+  categorisationService: CategorisationService,
+  goodsRecordsConnector: GoodsRecordConnector,
+  sessionRepository: SessionRepository
+)(implicit ec: ExecutionContext)
+    extends Logging {
 
   def autoCategoriseRecord(
-                            recordId: String,
-                            userAnswers: UserAnswers
-                          )(implicit request: DataRequest[_], hc: HeaderCarrier): Future[Option[Scenario]] =
+    recordId: String,
+    userAnswers: UserAnswers
+  )(implicit request: DataRequest[_], hc: HeaderCarrier): Future[Option[Scenario]] =
     goodsRecordsConnector.getRecord(recordId).flatMap {
       case Some(record) => autoCategoriseRecord(record, userAnswers)
-      case None =>
+      case None         =>
         logger.info(s"Record not found for recordId: $recordId")
         Future.successful(None)
     }
 
   def autoCategoriseRecord(
-                            record: GetGoodsRecordResponse,
-                            userAnswers: UserAnswers
-                          )(implicit request: DataRequest[_], hc: HeaderCarrier): Future[Option[Scenario]] =
+    record: GetGoodsRecordResponse,
+    userAnswers: UserAnswers
+  )(implicit request: DataRequest[_], hc: HeaderCarrier): Future[Option[Scenario]] =
     categorisationService
       .getCategorisationInfo(request, record.comcode, record.countryOfOrigin, record.recordId)
       .flatMap { categorisationInfo =>
@@ -68,13 +68,17 @@ class AutoCategoriseService @Inject() (
               case Right(categoryRecord) =>
                 for {
                   oldRecord <- goodsRecordsConnector.getRecord(categoryRecord.recordId)
-                  _ <- oldRecord match {
-                    case Some(oldRec) =>
-                      goodsRecordsConnector
-                        .updateCategoryAndComcodeForGoodsRecord(categoryRecord.recordId, categoryRecord, oldRec)
-                    case None =>
-                      Future.failed(new IllegalStateException(s"Record ${categoryRecord.recordId} not found after auto-categorisation"))
-                  }
+                  _         <- oldRecord match {
+                                 case Some(oldRec) =>
+                                   goodsRecordsConnector
+                                     .updateCategoryAndComcodeForGoodsRecord(categoryRecord.recordId, categoryRecord, oldRec)
+                                 case None         =>
+                                   Future.failed(
+                                     new IllegalStateException(
+                                       s"Record ${categoryRecord.recordId} not found after auto-categorisation"
+                                     )
+                                   )
+                               }
                 } yield Some(categoryRecord.category)
 
               case Left(errors) =>
@@ -88,20 +92,19 @@ class AutoCategoriseService @Inject() (
       }
 
   def getCategorisationInfoForRecord(
-                                      recordId: String,
-                                      userAnswers: UserAnswers
-                                    )(implicit request: DataRequest[_], hc: HeaderCarrier): Future[Option[CategorisationInfo]] =
+    recordId: String,
+    userAnswers: UserAnswers
+  )(implicit request: DataRequest[_], hc: HeaderCarrier): Future[Option[CategorisationInfo]] =
     goodsRecordsConnector.getRecord(recordId).flatMap {
       case Some(record) =>
         categorisationService
           .getCategorisationInfo(request, record.comcode, record.countryOfOrigin, record.recordId)
           .map(Some(_))
-          .recover {
-            case ex =>
-              logger.error(s"[getCategorisationInfoForRecord] failed for recordId=$recordId", ex)
-              None
+          .recover { case ex =>
+            logger.error(s"[getCategorisationInfoForRecord] failed for recordId=$recordId", ex)
+            None
           }
-      case None =>
+      case None         =>
         logger.info(s"Record not found for recordId: $recordId")
         Future.successful(None)
     }

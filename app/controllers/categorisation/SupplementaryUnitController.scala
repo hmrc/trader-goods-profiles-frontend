@@ -121,8 +121,8 @@ class SupplementaryUnitController @Inject() (
               case Some(value) if value != 0 => value.toString
               case _                         => ""
             }
-            val measurementUnit = record.measurementUnit
-            val preparedFormFuture = userAnswerValue match {
+            val measurementUnit      = record.measurementUnit
+            val preparedFormFuture   = userAnswerValue match {
               case Some(value) => Future.successful((form.fill(value), measurementUnit))
               case None        => Future.successful((form.fill(initialValue), measurementUnit))
             }
@@ -133,9 +133,10 @@ class SupplementaryUnitController @Inject() (
                 .addingToSession(initialValueOfSuppUnit -> initialValue)
                 .removingFromSession(dataUpdated, pageUpdated, dataRemoved)
             }
-          case None =>
+          case None         =>
             Future.successful(Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad()))
-        }.recover { case ex: Exception =>
+        }
+        .recover { case ex: Exception =>
           logger.error(s"Error occurred while fetching record for recordId: $recordId", ex)
           navigator.journeyRecovery()
         }

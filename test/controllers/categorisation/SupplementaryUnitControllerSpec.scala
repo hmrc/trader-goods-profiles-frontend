@@ -524,7 +524,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
         val mockAuditService         = mock[AuditService]
 
         when(mockGoodsRecordConnector.getRecord(any())(any()))
-          .thenReturn(Future.successful(record))
+          .thenReturn(Future.successful(Some(record)))
 
         val application =
           applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -583,7 +583,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
           .value
 
         when(mockGoodsRecordConnector.getRecord(any())(any()))
-          .thenReturn(Future.successful(record))
+          .thenReturn(Future.successful(Some(record)))
 
         val application =
           applicationBuilder(userAnswers = Some(answers))
@@ -643,7 +643,7 @@ class SupplementaryUnitControllerSpec extends SpecBase with MockitoSugar {
         val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
         when(mockGoodsRecordConnector.getRecord(any())(any()))
-          .thenReturn(Future.successful(record))
+          .thenReturn(Future.successful(Some(record)))
 
         val application = applicationBuilder(userAnswers = Some(userAnswers))
           .overrides(

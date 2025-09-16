@@ -88,7 +88,7 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
     reset(mockSessionRepository)
     reset(mockAuditService)
 
-    when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(goodsRecordResponse()))
+    when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(Some(goodsRecordResponse())))
 
     when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
     when(mockAuditService.auditStartUpdateGoodsRecord(any(), any(), any(), any(), any())(any()))
@@ -254,7 +254,8 @@ class CategorisationPreparationControllerSpec extends SpecBase with BeforeAndAft
           Instant.parse("2022-11-18T23:20:19Z")
         )
 
-        when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(recordWithoutSuppUnit))
+        when(mockGoodsRecordConnector.getRecord(any())(any()))
+          .thenReturn(Future.successful(Some(recordWithoutSuppUnit)))
 
         val app = application()
 

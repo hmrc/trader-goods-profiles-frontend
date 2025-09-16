@@ -92,7 +92,7 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar with Be
   "RemoveGoodsRecord Controller" - {
     "must return OK and the correct view for a GET" in {
       when(mockAuditService.auditStartRemoveGoodsRecord(any(), any(), any())(any())).thenReturn(Future.successful(Done))
-      when(mockConnector.getRecord(eqTo(testRecordId))(any())).thenReturn(Future.successful(testRecord))
+      when(mockConnector.getRecord(eqTo(testRecordId))(any())).thenReturn(Future.successful(Some(testRecord)))
 
       val application = applicationBuilder(userAnswers = Some(userAnswersWithProductRef))
         .overrides(
@@ -118,7 +118,7 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar with Be
 
     "must return OK and the alternate correct view for a GET with different url" in {
       when(mockAuditService.auditStartRemoveGoodsRecord(any(), any(), any())(any())).thenReturn(Future.successful(Done))
-      when(mockConnector.getRecord(eqTo(testRecordId))(any())).thenReturn(Future.successful(testRecord))
+      when(mockConnector.getRecord(eqTo(testRecordId))(any())).thenReturn(Future.successful(Some(testRecord)))
 
       val application = applicationBuilder(userAnswers = Some(userAnswersWithProductRef))
         .overrides(
@@ -167,7 +167,7 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar with Be
 
     "must redirect to the goods profile list and delete record when Yes is submitted and record is deleted" in {
       when(mockConnector.getRecord(eqTo(testRecordId))(any()))
-        .thenReturn(Future.successful(testRecord))
+        .thenReturn(Future.successful(Some(testRecord)))
       when(mockConnector.removeGoodsRecord(eqTo(testRecordId))(any()))
         .thenReturn(Future.successful(true))
 
@@ -202,7 +202,7 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar with Be
       when(mockAuditService.auditFinishRemoveGoodsRecord(any(), any(), any())(any()))
         .thenReturn(Future.successful(Done))
       when(mockConnector.removeGoodsRecord(eqTo(testRecordId))(any())).thenReturn(Future.successful(false))
-      when(mockConnector.getRecord(eqTo(testRecordId))(any())).thenReturn(Future.successful(testRecord))
+      when(mockConnector.getRecord(eqTo(testRecordId))(any())).thenReturn(Future.successful(Some(testRecord)))
 
       val application = applicationBuilder(userAnswers = Some(userAnswersWithProductRef))
         .overrides(
@@ -229,7 +229,7 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar with Be
     "must redirect to the goods profile list when No is submitted and location is GoodsProfileLocation" in {
       val mockConnector = mock[GoodsRecordConnector]
 
-      when(mockConnector.getRecord(eqTo(testRecordId))(any())).thenReturn(Future.successful(testRecord))
+      when(mockConnector.getRecord(eqTo(testRecordId))(any())).thenReturn(Future.successful(Some(testRecord)))
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
@@ -257,7 +257,7 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar with Be
       val mockConnector = mock[GoodsRecordConnector]
 
       when(mockConnector.getRecord(eqTo(testRecordId))(any()))
-        .thenReturn(Future.successful(testRecord))
+        .thenReturn(Future.successful(Some(testRecord)))
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(bind[GoodsRecordConnector].toInstance(mockConnector))
@@ -304,7 +304,7 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar with Be
 
     "must return OK and the correct view when product reference is missing in user answers but connector returns record" in {
       when(mockAuditService.auditStartRemoveGoodsRecord(any(), any(), any())(any())).thenReturn(Future.successful(Done))
-      when(mockConnector.getRecord(eqTo(testRecordId))(any())).thenReturn(Future.successful(testRecord))
+      when(mockConnector.getRecord(eqTo(testRecordId))(any())).thenReturn(Future.successful(Some(testRecord)))
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
@@ -350,7 +350,7 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar with Be
     }
 
     "must redirect to RecordNotFoundController when removeGoodsRecord returns 404 UpstreamErrorResponse" in {
-      when(mockConnector.getRecord(eqTo(testRecordId))(any())).thenReturn(Future.successful(testRecord))
+      when(mockConnector.getRecord(eqTo(testRecordId))(any())).thenReturn(Future.successful(Some(testRecord)))
       when(mockConnector.removeGoodsRecord(eqTo(testRecordId))(any()))
         .thenReturn(Future.failed(UpstreamErrorResponse("Not Found", 404)))
 
@@ -374,7 +374,7 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar with Be
     }
 
     "must redirect to JourneyRecoveryController on removeGoodsRecord exception other than 404" in {
-      when(mockConnector.getRecord(eqTo(testRecordId))(any())).thenReturn(Future.successful(testRecord))
+      when(mockConnector.getRecord(eqTo(testRecordId))(any())).thenReturn(Future.successful(Some(testRecord)))
       when(mockConnector.removeGoodsRecord(eqTo(testRecordId))(any()))
         .thenReturn(Future.failed(new RuntimeException("Unexpected error")))
 
@@ -397,7 +397,7 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar with Be
     }
 
     "must redirect to SingleRecordController when No is submitted and location is not GoodsProfileLocation" in {
-      when(mockConnector.getRecord(eqTo(testRecordId))(any())).thenReturn(Future.successful(testRecord))
+      when(mockConnector.getRecord(eqTo(testRecordId))(any())).thenReturn(Future.successful(Some(testRecord)))
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(

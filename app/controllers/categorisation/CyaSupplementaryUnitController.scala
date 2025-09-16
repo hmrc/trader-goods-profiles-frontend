@@ -102,7 +102,7 @@ class CyaSupplementaryUnitController @Inject() (
                 .addingToSession(dataUpdated -> isValueChanged.toString)
                 .addingToSession(dataRemoved -> isSuppUnitRemoved.toString)
                 .addingToSession(pageUpdated -> supplementaryUnit)
-            case None =>
+            case None            =>
               Future.successful(Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad()))
           }
         case Left(errors) =>

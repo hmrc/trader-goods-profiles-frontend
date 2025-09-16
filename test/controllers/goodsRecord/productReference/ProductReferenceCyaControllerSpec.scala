@@ -163,7 +163,7 @@ class ProductReferenceCyaControllerSpec
         "must update the goods record and redirect to the Home Page" in {
           val userAnswers = emptyUserAnswers.set(page, answer).success.value
 
-          when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(record))
+          when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(Some(record)))
           when(mockGoodsRecordConnector.patchGoodsRecord(any())(any())).thenReturn(Future.successful(Done))
           when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
             .thenReturn(Future.successful(Done))
@@ -204,7 +204,7 @@ class ProductReferenceCyaControllerSpec
           when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
             .thenReturn(Future.successful(Done))
           when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
-          when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
+          when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(Some(record))
 
           val application = applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
@@ -240,7 +240,7 @@ class ProductReferenceCyaControllerSpec
           val expectedPayload = UpdateGoodsRecord(testEori, testRecordId, productReference = Some(answer))
           val userAnswers     = emptyUserAnswers.set(page, answer).success.value
 
-          when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(record))
+          when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(Some(record)))
           when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
             .thenReturn(Future.successful(Done))
 
@@ -276,7 +276,7 @@ class ProductReferenceCyaControllerSpec
         "when future fails with openAccreditationError redirect to the record is locked page" in {
           val userAnswers = emptyUserAnswers.set(page, answer).success.value
 
-          when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(record))
+          when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(Some(record)))
           when(mockGoodsRecordConnector.patchGoodsRecord(any())(any()))
             .thenReturn(Future.failed(UpstreamErrorResponse(openAccreditationErrorCode, BAD_REQUEST)))
           when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))

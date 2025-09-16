@@ -53,7 +53,7 @@ class CreateRecordSuccessController @Inject() (
             case Some(record) =>
               val scenario = Scenario.fromInt(record.category)
               renderView(recordId, scenario, record)
-            case None =>
+            case None         =>
               Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
           }
         }

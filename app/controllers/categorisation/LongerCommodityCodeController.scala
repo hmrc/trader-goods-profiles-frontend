@@ -122,17 +122,18 @@ class LongerCommodityCodeController @Inject() (
           .flatMap { commodity =>
             if (
               todayInstant.isBefore(commodity.validityStartDate) ||
-                commodity.validityEndDate.exists(todayInstant.isAfter)
+              commodity.validityEndDate.exists(todayInstant.isAfter)
             ) {
               val formWithErrors = createFormWithErrors(form, value, "commodityCode.error.expired")
               Future.successful(BadRequest(view(formWithErrors, mode, shortCode, recordId)))
             } else {
               for {
-                updatedAnswers <- Future.fromTry(request.userAnswers.set(LongerCommodityCodePage(recordId), value))
-                updatedAnswersWithQuery <- Future.fromTry(
-                  updatedAnswers.set(LongerCommodityQuery(recordId), commodity.copy(commodityCode = longerCode))
-                )
-                _ <- sessionRepository.set(updatedAnswersWithQuery)
+                updatedAnswers          <- Future.fromTry(request.userAnswers.set(LongerCommodityCodePage(recordId), value))
+                updatedAnswersWithQuery <-
+                  Future.fromTry(
+                    updatedAnswers.set(LongerCommodityQuery(recordId), commodity.copy(commodityCode = longerCode))
+                  )
+                _                       <- sessionRepository.set(updatedAnswersWithQuery)
               } yield Redirect(
                 navigator.nextPage(LongerCommodityCodePage(recordId), mode, updatedAnswersWithQuery)
               )
@@ -143,7 +144,7 @@ class LongerCommodityCodeController @Inject() (
               form.copy(errors = Seq(FormError("value", getMessage("longerCommodityCode.error.invalid"))))
             BadRequest(view(formWithApiErrors, mode, shortCode, recordId))
           }
-      case None =>
+      case None         =>
         Future.successful(Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad()))
     }
   }

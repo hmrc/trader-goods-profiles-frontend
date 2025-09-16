@@ -56,13 +56,13 @@ class SingleRecordController @Inject() (
 
   def onPageLoad(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val countryOfOriginUpdated = request.session.get("countryOfOriginChanged").contains("true")
+      val countryOfOriginUpdated           = request.session.get("countryOfOriginChanged").contains("true")
       val showCommodityCodeBanner: Boolean = request.session.get("showCommodityCodeChangeBanner").contains("true")
 
       goodsRecordConnector
         .getRecord(recordId)
         .flatMap {
-          case None =>
+          case None                =>
             Future.successful(Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad()))
           case Some(initialRecord) =>
             val backLink = request.headers
@@ -78,23 +78,25 @@ class SingleRecordController @Inject() (
             )
 
             for {
-              countries <- retrieveAndStoreCountries
-              updatedAnswers <- updateUserAnswers(recordId, recordToDisplay)
+              countries              <- retrieveAndStoreCountries
+              updatedAnswers         <- updateUserAnswers(recordId, recordToDisplay)
               autoCategoriseScenario <- if (shouldAutoCategorise(recordToDisplay)) {
-                autoCategoriseService.autoCategoriseRecord(recordToDisplay, updatedAnswers)
-              } else {
-                Future.successful(None)
-              }
-              _ <- sessionRepository.set(updatedAnswers)
-              finalRecord <- if (autoCategoriseScenario.isDefined) {
-                goodsRecordConnector.getRecord(recordId).map {
-                  case Some(record) => record
-                  case None =>
-                    throw new IllegalStateException(s"Record $recordId not found after auto-categorisation")
-                }
-              } else {
-                Future.successful(recordToDisplay)
-              }
+                                          autoCategoriseService.autoCategoriseRecord(recordToDisplay, updatedAnswers)
+                                        } else {
+                                          Future.successful(None)
+                                        }
+              _                      <- sessionRepository.set(updatedAnswers)
+              finalRecord            <- if (autoCategoriseScenario.isDefined) {
+                                          goodsRecordConnector.getRecord(recordId).map {
+                                            case Some(record) => record
+                                            case None         =>
+                                              throw new IllegalStateException(
+                                                s"Record $recordId not found after auto-categorisation"
+                                              )
+                                          }
+                                        } else {
+                                          Future.successful(recordToDisplay)
+                                        }
             } yield renderView(
               recordId,
               finalRecord,
@@ -105,10 +107,8 @@ class SingleRecordController @Inject() (
               showCommodityCodeBanner
             )
         }
-        .recover {
-          case e: Exception =>
-            logger.error(s"Error loading goods record: ${e.getMessage}")
-            Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
+        .recover { case e: Exception =>
+          Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
         }
     }
 

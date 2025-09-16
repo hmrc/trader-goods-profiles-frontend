@@ -137,7 +137,7 @@ class CommodityCodeCyaControllerSpec
           .success
           .value
 
-        when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
+        when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(Some(record))
 
         val application = applicationBuilder(userAnswers = Some(userAnswers))
           .overrides(bind[AuditService].toInstance(mockAuditService))
@@ -181,7 +181,7 @@ class CommodityCodeCyaControllerSpec
           .success
           .value
 
-        when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
+        when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(Some(record))
 
         val application = applicationBuilder(userAnswers = Some(userAnswers))
           .overrides(bind[AuditService].toInstance(mockAuditService))
@@ -208,7 +208,7 @@ class CommodityCodeCyaControllerSpec
       }
 
       "must redirect to Journey Recovery if no answers are found" in {
-        when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
+        when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(Some(record))
 
         val application = applicationBuilder(Some(emptyUserAnswers))
           .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
@@ -304,7 +304,7 @@ class CommodityCodeCyaControllerSpec
             .thenReturn(Future.successful(Done))
 
           when(mockGoodsRecordConnector.getRecord(any())(any()))
-            .thenReturn(Future.successful(record))
+            .thenReturn(Future.successful(Some(record)))
 
           when(mockAutoCategoriseService.autoCategoriseRecord(any[String], any[UserAnswers])(any(), any()))
             .thenReturn(Future.successful(Some(emptyUserAnswers)))
@@ -366,7 +366,7 @@ class CommodityCodeCyaControllerSpec
             .thenReturn(Future.successful(true))
 
           when(mockGoodsRecordConnector.getRecord(any())(any()))
-            .thenReturn(Future.successful(record))
+            .thenReturn(Future.successful(Some(record)))
 
           when(
             mockAutoCategoriseService.autoCategoriseRecord(
@@ -448,7 +448,7 @@ class CommodityCodeCyaControllerSpec
             .value
 
           when(mockGoodsRecordConnector.getRecord(any())(any()))
-            .thenReturn(Future.successful(record))
+            .thenReturn(Future.successful(Some(record)))
 
           when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any()))
             .thenReturn(Future.successful(Done))
@@ -524,7 +524,7 @@ class CommodityCodeCyaControllerSpec
             .thenReturn(Future.successful(Done))
           when(mockGoodsRecordConnector.putGoodsRecord(any(), any())(any()))
             .thenReturn(Future.failed(UpstreamErrorResponse(openAccreditationErrorCode, BAD_REQUEST)))
-          when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
+          when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(Some(record))
 
           val application = applicationBuilder(userAnswers = Some(userAnswers))
             .overrides(
@@ -558,7 +558,7 @@ class CommodityCodeCyaControllerSpec
       "when user answers cannot create an update goods record" - {
         "must not submit anything, and redirect to Journey Recovery" in {
           when(mockGoodsRecordConnector.getRecord(any())(any()))
-            .thenReturn(Future.successful(record))
+            .thenReturn(Future.successful(Some(record)))
 
           when(mockOttConnector.getCountries)
             .thenReturn(Future.successful(Seq.empty))
@@ -645,7 +645,7 @@ class CommodityCodeCyaControllerSpec
           .thenReturn(Future.successful(Done))
         when(mockGoodsRecordConnector.patchGoodsRecord(any())(any()))
           .thenReturn(Future.failed(new RuntimeException("Connector failed")))
-        when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
+        when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(Some(record))
 
         val application = applicationBuilder(userAnswers = Some(userAnswers))
           .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))

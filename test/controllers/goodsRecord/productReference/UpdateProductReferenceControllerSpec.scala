@@ -116,7 +116,7 @@ class UpdateProductReferenceControllerSpec extends SpecBase with MockitoSugar wi
     "must redirect to the next page when valid data is submitted" in {
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
       when(mockGoodsRecordConnector.isProductReferenceUnique(any())(any())) thenReturn Future.successful(true)
-      when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
+      when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(Some(record))
 
       val application =
         applicationBuilder(userAnswers =
@@ -144,7 +144,7 @@ class UpdateProductReferenceControllerSpec extends SpecBase with MockitoSugar wi
 
     "must redirect to the next page when no change has been made" in {
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-      when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
+      when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(Some(record))
       when(mockGoodsRecordConnector.isProductReferenceUnique(any())(any())) thenReturn Future.successful(false)
 
       val application = applicationBuilder(userAnswers =
@@ -172,7 +172,7 @@ class UpdateProductReferenceControllerSpec extends SpecBase with MockitoSugar wi
 
     "must set changesMade to true if product reference is updated " in {
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-      when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
+      when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(Some(record))
       when(mockGoodsRecordConnector.isProductReferenceUnique(any())(any())) thenReturn Future.successful(true)
 
       val userAnswers =
@@ -204,7 +204,7 @@ class UpdateProductReferenceControllerSpec extends SpecBase with MockitoSugar wi
 
     "must set changesMade to false if product reference is not updated" in {
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-      when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
+      when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(Some(record))
       when(mockGoodsRecordConnector.isProductReferenceUnique(any())(any())) thenReturn Future.successful(false)
 
       val userAnswers =
@@ -248,7 +248,7 @@ class UpdateProductReferenceControllerSpec extends SpecBase with MockitoSugar wi
     }
 
     "must return a Bad Request and errors when an existing data is submitted" in {
-      when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
+      when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(Some(record))
       when(mockGoodsRecordConnector.isProductReferenceUnique(any())(any())) thenReturn Future.successful(false)
 
       val application = applicationBuilder(userAnswers =

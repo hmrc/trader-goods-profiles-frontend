@@ -43,7 +43,7 @@ class CommodityService @Inject() (
           case Some(commodity) => commodity.isValid
           case None            => false
         }
-      case None =>
+      case None                                   =>
         Future.successful(false)
     }
 
@@ -57,11 +57,11 @@ class CommodityService @Inject() (
     }
 
   def fetchRecordValues(
-                         recordId: String
-                       )(implicit request: DataRequest[AnyContent], hc: HeaderCarrier): Future[Option[(String, String)]] =
+    recordId: String
+  )(implicit request: DataRequest[AnyContent], hc: HeaderCarrier): Future[Option[(String, String)]] =
     goodsRecordsConnector.getRecord(recordId).map {
       case Some(record) => Some((record.comcode, record.countryOfOrigin))
-      case None =>
+      case None         =>
         logger.info(s"Record not found for recordId: $recordId")
         None
     }

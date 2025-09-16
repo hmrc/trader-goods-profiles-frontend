@@ -173,10 +173,10 @@ class CyaCategorisationController @Inject() (
               } yield Redirect(
                 navigator.nextPage(CyaCategorisationPage(recordId), NormalMode, request.userAnswers)
               )
-            case None =>
+            case None            =>
               Future.successful(Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad()))
           }
-        case Left(errors) =>
+        case Left(errors)          =>
           dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
           Future.successful(
             logErrorsAndContinue(

@@ -106,7 +106,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
         .success
         .value
 
-      when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(lockedRecord)
+      when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(Some(lockedRecord))
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
       when(mockSessionRepository.clearData(any(), any())) thenReturn Future.successful(true)
       when(mockOttConnector.getCountries).thenReturn(Future.successful(countries))
@@ -167,7 +167,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
         .value
 
       when(mockGoodsRecordConnector.getRecord(any())(any()))
-        .thenReturn(Future.successful(lockedRecord))
+        .thenReturn(Future.successful(Some(lockedRecord)))
       when(mockSessionRepository.set(any()))
         .thenReturn(Future.successful(true))
       when(mockSessionRepository.clearData(any(), any()))
@@ -227,7 +227,9 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
         .success
         .value
 
-      when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(notCategorisedLockedRecord)
+      when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(
+        Some(notCategorisedLockedRecord)
+      )
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
       when(mockSessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
 
@@ -353,7 +355,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
     }
 
     "must redirect to journey recovery for a GET when ott connectors fails" in {
-      when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(notCategorisedRecord)
+      when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(Some(notCategorisedRecord))
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
       when(mockOttConnector.getCountries(any())) thenReturn Future.failed(new RuntimeException("Ott connector failed"))
       when(mockSessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
@@ -617,7 +619,7 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
           .success
           .value
 
-        when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(record))
+        when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(Some(record)))
         when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
         when(mockSessionRepository.clearData(any(), any())).thenReturn(Future.successful(true))
 
@@ -654,13 +656,13 @@ class SingleRecordControllerSpec extends SpecBase with MockitoSugar with BeforeA
     }
 
     "must redirect to RecordNotFound when record does not exist" in {
-      when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(None)) // Fixed: Correct mock setup
-      when(mockSessionRepository.set(any())).thenReturn(Future.successful(true)) // Fixed: Separate mock setup
+      when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(None))
+      when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, routes.SingleRecordController.onPageLoad(testRecordId).url)
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.problem.routes.RecordNotFoundController.onPageLoad().url)

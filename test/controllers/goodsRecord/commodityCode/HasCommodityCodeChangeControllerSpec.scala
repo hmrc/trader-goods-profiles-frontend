@@ -58,7 +58,7 @@ class HasCommodityCodeChangedControllerSpec extends SpecBase with MockitoSugar w
   private val mockGoodsRecordConnector = mock[GoodsRecordConnector]
 
   override def beforeEach(): Unit = {
-    when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(goodsRecord))
+    when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(Some(goodsRecord)))
     super.beforeEach()
   }
 
@@ -69,7 +69,8 @@ class HasCommodityCodeChangedControllerSpec extends SpecBase with MockitoSugar w
 
         when(mockAuditService.auditStartUpdateGoodsRecord(any(), any(), any(), any(), any())(any()))
           .thenReturn(Future.successful(Done))
-        when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(goodsRecordCatNoAdvice))
+        when(mockGoodsRecordConnector.getRecord(any())(any()))
+          .thenReturn(Future.successful(Some(goodsRecordCatNoAdvice)))
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
@@ -105,7 +106,8 @@ class HasCommodityCodeChangedControllerSpec extends SpecBase with MockitoSugar w
       }
 
       "when advice status has happened" in {
-        when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(goodsRecordNoCatAdvice))
+        when(mockGoodsRecordConnector.getRecord(any())(any()))
+          .thenReturn(Future.successful(Some(goodsRecordNoCatAdvice)))
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
@@ -128,7 +130,7 @@ class HasCommodityCodeChangedControllerSpec extends SpecBase with MockitoSugar w
       }
 
       "when categorisation and advice has happened" in {
-        when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(goodsRecordCatAdvice))
+        when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(Some(goodsRecordCatAdvice)))
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))
@@ -152,7 +154,7 @@ class HasCommodityCodeChangedControllerSpec extends SpecBase with MockitoSugar w
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-      when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(goodsRecordCatNoAdvice))
+      when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(Some(goodsRecordCatNoAdvice)))
       val userAnswers = UserAnswers(userAnswersId).set(HasCommodityCodeChangePage(testRecordId), true).success.value
       val application = applicationBuilder(userAnswers = Some(userAnswers))
         .overrides(
@@ -202,7 +204,7 @@ class HasCommodityCodeChangedControllerSpec extends SpecBase with MockitoSugar w
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
-      when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(goodsRecordCatAdvice))
+      when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(Some(goodsRecordCatAdvice)))
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(bind[GoodsRecordConnector].toInstance(mockGoodsRecordConnector))

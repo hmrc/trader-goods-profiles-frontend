@@ -195,7 +195,7 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
             when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
               .thenReturn(Future.successful(Done))
             when(mockGoodsRecordConnector.putGoodsRecord(any(), any())(any())).thenReturn(Future.successful(Done))
-            when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(record))
+            when(mockGoodsRecordConnector.getRecord(any())(any())).thenReturn(Future.successful(Some(record)))
             when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
             when(mockCommodityService.isCommodityCodeValid(any(), any())(any(), any()))
               .thenReturn(Future.successful(false))
@@ -269,7 +269,7 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
             when(mockGoodsRecordConnector.putGoodsRecord(any(), any())(any())).thenReturn(Future.successful(Done))
             when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
               .thenReturn(Future.successful(Done))
-            when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
+            when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(Some(record))
             when(mockCommodityService.isCommodityCodeValid(any(), any())(any(), any())) thenReturn Future.successful(
               false
             )
@@ -344,7 +344,7 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
             when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any))
               .thenReturn(Future.successful(Done))
             when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future
-              .successful(record)
+              .successful(Some(record))
             when(
               mockAutoCategoriseService.autoCategoriseRecord(
                 any[GetGoodsRecordResponse],
@@ -418,7 +418,8 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
               .success
               .value
 
-            when(mockGoodsRecordConnector.getRecord(eqTo(testRecordId))(any())).thenReturn(Future.successful(record))
+            when(mockGoodsRecordConnector.getRecord(eqTo(testRecordId))(any()))
+              .thenReturn(Future.successful(Some(record)))
             when(mockAuditService.auditFinishUpdateGoodsRecord(any(), any(), any())(any()))
               .thenReturn(Future.successful(Done))
             when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
@@ -472,7 +473,7 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
 
           "when user answers cannot create an update goods record" - {
             "must not submit anything, and redirect to Journey Recovery" in {
-              when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
+              when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(Some(record))
               when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
               when(mockCommodityService.isCommodityCodeValid(any(), any())(any(), any())) thenReturn Future.successful(
                 false
@@ -551,7 +552,7 @@ class UpdateCommodityCodeResultControllerSpec extends SpecBase with MockitoSugar
                 .thenReturn(Future.successful(Done))
               when(mockGoodsRecordConnector.patchGoodsRecord(any())(any()))
                 .thenReturn(Future.failed(new RuntimeException("Connector failed")))
-              when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(record)
+              when(mockGoodsRecordConnector.getRecord(any())(any())) thenReturn Future.successful(Some(record))
               when(mockCommodityService.isCommodityCodeValid(any(), any())(any(), any())) thenReturn Future.successful(
                 false
               )

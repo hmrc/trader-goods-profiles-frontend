@@ -27,9 +27,7 @@ import navigation.GoodsProfileNavigator
 import pages.goodsRecord.ProductReferenceUpdatePage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import repositories.SessionRepository
 import services.AuditService
-import uk.gov.hmrc.http.UpstreamErrorResponse
 import views.html.goodsProfile.RemoveGoodsRecordView
 
 import javax.inject.Inject
@@ -43,7 +41,6 @@ class RemoveGoodsRecordController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   profileAuth: ProfileAuthenticateAction,
-  sessionRepository: SessionRepository,
   formProvider: RemoveGoodsRecordFormProvider,
   auditService: AuditService,
   val controllerComponents: MessagesControllerComponents,
@@ -61,9 +58,8 @@ class RemoveGoodsRecordController @Inject() (
         .map { productRef =>
           Ok(view(form, recordId, location, productRef))
         }
-        .recover {
-          case ex: Exception =>
-            Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
+        .recover { case ex: Exception =>
+          Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
         }
     }
 
@@ -92,7 +88,7 @@ class RemoveGoodsRecordController @Inject() (
       case None             =>
         goodsRecordConnector.getRecord(recordId).map {
           case Some(record) => record.traderRef
-          case None => "Unknown product"
+          case None         => "Unknown product"
         }
     }
 
@@ -112,9 +108,8 @@ class RemoveGoodsRecordController @Inject() (
           }
         }
       }
-      .recover {
-        case e: Exception                                    =>
-          Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
+      .recover { case e: Exception =>
+        Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
       }
 
   private def getCancelRedirect(location: Location, recordId: String): play.api.mvc.Call =

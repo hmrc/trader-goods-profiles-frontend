@@ -51,10 +51,8 @@ class CreateRecordSuccessControllerSpec extends SpecBase with BeforeAndAfterEach
     mock[CreateRecordAutoCategorisationSuccessView]
   val mockDefaultView: CreateRecordSuccessView                              = mock[CreateRecordSuccessView]
 
-  // Dummy messages instance
   val messages: Messages = MessagesImpl(play.api.i18n.Lang("en"), stubMessagesApi())
 
-  // Instantiate controller with mocks (some params can be null or mocks if unused)
   val controller = new CreateRecordSuccessController(
     messagesApi = stubMessagesApi(),
     identify = null,
@@ -68,7 +66,6 @@ class CreateRecordSuccessControllerSpec extends SpecBase with BeforeAndAfterEach
     autoCategorisationView = mockAutoCategorisationView
   )
 
-  // A fake implicit request for calling renderView
   implicit val request: Request[_] = FakeRequest()
 
   override def afterEach(): Unit = {
@@ -125,7 +122,8 @@ class CreateRecordSuccessControllerSpec extends SpecBase with BeforeAndAfterEach
         updatedDateTime = Instant.now()
       )
 
-      when(mockGoodsRecordConnector.getRecord(eqTo("test"))(any[HeaderCarrier])).thenReturn(Future.successful(record))
+      when(mockGoodsRecordConnector.getRecord(eqTo("test"))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(Some(record)))
       when(mockAutoCategoriseService.autoCategoriseRecord(any[String](), any())(any(), any()))
         .thenReturn(Future.successful(None))
 
@@ -177,7 +175,7 @@ class CreateRecordSuccessControllerSpec extends SpecBase with BeforeAndAfterEach
         )
       ).thenReturn(Future.successful(Some(StandardGoodsScenario)))
       when(mockGoodsRecordConnector.getRecord(eqTo(TestConstants.testRecordId))(any[HeaderCarrier]))
-        .thenReturn(Future.successful(record))
+        .thenReturn(Future.successful(Some(record)))
 
       val application = applicationWithMocks
 
@@ -234,7 +232,7 @@ class CreateRecordSuccessControllerSpec extends SpecBase with BeforeAndAfterEach
       ).thenReturn(Future.successful(Some(StandardGoodsScenario)))
 
       when(mockGoodsRecordConnector.getRecord(eqTo(TestConstants.testRecordId))(any[HeaderCarrier]))
-        .thenReturn(Future.successful(record))
+        .thenReturn(Future.successful(Some(record)))
 
       val application = applicationWithMocks
 
@@ -291,7 +289,7 @@ class CreateRecordSuccessControllerSpec extends SpecBase with BeforeAndAfterEach
       ).thenReturn(Future.successful(Some(StandardGoodsScenario)))
 
       when(mockGoodsRecordConnector.getRecord(eqTo(TestConstants.testRecordId))(any[HeaderCarrier]))
-        .thenReturn(Future.successful(record))
+        .thenReturn(Future.successful(Some(record)))
 
       val application = applicationWithMocks
 
@@ -347,7 +345,7 @@ class CreateRecordSuccessControllerSpec extends SpecBase with BeforeAndAfterEach
       ).thenReturn(Future.successful(None))
 
       when(mockGoodsRecordConnector.getRecord(eqTo(TestConstants.testRecordId))(any[HeaderCarrier]))
-        .thenReturn(Future.successful(record))
+        .thenReturn(Future.successful(Some(record)))
 
       val application = applicationWithMocks
 

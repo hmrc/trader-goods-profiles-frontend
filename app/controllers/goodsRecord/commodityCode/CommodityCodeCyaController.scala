@@ -81,7 +81,7 @@ class CommodityCodeCyaController @Inject() (
                   case Right(commodity) =>
                     val onSubmitAction =
                       controllers.goodsRecord.commodityCode.routes.CommodityCodeCyaController.onSubmit(recordId)
-                    val list = SummaryListViewModel(
+                    val list           = SummaryListViewModel(
                       Seq(
                         CommodityCodeSummary
                           .rowUpdateCya(
@@ -92,7 +92,7 @@ class CommodityCodeCyaController @Inject() (
                       )
                     )
                     Future.successful(Ok(view(list, onSubmitAction, commodityCodeKey)))
-                  case Left(errors) =>
+                  case Left(errors)     =>
                     Future.successful(
                       logErrorsAndContinue(
                         errorMessage,
@@ -101,13 +101,14 @@ class CommodityCodeCyaController @Inject() (
                     )
                 }
               }
-          case None =>
+          case None                 =>
             Future.successful(
               navigator.journeyRecovery(
                 Some(RedirectUrl(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId).url))
               )
             )
-        }.recoverWith { case e: Exception =>
+        }
+        .recoverWith { case e: Exception =>
           logger.error(s"Unable to fetch record $recordId", e)
           Future.successful(
             navigator.journeyRecovery(
@@ -119,65 +120,70 @@ class CommodityCodeCyaController @Inject() (
 
   def onSubmit(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      goodsRecordConnector.getRecord(recordId).flatMap {
-        case Some(oldRecord) =>
-          val isCommCodeExpired = oldRecord.comcodeEffectiveToDate.exists(
-            _.isBefore(LocalDate.now().atStartOfDay(ZoneId.of("UTC")).toInstant)
-          )
-          val maybeOriginalCommodityCode: Option[String] =
-            request.session.get("originalCommodityCode").map(_.trim)
-          for {
-            commodity <- UpdateGoodsRecord.validateCommodityCode(
-              request.userAnswers,
-              recordId,
-              oldRecord.category.isDefined,
-              isCommCodeExpired
-            ) match {
-              case Right(value) => Future.successful(value)
-              case Left(errors) => Future.failed(GoodsRecordBuildFailure(errors))
-            }
-            updateGoodsRecord = UpdateGoodsRecord(
-              eori = request.eori,
-              recordId = recordId,
-              commodityCode = Some(commodity)
+      goodsRecordConnector
+        .getRecord(recordId)
+        .flatMap {
+          case Some(oldRecord) =>
+            val isCommCodeExpired                          = oldRecord.comcodeEffectiveToDate.exists(
+              _.isBefore(LocalDate.now().atStartOfDay(ZoneId.of("UTC")).toInstant)
             )
-            _ = auditService.auditFinishUpdateGoodsRecord(
-              recordId,
-              request.affinityGroup,
-              updateGoodsRecord
-            )
-            _ <- goodsRecordUpdateService.updateIfChanged(
-              oldValue = oldRecord.comcode,
-              newValue = commodity.commodityCode,
-              updateGoodsRecord = updateGoodsRecord,
-              oldRecord = oldRecord,
-              patch = false
-            )
-            updatedAnswersWithChange <- Future.fromTry(
-              request.userAnswers.remove(HasCommodityCodeChangePage(recordId))
-            )
-            updatedAnswers <- Future.fromTry(
-              updatedAnswersWithChange.remove(CommodityCodeUpdatePage(recordId))
-            )
-            _ <- sessionRepository.set(updatedAnswers)
-            autoCategoriseScenario <- autoCategoriseService.autoCategoriseRecord(recordId, updatedAnswers)
-          } yield {
-            val newCode = commodity.commodityCode.trim
-            val originalCode = maybeOriginalCommodityCode.getOrElse("").trim
-            val commodityCodeHasChanged = newCode != originalCode
-            if (commodityCodeHasChanged) {
-              if (autoCategoriseScenario.isDefined) {
-                Redirect(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
+            val maybeOriginalCommodityCode: Option[String] =
+              request.session.get("originalCommodityCode").map(_.trim)
+            for {
+              commodity                <- UpdateGoodsRecord.validateCommodityCode(
+                                            request.userAnswers,
+                                            recordId,
+                                            oldRecord.category.isDefined,
+                                            isCommCodeExpired
+                                          ) match {
+                                            case Right(value) => Future.successful(value)
+                                            case Left(errors) => Future.failed(GoodsRecordBuildFailure(errors))
+                                          }
+              updateGoodsRecord         = UpdateGoodsRecord(
+                                            eori = request.eori,
+                                            recordId = recordId,
+                                            commodityCode = Some(commodity)
+                                          )
+              _                         = auditService.auditFinishUpdateGoodsRecord(
+                                            recordId,
+                                            request.affinityGroup,
+                                            updateGoodsRecord
+                                          )
+              _                        <- goodsRecordUpdateService.updateIfChanged(
+                                            oldValue = oldRecord.comcode,
+                                            newValue = commodity.commodityCode,
+                                            updateGoodsRecord = updateGoodsRecord,
+                                            oldRecord = oldRecord,
+                                            patch = false
+                                          )
+              updatedAnswersWithChange <- Future.fromTry(
+                                            request.userAnswers.remove(HasCommodityCodeChangePage(recordId))
+                                          )
+              updatedAnswers           <- Future.fromTry(
+                                            updatedAnswersWithChange.remove(CommodityCodeUpdatePage(recordId))
+                                          )
+              _                        <- sessionRepository.set(updatedAnswers)
+              autoCategoriseScenario   <- autoCategoriseService.autoCategoriseRecord(recordId, updatedAnswers)
+            } yield {
+              val newCode                 = commodity.commodityCode.trim
+              val originalCode            = maybeOriginalCommodityCode.getOrElse("").trim
+              val commodityCodeHasChanged = newCode != originalCode
+              if (commodityCodeHasChanged) {
+                if (autoCategoriseScenario.isDefined) {
+                  Redirect(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
+                } else {
+                  Redirect(
+                    controllers.goodsRecord.commodityCode.routes.UpdatedCommodityCodeController.onPageLoad(recordId)
+                  )
+                }
               } else {
-                Redirect(controllers.goodsRecord.commodityCode.routes.UpdatedCommodityCodeController.onPageLoad(recordId))
+                Redirect(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
+                  .removingFromSession("showCommodityCodeChangeBanner")
               }
-            } else {
-              Redirect(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
-                .removingFromSession("showCommodityCodeChangeBanner")
             }
-          }
-        case None =>
-          Future.successful(Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad()))
-      }.recover(handleRecover(recordId))
+          case None            =>
+            Future.successful(Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad()))
+        }
+        .recover(handleRecover(recordId))
     }
 }
