@@ -58,99 +58,102 @@ class CategorisationPreparationController @Inject() (
 
   def startCategorisation(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      (for {
-        goodsRecord                           <- goodsRecordsConnector.getRecord(recordId)
-        categorisationInfo                    <-
-          categorisationService
-            .getCategorisationInfo(request, goodsRecord.comcode, goodsRecord.countryOfOrigin, recordId)
-        _                                      = auditService.auditStartUpdateGoodsRecord(
-                                                   request.eori,
-                                                   request.affinityGroup,
-                                                   CategorisationUpdate,
-                                                   recordId,
-                                                   Some(categorisationInfo)
-                                                 )
-        updatedUserAnswers                    <-
-          Future.fromTry(request.userAnswers.set(CategorisationDetailsQuery(recordId), categorisationInfo))
-        updatedHasLongComCodeQueryUserAnswers <-
-          Future.fromTry(updatedUserAnswers.set(HasLongComCodeQuery(recordId), goodsRecord.comcode.length == 10))
-        _                                     <- sessionRepository.set(updatedHasLongComCodeQueryUserAnswers)
-
-        _ <- updateCategory(
-               updatedHasLongComCodeQueryUserAnswers,
-               request.eori,
-               request.affinityGroup,
-               recordId,
-               categorisationInfo
-             )
-      } yield Redirect(
-        navigator.nextPage(
-          CategorisationPreparationPage(recordId),
-          NormalMode,
-          updatedHasLongComCodeQueryUserAnswers
-        )
-      )
-        .removingFromSession(dataUpdated, pageUpdated, dataRemoved))
-        .recover { e =>
-          logger.error(s"Unable to start categorisation for record $recordId: ${e.getMessage}")
-          Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad().url)
-        }
-
+      goodsRecordsConnector.getRecord(recordId).flatMap {
+        case Some(goodsRecord) =>
+          for {
+            categorisationInfo <- categorisationService.getCategorisationInfo(
+              request,
+              goodsRecord.comcode,
+              goodsRecord.countryOfOrigin,
+              recordId
+            )
+            _ = auditService.auditStartUpdateGoodsRecord(
+              request.eori,
+              request.affinityGroup,
+              CategorisationUpdate,
+              recordId,
+              Some(categorisationInfo)
+            )
+            updatedUserAnswers <- Future.fromTry(
+              request.userAnswers.set(CategorisationDetailsQuery(recordId), categorisationInfo)
+            )
+            updatedHasLongComCodeQueryUserAnswers <- Future.fromTry(
+              updatedUserAnswers.set(
+                HasLongComCodeQuery(recordId),
+                goodsRecord.comcode.length == 10
+              )
+            )
+            _ <- sessionRepository.set(updatedHasLongComCodeQueryUserAnswers)
+            _ <- updateCategory(
+              updatedHasLongComCodeQueryUserAnswers,
+              request.eori,
+              request.affinityGroup,
+              recordId,
+              categorisationInfo
+            )
+          } yield Redirect(
+            navigator.nextPage(
+              CategorisationPreparationPage(recordId),
+              NormalMode,
+              updatedHasLongComCodeQueryUserAnswers
+            )
+          ).removingFromSession(dataUpdated, pageUpdated, dataRemoved)
+        case None =>
+          Future.successful(Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad()))
+      }.recover { case e =>
+        logger.error(s"Unable to start categorisation for record $recordId: ${e.getMessage}", e)
+        Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
+      }
     }
 
   def startLongerCategorisation(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      (for {
-        goodsRecord               <- goodsRecordsConnector.getRecord(recordId)
-        shorterCategorisationInfo <-
-          Future.fromTry(Try(request.userAnswers.get(CategorisationDetailsQuery(recordId)).get))
-
-        oldLongerCategorisationInfoOpt = request.userAnswers.get(LongerCategorisationDetailsQuery(recordId))
-        longerComCode                 <- Future.fromTry(Try(request.userAnswers.get(LongerCommodityQuery(recordId)).get))
-        newLongerCategorisationInfo   <-
-          categorisationService
-            .getCategorisationInfo(
+      goodsRecordsConnector.getRecord(recordId).flatMap {
+        case Some(goodsRecord) =>
+          for {
+            shorterCategorisationInfo <- Future.fromTry(
+              Try(request.userAnswers.get(CategorisationDetailsQuery(recordId)).get)
+            )
+            oldLongerCategorisationInfoOpt = request.userAnswers.get(LongerCategorisationDetailsQuery(recordId))
+            longerComCode <- Future.fromTry(Try(request.userAnswers.get(LongerCommodityQuery(recordId)).get))
+            newLongerCategorisationInfo <- categorisationService.getCategorisationInfo(
               request,
               longerComCode.commodityCode,
               goodsRecord.countryOfOrigin,
               recordId,
               longerCode = true
             )
-
-        updatedUASuppUnit <-
-          Future.fromTry(
-            cleanupSupplementaryUnit(
-              request.userAnswers,
-              recordId,
-              shorterCategorisationInfo,
-              newLongerCategorisationInfo
+            updatedUASuppUnit <- Future.fromTry(
+              cleanupSupplementaryUnit(
+                request.userAnswers,
+                recordId,
+                shorterCategorisationInfo,
+                newLongerCategorisationInfo
+              )
             )
+            updatedUACatInfo <- Future.fromTry(
+              updatedUASuppUnit.set(LongerCategorisationDetailsQuery(recordId), newLongerCategorisationInfo)
+            )
+            updatedUAReassessmentAnswers <- updateReassessmentAnswers(
+              oldLongerCategorisationInfoOpt,
+              newLongerCategorisationInfo,
+              updatedUACatInfo,
+              recordId,
+              shorterCategorisationInfo
+            )
+            reorderedUserAnswers <- categorisationService.reorderRecategorisationAnswers(
+              updatedUAReassessmentAnswers,
+              recordId
+            )
+          } yield Redirect(
+            navigator.nextPage(RecategorisationPreparationPage(recordId), mode, reorderedUserAnswers)
           )
-
-        updatedUACatInfo <-
-          Future.fromTry(updatedUASuppUnit.set(LongerCategorisationDetailsQuery(recordId), newLongerCategorisationInfo))
-
-        updatedUAReassessmentAnswers <- updateReassessmentAnswers(
-                                          oldLongerCategorisationInfoOpt,
-                                          newLongerCategorisationInfo,
-                                          updatedUACatInfo,
-                                          recordId,
-                                          shorterCategorisationInfo
-                                        )
-
-        reorderedUserAnswers <-
-          categorisationService.reorderRecategorisationAnswers(updatedUAReassessmentAnswers, recordId)
-      } yield Redirect(
-        navigator.nextPage(
-          RecategorisationPreparationPage(recordId),
-          mode,
-          reorderedUserAnswers
-        )
-      ))
-        .recover { e =>
-          logger.error(s"Unable to start categorisation for record $recordId: ${e.getMessage}")
-          Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad().url)
-        }
+        case None =>
+          Future.successful(Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad()))
+      }.recover { case e =>
+        logger.error(s"Unable to start categorisation for record $recordId: ${e.getMessage}", e)
+        Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
+      }
     }
 
   private def cleanupSupplementaryUnit(
@@ -197,18 +200,19 @@ class CategorisationPreparationController @Inject() (
         CategoryRecord.build(updatedUserAnswers, eori, recordId, categorisationService) match {
           case Right(record) =>
             auditService.auditFinishCategorisation(eori, affinityGroup, recordId, record)
-
-            for {
-              oldRecord <- goodsRecordsConnector.getRecord(recordId)
-              _         <- goodsRecordsConnector.updateCategoryAndComcodeForGoodsRecord(recordId, record, oldRecord)
-            } yield Done
-
+            goodsRecordsConnector.getRecord(recordId).flatMap {
+              case Some(oldRecord) =>
+                goodsRecordsConnector
+                  .updateCategoryAndComcodeForGoodsRecord(recordId, record, oldRecord)
+                  .map(_ => Done)
+              case None =>
+                Future.successful(Done) // Record not found, but proceed to avoid blocking
+            }
           case Left(errors) =>
             val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
             Future.failed(CategoryRecordBuildFailure(errorMessages))
         }
       }
-
     } else {
       Future.successful(Done)
     }

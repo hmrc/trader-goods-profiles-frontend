@@ -88,24 +88,25 @@ class HasSupplementaryUnitController @Inject() (
         )
       val userAnswerValue = request.userAnswers.get(HasSupplementaryUnitUpdatePage(recordId))
 
-      goodsRecordConnector.getRecord(recordId).flatMap { record =>
-        val initialValue = record.supplementaryUnit.exists(_ != 0)
-
-        val preparedFormFuture = userAnswerValue match {
-          case Some(value) =>
-            Future.successful(form.fill(value))
-          case None        =>
-            Future.successful(form.fill(initialValue))
-        }
-        preparedFormFuture.map { preparedForm =>
-          val onSubmitAction: Call =
-            controllers.categorisation.routes.HasSupplementaryUnitController.onSubmitUpdate(mode, recordId)
-          Ok(view(preparedForm, mode, recordId, onSubmitAction))
-            .addingToSession(
-              initialValueOfHasSuppUnit -> initialValue.toString
-            )
-            .removingFromSession(dataUpdated, pageUpdated, dataRemoved, initialValueOfSuppUnit)
-        }
+      goodsRecordConnector.getRecord(recordId).flatMap {
+        case Some(record) =>
+          val initialValue = record.supplementaryUnit.exists(_ != 0)
+          val preparedFormFuture = userAnswerValue match {
+            case Some(value) => Future.successful(form.fill(value))
+            case None => Future.successful(form.fill(initialValue))
+          }
+          preparedFormFuture.map { preparedForm =>
+            val onSubmitAction: Call =
+              controllers.categorisation.routes.HasSupplementaryUnitController.onSubmitUpdate(mode, recordId)
+            Ok(view(preparedForm, mode, recordId, onSubmitAction))
+              .addingToSession(initialValueOfHasSuppUnit -> initialValue.toString)
+              .removingFromSession(dataUpdated, pageUpdated, dataRemoved, initialValueOfSuppUnit)
+          }
+        case None =>
+          Future.successful(Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad()))
+      }.recover { case ex: Exception =>
+        logger.error(s"Error occurred while fetching record for recordId: $recordId", ex)
+        navigator.journeyRecovery()
       }
     }
 

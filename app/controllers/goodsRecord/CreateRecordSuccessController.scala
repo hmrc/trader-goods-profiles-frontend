@@ -49,9 +49,12 @@ class CreateRecordSuccessController @Inject() (
     } else {
       (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
         autoCategoriseService.autoCategoriseRecord(recordId, request.userAnswers).flatMap { _ =>
-          goodsRecordConnector.getRecord(recordId).map { record =>
-            val scenario = Scenario.fromInt(record.category)
-            renderView(recordId, scenario, record)
+          goodsRecordConnector.getRecord(recordId).map {
+            case Some(record) =>
+              val scenario = Scenario.fromInt(record.category)
+              renderView(recordId, scenario, record)
+            case None =>
+              Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
           }
         }
       }

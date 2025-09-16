@@ -165,20 +165,18 @@ class CyaCategorisationController @Inject() (
         ) match {
         case Right(categoryRecord) =>
           auditService.auditFinishCategorisation(request.eori, request.affinityGroup, recordId, categoryRecord)
-          for {
-            oldRecord <- goodsRecordConnector.getRecord(recordId)
-            _         <-
-              goodsRecordConnector
-                .updateCategoryAndComcodeForGoodsRecord(recordId, categoryRecord, oldRecord)
-            _         <- dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
-          } yield Redirect(
-            navigator.nextPage(
-              CyaCategorisationPage(recordId),
-              NormalMode,
-              request.userAnswers
-            )
-          )
-        case Left(errors)          =>
+          goodsRecordConnector.getRecord(recordId).flatMap {
+            case Some(oldRecord) =>
+              for {
+                _ <- goodsRecordConnector.updateCategoryAndComcodeForGoodsRecord(recordId, categoryRecord, oldRecord)
+                _ <- dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
+              } yield Redirect(
+                navigator.nextPage(CyaCategorisationPage(recordId), NormalMode, request.userAnswers)
+              )
+            case None =>
+              Future.successful(Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad()))
+          }
+        case Left(errors) =>
           dataCleansingService.deleteMongoData(request.userAnswers.id, CategorisationJourney)
           Future.successful(
             logErrorsAndContinue(

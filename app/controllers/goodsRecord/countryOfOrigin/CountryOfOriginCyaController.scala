@@ -67,46 +67,43 @@ class CountryOfOriginCyaController @Inject() (
 
   def onPageLoad(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      goodsRecordConnector
-        .getRecord(recordId)
-        .flatMap { recordResponse =>
-          UpdateGoodsRecord.validateCountryOfOrigin(
-            request.userAnswers,
-            recordId,
-            recordResponse.category.isDefined
-          ) match {
-            case Right(_) =>
-              val onSubmitAction =
-                controllers.goodsRecord.countryOfOrigin.routes.CountryOfOriginCyaController.onSubmit(recordId)
-
-              getCountryOfOriginAnswer(request.userAnswers, recordId).map {
-                case Some(answer) =>
-                  val list = SummaryListViewModel(
-                    Seq(
-                      CountryOfOriginSummary.rowUpdateCya(answer, recordId, CheckMode)
+      goodsRecordConnector.getRecord(recordId).flatMap {
+          case Some(recordResponse) =>
+            UpdateGoodsRecord.validateCountryOfOrigin(
+              request.userAnswers,
+              recordId,
+              recordResponse.category.isDefined
+            ) match {
+              case Right(_) =>
+                getCountryOfOriginAnswer(request.userAnswers, recordId).map {
+                  case Some(answer) =>
+                    val list = SummaryListViewModel(
+                      Seq(CountryOfOriginSummary.rowUpdateCya(answer, recordId, CheckMode))
                     )
-                  )
-                  Ok(view(list, onSubmitAction, countryOfOriginKey))
-
-                case None =>
-                  Redirect(
-                    controllers.problem.routes.JourneyRecoveryController.onPageLoad(
-                      Some(RedirectUrl(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId).url))
+                    Ok(view(list, controllers.goodsRecord.countryOfOrigin.routes.CountryOfOriginCyaController.onSubmit(recordId), countryOfOriginKey))
+                  case None =>
+                    Redirect(
+                      controllers.problem.routes.JourneyRecoveryController.onPageLoad(
+                        Some(RedirectUrl(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId).url))
+                      )
                     )
+                }
+              case Left(errors) =>
+                Future.successful(
+                  logErrorsAndContinue(
+                    errorMessage,
+                    controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId),
+                    errors
                   )
-              }
-
-            case Left(errors) =>
-              Future.successful(
-                logErrorsAndContinue(
-                  errorMessage,
-                  controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId),
-                  errors
                 )
+            }
+          case None =>
+            Future.successful(
+              navigator.journeyRecovery(
+                Some(RedirectUrl(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId).url))
               )
-          }
-        }
-        .recoverWith { case e =>
+            )
+        }.recoverWith { case e =>
           Future.successful(
             navigator.journeyRecovery(
               Some(RedirectUrl(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId).url))
@@ -117,79 +114,65 @@ class CountryOfOriginCyaController @Inject() (
 
   def onSubmit(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      (for {
-        oldRecord <- goodsRecordConnector.getRecord(recordId)
-
-        originalCountry <-
-          request.userAnswers
-            .get(OriginalCountryOfOriginPage(recordId))
-            .map(Future.successful)
-            .getOrElse(Future.failed(new Exception(s"Original country of origin not found in session for $recordId")))
-
-        countryOfOrigin <-
-          handleValidateError(
-            UpdateGoodsRecord.validateCountryOfOrigin(request.userAnswers, recordId, oldRecord.category.isDefined)
-          )
-
-        oldValNormalized        =
-          Option(originalCountry).map(_.trim).getOrElse("")
-        newValNormalized        =
-          countryOfOrigin.trim
-        countryHasReallyChanged = oldValNormalized != newValNormalized
-
-        updateGoodsRecord = UpdateGoodsRecord(
-                              eori = request.eori,
-                              recordId = recordId,
-                              countryOfOrigin = Some(countryOfOrigin)
-                            )
-
-        _ = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
-
-        _ <- goodsRecordUpdateService.updateIfChanged(
-               oldValue = oldRecord.countryOfOrigin.trim,
-               newValue = newValNormalized,
-               updateGoodsRecord = updateGoodsRecord,
-               oldRecord = oldRecord,
-               patch = true
-             )
-
-        updatedAnswers <-
-          Future.fromTry(request.userAnswers.set(OriginalCountryOfOriginPage(recordId), countryOfOrigin))
-        _              <- sessionRepository.set(updatedAnswers)
-
-        cleanedAnswers <- Future.fromTry(
-                            updatedAnswers
-                              .remove(HasCountryOfOriginChangePage(recordId))
-                              .flatMap(_.remove(CountryOfOriginUpdatePage(recordId)))
-                          )
-        _              <- sessionRepository.set(cleanedAnswers)
-
-        categorisationInfoOpt <- autoCategoriseService.getCategorisationInfoForRecord(recordId, cleanedAnswers)
-        isAutoCategorisable    = categorisationInfoOpt.exists(_.isAutoCategorisable)
-
-        _ <- if (countryHasReallyChanged && !isAutoCategorisable) {
-               goodsRecordUpdateService.removeManualCategory(request.eori, recordId, oldRecord)
-             } else Future.successful(Done)
-
-      } yield {
-        val redirect =
-          if (!countryHasReallyChanged) {
-            controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId)
-          } else if (isAutoCategorisable) {
-            controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId)
-          } else {
-            controllers.goodsRecord.countryOfOrigin.routes.UpdatedCountryOfOriginController.onPageLoad(recordId)
+      goodsRecordConnector.getRecord(recordId).flatMap {
+        case Some(oldRecord) =>
+          for {
+            originalCountry <- request.userAnswers
+              .get(OriginalCountryOfOriginPage(recordId))
+              .map(Future.successful)
+              .getOrElse(Future.failed(new Exception(s"Original country of origin not found in session for $recordId")))
+            countryOfOrigin <- handleValidateError(
+              UpdateGoodsRecord.validateCountryOfOrigin(request.userAnswers, recordId, oldRecord.category.isDefined)
+            )
+            oldValNormalized = Option(originalCountry).map(_.trim).getOrElse("")
+            newValNormalized = countryOfOrigin.trim
+            countryHasReallyChanged = oldValNormalized != newValNormalized
+            updateGoodsRecord = UpdateGoodsRecord(
+              eori = request.eori,
+              recordId = recordId,
+              countryOfOrigin = Some(countryOfOrigin)
+            )
+            _ = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
+            _ <- goodsRecordUpdateService.updateIfChanged(
+              oldValue = oldRecord.countryOfOrigin.trim,
+              newValue = newValNormalized,
+              updateGoodsRecord = updateGoodsRecord,
+              oldRecord = oldRecord,
+              patch = true
+            )
+            updatedAnswers <- Future.fromTry(request.userAnswers.set(OriginalCountryOfOriginPage(recordId), countryOfOrigin))
+            _              <- sessionRepository.set(updatedAnswers)
+            cleanedAnswers <- Future.fromTry(
+              updatedAnswers
+                .remove(HasCountryOfOriginChangePage(recordId))
+                .flatMap(_.remove(CountryOfOriginUpdatePage(recordId)))
+            )
+            _              <- sessionRepository.set(cleanedAnswers)
+            categorisationInfoOpt <- autoCategoriseService.getCategorisationInfoForRecord(recordId, cleanedAnswers)
+            isAutoCategorisable = categorisationInfoOpt.exists(_.isAutoCategorisable)
+            _ <- if (countryHasReallyChanged && !isAutoCategorisable) {
+              goodsRecordUpdateService.removeManualCategory(request.eori, recordId, oldRecord)
+            } else Future.successful(Done)
+          } yield {
+            val redirect =
+              if (!countryHasReallyChanged) {
+                controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId)
+              } else if (isAutoCategorisable) {
+                controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId)
+              } else {
+                controllers.goodsRecord.countryOfOrigin.routes.UpdatedCountryOfOriginController.onPageLoad(recordId)
+              }
+            val showBanner = countryHasReallyChanged && isAutoCategorisable
+            Redirect(redirect)
+              .addingToSession(
+                "countryOfOriginChanged"        -> countryHasReallyChanged.toString,
+                "showCommodityCodeChangeBanner" -> showBanner.toString
+              )
+              .removingFromSession(dataUpdated)
           }
-
-        val showBanner = countryHasReallyChanged && isAutoCategorisable
-
-        Redirect(redirect)
-          .addingToSession(
-            "countryOfOriginChanged"        -> countryHasReallyChanged.toString,
-            "showCommodityCodeChangeBanner" -> showBanner.toString
-          )
-          .removingFromSession(dataUpdated)
-      }).recover(handleRecover(recordId))
+        case None =>
+          Future.successful(Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad()))
+      }.recover(handleRecover(recordId))
     }
 
   private def handleValidateError[T](result: EitherNec[ValidationError, T]): Future[T] =

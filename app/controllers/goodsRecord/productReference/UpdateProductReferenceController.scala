@@ -78,22 +78,25 @@ class UpdateProductReferenceController @Inject() (
         .fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, onSubmitAction))),
           value =>
-            for {
-              isProductReferenceUnique <- goodsRecordConnector.isProductReferenceUnique(value)
-              oldRecord                <- goodsRecordConnector.getRecord(recordId)
-              updatedAnswers           <-
-                Future.fromTry(request.userAnswers.set(ProductReferenceUpdatePage(recordId), value))
-            } yield
-              if (isProductReferenceUnique || oldRecord.traderRef == value) {
-                sessionRepository.set(updatedAnswers)
-                Redirect(navigator.nextPage(ProductReferenceUpdatePage(recordId), mode, updatedAnswers))
-                  .addingToSession(dataUpdated -> (oldRecord.traderRef != value).toString)
-                  .addingToSession(pageUpdated -> productReference)
-              } else {
-                val formWithApiErrors =
-                  createFormWithErrors(form, value, "productReference.error.traderRefNotUnique")
-                BadRequest(view(formWithApiErrors, onSubmitAction))
-              }
+            goodsRecordConnector.getRecord(recordId).flatMap {
+              case Some(oldRecord) =>
+                for {
+                  isProductReferenceUnique <- goodsRecordConnector.isProductReferenceUnique(value)
+                  updatedAnswers <- Future.fromTry(request.userAnswers.set(ProductReferenceUpdatePage(recordId), value))
+                } yield
+                  if (isProductReferenceUnique || oldRecord.traderRef == value) {
+                    sessionRepository.set(updatedAnswers)
+                    Redirect(navigator.nextPage(ProductReferenceUpdatePage(recordId), mode, updatedAnswers))
+                      .addingToSession(dataUpdated -> (oldRecord.traderRef != value).toString)
+                      .addingToSession(pageUpdated -> productReference)
+                  } else {
+                    val formWithApiErrors =
+                      createFormWithErrors(form, value, "productReference.error.traderRefNotUnique")
+                    BadRequest(view(formWithApiErrors, onSubmitAction))
+                  }
+              case None =>
+                Future.successful(Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad()))
+            }
         )
     }
 }

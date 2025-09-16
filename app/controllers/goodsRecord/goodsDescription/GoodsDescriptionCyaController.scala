@@ -91,30 +91,32 @@ class GoodsDescriptionCyaController @Inject() (
 
   def onSubmit(recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      (for {
-        goodsDescription  <-
-          handleValidateError(UpdateGoodsRecord.validateGoodsDescription(request.userAnswers, recordId))
-        updateGoodsRecord <-
-          Future.successful(UpdateGoodsRecord(request.eori, recordId, goodsDescription = Some(goodsDescription)))
-        _                  = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
-        oldRecord         <- goodsRecordConnector.getRecord(recordId)
-        _                 <- goodsRecordUpdateService.updateIfChanged(
-                               oldValue = oldRecord.goodsDescription,
-                               newValue = goodsDescription,
-                               updateGoodsRecord = updateGoodsRecord,
-                               oldRecord = oldRecord
-                             )
-        updatedAnswers    <- Future.fromTry(request.userAnswers.remove(GoodsDescriptionUpdatePage(recordId)))
-        _                 <- sessionRepository.set(updatedAnswers)
-      } yield {
-        val hasGoodsDescriptionChanged = oldRecord.goodsDescription != goodsDescription
-        if (hasGoodsDescriptionChanged) {
-          Redirect(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
-            .addingToSession("hasGoodsDescriptionChanged" -> hasGoodsDescriptionChanged.toString)
-        } else {
-          Redirect(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
-            .removingFromSession(dataUpdated, "hasGoodsDescriptionChanged")
-        }
-      }).recover(handleRecover(recordId))
+      goodsRecordConnector.getRecord(recordId).flatMap {
+        case Some(oldRecord) =>
+          for {
+            goodsDescription  <- handleValidateError(UpdateGoodsRecord.validateGoodsDescription(request.userAnswers, recordId))
+            updateGoodsRecord <- Future.successful(UpdateGoodsRecord(request.eori, recordId, goodsDescription = Some(goodsDescription)))
+            _                 = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
+            _                 <- goodsRecordUpdateService.updateIfChanged(
+              oldValue = oldRecord.goodsDescription,
+              newValue = goodsDescription,
+              updateGoodsRecord = updateGoodsRecord,
+              oldRecord = oldRecord
+            )
+            updatedAnswers    <- Future.fromTry(request.userAnswers.remove(GoodsDescriptionUpdatePage(recordId)))
+            _                 <- sessionRepository.set(updatedAnswers)
+          } yield {
+            val hasGoodsDescriptionChanged = oldRecord.goodsDescription != goodsDescription
+            if (hasGoodsDescriptionChanged) {
+              Redirect(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
+                .addingToSession("hasGoodsDescriptionChanged" -> hasGoodsDescriptionChanged.toString)
+            } else {
+              Redirect(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
+                .removingFromSession(dataUpdated, "hasGoodsDescriptionChanged")
+            }
+          }
+        case None =>
+          Future.successful(Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad()))
+      }.recover(handleRecover(recordId))
     }
 }

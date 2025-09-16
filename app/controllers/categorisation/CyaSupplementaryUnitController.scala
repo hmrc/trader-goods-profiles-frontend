@@ -91,17 +91,20 @@ class CyaSupplementaryUnitController @Inject() (
             request.affinityGroup,
             model
           )
-          val result                = for {
-            oldRecord <- goodsRecordConnector.getRecord(recordId)
-            _         <- goodsRecordConnector.updateSupplementaryUnitForGoodsRecord(recordId, model, oldRecord)
-          } yield {
-            dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
-            Redirect(navigator.nextPage(CyaSupplementaryUnitPage(recordId), NormalMode, request.userAnswers))
-              .addingToSession(dataUpdated -> isValueChanged.toString)
-              .addingToSession(dataRemoved -> isSuppUnitRemoved.toString)
-              .addingToSession(pageUpdated -> supplementaryUnit)
+          goodsRecordConnector.getRecord(recordId).flatMap {
+            case Some(oldRecord) =>
+              for {
+                _ <- goodsRecordConnector.updateSupplementaryUnitForGoodsRecord(recordId, model, oldRecord)
+                _ <- dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
+              } yield Redirect(
+                navigator.nextPage(CyaSupplementaryUnitPage(recordId), NormalMode, request.userAnswers)
+              )
+                .addingToSession(dataUpdated -> isValueChanged.toString)
+                .addingToSession(dataRemoved -> isSuppUnitRemoved.toString)
+                .addingToSession(pageUpdated -> supplementaryUnit)
+            case None =>
+              Future.successful(Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad()))
           }
-          result
         case Left(errors) =>
           dataCleansingService.deleteMongoData(request.userAnswers.id, SupplementaryUnitUpdateJourney)
           Future.successful(

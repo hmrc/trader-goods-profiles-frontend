@@ -56,53 +56,51 @@ class HasCommodityCodeChangedController @Inject() (
   def onPageLoad(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
       val record = goodsRecordConnector.getRecord(recordId)
-      record
-        .map { goodsRecord =>
-          auditService.auditStartUpdateGoodsRecord(
-            request.eori,
-            request.affinityGroup,
-            GoodsDetailsUpdate,
-            recordId
-          )
-          val preparedForm = prepareForm(HasCommodityCodeChangePage(recordId), form)
-
-          val needCategorisingWarning = goodsRecord.category.isDefined
-          val needAdviceWarning       = goodsRecord.adviceStatus == AdviceReceived
-
-          Ok(view(preparedForm, mode, recordId, needAdviceWarning, needCategorisingWarning))
-            .removingFromSession(dataRemoved, dataUpdated, pageUpdated)
-        }
-        .recover { _ =>
+      record.map {
+          case Some(goodsRecord) =>
+            auditService.auditStartUpdateGoodsRecord(
+              request.eori,
+              request.affinityGroup,
+              GoodsDetailsUpdate,
+              recordId
+            )
+            val preparedForm = prepareForm(HasCommodityCodeChangePage(recordId), form)
+            val needCategorisingWarning = goodsRecord.category.isDefined
+            val needAdviceWarning = goodsRecord.adviceStatus == AdviceReceived
+            Ok(view(preparedForm, mode, recordId, needAdviceWarning, needCategorisingWarning))
+              .removingFromSession(dataRemoved, dataUpdated, pageUpdated)
+          case None =>
+            navigator.journeyRecovery()
+        }.recover { _ =>
           navigator.journeyRecovery()
         }
     }
 
   def onSubmit(mode: Mode, recordId: String): Action[AnyContent] =
     (identify andThen profileAuth andThen getData andThen requireData).async { implicit request =>
-      val record = goodsRecordConnector.getRecord(recordId)
-
-      record
-        .flatMap { goodsRecord =>
-          val needCategorisingWarning = goodsRecord.category.isDefined
-          val needAdviceWarning       = goodsRecord.adviceStatus == AdviceReceived
-          val oldAnswer: String       =
-            request.userAnswers.get(CommodityCodeUpdatePage(recordId)).getOrElse(CommodityCodePage)
-          form
-            .bindFromRequest()
-            .fold(
-              formWithErrors =>
-                Future.successful(
-                  BadRequest(view(formWithErrors, mode, recordId, needCategorisingWarning, needAdviceWarning))
-                ),
-              value =>
-                for {
-                  updatedAnswers <- Future.fromTry(request.userAnswers.set(HasCommodityCodeChangePage(recordId), value))
-                  _              <- sessionRepository.set(updatedAnswers)
-                } yield Redirect(navigator.nextPage(HasCommodityCodeChangePage(recordId), mode, updatedAnswers))
-                  .addingToSession("oldAnswer" -> oldAnswer)
-            )
-        }
-        .recover { _ =>
+      goodsRecordConnector.getRecord(recordId).flatMap {
+          case Some(goodsRecord) =>
+            val needCategorisingWarning = goodsRecord.category.isDefined
+            val needAdviceWarning = goodsRecord.adviceStatus == AdviceReceived
+            val oldAnswer: String =
+              request.userAnswers.get(CommodityCodeUpdatePage(recordId)).getOrElse(CommodityCodePage)
+            form
+              .bindFromRequest()
+              .fold(
+                formWithErrors =>
+                  Future.successful(
+                    BadRequest(view(formWithErrors, mode, recordId, needAdviceWarning, needCategorisingWarning))
+                  ),
+                value =>
+                  for {
+                    updatedAnswers <- Future.fromTry(request.userAnswers.set(HasCommodityCodeChangePage(recordId), value))
+                    _ <- sessionRepository.set(updatedAnswers)
+                  } yield Redirect(navigator.nextPage(HasCommodityCodeChangePage(recordId), mode, updatedAnswers))
+                    .addingToSession("oldAnswer" -> oldAnswer)
+              )
+          case None =>
+            Future.successful(navigator.journeyRecovery())
+        }.recover { _ =>
           navigator.journeyRecovery()
         }
     }

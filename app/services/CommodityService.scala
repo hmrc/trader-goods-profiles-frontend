@@ -37,11 +37,14 @@ class CommodityService @Inject() (
   def isCommodityCodeValid(
     recordId: String
   )(implicit request: DataRequest[AnyContent], hc: HeaderCarrier): Future[Boolean] =
-    fetchRecordValues(recordId).flatMap { (commodityCode, countryOfOrigin) =>
-      fetchCommodity(commodityCode, countryOfOrigin).map {
-        case Some(commodity) => commodity.isValid
-        case _               => false
-      }
+    fetchRecordValues(recordId).flatMap {
+      case Some((commodityCode, countryOfOrigin)) =>
+        fetchCommodity(commodityCode, countryOfOrigin).map {
+          case Some(commodity) => commodity.isValid
+          case None            => false
+        }
+      case None =>
+        Future.successful(false)
     }
 
   def isCommodityCodeValid(commodityCode: String, countryOfOrigin: String)(implicit
@@ -54,10 +57,13 @@ class CommodityService @Inject() (
     }
 
   def fetchRecordValues(
-    recordId: String
-  )(implicit request: DataRequest[AnyContent], hc: HeaderCarrier): Future[(String, String)] =
-    goodsRecordsConnector.getRecord(recordId).map { x =>
-      (x.comcode, x.countryOfOrigin)
+                         recordId: String
+                       )(implicit request: DataRequest[AnyContent], hc: HeaderCarrier): Future[Option[(String, String)]] =
+    goodsRecordsConnector.getRecord(recordId).map {
+      case Some(record) => Some((record.comcode, record.countryOfOrigin))
+      case None =>
+        logger.info(s"Record not found for recordId: $recordId")
+        None
     }
 
   def fetchCommodity(

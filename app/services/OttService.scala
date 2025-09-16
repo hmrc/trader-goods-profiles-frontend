@@ -34,23 +34,25 @@ class OttService @Inject() (
   def getMeasurementUnit(request: DataRequest[_], recordId: String)(implicit
     hc: HeaderCarrier
   ): Future[Option[String]] = {
-
-    val response = for {
-      getGoodsRecordResponse <- goodsRecordsConnector.getRecord(recordId = recordId)
-      goodsNomenclature      <- ottConnector.getCategorisationInfo(
-                                  getGoodsRecordResponse.comcode,
-                                  request.eori,
-                                  request.affinityGroup,
-                                  Some(recordId),
-                                  getGoodsRecordResponse.countryOfOrigin,
-                                  LocalDate.now()
-                                )
-    } yield goodsNomenclature.goodsNomenclature.measurementUnit
-
-    response.recover { case ex: Exception =>
-      logger.error(s"Error occurred while fetching measurement unit for recordId: $recordId", ex)
-      None
+    goodsRecordsConnector.getRecord(recordId).flatMap {
+      case Some(getGoodsRecordResponse) =>
+        ottConnector
+          .getCategorisationInfo(
+            getGoodsRecordResponse.comcode,
+            request.eori,
+            request.affinityGroup,
+            Some(recordId),
+            getGoodsRecordResponse.countryOfOrigin,
+            LocalDate.now()
+          )
+          .map(_.goodsNomenclature.measurementUnit)
+          .recover { case ex: Exception =>
+            logger.error(s"Error occurred while fetching measurement unit for recordId: $recordId", ex)
+            None
+          }
+      case None =>
+        logger.info(s"Record not found for recordId: $recordId")
+        Future.successful(None)
     }
   }
-
 }

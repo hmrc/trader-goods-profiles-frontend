@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,30 +31,32 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
 
 class AutoCategoriseService @Inject() (
-  categorisationService: CategorisationService,
-  goodsRecordsConnector: GoodsRecordConnector,
-  sessionRepository: SessionRepository
-)(implicit ec: ExecutionContext)
-    extends Logging {
+                                        categorisationService: CategorisationService,
+                                        goodsRecordsConnector: GoodsRecordConnector,
+                                        sessionRepository: SessionRepository
+                                      )(implicit ec: ExecutionContext)
+  extends Logging {
 
   def autoCategoriseRecord(
-    recordId: String,
-    userAnswers: UserAnswers
-  )(implicit request: DataRequest[_], hc: HeaderCarrier): Future[Option[Scenario]] =
-    goodsRecordsConnector.getRecord(recordId).flatMap { record =>
-      autoCategoriseRecord(record, userAnswers)
+                            recordId: String,
+                            userAnswers: UserAnswers
+                          )(implicit request: DataRequest[_], hc: HeaderCarrier): Future[Option[Scenario]] =
+    goodsRecordsConnector.getRecord(recordId).flatMap {
+      case Some(record) => autoCategoriseRecord(record, userAnswers)
+      case None =>
+        logger.info(s"Record not found for recordId: $recordId")
+        Future.successful(None)
     }
 
   def autoCategoriseRecord(
-    record: GetGoodsRecordResponse,
-    userAnswers: UserAnswers
-  )(implicit request: DataRequest[_], hc: HeaderCarrier): Future[Option[Scenario]] =
+                            record: GetGoodsRecordResponse,
+                            userAnswers: UserAnswers
+                          )(implicit request: DataRequest[_], hc: HeaderCarrier): Future[Option[Scenario]] =
     categorisationService
       .getCategorisationInfo(request, record.comcode, record.countryOfOrigin, record.recordId)
       .flatMap { categorisationInfo =>
         if (categorisationInfo.isAutoCategorisable && record.category.isEmpty) {
 
-          // Update session with CategorisationInfo
           val updatedUserAnswersFut: Future[UserAnswers] =
             userAnswers.set(CategorisationDetailsQuery(record.recordId), categorisationInfo) match {
               case Success(updated)   => sessionRepository.set(updated).map(_ => updated)
@@ -66,10 +68,14 @@ class AutoCategoriseService @Inject() (
               case Right(categoryRecord) =>
                 for {
                   oldRecord <- goodsRecordsConnector.getRecord(categoryRecord.recordId)
-                  _         <-
-                    goodsRecordsConnector
-                      .updateCategoryAndComcodeForGoodsRecord(categoryRecord.recordId, categoryRecord, oldRecord)
-                } yield Some(categoryRecord.category) // ✅ return Some(Scenario)
+                  _ <- oldRecord match {
+                    case Some(oldRec) =>
+                      goodsRecordsConnector
+                        .updateCategoryAndComcodeForGoodsRecord(categoryRecord.recordId, categoryRecord, oldRec)
+                    case None =>
+                      Future.failed(new IllegalStateException(s"Record ${categoryRecord.recordId} not found after auto-categorisation"))
+                  }
+                } yield Some(categoryRecord.category)
 
               case Left(errors) =>
                 val errorMessages = errors.toChain.toList.map(_.message).mkString(", ")
@@ -82,16 +88,21 @@ class AutoCategoriseService @Inject() (
       }
 
   def getCategorisationInfoForRecord(
-    recordId: String,
-    userAnswers: UserAnswers
-  )(implicit request: DataRequest[_], hc: HeaderCarrier): Future[Option[CategorisationInfo]] =
-    goodsRecordsConnector.getRecord(recordId).flatMap { record =>
-      categorisationService
-        .getCategorisationInfo(request, record.comcode, record.countryOfOrigin, record.recordId)
-        .map(Some(_))
-        .recover { case ex =>
-          logger.error(s"[getCategorisationInfoForRecord] failed for recordId=$recordId", ex)
-          None
-        }
+                                      recordId: String,
+                                      userAnswers: UserAnswers
+                                    )(implicit request: DataRequest[_], hc: HeaderCarrier): Future[Option[CategorisationInfo]] =
+    goodsRecordsConnector.getRecord(recordId).flatMap {
+      case Some(record) =>
+        categorisationService
+          .getCategorisationInfo(request, record.comcode, record.countryOfOrigin, record.recordId)
+          .map(Some(_))
+          .recover {
+            case ex =>
+              logger.error(s"[getCategorisationInfoForRecord] failed for recordId=$recordId", ex)
+              None
+          }
+      case None =>
+        logger.info(s"Record not found for recordId: $recordId")
+        Future.successful(None)
     }
 }

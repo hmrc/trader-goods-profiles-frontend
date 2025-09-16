@@ -22,6 +22,7 @@ import config.FrontendAppConfig
 import connectors.GoodsRecordConnector
 import controllers.BaseController
 import controllers.actions.*
+import exceptions.GoodsRecordBuildFailure
 import forms.HasCorrectGoodsFormProvider
 import models.requests.DataRequest
 import models.router.requests.PutRecordRequest
@@ -45,23 +46,23 @@ import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 
 class UpdateCommodityCodeResultController @Inject() (
-  override val messagesApi: MessagesApi,
-  sessionRepository: SessionRepository,
-  navigator: Navigation,
-  identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
-  profileAuth: ProfileAuthenticateAction,
-  formProvider: HasCorrectGoodsFormProvider,
-  goodsRecordConnector: GoodsRecordConnector,
-  auditService: AuditService,
-  commodityService: CommodityService,
-  autoCategoriseService: AutoCategoriseService,
-  config: FrontendAppConfig,
-  val controllerComponents: MessagesControllerComponents,
-  view: HasCorrectGoodsView
-)(implicit @unused ec: ExecutionContext, appConfig: FrontendAppConfig)
-    extends BaseController {
+                                                      override val messagesApi: MessagesApi,
+                                                      sessionRepository: SessionRepository,
+                                                      navigator: Navigation,
+                                                      identify: IdentifierAction,
+                                                      getData: DataRetrievalAction,
+                                                      requireData: DataRequiredAction,
+                                                      profileAuth: ProfileAuthenticateAction,
+                                                      formProvider: HasCorrectGoodsFormProvider,
+                                                      goodsRecordConnector: GoodsRecordConnector,
+                                                      auditService: AuditService,
+                                                      commodityService: CommodityService,
+                                                      autoCategoriseService: AutoCategoriseService,
+                                                      config: FrontendAppConfig,
+                                                      val controllerComponents: MessagesControllerComponents,
+                                                      view: HasCorrectGoodsView
+                                                    )(implicit @unused ec: ExecutionContext, appConfig: FrontendAppConfig)
+  extends BaseController {
 
   private val form = formProvider()
 
@@ -119,59 +120,76 @@ class UpdateCommodityCodeResultController @Inject() (
   private def updateCommodityCode(recordId: String, request: DataRequest[AnyContent], updatedUserAnswers: UserAnswers)(
     implicit hc: HeaderCarrier
   ): Future[Result] = {
-
     def normaliseCode(code: String): String = code.trim.replaceAll("\\s", "")
 
-    (for {
-      oldRecord                <- goodsRecordConnector.getRecord(recordId)
-      isValidCommodity         <- commodityService.isCommodityCodeValid(oldRecord.comcode, oldRecord.countryOfOrigin)(request)
-      commodity                <- handleValidateError(
-                                    UpdateGoodsRecord.validateCommodityCode(
-                                      updatedUserAnswers,
-                                      recordId,
-                                      oldRecord.category.isDefined,
-                                      !isValidCommodity
-                                    )
-                                  )
-      updateGoodsRecord         = UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity))
-      putGoodsRecord            = PutRecordRequest(
-                                    actorId = oldRecord.eori,
-                                    traderRef = oldRecord.traderRef,
-                                    comcode = commodity.commodityCode,
-                                    goodsDescription = oldRecord.goodsDescription,
-                                    countryOfOrigin = oldRecord.countryOfOrigin,
-                                    category = None,
-                                    assessments = oldRecord.assessments,
-                                    supplementaryUnit = oldRecord.supplementaryUnit,
-                                    measurementUnit = oldRecord.measurementUnit,
-                                    comcodeEffectiveFromDate = oldRecord.comcodeEffectiveFromDate,
-                                    comcodeEffectiveToDate = oldRecord.comcodeEffectiveToDate
-                                  )
-      _                         = auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
-      _                        <- updateGoodsRecordIfPutValueChanged(
-                                    commodity.commodityCode,
-                                    oldRecord.comcode,
-                                    updateGoodsRecord,
-                                    putGoodsRecord
-                                  )
-      updatedRecord            <- goodsRecordConnector.getRecord(recordId)
-      autoCategoriseScenario   <- autoCategoriseService.autoCategoriseRecord(updatedRecord, updatedUserAnswers)(request)
-      updatedAnswersWithChange <- Future.fromTry(request.userAnswers.remove(HasCommodityCodeChangePage(recordId)))
-      updatedAnswers           <- Future.fromTry(updatedAnswersWithChange.remove(CommodityCodeUpdatePage(recordId)))
-      _                        <- sessionRepository.set(updatedAnswers)
-    } yield {
-      val originalCode = normaliseCode(oldRecord.comcode)
-      val newCode      = normaliseCode(commodity.commodityCode)
-      val hasChanged   = newCode != originalCode
-      if (autoCategoriseScenario.isDefined || !hasChanged) {
-        Redirect(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
-          .addingToSession(pageUpdated -> commodityCode)(request)
-          .addingToSession(dataUpdated -> request.session.get(dataUpdated).contains("true").toString)(request)
-          .addingToSession("showCommodityCodeChangeBanner" -> hasChanged.toString)(request)
-      } else {
-        Redirect(controllers.goodsRecord.commodityCode.routes.UpdatedCommodityCodeController.onPageLoad(recordId))
-      }
-    }).recover { case e: GoodsRecordBuildFailure =>
+    goodsRecordConnector.getRecord(recordId).flatMap {
+      case Some(oldRecord) =>
+        commodityService
+          .isCommodityCodeValid(oldRecord.comcode, oldRecord.countryOfOrigin)(request)
+          .flatMap { isValidCommodity =>
+            handleValidateError(
+              UpdateGoodsRecord.validateCommodityCode(
+                updatedUserAnswers,
+                recordId,
+                oldRecord.category.isDefined,
+                !isValidCommodity
+              )
+            ).flatMap { commodity =>
+              val updateGoodsRecord = UpdateGoodsRecord(request.eori, recordId, commodityCode = Some(commodity))
+              val putGoodsRecord = PutRecordRequest(
+                actorId = oldRecord.eori,
+                traderRef = oldRecord.traderRef,
+                comcode = commodity.commodityCode,
+                goodsDescription = oldRecord.goodsDescription,
+                countryOfOrigin = oldRecord.countryOfOrigin,
+                category = None,
+                assessments = oldRecord.assessments,
+                supplementaryUnit = oldRecord.supplementaryUnit,
+                measurementUnit = oldRecord.measurementUnit,
+                comcodeEffectiveFromDate = oldRecord.comcodeEffectiveFromDate,
+                comcodeEffectiveToDate = oldRecord.comcodeEffectiveToDate
+              )
+              auditService.auditFinishUpdateGoodsRecord(recordId, request.affinityGroup, updateGoodsRecord)
+              for {
+                _ <- updateGoodsRecordIfPutValueChanged(
+                  commodity.commodityCode,
+                  oldRecord.comcode,
+                  updateGoodsRecord,
+                  putGoodsRecord
+                )
+                updatedRecord <- goodsRecordConnector.getRecord(recordId)
+                autoCategoriseScenario <- updatedRecord match {
+                  case Some(record) =>
+                    autoCategoriseService.autoCategoriseRecord(record, updatedUserAnswers)(
+                      request,
+                      hc
+                    )
+                  case None =>
+                    Future.successful(None)
+                }
+                updatedAnswersWithChange <- Future.fromTry(
+                  request.userAnswers.remove(HasCorrectGoodsCommodityCodeUpdatePage(recordId))
+                )
+                updatedAnswers <- Future.fromTry(updatedAnswersWithChange.remove(CommodityCodeUpdatePage(recordId)))
+                _ <- sessionRepository.set(updatedAnswers)
+              } yield {
+                val originalCode = normaliseCode(oldRecord.comcode)
+                val newCode = normaliseCode(commodity.commodityCode)
+                val hasChanged = newCode != originalCode
+                if (autoCategoriseScenario.isDefined || !hasChanged) {
+                  Redirect(controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId))
+                    .addingToSession(pageUpdated -> commodityCode)(request)
+                    .addingToSession(dataUpdated -> request.session.get(dataUpdated).contains("true").toString)(request)
+                    .addingToSession("showCommodityCodeChangeBanner" -> hasChanged.toString)(request)
+                } else {
+                  Redirect(controllers.goodsRecord.commodityCode.routes.UpdatedCommodityCodeController.onPageLoad(recordId))
+                }
+              }
+            }
+          }
+      case None =>
+        Future.successful(Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad()))
+    }.recover { case e: GoodsRecordBuildFailure =>
       logErrorsAndContinue(
         e.getMessage,
         controllers.goodsRecord.routes.SingleRecordController.onPageLoad(recordId)
@@ -185,19 +203,14 @@ class UpdateCommodityCodeResultController @Inject() (
       case Left(errors) => Future.failed(GoodsRecordBuildFailure(errors))
     }
 
-  private case class GoodsRecordBuildFailure(errors: data.NonEmptyChain[ValidationError]) extends Exception {
-    private val errorsAsString       = errors.toChain.toList.map(_.message).mkString(", ")
-    private val errorMessage: String = "Unable to update Goods Record."
-
-    override def getMessage: String = s"$errorMessage Missing pages: $errorsAsString"
-  }
+  private def normaliseCode(code: String): String = code.trim.replaceAll("\\s", "")
 
   private def updateGoodsRecordIfPutValueChanged(
-    newValue: String,
-    oldValue: String,
-    newUpdateGoodsRecord: UpdateGoodsRecord,
-    putRecordRequest: PutRecordRequest
-  )(implicit hc: HeaderCarrier): Future[Done] =
+                                                  newValue: String,
+                                                  oldValue: String,
+                                                  newUpdateGoodsRecord: UpdateGoodsRecord,
+                                                  putRecordRequest: PutRecordRequest
+                                                )(implicit hc: HeaderCarrier): Future[Done] =
     if (newValue != oldValue) {
       if (config.useEisPatchMethod) {
         goodsRecordConnector.putGoodsRecord(
@@ -212,5 +225,4 @@ class UpdateCommodityCodeResultController @Inject() (
     } else {
       Future.successful(Done)
     }
-
 }
