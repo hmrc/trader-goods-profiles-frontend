@@ -24,10 +24,10 @@ import forms.goodsProfile.RemoveGoodsRecordFormProvider
 import models.DeclarableStatus.ImmiReady
 import models.GoodsRecordsPagination.firstPage
 import models.router.responses.GetGoodsRecordResponse
-import models.{AdviceStatus, GoodsProfileLocation, GoodsRecordLocation}
+import models.{AdviceStatus, GoodsProfileLocation, GoodsRecordLocation, UserAnswers}
 import navigation.{FakeGoodsProfileNavigator, GoodsProfileNavigator}
 import org.apache.pekko.Done
-import org.mockito.ArgumentMatchers.{any, eq as eqTo}
+import org.mockito.ArgumentMatchers.{any, argThat, eq as eqTo}
 import org.mockito.Mockito.{never, reset, times, verify, verifyNoMoreInteractions, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
@@ -36,6 +36,7 @@ import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
+import repositories.SessionRepository
 import services.AuditService
 import uk.gov.hmrc.http.UpstreamErrorResponse
 import views.html.goodsProfile.RemoveGoodsRecordView
@@ -167,6 +168,8 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar with Be
     }
 
     "must redirect to the goods profile list and delete record when Yes is submitted and record is deleted" in {
+      val mockSessionRepository = mock[SessionRepository]
+
       when(mockConnector.getRecord(eqTo(testRecordId))(any()))
         .thenReturn(Future.successful(testRecord))
       when(mockConnector.removeGoodsRecord(eqTo(testRecordId))(any()))
@@ -175,24 +178,31 @@ class RemoveGoodsRecordControllerSpec extends SpecBase with MockitoSugar with Be
       when(mockAuditService.auditFinishRemoveGoodsRecord(any(), any(), any())(any()))
         .thenReturn(Future.successful(Done))
 
+      when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
+
       val application = applicationBuilder(userAnswers = Some(userAnswersWithProductRef))
         .overrides(
+          bind[GoodsProfileNavigator].toInstance(new FakeGoodsProfileNavigator(onwardRoute)),
           bind[GoodsRecordConnector].toInstance(mockConnector),
           bind[AuditService].toInstance(mockAuditService),
-          bind[GoodsProfileNavigator].toInstance(new FakeGoodsProfileNavigator(onwardRoute))
+          bind[SessionRepository].toInstance(mockSessionRepository)
         )
         .build()
 
       running(application) {
         val request = FakeRequest(POST, removeGoodsRecordRoute).withFormUrlEncodedBody("value" -> "true")
-
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual
           controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(firstPage).url
 
         verify(mockConnector).removeGoodsRecord(eqTo(testRecordId))(any())
+
+        verify(mockSessionRepository, times(1)).set(argThat[UserAnswers] { updated =>
+          updated.get(ProductReferenceUpdatePage(testRecordId)).isEmpty
+        })
+
         verify(mockAuditService, times(1)).auditFinishRemoveGoodsRecord(any(), any(), any())(any())
         verifyNoMoreInteractions(mockAuditService)
       }
