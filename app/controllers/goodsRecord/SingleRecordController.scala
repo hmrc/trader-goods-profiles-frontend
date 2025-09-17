@@ -18,21 +18,21 @@ package controllers.goodsRecord
 
 import connectors.{GoodsRecordConnector, OttConnector}
 import controllers.BaseController
-import controllers.actions._
+import controllers.actions.*
 import exceptions.RecordNotFoundException
-import models.helper._
+import models.helper.*
 import models.requests.DataRequest
 import models.router.responses.GetGoodsRecordResponse
-import models._
+import models.*
 import pages.goodsRecord.*
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import queries.CountriesQuery
 import repositories.SessionRepository
 import services.{AutoCategoriseService, DataCleansingService}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import utils.SessionData.*
 import viewmodels.checkAnswers.*
-import viewmodels.checkAnswers.goodsRecord._
+import viewmodels.checkAnswers.goodsRecord.*
 import viewmodels.govuk.summarylist.*
 import views.html.goodsRecord.SingleRecordView
 
@@ -85,7 +85,19 @@ class SingleRecordController @Inject() (
                                       }
             _                      <- sessionRepository.set(updatedAnswers)
             finalRecord            <- if (autoCategoriseScenario.isDefined) {
-                                        goodsRecordConnector.getRecord(recordId)
+                                        goodsRecordConnector.getRecord(recordId).recover {
+                                          case _: RecordNotFoundException =>
+                                            logger.info(s"Record not found for ID: $recordId during auto-categorisation")
+                                            recordToDisplay
+                                          case e: Exception               =>
+                                            logger.error(
+                                              s"Error during auto-categorisation for ID: $recordId. " +
+                                                s"Exception type: ${e.getClass.getName}, " +
+                                                s"Message: ${e.getMessage}, " +
+                                                s"Cause: ${Option(e.getCause).map(_.toString).getOrElse("None")}"
+                                            )
+                                            throw e
+                                        }
                                       } else {
                                         Future.successful(recordToDisplay)
                                       }
@@ -100,10 +112,11 @@ class SingleRecordController @Inject() (
           )
         }
         .recover {
-          case _: RecordNotFoundException =>
+          case _: RecordNotFoundException                      =>
             Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
-          case e: Exception               =>
-            logger.error(s"Error loading goods record: ${e.getMessage}")
+          case e: UpstreamErrorResponse if e.statusCode == 404 =>
+            Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
+          case e: Exception                                    =>
             Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
         }
     }
