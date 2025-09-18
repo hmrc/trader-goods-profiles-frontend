@@ -75,28 +75,13 @@ class OttConnectorSpec
   }
 
   "headers" - {
-    "when useAPIKeyFeature is true" - {
-      "must return x-api-key header" in {
-        val appWithFeatureEnabled = new GuiceApplicationBuilder()
-          .configure("features.online-trade-tariff-useApiKey" -> true)
-          .build()
+    "must return x-api-key header" in {
+      val appWithFeatureEnabled = new GuiceApplicationBuilder()
+        .build()
 
-        val connectorWithFeatureEnabled = appWithFeatureEnabled.injector.instanceOf[OttConnector]
+      val connectorWithFeatureEnabled = appWithFeatureEnabled.injector.instanceOf[OttConnector]
 
-        connectorWithFeatureEnabled.headers mustBe "x-api-key" -> "apiKey"
-      }
-    }
-
-    "when useAPIKeyFeature is false" - {
-      "must return authorisation header" in {
-        val appWithFeatureDisabled = new GuiceApplicationBuilder()
-          .configure("features.online-trade-tariff-useApiKey" -> false)
-          .build()
-
-        val connectorWithFeatureDisabled = appWithFeatureDisabled.injector.instanceOf[OttConnector]
-
-        connectorWithFeatureDisabled.headers mustBe HeaderNames.authorisation -> s"Token bearerToken"
-      }
+      connectorWithFeatureEnabled.headers mustBe "x-api-key" -> "apiKey"
     }
   }
 

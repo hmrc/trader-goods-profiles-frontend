@@ -26,7 +26,7 @@ import repositories.CountryRepository
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, HttpException, HttpResponse, StringContextOps, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpException, HttpResponse, StringContextOps, UpstreamErrorResponse}
 
 import java.net.URL
 import java.time.{Instant, LocalDate}
@@ -41,15 +41,11 @@ class OttConnector @Inject() (
 )(implicit ec: ExecutionContext)
     extends LegacyRawReads {
 
-  private val useAPIKeyFeature: Boolean = config.get[Boolean]("features.online-trade-tariff-useApiKey")
-
   private val baseUrl: String   = config.get[String]("microservice.services.online-trade-tariff-api.url")
-  private val authToken: String = config.get[String]("microservice.services.online-trade-tariff-api.bearerToken")
   private val apiKey: String    = config.get[String]("microservice.services.online-trade-tariff-api.apiKey")
   private val useProxy: Boolean = config.get[Boolean]("microservice.services.online-trade-tariff-api.useProxy")
 
-  val headers: (String, String) =
-    if (useAPIKeyFeature) "x-api-key" -> s"$apiKey" else HeaderNames.authorisation -> s"Token $authToken"
+  val headers: (String, String) = "x-api-key" -> s"$apiKey"
 
   private def ottGreenLanesUrl(commodityCode: String, queryParams: Map[String, String]) =
     url"$baseUrl/xi/api/v2/green_lanes/goods_nomenclatures/$commodityCode?$queryParams"
