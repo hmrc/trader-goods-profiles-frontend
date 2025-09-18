@@ -16,7 +16,6 @@
 
 package controllers.profile
 
-import config.FrontendAppConfig
 import connectors.TraderProfileConnector
 import controllers.BaseController
 import controllers.actions._
@@ -44,8 +43,7 @@ class ProfileSetupController @Inject() (
   getOrCreate: DataRetrievalOrCreateAction,
   checkProfile: ProfileCheckAction,
   sessionRepository: SessionRepository,
-  traderProfileConnector: TraderProfileConnector,
-  config: FrontendAppConfig
+  traderProfileConnector: TraderProfileConnector
 )(implicit ec: ExecutionContext)
     extends BaseController {
 
@@ -55,17 +53,11 @@ class ProfileSetupController @Inject() (
 
   def onSubmit: Action[AnyContent] = (identify andThen checkProfile andThen getData andThen requireData).async {
     implicit request =>
-      if (config.getHistoricProfileEnabled) {
-        for {
-          historicProfileData <- traderProfileConnector.getHistoricProfileData(request.eori)
-          updatedUserAnswers  <- updateUserAnswersWithProfileData(request.userAnswers, historicProfileData)
-          _                   <- sessionRepository.set(updatedUserAnswers)
-        } yield Redirect(navigator.nextPage(ProfileSetupPage, NormalMode, updatedUserAnswers))
-      } else {
-        sessionRepository
-          .set(request.userAnswers)
-          .map(_ => Redirect(navigator.nextPage(ProfileSetupPage, NormalMode, request.userAnswers)))
-      }
+      for {
+        historicProfileData <- traderProfileConnector.getHistoricProfileData(request.eori)
+        updatedUserAnswers  <- updateUserAnswersWithProfileData(request.userAnswers, historicProfileData)
+        _                   <- sessionRepository.set(updatedUserAnswers)
+      } yield Redirect(navigator.nextPage(ProfileSetupPage, NormalMode, updatedUserAnswers))
   }
 
   private def updateUserAnswersWithProfileData(

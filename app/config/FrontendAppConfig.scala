@@ -62,9 +62,6 @@ class FrontendAppConfig @Inject() (configuration: Configuration) {
   val userAllowListEnabled: Boolean =
     configuration.get[Boolean]("features.user-allow-list-enabled")
 
-  val getHistoricProfileEnabled: Boolean =
-    configuration.get[Boolean]("features.get-historic-profile")
-
   val useEisPatchMethod: Boolean =
     configuration.get[Boolean]("features.use-eis-patch-method")
 
