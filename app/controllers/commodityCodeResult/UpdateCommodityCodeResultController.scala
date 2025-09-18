@@ -57,7 +57,6 @@ class UpdateCommodityCodeResultController @Inject() (
   auditService: AuditService,
   commodityService: CommodityService,
   autoCategoriseService: AutoCategoriseService,
-  config: FrontendAppConfig,
   val controllerComponents: MessagesControllerComponents,
   view: HasCorrectGoodsView
 )(implicit @unused ec: ExecutionContext, appConfig: FrontendAppConfig)
