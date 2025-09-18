@@ -199,16 +199,10 @@ class UpdateCommodityCodeResultController @Inject() (
     putRecordRequest: PutRecordRequest
   )(implicit hc: HeaderCarrier): Future[Done] =
     if (newValue != oldValue) {
-      if (config.useEisPatchMethod) {
-        goodsRecordConnector.putGoodsRecord(
-          putRecordRequest,
-          newUpdateGoodsRecord.recordId
-        )
-      } else {
-        goodsRecordConnector.patchGoodsRecord(
-          newUpdateGoodsRecord
-        )
-      }
+      goodsRecordConnector.putGoodsRecord(
+        putRecordRequest,
+        newUpdateGoodsRecord.recordId
+      )
     } else {
       Future.successful(Done)
     }
