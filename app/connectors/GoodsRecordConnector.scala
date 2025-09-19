@@ -61,9 +61,6 @@ class GoodsRecordConnector @Inject() (
   private def recordsSummaryUrl =
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/records-summary"
 
-  private def filterRecordsUrl(eori: String, queryParams: Map[String, String]) =
-    url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/$eori/records/filter?$queryParams"
-
   private def isProductReferenceUniqueUrl(productReference: String) = {
     val encodedRef = URLEncoder.encode(productReference, "UTF-8").replace("+", "%20")
     url"$dataStoreBaseUrl/trader-goods-profiles-data-store/traders/records/is-trader-reference-unique?traderReference=$encodedRef"
@@ -233,35 +230,6 @@ class GoodsRecordConnector @Inject() (
         logger.warn(s"Call to check product reference uniqueness failed: ${ex.getMessage}")
         false
       }
-
-  def filterRecordsByField(
-    eori: String,
-    searchTerm: String,
-    field: String
-  )(implicit hc: HeaderCarrier): Future[Option[GetRecordsResponse]] = {
-
-    val queryParams = Map("searchTerm" -> searchTerm, "field" -> field)
-
-    httpClient
-      .get(filterRecordsUrl(eori, queryParams))
-      .setHeader(clientIdHeader)
-      .execute[HttpResponse]
-      .flatMap { response =>
-        response.status match {
-          case OK       => Future.successful(Some(response.json.as[GetRecordsResponse]))
-          case ACCEPTED => Future.successful(None)
-          case _        =>
-            Future.failed(
-              new UpstreamErrorResponse(
-                message = response.body,
-                statusCode = response.status,
-                reportAs = response.status,
-                headers = Map.empty
-              )
-            )
-        }
-      }
-  }
 
   def searchRecords(
     eori: String,
