@@ -51,7 +51,7 @@ homepage.h1 = Hafan Proffil Nwyddau Masnachwyr (TGP)
 homepage.eori = Rhif EORI: {0}
 homepage.h2.1 = Cofnodion nwyddau
 homepage.p2.linkText = Rheoli’ch cofnodion nwyddau
-homepage.p3.linkText = Gallwch greu cofnod nwyddau newydd
+homepage.p3.linkText = Creu cofnod nwyddau newydd
 homepage.noRecords = Does gennych chi ddim cofnodion yn eich proffil nwyddau.
 homepage.p3 = Gallwch
 homepage.p3.linkText2 = greu cofnod nwyddau newydd
@@ -394,9 +394,9 @@ singleRecord.measureReviewReason = Mae’r eithriadau o ran categoreiddio neu’
 singleRecord.measureReviewReason.linkText = gategoreiddio’r cofnod nwyddau hwn
 
 singleRecord.countryReviewReason.categorise = Ni fyddwch yn gallu categoreiddio’r cofnod hwn nes i chi ddiweddaru’r wlad tarddiad.
-singleRecord.countryReviewReason.notCategorised.paragraph = Nid yw’r wlad tarddiad:  {0}
-singleRecord.countryReviewReason.categorised.paragraph = Nid yw’r wlad tarddiad {0} sydd hefyd yn golygu nad yw’r categori yn ddilys mwyach.
-singleRecord.countryReviewReason.linkText = newid y wlad tarddiad ac yna categoreiddio’r cofnod
+singleRecord.countryReviewReason.notCategorised.paragraph = Gwlad tarddiad:  {0}
+singleRecord.countryReviewReason.categorised.paragraph = Gwlad tarddiad {0} sydd hefyd yn golygu nad yw’r categori yn ddilys mwyach.
+singleRecord.countryReviewReason.linkText = newid y wlad tarddiad
 
 
 singleRecord.reviewReason.tagText = Nid yw’n ddilys mwyach
