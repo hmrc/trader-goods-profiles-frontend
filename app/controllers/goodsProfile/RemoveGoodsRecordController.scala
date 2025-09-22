@@ -85,9 +85,12 @@ class RemoveGoodsRecordController @Inject() (
               }
             )
         }
-        .recover { case ex =>
-          logger.error(s"[RemoveGoodsRecordController][onSubmit] Failed processing form for record $recordId", ex)
-          Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
+        .recover {
+          case e: UpstreamErrorResponse if e.statusCode == 404 =>
+            Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
+          case e: Exception                                    =>
+            logger.error(s"[RemoveGoodsRecordController][onSubmit] Failed processing form for record $recordId", e)
+            Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
         }
     }
 
