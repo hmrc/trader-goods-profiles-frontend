@@ -63,10 +63,12 @@ class RemoveGoodsRecordController @Inject() (
           Ok(view(form, recordId, location, productRef))
         }
         .recover {
-          case _: RecordNotFoundException =>
+          case _: RecordNotFoundException                      =>
             Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
-          case ex                         =>
-            logger.error(s"[RemoveGoodsRecordController][onPageLoad] Failed to fetch record $recordId", ex)
+          case e: UpstreamErrorResponse if e.statusCode == 404 =>
+            Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
+          case e                                               =>
+            logger.error(s"[RemoveGoodsRecordController][onPageLoad] Failed to fetch record $recordId", e)
             Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
         }
     }
