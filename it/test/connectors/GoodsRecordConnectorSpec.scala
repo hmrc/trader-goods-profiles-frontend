@@ -24,7 +24,6 @@ import models.router.requests.{CreateRecordRequest, PatchRecordRequest, PutRecor
 import models.router.responses.{GetGoodsRecordResponse, GetRecordsResponse}
 import models.{Category1Scenario, CategoryRecord, Commodity, GoodsRecord, RecordsSummary, SupplementaryRequest, UpdateGoodsRecord}
 import org.scalatest.OptionValues
-import org.scalatest.RecoverMethods.recoverToExceptionIf
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -38,10 +37,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import uk.gov.hmrc.http.test.WireMockSupport
 import utils.GetRecordsResponseUtil
 import play.api.test.Helpers.defaultAwaitTimeout
-import scala.concurrent.ExecutionContext.Implicits.global
 
-import java.net.URLEncoder
-import java.util.regex.Pattern
 import java.time.Instant
 import scala.concurrent.Future
 
@@ -841,9 +837,6 @@ class GoodsRecordConnectorSpec
   ".searchRecords" - {
 
     val searchString = "banana"
-    val exactMatch = false
-    val pagedGoodsRecordsSearchUrl =
-      s"/trader-goods-profiles-data-store/traders/$testEori/records/filter?searchTerm=$searchString&exactMatch=$exactMatch&page=1&size=3"
 
     "when enhance search true" - {
 
