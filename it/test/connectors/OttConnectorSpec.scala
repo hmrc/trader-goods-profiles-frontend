@@ -35,7 +35,7 @@ import play.api.libs.json.Json
 import services.AuditService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.http.test.WireMockSupport
-import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import repositories.CountryRepository
 
 import java.time.{Instant, LocalDate}
