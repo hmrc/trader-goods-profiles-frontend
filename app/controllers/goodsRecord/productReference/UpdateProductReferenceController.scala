@@ -18,7 +18,7 @@ package controllers.goodsRecord.productReference
 
 import connectors.GoodsRecordConnector
 import controllers.BaseController
-import controllers.actions._
+import controllers.actions.*
 import forms.goodsRecord.ProductReferenceFormProvider
 import models.Mode
 import models.helper.GoodsDetailsUpdate
@@ -28,7 +28,8 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import services.AuditService
-import utils.SessionData._
+import uk.gov.hmrc.http.UpstreamErrorResponse
+import utils.SessionData.*
 import views.html.goodsRecord.ProductReferenceView
 
 import javax.inject.Inject
@@ -95,5 +96,11 @@ class UpdateProductReferenceController @Inject() (
                 BadRequest(view(formWithApiErrors, onSubmitAction))
               }
         )
+        .recover {
+          case e: UpstreamErrorResponse if e.statusCode == 404 =>
+            Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
+          case e: Exception                                    =>
+            Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
+        }
     }
 }

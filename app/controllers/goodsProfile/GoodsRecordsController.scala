@@ -31,6 +31,7 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import services.AuditService
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
 import views.html.goodsProfile.{GoodsRecordsEmptyView, GoodsRecordsView}
@@ -68,45 +69,53 @@ class GoodsRecordsController @Inject() (
       if (page < 1) {
         Future.successful(navigator.journeyRecovery())
       } else {
-        goodsRecordConnector.getRecords(page, pageSize).flatMap {
-          case Some(goodsRecordsResponse) if goodsRecordsResponse.pagination.totalRecords > 0 =>
-            for {
-              countries      <- ottConnector.getCountries
-              updatedAnswers <- Future.fromTry(request.userAnswers.remove(GoodsRecordsPage))
-              _              <- sessionRepository.set(updatedAnswers)
-            } yield {
-              val firstRecord = getFirstRecordIndex(goodsRecordsResponse.pagination, pageSize)
-              Ok(
-                view(
-                  form,
-                  goodsRecordsResponse.goodsItemRecords,
-                  goodsRecordsResponse.pagination,
-                  firstRecord,
-                  getLastRecordIndex(firstRecord, goodsRecordsResponse.goodsItemRecords.size),
-                  countries,
-                  getPagination(
-                    goodsRecordsResponse.pagination.currentPage,
-                    goodsRecordsResponse.pagination.totalPages
-                  ),
-                  page,
-                  pageSize,
-                  emptySearchForm,
-                  None
-                )
-              ).removingFromSession(dataUpdated, pageUpdated, dataRemoved)
-            }
-          case Some(_)                                                                        =>
-            Future.successful(Ok(emptyView()).removingFromSession(dataUpdated, pageUpdated, dataRemoved))
-          case None                                                                           =>
-            Future.successful(
-              Redirect(
-                controllers.goodsProfile.routes.GoodsRecordsLoadingController
-                  .onPageLoad(
-                    Some(RedirectUrl(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(page).url))
+        goodsRecordConnector
+          .getRecords(page, pageSize)
+          .flatMap {
+            case Some(goodsRecordsResponse) if goodsRecordsResponse.pagination.totalRecords > 0 =>
+              for {
+                countries      <- ottConnector.getCountries
+                updatedAnswers <- Future.fromTry(request.userAnswers.remove(GoodsRecordsPage))
+                _              <- sessionRepository.set(updatedAnswers)
+              } yield {
+                val firstRecord = getFirstRecordIndex(goodsRecordsResponse.pagination, pageSize)
+                Ok(
+                  view(
+                    form,
+                    goodsRecordsResponse.goodsItemRecords,
+                    goodsRecordsResponse.pagination,
+                    firstRecord,
+                    getLastRecordIndex(firstRecord, goodsRecordsResponse.goodsItemRecords.size),
+                    countries,
+                    getPagination(
+                      goodsRecordsResponse.pagination.currentPage,
+                      goodsRecordsResponse.pagination.totalPages
+                    ),
+                    page,
+                    pageSize,
+                    emptySearchForm,
+                    None
                   )
+                ).removingFromSession(dataUpdated, pageUpdated, dataRemoved)
+              }
+            case Some(_)                                                                        =>
+              Future.successful(Ok(emptyView()).removingFromSession(dataUpdated, pageUpdated, dataRemoved))
+            case None                                                                           =>
+              Future.successful(
+                Redirect(
+                  controllers.goodsProfile.routes.GoodsRecordsLoadingController
+                    .onPageLoad(
+                      Some(RedirectUrl(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(page).url))
+                    )
+                )
               )
-            )
-        }
+          }
+          .recover {
+            case e: UpstreamErrorResponse if e.statusCode == 404 =>
+              Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
+            case e: Exception                                    =>
+              Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
+          }
       }
     }
 

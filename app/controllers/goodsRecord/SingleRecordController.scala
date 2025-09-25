@@ -63,53 +63,59 @@ class SingleRecordController @Inject() (
       goodsRecordConnector
         .getRecord(recordId)
         .flatMap { initialRecord =>
-          val backLink = request.headers
-            .get("Referer")
-            .filter(_.contains("page"))
-            .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url)
+          val isActive = initialRecord.active
 
-          val countryFromSession: Option[String] =
-            request.userAnswers.get(OriginalCountryOfOriginPage(recordId))
+          if (!isActive) {
+            Future.successful(Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad()))
+          } else {
+            val backLink = request.headers
+              .get("Referer")
+              .filter(_.contains("page"))
+              .getOrElse(controllers.goodsProfile.routes.GoodsRecordsController.onPageLoad(1).url)
 
-          val recordToDisplay = initialRecord.copy(
-            countryOfOrigin = countryFromSession.orElse(Option(initialRecord.countryOfOrigin)).getOrElse("")
-          )
+            val countryFromSession: Option[String] =
+              request.userAnswers.get(OriginalCountryOfOriginPage(recordId))
 
-          for {
-            countries              <- retrieveAndStoreCountries
-            updatedAnswers         <- updateUserAnswers(recordId, recordToDisplay)
-            autoCategoriseScenario <- if (shouldAutoCategorise(recordToDisplay)) {
-                                        autoCategoriseService.autoCategoriseRecord(recordToDisplay, updatedAnswers)
-                                      } else {
-                                        Future.successful(None)
-                                      }
-            _                      <- sessionRepository.set(updatedAnswers)
-            finalRecord            <- if (autoCategoriseScenario.isDefined) {
-                                        goodsRecordConnector.getRecord(recordId).recover {
-                                          case _: RecordNotFoundException =>
-                                            logger.info(s"Record not found for ID: $recordId during auto-categorisation")
-                                            recordToDisplay
-                                          case e: Exception               =>
-                                            logger.error(
-                                              s"Error during auto-categorisation for ID: $recordId. " +
-                                                s"Exception type: ${e.getClass.getName}, " +
-                                                s"Message: ${e.getMessage}, " +
-                                                s"Cause: ${Option(e.getCause).map(_.toString).getOrElse("None")}"
-                                            )
-                                            throw e
+            val recordToDisplay = initialRecord.copy(
+              countryOfOrigin = countryFromSession.orElse(Option(initialRecord.countryOfOrigin)).getOrElse("")
+            )
+
+            for {
+              countries              <- retrieveAndStoreCountries
+              updatedAnswers         <- updateUserAnswers(recordId, recordToDisplay)
+              autoCategoriseScenario <- if (shouldAutoCategorise(recordToDisplay)) {
+                                          autoCategoriseService.autoCategoriseRecord(recordToDisplay, updatedAnswers)
+                                        } else {
+                                          Future.successful(None)
                                         }
-                                      } else {
-                                        Future.successful(recordToDisplay)
-                                      }
-          } yield renderView(
-            recordId,
-            finalRecord,
-            backLink,
-            countries,
-            autoCategoriseScenario,
-            countryOfOriginUpdated,
-            showCommodityCodeBanner
-          )
+              _                      <- sessionRepository.set(updatedAnswers)
+              finalRecord            <- if (autoCategoriseScenario.isDefined) {
+                                          goodsRecordConnector.getRecord(recordId).recover {
+                                            case _: RecordNotFoundException =>
+                                              logger.info(s"Record not found for ID: $recordId during auto-categorisation")
+                                              recordToDisplay
+                                            case e: Exception               =>
+                                              logger.error(
+                                                s"Error during auto-categorisation for ID: $recordId. " +
+                                                  s"Exception type: ${e.getClass.getName}, " +
+                                                  s"Message: ${e.getMessage}, " +
+                                                  s"Cause: ${Option(e.getCause).map(_.toString).getOrElse("None")}"
+                                              )
+                                              throw e
+                                          }
+                                        } else {
+                                          Future.successful(recordToDisplay)
+                                        }
+            } yield renderView(
+              recordId,
+              finalRecord,
+              backLink,
+              countries,
+              autoCategoriseScenario,
+              countryOfOriginUpdated,
+              showCommodityCodeBanner
+            )
+          }
         }
         .recover {
           case _: RecordNotFoundException                      =>

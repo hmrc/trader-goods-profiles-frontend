@@ -33,7 +33,7 @@ import play.api.mvc.*
 import queries.CountriesQuery
 import repositories.SessionRepository
 import services.AuditService
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import utils.SessionData.*
 import views.html.goodsRecord.CountryOfOriginView
 
@@ -140,6 +140,12 @@ class UpdateCountryOfOriginController @Inject() (
 
               }
             )
+            .recover {
+              case e: UpstreamErrorResponse if e.statusCode == 404 =>
+                Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
+              case e: Exception                                    =>
+                Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
+            }
         case None            => throw new Exception("Countries should have been populated on page load.")
       }
     }
