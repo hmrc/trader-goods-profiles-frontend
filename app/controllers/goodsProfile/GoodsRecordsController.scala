@@ -31,6 +31,7 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import services.AuditService
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import utils.SessionData.{dataRemoved, dataUpdated, pageUpdated}
 import views.html.goodsProfile.{GoodsRecordsEmptyView, GoodsRecordsView}
@@ -106,6 +107,11 @@ class GoodsRecordsController @Inject() (
                   )
               )
             )
+        }.recover {
+          case e: UpstreamErrorResponse if e.statusCode == 404 =>
+            Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
+          case e: Exception                                    =>
+            Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
         }
       }
     }
