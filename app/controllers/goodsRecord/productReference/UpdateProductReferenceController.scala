@@ -95,10 +95,11 @@ class UpdateProductReferenceController @Inject() (
                   createFormWithErrors(form, value, "productReference.error.traderRefNotUnique")
                 BadRequest(view(formWithApiErrors, onSubmitAction))
               }
-        ).recover {
+        )
+        .recover {
           case e: UpstreamErrorResponse if e.statusCode == 404 =>
             Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
-          case e: Exception =>
+          case e: Exception                                    =>
             Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
         }
     }

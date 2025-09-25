@@ -139,10 +139,11 @@ class UpdateCountryOfOriginController @Inject() (
                   .addingToSession(pageUpdated -> "countryOfOrigin")
 
               }
-            ).recover {
+            )
+            .recover {
               case e: UpstreamErrorResponse if e.statusCode == 404 =>
                 Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
-              case e: Exception =>
+              case e: Exception                                    =>
                 Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
             }
         case None            => throw new Exception("Countries should have been populated on page load.")
