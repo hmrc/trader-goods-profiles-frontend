@@ -83,7 +83,7 @@
     @hmrcStandardHeader(
         serviceUrl  = if (headerShouldHaveServiceLink) Some(routes.IndexController.onPageLoad().url) else None,
         signOutUrl  = if(showSignOut) Some(signOutUrl) else None,
-        phaseBanner = Some(betaBanner(appConfig.feedbackUrl()))
+        phaseBanner = None
     )
 }
 
