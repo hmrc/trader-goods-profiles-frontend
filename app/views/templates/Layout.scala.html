@@ -128,7 +128,7 @@
     headerBlock = Some(hmrcStandardHeader(
         serviceUrl  = if (headerShouldHaveServiceLink) Some(routes.IndexController.onPageLoad().url) else None,
         signOutUrl  = if(showSignOut) Some(signOutUrl) else None,
-        phaseBanner = Some(betaBanner(appConfig.feedbackUrl.toString()))
+        phaseBanner = None
     )),
     mainContentLayout = Some(if(isFullWidth) fullWidthMainContent(_) else twoThirdsMainContent(_)),
     beforeContentBlock = Some(beforeContent),
