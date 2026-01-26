@@ -18,6 +18,7 @@
 @import uk.gov.hmrc.hmrcfrontend.views.config.StandardBetaBanner
 @import views.html.helper.CSPNonce
 @import views.html.components.fullWidthMainContent
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 
 @this(
     appConfig: FrontendAppConfig,
@@ -94,7 +95,7 @@
 
 @beforeContent = {
 
-    @if(appConfig.languageTranslationEnabled) {
+    @if(!appConfig.forceNavigation && appConfig.languageTranslationEnabled) {
         @hmrcLanguageSelect(LanguageSelect(
             if (messages.lang.code == "cy") Cy else En,
             (En, routes.LanguageSwitchController.switchToLanguage("en").url),
@@ -128,6 +129,15 @@
     headerBlock = Some(hmrcStandardHeader(
         serviceUrl  = if (headerShouldHaveServiceLink) Some(routes.IndexController.onPageLoad().url) else None,
         signOutUrl  = if(showSignOut) Some(signOutUrl) else None,
+        isWelshTranslationAvailable = if (appConfig.forceNavigation) true else false,
+        serviceNavigation = if (appConfig.forceNavigation) {
+        Some(
+            ServiceNavigation(
+                serviceName = Some(messages("service.name")),
+                serviceUrl = Some(routes.IndexController.onPageLoad().url)
+            ).withLanguageToggle()
+        )
+        } else None,
         phaseBanner = None
     )),
     mainContentLayout = Some(if(isFullWidth) fullWidthMainContent(_) else twoThirdsMainContent(_)),

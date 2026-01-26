@@ -41,6 +41,9 @@ class FrontendAppConfig @Inject() (configuration: Configuration) {
   val dataStoreBaseUrl: Service = configuration.get[Service]("microservice.services.trader-goods-profiles-data-store")
   val customsEmailUrl: Service  = configuration.get[Service]("microservice.services.customs-email-frontend")
 
+  lazy val forceNavigation: Boolean =
+    configuration.getOptional[Boolean]("play-frontend-hmrc.forceServiceNavigation").getOrElse(false)
+
   val languageTranslationEnabled: Boolean =
     configuration.get[Boolean]("features.welsh-translation")
 
