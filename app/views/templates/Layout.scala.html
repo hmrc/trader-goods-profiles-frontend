@@ -19,6 +19,7 @@
 @import views.html.helper.CSPNonce
 @import views.html.components.fullWidthMainContent
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits.RichServiceNavigation
 
 @this(
     appConfig: FrontendAppConfig,
@@ -28,7 +29,6 @@
     hmrcStandardHeader: HmrcStandardHeader,
     hmrcStandardFooter: HmrcStandardFooter,
     hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet,
-    hmrcLanguageSelect: HmrcLanguageSelect,
     hmrcTimeoutDialog: HmrcTimeoutDialog,
     hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
     hmrcScripts: HmrcScripts,
@@ -95,14 +95,6 @@
 
 @beforeContent = {
 
-    @if(!appConfig.forceNavigation && appConfig.languageTranslationEnabled) {
-        @hmrcLanguageSelect(LanguageSelect(
-            if (messages.lang.code == "cy") Cy else En,
-            (En, routes.LanguageSwitchController.switchToLanguage("en").url),
-            (Cy, routes.LanguageSwitchController.switchToLanguage("cy").url)
-        ))
-    }
-
     @if(showBackLink) {
         @govukBackLink(BackLinkViewModel(href = backLinkUrl, text = messages(backLinkMessageKey)).withCssClass("js-visible"))
     }
@@ -129,15 +121,13 @@
     headerBlock = Some(hmrcStandardHeader(
         serviceUrl  = if (headerShouldHaveServiceLink) Some(routes.IndexController.onPageLoad().url) else None,
         signOutUrl  = if(showSignOut) Some(signOutUrl) else None,
-        isWelshTranslationAvailable = if (appConfig.forceNavigation) true else false,
-        serviceNavigation = if (appConfig.forceNavigation) {
-        Some(
+        isWelshTranslationAvailable = appConfig.languageTranslationEnabled,
+        serviceNavigation = if (appConfig.languageTranslationEnabled) Some(
             ServiceNavigation(
                 serviceName = Some(messages("service.name")),
                 serviceUrl = Some(routes.IndexController.onPageLoad().url)
             ).withLanguageToggle()
-        )
-        } else None,
+        ) else None,
         phaseBanner = None
     )),
     mainContentLayout = Some(if(isFullWidth) fullWidthMainContent(_) else twoThirdsMainContent(_)),
