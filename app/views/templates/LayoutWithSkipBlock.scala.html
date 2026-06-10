@@ -15,27 +15,20 @@
  *@
 
 @import config.FrontendAppConfig
-@import uk.gov.hmrc.hmrcfrontend.views.config.StandardBetaBanner
 @import views.html.helper.CSPNonce
 @import views.html.components.fullWidthMainContent
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits.RichServiceNavigation
+@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.hmrcstandardpage.{HmrcStandardPageParams, ServiceURLs, TemplateOverrides}
 
 @this(
     appConfig: FrontendAppConfig,
-        govukTemplate: GovukTemplate,
+    hmrcStandardPage: HmrcStandardPage,
     govukBackLink: GovukBackLink,
-    hmrcHead: HmrcHead,
-    hmrcStandardHeader: HmrcStandardHeader,
-    hmrcStandardFooter: HmrcStandardFooter,
-    hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet,
     hmrcTimeoutDialog: HmrcTimeoutDialog,
     hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
-    hmrcScripts: HmrcScripts,
-    betaBanner: StandardBetaBanner,
     twoThirdsMainContent: TwoThirdsMainContent,
-    fullWidthMainContent: fullWidthMainContent,
-    govukSkipLink: GovukSkipLink
+    fullWidthMainContent: fullWidthMainContent
 )
 
 @(
@@ -52,23 +45,20 @@
     additionalSkipLinks: Option[Html] = None
     )(contentBlock: Html)(implicit request: RequestHeader, messages: Messages)
 
-@head = {
-
-    @hmrcHead(
-        headBlock = if(timeout) { Some(
-            hmrcTimeoutDialog(TimeoutDialog(
-                timeout             = Some(appConfig.timeout),
-                countdown           = Some(appConfig.countdown),
-                keepAliveUrl        = Some(routes.KeepAliveController.keepAlive().url),
-                keepAliveButtonText = Some(messages("timeout.keepAlive")),
-                signOutUrl          = Some(signOutUrl),
-                signOutButtonText   = Some(messages("timeout.signOut")),
-                title               = Some(messages("timeout.title")),
-                message             = Some(messages("timeout.message")),
-                language            = Some(messages.lang.code)
-            )))
-        } else None
-    )
+@additionalHead = {
+    @if(timeout) {
+        @hmrcTimeoutDialog(TimeoutDialog(
+            timeout             = Some(appConfig.timeout),
+            countdown           = Some(appConfig.countdown),
+            keepAliveUrl        = Some(routes.KeepAliveController.keepAlive().url),
+            keepAliveButtonText = Some(messages("timeout.keepAlive")),
+            signOutUrl          = Some(signOutUrl),
+            signOutButtonText   = Some(messages("timeout.signOut")),
+            title               = Some(messages("timeout.title")),
+            message             = Some(messages("timeout.message")),
+            language            = Some(messages.lang.code)
+        ))
+    }
     <link href="@routes.Assets.versioned("stylesheets/accessible-autocomplete.min.css").url" media="screen" rel="stylesheet" type="text/css" />
     <link href="@routes.Assets.versioned("stylesheets/application.css")" media="all" rel="stylesheet" type="text/css" />
     <style>
@@ -79,47 +69,27 @@
     @extraHead
 }
 
-@headerBlock = {
-    @hmrcStandardHeader(
-        serviceUrl  = if (headerShouldHaveServiceLink) Some(routes.IndexController.onPageLoad().url) else None,
-        signOutUrl  = if(showSignOut) Some(signOutUrl) else None,
-        isWelshTranslationAvailable = appConfig.languageTranslationEnabled,
-        serviceNavigation = if (appConfig.languageTranslationEnabled) Some(
-            ServiceNavigation(
-                serviceName = Some(messages("service.name")),
-                serviceUrl = Some(routes.IndexController.onPageLoad().url)
-            ).withLanguageToggle()
-        ) else None,
-        phaseBanner = None
-    )
-}
-
 @additionalScripts = {
     <script src='@controllers.routes.Assets.versioned("javascripts/accessible-autocomplete.js")'></script>
     <script src='@controllers.routes.Assets.versioned("javascripts/application.js")' @CSPNonce.attr></script>
 
-
-<script async src="https://www.googletagmanager.com/gtag/js?id=@appConfig.googleTagId"></script>
-
-<script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', "@appConfig.googleTagId");
-</script>
-
+    <script async src="https://www.googletagmanager.com/gtag/js?id=@appConfig.googleTagId"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', "@appConfig.googleTagId");
+    </script>
 }
 
 @beforeContent = {
-
+    @additionalSkipLinks
     @if(showBackLink) {
         @govukBackLink(BackLinkViewModel(href = backLinkUrl, text = messages(backLinkMessageKey)).withCssClass("js-visible"))
     }
-
 }
 
 @content = {
-
     @if(isFullWidth) {
         @fullWidthMainContent(contentBlock)
     } else {
@@ -137,20 +107,23 @@
     }
 }
 
-@skipLinkBlock = {
-    @govukSkipLink(SkipLink(href = "#main-content", content = Text(messages("site.skipToMainContent"))))
-    @additionalSkipLinks
-}
-
-@govukTemplate(
-    htmlLang = Some(messages.lang.code),
-    pageTitle   = Some(pageTitle),
-    headBlock   = Some(head),
-    headerBlock = headerBlock,
-    beforeContentBlock = Some(beforeContent),
-    footerBlock        = hmrcStandardFooter(),
-    bodyEndBlock       = Some(hmrcScripts(
-        scriptsBlock = Some(additionalScripts)
-    )),
-    skipLinkBlock = Some(skipLinkBlock)
-)(content)
+@hmrcStandardPage(HmrcStandardPageParams(
+    pageTitle = Some(pageTitle),
+    serviceName = Some(messages("service.name")),
+    isWelshTranslationAvailable = appConfig.languageTranslationEnabled,
+    serviceURLs = ServiceURLs(
+        serviceUrl = if (headerShouldHaveServiceLink) Some(routes.IndexController.onPageLoad().url) else None,
+        signOutUrl = if (showSignOut) Some(signOutUrl) else None
+    ),
+    serviceNavigation = if (appConfig.languageTranslationEnabled) Some(
+        ServiceNavigation(
+            serviceName = Some(messages("service.name")),
+            serviceUrl = Some(routes.IndexController.onPageLoad().url)
+        ).withLanguageToggle()
+    ) else None,
+    templateOverrides = TemplateOverrides(
+        additionalHeadBlock = Some(additionalHead),
+        beforeContentBlock = Some(beforeContent),
+        additionalScriptsBlock = Some(additionalScripts)
+    )
+))(content)
