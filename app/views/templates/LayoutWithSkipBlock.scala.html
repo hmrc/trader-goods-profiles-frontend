@@ -18,7 +18,6 @@
 @import views.html.helper.CSPNonce
 @import views.html.components.fullWidthMainContent
 @import uk.gov.hmrc.govukfrontend.views.html.components._
-@import uk.gov.hmrc.govukfrontend.views.html.components.implicits.RichServiceNavigation
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.hmrcstandardpage.{HmrcStandardPageParams, ServiceURLs, TemplateOverrides}
 
 @this(
@@ -115,12 +114,6 @@
         serviceUrl = if (headerShouldHaveServiceLink) Some(routes.IndexController.onPageLoad().url) else None,
         signOutUrl = if (showSignOut) Some(signOutUrl) else None
     ),
-    serviceNavigation = if (appConfig.languageTranslationEnabled) Some(
-        ServiceNavigation(
-            serviceName = Some(messages("service.name")),
-            serviceUrl = Some(routes.IndexController.onPageLoad().url)
-        ).withLanguageToggle()
-    ) else None,
     templateOverrides = TemplateOverrides(
         additionalHeadBlock = Some(additionalHead),
         beforeContentBlock = Some(beforeContent),

@@ -108,12 +108,6 @@
         serviceUrl = if (headerShouldHaveServiceLink) Some(routes.IndexController.onPageLoad().url) else None,
         signOutUrl = if (showSignOut) Some(signOutUrl) else None
     ),
-    serviceNavigation = if (appConfig.languageTranslationEnabled) Some(
-        ServiceNavigation(
-            serviceName = Some(messages("service.name")),
-            serviceUrl = Some(routes.IndexController.onPageLoad().url)
-        ).withLanguageToggle()
-    ) else None,
     templateOverrides = TemplateOverrides(
         additionalHeadBlock = Some(additionalHead),
         beforeContentBlock = Some(beforeContent),
