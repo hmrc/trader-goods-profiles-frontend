@@ -17,6 +17,7 @@
 package models.router.requests
 
 import base.SpecBase
+import models.{Commodity, SupplementaryRequest, UpdateGoodsRecord}
 import play.api.libs.json.*
 
 import java.time.Instant
@@ -63,6 +64,50 @@ class PatchRecordRequestSpec extends SpecBase {
 
     "must serialize to json" in {
       Json.toJson(patchRecordRequest) mustBe patchRecordRequestJson
+    }
+
+    "map" - {
+      "must map from UpdateGoodsRecord" in {
+        val commodity    = Commodity("12012000", List.empty, time, None)
+        val updateRecord = UpdateGoodsRecord(
+          eori = "eori",
+          recordId = "recordId",
+          countryOfOrigin = Some("GB"),
+          goodsDescription = Some("goodsDesc"),
+          productReference = Some("traderRef"),
+          commodityCode = Some(commodity),
+          category = Some(1),
+          commodityCodeStartDate = Some(time),
+          commodityCodeEndDate = Some(time)
+        )
+        val result       = PatchRecordRequest.map(updateRecord)
+        result.eori mustBe "eori"
+        result.recordId mustBe "recordId"
+        result.countryOfOrigin mustBe Some("GB")
+        result.comcode mustBe Some("12012000")
+      }
+    }
+
+    "mapFromSupplementary" - {
+      "must map with a valid supplementary unit" in {
+        val supplementary =
+          SupplementaryRequest("eori", "recordId", supplementaryUnit = Some("1.5"), measurementUnit = Some("kg"))
+        val result        = PatchRecordRequest.mapFromSupplementary(supplementary)
+        result.supplementaryUnit mustBe Some(BigDecimal("1.5"))
+        result.measurementUnit mustBe Some("kg")
+      }
+
+      "must map with no supplementary unit" in {
+        val supplementary = SupplementaryRequest("eori", "recordId", supplementaryUnit = None)
+        val result        = PatchRecordRequest.mapFromSupplementary(supplementary)
+        result.supplementaryUnit mustBe Some(0)
+      }
+
+      "must map with a non-numeric supplementary unit" in {
+        val supplementary = SupplementaryRequest("eori", "recordId", supplementaryUnit = Some("invalid"))
+        val result        = PatchRecordRequest.mapFromSupplementary(supplementary)
+        result.supplementaryUnit mustBe None
+      }
     }
   }
 
