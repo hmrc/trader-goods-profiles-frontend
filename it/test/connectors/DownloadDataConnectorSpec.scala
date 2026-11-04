@@ -80,7 +80,7 @@ class DownloadDataConnectorSpec
       )
 
       val ex = connector.requestDownloadData.failed.futureValue
-      ex shouldBe a[UpstreamErrorResponse]
+      ex                                                shouldBe a[UpstreamErrorResponse]
       ex.asInstanceOf[UpstreamErrorResponse].statusCode shouldBe 400
     }
 
@@ -126,7 +126,7 @@ class DownloadDataConnectorSpec
         val result = connector.requestDownloadData
 
         val ex = result.failed.futureValue
-        ex shouldBe a[UpstreamErrorResponse]
+        ex                                                shouldBe a[UpstreamErrorResponse]
         ex.asInstanceOf[UpstreamErrorResponse].statusCode shouldBe errorStatus
 
         wireMockServer.verify(
@@ -136,7 +136,6 @@ class DownloadDataConnectorSpec
       }
     }
 
-
     "must return Seq.empty when response status is unexpected" in {
       wireMockServer.stubFor(
         get(urlEqualTo(downloadDataSummaryUrl))
@@ -145,7 +144,6 @@ class DownloadDataConnectorSpec
 
       connector.getDownloadDataSummary.futureValue mustBe Seq.empty
     }
-
 
     "must return a failed future when the server returns an error" in {
 
@@ -167,13 +165,13 @@ class DownloadDataConnectorSpec
       connector.getDownloadDataSummary.futureValue mustBe Seq.empty
     }
 
-
   }
 
   ".getDownloadDataSummary" - {
 
     "must return data when status is OK" in {
-      val downloadDataSummary = Seq(DownloadDataSummary("id", testEori, FileInProgress, Instant.now(), Instant.now(), None))
+      val downloadDataSummary =
+        Seq(DownloadDataSummary("id", testEori, FileInProgress, Instant.now(), Instant.now(), None))
 
       wireMockServer.stubFor(
         get(urlEqualTo(downloadDataSummaryUrl))
@@ -214,7 +212,7 @@ class DownloadDataConnectorSpec
 
   ".getEmail" - {
 
-    val emailUrl = "/trader-goods-profiles-data-store/traders/email"
+    val emailUrl  = "/trader-goods-profiles-data-store/traders/email"
     val testEmail = Email("test@example.com", Instant.now())
 
     "must fail future when response status is unexpected (e.g. 500)" in {
@@ -224,7 +222,7 @@ class DownloadDataConnectorSpec
       )
 
       val ex = connector.getEmail.failed.futureValue
-      ex shouldBe a[UpstreamErrorResponse]
+      ex                                                shouldBe a[UpstreamErrorResponse]
       ex.asInstanceOf[UpstreamErrorResponse].statusCode shouldBe 500
     }
 
@@ -253,7 +251,7 @@ class DownloadDataConnectorSpec
       )
 
       val ex = connector.getEmail.failed.futureValue
-      ex shouldBe a[UpstreamErrorResponse]
+      ex                                                shouldBe a[UpstreamErrorResponse]
       ex.asInstanceOf[UpstreamErrorResponse].statusCode shouldBe 500
     }
 
@@ -279,11 +277,10 @@ class DownloadDataConnectorSpec
         )
 
         val ex = connector.updateSeenStatus.failed.futureValue
-        ex shouldBe a[UpstreamErrorResponse]
+        ex                                                shouldBe a[UpstreamErrorResponse]
         ex.asInstanceOf[UpstreamErrorResponse].statusCode shouldBe 404
       }
     }
-
 
     "must return Done when response status is NO_CONTENT (204)" in {
       wireMockServer.stubFor(
@@ -301,7 +298,7 @@ class DownloadDataConnectorSpec
       )
 
       val ex = connector.updateSeenStatus.failed.futureValue
-      ex shouldBe a[UpstreamErrorResponse]
+      ex                                                shouldBe a[UpstreamErrorResponse]
       ex.asInstanceOf[UpstreamErrorResponse].statusCode shouldBe 500
     }
   }
@@ -318,7 +315,6 @@ class DownloadDataConnectorSpec
         connector.getDownloadData.futureValue mustBe Seq.empty
       }
     }
-
 
     "must return data when status is OK" in {
       val downloadData = Seq(DownloadData("downloadURL", "fileName", 600, Seq.empty))
