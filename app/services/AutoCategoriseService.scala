@@ -90,7 +90,7 @@ class AutoCategoriseService @Inject() (
         .getCategorisationInfo(request, record.comcode, record.countryOfOrigin, record.recordId)
         .map(Some(_))
         .recover { case ex =>
-          logger.error(s"[getCategorisationInfoForRecord] failed for recordId=$recordId", ex)
+          logger.error(s"Getting categorisation information failed for recordId=$recordId", ex)
           None
         }
     }

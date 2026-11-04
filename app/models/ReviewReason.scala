@@ -182,8 +182,8 @@ object ReviewReason {
         case "measure"    => JsSuccess(Measure)
         case "mismatch"   => JsSuccess(Mismatch)
         case "country"    => JsSuccess(Country)
-        case other        => JsError(s"[ReviewReason] Reads unknown ReviewReason: $other")
+        case other        => JsError(s"Reads unknown ReviewReason: $other")
       }
-    case other       => JsError(s"[ReviewReason] Reads unknown ReviewReason: $other")
+    case other       => JsError(s"Unexpected type received: Reads unknown ReviewReason: $other")
   }
 }

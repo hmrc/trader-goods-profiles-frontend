@@ -68,7 +68,7 @@ class RemoveGoodsRecordController @Inject() (
           case e: UpstreamErrorResponse if e.statusCode == 404 =>
             Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
           case e                                               =>
-            logger.error(s"[RemoveGoodsRecordController][onPageLoad] Failed to fetch record $recordId", e)
+            logger.error(s"Failed to fetch record $recordId", e)
             Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
         }
     }
@@ -91,7 +91,7 @@ class RemoveGoodsRecordController @Inject() (
           case e: UpstreamErrorResponse if e.statusCode == 404 =>
             Redirect(controllers.problem.routes.RecordNotFoundController.onPageLoad())
           case e: Exception                                    =>
-            logger.error(s"[RemoveGoodsRecordController][onSubmit] Failed processing form for record $recordId", e)
+            logger.error(s"Error when submitting removal of good record -  Failed processing form for record $recordId", e)
             Redirect(controllers.problem.routes.JourneyRecoveryController.onPageLoad())
         }
     }
