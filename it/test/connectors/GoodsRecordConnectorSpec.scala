@@ -247,9 +247,9 @@ class GoodsRecordConnectorSpec
       val responseBody =
         Json.obj(
           "goodsItemRecords" -> Json.arr(),
-          "pagination" -> Json.obj(
-            "totalPages" -> 0,
-            "currentPage" -> 2,
+          "pagination"       -> Json.obj(
+            "totalPages"   -> 0,
+            "currentPage"  -> 2,
             "totalRecords" -> 0
           )
         )
@@ -350,18 +350,16 @@ class GoodsRecordConnectorSpec
           )
       )
 
-
       val result = connector.removeGoodsRecord("some-record-id")
 
       whenReady(result.failed) {
         case ex: UpstreamErrorResponse =>
           ex.statusCode shouldBe INTERNAL_SERVER_ERROR
-          ex.getMessage should include("Internal server error occurred")
-        case other =>
+          ex.getMessage   should include("Internal server error occurred")
+        case other                     =>
           fail(s"Expected UpstreamErrorResponse but got $other")
       }
     }
-
 
     "return false when record is not found (404)" in {
       stubFor(
@@ -374,7 +372,6 @@ class GoodsRecordConnectorSpec
       val result = await(connector.removeGoodsRecord("some-record-id"))
       result shouldBe false
     }
-
 
     "must return true when goods record is removed" in {
 
@@ -773,10 +770,9 @@ class GoodsRecordConnectorSpec
         ex shouldBe a[UpstreamErrorResponse]
         val ue = ex.asInstanceOf[UpstreamErrorResponse]
         ue.statusCode shouldBe INTERNAL_SERVER_ERROR
-        ue.getMessage should include("Internal server error")
+        ue.getMessage   should include("Internal server error")
       }
     }
-
 
     "must get a page of goods records" in {
 
@@ -1010,7 +1006,6 @@ class GoodsRecordConnectorSpec
         res shouldBe false
       }
     }
-
 
     "must get a records summary" in {
 

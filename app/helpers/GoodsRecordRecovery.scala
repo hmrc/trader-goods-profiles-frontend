@@ -34,7 +34,7 @@ trait GoodsRecordRecovery {
 
   def handleRecover(recordId: String)(implicit request: DataRequest[AnyContent]): PartialFunction[Throwable, Result] = {
     case e: GoodsRecordBuildFailure =>
-      recoveryLogger.warn(s"[GoodsRecordRecovery] ${e.getMessage}")
+      recoveryLogger.warn(s"Error recovering goods: ${e.getMessage}")
       Redirect(
         controllers.problem.routes.JourneyRecoveryController.onPageLoad(
           Some(
